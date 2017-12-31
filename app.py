@@ -249,6 +249,7 @@ def main():
         graph = None
         record = None
         listing = None
+        on_edge=None
         if request.method == 'POST':
                 code = request.form['CourseCodes']
                 dept = request.form['Dept']
@@ -264,8 +265,10 @@ def main():
                         record = get_hist(dept,num)
                 elif dept.strip() is not 'ALL' and num is '':
                         listing = gen_almanac_listing(dept=dept)
-        record=request.user_agent.browser
-        return render_template('test.html', record=record, graph=graph, listing=listing)
+        client_agent = request.user_agent
+        if client_agent.browser.strip() == 'msie' or 'Edge' in client_agent.string:
+        	on_edge = 'O Yes'
+        return render_template('test.html', record=record, graph=graph, listing=listing, on_edge=on_edge)
 
 if __name__ == '__main__':
     app.run(debug=True)
