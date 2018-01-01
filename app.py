@@ -33,11 +33,14 @@ def get_rela_dates(abs_dates):
     wk_ind = 0
     day = 0
     for i in range(abs_dates):
-        result.append('{}:{}'.format(wkday_trans(day),weeks[wk_ind]))
+        result.append('{}{}'.format(weeks[wk_ind],wkday_trans(day)))
         day += 1
         if day == 7:
             day = 0
             wk_ind +=1
+        if i == 25:
+        	day = 0
+        	wk_ind += 1
     return result
 
 def process_wl(wl,num):
@@ -118,20 +121,6 @@ def mkgraph(code,dept,num, f=False):
     	return
     return line_chart.render_data_uri()
 
-def get_code(dept, num):
-	base_url = 'https://www.reg.uci.edu/perl/WebSoc?'
-	fields = [('YearTerm','2018-03'), ('Dept',dept), ('CourseNum',num)]
-	sauce = urllib.request.urlopen(base_url + urllib.parse.urlencode(fields))
-	soup = bs.BeautifulSoup(sauce, 'html.parser')
-	try:
-		cell = soup.find('div', {'class':'course-list'}).find('tr',{'valign':'top','bgcolor':'#FFFFCC'}).find('td')
-		if len(cell.text) == 5:
-			return cell.text
-		else:
-			raise
-	except:
-		return '-----'
-
 def get_course_info(code):
 	base_url = 'https://www.reg.uci.edu/perl/WebSoc?'
 	fields = [('YearTerm','2018-03'), ('CourseCodes',code)]
@@ -193,16 +182,29 @@ def get_hist(dept,num):
 			res += '</tr>'
 	return res+'</table>'
 
-def gen_almanac_listing(dept='',ge=''):
+def gen_almanac_listing(dept='',ge='',num='',code=''):
 	url = 'https://www.reg.uci.edu/perl/WebSoc?'
 	fields = [('YearTerm','2018-03'),('ShowFinals','1'),('ShowComments','1')]
-	if ge != '':
+	if code != '':
+		fields.append(('CourseCodes',code))
+		r = '<h4>You searched for the code(s): {}</h4>'.format(code)
+	elif ge != '':
 		fields.append(('Breadth',ge))
+		r = '<h4>You searched for the breadth: {}</h4>'.format(ge)
+	elif num != '':
+		fields.extend([('Dept',dept),('CourseNum',num)])
+		r = '<h4>You searched in the {} department for the course(s): {}</h4>'.format(dept,num)
 	else:
 		fields.append(('Dept',dept))
+		r = '<h4>You searched for the {} department</h4>'.format(dept)
 	sauce = urllib.request.urlopen(url + urllib.parse.urlencode(fields))
 	sp = bs.BeautifulSoup(sauce, 'html.parser')
-	r = ''
+	for div in sp.find_all('div'):
+		if div.text.strip() == 'No courses matched your search criteria for this term.':
+			chart = pygal.Line(no_data_text='Nothing Matched Your Search', style=DefaultStyle(no_data_font_size=40))
+			chart.add('line', [])
+			r += '<br><h5>Nothing. We Ain\'t Found Nothing.</h5>'
+			return [(r,chart.render_data_uri())]
 	res = []
 	cur_num = ''
 	for row in sp.find_all('tr', {'class':''}):
@@ -228,25 +230,8 @@ def gen_almanac_listing(dept='',ge=''):
 					dept = ' '.join(temp[:-1])
 	return res
 
-def gen_graph_listing(dept, num):
-	url = 'https://www.reg.uci.edu/perl/WebSoc?'
-	fields = [('YearTerm','2018-03'),('ShowFinals','1'),('ShowComments','1'),('Dept',dept),('CourseNum',num)]
-	sauce = urllib.request.urlopen(url + urllib.parse.urlencode(fields))
-	sp = bs.BeautifulSoup(sauce, 'html.parser')
-	res = []
-	for row in sp.find_all('tr', {'class':''}):
-		if row.find('td', {'class':'Comments'}) == None or row.find('table') != None:
-			cells = row.find_all('td')
-			if len(cells)==9:
-				continue
-			if len(cells) != 0 and len(cells[0].text) == 5 and cells[3].text != '0':
-				code = cells[0].text
-				res.append(mkgraph(code,dept,num))
-	return res
-
 @app.route('/', methods=['GET', 'POST'])
 def main():
-        graph = None
         record = None
         listing = None
         on_edge=None
@@ -257,18 +242,19 @@ def main():
                 ge = request.form['Breadth']
                 if code is not '':
                         dept, num = get_course_info(code)
-                        graph = [mkgraph(code,dept,num)]
+                        listing = gen_almanac_listing(code=code,dept=dept,num=num)
+                        record = get_hist(dept,num)
                 elif ge.strip() != 'ANY':
                 		listing = gen_almanac_listing(ge=ge)
                 elif dept.strip() is not 'ALL' and num is not '':
-                        graph = gen_graph_listing(dept,num)
+                        listing = gen_almanac_listing(dept=dept,num=num)
                         record = get_hist(dept,num)
                 elif dept.strip() is not 'ALL' and num is '':
                         listing = gen_almanac_listing(dept=dept)
         client_agent = request.user_agent
         if client_agent.browser.strip() == 'msie' or 'Edge' in client_agent.string:
         	on_edge = 'O Yes'
-        return render_template('test.html', record=record, graph=graph, listing=listing, on_edge=on_edge)
+        return render_template('test.html', record=record, listing=listing, on_edge=on_edge)
 
 if __name__ == '__main__':
     app.run(debug=True)
