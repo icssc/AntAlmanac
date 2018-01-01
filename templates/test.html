@@ -9,6 +9,15 @@
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+ $(".button").click(function(){
+     $("#text" + $(this).attr('t')).toggle();
+ }); 
+});
+</script>
+
 <style type="text/css">
 <!--/* <![CDATA[ */
 		/* bodyfontsize */
@@ -341,12 +350,12 @@
 		
 		<td bgcolor="#CCCCCC" nowrap="nowrap" width="200px">
 		    <font face="Verdana, Helvetica, Arial" size="1" color="Blue"><b> &nbsp;
-			Course Number:   </b>
+			Course Number(s):   </b>
 		</font>
 		</td>
 		<td align="left" nowrap="nowrap">
 		    &nbsp;<input name="CourseNum" size="22" />&nbsp;
-		    <font face="Helvetica, Arial, sans-serif" size="1" color="#3152A5"><b>H2A, 5</b> &nbsp; &nbsp; (multiple entries NOT ok)</font>
+		    <font face="Helvetica, Arial, sans-serif" size="1" color="#3152A5"><b>H2A, 5</b> &nbsp; &nbsp; (multiple entries OKAY)</font>
 		</td>
 	    </tr>
 
@@ -354,28 +363,30 @@
 		
 		<td bgcolor="#E6E6E6" nowrap="nowrap" width="200px">
 		    <font face="Verdana, Helvetica, Arial" size="1" color="Blue"><b>
-		    &nbsp; Course Code:   </b>
+		    &nbsp; Course Code(s):   </b>
 		    </font>
 		</td>
 		<td align="left" nowrap="nowrap">
 		    &nbsp;<input name="CourseCodes" size="22" />&nbsp;
-		    <font face="Helvetica, Arial, sans-serif" size="1" color="#3152A5"><b>14200, NOT 29000-29100</b></font>
+		    <font face="Helvetica, Arial, sans-serif" size="1" color="#3152A5"><b>14200, 29000-29100</b></font>
 		</td>
 	    </tr>  
 	</table>
     </form>
 
     <br>
+<!--
+    <div class="button"><div class="button float_l" t="1"><a href="#">More..</a></div>
+	<div class="button"><div class="button float_l" t="2"><a href="#">More..</a></div>
+	<div class="button"><div class="button float_l" t="3"><a href="#">More..</a></div>   
 
-    {% if graph %}
-    	{% for g in graph %}
-    	<embed type="image/svg+xml" src= {{ g|safe }} />
-    	{% endfor %}
-    {% endif %}
 
-    {% if record %}
-    	{{record|safe}}
-    {% endif %}
+    <p><div id="text1">Paragraph 1</div></p>
+
+    <p><div id="text2">Paragraph 2</div></p>
+
+    <p><div id="text3">Paragraph 3</div></p>
+-->
     
     {% if on_edge %}
     	<p><i>***Graphs are weird or not interactive? Probably because you're using MS Edge or Internet Explorer***</i></p>
@@ -392,6 +403,10 @@
 	    	{% endif %}
     	{% endfor %}
     	</table>
+    {% endif %}
+
+    {% if record %}
+    	{{record|safe}}
     {% endif %}
 
     <!-- HTML for Registrar contact info in footer. -->
