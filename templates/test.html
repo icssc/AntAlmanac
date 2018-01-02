@@ -18,6 +18,14 @@ $(document).ready(function () {
 });
 </script>
 
+<script type="text/javascript">// <![CDATA[
+        function preloader(){
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("content").style.display = "block";
+        }//preloader
+        window.onload = preloader;
+// ]]></script>
+
 <style type="text/css">
 <!--/* <![CDATA[ */
 		/* bodyfontsize */
@@ -116,6 +124,8 @@ $(document).ready(function () {
 		.course-summary dd{ font-size:80%; }
 
 
+
+
 /* ]]> */-->
 </style>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
@@ -147,10 +157,12 @@ $(document).ready(function () {
 
 	<p><font face="Verdana, Helvetica, Arial" size="3" color="black"><b>
 		Must Specify One of Breadth, Department or Course Code </b>
-				<br>
+				<br />
 		*Graphs only available for courses with more than zero units*
-	<br>
+	<br />
 		*Some lengthy results may take ages*
+		<br />
+		*NEW FEATURE: Try searching for a specific course, such as MGMT 30B, or ICS 6N*
 	</font></p>
 
 
@@ -387,7 +399,9 @@ $(document).ready(function () {
 
     <p><div id="text3">Paragraph 3</div></p>
 -->
-    
+    	
+	<div id="loading"><iframe src="https://giphy.com/embed/49eS4H0R1LoOc" width="480" height="480" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/top-recall-fiat-49eS4H0R1LoOc">via GIPHY</a></p></div>
+	<div id="content">
     {% if on_edge %}
     	<p><i>***Graphs are weird or not interactive? Probably because you're using MS Edge or Internet Explorer***</i></p>
     {% endif %}
@@ -411,6 +425,7 @@ $(document).ready(function () {
 
     <!-- HTML for Registrar contact info in footer. -->
     <!-- Used with "/css/banner750.css"  -->
+	</div>
 
     <br>
 	<address id="footer-copyright">
