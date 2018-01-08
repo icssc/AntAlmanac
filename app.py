@@ -232,7 +232,7 @@ def gen_almanac_listing(dept='',ge='',num='',code=''):
 
 @app.route('/_course_hist/<dept>/<num>')
 def _course_hist(dept, num):
-	return render_html('course_hist.html',record=get_hist(dept,num))
+	return render_template('course_hist.html',record=get_hist(dept,num))
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
