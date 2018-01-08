@@ -219,8 +219,7 @@ def gen_almanac_listing(dept='',ge='',num='',code=''):
 				if '199' in cur_num or (cells[2].text.isnumeric() and int(cells[2].text)>4):
 					r += 'DATA HIDDEN</td></tr>'
 				else:
-					res.append((r,mkgraph(code,dept,cur_num)))
-					r='</td></tr>'
+					res.append((r,mkgraph(code,dept,cur_num),dept,cur_num))
 			elif row.find('td', {'class':'CourseTitle'}) != None:
 				temp = str(row.find('td', {'class':'CourseTitle'}))
 				temp = temp[temp.find('>')+1:]
