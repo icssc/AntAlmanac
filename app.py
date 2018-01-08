@@ -220,6 +220,7 @@ def gen_almanac_listing(dept='',ge='',num='',code=''):
 					r += 'DATA HIDDEN</td></tr>'
 				else:
 					res.append((r,mkgraph(code,dept,cur_num),dept,cur_num))
+					r = ''
 			elif row.find('td', {'class':'CourseTitle'}) != None:
 				temp = str(row.find('td', {'class':'CourseTitle'}))
 				temp = temp[temp.find('>')+1:]
