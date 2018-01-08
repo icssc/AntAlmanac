@@ -9,14 +9,8 @@
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 
-<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-<script type="text/javascript">
-$(document).ready(function () {
- $(".button").click(function(){
-     $("#text" + $(this).attr('t')).toggle();
- }); 
-});
-</script>
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+
 
 <script type="text/javascript">// <![CDATA[
         function preloader(){
@@ -112,6 +106,15 @@ $(document).ready(function () {
 		}
 		.course-list tr.dept-title a:link, .course-list tr.dept-title a:visited{
 		    color: white;
+		}
+
+	
+		.course-hist-button {
+		  padding: 0.75em 1.25em;
+		  background-color: whitesmoke;
+		  opacity: 0.9;
+		  width: 10em;
+		  color: black;
 		}
 
 		.course-list input{ font-size:63%; }
@@ -387,19 +390,7 @@ $(document).ready(function () {
     </form>
 
     <br>
-<!--
-    <div class="button"><div class="button float_l" t="1"><a href="#">More..</a></div>
-	<div class="button"><div class="button float_l" t="2"><a href="#">More..</a></div>
-	<div class="button"><div class="button float_l" t="3"><a href="#">More..</a></div>   
-
-
-    <p><div id="text1">Paragraph 1</div></p>
-
-    <p><div id="text2">Paragraph 2</div></p>
-
-    <p><div id="text3">Paragraph 3</div></p>
--->
-    	
+   	
 	<div id="loading"><iframe src="https://giphy.com/embed/49eS4H0R1LoOc" width="480" height="480" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/top-recall-fiat-49eS4H0R1LoOc">via GIPHY</a></p></div>
 	<div id="content">
     {% if on_edge %}
@@ -408,13 +399,16 @@ $(document).ready(function () {
 
     {% if listing %}
     	<table>
-    	{% for h,g in listing %}
+    	{% for h,g,dept,num in listing %}
     		{{ h | safe}}
     		{% if on_edge %}
     			<img src= {{ g|safe }} alt="chart title"/>
     		{% else %}
 	    		<embed type="image/svg+xml" src= {{ g|safe }} />
 	    	{% endif %}
+		</td><td><div class='course-hist-button'><button onclick="myFunction("dept","num")">Show Past Course Offerings</button></div>
+		</td></tr><tr><td>
+		</td></tr>
     	{% endfor %}
     	</table>
     {% endif %}
@@ -438,6 +432,20 @@ $(document).ready(function () {
 
 
 </td></tr></table>
+<!--
+<script type="text/javascript">
+$(document).ready(function () {
+ $(".course-hist-button").on('click', function(){
+     $(this).next().load("/_course_hist// #);
+ }); 
+});
+</script>
+-->
+<script>
+function getCourseHist(dept,num) {
+    $(this).next().next().load("/_course_hist/"+dept+"/"+num+" #record");
+}
+</script>
 
 </body>
 </html>
