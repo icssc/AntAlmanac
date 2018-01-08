@@ -406,7 +406,14 @@
     		{% else %}
 	    		<embed type="image/svg+xml" src= {{ g|safe }} />
 	    	{% endif %}
-		</td></tr><tr><div class='course-hist-button'><button onclick=getCourseHist({{dept}},{{num}})>Show Past Course Offerings</button></div>
+		</td></tr>
+		<tr>
+			<td colspan=16>
+		<button onclick=getCourseHist({{dept|safe}},{{num|safe}})>Show Past Course Offerings</button>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
 		</tr>
     	{% endfor %}
     	</table>
