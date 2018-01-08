@@ -1,0 +1,328 @@
+<!doctype html>
+
+
+
+<html>
+
+
+
+<head>
+
+<!-- %2fperl%2fWebSoc; 146-80 -->
+
+
+
+<title>AntAlmanac</title>
+
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+
+
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+
+<script type="text/javascript">
+
+$(document).ready(function () {
+
+ $(".button").click(function(){
+
+     $("#text" + $(this).attr('t')).toggle();
+
+ }); 
+
+});
+
+</script>
+
+
+
+<script type="text/javascript">// <![CDATA[
+
+        function preloader(){
+
+            document.getElementById("loading").style.display = "none";
+
+            document.getElementById("content").style.display = "block";
+
+        }//preloader
+
+        window.onload = preloader;
+
+// ]]></script>
+
+
+
+<style type="text/css">
+
+<!--/* <![CDATA[ */
+
+		/* bodyfontsize */
+
+
+
+		.course-list{
+
+		    color:black;
+
+		}
+
+
+
+		.course-list table {
+
+		    empty-cells: show;
+
+		}
+
+		/* Blue bar separates course list from next course title */
+
+		.course-list tr.blue-bar td{
+
+		    background-color: navy;
+
+		    padding: 0;
+
+		    height: 4px;
+
+		}
+
+		/* White bar separates college and department comments from next section. */
+
+		.course-list tr.white-bar td{
+
+		    background-color: white;
+
+		    padding: 0;
+
+		    height: 3px;
+
+		}
+
+		.course-list tr.white-bar-thick td{
+
+		    background-color: white;
+
+		    padding: 0;
+
+		    height: 6px;
+
+		}
+
+
+
+		.course-list tr.college-title td{
+
+		    border-top: solid white 0.8em;
+
+		    border-bottom: solid white 3px;
+
+		    padding: 0.45em;
+
+		    background-color: black;
+
+		    white-space: nowrap;
+
+		    text-align: center;
+
+		    color: white;
+
+		    font-family: Arial,Helvetica,sans-serif;
+
+		    font-size:130%;
+
+		    font-weight: bold
+
+		}
+
+
+
+		.course-list tr.college-comment td,
+
+			.course-list tr.dept-comment td,
+
+			.course-list tr.num-range-comment td,
+
+			.course-list tr.ccode-range-comment td{
+
+		    border: solid navy 3px;
+
+		    padding: 0 1.5em 0 1.5em;
+
+		    background-color: #E7E7E7;
+
+		    text-align: left;
+
+		    color: black;
+
+		    font: 80% Times New Roman,Times,serif;
+
+		}
+
+		.course-list tr.college-comment td{
+
+		    border-color: black;
+
+		}
+
+		.course-list tr.num-range-comment td{
+
+		    background-color: #efe7ef;
+
+		}
+
+		.course-list tr.college-comment p,
+
+			.course-list tr.dept-comment p,
+
+			.course-list tr.num-range-comment p,
+
+			.course-list tr.ccode-range-comment p{
+
+		    margin: 0.5em 0 0.5em 0;
+
+		}
+
+
+
+		.course-list tr p.comment-heading {
+
+		    word-spacing: 0.2em;
+
+			/* letter-spacing: 1px; */
+
+		    font-size: 125%;
+
+		    font-weight: bold;
+
+		}
+
+
+
+		.course-list tr.dept-title td{
+
+		    border-top: solid white 2px;
+
+		    border-bottom: solid white 3px;
+
+		    padding-left: 0.7em;
+
+		    background-color: navy;
+
+		    white-space: nowrap;
+
+		    color: white;
+
+		    font-family: sans-serif;
+
+		    font-size: 100%;
+
+		    font-weight: bold
+
+		}
+
+		.course-list tr.dept-title a:link, .course-list tr.dept-title a:visited{
+
+		    color: white;
+
+		}
+
+
+
+		.course-list input{ font-size:63%; }
+
+		.course-list td{ color:black; font-size:70%; }
+
+		.course-list td td{ color:black; font-size:100%; }
+
+		.course-list th{ color:black; font-size:70%; }
+
+		.course-list td.Pct100 { font-size:100%;  }  /* need unscaled size to protect inner tables. */
+
+		.course-list td.CourseTitle { color:black; font-size:100%; }
+
+		.course-list td td.Comments { color:black; font-size:80%;  }
+
+		.course-summary dd{ font-size:80%; }
+
+
+
+
+
+
+
+
+
+/* ]]> */-->
+
+</style>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+</head>
+
+<body>
+
+
+
+
+
+    
+
+    <!-- HTML for Registrar Main Banner. -->
+
+    <!-- Insert this after "<body>" tag. -->
+
+    <!-- Used with "/css/banner750all.css" or "/css/banner750.css" -->
+
+
+
+    <!--#config timefmt="%A, %B %e, %Y" -->  <!-- Use "man strftime" to see formatting options. -->
+
+
+
+    <table>
+
+    	<tr><td>&nbsp;</td><td>
+
+    <div class="title-bar">
+
+	<h3>Poor Peter's Anteater-Almanac(k): Winter 2018</h3>
+
+    </div>
+
+
+    <div id="record">
+    {% if record %}
+
+    	{{record|safe}}
+
+    {% endif %}
+    </div>
+
+
+	</div>
+
+
+
+    <br>
+
+	<address id="footer-copyright">
+
+	    &copy; 2007 The Regents of the University of California.
+
+	    &nbsp; All Rights Reserved.<br>
+
+	    &copy; 3017 The Rango Company.
+
+	    &nbsp; Please don't sue me, I'm broke.
+
+	</address>
+
+    </div>
+
+</td></tr></table>
+
+</body>
+</html>
