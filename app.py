@@ -199,7 +199,7 @@ def gen_almanac_listing(dept='',ge='',num='',code=''):
 		r = '<h4>You searched for the {} department</h4>'.format(dept)
 	sauce = urllib.request.urlopen(url + urllib.parse.urlencode(fields))
 	sp = bs.BeautifulSoup(sauce, 'html.parser')
-		for div in sp.find_all('div'):
+	for div in sp.find_all('div'):
 		if div.text.strip() == 'No courses matched your search criteria for this term.':
 			chart = pygal.Line(no_data_text='Nothing Matched Your Search', style=DefaultStyle(no_data_font_size=40))
 			chart.add('line', [])
