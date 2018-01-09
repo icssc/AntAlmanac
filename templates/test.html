@@ -147,6 +147,7 @@
     	<tr><td>&nbsp;</td><td>
     <div class="title-bar">
 	<h3>Poor Peter's Anteater-Almanac(k): Winter 2018</h3>
+	<h6>(The AntAlamanac is still under heavy construction! This is only a preview, but please stay tuned!)</h6>
     </div>
 
     
@@ -413,7 +414,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td></td>
+			<td id={{num|safe}} colspan=16 align="center"></td>
 		</tr>
     	{% endfor %}
     	</table>
@@ -438,18 +439,11 @@
 
 
 </td></tr></table>
-<!--
-<script >
-$(document).ready(function () {
- $(".course-hist-button").on('click', function(){
-     $(this).next().load("/_course_hist// #);
- }); 
-});
-</script>
--->
+
 <script type="text/javascript">
 function getCourseHist(dept,num) {
-    $(this).next().next().load("/_course_hist/"+dept+"/"+num+" #record");
+    alert(dept+" "+num);
+    $("#"+dept+num).load("/_course_hist/"+dept+"/"+num+" #record");
 }
 </script>
 
