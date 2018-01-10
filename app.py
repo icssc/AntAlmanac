@@ -151,7 +151,7 @@ def get_hist(dept,num):
 	fields = [('dept_name',dept),('course_no',num),('class_type',''),('action','Submit')]
 	sauce = urllib.request.urlopen(base_url + urllib.parse.urlencode(fields))
 	soup = bs.BeautifulSoup(sauce, 'html.parser')
-	res = '<table>'
+	res = ''
 	cur_q = ''
 	for row in soup.find_all('tr'):
 		r = row.find_all('td')
@@ -182,6 +182,13 @@ def get_hist(dept,num):
 			res += '</tr>'
 	return res+'</table>'
 
+def uri_encode(string):
+    while ' ' in string:
+        string = string[:string.find(' ')]+'&nbsp;'+string[string.find(' ')+1:]
+    while '&' in string:
+        string = string[:string.find('&')]+'&#38;'+string[string.find('&')+1:]
+    return string
+
 def gen_almanac_listing(dept='',ge='',num='',code=''):
 	url = 'https://www.reg.uci.edu/perl/WebSoc?'
 	fields = [('YearTerm','2018-03'),('ShowFinals','1'),('ShowComments','1')]
@@ -203,8 +210,8 @@ def gen_almanac_listing(dept='',ge='',num='',code=''):
 		if div.text.strip() == 'No courses matched your search criteria for this term.':
 			chart = pygal.Line(no_data_text='Nothing Matched Your Search', style=DefaultStyle(no_data_font_size=40))
 			chart.add('line', [])
-			r += '<br><h5>Nothing. We Ain\'t Found Nothing.</h5>'
-			return [(r,chart.render_data_uri())]
+			r += '<br><h5>Nothing. We Ain\'t Found Nothing. At least for this quarter.</h5>'
+			return [(r,chart.render_data_uri(),'','')]
 	res = []
 	cur_num = ''
 	for row in sp.find_all('tr', {'class':''}):
@@ -217,9 +224,9 @@ def gen_almanac_listing(dept='',ge='',num='',code=''):
 				code = cells[0].text
 				r+='<tr><td colspan = 16>'
 				if '199' in cur_num or (cells[2].text.isnumeric() and int(cells[2].text)>4):
-					r += 'DATA HIDDEN</td></tr>'
+					r += 'DATA HIDDEN'
 				else:
-					res.append((r,mkgraph(code,dept,cur_num),dept,cur_num))
+					res.append((r,mkgraph(code,dept,cur_num),uri_encode(dept),cur_num))
 					r = ''
 			elif row.find('td', {'class':'CourseTitle'}) != None:
 				temp = str(row.find('td', {'class':'CourseTitle'}))
@@ -237,7 +244,7 @@ def _course_hist():
 		dept = request.form['dept']
 		num = request.form['num']
 		record=get_hist(dept,num)
-	return render_template('course_hist.html',record)
+	return render_template('course_hist.html',record=record)
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
