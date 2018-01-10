@@ -392,7 +392,7 @@
 
     <br>
    	
-	<div id="loading"><iframe src="https://giphy.com/embed/49eS4H0R1LoOc" width="480" height="480" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/top-recall-fiat-49eS4H0R1LoOc">via GIPHY</a></p></div>
+	<div id="loading"><iframe src="https://giphy.com/embed/49eS4H0R1LoOc" width="480" height="480" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/top-recall-fiat-49eS4H0R1LoOc"></a></p></div>
 	<div id="content">
     {% if on_edge %}
     	<p><i>***Graphs are weird or not interactive? Probably because you're using MS Edge or Internet Explorer***</i></p>
@@ -407,18 +407,20 @@
     		{% else %}
 	    		<embed type="image/svg+xml" src= {{ g|safe }} />
 	    	{% endif %}
-		</td></tr>
+			</td>
+		</tr>
 		<tr>
 			<td colspan=16 align="center">
 		<button onclick=getCourseHist("{{dept|safe}}","{{num|safe}}")>Show Past Course Offerings</button>
 			</td>
 		</tr>
 		<tr>
-			<td id={{num|safe}} colspan=16 align="center">
-				<div id='loadingDiv'>
-    					Please wait...working hard for you right now...any second now...
- 				</div> 
-
+			<td id="{{dept|safe}}{{num|safe}}" colspan=16 align="center">
+			</td>
+		</tr>
+		<tr>
+			<td class="loadingDiv" id="{{dept|safe}}{{num|safe}}loading" colspan=16 align="center">
+			Please wait as I work hard for you.....any second now.....
 			</td>
 		</tr>
     	{% endfor %}
@@ -431,7 +433,7 @@
 
     <!-- HTML for Registrar contact info in footer. -->
     <!-- Used with "/css/banner750.css"  -->
-	</div>
+	    </div>
 
     <br>
 	<address id="footer-copyright">
@@ -447,16 +449,16 @@
 
 <script type="text/javascript">
 function getCourseHist(this_dept,this_num) {
-    alert(this_dept+" "+this_num);
-    $("#"+num).load("/_course_hist/ #record", {dept:this_dept, num:this_num});
+    $("#"+this_dept+this_num+"loading").show();
+    $("#"+this_dept+this_num).load("/_course_hist #record", {'dept':this_dept, 'num':this_num}, function(){
+	$("#"+this_dept+this_num+"loading").hide();
+});
 }
 
-$('#loadingDiv').hide().ajaxStart( function() {
-$(this).show();  // show Loading Div
-} ).ajaxStop ( function(){
-$(this).hide(); // hide loading div
+$(document).ready(function() {
+    $(".loadingDiv").hide();
 });
-	
+
 </script>
 
 </body>
