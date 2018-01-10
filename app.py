@@ -230,9 +230,14 @@ def gen_almanac_listing(dept='',ge='',num='',code=''):
 					dept = ' '.join(temp[:-1])
 	return res
 
-@app.route('/_course_hist/<dept>/<num>')
-def _course_hist(dept, num):
-	return render_template('course_hist.html',record=get_hist(dept,num))
+@app.route('/_course_hist', methods=['GET','POST'])
+def _course_hist():
+	record = None
+	if request.method == 'POST':
+		dept = request.form['dept']
+		num = request.form['num']
+		record=get_hist(dept,num)
+	return render_template('course_hist.html',record)
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
