@@ -414,7 +414,12 @@
 			</td>
 		</tr>
 		<tr>
-			<td id={{num|safe}} colspan=16 align="center"></td>
+			<td id={{num|safe}} colspan=16 align="center">
+				<div id='loadingDiv'>
+    					Please wait...working hard for you right now...any second now...
+ 				</div> 
+
+			</td>
 		</tr>
     	{% endfor %}
     	</table>
@@ -441,10 +446,17 @@
 </td></tr></table>
 
 <script type="text/javascript">
-function getCourseHist(dept,num) {
-    alert(dept+" "+num);
-    $("#"+num).load("/_course_hist/"+dept+"/"+num+" #record");
+function getCourseHist(this_dept,this_num) {
+    alert(this_dept+" "+this_num);
+    $("#"+num).load("/_course_hist/ #record", {dept:this_dept, num:this_num});
 }
+
+$('#loadingDiv').hide().ajaxStart( function() {
+$(this).show();  // show Loading Div
+} ).ajaxStop ( function(){
+$(this).hide(); // hide loading div
+});
+	
 </script>
 
 </body>
