@@ -1,92 +1,136 @@
 <!doctype html>
+
 <html>
+
 <head>
+
+
 
 <title>AntAlmanac</title>
 
+
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
 
 <style type="text/css">
 
+
 <!--/* <![CDATA[ */
+
 
 		/* bodyfontsize */
 
 
 
+
 		.course-list{
+
 
 		    color:black;
 
+
 		}
+
 
 
 
 		.course-list table {
 
+
 		    empty-cells: show;
 
+
 		}
+
 
 		/* Blue bar separates course list from next course title */
 
+
 		.course-list tr.blue-bar td{
+
 
 		    background-color: navy;
 
+
 		    padding: 0;
+
 
 		    height: 4px;
 
+
 		}
+
 
 		/* White bar separates college and department comments from next section. */
 
+
 		.course-list tr.white-bar td{
+
 
 		    background-color: white;
 
+
 		    padding: 0;
+
 
 		    height: 3px;
 
+
 		}
+
 
 		.course-list tr.white-bar-thick td{
 
+
 		    background-color: white;
+
 
 		    padding: 0;
 
+
 		    height: 6px;
 
+
 		}
+
 
 
 
 		.course-list tr.college-title td{
 
+
 		    border-top: solid white 0.8em;
+
 
 		    border-bottom: solid white 3px;
 
+
 		    padding: 0.45em;
+
 
 		    background-color: black;
 
+
 		    white-space: nowrap;
+
 
 		    text-align: center;
 
+
 		    color: white;
+
 
 		    font-family: Arial,Helvetica,sans-serif;
 
+
 		    font-size:130%;
+
 
 		    font-weight: bold
 
+
 		}
+
 
 
 
@@ -208,16 +252,26 @@
 
 /* ]]> */-->
 
+
 </style>
+
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 
+
 </head>
 
+
+
 <body>
+
     <table>
 
-    	<tr><td>&nbsp;</td><td>
+
+    	<tr><td>&nbsp;</td>
+<td>
+
+
 
     <div class="title-bar">
 
@@ -225,16 +279,26 @@
 
     </div>
 		
-    <div id="record">
+    
+<div id="record">
+
     {% if record %}
 
+
+	<table>
+	<tr bgcolor="#E7E7E7" align="left">
+	    <th title="term" align="center">Term</th><th>Code</th><th>Instructor</th><th>Time</th><th title="Max = Maximum enrollment allowed">Max</th><th title="Enr = Current course enrollment" align="center">Enr</th><th title="Req = Enrollment requests">Req</th><th title="Web = Course website">Web</th>
+	</tr>
     	{{record|safe}}
 
-    {% endif %}
-    </div>
 
-	    </div>
-    <br>
+    {% endif %}
+
+ </div>
+
+	    
+
+<br>
 
 	<address id="footer-copyright">
 
@@ -248,9 +312,13 @@
 
 	</address>
 
-    </div>
 
-</td></tr></table>
+    
+</td>
+</tr>
+</table>
+
 
 </body>
+
 </html>
