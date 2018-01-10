@@ -183,10 +183,10 @@ def get_hist(dept,num):
 	return res+'</table>'
 
 def uri_encode(string):
-    while ' ' in string:
-        string = string[:string.find(' ')]+'&nbsp;'+string[string.find(' ')+1:]
-    while '&' in string:
+    if '&' in string:
         string = string[:string.find('&')]+'&#38;'+string[string.find('&')+1:]
+    if ' ' in string:
+        string = string[:string.find(' ')]+'&nbsp;'+string[string.find(' ')+1:]
     return string
 
 def gen_almanac_listing(dept='',ge='',num='',code=''):
