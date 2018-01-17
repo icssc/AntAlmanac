@@ -235,27 +235,22 @@ def main():
         record = None
         listing = None
         on_edge=None
-        with open('log.txt','a') as log:
-            if request.method == 'POST':
-                code = request.form['CourseCodes']
-                dept = request.form['Dept']
-                num = request.form['CourseNum']
-                ge = request.form['Breadth']
-                if code is not '':
-                    dept, num = get_course_info(code)
-                    listing = gen_almanac_listing(code=code,dept=dept,num=num)
-                    record = get_hist(dept,num)
-                elif ge.strip() != 'ANY':
-                    listing = gen_almanac_listing(ge=ge)
-                elif dept.strip() is not 'ALL' and num is not '':
-                    listing = gen_almanac_listing(dept=dept,num=num)
-                    record = get_hist(dept,num)
-                elif dept.strip() is not 'ALL' and num is '':
-                    listing = gen_almanac_listing(dept=dept)
-                log.write('{}\t{}\t{}\t{}\t'.format(code, dept, num, ge))
-            else:
-                log.write('-\t'*4)
-            log.write('{}\n'.format(request.remote_addr))
+        if request.method == 'POST':
+            code = request.form['CourseCodes']
+            dept = request.form['Dept']
+            num = request.form['CourseNum']
+            ge = request.form['Breadth']
+            if code is not '':
+                dept, num = get_course_info(code)
+                listing = gen_almanac_listing(code=code,dept=dept,num=num)
+                record = get_hist(dept,num)
+            elif ge.strip() != 'ANY':
+                listing = gen_almanac_listing(ge=ge)
+            elif dept.strip() is not 'ALL' and num is not '':
+                listing = gen_almanac_listing(dept=dept,num=num)
+                record = get_hist(dept,num)
+            elif dept.strip() is not 'ALL' and num is '':
+                listing = gen_almanac_listing(dept=dept)
         
         client_agent = request.user_agent
         if client_agent.browser.strip() == 'msie' or 'Edge' in client_agent.string:
