@@ -1,2 +1,2 @@
 #this is where requests are logged.
-code  dept  num ge  IP
+code	dept	num	ge	IP
