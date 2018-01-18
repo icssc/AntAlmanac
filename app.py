@@ -65,7 +65,7 @@ def mkgraph(code,dept,num, f=False):
 	line_chart.add('Maximum', [int(i) for i in cap_rec])
 	line_chart.add('Enrolled', [int(i) for i in enr_rec])
 	line_chart.add('Requested', [int(i) for i in req_rec])
-	if type(wl_rec) is list:
+	if len(wl_rec) == 1 and wl_rec[0] == 'n/a':
 		line_chart.add('Waitlisted', [int(i) for i in wl_rec])
 	
 	return line_chart.render_data_uri()
