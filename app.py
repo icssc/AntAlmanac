@@ -5,8 +5,9 @@ import pygal
 from pygal.style import DefaultStyle
 import urllib.request, html
 import bs4 as bs
-
-GENESIS = date(2017,11,20)
+import os
+from urllib.parse import urlparse
+import redis
 
 app = Flask(__name__)
 
@@ -43,82 +44,30 @@ def get_rela_dates(abs_dates):
         	wk_ind += 1
     return result
 
-def process_wl(wl,num):
-    if len(wl) == 1:
-        return 0
-    if wl[-1] == 'n/a':
-        for i in range(num-len(wl)+1):
-            wl.append(0)
-    result = []
-    for i in wl:
-        if 'off' in i:
-            # print(i)
-            result.append(int(i[4:-1]))
-        else:
-            result.append(int(i))
-    return result
-
-def process_max(cap,num):
-    if len(cap) == 1:
-        return [int(cap[0]) for i in range(num)]
-    result = []
-    last_time = GENESIS
-    for i in range(0,len(cap)-1,2):
-        cur_time = cap[i+1]
-        cp = cur_time.find('-')
-        y = int(cur_time[1:cp])
-        m = int(cur_time[cp+1:cur_time.find('-',cp+1)])
-        d = int(cur_time[cur_time.find('-',cp+1)+1:-1])
-        cur_time = date(y,m,d)
-        gap = cur_time - last_time
-        for j in range(gap.days):
-            result.append(int(cap[i]))
-        last_time = cur_time
-    for i in range((date(2017,12,15)-last_time).days+1):
-        result.append(int(cap[-1]))
-    return result
-
 def mkgraph(code,dept,num, f=False):
-    with open('data.txt') as in_file:
-        poss = True
-        for line in in_file:
-            if line == '=====':
-                poss = False
-                break
-            if code == line.strip():
-                break
+	url = urlparse(os.environ.get('REDISCLOUD_URL'))
+	r = redis.Redis(host=url.hostname, port=url.port, password=url.password, decode_responses=True)
+
+	response = r.get(code)
     
-        if not poss:
-            chart = pygal.Line(no_data_text='Course Not Found',
-                   style=DefaultStyle(no_data_font_size=40))
-            chart.add('line', [])
-            return chart.render_data_uri()
+	if response = None:
+		chart = pygal.Line(no_data_text='Course Not Found',
+			   style=DefaultStyle(no_data_font_size=40))
+		chart.add('line', [])
+		return chart.render_data_uri()
     
-        cap_rec = in_file.readline().strip().split()
-        enr_rec = in_file.readline().strip().split()
-        req_rec = in_file.readline().strip().split()
-        wl_rec = in_file.readline().strip().split()
-
-        num_rec = len(enr_rec)
+	cap_rec,enr_rec,req_rec,wl_rec = response
+	num_rec = len(enr_rec)
         
-        line_chart = pygal.Line(title='Registration History for {} ({}   {})'.format(code,html.unescape(dept),num),x_title='Time (By the End of the Day)', y_title='Number of People')
-        line_chart.x_labels = map(str, get_rela_dates(num_rec))
+    line_chart = pygal.Line(title='Registration History for {} ({}   {})'.format(code,html.unescape(dept),num),x_title='Time (By the End of the Day)', y_title='Number of People')
+    line_chart.x_labels = map(str, get_rela_dates(num_rec))
 
-        y_m = process_max(cap_rec,num_rec)
-        line_chart.add('Maximum', y_m)
-        
-        y_e = [int(i) for i in enr_rec]
-        line_chart.add('Enrolled', y_e)
-
-        y_r = [int(i) for i in req_rec]
-        line_chart.add('Requested', y_r)
-            
-        rendered_wl = process_wl(wl_rec,num_rec)
-        if rendered_wl != 0:
-        	line_chart.add('Waitlisted', rendered_wl)
-    if f:
-    	line_chart.render_to_file('/tmp/{}.svg'.format(code))
-    	return
+	line_chart.add('Maximum', cap_rec)
+	line_chart.add('Enrolled', enr_rec)
+	line_chart.add('Requested', req_rec)
+	if typeof(wl_rec) is list:
+		line_chart.add('Waitlisted', wl_rec)
+	
     return line_chart.render_data_uri()
 
 def get_course_info(code):
@@ -226,7 +175,7 @@ def gen_almanac_listing(dept='',ge='',num='',code=''):
 				if '199' in cur_num or (cells[2].text.isnumeric() and int(cells[2].text)>4):
 					r += 'DATA HIDDEN'
 				else:
-					res.append((r,mkgraph(code,dept,cur_num),uri_encode(dept),cur_num))
+					res.append((r,mkgraph(code,dept,cur_num),dept,cur_num))
 					r = ''
 			elif row.find('td', {'class':'CourseTitle'}) != None:
 				temp = str(row.find('td', {'class':'CourseTitle'}))
