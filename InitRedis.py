@@ -1,5 +1,5 @@
 import os
-import urlparse
+from urllib.parse import urlparse
 import redis
 
 url = urlparse.urlparse(os.environ.get('REDISCLOUD_URL'))
