@@ -50,7 +50,7 @@ def mkgraph(code,dept,num, f=False):
 
 	response = r.get(code)
     
-	if response == 'None':
+	if str(response) == 'None':
 		chart = pygal.Line(no_data_text='Course Not Found',
 			   style=DefaultStyle(no_data_font_size=40))
 		chart.add('line', [])
