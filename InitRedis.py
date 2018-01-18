@@ -18,3 +18,6 @@ with open('corrected.txt') as data:
     r.set(code, (cap,enr,wl))
     
     code = data.readline().strip()
+    
+    
+print('done')    
