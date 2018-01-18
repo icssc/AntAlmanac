@@ -9,6 +9,8 @@ with open('corrected.txt') as data:
   code = data.readline().strip()
   while code != '=====':
     
+    print('=')
+    
     cap = data.readline().split()
     enr = data.readline().split()
     wl = data.readline().split()
