@@ -30,7 +30,7 @@ def wkday_trans(day):
 
 def get_rela_dates(abs_dates):
     result = []
-    weeks = ['8','9','10','f','b1','b2','b3','1','2']
+    weeks = ['8','9','10','f','1','2']
     wk_ind = 0
     day = 0
     for i in range(abs_dates):
