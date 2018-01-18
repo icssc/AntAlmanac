@@ -68,7 +68,7 @@ def mkgraph(code,dept,num, f=False):
 	if typeof(wl_rec) is list:
 		line_chart.add('Waitlisted', wl_rec)
 	
-    return line_chart.render_data_uri()
+	return line_chart.render_data_uri()
 
 def get_course_info(code):
 	base_url = 'https://www.reg.uci.edu/perl/WebSoc?'
