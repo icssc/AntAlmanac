@@ -50,13 +50,13 @@ def mkgraph(code,dept,num, f=False):
 
 	response = r.get(code)
     
-	if response == None:
+	if response == 'None':
 		chart = pygal.Line(no_data_text='Course Not Found',
 			   style=DefaultStyle(no_data_font_size=40))
 		chart.add('line', [])
 		return chart.render_data_uri()
     
-	cap_rec,enr_rec,req_rec,wl_rec = response
+	cap_rec,enr_rec,req_rec,wl_rec = eval(response)
 	num_rec = len(enr_rec)
         
 	line_chart = pygal.Line(title='Registration History for {} ({}   {})'.format(code,html.unescape(dept),num),x_title='Time (By the End of the Day)', y_title='Number of People')
