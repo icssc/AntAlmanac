@@ -12,10 +12,10 @@ import redis
 app = Flask(__name__)
 
 def get_rela_dates(abs_dates):
-    result, weeks = [], ['8','9','10','f','1','2']
+    result, weeks = [], ['8','9','T','f','1','2']
     wk_ind, day = 0, 0
     for i in range(abs_dates):
-        result.append('{}{}'.format(weeks[wk_ind],'MTWTFSS'[day]))
+        result.append('{}{}'.format('MTWTFSS'[day],weeks[wk_ind]))
         day += 1
         if day == 7 or i == 25:
             day = 0
@@ -176,7 +176,7 @@ def _course_hist():
 	if request.method == 'POST':
 		dept = request.form['dept']
 		num = request.form['num']
-		record=get_hist(uri_decode(dept),num)
+		record=get_hist(dept,num)
 	return render_template('course_hist.html',record=record)
 
 @app.route('/', methods=['GET', 'POST'])
