@@ -114,10 +114,8 @@ def uri_encode(string):
         return string[:string.find(' ')]+'&nbsp;'+string[string.find(' ')+1:]
 
 def uri_decode(string):
-	if '&#38;' in string:
-		string = string[:string.find('&#38;')]+'&'+string[string.find('&#38;')+1:]
 	if '&nbsp;' in string:
-		string = string[:string.find('&nbsp;')]+' '+string[string.find('&nbsp;')+1:]
+		return string[:string.find('&nbsp;')]+' '+string[string.find('&nbsp;')+1:]
 
 def gen_almanac_listing(dept='',ge='',num='',code=''):
 	url = 'https://www.reg.uci.edu/perl/WebSoc?'
@@ -173,7 +171,8 @@ def _course_hist():
 	if request.method == 'POST':
 		dept = request.form['dept']
 		num = request.form['num']
-		record=get_hist(dept,num)
+		print(str(dept))
+		record=get_hist(uri_decode(dept),num)
 	return render_template('course_hist.html',record=record)
 
 @app.route('/', methods=['GET', 'POST'])
