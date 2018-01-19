@@ -111,7 +111,7 @@ def get_hist(dept,num):
 
 def uri_encode(string):
     if '&' in string:
-        string = string[:string.find('&')]+'&#38;'+string[string.find('&')+1:]
+        string = string[:string.find('&')]+'&amp;'+string[string.find('&')+1:]
     if ' ' in string:
         string = string[:string.find(' ')]+'&nbsp;'+string[string.find(' ')+1:]
     return string
