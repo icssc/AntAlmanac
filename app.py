@@ -116,7 +116,7 @@ def js_encode(string):
 		string = string[:string.find('&')]+'qq'+string[string.find('&')+5:]
 	return string
 
-def ja_decode(string):
+def js_decode(string):
 	if 'zz' in string:
 		string = string[:string.find('zz')]+' '+string[string.find('zz')+2:]
 	if 'qq' in string:
