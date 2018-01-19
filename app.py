@@ -174,7 +174,7 @@ def _course_hist():
 		dept = request.form['dept']
 		num = request.form['num']
 		print(str(dept))
-		record=get_hist(uri_decode(dept),num)
+		record=get_hist(uri_decode(dept).strip(),num)
 	return render_template('course_hist.html',record=record)
 
 @app.route('/', methods=['GET', 'POST'])
