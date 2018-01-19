@@ -111,16 +111,16 @@ def get_hist(dept,num):
 
 def uri_encode(string):
 	if ' ' in string:
-		return string[:string.find(' ')]+'z'+string[string.find(' ')+1:]
+		string = string[:string.find(' ')]+'z'+string[string.find(' ')+1:]
 	if '&' in string:
-		return string[:string.find('&')]+'q'+string[string.find('&')+1:]
+		string = string[:string.find('&')]+'q'+string[string.find('&')+1:]
 	return string
 
 def uri_decode(string):
 	if 'z' in string:
-		return string[:string.find('z')]+' '+string[string.find('z')+1:]
+		string = string[:string.find('z')]+' '+string[string.find('z')+1:]
 	if 'q' in string:
-		return string[:string.find('q')]+'&'+string[string.find('q')+1:]
+		string = string[:string.find('q')]+'&'+string[string.find('q')+1:]
 	return string
 
 def gen_almanac_listing(dept='',ge='',num='',code=''):
