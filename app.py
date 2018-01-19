@@ -156,7 +156,7 @@ def gen_almanac_listing(dept='',ge='',num='',code=''):
 				if '199' in cur_num or (cells[2].text.isnumeric() and int(cells[2].text)>4):
 					r += 'DATA HIDDEN'
 				else:
-					res.append((r,mkgraph(code,dept,cur_num),uri_encode(dept),cur_num))
+					res.append((r,mkgraph(code,dept,cur_num),dept,cur_num))
 					r = ''
 			elif row.find('td', {'class':'CourseTitle'}) != None:
 				temp = str(row.find('td', {'class':'CourseTitle'}))
@@ -174,7 +174,7 @@ def _course_hist():
 		dept = request.form['dept']
 		num = request.form['num']
 		print(str(dept))
-		record=get_hist(uri_decode(dept).strip(),num)
+		record=get_hist(dept,num)
 	return render_template('course_hist.html',record=record)
 
 @app.route('/', methods=['GET', 'POST'])
