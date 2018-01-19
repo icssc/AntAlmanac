@@ -9,39 +9,19 @@ import os
 from urllib.parse import urlparse
 import redis
 
+RELA_DATES = None
+
 app = Flask(__name__)
 
-def wkday_trans(day):
-    if day == 0:
-        return 'M'
-    if day == 1:
-        return 'T'
-    if day == 2:
-        return 'W'
-    if day == 3:
-        return 'T'
-    if day == 4:
-        return 'F'
-    if day == 5:
-        return 'S'
-    if day == 6:
-        return 'S'
-    return 'Wtf'
-
 def get_rela_dates(abs_dates):
-    result = []
-    weeks = ['8','9','10','f','1','2']
-    wk_ind = 0
-    day = 0
+    result, weeks = [], ['8','9','10','f','1','2']
+    wk_ind, day = 0, 0
     for i in range(abs_dates):
-        result.append('{}{}'.format(weeks[wk_ind],wkday_trans(day)))
+        result.append('{}{}'.format(weeks[wk_ind],'MTWTFSS'[day]))
         day += 1
-        if day == 7:
+        if day == 7 or i == 25:
             day = 0
             wk_ind +=1
-        if i == 25:
-        	day = 0
-        	wk_ind += 1
     return result
 
 def mkgraph(code,dept,num, f=False):
@@ -60,7 +40,9 @@ def mkgraph(code,dept,num, f=False):
 	num_rec = len(enr_rec)
         
 	line_chart = pygal.Line(title='Registration History for {} ({}   {})'.format(code,html.unescape(dept),num),x_title='Time (By the End of the Day)', y_title='Number of People')
-	line_chart.x_labels = map(str, get_rela_dates(num_rec))
+	if RELA_DATES == None:
+		RELA_DATES = get_rela_dates(num_rec)
+	line_chart.x_labels = map(str, RELA_DATES)
 
 	line_chart.add('Maximum', [int(i) for i in cap_rec])
 	line_chart.add('Enrolled', [int(i) for i in enr_rec])
@@ -138,6 +120,12 @@ def uri_encode(string):
         string = string[:string.find(' ')]+'&nbsp;'+string[string.find(' ')+1:]
     return string
 
+def uri_decode(string):
+	if '&#38;' in string:
+		string = string[:string.find('&#38;')]+'&'+string[string.find('&#38;')+1:]
+	if '&nbsp;' in string:
+		string = string[:string.find('&nbsp;')]+' '+string[string.find('&nbsp;')+1:]
+
 def gen_almanac_listing(dept='',ge='',num='',code=''):
 	url = 'https://www.reg.uci.edu/perl/WebSoc?'
 	fields = [('YearTerm','2018-03'),('ShowFinals','1'),('ShowComments','1')]
@@ -175,7 +163,7 @@ def gen_almanac_listing(dept='',ge='',num='',code=''):
 				if '199' in cur_num or (cells[2].text.isnumeric() and int(cells[2].text)>4):
 					r += 'DATA HIDDEN'
 				else:
-					res.append((r,mkgraph(code,dept,cur_num),dept,cur_num))
+					res.append((r,mkgraph(code,dept,cur_num),uri_encode(dept),cur_num))
 					r = ''
 			elif row.find('td', {'class':'CourseTitle'}) != None:
 				temp = str(row.find('td', {'class':'CourseTitle'}))
@@ -192,7 +180,7 @@ def _course_hist():
 	if request.method == 'POST':
 		dept = request.form['dept']
 		num = request.form['num']
-		record=get_hist(dept,num)
+		record=get_hist(uri_decode(dept),num)
 	return render_template('course_hist.html',record=record)
 
 @app.route('/', methods=['GET', 'POST'])
