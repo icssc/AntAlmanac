@@ -110,8 +110,8 @@ def get_hist(dept,num):
 	return res+'</table>'
 
 def uri_encode(string):
-    if ' ' in string:
-        return string[:string.find(' ')]+'&nbsp;'+string[string.find(' ')+1:]
+	if ' ' in string:
+		return string[:string.find(' ')]+'&nbsp;'+string[string.find(' ')+1:]
 	return string
 
 def uri_decode(string):
