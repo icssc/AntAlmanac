@@ -109,18 +109,18 @@ def get_hist(dept,num):
 			res += '</tr>'
 	return res+'</table>'
 
-def uri_encode(string):
+def js_encode(string):
 	if ' ' in string:
-		string = string[:string.find(' ')]+'z'+string[string.find(' ')+1:]
+		string = string[:string.find(' ')]+'zz'+string[string.find(' ')+1:]
 	if '&' in string:
-		string = string[:string.find('&')]+'q'+string[string.find('&')+1:]
+		string = string[:string.find('&')]+'qq'+string[string.find('&')+5:]
 	return string
 
-def uri_decode(string):
-	if 'z' in string:
-		string = string[:string.find('z')]+' '+string[string.find('z')+1:]
-	if 'q' in string:
-		string = string[:string.find('q')]+'&'+string[string.find('q')+1:]
+def ja_decode(string):
+	if 'zz' in string:
+		string = string[:string.find('zz')]+' '+string[string.find('zz')+2:]
+	if 'qq' in string:
+		string = string[:string.find('qq')]+'&'+string[string.find('qq')+2:]
 	return string
 
 def gen_almanac_listing(dept='',ge='',num='',code=''):
@@ -160,7 +160,7 @@ def gen_almanac_listing(dept='',ge='',num='',code=''):
 				if '199' in cur_num or (cells[2].text.isnumeric() and int(cells[2].text)>4):
 					r += 'DATA HIDDEN'
 				else:
-					res.append((r,mkgraph(code,dept,cur_num),uri_encode(dept),cur_num))
+					res.append((r,mkgraph(code,dept,cur_num),js_encode(dept),cur_num))
 					r = ''
 			elif row.find('td', {'class':'CourseTitle'}) != None:
 				temp = str(row.find('td', {'class':'CourseTitle'}))
@@ -178,7 +178,7 @@ def _course_hist():
 		dept = request.form['dept']
 		num = request.form['num']
 		print(str(dept))
-		record=get_hist(uri_decode(dept),num)
+		record=get_hist(js_decode(dept),num)
 	return render_template('course_hist.html',record=record)
 
 @app.route('/', methods=['GET', 'POST'])
