@@ -112,10 +112,12 @@ def get_hist(dept,num):
 def uri_encode(string):
     if ' ' in string:
         return string[:string.find(' ')]+'&nbsp;'+string[string.find(' ')+1:]
+	return string
 
 def uri_decode(string):
 	if '&nbsp;' in string:
 		return string[:string.find('&nbsp;')]+' '+string[string.find('&nbsp;')+1:]
+	return string
 
 def gen_almanac_listing(dept='',ge='',num='',code=''):
 	url = 'https://www.reg.uci.edu/perl/WebSoc?'
