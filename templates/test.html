@@ -449,7 +449,6 @@
 <script type="text/javascript">
 function getCourseHist(this_dept,this_num) {
     $("#"+this_dept+this_num+"loading").show();
-	alert(this_dept+this_num);
     $("#"+this_dept+this_num).load("/_course_hist #record", {'dept':this_dept, 'num':this_num}, function(){
 	$("#"+this_dept+this_num+"loading").hide();
 });
