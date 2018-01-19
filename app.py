@@ -9,8 +9,6 @@ import os
 from urllib.parse import urlparse
 import redis
 
-RELA_DATES = None
-
 app = Flask(__name__)
 
 def get_rela_dates(abs_dates):
@@ -24,7 +22,7 @@ def get_rela_dates(abs_dates):
             wk_ind +=1
     return result
 
-def mkgraph(code,dept,num, f=False):
+def mkgraph(code,dept,num):
 	url = urlparse(os.environ.get('REDISCLOUD_URL'))
 	r = redis.Redis(host=url.hostname, port=url.port, password=url.password, decode_responses=True)
 
@@ -40,9 +38,7 @@ def mkgraph(code,dept,num, f=False):
 	num_rec = len(enr_rec)
         
 	line_chart = pygal.Line(title='Registration History for {} ({}   {})'.format(code,html.unescape(dept),num),x_title='Time (By the End of the Day)', y_title='Number of People')
-	if RELA_DATES == None:
-		RELA_DATES = get_rela_dates(num_rec)
-	line_chart.x_labels = map(str, RELA_DATES)
+	line_chart.x_labels = map(str, 	get_rela_dates(num_rec))
 
 	line_chart.add('Maximum', [int(i) for i in cap_rec])
 	line_chart.add('Enrolled', [int(i) for i in enr_rec])
