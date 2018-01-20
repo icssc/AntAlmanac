@@ -177,7 +177,6 @@ def _course_hist():
 	if request.method == 'POST':
 		dept = request.form['dept']
 		num = request.form['num']
-		print(str(dept))
 		record=get_hist(js_decode(dept),num)
 	return render_template('course_hist.html',record=record)
 
