@@ -8,6 +8,9 @@ if now_time > datetime.strptime('15:00', '%H:%M').time() and now_time < datetime
         data = urllib.request.urlopen('https://antalmanac.herokuapp.com/')
         data.read()
         data.close()
+        data = urllib.request.urlopen('https://buttertesting.herokuapp.com/')
+        data.read()
+        data.close()
     except:
         pass
     print('woke')
