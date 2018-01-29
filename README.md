@@ -5,6 +5,8 @@ The AntAlmanac is built using Python Flask, HTML + CSS, Javascript (jQuery and s
 
 Currently deployed at: https://antalmanac.herokuapp.com/
 
+Most up-to-date version (that is deployed) is the phase-3-js-redis branch; please check that out!
+
 Note: The Heroku dyno that the AntAlmanac is currently hosted on goes to sleep after 30 minutes. When it is asleep, any request sent to it will require waking the dyno, which takes a considerable amount of time. That is why The AntAlmanac is so slow to load on the first try.
 
 The AntAlmanac is still in a very early development phase...but stay tuned! Here is a list of things to expect:
