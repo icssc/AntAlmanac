@@ -171,7 +171,10 @@ def gen_almanac_listing(dept='',ge='',num='',code=''):
 					dept = ' '.join(temp[:-1])
 	return res
 
-	
+
+@app.route('/catchsquares')
+def catchsquares():
+	return render_template('self.html')
 
 @app.route('/_course_hist', methods=['GET','POST'])
 def _course_hist():
