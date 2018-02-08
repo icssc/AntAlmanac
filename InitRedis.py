@@ -5,7 +5,7 @@ import redis
 url = urlparse(os.environ.get('REDISCLOUD_URL'))
 r = redis.Redis(host=url.hostname, port=url.port, password=url.password)
 
-#r.flushall()
+r.flushall()
 
 with open('corrected.txt') as data:
   code = data.readline().strip()
@@ -18,7 +18,7 @@ with open('corrected.txt') as data:
     req = data.readline().split()
     wl = data.readline().split()
     
-    r.set(code, (cap,enr,req,wl))
+    r.set('W'+code, (cap,enr,req,wl))
     
     code = data.readline().strip()
     
