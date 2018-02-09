@@ -176,7 +176,7 @@ def gen_almanac_listing(dept='',ge='',num='',code=''):
 def game():
 	return render_template('self.html')
 
-@app.route('_db', methods=['GET','POST'])
+@app.route('/_db', methods=['GET','POST'])
 def _db():
 	val = None
 	if request.method == 'POST':
