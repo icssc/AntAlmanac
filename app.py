@@ -182,7 +182,7 @@ def _db():
 	if request.method == 'POST':
 		url = urlparse(os.environ.get('REDISCLOUD_URL'))
 		r = redis.Redis(host=url.hostname, port=url.port, password=url.password)
-		val = r.get(request.form['target'])
+		val = r.get(request.form['key'])
 	return render_template('db.html', val=val)
 	
 
