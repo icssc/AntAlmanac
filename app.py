@@ -26,7 +26,7 @@ def mkgraph(code,dept,num):
 	url = urlparse(os.environ.get('REDISCLOUD_URL'))
 	r = redis.Redis(host=url.hostname, port=url.port, password=url.password, decode_responses=True)
 
-	response = r.get(code)
+	response = r.get('W'+code)
     
 	if str(response) == 'None':
 		chart = pygal.Line(no_data_text='Course Not Found',
@@ -172,9 +172,19 @@ def gen_almanac_listing(dept='',ge='',num='',code=''):
 	return res
 
 
-@app.route('/catchsquares')
-def catchsquares():
+@app.route('/catch_squares')
+def game():
 	return render_template('self.html')
+
+@app.route('_db', methods=['GET','POST'])
+def _db():
+	val = None
+	if request.method == 'POST':
+		url = urlparse(os.environ.get('REDISCLOUD_URL'))
+		r = redis.Redis(host=url.hostname, port=url.port, password=url.password)
+		val = r.get(request.form['target'])
+	return render_template('db.html', val=val)
+	
 
 @app.route('/_course_hist', methods=['GET','POST'])
 def _course_hist():
