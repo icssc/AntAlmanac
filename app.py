@@ -176,13 +176,7 @@ def gen_almanac_listing(dept='',ge='',num='',code=''):
 def game():
 	return render_template('self.html')
 
-@app.route('/_db', methods=['GET','POST'])
-def _db():
-	val = None
-	if request.method == 'POST':
-		url = urlparse(os.environ.get('REDISCLOUD_URL'))
-		val = eval(redis.Redis(host=url.hostname, port=url.port, password=url.password).get(request.form['key']))
-	return render_template('db.html', val=val)
+
 	
 
 @app.route('/_course_hist', methods=['GET','POST'])
