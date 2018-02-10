@@ -1,3 +1,4 @@
+
 <!doctype html>
 
 <html lang="en">
@@ -9,6 +10,12 @@
   <meta name="author" content="Me">
 
   <link rel="stylesheet" href="css/styles.css?v=1.0">
+  
+  <style>
+    p {
+      font: 30px calibri;
+    }
+  </style>
 
   <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
@@ -16,14 +23,17 @@
 </head>
 
 <body>
-  <h2>Enter a Redis database key here. Examples include: 'W36050', 'W38122'.</h2>
+  <p>Enter Redis database key (e.g. 'W36050', 'W38122'):</p>
   <form method="post" action="" >
 <p><input name="key" size="30" />
 <input type="submit" name="Submit" value="get it doggo" /></p>
   </form>
   
   {% if val %}
-    {{ val|safe }}
+    {% for list in val %}
+      {{ list|safe }}
+      <br>
+    {% endfor %}
   {% endif %}
 </body>
 </html>
