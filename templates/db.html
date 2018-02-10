@@ -15,6 +15,9 @@
     p {
       font: 30px calibri;
     }
+    input {
+      font-size:14pt;
+    }
   </style>
 
   <!--[if lt IE 9]>
@@ -31,7 +34,7 @@
   
   {% if val %}
     {% for list in val %}
-      {{ list|safe }}
+  <p>{{ list|safe }}</p>
       <br>
     {% endfor %}
   {% endif %}
