@@ -21,7 +21,7 @@ REQ_INDEX = 11
 def getDepts():
     Depts = set()
     with urllib.request.urlopen(BASE_URL) as sauce:
-        soup = bs.BeautifulSoup(sauce,'lxml')
+        soup = bs.BeautifulSoup(sauce,'html.parser')
         for option in soup.find_all('select'):
             #print(option.get('name'))
             if (option.get('name') == 'Dept'):
@@ -46,7 +46,7 @@ def getURL(depts):
 def UrlToDict(url):
     codes={}
     sauce = urllib.request.urlopen(url).read()
-    soup = bs.BeautifulSoup(sauce, 'lxml')
+    soup = bs.BeautifulSoup(sauce, 'html.parser')
     for tr in soup.find_all('tr'):
         #print(tr)
         classes = [td.string for td in tr.find_all('td')]
