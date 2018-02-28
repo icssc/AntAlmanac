@@ -27,6 +27,6 @@ r = redis.Redis(host=url.hostname, port=url.port, password=url.password)
 master_dict = SOCSpider.getAllInfo(SOCSpider.getURL(SOCSpider.getDepts()))
 for code, data in master_dict.items():
     print(code,end=' ')
-    r.set('S'+code, ([int(int(data[0])/2)], [int(int(data[1])/2)], [int(int(data[2])/2)], ['n/a' if data[3] == 'n/a' else int(int(data[3])/2)]))
+    r.set('S'+code, ([data[0]], [int(int(data[1])/2)], [int(int(data[2])/2)], ['n/a' if data[3] == 'n/a' else int(int(data[3])/2)]))
     
 print('done')    
