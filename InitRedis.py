@@ -24,6 +24,7 @@ r = redis.Redis(host=url.hostname, port=url.port, password=url.password)
 #     code = data.readline().strip()
     
 #input new
+print('*****Doggo\'s doing its thing*****')
 master_dict = SOCSpider.getAllInfo(SOCSpider.getURL(SOCSpider.getDepts()))
 for code, data in master_dict.items():
     print(code,end=' ')
