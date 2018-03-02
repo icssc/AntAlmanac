@@ -35,7 +35,7 @@ for session in [('S1','2018-25'), ('S10','2018-39'), ('S2','2018-76')]:
             temp = int(req)
         except:
             req = wl
-            wl = 'n/a
+            wl = 'n/a'
         r.set(session[0]+code, ([data[0]], [data[1]], [req], [wl]))
     
 print('done')    
