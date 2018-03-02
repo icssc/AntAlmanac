@@ -15,11 +15,28 @@ print('=====================================')
 
 for code, data in master_dict.items():
     print(code,end=' ')
-    cap, enr, req, wl = eval(r.get('S'+code))
+    try:
+        cap, enr, req, wl = eval(r.get('S'+code))
+    except:
+        continue
     cap.append(data[0])
-    enr.append(data[1])
-    req.append(data[2])
-    wl.append(data[3])
+    if data[1] == data[0]:
+        full = True
+    if full:
+        enr.append(data[1])
+    else:
+        enr.append(int((int(data[1])+int(enr[-1]))/2))
+    if full:
+        req.append(data[2])
+    else:
+        req.append(int((int(data[2])+int(req[-1]))/2))
+    if full:
+        wl.append(data[3])
+    else:
+        if data[3] == 'n/a':
+            wl.append(data[3])
+        else:
+            wl.append(int((int(data[3])+int(wl[-1]))/2))
     r.set('S'+code, (cap, enr, req, wl))
     
 print('done')  
