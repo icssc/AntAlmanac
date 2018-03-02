@@ -37,7 +37,10 @@ for code, data in master_dict.items():
         if data[3] == 'n/a':
             wl.append(data[3])
         else:
-            wl.append(int((int(data[3])+int(wl[-1]))/2))
+            try:
+                wl.append(int((int(data[3])+int(wl[-1]))/2))
+            except:
+                wl.append(data[3])
     r.set('S'+code, (cap, enr, req, wl))
     
 print('done')  
