@@ -1,6 +1,6 @@
 import os
 from urllib.parse import urlparse
-import SOCSpider
+import SummerSOCSpider
 import redis
 
 url = urlparse(os.environ.get('REDISCLOUD_URL'))
