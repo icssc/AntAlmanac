@@ -20,6 +20,7 @@ for code, data in master_dict.items():
     except:
         continue
     cap.append(data[0])
+    full = False
     if data[1] == data[0]:
         full = True
     if full:
