@@ -20,27 +20,9 @@ for code, data in master_dict.items():
     except:
         continue
     cap.append(data[0])
-    full = False
-    if data[1] == data[0]:
-        full = True
-    if full:
-        enr.append(data[1])
-    else:
-        enr.append(int((int(data[1])+int(enr[-1]))/2))
-    if full:
-        req.append(data[2])
-    else:
-        req.append(int((int(data[2])+int(req[-1]))/2))
-    if full:
-        wl.append(data[3])
-    else:
-        if data[3] == 'n/a':
-            wl.append(data[3])
-        else:
-            try:
-                wl.append(int((int(data[3])+int(wl[-1]))/2))
-            except:
-                wl.append(data[3])
+    enr.append(data[1])
+    req.append(data[2])
+    wl.append(data[3])
     r.set('S'+code, (cap, enr, req, wl))
     
 print('done')  
