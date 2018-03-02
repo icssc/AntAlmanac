@@ -29,6 +29,13 @@ for session in [('S1','2018-25'), ('S10','2018-39'), ('S2','2018-76')]:
     master_dict = SummerSOCSpider.getAllInfo(SummerSOCSpider.getURL(SummerSOCSpider.getDepts(), session[1]))
     for code, data in master_dict.items():
         print(code,end=' ')
-        r.set(session[0]+code, ([data[0]], [data[1]], [data[2]], [data[3]]))
+        req = data[2]
+        wl = data[3]
+        try:
+            temp = int(req)
+        except:
+            req = wl
+            wl = 'n/a
+        r.set(session[0]+code, ([data[0]], [data[1]], [req], [wl]))
     
 print('done')    
