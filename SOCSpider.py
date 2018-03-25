@@ -50,7 +50,7 @@ def UrlToDict(url):
     for tr in soup.find_all('tr'):
         #print(tr)
         classes = [td.string for td in tr.find_all('td')]
-        if (len(classes)==17 and classes[3] != '0'):
+        if (len(classes)>=16 and len(classes)<=17 and classes[3] != '0'):
             #print(classes)
             code = classes[COURSE_CODE_INDEX]
             cap = classes[MAX_INDEX]
