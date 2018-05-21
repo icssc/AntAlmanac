@@ -1,10 +1,8 @@
 import os
-from urllib.parse import urlparse
 import SOCSpider
 import redis
 
-url = urlparse(os.environ.get('REDISCLOUD_URL'))
-r = redis.Redis(host=url.hostname, port=url.port, password=url.password)
+r = redis.from_url(os.environ.get('REDISCLOUD_URL'))
     
 #input new
 print('=====================================')
@@ -23,6 +21,6 @@ for code, data in master_dict.items():
     enr.append(data[1])
     req.append(data[2])
     wl.append(data[3])
-    r.set('S'+code, (cap, enr, req, wl))
+    r.set('F'+code, (cap, enr, req, wl))
     
 print('done')  
