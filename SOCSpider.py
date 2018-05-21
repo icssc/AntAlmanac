@@ -35,7 +35,7 @@ def getURL(depts):
     urls = set()
     for i in sorted(depts):
         #print(i)
-        fields=[('YearTerm','2018-14'),('ShowFinals','1'),('ShowComments','1'),('Dept',i)]
+        fields=[('YearTerm','2018-92'),('ShowFinals','1'),('ShowComments','1'),('Dept',i)]
         url = BASE_URL + urllib.parse.urlencode(fields)
         #print(url)
         urls.add(url)
