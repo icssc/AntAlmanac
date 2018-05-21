@@ -3,8 +3,7 @@ from urllib.parse import urlparse
 import SOCSpider
 import redis
 
-url = urlparse(os.environ.get('REDISCLOUD_URL'))
-r = redis.Redis(host=url.hostname, port=url.port, password=url.password)
+r = redis.from_url(os.environ.get('REDISCLOUD_URL'))
 
 # r.flushall()
 
@@ -28,6 +27,6 @@ print('*****Doggo\'s doing its thing*****')
 master_dict = SOCSpider.getAllInfo(SOCSpider.getURL(SOCSpider.getDepts()))
 for code, data in master_dict.items():
     print(code,end=' ')
-    r.set('S'+code, ([data[0]], [data[1]], [data[2]], [data[3]]))
+    r.set('F'+code, ([data[0]], [data[1]], [data[2]], [data[3]]))
     
 print('done')    
