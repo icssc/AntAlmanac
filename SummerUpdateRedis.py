@@ -1,7 +1,11 @@
 import os
 from urllib.parse import urlparse
+import datetime
 import SummerSOCSpider
 import redis
+
+if datetime.datetime.today().weekday() != 1:
+    raise Exception('it\'s not Monday my dudes')
 
 url = urlparse(os.environ.get('REDISCLOUD_URL'))
 r = redis.Redis(host=url.hostname, port=url.port, password=url.password)
