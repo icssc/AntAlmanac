@@ -27,32 +27,6 @@ def mkgraph(code):
 	with urllib.request.urlopen(bu.format('w','18',code)) as src:
 		return src.read().decode('utf-8')
 
-def mkgraph(code,dept,num):
-	url = urlparse(os.environ.get('REDISCLOUD_URL'))
-	r = redis.Redis(host=url.hostname, port=url.port, password=url.password, decode_responses=True)
-
-	response = r.get('W'+code)
-    
-	if str(response) == 'None':
-		chart = pygal.Line(no_data_text='Course Not Found',
-			   style=DefaultStyle(no_data_font_size=40))
-		chart.add('line', [])
-		return chart.render_data_uri()
-    
-	cap_rec,enr_rec,req_rec,wl_rec = eval(response)
-	num_rec = len(enr_rec)
-        
-	line_chart = pygal.Line(title='Registration History for {} ({}   {})'.format(code,html.unescape(dept),num),x_title='Time (By the End of the Day)', y_title='Number of People')
-	line_chart.x_labels = map(str, 	get_rela_dates(num_rec))
-
-	line_chart.add('Maximum', [int(i) for i in cap_rec])
-	line_chart.add('Enrolled', [int(i) for i in enr_rec])
-	line_chart.add('Requested', [int(i) for i in req_rec])
-	if len(wl_rec) != 1:
-		line_chart.add('Waitlisted', [int(i) for i in wl_rec])
-	
-	return line_chart.render_data_uri()
-
 def get_course_info(code):
 	base_url = 'https://www.reg.uci.edu/perl/WebSoc?'
 	fields = [('YearTerm','2018-03'), ('CourseCodes',code)]
