@@ -24,8 +24,16 @@ def get_rela_dates(abs_dates):
 
 def mkgraph(code):
 	bu = os.environ.get('PORTOFCALL')
-	with urllib.request.urlopen(bu.format('w','18',code)) as src:
-		return src.read().decode('utf-8')
+	try:
+		inf = urllib.request.urlopen(bu.format('w','18',code))
+	except:
+		chart = pygal.Line(no_data_text='Course Not Found',
+			   style=DefaultStyle(no_data_font_size=40))
+		chart.add('line', [])
+		return chart.render_data_uri()
+	src = inf.read()
+	inf.close()
+	return src.decode('utf-8')
 
 def get_course_info(code):
 	base_url = 'https://www.reg.uci.edu/perl/WebSoc?'
