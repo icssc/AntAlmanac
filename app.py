@@ -22,6 +22,11 @@ def get_rela_dates(abs_dates):
             wk_ind +=1
     return result
 
+def mkgraph(code):
+	bu = os.environ.get('PORTOFCALL')
+	with urllib.request.urlopen(bu.format('w','18',code)) as src:
+		return src.read().decode('utf-8')
+
 def mkgraph(code,dept,num):
 	url = urlparse(os.environ.get('REDISCLOUD_URL'))
 	r = redis.Redis(host=url.hostname, port=url.port, password=url.password, decode_responses=True)
@@ -160,7 +165,7 @@ def gen_almanac_listing(dept='',ge='',num='',code=''):
 				if '199' in cur_num or (cells[2].text.isnumeric() and int(cells[2].text)>4):
 					r += 'DATA HIDDEN'
 				else:
-					res.append((r,mkgraph(code,dept,cur_num),js_encode(dept),cur_num))
+					res.append((r,mkgraph(code),js_encode(dept),cur_num))
 					r = ''
 			elif row.find('td', {'class':'CourseTitle'}) != None:
 				temp = str(row.find('td', {'class':'CourseTitle'}))
