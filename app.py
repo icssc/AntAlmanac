@@ -204,5 +204,9 @@ def main():
         	on_edge = 'O Yes'
         return render_template('test.html', record=record, listing=listing, on_edge=on_edge)
 
+@app.route('/_test')
+def test():
+	return render_template('index.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
