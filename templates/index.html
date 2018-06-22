@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>AntAlamanac: Poor Peter's AntAlamanac</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename="css/bootstrap.min.css")}}">
+    
+    <style>
+    *{padding:0;margin:0;}
+
+    body{
+        font-family:Verdana, Geneva, sans-serif;
+        font-size:18px;
+        background-color:#CCC;
+        height: 100%;
+		margin: 0;
+    }
+
+    .float{
+        position:fixed;
+        width:100px;
+        height:100px;
+        bottom:40px;
+        right:40px;
+        background-color:#0064a4;
+        color:#ffd200;
+        border-radius:100%;
+        text-align:center;
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 2px 2px 3px #999;
+    }
+
+    .my-float{
+        margin-top:22px;
+    }
+    
+    #left {
+        width: 50%;
+        float: left;
+    }
+
+    #right {
+        width: 50%;
+        height: 100%;
+        float: left;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch; /* for iOS */
+    }
+
+    #upper {
+        overflow: auto;
+        padding: 5px;
+    }
+
+    #upper h1 {
+        line-height: 20px;
+    }
+
+    #upper #main-nav {
+        float: left;
+    }
+
+    #upper #cal-ctrl {
+        float: right;
+    }
+    </style>
+</head>
+
+<body>
+    <a href="#" class="float">
+    LOG IN
+    </a>
+   
+    <div id="left">
+      <div id="upper">
+        <div id="main-nav">
+            <h1>Antplanner</h1>
+            <a target="_blank" href="https://github.com/gumho/antplanner2/wiki/AntPlanner-FAQ">?</a>
+        </div>
+        <div id="cal-ctrl">
+          <button type="button" class="btn" onclick="javascript:print()">Print</button>
+          <button type="button" id="save-btn" class="btn">Save</button>
+          <button type="button" id="load-btn" class="btn">Load</button>
+          <button type="button" id="clear-cal-btn" class="btn">Clear</button>
+          <button type="button" id="resize-btn" class="btn">Size</button>
+        </div>
+      </div>
+      <div id="cal"></div>
+    </div>
+    <div id="right">
+      <iframe src="{{url_for('websoc_search_form')}}" id="soc" frameborder="0"></iframe>
+    </div>
+</body>
