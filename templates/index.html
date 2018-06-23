@@ -119,7 +119,7 @@
 	
 	
 <body>
-    <a href="#" class="float">
+    <a href="#login" class="float">
     LOG IN
     </a>
    
@@ -148,24 +148,6 @@
   <p>Tokyo is the capital of Japan.</p>
 </div>
 
-<script>
-function openCity(evt, cityName) {
-    var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-    document.getElementById(cityName).style.display = "block";
-    evt.currentTarget.className += " active";
-}
-
-// Get the element with id="defaultOpen" and click on it
-document.getElementById("defaultOpen").click();
-</script>
       <div id="upper">
         <div id="main-nav">
             <h1>Antplanner</h1>
@@ -184,4 +166,51 @@ document.getElementById("defaultOpen").click();
     <div id="left">
 	    <h2>This will be the search area</h2>
     </div>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+    <script>
+		$('#login').on('click', function() {
+		  var username = prompt('Please enter a unique username (e.g. Student ID): ', '');
+          // Validation
+          if(username == null) {
+            return;
+          }
+
+          // Save to server
+          $.ajax({
+            url: "{{url_for('login')}}",
+            type: 'post',
+            data: {
+              username: username,
+            },
+            success: function(data) {
+              if(data.success) {
+                alert('Logged in!');
+              }
+              else {
+                alert('Not logged in! :(');
+              }
+            }
+          });
+        });
+		
+		function openCity(evt, cityName) {
+			var i, tabcontent, tablinks;
+			tabcontent = document.getElementsByClassName("tabcontent");
+			for (i = 0; i < tabcontent.length; i++) {
+				tabcontent[i].style.display = "none";
+			}
+			tablinks = document.getElementsByClassName("tablinks");
+			for (i = 0; i < tablinks.length; i++) {
+				tablinks[i].className = tablinks[i].className.replace(" active", "");
+			}
+			document.getElementById(cityName).style.display = "block";
+			evt.currentTarget.className += " active";
+		}
+
+// Get the element with id="defaultOpen" and click on it
+		document.getElementById("defaultOpen").click();
+	</script>
 </body>
+</html>
