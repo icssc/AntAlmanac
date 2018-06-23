@@ -112,6 +112,15 @@
 }
 
 .topright:hover {color: red;}
+		
+.btn {
+  display:block;
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  border: 1px solid red;
+  
+}
     </style>
 </head>
 
@@ -119,9 +128,9 @@
 	
 	
 <body>
-    <a href="#login" class="float">
+    <a href="#login" class="float"><button type="button" id="login" class="btn">
     LOG IN
-    </a>
+		</button></a>
    
     <div id="left">
 	    <h2>This will be the search area</h2>
@@ -173,334 +182,42 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
     <script>
 	
-
       $(document).ready(function() {
-
-        $('#cal').weekCalendar({
-
-          businessHours: {start: 6, end: 24, limitDisplay: true},
-
-          showHeader: false,
-
-          showColumnHeaderDate: false,
-
-          timeslotsPerHour: 3,
-
-          daysToShow:5,
-
-          readonly: true,
-
-          useShortDayNames: true,
-
-          allowCalEventOverlap: true,
-
-          overlapEventsSeparate: true,
-
-          buttons: false,
-
-          height: function($calendar){
-
-            return $(window).height() - $('#upper').outerHeight();
-
-          },
-
-          draggable : function(calEvent, element) { return false; },
-
-          resizable : function(calEvent, element) { return false; },
-
-          eventClick : function(calEvent, element) {
-
-            var delCode = calEvent.groupId;
-
-            $('.wc-cal-event').each(function(index, el) {
-
-              var c = $(el).data().calEvent
-
-              if( c.groupId == delCode ) {
-
-                $('#cal').weekCalendar('removeEvent', c.id);
-
-              }
-
-            });
-
-          }
-
-        });
-
-
-
-        $('#cal').weekCalendar('gotoWeek', new Date(APP_YEAR, APP_MONTH, APP_DAY));
-
-
-
-        $('#soc').bind('load', function(){
-
-          var $listingContext = $('.course-list', $('#soc').contents());
-
-          var $courseRow = $("tr[valign*='top']:not([bgcolor='#fff0ff'])", $listingContext);
-
-
-
-            // FIXME: hover() deprecated
-
-            $courseRow.hover(
-
-              function() {
-
-                $(this).css({'color': '#ff0000', 'cursor': 'pointer'});
-
-              },
-
-              function() {
-
-                $(this).css({'color': '#000000', 'cursor': 'default'});
-
-              }
-
-            );
-
-
-
-            $courseRow.on('click', function() {
-
-              var timeString = $(this).find('td').eq(LISTING_TIME_INDEX).html();
-
-
-
-              // Ignore if course is "TBA"
-
-              if(timeString.indexOf('TBA') != -1) {
-
-                alert('Course is TBA');
-
-                return;
-
-              }
-
-
-
-              var courseCode = $(this).find('td').eq(LISTING_CODE_INDEX).text();
-
-
-
-              // Ignore if course already added
-
-              if(isCourseAdded(courseCode)) {
-
-                alert('You have already added that course!');
-
-                return;
-
-              }
-
-
-
-              var courseName = $.trim( $(this).prevAll().find('.CourseTitle:last').html().split('<font')[0].replace(/&nbsp;/g, '') )
-
-              var courseTimes = new CourseTimeStringParser(timeString)
-
-              var roomString = $(this).find('td').eq(LISTING_ROOM_INDEX).html();
-
-              var rooms = parseRoomString(roomString);
-
-
-
-              // Iterate through course times (a course may have different meeting times)
-
-              for(var i in courseTimes) {
-
-                var parsed = courseTimes[i];
-
-                $('#cal').weekCalendar('scrollToHour', parsed.beginHour, true);
-
-
-
-                if (i in rooms && rooms[i].length > 0) {
-
-                    var room = rooms[i];
-
-                } else {
-
-                    // Is there a possibility that there is only one room listed for all times (in the case of multiple times)?
-
-                    var room = "TBA";
-
-                }
-
-
-
-                for(var i in parsed.days) {
-
-                  var day = parsed.days[i];
-
-
-
-                  calEvent = {
-
-                    id: S4(),
-
-                    groupId: courseCode,
-
-                    start: new Date(APP_YEAR, APP_MONTH, day, parsed.beginHour, parsed.beginMin),
-
-                    end: new Date(APP_YEAR, APP_MONTH, day, parsed.endHour, parsed.endMin),
-
-                    title: courseName + ' at ' + room + '<br>(' + courseCode + ')'
-
-                  }
-
-                  $('#cal').weekCalendar("updateEvent", calEvent);
-
-                }
-
-              }
-
-
-
-              // Assign a color to the courses
-
-              var colorPair = getRandomColorPair();
-
-              $('.wc-cal-event').each(function(index, el) {
-
-                var c = $(el).data().calEvent
-
-                if( c.groupId.indexOf(courseCode) != -1 ) {
-
-                  colorEvent(el, colorPair);
-
-                }
-
-              });
-
-            });
-
-        });
-
-
-
        $('#login').on('click', function() {
-			var username = prompt('Please enter a unique username (e.g. Student ID): ', '');
-			  // Validation
-			  if(username == null) {
-			    return;
+		  var username = prompt('Please enter a unique username (e.g. Student ID): ', '');
+		  // Save to server
+		  $.ajax({
+			url: "{{url_for('login')}}",
+			type: 'post',
+			data: {
+			  username: username,
+			},
+			success: function(data) {
+			  if(data.success) {
+			alert('Logged in!');
 			  }
-
-			  // Save to server
-			  $.ajax({
-			    url: "{{url_for('login')}}",
-			    type: 'post',
-			    data: {
-			      username: username,
-			    },
-			    success: function(data) {
-			      if(data.success) {
-				alert('Logged in!');
-			      }
-			      else {
-				alert('Not logged in! :(');
-			      }
-			    }
-			  });
-			});
-
-
-
-        $('#load-btn').on('click', function() {
-
-          var defaultName = localStorage.username ? localStorage.username : '';
-
-          var username = prompt('Please enter your username', defaultName);
-
-
-
-          if(username == '') {
-
-            return;
-
-          }
-
-
-
-          $.ajax({
-
-            url: '/schedule/load',
-
-            data: { username: username },
-
-            success: function(data) {
-
-              if(data.success) {
-
-                $('#cal').weekCalendar('clear');
-
-                $('#cal').weekCalendar("loadEvents", JSON.parse(data.data));
-
-                groupColorize();
-
-                alert('Schedule successfully loaded!');
-
-              }
-
-              else {
-
-                alert('Problem loading schedule');
-
-              }
-
-            }
-
-          });
-
-        });
-
-
-
-        $('#clear-cal-btn').on('click', function() {
-
-          $('#cal').weekCalendar('clear');
-
-        });
-
-
-
-        // TODO: toggle() deprecated
-
-        $('#resize-btn').toggle(function() {
-
-          $(this).addClass('active');
-
-          $('#soc').hide();
-
-          $('#cal').animate({width: '200%'});
-
-        }, function() {
-
-          $('#cal').animate({width: '100%'});
-
-          $('#soc').show();
-
-          $(this).removeClass('active');
-
-        });
-
+			  else {
+			alert('Not logged in! :(');
+			  }
+			}
+		  });
+		});
       });
 		
 
-				function openCity(evt, cityName) {
-					var i, tabcontent, tablinks;
-					tabcontent = document.getElementsByClassName("tabcontent");
-					for (i = 0; i < tabcontent.length; i++) {
-						tabcontent[i].style.display = "none";
-					}
-					tablinks = document.getElementsByClassName("tablinks");
-					for (i = 0; i < tablinks.length; i++) {
-						tablinks[i].className = tablinks[i].className.replace(" active", "");
-					}
-					document.getElementById(cityName).style.display = "block";
-					evt.currentTarget.className += " active";
-				}
+		function openCity(evt, cityName) {
+			var i, tabcontent, tablinks;
+			tabcontent = document.getElementsByClassName("tabcontent");
+			for (i = 0; i < tabcontent.length; i++) {
+				tabcontent[i].style.display = "none";
+			}
+			tablinks = document.getElementsByClassName("tablinks");
+			for (i = 0; i < tablinks.length; i++) {
+				tablinks[i].className = tablinks[i].className.replace(" active", "");
+			}
+			document.getElementById(cityName).style.display = "block";
+			evt.currentTarget.className += " active";
+		}
 
 // Get the element with id="defaultOpen" and click on it
 		document.getElementById("defaultOpen").click();
