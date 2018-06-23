@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, request
-from flask.ext.pymongo import PyMongo
+from flask_pymongo import PyMongo
 import time
 from datetime import datetime, date, timedelta
 import pygal
