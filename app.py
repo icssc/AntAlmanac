@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, jsonify
 from flask_pymongo import PyMongo
 import time
 from datetime import datetime, date, timedelta
