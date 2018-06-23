@@ -7,10 +7,12 @@ cycler==0.10.0
 Django==2.0
 flake8==3.5.0
 Flask==0.12.2
+Flask-PyMongo==0.5.2
 gunicorn==19.7.1
 idna==2.6
 itsdangerous==0.24
 Jinja2==2.10
+lxml==4.1.1
 MarkupSafe==1.0
 mccabe==0.6.1
 numpy==1.13.3
