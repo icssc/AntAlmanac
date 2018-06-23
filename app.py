@@ -1,4 +1,5 @@
 from flask import Flask, render_template, url_for, request
+from flask.ext.pymongo import PyMongo
 import time
 from datetime import datetime, date, timedelta
 import pygal
@@ -7,9 +8,13 @@ import urllib.request, html
 import bs4 as bs
 import os
 from urllib.parse import urlparse
-import redis
 
 app = Flask(__name__)
+
+app.config['MONGO_DBNAME'] = os.environ.get('MONGODB_NAME')
+app.config['MONGO_URI'] = os.environ.get('MONGODB_URI')
+
+mongo = PyMongo(app)
 
 def get_rela_dates(abs_dates):
     result, weeks = [], ['8','9','T','f','1','2']
@@ -207,6 +212,11 @@ def main():
 @app.route('/_test')
 def test():
 	return render_template('index.html')
+
+@app.route('/_test/login', methods = ['POST'])
+def login():
+	users = mongo.db.users
+	users.insert({'name' : request.form.get('username')})
 
 if __name__ == '__main__':
     app.run(debug=True)
