@@ -217,6 +217,7 @@ def test():
 def login():
 	users = mongo.db.users
 	users.insert({'name' : request.form.get('username')})
+	return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
