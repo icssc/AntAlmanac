@@ -5,7 +5,7 @@
     <title>AntAlamanac: Poor Peter's AntAlamanac</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static', filename="css/bootstrap.min.css")}}">
-    
+
     <style>
     *{padding:0;margin:0;}
 
@@ -17,12 +17,12 @@
 		margin: 0;
     }
 
-    
+
 
     .my-float{
         margin-top:22px;
     }
-    
+
     #left {
         width: 50%;
         float: left;
@@ -97,7 +97,7 @@
 }
 
 .topright:hover {color: red;}
-		
+
 .btn {
   display:block;
   height: 100px;
@@ -113,7 +113,7 @@
 	align-items: center;
 	box-shadow: 2px 2px 3px #999;
 }
-	    
+
 .float{
         position:fixed;
         width:100px;
@@ -133,18 +133,19 @@
     </style>
 </head>
 
-	
-	
-	
+
+
+
 <body>
     <a href="#login" class="float"><button type="button" id="login" class="btn">
     LOG IN
 		</button></a>
-   
+
     <div id="left">
 	    <h2>This will be the search area</h2>
+      <h2>Andrew Test</h2>
     </div>
-	
+
     <div id="right">
 	    <div class="tab">
 		  <button class="tablinks" onclick="openCity(event, 'London')" id="defaultOpen">London</button>
@@ -161,7 +162,7 @@
 		<div id="Paris" class="tabcontent">
 		  <span onclick="this.parentElement.style.display='none'" class="topright">&times</span>
 		  <h3>Paris</h3>
-		  <p>Paris is the capital of France.</p> 
+		  <p>Paris is the capital of France.</p>
 		</div>
 
 		<div id="Tokyo" class="tabcontent">
@@ -186,11 +187,11 @@
       <div id="cal"></div>
     </div>
 
-	
+
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
     <script>
-	
+
       $(document).ready(function() {
        $('#login').on('click', function() {
 		  var username = prompt('Please enter a unique username (e.g. Student ID): ', '');
@@ -212,7 +213,7 @@
 		  });
 		});
       });
-		
+
 
 		function openCity(evt, cityName) {
 			var i, tabcontent, tablinks;
