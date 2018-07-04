@@ -26,8 +26,15 @@
         margin-top:22px;
     }
 
+	    #search{
+		    height: 100%;
+		    width: 100%;
+		    float: left;
+		    position: relative;
+	    }
+	    
 	.search {
-		height: 94.5%;
+		height: 94%;
 		width: 100%;
 		float: left;
 		position: relative;
@@ -187,7 +194,7 @@
 		<button class="leftTabLink" onclick="openSchedule(event, 'CompSch')">Schedule</button>
       </div>
       <div id="Classes" class="search leftTabContent">
-		<iframe src="{{url_for('main')}}" class="search" frameborder="0"></iframe>
+		<iframe src="{{url_for('main')}}" id="search" frameborder="0"></iframe>
       </div>
       <div id="PersonalEvents" class="leftTabContent">
         <h3>Personal Events</h3>
