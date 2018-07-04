@@ -130,6 +130,35 @@
         align-items: center;
         box-shadow: 2px 2px 3px #999;
     }
+
+/*Andrew's CSS  */
+/*TAB CSS*/
+.leftTab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+.leftTab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+}
+.leftTab button:hover {
+    background-color: #ddd;
+}
+.leftTab button.active {
+    background-color: #ccc;
+}
+.leftTabContent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
     </style>
 </head>
 
@@ -142,8 +171,19 @@
 		</button></a>
 
     <div id="left">
-	    <h2>This will be the search area</h2>
-      <h2>Andrew Test</h2>
+	    <h2>Scheduling</h2>
+      <div class="leftTab">
+        <button class="leftTabLink" onclick="openSchedule(event, 'Classes')" id="defaultOpen">Classes</button>
+  		  <button class="leftTabLink" onclick="openSchedule(event, 'PersonalEvents')">Personal Events</button>
+      </div>
+      <div id="Classes" class="leftTabContent">
+        <h3>Classes</h3>
+        <p>Searching for classes here.</p>
+      </div>
+      <div id="PersonalEvents" class="leftTabContent">
+        <h3>Personal Events</h3>
+        <p>Add your personal events here.</p>
+      </div>
     </div>
 
     <div id="right">
@@ -151,7 +191,7 @@
 		  <button class="tablinks" onclick="openCity(event, 'London')" id="defaultOpen">London</button>
 		  <button class="tablinks" onclick="openCity(event, 'Paris')">Paris</button>
 		  <button class="tablinks" onclick="openCity(event, 'Tokyo')">Tokyo</button>
-		</div>
+		  </div>
 
 		<div id="London" class="tabcontent">
 		  <span onclick="this.parentElement.style.display='none'" class="topright">&times</span>
@@ -228,6 +268,20 @@
 			document.getElementById(cityName).style.display = "block";
 			evt.currentTarget.className += " active";
 		}
+
+    function openSchedule(evt, cityName) {
+        var i, leftTabContent, leftTabLink;
+        leftTabContent = document.getElementsByClassName("leftTabContent");
+        for (i = 0; i < leftTabContent.length; i++) {
+            leftTabContent[i].style.display = "none";
+        }
+        leftTabLink = document.getElementsByClassName("leftTabLink");
+        for (i = 0; i < leftTabLink.length; i++) {
+            leftTabLink[i].className = leftTabLink[i].className.replace(" active", "");
+        }
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
 
 // Get the element with id="defaultOpen" and click on it
 		document.getElementById("defaultOpen").click();
