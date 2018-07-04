@@ -254,6 +254,9 @@
       $(document).ready(function() {
        $('#login').on('click', function() {
 		  var username = prompt('Please enter a unique username (e.g. Student ID): ', '');
+	      if (username == ""){
+			  return;
+		  }
 		  // Save to server
 		  $.ajax({
 			url: "{{url_for('login')}}",
