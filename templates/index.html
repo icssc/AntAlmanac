@@ -10,6 +10,8 @@
     <style>
     *{padding:0;margin:0;}
 
+	    
+	    
     body{
         font-family:Verdana, Geneva, sans-serif;
         font-size:18px;
@@ -24,6 +26,119 @@
         margin-top:22px;
     }
 
+	
+
+#left {
+
+	width: 50%;
+
+	float: left;
+
+}
+
+
+
+#right {
+
+	width: 50%;
+
+	height: 100%;
+
+	float: left;
+
+	overflow: auto;
+
+	-webkit-overflow-scrolling: touch; /* for iOS */
+
+}
+
+
+
+#upper {
+
+	overflow: auto;
+
+	padding: 5px;
+
+}
+
+
+
+
+
+
+#upper #main-nav {
+
+	float: left;
+
+}
+
+
+
+#upper #cal-ctrl {
+
+	float: right;
+
+}
+
+
+
+
+
+#cal {
+
+	position: relative;
+
+}
+
+#soc {
+
+	height: 100%;
+
+	width: 100%;
+
+	float: left;
+
+	position: relative;
+
+}
+
+
+
+
+
+@media print {
+
+	#left {
+
+		width: 100%;
+
+	}
+
+	#upper, #soc {
+
+		display: none;
+
+	}
+
+
+
+	.wc-scrollable-grid {
+
+		height: 1200px !important;
+
+	}
+
+
+
+	.wc-cal-event {
+
+		font-size: 10px !important;
+
+		border: 1px solid black;
+
+	}	
+	
     #left {
         width: 50%;
         float: left;
