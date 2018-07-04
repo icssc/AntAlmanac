@@ -5,7 +5,8 @@
     <title>AntAlamanac: Poor Peter's AntAlamanac</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+	
     <style>
     *{padding:0;margin:0;}
 	    
@@ -173,6 +174,42 @@
     border: 1px solid #ccc;
     border-top: none;
 }
+	  
+	@media print {
+
+	#left {
+
+		width: 100%;
+
+	}
+
+	#upper, #soc {
+
+		display: none;
+
+	}
+
+
+
+	.wc-scrollable-grid {
+
+		height: 1200px !important;
+
+	}
+
+
+
+	.wc-cal-event {
+
+		font-size: 10px !important;
+
+		border: 1px solid black;
+
+	}
+
+
+	    
+	    
     </style>
 </head>
 
