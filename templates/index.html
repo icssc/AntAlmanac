@@ -165,7 +165,7 @@
     outline: none;
     cursor: pointer;
     padding: 14px 16px;
-    transition: 0.3s;
+ 	transition: 0.3s;
 }
 .leftTab button:hover {
     background-color: #ddd;
@@ -194,7 +194,8 @@
 	    <h2>Scheduling</h2>
       <div class="leftTab">
         <button class="leftTabLink" onclick="openSchedule(event, 'Classes')" id="defaultOpen">Classes</button>
-  		  <button class="leftTabLink" onclick="openSchedule(event, 'PersonalEvents')">Personal Events</button>
+  		<button class="leftTabLink" onclick="openSchedule(event, 'PersonalEvents')">Personal Events</button>
+		<button class="leftTabLink" onclick="openSchedule(event, 'CompSch')">Schedule</button>
       </div>
       <div id="Classes" class="leftTabContent">
         <h3>Classes</h3>
@@ -246,7 +247,6 @@
       <div id="upper">
         <div id="main-nav">
             <h1>Antplanner</h1>
-            <a target="_blank" href="https://github.com/gumho/antplanner2/wiki/AntPlanner-FAQ">?</a>
         </div>
         <div id="cal-ctrl">
           <button type="button" onclick="javascript:print()">Print</button>
