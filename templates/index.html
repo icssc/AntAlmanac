@@ -4,8 +4,13 @@
     <meta charset="utf-8">
     <title>AntAlamanac: Poor Peter's AntAlamanac</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="shortcut icon" href="{{ url_for('static', filename='fav.ico') }}">
+	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+	<link rel='stylesheet' href='{{ url_for('static', filename='fullcalendar/fullcalendar.css') }}' />
+	<script src='{{ url_for('static', filename='fullcalendar/lib/jquery.min.js') }}'></script>
+	<script src='{{ url_for('static', filename='fullcalendar/lib/moment.min.js') }}'></script>
+	<script src='{{ url_for('static', filename='fullcalendar/fullcalendar.js') }}'></script>
+	
 	
     <style>
     *{padding:0;margin:0;}
@@ -33,13 +38,6 @@
 		    position: relative;
 	    }
 	    
-	.search {
-		height: 94%;
-		width: 100%;
-		float: left;
-		position: relative;
-	}
-
     #right {
         width: 50%;
         float: right;
@@ -169,6 +167,10 @@
     background-color: #FFF;
 }
 .leftTabContent {
+	height: 94%;
+	width: 100%;
+	float: left;
+	position: relative;
     display: none;
     border-top: none;
 }
@@ -190,7 +192,7 @@
   		<button class="leftTabLink" onclick="openSchedule(event, 'PersonalEvents')">Personal Events</button>
 		<button class="leftTabLink" onclick="openSchedule(event, 'CompSch')">Schedule</button>
       </div>
-      <div id="Classes" class="search leftTabContent">
+      <div id="Classes" class="leftTabContent">
 		<iframe src="{{url_for('main')}}" id="search" frameborder="0"></iframe>
       </div>
       <div id="PersonalEvents" class="leftTabContent">
@@ -247,7 +249,7 @@
           <button type="button" id="resize-btn">Size</button>
         </div>
       </div>
-      <div id="cal"></div>
+      <div id="calendar"></div>
     </div>
 
 
@@ -278,9 +280,19 @@
 			}
 		  });
 		});
+		
+		$('#calendar').fullCalendar({
+			defaultView: 'agendaWeek',
+			weekends: false,
+			allDaySlot: false,
+			minTime: '07:00:00',
+			maxTime: '22:00:00',
+			nowIndicator: false,
+			columnHeaderFormat: 'dddd'			
+		});
       });
-
-
+		
+	
 		function openCity(evt, cityName) {
 			var i, tabcontent, tablinks;
 			tabcontent = document.getElementsByClassName("tabcontent");
