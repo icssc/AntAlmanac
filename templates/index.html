@@ -10,7 +10,19 @@
 	<script src='{{ url_for('static', filename='fullcalendar/lib/jquery.min.js') }}'></script>
 	<script src='{{ url_for('static', filename='fullcalendar/lib/moment.min.js') }}'></script>
 	<script src='{{ url_for('static', filename='fullcalendar/fullcalendar.js') }}'></script>
-	
+	<script>
+		$( document ).ready(function() {
+		  $('#calendar').fullCalendar({
+			defaultView: 'agendaWeek',
+			weekends: false,
+			allDaySlot: false,
+			minTime: '07:00:00',
+			maxTime: '22:00:00',
+			nowIndicator: false,
+			columnHeaderFormat: 'dddd'
+		  })
+		});
+	</script>
 	
     <style>
     *{padding:0;margin:0;}
@@ -281,17 +293,7 @@
 		  });
 		});
 		
-		$(function() {
-		  $('#calendar').fullCalendar({
-			defaultView: 'agendaWeek',
-			weekends: false,
-			allDaySlot: false,
-			minTime: '07:00:00',
-			maxTime: '22:00:00',
-			nowIndicator: false,
-			columnHeaderFormat: 'dddd'
-		  })
-		});
+		
       });
 		
 	
