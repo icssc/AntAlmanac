@@ -191,12 +191,12 @@ def soc():
             soup = bs.BeautifulSoup(src, 'lxml')
         form = str(soup.find('form', {'action':'https://www.reg.uci.edu/perl/WebSoc'}))
         form = form[:form.find('</table>')+8]
+        form = form.replace('https://www.reg.uci.edu/perl/WebSoc','')
         return render_template('form.html',search_form=form)
     else:# request.method == 'POST':
-        src = urllib.urlopen("https://www.reg.uci.edu/perl/WebSoc/",
-                            data=urllib.parse.urlencode(request.form),
-                            headers={'Content-Type': 'application/x-www-form-urlencoded'})
-        soup = BeautifulSoup(src.read(), 'lxml')
+        src = urllib.request.urlopen("https://www.reg.uci.edu/perl/WebSoc/",
+                                    data=urllib.parse.urlencode(request.form).encode())
+        soup = bs.BeautifulSoup(src.read(), 'lxml')
         src.close()
         results = soup.find('div', {'class':'course-list'})
         # if results != None:
