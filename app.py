@@ -4,7 +4,7 @@ import time
 from datetime import datetime, date, timedelta
 import pygal
 from pygal.style import DefaultStyle
-import urllib.request, html
+import urllib.request, html, urllib.parse
 import bs4 as bs
 import os
 from urllib.parse import urlparse
@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.config['MONGO_DBNAME'] = os.environ.get('MONGODB_NAME')
 app.config['MONGO_URI'] = os.environ.get('MONGODB_URI')
 
-mongo = PyMongo(app)
+#mongo = PyMongo(app)
 
 def get_rela_dates(abs_dates):
     result, weeks = [], ['8','9','T','f','1','2']
@@ -91,7 +91,7 @@ def get_hist(dept,num):
 				cells = l.find_all('td')
 				if cells[3].text != '0':
 					res += str(cells[0]) + str(cells[4]) + str(cells[5])
-					res += str(cells[7]) + str(cells[8]) 
+					res += str(cells[7]) + str(cells[8])
 					if len(cells) == 14:
 						res += str(cells[9])
 						res += str(cells[12])
@@ -172,7 +172,7 @@ def _db():
 		url = urlparse(os.environ.get('REDISCLOUD_URL'))
 		val = eval(redis.Redis(host=url.hostname, port=url.port, password=url.password).get(request.form['key']))
 	return render_template('db.html', val=val)
-	
+
 
 @app.route('/_course_hist', methods=['GET','POST'])
 def _course_hist():
@@ -182,6 +182,30 @@ def _course_hist():
 		num = request.form['num']
 		record=get_hist(js_decode(dept),num)
 	return render_template('course_hist.html',record=record)
+
+@app.route('/soc', methods=['GET', 'POST'])
+def soc():
+    print('hello world')
+    if request.method == 'GET':
+        with urllib.request.urlopen('https://www.reg.uci.edu/perl/WebSoc') as src:
+            soup = bs.BeautifulSoup(src, 'lxml')
+        form = str(soup.find('form', {'action':'https://www.reg.uci.edu/perl/WebSoc'}))
+        form = form[:form.find('</table>')+8]
+        return render_template('form.html',search_form=form)
+    else:# request.method == 'POST':
+        src = urllib.urlopen("https://www.reg.uci.edu/perl/WebSoc/",
+                            data=urllib.parse.urlencode(request.form),
+                            headers={'Content-Type': 'application/x-www-form-urlencoded'})
+        soup = BeautifulSoup(src.read(), 'lxml')
+        src.close()
+        results = soup.find('div', {'class':'course-list'})
+        # if results != None:
+        #     results = unicode(results.encode(formatter='html'))
+        # else:
+        #     print('damn it')
+        #     # We come here if course-list was not found
+        #     results = unicode(soup.encode(formatter='html'))
+        return render_template('results.html',results=str(results))
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
@@ -210,6 +234,10 @@ def main():
         return render_template('test.html', record=record, listing=listing, on_edge=on_edge)
 
 @app.route('/_test')
+def test():
+	return render_template('index1.html')
+
+@app.route('/_new')
 def test():
 	return render_template('index.html')
 
