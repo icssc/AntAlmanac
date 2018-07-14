@@ -233,11 +233,11 @@ def main():
         	on_edge = 'O Yes'
         return render_template('test.html', record=record, listing=listing, on_edge=on_edge)
 
-@app.route('/_test')
+@app.route('/_new')
 def test():
 	return render_template('index1.html')
 
-@app.route('/_new')
+@app.route('/_test')
 def new_test():
 	return render_template('index.html')
 
