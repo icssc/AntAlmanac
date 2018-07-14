@@ -238,7 +238,7 @@ def test():
 	return render_template('index1.html')
 
 @app.route('/_new')
-def test():
+def new_test():
 	return render_template('index.html')
 
 @app.route('/_test/login', methods = ['POST'])
