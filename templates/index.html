@@ -218,6 +218,29 @@
     display: none;
     border-top: none;
 }
+
+/*days of week  */
+.weekDays-selector input {
+  display: none!important;
+}
+
+.weekDays-selector input[type=checkbox] + label {
+  display: inline-block;
+  border-radius: 6px;
+  background: #dddddd;
+  height: 40px;
+  width: 30px;
+  margin-right: 3px;
+  line-height: 40px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.weekDays-selector input[type=checkbox]:checked + label {
+  background: #2AD705;
+  color: #ffffff;
+}
+
     </style>
 </head>
 
@@ -238,6 +261,22 @@
       <div id="PersonalEvents" class="leftTabContent">
         <h3>Personal Events</h3>
         <p>Add your personal events here.</p>
+        <div class="weekDays-selector">
+          <input type="checkbox" id="weekday-mon" class="weekday" />
+          <label for="weekday-mon">M</label>
+          <input type="checkbox" id="weekday-tue" class="weekday" />
+          <label for="weekday-tue">T</label>
+          <input type="checkbox" id="weekday-wed" class="weekday" />
+          <label for="weekday-wed">W</label>
+          <input type="checkbox" id="weekday-thu" class="weekday" />
+          <label for="weekday-thu">T</label>
+          <input type="checkbox" id="weekday-fri" class="weekday" />
+          <label for="weekday-fri">F</label>
+          <input type="checkbox" id="weekday-sat" class="weekday" />
+          <label for="weekday-sat">S</label>
+          <input type="checkbox" id="weekday-sun" class="weekday" />
+          <label for="weekday-sun">S</label>
+        </div>
       </div>
       <div id="CompSch" class="leftTabContent">
         <h3>Schedule</h3>
