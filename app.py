@@ -199,6 +199,7 @@ def soc():
         soup = bs.BeautifulSoup(src.read(), 'lxml')
         src.close()
         results = soup.find('div', {'class':'course-list'})
+        results = results.find('table')
         # if results != None:
         #     results = unicode(results.encode(formatter='html'))
         # else:

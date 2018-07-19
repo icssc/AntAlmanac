@@ -13,16 +13,43 @@
 	<script src='{{ url_for('static', filename='fullcalendar/lib/moment.min.js') }}'></script>
 	<script src='{{ url_for('static', filename='fullcalendar/fullcalendar.js') }}'></script>
 	<script>
+    var current = 0;
+
 		$( document ).ready(function() {
 		  $('#calendar').fullCalendar({
-			defaultView: 'agendaWeek',
-			weekends: false,
-			allDaySlot: false,
-			minTime: '07:00:00',
-			maxTime: '22:00:00',
-			nowIndicator: false,
-			columnHeaderFormat: 'dddd',
-			height: 'parent'
+        defaultView: 'agendaWeek',
+        weekends: false,
+        allDaySlot: false,
+        minTime: '07:00:00',
+        maxTime: '22:00:00',
+        nowIndicator: false,
+        height: 'parent',
+        columnHeaderFormat: 'dddd', // Displays spelled out day name, but no date
+        defaultDate: startDay.format(),
+        header: {
+            left: 'title',
+            center: '',
+            right: 'lastSch,nextSch'
+        },
+        titleFormat: 'Schdule 1 of 4',
+        customButtons: {
+            lastSch: {
+                text: 'Last',
+                icon: 'left-single-arrow',
+                click: function() {
+                  current = (current+3)%4;
+                  $('#calendar').fullCalendar('option', 'titleFormat', '[Schedule '+(current+1)+' of 4]');
+                }
+            },
+            nextSch: {
+                text: 'Next',
+                icon: 'right-single-arrow',
+                click: function() {
+                  current = (current+1)%4;
+                  $('#calendar').fullCalendar('option', 'titleFormat', '[Schedule '+(current+1)+' of 4]');
+                }
+            }
+        }
 		  })
 		});
 	</script>
