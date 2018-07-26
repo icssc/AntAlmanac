@@ -7,6 +7,8 @@
     "redux": "^4.0.0",
     "react-redux": "^5.0.7",
     "@material-ui/core": "^1.4.1",
+    "@material-ui/icons": "^2.0.0",
+    "mui-downshift": "^1.0.0",
     "react-dom": "^16.4.1",
     "react-scripts": "1.1.4"
   },
