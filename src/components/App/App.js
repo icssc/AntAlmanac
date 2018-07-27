@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import SearchBar from "../SearchForm/SearchBar/searchbar";
+import DeptSearchBar from "../SearchForm/DeptSearchBar/deptsearchbar";
+import GESelector from "../SearchForm/GESelector/geselector";
 
 class App extends Component {
   render() {
     return (
-        <SearchBar />
+        <DeptSearchBar />
+        <GESelector />
     );
   }
 }
