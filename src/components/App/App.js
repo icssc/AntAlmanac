@@ -5,8 +5,10 @@ import GESelector from "../SearchForm/GESelector/geselector";
 class App extends Component {
   render() {
     return (
+      <div>
         <DeptSearchBar />
         <GESelector />
+      </div>
     );
   }
 }
