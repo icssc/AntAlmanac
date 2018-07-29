@@ -44,7 +44,7 @@ class TermSelector extends React.Component {
             input={<Input name="term" id="term-auto-width" />}
             autoWidth
           >
-            <MenuItem value="2018-92" style="color: purple" selected="selected">2018  Fall Quarter</MenuItem>
+            <MenuItem value="2018-92" style="color: purple">2018  Fall Quarter</MenuItem>
   			    <MenuItem value="2018-76" style="color: #744a00">2018  Summer Session 2</MenuItem>
   			    <MenuItem value="2018-51" style="color: #555">2018  Summer Qtr (COM)</MenuItem>
   			    <MenuItem value="2018-39" style="color: #744a00">2018  10-wk Summer</MenuItem>
