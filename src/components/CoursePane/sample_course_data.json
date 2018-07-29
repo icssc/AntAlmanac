@@ -1,0 +1,2887 @@
+{
+  "comment": " <p><b>DEADLINE TO ADD/DROP/CHANGE GRADE OPTION FOR UNDERGRADUATE AND GRADUATE COURSES:</b> The Donald Bren School of Information and Computer Sciences <i>STRICTLY</i> adheres to the campus deadline of <b>5:00pm on Friday of Week 2</b> for both undergraduate AND graduate level courses. For more information: https://www.reg.uci.edu/enrollment/adc/exceptions.html</p> <p>To add, drop, or change the grading option of a course after this deadline, an online enrollment exception request must be submitted. Students should be prepared to submit documentation for any enrollment exception requests. <i>Approval of enrollment exception requests is not automatic.</i></p> <p><b>PREREQUISITES:</b> Prerequisites are STRICTLY enforced. The School <b>WILL DROP</b> students from courses for which they have not satisfied prerequisites. If you find you have been dropped from a course, please check the course prerequisites and contact the ICS Student Affairs Office (<a href=\"http://www.ics.uci.edu/ugrad/sao/index.php\">http://www.ics.uci.edu/ugrad/sao/index.php</a>) <i>BEFORE</i> attempting to enroll in the course again. Note that meeting the prerequisites for a course does not guarantee a space in the class.</p> <p><b>GRADUATE ENROLLMENT IN UNDERGRADUATE COURSES:</b> Graduate students may enroll in undergraduate courses with permission from the ICS Student Affairs Office, and <i>only if seats are available once undergraduates have registered</i>. Unauthorized students found enrolled in undergraduate courses WILL be dropped by ICS Student Affairs.</p> <p><b>UNDERGRADUATE ENROLLMENT IN GRADUATE COURSES:</b> Undergraduate students may enroll in graduate level courses with the instructor's consent <i>if seats are available after graduate students have registered</i>. Note that graduate courses taken as an undergraduate will not count toward a graduate degree program.</p>  ",
+  "departments": [
+    {
+      "comments": [
+        " <p><b>RESTRICTIONS:</b> I&amp;C SCI courses will initially be RESTRICTED to <i>majors in the Donald Bren School of Information and Computer Sciences ONLY</i>. Note that some courses may be additionally restricted to specific majors and/or level.</p> <p><i>ALWAYS CHECK a course's restriction status before enrolling in classes or making enrollment changes.</i></p> <p>The status of restrictions on UNDERGRADUATE courses will be updated throughout the enrollment period. Announcements will be posted on ICS Student Affairs Facebook (https://www.facebook.com/icsugradstudentaffairs) and on the ICS Course Updates page (<a href=\"http://www.ics.uci.edu/ugrad/sao/Course_updates.php\">http://www.ics.uci.edu/ugrad/sao/Course_updates.php</a>).</p> <p><b>DISCUSSIONS &amp; LABS:</b> Unless otherwise specified by the instructor, discussion and lab sections will begin meeting AFTER the first lecture.</p> <p>Note that some lab sections will be scheduled in laptop instructional labs, ICS 364A or ICS2 170. Students attending these labs are required to bring a personal laptop to class meetings.</p>  "
+      ],
+      "courses": [
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36500",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "STAFF"
+              ],
+              "meetings": [
+                [
+                  "MWF 9:00- 9:50 ",
+                  "ICS 174"
+                ]
+              ],
+              "finalExam": "Dec 12 Wed 8:00-10:00am",
+              "maxCapacity": "131",
+              "numCurrentlyEnrolled": [
+                "102",
+                "102"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "145",
+              "numNewOnlyReserved": "65",
+              "restrictions": "",
+              "status": "NewOnly",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "3",
+            "INTERNET TECH & SOC"
+          ],
+          "prerequisiteLink": ""
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36505",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "TOMLINSON, W."
+              ],
+              "meetings": [
+                [
+                  "TBA",
+                  "ON LINE"
+                ]
+              ],
+              "finalExam": "TBA",
+              "maxCapacity": "280",
+              "numCurrentlyEnrolled": [
+                "209",
+                "209"
+              ],
+              "numOnWaitlist": "19",
+              "numRequested": "287",
+              "numNewOnlyReserved": "100",
+              "restrictions": "",
+              "status": "NewOnly",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "5",
+            "GLBL DSRPT INF TECH"
+          ],
+          "prerequisiteLink": ""
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36520",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "GASSKO, I."
+              ],
+              "meetings": [
+                [
+                  "MWF12:00-12:50p",
+                  "SSLH 100"
+                ]
+              ],
+              "finalExam": "Dec 10 Mon 1:30-3:30pm",
+              "maxCapacity": "313",
+              "numCurrentlyEnrolled": [
+                "159",
+                "159"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "301",
+              "numNewOnlyReserved": "300",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36525",
+              "classType": "Lec",
+              "sectionCode": "B",
+              "units": "4",
+              "instructors": [
+                "GASSKO, I."
+              ],
+              "meetings": [
+                [
+                  "MWF 1:00- 1:50p",
+                  "SSLH 100"
+                ]
+              ],
+              "finalExam": "Dec 12 Wed 1:30-3:30pm",
+              "maxCapacity": "312",
+              "numCurrentlyEnrolled": [
+                "153",
+                "153"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "222",
+              "numNewOnlyReserved": "300",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36531",
+              "classType": "Dis",
+              "sectionCode": "1",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "GASSKO, I."
+              ],
+              "meetings": [
+                [
+                  "TuTh 7:00- 7:50p",
+                  "ICS 174"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "125",
+              "numCurrentlyEnrolled": [
+                "73",
+                "73"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "81",
+              "numNewOnlyReserved": "100",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36532",
+              "classType": "Dis",
+              "sectionCode": "2",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "GASSKO, I."
+              ],
+              "meetings": [
+                [
+                  "TuTh 8:00- 8:50p",
+                  "ICS 174"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "125",
+              "numCurrentlyEnrolled": [
+                "30",
+                "30"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "33",
+              "numNewOnlyReserved": "100",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36533",
+              "classType": "Dis",
+              "sectionCode": "3",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "GASSKO, I."
+              ],
+              "meetings": [
+                [
+                  "MW 4:00- 4:50p",
+                  "HG 1800"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "125",
+              "numCurrentlyEnrolled": [
+                "125",
+                "125"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "136",
+              "numNewOnlyReserved": "100",
+              "restrictions": "A and N",
+              "status": "FULL",
+              "comment": ""
+            },
+            {
+              "classCode": "36534",
+              "classType": "Dis",
+              "sectionCode": "4",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "GASSKO, I."
+              ],
+              "meetings": [
+                [
+                  "MW 5:00- 5:50p",
+                  "HG 1800"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "125",
+              "numCurrentlyEnrolled": [
+                "45",
+                "45"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "52",
+              "numNewOnlyReserved": "100",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36535",
+              "classType": "Dis",
+              "sectionCode": "5",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "GASSKO, I."
+              ],
+              "meetings": [
+                [
+                  "MW 8:00- 8:50 ",
+                  "ICS 174"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "125",
+              "numCurrentlyEnrolled": [
+                "39",
+                "39"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "50",
+              "numNewOnlyReserved": "100",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36536",
+              "classType": "Dis",
+              "sectionCode": "6",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "GASSKO, I."
+              ],
+              "meetings": [
+                [
+                  "MW 3:00- 3:50p",
+                  "TBA "
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "0",
+              "numCurrentlyEnrolled": [
+                "0",
+                "0"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "3",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "FULL",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "6B",
+            "BOOLEAN ALG & LOGIC"
+          ],
+          "prerequisiteLink": "https://www.reg.uci.edu/cob/prrqcgi?term=201892&dept=I%26C%20SCI&action=view_by_term#6B"
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36540",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "JARECKI, S."
+              ],
+              "meetings": [
+                [
+                  "TuTh 2:00- 3:20p",
+                  "HSLH 100A"
+                ]
+              ],
+              "finalExam": "Dec 13 Thu 1:30-3:30pm",
+              "maxCapacity": "327",
+              "numCurrentlyEnrolled": [
+                "138",
+                "138"
+              ],
+              "numOnWaitlist": "13",
+              "numRequested": "287",
+              "numNewOnlyReserved": "200",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36541",
+              "classType": "Dis",
+              "sectionCode": "1",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "JARECKI, S."
+              ],
+              "meetings": [
+                [
+                  "F10:00-10:50 ",
+                  "SSL 140"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "98",
+              "numCurrentlyEnrolled": [
+                "39",
+                "39"
+              ],
+              "numOnWaitlist": "7",
+              "numRequested": "52",
+              "numNewOnlyReserved": "65",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36542",
+              "classType": "Dis",
+              "sectionCode": "2",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "JARECKI, S."
+              ],
+              "meetings": [
+                [
+                  "F12:00-12:50p",
+                  "ICS 174"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "114",
+              "numCurrentlyEnrolled": [
+                "49",
+                "49"
+              ],
+              "numOnWaitlist": "1",
+              "numRequested": "64",
+              "numNewOnlyReserved": "67",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36543",
+              "classType": "Dis",
+              "sectionCode": "3",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "JARECKI, S."
+              ],
+              "meetings": [
+                [
+                  "F 1:00- 1:50p",
+                  "DBH 1600"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "115",
+              "numCurrentlyEnrolled": [
+                "49",
+                "49"
+              ],
+              "numOnWaitlist": "6",
+              "numRequested": "60",
+              "numNewOnlyReserved": "68",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "6D",
+            "DISCRET MATH FOR CS"
+          ],
+          "prerequisiteLink": "https://www.reg.uci.edu/cob/prrqcgi?term=201892&dept=I%26C%20SCI&action=view_by_term#6D"
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36550",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "MEENAKSHISUNDA, G.",
+                "GAGO MASAGUE, S."
+              ],
+              "meetings": [
+                [
+                  "MWF 3:00- 3:50p",
+                  "SSLH 100"
+                ]
+              ],
+              "finalExam": "Dec 10 Mon 4:00-6:00pm",
+              "maxCapacity": "222",
+              "numCurrentlyEnrolled": [
+                "59",
+                "59"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "117",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36551",
+              "classType": "Dis",
+              "sectionCode": "1",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "MEENAKSHISUNDA, G.",
+                "GAGO MASAGUE, S."
+              ],
+              "meetings": [
+                [
+                  "M 6:00- 6:50p",
+                  "DBH 1100"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "222",
+              "numCurrentlyEnrolled": [
+                "59",
+                "59"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "69",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "6N",
+            "COMP LINEAR ALGEBRA"
+          ],
+          "prerequisiteLink": "https://www.reg.uci.edu/cob/prrqcgi?term=201892&dept=I%26C%20SCI&action=view_by_term#6N"
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36555",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "HUSSAIN, M."
+              ],
+              "meetings": [
+                [
+                  "MWF 3:00- 3:50p",
+                  "SSH 100"
+                ]
+              ],
+              "finalExam": "Dec 10 Mon 4:00-6:00pm",
+              "maxCapacity": "180",
+              "numCurrentlyEnrolled": [
+                "108",
+                "108"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "151",
+              "numNewOnlyReserved": "90",
+              "restrictions": "A",
+              "status": "NewOnly",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "10",
+            "HOW COMPUTERS WORK"
+          ],
+          "prerequisiteLink": "https://www.reg.uci.edu/cob/prrqcgi?term=201892&dept=I%26C%20SCI&action=view_by_term#10"
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36560",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "ALFARO, S."
+              ],
+              "meetings": [
+                [
+                  "TuTh11:00-12:20p",
+                  "HIB 100"
+                ]
+              ],
+              "finalExam": "Dec 11 Tue 10:30-12:30pm",
+              "maxCapacity": "344",
+              "numCurrentlyEnrolled": [
+                "91",
+                "91"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "377",
+              "numNewOnlyReserved": "344",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36561",
+              "classType": "Lab",
+              "sectionCode": "1",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "ALFARO, S."
+              ],
+              "meetings": [
+                [
+                  "MWF 8:00- 9:20 ",
+                  "ICS 364A"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "42",
+              "numCurrentlyEnrolled": [
+                "3",
+                "3"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "5",
+              "numNewOnlyReserved": "42",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36562",
+              "classType": "Lab",
+              "sectionCode": "2",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "ALFARO, S."
+              ],
+              "meetings": [
+                [
+                  "MWF 9:30-10:50 ",
+                  "ICS 364A"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "29",
+                "29"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "39",
+              "numNewOnlyReserved": "44",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36563",
+              "classType": "Lab",
+              "sectionCode": "3",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "ALFARO, S."
+              ],
+              "meetings": [
+                [
+                  "MWF11:00-12:20p",
+                  "ICS 364A"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "42",
+              "numCurrentlyEnrolled": [
+                "21",
+                "21"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "33",
+              "numNewOnlyReserved": "42",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36564",
+              "classType": "Lab",
+              "sectionCode": "4",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "ALFARO, S."
+              ],
+              "meetings": [
+                [
+                  "MWF12:30- 1:50p",
+                  "ICS 364A"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "42",
+              "numCurrentlyEnrolled": [
+                "5",
+                "5"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "5",
+              "numNewOnlyReserved": "42",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36565",
+              "classType": "Lab",
+              "sectionCode": "5",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "ALFARO, S."
+              ],
+              "meetings": [
+                [
+                  "MWF 2:00- 3:20p",
+                  "ICS 183"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "23",
+                "23"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "31",
+              "numNewOnlyReserved": "44",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36566",
+              "classType": "Lab",
+              "sectionCode": "6",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "ALFARO, S."
+              ],
+              "meetings": [
+                [
+                  "MWF 3:30- 4:50p",
+                  "ICS 183"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "6",
+                "6"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "8",
+              "numNewOnlyReserved": "44",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36567",
+              "classType": "Lab",
+              "sectionCode": "7",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "ALFARO, S."
+              ],
+              "meetings": [
+                [
+                  "MWF 5:00- 6:20p",
+                  "ICS 183"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "4",
+                "4"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "5",
+              "numNewOnlyReserved": "44",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36568",
+              "classType": "Lab",
+              "sectionCode": "8",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "ALFARO, S."
+              ],
+              "meetings": [
+                [
+                  "MWF 6:30- 7:50p",
+                  "ICS 183"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "0",
+                "0"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "0",
+              "numNewOnlyReserved": "44",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "31",
+            "INTRO TO PROGRMMING"
+          ],
+          "prerequisiteLink": "https://www.reg.uci.edu/cob/prrqcgi?term=201892&dept=I%26C%20SCI&action=view_by_term#31"
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36580",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "THORNTON, A."
+              ],
+              "meetings": [
+                [
+                  "TuTh 5:00- 6:20p",
+                  "BS3 1200"
+                ]
+              ],
+              "finalExam": "Dec 13 Thu 4:00-6:00pm",
+              "maxCapacity": "352",
+              "numCurrentlyEnrolled": [
+                "66",
+                "66"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "295",
+              "numNewOnlyReserved": "100",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36581",
+              "classType": "Lab",
+              "sectionCode": "1",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "THORNTON, A."
+              ],
+              "meetings": [
+                [
+                  "MWF 8:00- 9:20 ",
+                  "ICS 189"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "4",
+                "4"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "13",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36582",
+              "classType": "Lab",
+              "sectionCode": "2",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "THORNTON, A."
+              ],
+              "meetings": [
+                [
+                  "MWF 9:30-10:50 ",
+                  "ICS 189"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "15",
+                "15"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "16",
+              "numNewOnlyReserved": "15",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36583",
+              "classType": "Lab",
+              "sectionCode": "3",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "THORNTON, A."
+              ],
+              "meetings": [
+                [
+                  "MWF11:00-12:20p",
+                  "ICS 189"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "16",
+                "16"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "23",
+              "numNewOnlyReserved": "15",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36584",
+              "classType": "Lab",
+              "sectionCode": "4",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "THORNTON, A."
+              ],
+              "meetings": [
+                [
+                  "MWF 2:00- 3:20p",
+                  "ICS 189"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "13",
+                "13"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "19",
+              "numNewOnlyReserved": "14",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36585",
+              "classType": "Lab",
+              "sectionCode": "5",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "THORNTON, A."
+              ],
+              "meetings": [
+                [
+                  "MWF 3:30- 4:50p",
+                  "ICS 189"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "7",
+                "7"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "11",
+              "numNewOnlyReserved": "14",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36586",
+              "classType": "Lab",
+              "sectionCode": "6",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "THORNTON, A."
+              ],
+              "meetings": [
+                [
+                  "MWF 5:00- 6:20p",
+                  "ICS 189"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "5",
+                "5"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "10",
+              "numNewOnlyReserved": "14",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36587",
+              "classType": "Lab",
+              "sectionCode": "7",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "THORNTON, A."
+              ],
+              "meetings": [
+                [
+                  "MWF 6:30- 7:50p",
+                  "ICS 189"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "1",
+                "1"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "2",
+              "numNewOnlyReserved": "14",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36588",
+              "classType": "Lab",
+              "sectionCode": "8",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "THORNTON, A."
+              ],
+              "meetings": [
+                [
+                  "MWF 8:00- 9:20p",
+                  "ICS 189"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "5",
+                "5"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "5",
+              "numNewOnlyReserved": "14",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36589",
+              "classType": "Lab",
+              "sectionCode": "9",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "THORNTON, A."
+              ],
+              "meetings": [
+                [
+                  "TBA",
+                  "TBA "
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "0",
+              "numCurrentlyEnrolled": [
+                "0",
+                "0"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "0",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "FULL",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "32",
+            "PROG SOFTWARE LIBR"
+          ],
+          "prerequisiteLink": "https://www.reg.uci.edu/cob/prrqcgi?term=201892&dept=I%26C%20SCI&action=view_by_term#32"
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36600",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "STAFF"
+              ],
+              "meetings": [
+                [
+                  "TuTh 5:00- 6:20p",
+                  "ELH 100"
+                ]
+              ],
+              "finalExam": "Dec 13 Thu 4:00-6:00pm",
+              "maxCapacity": "300",
+              "numCurrentlyEnrolled": [
+                "89",
+                "89"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "118",
+              "numNewOnlyReserved": "300",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36601",
+              "classType": "Lab",
+              "sectionCode": "1",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "STAFF"
+              ],
+              "meetings": [
+                [
+                  "MWF 8:00- 9:20 ",
+                  "ICS 192"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "36",
+              "numCurrentlyEnrolled": [
+                "7",
+                "7"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "8",
+              "numNewOnlyReserved": "36",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36602",
+              "classType": "Lab",
+              "sectionCode": "2",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "STAFF"
+              ],
+              "meetings": [
+                [
+                  "MWF 9:30-10:50 ",
+                  "ICS 192"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "38",
+              "numCurrentlyEnrolled": [
+                "25",
+                "25"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "25",
+              "numNewOnlyReserved": "38",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36603",
+              "classType": "Lab",
+              "sectionCode": "3",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "STAFF"
+              ],
+              "meetings": [
+                [
+                  "MWF11:00-12:20p",
+                  "ICS 192"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "36",
+              "numCurrentlyEnrolled": [
+                "20",
+                "20"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "21",
+              "numNewOnlyReserved": "36",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36604",
+              "classType": "Lab",
+              "sectionCode": "4",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "STAFF"
+              ],
+              "meetings": [
+                [
+                  "MWF 2:00- 3:20p",
+                  "ICS 192"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "38",
+              "numCurrentlyEnrolled": [
+                "17",
+                "17"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "20",
+              "numNewOnlyReserved": "38",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36605",
+              "classType": "Lab",
+              "sectionCode": "5",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "STAFF"
+              ],
+              "meetings": [
+                [
+                  "MWF 3:30- 4:50p",
+                  "ICS 192"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "38",
+              "numCurrentlyEnrolled": [
+                "6",
+                "6"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "8",
+              "numNewOnlyReserved": "38",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36606",
+              "classType": "Lab",
+              "sectionCode": "6",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "STAFF"
+              ],
+              "meetings": [
+                [
+                  "MWF 5:00- 6:20p",
+                  "ICS 192"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "38",
+              "numCurrentlyEnrolled": [
+                "13",
+                "13"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "16",
+              "numNewOnlyReserved": "38",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36607",
+              "classType": "Lab",
+              "sectionCode": "7",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "STAFF"
+              ],
+              "meetings": [
+                [
+                  "MWF 6:30- 7:50p",
+                  "ICS 192"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "38",
+              "numCurrentlyEnrolled": [
+                "0",
+                "0"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "0",
+              "numNewOnlyReserved": "38",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36608",
+              "classType": "Lab",
+              "sectionCode": "8",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "STAFF"
+              ],
+              "meetings": [
+                [
+                  "MWF 8:00- 9:20p",
+                  "ICS 192"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "38",
+              "numCurrentlyEnrolled": [
+                "1",
+                "1"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "1",
+              "numNewOnlyReserved": "38",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "32A",
+            "PYTHN PGMG LIBR/ACC"
+          ],
+          "prerequisiteLink": "https://www.reg.uci.edu/cob/prrqcgi?term=201892&dept=I%26C%20SCI&action=view_by_term#32A"
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36620",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "PATTIS, R."
+              ],
+              "meetings": [
+                [
+                  "MWF 2:00- 2:50p",
+                  "HIB 100"
+                ]
+              ],
+              "finalExam": "Dec 14 Fri 1:30-3:30pm",
+              "maxCapacity": "336",
+              "numCurrentlyEnrolled": [
+                "218",
+                "218"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "296",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36621",
+              "classType": "Lab",
+              "sectionCode": "1",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "PATTIS, R."
+              ],
+              "meetings": [
+                [
+                  "TuTh 8:00- 9:50 ",
+                  "ICS 183"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "9",
+                "9"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "13",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36622",
+              "classType": "Lab",
+              "sectionCode": "2",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "PATTIS, R."
+              ],
+              "meetings": [
+                [
+                  "TuTh 8:00- 9:50 ",
+                  "ICS 189"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "2",
+                "2"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "2",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36623",
+              "classType": "Lab",
+              "sectionCode": "3",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "PATTIS, R."
+              ],
+              "meetings": [
+                [
+                  "TuTh10:00-11:50 ",
+                  "ICS 183"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "43",
+                "43"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "41",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36624",
+              "classType": "Lab",
+              "sectionCode": "4",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "PATTIS, R."
+              ],
+              "meetings": [
+                [
+                  "TuTh10:00-11:50 ",
+                  "ICS 189"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "25",
+                "25"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "18",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36625",
+              "classType": "Lab",
+              "sectionCode": "5",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "PATTIS, R."
+              ],
+              "meetings": [
+                [
+                  "TuTh10:00-11:50 ",
+                  "ICS 192"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "36",
+              "numCurrentlyEnrolled": [
+                "18",
+                "18"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "13",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36626",
+              "classType": "Lab",
+              "sectionCode": "6",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "PATTIS, R."
+              ],
+              "meetings": [
+                [
+                  "TuTh12:00- 1:50p",
+                  "ICS 183"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "44",
+                "44"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "48",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "Waitl",
+              "comment": ""
+            },
+            {
+              "classCode": "36627",
+              "classType": "Lab",
+              "sectionCode": "7",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "PATTIS, R."
+              ],
+              "meetings": [
+                [
+                  "TuTh12:00- 1:50p",
+                  "ICS 189"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "44",
+              "numCurrentlyEnrolled": [
+                "43",
+                "43"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "28",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36628",
+              "classType": "Lab",
+              "sectionCode": "8",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "PATTIS, R."
+              ],
+              "meetings": [
+                [
+                  "TuTh12:00- 1:50p",
+                  "ICS 192"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "36",
+              "numCurrentlyEnrolled": [
+                "34",
+                "34"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "22",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "33",
+            "INTERMEDIATE PRGRMG"
+          ],
+          "prerequisiteLink": "https://www.reg.uci.edu/cob/prrqcgi?term=201892&dept=I%26C%20SCI&action=view_by_term#33"
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36640",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "KLEFSTAD, R."
+              ],
+              "meetings": [
+                [
+                  "TuTh 8:00- 9:20 ",
+                  "ELH 100"
+                ]
+              ],
+              "finalExam": "Dec 11 Tue 8:00-10:00am",
+              "maxCapacity": "270",
+              "numCurrentlyEnrolled": [
+                "102",
+                "102"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "118",
+              "numNewOnlyReserved": "100",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36645",
+              "classType": "Lec",
+              "sectionCode": "B",
+              "units": "4",
+              "instructors": [
+                "THORNTON, A."
+              ],
+              "meetings": [
+                [
+                  "TuTh 3:30- 4:50p",
+                  "ELH 100"
+                ]
+              ],
+              "finalExam": "Dec 11 Tue 4:00-6:00pm",
+              "maxCapacity": "270",
+              "numCurrentlyEnrolled": [
+                "209",
+                "209"
+              ],
+              "numOnWaitlist": "17",
+              "numRequested": "245",
+              "numNewOnlyReserved": "100",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "45C",
+            "PROGRAM IN C/C++"
+          ],
+          "prerequisiteLink": "https://www.reg.uci.edu/cob/prrqcgi?term=201892&dept=I%26C%20SCI&action=view_by_term#45C"
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36650",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "WU, Z."
+              ],
+              "meetings": [
+                [
+                  "MWF 1:00- 1:50p",
+                  "DBH 1100"
+                ]
+              ],
+              "finalExam": "Dec 12 Wed 1:30-3:30pm",
+              "maxCapacity": "246",
+              "numCurrentlyEnrolled": [
+                "29",
+                "29"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "81",
+              "numNewOnlyReserved": "50",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36655",
+              "classType": "Lec",
+              "sectionCode": "B",
+              "units": "4",
+              "instructors": [
+                "STAFF"
+              ],
+              "meetings": [
+                [
+                  "TuTh 6:30- 7:50p",
+                  "ELH 100"
+                ]
+              ],
+              "finalExam": "TBA",
+              "maxCapacity": "250",
+              "numCurrentlyEnrolled": [
+                "116",
+                "116"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "157",
+              "numNewOnlyReserved": "50",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "45J",
+            "PROGRAMMING IN JAVA"
+          ],
+          "prerequisiteLink": "https://www.reg.uci.edu/cob/prrqcgi?term=201892&dept=I%26C%20SCI&action=view_by_term#45J"
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36660",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "GAGO MASAGUE, S."
+              ],
+              "meetings": [
+                [
+                  "TuTh 5:00- 6:20p",
+                  "EH 1200"
+                ]
+              ],
+              "finalExam": "Dec 13 Thu 4:00-6:00pm",
+              "maxCapacity": "300",
+              "numCurrentlyEnrolled": [
+                "201",
+                "201"
+              ],
+              "numOnWaitlist": "4",
+              "numRequested": "218",
+              "numNewOnlyReserved": "110",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36665",
+              "classType": "Lec",
+              "sectionCode": "B",
+              "units": "4",
+              "instructors": [
+                "PATTIS, R."
+              ],
+              "meetings": [
+                [
+                  "MWF11:00-11:50 ",
+                  "EH 1200"
+                ]
+              ],
+              "finalExam": "Dec 14 Fri 8:00-10:00am",
+              "maxCapacity": "300",
+              "numCurrentlyEnrolled": [
+                "196",
+                "196"
+              ],
+              "numOnWaitlist": "2",
+              "numRequested": "213",
+              "numNewOnlyReserved": "110",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "46",
+            "DATA STRC IMPL&ANLS"
+          ],
+          "prerequisiteLink": "https://www.reg.uci.edu/cob/prrqcgi?term=201892&dept=I%26C%20SCI&action=view_by_term#46"
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36670",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "6",
+              "instructors": [
+                "NICOLAU, A."
+              ],
+              "meetings": [
+                [
+                  "TuTh 9:30-10:50 ",
+                  "HSLH 100A"
+                ]
+              ],
+              "finalExam": "Dec 13 Thu 8:00-10:00am",
+              "maxCapacity": "334",
+              "numCurrentlyEnrolled": [
+                "245",
+                "245"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "368",
+              "numNewOnlyReserved": "108",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36671",
+              "classType": "Dis",
+              "sectionCode": "A1",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "NICOLAU, A."
+              ],
+              "meetings": [
+                [
+                  "W 8:00- 8:50p",
+                  "HSLH 100A"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "334",
+              "numCurrentlyEnrolled": [
+                "245",
+                "245"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "261",
+              "numNewOnlyReserved": "108",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36681",
+              "classType": "Lab",
+              "sectionCode": "1",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "NICOLAU, A."
+              ],
+              "meetings": [
+                [
+                  "MW 2:00- 3:20p",
+                  "ICS 364A"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "48",
+              "numCurrentlyEnrolled": [
+                "42",
+                "42"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "54",
+              "numNewOnlyReserved": "18",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36682",
+              "classType": "Lab",
+              "sectionCode": "2",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "NICOLAU, A."
+              ],
+              "meetings": [
+                [
+                  "MW 3:30- 4:50p",
+                  "ICS 364A"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "48",
+              "numCurrentlyEnrolled": [
+                "31",
+                "31"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "38",
+              "numNewOnlyReserved": "18",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36683",
+              "classType": "Lab",
+              "sectionCode": "3",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "NICOLAU, A."
+              ],
+              "meetings": [
+                [
+                  "MW 5:00- 6:20p",
+                  "ICS 364A"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "48",
+              "numCurrentlyEnrolled": [
+                "35",
+                "35"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "39",
+              "numNewOnlyReserved": "18",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36684",
+              "classType": "Lab",
+              "sectionCode": "4",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "NICOLAU, A."
+              ],
+              "meetings": [
+                [
+                  "MW 6:30- 7:50p",
+                  "ICS 364A"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "48",
+              "numCurrentlyEnrolled": [
+                "30",
+                "30"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "32",
+              "numNewOnlyReserved": "18",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36685",
+              "classType": "Lab",
+              "sectionCode": "5",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "NICOLAU, A."
+              ],
+              "meetings": [
+                [
+                  "TuTh 6:30- 7:50p",
+                  "ICS 364A"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "48",
+              "numCurrentlyEnrolled": [
+                "31",
+                "31"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "40",
+              "numNewOnlyReserved": "18",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36686",
+              "classType": "Lab",
+              "sectionCode": "6",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "NICOLAU, A."
+              ],
+              "meetings": [
+                [
+                  "TuTh 8:00- 9:20p",
+                  "ICS 364A"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "48",
+              "numCurrentlyEnrolled": [
+                "30",
+                "30"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "33",
+              "numNewOnlyReserved": "18",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36687",
+              "classType": "Lab",
+              "sectionCode": "7",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "NICOLAU, A."
+              ],
+              "meetings": [
+                [
+                  "MW 9:30-10:50 ",
+                  "ICS 183"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "46",
+              "numCurrentlyEnrolled": [
+                "46",
+                "46"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "43",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "FULL",
+              "comment": ""
+            },
+            {
+              "classCode": "36688",
+              "classType": "Lab",
+              "sectionCode": "8",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "NICOLAU, A."
+              ],
+              "meetings": [
+                [
+                  "TBA",
+                  "TBA "
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "0",
+              "numCurrentlyEnrolled": [
+                "0",
+                "0"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "0",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "FULL",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "51",
+            "INTRO COMPUTER ORG"
+          ],
+          "prerequisiteLink": "https://www.reg.uci.edu/cob/prrqcgi?term=201892&dept=I%26C%20SCI&action=view_by_term#51"
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36700",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "STEINKUEHLER, C."
+              ],
+              "meetings": [
+                [
+                  "TuTh12:30- 1:50p",
+                  "HIB 100"
+                ]
+              ],
+              "finalExam": "Dec 14 Fri 10:30-12:30pm",
+              "maxCapacity": "300",
+              "numCurrentlyEnrolled": [
+                "73",
+                "73"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "188",
+              "numNewOnlyReserved": "200",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36701",
+              "classType": "Dis",
+              "sectionCode": "1",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "STEINKUEHLER, C."
+              ],
+              "meetings": [
+                [
+                  "W10:00-10:50 ",
+                  "MSTB 118"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "50",
+              "numCurrentlyEnrolled": [
+                "12",
+                "12"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "17",
+              "numNewOnlyReserved": "34",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36702",
+              "classType": "Dis",
+              "sectionCode": "2",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "STEINKUEHLER, C."
+              ],
+              "meetings": [
+                [
+                  "W11:00-11:50 ",
+                  "MSTB 118"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "50",
+              "numCurrentlyEnrolled": [
+                "17",
+                "17"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "17",
+              "numNewOnlyReserved": "34",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36703",
+              "classType": "Dis",
+              "sectionCode": "3",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "STEINKUEHLER, C."
+              ],
+              "meetings": [
+                [
+                  "W 2:00- 2:50p",
+                  "SST 220B"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "50",
+              "numCurrentlyEnrolled": [
+                "17",
+                "17"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "19",
+              "numNewOnlyReserved": "33",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36704",
+              "classType": "Dis",
+              "sectionCode": "4",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "STEINKUEHLER, C."
+              ],
+              "meetings": [
+                [
+                  "W 3:00- 3:50p",
+                  "SST 220B"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "50",
+              "numCurrentlyEnrolled": [
+                "9",
+                "9"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "8",
+              "numNewOnlyReserved": "33",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36705",
+              "classType": "Dis",
+              "sectionCode": "5",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "STEINKUEHLER, C."
+              ],
+              "meetings": [
+                [
+                  "W 4:00- 4:50p",
+                  "ICS 180"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "50",
+              "numCurrentlyEnrolled": [
+                "7",
+                "7"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "8",
+              "numNewOnlyReserved": "33",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            },
+            {
+              "classCode": "36707",
+              "classType": "Dis",
+              "sectionCode": "6",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "STEINKUEHLER, C."
+              ],
+              "meetings": [
+                [
+                  "W 5:00- 5:50p",
+                  "ICS 180"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "50",
+              "numCurrentlyEnrolled": [
+                "11",
+                "11"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "11",
+              "numNewOnlyReserved": "33",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "60",
+            "CMP GAMES & SOCIETY"
+          ],
+          "prerequisiteLink": "https://www.reg.uci.edu/cob/prrqcgi?term=201892&dept=I%26C%20SCI&action=view_by_term#60"
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36720",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "1",
+              "instructors": [
+                "STAFF"
+              ],
+              "meetings": [
+                [
+                  "W 6:30- 7:50p",
+                  "PSLH 100"
+                ]
+              ],
+              "finalExam": "TBA",
+              "maxCapacity": "448",
+              "numCurrentlyEnrolled": [
+                "191",
+                "191"
+              ],
+              "numOnWaitlist": "90",
+              "numRequested": "471",
+              "numNewOnlyReserved": "448",
+              "restrictions": "D and L",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36725",
+              "classType": "Lec",
+              "sectionCode": "B",
+              "units": "1",
+              "instructors": [
+                "STAFF"
+              ],
+              "meetings": [
+                [
+                  "W 6:30- 7:50p",
+                  "BS3 1200"
+                ]
+              ],
+              "finalExam": "TBA",
+              "maxCapacity": "401",
+              "numCurrentlyEnrolled": [
+                "32",
+                "32"
+              ],
+              "numOnWaitlist": "81",
+              "numRequested": "207",
+              "numNewOnlyReserved": "401",
+              "restrictions": "D and L",
+              "status": "NewOnly",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "90",
+            "NEW STUDENTS SEMINR"
+          ],
+          "prerequisiteLink": ""
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36750",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "ALFARO, S."
+              ],
+              "meetings": [
+                [
+                  "TBA",
+                  "ON LINE"
+                ]
+              ],
+              "finalExam": "TBA",
+              "maxCapacity": "100",
+              "numCurrentlyEnrolled": [
+                "64",
+                "64"
+              ],
+              "numOnWaitlist": "14",
+              "numRequested": "178",
+              "numNewOnlyReserved": "80",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36760",
+              "classType": "Lec",
+              "sectionCode": "B",
+              "units": "4",
+              "instructors": [
+                "REGAN, A.",
+                "WONG-MA, J."
+              ],
+              "meetings": [
+                [
+                  "TBA",
+                  "ON LINE"
+                ]
+              ],
+              "finalExam": "TBA",
+              "maxCapacity": "100",
+              "numCurrentlyEnrolled": [
+                "100",
+                "100"
+              ],
+              "numOnWaitlist": "16",
+              "numRequested": "164",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "FULL",
+              "comment": ""
+            },
+            {
+              "classCode": "36780",
+              "classType": "Lec",
+              "sectionCode": "D",
+              "units": "4",
+              "instructors": [
+                "BLACK, R."
+              ],
+              "meetings": [
+                [
+                  "MW 2:00- 3:20p",
+                  "SSL 248"
+                ]
+              ],
+              "finalExam": "Dec 14 Fri 1:30-3:30pm",
+              "maxCapacity": "100",
+              "numCurrentlyEnrolled": [
+                "39",
+                "39"
+              ],
+              "numOnWaitlist": "1",
+              "numRequested": "56",
+              "numNewOnlyReserved": "80",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36781",
+              "classType": "Dis",
+              "sectionCode": "D1",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "BLACK, R."
+              ],
+              "meetings": [
+                [
+                  "F 9:00- 9:50 ",
+                  "DBH 1423"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "25",
+              "numCurrentlyEnrolled": [
+                "9",
+                "9"
+              ],
+              "numOnWaitlist": "1",
+              "numRequested": "7",
+              "numNewOnlyReserved": "20",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36782",
+              "classType": "Dis",
+              "sectionCode": "D2",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "BLACK, R."
+              ],
+              "meetings": [
+                [
+                  "F10:00-10:50 ",
+                  "DBH 1423"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "25",
+              "numCurrentlyEnrolled": [
+                "11",
+                "11"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "12",
+              "numNewOnlyReserved": "20",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36783",
+              "classType": "Dis",
+              "sectionCode": "D3",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "BLACK, R."
+              ],
+              "meetings": [
+                [
+                  "F 2:00- 2:50p",
+                  "DBH 1423"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "25",
+              "numCurrentlyEnrolled": [
+                "12",
+                "12"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "14",
+              "numNewOnlyReserved": "20",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            },
+            {
+              "classCode": "36784",
+              "classType": "Dis",
+              "sectionCode": "D4",
+              "units": "0",
+              "instructors": [
+                "STAFF",
+                "BLACK, R."
+              ],
+              "meetings": [
+                [
+                  "F 3:00- 3:50p",
+                  "DBH 1423"
+                ]
+              ],
+              "finalExam": "",
+              "maxCapacity": "25",
+              "numCurrentlyEnrolled": [
+                "7",
+                "7"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "5",
+              "numNewOnlyReserved": "20",
+              "restrictions": "A and N",
+              "status": "NewOnly",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "139W",
+            "CRITICAL WRITING"
+          ],
+          "prerequisiteLink": "https://www.reg.uci.edu/cob/prrqcgi?term=201892&dept=I%26C%20SCI&action=view_by_term#139W"
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36800",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "TRAMMELL, A."
+              ],
+              "meetings": [
+                [
+                  "TuTh12:30- 1:50p",
+                  "SH 134"
+                ]
+              ],
+              "finalExam": "Dec 14 Fri 10:30-12:30pm",
+              "maxCapacity": "80",
+              "numCurrentlyEnrolled": [
+                "60",
+                "60"
+              ],
+              "numOnWaitlist": "0",
+              "numRequested": "83",
+              "numNewOnlyReserved": "0",
+              "restrictions": "A and N",
+              "status": "OPEN",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "163",
+            "MOBILE & UBI GAMES"
+          ],
+          "prerequisiteLink": "https://www.reg.uci.edu/cob/prrqcgi?term=201892&dept=I%26C%20SCI&action=view_by_term#163"
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36830",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "TANENBAUM, J."
+              ],
+              "meetings": [
+                [
+                  "W 5:00- 7:50p",
+                  "ALP 1700"
+                ]
+              ],
+              "finalExam": "TBA",
+              "maxCapacity": "70",
+              "numCurrentlyEnrolled": [
+                "70",
+                "70"
+              ],
+              "numOnWaitlist": "1",
+              "numRequested": "74",
+              "numNewOnlyReserved": "0",
+              "restrictions": "J and N",
+              "status": "Waitl",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "169A",
+            "CAPSTONE GAME I"
+          ],
+          "prerequisiteLink": "https://www.reg.uci.edu/cob/prrqcgi?term=201892&dept=I%26C%20SCI&action=view_by_term#169A"
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36840",
+              "classType": "Fld",
+              "sectionCode": "A",
+              "units": "2",
+              "instructors": [
+                "MEENAKSHISUNDA, G."
+              ],
+              "meetings": [
+                [
+                  "TBA",
+                  "TBA "
+                ]
+              ],
+              "finalExam": "TBA",
+              "maxCapacity": "0",
+              "numCurrentlyEnrolled": [
+                "0",
+                "0"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "0",
+              "numNewOnlyReserved": "0",
+              "restrictions": "D and X",
+              "status": "FULL",
+              "comment": ""
+            },
+            {
+              "classCode": "36845",
+              "classType": "Fld",
+              "sectionCode": "B",
+              "units": "2",
+              "instructors": [
+                "MEENAKSHISUNDA, G."
+              ],
+              "meetings": [
+                [
+                  "TBA",
+                  "TBA "
+                ]
+              ],
+              "finalExam": "TBA",
+              "maxCapacity": "0",
+              "numCurrentlyEnrolled": [
+                "0",
+                "0"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "0",
+              "numNewOnlyReserved": "0",
+              "restrictions": "D and X",
+              "status": "FULL",
+              "comment": ""
+            },
+            {
+              "classCode": "36850",
+              "classType": "Fld",
+              "sectionCode": "C",
+              "units": "2",
+              "instructors": [
+                "MEENAKSHISUNDA, G."
+              ],
+              "meetings": [
+                [
+                  "TBA",
+                  "TBA "
+                ]
+              ],
+              "finalExam": "TBA",
+              "maxCapacity": "0",
+              "numCurrentlyEnrolled": [
+                "0",
+                "0"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "0",
+              "numNewOnlyReserved": "0",
+              "restrictions": "D and X",
+              "status": "FULL",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "192",
+            "INDUS/PBLC FLD STDY"
+          ],
+          "prerequisiteLink": ""
+        },
+        {
+          "comment": " <p>Enrollment in I&amp;C SCI 193 is limited to students in the ICS Lab Tutor Program. For more information: <a href=\"http://tutors.ics.uci.edu/\">http://tutors.ics.uci.edu/</a></p>  ",
+          "sections": [
+            {
+              "classCode": "36860",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "2",
+              "instructors": [
+                "PATTIS, R."
+              ],
+              "meetings": [
+                [
+                  "Tu 2:00- 3:20p",
+                  "TBA "
+                ]
+              ],
+              "finalExam": "Dec 13 Thu 1:30-3:30pm",
+              "maxCapacity": "70",
+              "numCurrentlyEnrolled": [
+                "0",
+                "0"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "7",
+              "numNewOnlyReserved": "0",
+              "restrictions": "B",
+              "status": "OPEN",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "193",
+            "TUTORING IN ICS"
+          ],
+          "prerequisiteLink": ""
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36870",
+              "classType": "Lec",
+              "sectionCode": "A",
+              "units": "2",
+              "instructors": [
+                "LATHROP, R."
+              ],
+              "meetings": [
+                [
+                  "W11:00-11:50 ",
+                  "PSCB 220"
+                ]
+              ],
+              "finalExam": "TBA",
+              "maxCapacity": "30",
+              "numCurrentlyEnrolled": [
+                "0",
+                "0"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "3",
+              "numNewOnlyReserved": "0",
+              "restrictions": "B and D",
+              "status": "OPEN",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "H197",
+            "HONORS SEMINAR"
+          ],
+          "prerequisiteLink": ""
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36890",
+              "classType": "Sem",
+              "sectionCode": "A",
+              "units": "2",
+              "instructors": [
+                "ZIV, H."
+              ],
+              "meetings": [
+                [
+                  "W 9:00-10:50 ",
+                  "MSTB 120"
+                ]
+              ],
+              "finalExam": "TBA",
+              "maxCapacity": "50",
+              "numCurrentlyEnrolled": [
+                "38",
+                "38"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "44",
+              "numNewOnlyReserved": "0",
+              "restrictions": "K and S",
+              "status": "OPEN",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "398A",
+            "TA TRAINING SEMINAR"
+          ],
+          "prerequisiteLink": ""
+        },
+        {
+          "comment": "",
+          "sections": [
+            {
+              "classCode": "36895",
+              "classType": "Tut",
+              "sectionCode": "A",
+              "units": "4",
+              "instructors": [
+                "MEENAKSHISUNDA, G."
+              ],
+              "meetings": [
+                [
+                  "TBA",
+                  "TBA "
+                ]
+              ],
+              "finalExam": "TBA",
+              "maxCapacity": "150",
+              "numCurrentlyEnrolled": [
+                "52",
+                "52"
+              ],
+              "numOnWaitlist": "n/a",
+              "numRequested": "58",
+              "numNewOnlyReserved": "0",
+              "restrictions": "K",
+              "status": "OPEN",
+              "comment": ""
+            }
+          ],
+          "name": [
+            "399",
+            "UNIVERSITY TEACHING"
+          ],
+          "prerequisiteLink": ""
+        }
+      ],
+      "name": [
+        "I&C SCI",
+        "Information and Computer Science"
+      ]
+    }
+  ],
+  "name": "Donald Bren School of Information and Computer Sciences"
+}
