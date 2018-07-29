@@ -39,6 +39,7 @@ class TermSelector extends React.Component {
         <FormControl required className={classes.formControl}>
           <InputLabel htmlFor="term-auto-width">Please select a term</InputLabel>
           <Select
+            autoWidth
             value={this.state.term}
             onChange={this.handleChange('term')}
             name="term"
