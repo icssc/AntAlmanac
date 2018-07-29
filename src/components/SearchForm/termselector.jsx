@@ -37,13 +37,13 @@ class TermSelector extends React.Component {
     return (
       <div className={classes.root}>
         <FormControl required className={classes.formControl}>
-          <InputLabel htmlFor="term-simple-required">Please select a term</InputLabel>
+          <InputLabel htmlFor="term-auto-width-required">Please select a term</InputLabel>
           <Select
             value={this.state.term}
             onChange={this.handleChange('term')}
             name="term"
             inputProps={{
-              id: 'term-simple-required',
+              id: 'term-auto-width-required',
             }}
           >
             <option value="2018-92" style="color: purple" selected="selected">2018  Fall Quarter</option>
