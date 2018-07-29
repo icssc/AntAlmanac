@@ -2,14 +2,13 @@ import React, {Component} from 'react';
 import ge from './ge.json';
 import MuiDownshift from 'mui-downshift';
 
-// TODO: Maps department codes to index value.
-//       Later, we will change this to map dept name to dept code, like {'Chemistry': 'CHEM'}
+
 const items = ge.map((label, value) => ({label, value}));
 
 class GESelector extends Component {
     constructor(props) {
         super(props);
-        this.state = {filteredItems: items}; // Inital state is the whole list of depts
+        this.state = {filteredItems: items}; // Inital state is the whole list of GEs
         this.handleStateChange = this.handleStateChange.bind(this);
     }
 
