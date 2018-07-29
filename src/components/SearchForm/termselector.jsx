@@ -3,12 +3,10 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
-import ListItemText from '@material-ui/core/ListItemText';
 import Select from '@material-ui/core/Select';
-import Checkbox from '@material-ui/core/Checkbox';
-import Chip from '@material-ui/core/Chip';
+import NativeSelect from '@material-ui/core/NativeSelect';
 
 const styles = theme => ({
   root: {
@@ -18,127 +16,68 @@ const styles = theme => ({
   formControl: {
     margin: theme.spacing.unit,
     minWidth: 120,
-    maxWidth: 300,
   },
-  chips: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  chip: {
-    margin: theme.spacing.unit / 4,
+  selectEmpty: {
+    marginTop: theme.spacing.unit * 2,
   },
 });
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
-const names = [
-  'Oliver Hansen',
-  'Van Henry',
-  'April Tucker',
-  'Ralph Hubbard',
-  'Omar Alexander',
-  'Carlos Abbott',
-  'Miriam Wagner',
-  'Bradley Wilkerson',
-  'Virginia Andrews',
-  'Kelly Snyder',
-];
-
 class TermSelector extends React.Component {
   state = {
-    name: [],
-  };
+      year: '',
+      quarter: '',
+    };
 
-  handleChange = event => {
-    this.setState({ name: event.target.value });
+  handleChange = name => event => {
+    this.setState({ [name]: event.target.value });
   };
 
   render() {
-    const { classes, theme } = this.props;
+    const { classes } = this.props;
 
     return (
       <div className={classes.root}>
-        <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="select-multiple">Name</InputLabel>
+        <FormControl required className={classes.formControl}>
+          <InputLabel htmlFor="year-native-required">Year</InputLabel>
           <Select
-            multiple
-            value={this.state.name}
-            onChange={this.handleChange}
-            input={<Input id="select-multiple" />}
-            MenuProps={MenuProps}
+            native
+            value={this.state.year}
+            onChange={this.handleChange('year')}
+            name="year"
+            inputProps={{
+              id: 'year-native-required',
+            }}
           >
-            {names.map(name => (
-              <MenuItem
-                key={name}
-                value={name}
-                style={{
-                  fontWeight:
-                    this.state.name.indexOf(name) === -1
-                      ? theme.typography.fontWeightRegular
-                      : theme.typography.fontWeightMedium,
-                }}
-              >
-                {name}
-              </MenuItem>
-            ))}
+            <option value="" />
+            <option value={2018}>2018</option>
+            <option value={2017}>2017</option>
+            <option value={2016}>2016</option>
+            <option value={2015}>2015</option>
+            <option value={2014}>2014</option>
           </Select>
+          <FormHelperText>Required</FormHelperText>
         </FormControl>
-        <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="select-multiple-checkbox">Tag</InputLabel>
+
+        <FormControl required className={classes.formControl}>
+          <InputLabel htmlFor="quarter-native-required">Quarter</InputLabel>
           <Select
-            multiple
-            value={this.state.name}
-            onChange={this.handleChange}
-            input={<Input id="select-multiple-checkbox" />}
-            renderValue={selected => selected.join(', ')}
-            MenuProps={MenuProps}
+            native
+            value={this.state.quarter}
+            onChange={this.handleChange('quarter')}
+            name="quarter"
+            inputProps={{
+              id: 'quarter-native-required',
+            }}
           >
-            {names.map(name => (
-              <MenuItem key={name} value={name}>
-                <Checkbox checked={this.state.name.indexOf(name) > -1} />
-                <ListItemText primary={name} />
-              </MenuItem>
-            ))}
+            <option value="" />
+            <option value={"F"}>Fall</option>
+            <option value={"W"}>Winter</option>
+            <option value={"S"}>Spring</option>
+            <option value={"SS1"}>Sum I</option>
+            <option value={"SS10"}>Sum 10</option>
+            <option value={"SS2"}>Sum II</option>
           </Select>
-        </FormControl>
-        <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="select-multiple-chip">Chip</InputLabel>
-          <Select
-            multiple
-            value={this.state.name}
-            onChange={this.handleChange}
-            input={<Input id="select-multiple-chip" />}
-            renderValue={selected => (
-              <div className={classes.chips}>
-                {selected.map(value => <Chip key={value} label={value} className={classes.chip} />)}
-              </div>
-            )}
-            MenuProps={MenuProps}
-          >
-            {names.map(name => (
-              <MenuItem
-                key={name}
-                value={name}
-                style={{
-                  fontWeight:
-                    this.state.name.indexOf(name) === -1
-                      ? theme.typography.fontWeightRegular
-                      : theme.typography.fontWeightMedium,
-                }}
-              >
-                {name}
-              </MenuItem>
-            ))}
-          </Select>
+          <FormHelperText>Required</FormHelperText>
         </FormControl>
       </div>
     );
@@ -147,7 +86,6 @@ class TermSelector extends React.Component {
 
 TermSelector.propTypes = {
   classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(TermSelector);
+export default withStyles(styles)(TermSelector);
