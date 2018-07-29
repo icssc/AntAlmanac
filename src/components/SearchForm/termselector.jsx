@@ -38,27 +38,6 @@ class TermSelector extends React.Component {
     return (
       <div className={classes.root}>
         <FormControl required className={classes.formControl}>
-          <InputLabel htmlFor="year-native-required">Year</InputLabel>
-          <Select
-            native
-            value={this.state.year}
-            onChange={this.handleChange('year')}
-            name="year"
-            inputProps={{
-              id: 'year-native-required',
-            }}
-          >
-            <option value="" />
-            <option value={2018}>2018</option>
-            <option value={2017}>2017</option>
-            <option value={2016}>2016</option>
-            <option value={2015}>2015</option>
-            <option value={2014}>2014</option>
-          </Select>
-          <FormHelperText>Required</FormHelperText>
-        </FormControl>
-
-        <FormControl required className={classes.formControl}>
           <InputLabel htmlFor="quarter-native-required">Quarter</InputLabel>
           <Select
             native
@@ -76,6 +55,27 @@ class TermSelector extends React.Component {
             <option value={"SS1"}>Sum I</option>
             <option value={"SS10"}>Sum 10</option>
             <option value={"SS2"}>Sum II</option>
+          </Select>
+          <FormHelperText>Required</FormHelperText>
+        </FormControl>
+
+        <FormControl required className={classes.formControl}>
+          <InputLabel htmlFor="year-native-required">Year</InputLabel>
+          <Select
+            native
+            value={this.state.year}
+            onChange={this.handleChange('year')}
+            name="year"
+            inputProps={{
+              id: 'year-native-required',
+            }}
+          >
+            <option value="" />
+            <option value={2018}>2018</option>
+            <option value={2017}>2017</option>
+            <option value={2016}>2016</option>
+            <option value={2015}>2015</option>
+            <option value={2014}>2014</option>
           </Select>
           <FormHelperText>Required</FormHelperText>
         </FormControl>
