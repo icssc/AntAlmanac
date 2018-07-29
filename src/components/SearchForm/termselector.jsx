@@ -38,7 +38,7 @@ class TermSelector extends React.Component {
     return (
       <div className={classes.root}>
         <FormControl required className={classes.formControl}>
-          <InputLabel htmlFor="quarter-native-required">Quarter</InputLabel>
+          <InputLabel htmlFor="quarter-simple-required">Quarter</InputLabel>
           <Select
             native
             value={this.state.quarter}
@@ -60,7 +60,7 @@ class TermSelector extends React.Component {
         </FormControl>
 
         <FormControl required className={classes.formControl}>
-          <InputLabel htmlFor="year-native-required">Year</InputLabel>
+          <InputLabel htmlFor="year-simple-required">Year</InputLabel>
           <Select
             native
             value={this.state.year}
