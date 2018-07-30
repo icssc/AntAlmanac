@@ -3,7 +3,7 @@ import Paper from '@material-ui/core/Paper'
 import CourseExpansionPanel from "./CourseExpansionPanel";
 import data from './sample_course_data.json';
 
-console.log(data.departments[0].courses);
+// console.log(data.departments[0].courses);
 
 class CoursePane extends Component {
     constructor(props) {

@@ -1,47 +1,32 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Input from '@material-ui/core/Input';
+import React, {Component} from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
-const styles = theme => ({
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  formControl: {
-    margin: theme.spacing.unit,
-    minWidth:400 ,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing.unit * 2,
-  },
-});
+class TermSelector extends Component {
+    constructor(props) {
+        super(props);
 
-class TermSelector extends React.Component {
-  state = {
-      term: '',
-    };
+        this.state = {
+            term: '2018-92',
+        };
 
-  handleChange = name => event => {
-    this.setState({ [name]: event.target.value });
+        this.handleChange = this.handleChange.bind(this);
+    }
+
+  handleChange(event) {
+      this.setState({ [event.target.name]: event.target.value });
   };
 
   render() {
-    const { classes } = this.props;
-
     return (
-      <div className={classes.root}>
-        <FormControl required className={classes.formControl}>
-        <InputLabel htmlFor="term-auto-width">Please select term</InputLabel>
+       <FormControl>
+           <InputLabel htmlFor="term-select">ijk</InputLabel>
           <Select
-            value={this.state.age}
+            value={this.state.term}
             onChange={this.handleChange}
-            input={<Input name="term" id="term-auto-width" />}
+            inputProps={{name:"term", id:"term-select"}}
             autoWidth
           >
             <MenuItem value={"2018-92"}>2018  Fall Quarter</MenuItem>
@@ -87,15 +72,9 @@ class TermSelector extends React.Component {
   			    <MenuItem value={"2013-14"}>2013  Spring Quarter</MenuItem>
   			    <MenuItem value={"2013-03"}>2013  Winter Quarter</MenuItem>
           </Select>
-          <FormHelperText>Required</FormHelperText>
-        </FormControl>
-      </div>
+       </FormControl>
     );
   }
 }
 
-TermSelector.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(TermSelector);
+export default TermSelector;

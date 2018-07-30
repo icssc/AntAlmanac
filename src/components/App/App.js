@@ -1,17 +1,21 @@
 import React, { Component } from 'react';
-import SearchBar from "../SearchForm/SearchBar/SearchBar";
-import CourseExpansionPanel from "../CoursePane/CourseExpansionPanel";
-import SectionTable from "../CoursePane/SectionTable";
+import { Fragment } from 'react';
+import DeptSearchBar from "../SearchForm/DeptSearchBar/DeptSearchBar";
+import GESelector from "../SearchForm/GESelector/geselector";
+import TermSelector from "../SearchForm/TermSelector"
 import CoursePane from "../CoursePane/CoursePane";
 
 class App extends Component {
-  render() {
-    return (
-        <div><SearchBar />
-            <CoursePane /></div>
-
-    );
-  }
+    render() {
+        return (
+            <Fragment>
+                <DeptSearchBar />
+                <GESelector />
+                <TermSelector />
+                <CoursePane/>
+            </Fragment >
+        );
+    }
 }
 
 export default App;
