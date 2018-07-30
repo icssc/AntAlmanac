@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Fragment } from 'react';
 import DeptSearchBar from "../SearchForm/DeptSearchBar/DeptSearchBar";
-import GESelector from "../SearchForm/GESelector/geselector";
+import GESelector from "../SearchForm/GESelector/GESelector";
 import TermSelector from "../SearchForm/TermSelector"
 import CoursePane from "../CoursePane/CoursePane";
 

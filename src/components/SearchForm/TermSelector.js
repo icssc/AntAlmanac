@@ -22,7 +22,7 @@ class TermSelector extends Component {
   render() {
     return (
        <FormControl>
-           <InputLabel htmlFor="term-select">ijk</InputLabel>
+           <InputLabel htmlFor="term-select">Term</InputLabel>
           <Select
             value={this.state.term}
             onChange={this.handleChange}
