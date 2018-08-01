@@ -21,7 +21,8 @@ class GESelector extends Component {
 
     render() {
         return (
-            <FormControl style={{minWidth: 300}}> //Temporary CSS
+            {/* Temporary CSS */}
+            <FormControl style={{minWidth: 300}}>
                 <InputLabel htmlFor='ge-select'>General Education</InputLabel>
                 <Select
                     value={this.state.ge}
