@@ -11,7 +11,7 @@ function getModalStyle() {
   return {
     width: 800,
     height: 800,
-    margin: auto,
+    top: 50
     transform: `translate(-50, -50)`,
   };
 }
