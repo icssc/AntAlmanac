@@ -9,8 +9,9 @@ import FetchGraph from './FetchGraph'
 
 function getModalStyle() {
   return {
-    top: 50,
-    left: 50,
+    width: 800,
+    height: 800,
+    margin: auto,
     transform: `translate(-50, -50)`,
   };
 }
@@ -53,11 +54,9 @@ class AlmanacGraph extends React.Component {
         >
           <div style={getModalStyle()} className={classes.paper}>
             <Typography variant="title" id="modal-title">
-              Text in a modal
+              This should be the graph for ICS 31
             </Typography>
-            <Typography variant="subheading" id="simple-modal-description">
-              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </Typography>
+            <img src= {FetchGraph('w','18','36050')}/>
             <AlmanacGraphWrapped />
           </div>
         </Modal>
