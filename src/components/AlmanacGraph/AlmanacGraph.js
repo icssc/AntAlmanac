@@ -5,7 +5,6 @@ import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
 import availableQuarters from './availableQuarters.json'
-import FetchGraph from './FetchGraph'
 
 const https = require('https');
 var url_base = "https://www.ics.uci.edu/~rang1/";
