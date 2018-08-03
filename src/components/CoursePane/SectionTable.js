@@ -32,7 +32,6 @@ class SectionTable extends Component {
                             <TableCell>Instructors</TableCell>
                             <TableCell>Time</TableCell>
                             <TableCell>Place</TableCell>
-                            <TableCell>Final</TableCell>
                             <TableCell>Max</TableCell>
                             <TableCell>Enr</TableCell>
                             <TableCell>WL</TableCell>
@@ -52,7 +51,6 @@ class SectionTable extends Component {
                                     <TableCell>{SectionTable.withLinebreak(section.instructors)}</TableCell>
                                     <TableCell>{SectionTable.withLinebreak(section.meetings.map(meeting => meeting[0]))}</TableCell>
                                     <TableCell>{SectionTable.withLinebreak(section.meetings.map(meeting => meeting[1]))}</TableCell>
-                                    <TableCell>{section.finalExam}</TableCell>
                                     <TableCell>{section.maxCapacity}</TableCell>
                                     <TableCell>{section.numCurrentlyEnrolled[0]}</TableCell>
                                     <TableCell>{section.numOnWaitlist}</TableCell>

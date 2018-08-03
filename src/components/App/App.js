@@ -4,6 +4,7 @@ import DeptSearchBar from "../SearchForm/DeptSearchBar/DeptSearchBar";
 import GESelector from "../SearchForm/GESelector/GESelector";
 import TermSelector from "../SearchForm/TermSelector"
 import CoursePane from "../CoursePane/CoursePane";
+import Calendar from "../Calendar/Calendar";
 
 class App extends Component {
     render() {
@@ -12,7 +13,7 @@ class App extends Component {
                 <DeptSearchBar />
                 <GESelector />
                 <TermSelector />
-                <CoursePane/>
+                <Calendar/>
             </Fragment >
         );
     }
