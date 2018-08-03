@@ -14,6 +14,7 @@ function getModalStyle() {
     width: 800,
     height: 800,
     top: 50,
+    left: 50,
     transform: `translate(-50, -50)`,
   };
 }
@@ -58,8 +59,7 @@ class AlmanacGraph extends React.Component {
             <Typography variant="title" id="modal-title">
               This should be the graph for ICS 31
             </Typography>
-            {/*<img src=  {temp}/>*/}
-            <AlmanacGraphWrapped />
+            <img src=  {temp}/>
           </div>
         </Modal>
       </div>
@@ -72,6 +72,6 @@ AlmanacGraph.propTypes = {
 };
 
 // We need an intermediary variable for handling the recursive nesting.
-const AlmanacGraphWrapped = withStyles(styles)(AlmanacGraph);
+const AlmanacGraph = withStyles(styles)(AlmanacGraph);
 
-export default AlmanacGraphWrapped;
+export default AlmanacGraph;
