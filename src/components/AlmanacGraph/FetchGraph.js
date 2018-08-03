@@ -1,5 +1,5 @@
 const https = require('https');
-var url_base = "https://www.ics.uci.edu/~rang1/w18/02350.txt";
+var url_base = "https://www.ics.uci.edu/~rang1/";
 
 function FetchGraph(quarter, year, code){
   var graph_url = url_base + quarter + year + '/' + code + '.txt';
