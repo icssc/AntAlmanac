@@ -58,8 +58,7 @@ class AlmanacGraph extends React.Component {
             <Typography variant="title" id="modal-title">
               This should be the graph for ICS 31
             </Typography>
-            <img src=  {FetchGraph('w','18','36050')}/>
-            <img src=  {temp}/>
+            {/*<img src=  {temp}/>*/}
             <AlmanacGraphWrapped />
           </div>
         </Modal>
