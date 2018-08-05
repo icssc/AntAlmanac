@@ -21,13 +21,12 @@ class TermSelector extends Component {
 
   render() {
     return (
-       <FormControl>
+       <FormControl fullWidth>
            <InputLabel htmlFor="term-select">Term</InputLabel>
           <Select
             value={this.state.term}
             onChange={this.handleChange}
             inputProps={{name:"term", id:"term-select"}}
-            autoWidth
           >
             <MenuItem value={"2018-92"}>2018  Fall Quarter</MenuItem>
   			    <MenuItem value={"2018-76"}>2018  Summer Session 2</MenuItem>
