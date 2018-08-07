@@ -10,11 +10,20 @@ class Calendar extends Component {
         super(props);
         this.state = {
             events: [{
+                color: '#4a6591',
                 start: new Date(2018, 0, 1, 8),
                 end: new Date(2018, 0, 1, 8, 50),
                 title: "ICS 33"
             }]
         }
+    }
+
+    static eventStyleGetter(event, start, end, isSelected) {
+        return {
+            style: {
+                backgroundColor: event.color,
+            }
+        };
     }
 
     render() {
@@ -34,6 +43,7 @@ class Calendar extends Component {
                 min={new Date(2018, 0, 1, 8)}
                 max={new Date(2018, 0, 1, 22)}
                 events={this.state.events}
+                eventPropGetter={Calendar.eventStyleGetter}
             />
         )
     }
