@@ -21,7 +21,7 @@ class Calendar extends Component {
     static eventStyleGetter(event, start, end, isSelected) {
         return {
             style: {
-                backgroundColor: event.color,
+                backgroundColor: event.color
             }
         };
     }

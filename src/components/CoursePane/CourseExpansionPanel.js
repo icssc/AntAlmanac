@@ -20,7 +20,7 @@ class CourseExpansionPanel extends Component {
                     <Typography>{name[0]} {name[1]}</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
-                    <SectionTable sectionInfo={this.props.courseData.sections}/>
+                    <SectionTable courseData={this.props.courseData}/>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
         );
