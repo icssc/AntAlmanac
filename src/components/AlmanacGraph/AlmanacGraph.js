@@ -32,7 +32,7 @@ function FetchGraph(quarter, year, code){
 function getModalStyle() {
   return {
     width: 800,
-    height: 800,
+    height: 600,
     top: 50,
     left: 50,
     transform: `translate(-50, -50)`,
