@@ -16,7 +16,8 @@ class GESelector extends Component {
     }
 
     handleChange(event) {
-        this.setState({ [event.target.name]: event.target.value });
+        this.setState({[event.target.name]: event.target.value});
+        this.props.setGE(event.target.value);
     };
 
     render() {

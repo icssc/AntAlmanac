@@ -22,6 +22,7 @@ class DeptSearchBar extends Component {
             <MuiDownshift
                 items={this.state.filteredItems}
                 onStateChange={this.handleStateChange}
+                onChange={this.props.setDept}
                 getInputProps={() => ({     // Downshift requires this syntax to pass down these props to the text field
                     label: 'Department',
                     required: true,
