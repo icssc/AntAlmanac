@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import Paper from '@material-ui/core/Paper'
 import CourseExpansionPanel from "./CourseExpansionPanel";
 // import data from './sample_course_data.json';
@@ -9,8 +9,8 @@ class CoursePane extends Component {
         this.state = {courseData: null, loaded: false};
     }
 
-    renderCoursePane() {
-
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        return this.state !== nextState || nextProps.formData !== this.props.formData;
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -31,11 +31,11 @@ class CoursePane extends Component {
 
     render() {
         return (
-            <Paper>
-                {this.state.loaded && this.state.courseData.map((course) => {
-                    return (<CourseExpansionPanel key={course.name} courseData={course}/>)
+            <Fragment>
+                {this.state.loaded && this.state.courseData.map((course, index) => {
+                    return (<CourseExpansionPanel handleAddClass={this.props.handleAddClass} key={index} courseData={course}/>)
                 })}
-            </Paper>
+            </Fragment>
         );
     }
 }

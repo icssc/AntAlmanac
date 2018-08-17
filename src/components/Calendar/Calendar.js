@@ -32,10 +32,11 @@ class Calendar extends Component {
                 step={15}
                 timeslots={2}
                 defaultDate={new Date(2018, 0, 1)}
-                min={new Date(2018, 0, 1, 8)}
-                max={new Date(2018, 0, 1, 22)}
-                events={this.props.classesInCalendar}
+                min={new Date(2018, 0, 1, 7)}
+                max={new Date(2018, 0, 1, 23)}
+                events={this.props.classEventsInCalendar}
                 eventPropGetter={Calendar.eventStyleGetter}
+                onSelectEvent={event => this.props.onClassDelete(event.title)}
             />
         )
     }

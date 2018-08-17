@@ -7,10 +7,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SectionTable from "./SectionTable";
 
 class CourseExpansionPanel extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         const name = this.props.courseData.name;
 
@@ -20,7 +16,7 @@ class CourseExpansionPanel extends Component {
                     <Typography>{name[0]} {name[1]}</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
-                    <SectionTable courseData={this.props.courseData}/>
+                    <SectionTable handleAddClass={this.props.handleAddClass} courseData={this.props.courseData}/>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
         );

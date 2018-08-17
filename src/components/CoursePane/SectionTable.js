@@ -22,49 +22,52 @@ class SectionTable extends Component {
         const sectionInfo = this.props.courseData.sections;
 
         return (
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell padding='none'>Add</TableCell>
-                            <TableCell padding='none'>Code</TableCell>
-                            <TableCell padding='none'>Type</TableCell>
-                            <TableCell padding='none'>Sec</TableCell>
-                            <TableCell padding='none'>Units</TableCell>
-                            <TableCell padding='none'>Instructors</TableCell>
-                            <TableCell padding='none'>Time</TableCell>
-                            <TableCell padding='none'>Place</TableCell>
-                            <TableCell padding='none'>Max</TableCell>
-                            <TableCell padding='none'>Restr</TableCell>
-                            <TableCell padding='none'>Status</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {sectionInfo.map((section) => {
-                            return (
-                                <TableRow key={section.classCode}>
-                                    <TableCell padding='none'>
-                                        <IconButton aria-label="Add Class"><AddCircle/></IconButton>
-                                    </TableCell>
-                                    <TableCell padding='none'>{section.classCode}</TableCell>
-                                    <TableCell padding='none'>{section.classType}</TableCell>
-                                    <TableCell padding='none'>{section.sectionCode}</TableCell>
-                                    <TableCell padding='none'>{section.units}</TableCell>
-                                    <TableCell padding='none'>{SectionTable.withLinebreak(section.instructors)}</TableCell>
-                                    <TableCell padding='none'>{SectionTable.withLinebreak(section.meetings.map(meeting => meeting[0]))}</TableCell>
-                                    <TableCell padding='none'>{SectionTable.withLinebreak(section.meetings.map(meeting => meeting[1]))}</TableCell>
-                                    <TableCell padding='none'><p>
-                                        {section.numCurrentlyEnrolled[0]}/{section.maxCapacity}<br/>
-                                        WL: {section.numOnWaitlist}<br/>
-                                        NOR: {section.numNewOnlyReserved}
-                                        </p>
-                                    </TableCell>
-                                    <TableCell padding='none'>{section.restrictions}</TableCell>
-                                    <TableCell padding='none'>{section.status}</TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
+            <Table padding='none'>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>{}</TableCell>
+                        <TableCell>Code</TableCell>
+                        <TableCell>Type</TableCell>
+                        <TableCell>Sec</TableCell>
+                        <TableCell>Units</TableCell>
+                        <TableCell>Instructors</TableCell>
+                        <TableCell>Time</TableCell>
+                        <TableCell>Place</TableCell>
+                        <TableCell>Enrollment</TableCell>
+                        <TableCell>Restr</TableCell>
+                        <TableCell>Status</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {sectionInfo.map((section) => {
+                        return (
+                            <TableRow key={section.classCode}>
+                                <TableCell>
+                                    <IconButton aria-label="Add Class"
+                                                onClick={() => this.props.handleAddClass(section, this.props.courseData.name)}><AddCircle/></IconButton>
+                                </TableCell>
+                                <TableCell>{section.classCode}</TableCell>
+                                <TableCell>{section.classType}</TableCell>
+                                <TableCell>{section.sectionCode}</TableCell>
+                                <TableCell>{section.units}</TableCell>
+                                <TableCell>{SectionTable.withLinebreak(section.instructors)}</TableCell>
+                                <TableCell
+                                   >{SectionTable.withLinebreak(section.meetings.map(meeting => meeting[0]))}</TableCell>
+                                <TableCell
+                                   >{SectionTable.withLinebreak(section.meetings.map(meeting => meeting[1]))}</TableCell>
+                                <TableCell><p>
+                                    {section.numCurrentlyEnrolled[0]}/{section.maxCapacity}<br/>
+                                    WL: {section.numOnWaitlist}<br/>
+                                    NOR: {section.numNewOnlyReserved}
+                                </p>
+                                </TableCell>
+                                <TableCell>{section.restrictions}</TableCell>
+                                <TableCell>{section.status}</TableCell>
+                            </TableRow>
+                        );
+                    })}
+                </TableBody>
+            </Table>
         );
     }
 }
