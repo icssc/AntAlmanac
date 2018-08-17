@@ -6,6 +6,7 @@ import SearchForm from "../SearchForm/SearchForm";
 import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
 import Paper from "@material-ui/core/Paper";
+import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 
 class App extends Component {
     constructor(props) {
@@ -37,6 +38,7 @@ class App extends Component {
                 <CssBaseline/>
                 <Grid container>
                     <Grid item lg={12}>
+                        <AlmanacGraphWrapped />
                         <SearchForm updateFormData={this.updateFormData}/>
                     </Grid>
                     <Grid item lg={6}>
