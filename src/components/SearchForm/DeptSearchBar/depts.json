@@ -123,8 +123,8 @@
   {"value": "ROTC", "label": "ROTC : Reserve Officers' Training Corps"}, 
   {"value": "RUSSIAN", "label": "RUSSIAN : Russian"}, 
   {"value": "SOC SCI", "label": "SOC SCI : Social Science"}, 
-  {"value": "SOCECOL", "label": "SOCECOL : Social Ecology"}, {
-  "value": "SOCIOL", "label": "SOCIOL : Sociology"}, 
+  {"value": "SOCECOL", "label": "SOCECOL : Social Ecology"}, 
+  {"value": "SOCIOL", "label": "SOCIOL : Sociology"}, 
   {"value": "SPANISH", "label": "SPANISH : Spanish"}, 
   {"value": "SPPS", "label": "SPPS : Social Policy & Public Service (started 2016 Wtr)"}, 
   {"value": "STATS", "label": "STATS : Statistics"}, 
