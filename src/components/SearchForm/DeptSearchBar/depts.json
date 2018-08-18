@@ -100,7 +100,7 @@
   {"label": "OB/GYN : Obstetrics and Gynecology", "value": "OB/GYN"}, 
   {"label": "OPHTHAL : Ophthalmology", "value": "OPHTHAL"}, 
   {"label": "PATH : Pathology and Laboratory Medicine", "value": "PATH"}, 
-  {"label": "PED GEN : Pediatrics Genetics", "value": "PED GEN"}
+  {"label": "PED GEN : Pediatrics Genetics", "value": "PED GEN"},
   {"label": "PEDS : Pediatrics", "value": "PEDS"}, 
   {"label": "PERSIAN : Persian", "value": "PERSIAN"},
   {"label": "PHARM : Medical Pharmacology", "value": "PHARM"}, 
