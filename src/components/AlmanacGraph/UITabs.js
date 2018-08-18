@@ -88,8 +88,7 @@ class CustomizedTabs extends React.Component {
       
     })
   }
-
-
+ 
   render() {
     const { classes } = this.props;
     const { value } = this.state;
@@ -117,9 +116,7 @@ class CustomizedTabs extends React.Component {
             label="Winter 18"
           />
         </Tabs>
-        <div  style={getModalStyle()}>
-        <embed type="image/svg+xml" src={this.state.x}/>
-        </div>
+        <div style={getModalStyle()} dangerouslySetInnerHTML={{__html: this.state.x}} />.
       </div>
     );
   }
