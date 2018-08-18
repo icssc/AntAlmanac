@@ -1,4 +1,4 @@
-let url_base = "http://summer18.herokuapp.com/";
+let url_base = "https://summer18.herokuapp.com/";
 
 // AJAX
 //@param callback is a function to pass the url after ready state avaliable
