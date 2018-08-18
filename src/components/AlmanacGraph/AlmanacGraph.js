@@ -8,7 +8,6 @@ import availableQuarters from './availableQuarters.json'
 //----------------------------------
 // imports for rendering the graph
 import SimpleTab from './UITabs'
-import {getGraph} from './FetchGraph' 
 //---------------------------------
 
 const styles = theme => ({
@@ -61,23 +60,3 @@ AlmanacGraph.propTypes = {
 // We need an intermediary variable for handling the recursive nesting.
 const AlmanacGraphWrapped = withStyles(styles)(AlmanacGraph);
 export default AlmanacGraphWrapped;
-
-/**
- * manuel tabs 
- *  <Tabs defaultIndex={1}>
-            <TabList>
-                <Tab>2018</Tab>
-                <Tab>2017</Tab>
-            </TabList>
-            <TabPanel>
-              <div style={getModalStyle()} className={classes.paper}>
-               <img src = {this.state.x}/>
-             </div> 
-          </TabPanel>
-
-            <TabPanel> <div style={getModalStyle()} className={classes.paper}>
-               <img src = {this.state.x}/>
-             </div> 
-             </TabPanel>
-          </Tabs>
- */
