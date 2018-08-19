@@ -7,7 +7,7 @@ import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
 import Paper from "@material-ui/core/Paper";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
-import LoginBtn from "../LoginButton/LButton";
+import LoginBtn from "../LogInButton/LButton";
 import Popup from "../CustomEvents/Popup/Popup";
 
 import {
