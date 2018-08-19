@@ -7,7 +7,8 @@ import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
 import Paper from "@material-ui/core/Paper";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
-import Popup from "../Popup/Popup"; 
+import LoginBtn from "../LoginButton/LButton";
+import Popup from "../CustomEvents/Popup/Popup";
 
 import {
     red,
@@ -118,6 +119,13 @@ class App extends Component {
         return (
             <Fragment>
                 <CssBaseline/>
+                {/*temporary placement*/}
+                <LoginBtn
+                  onName={this.handleName}
+                  value={this.state.nName}
+                  onSubmit={this.handleSubmit}
+                  onPopup={this.handlePopup}
+                />
                 <Grid container>
                     <Grid item lg={12}>
                         <AlmanacGraphWrapped />
