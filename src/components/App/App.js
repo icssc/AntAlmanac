@@ -49,7 +49,7 @@ class App extends Component {
             <AddCalBtn />
           </Grid>
         </Grid>
-        */>
+        */}
         <DeptSearchBar />
         <GESelector />
         <TermSelector />
