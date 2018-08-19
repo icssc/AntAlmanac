@@ -14,6 +14,8 @@ import Grid from "@material-ui/core/Grid";
 import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
 import LoginBtn from "../LoginButton/LButton";
+import Popup from "../Popup/Popup";
+
 
 class App extends Component {
   state = {
@@ -34,6 +36,7 @@ class App extends Component {
           onSubmit={this.handleSubmit}
           onPopup={this.handlePopup}
         />
+      <Popup />
         <Grid container>
           <Grid item lg={4}>
             <h5>Start</h5>
