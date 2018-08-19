@@ -7,6 +7,7 @@ import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
 import Paper from "@material-ui/core/Paper";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
+import Popup from "../Popup/Popup"; 
 
 import {
     red,
@@ -120,6 +121,8 @@ class App extends Component {
                 <Grid container>
                     <Grid item lg={12}>
                         <AlmanacGraphWrapped />
+                        {/* temporary placement */}
+                        <Popup />
                         <SearchForm updateFormData={this.updateFormData}/>
                     </Grid>
                     <Grid item lg={6} xs={12}>
