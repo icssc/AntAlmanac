@@ -37,7 +37,9 @@ class App extends Component {
           onPopup={this.handlePopup}
         />
       <Popup />
-        <Grid container>
+        
+	{/*
+	<Grid container>
           <Grid item lg={4}>
             <h5>Start</h5>
             <DropdownMenu />
@@ -47,7 +49,7 @@ class App extends Component {
             <AddCalBtn />
           </Grid>
         </Grid>
-        
+        */>
         <DeptSearchBar />
         <GESelector />
         <TermSelector />
