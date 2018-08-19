@@ -63,7 +63,6 @@ class SimpleSelect extends React.Component {
             <MenuItem value={11}>11</MenuItem>
             <MenuItem value={12}>12</MenuItem>
           </Select>
-          <FormHelperText>hello</FormHelperText>
         </FormControl>
 
         <FormControl className={classes.formControl}>
