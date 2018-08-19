@@ -47,7 +47,7 @@ class App extends Component {
             <AddCalBtn />
           </Grid>
         </Grid>
-        <AlmanacGraphWrapped />
+        
         <DeptSearchBar />
         <GESelector />
         <TermSelector />
