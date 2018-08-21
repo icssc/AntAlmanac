@@ -16,17 +16,18 @@ class GESelector extends Component {
     }
 
     handleChange(event) {
-        this.setState({ [event.target.name]: event.target.value });
+        this.setState({[event.target.name]: event.target.value});
+        this.props.setGE(event.target.value);
     };
 
     render() {
         return (
-            <FormControl style={{minWidth: 300}/* Temporary CSS */}>
+            <FormControl fullWidth>
                 <InputLabel htmlFor='ge-select'>General Education</InputLabel>
                 <Select
                     value={this.state.ge}
                     onChange={this.handleChange}
-                    inputProps={{name:'ge', id:'ge-select'}}
+                    inputProps={{name:'ge', id:'ge-select', fullWidth:true}}
                 >
                     <MenuItem value={'ANY'}>All: Do not filter for GE</MenuItem>
                     <MenuItem value={'GE-1A'}>GE Ia (1a): Lower Division Writing</MenuItem>

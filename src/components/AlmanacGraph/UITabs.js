@@ -3,20 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
 import {getGraph} from './FetchGraph'
-
-function getModalStyle() {
-    return {
-      position: "center",
-      margin: [0, "auto"] ,
-      width: "50%",
-      height: "80%",
-      top: 50,
-      backgroundColor: "white",
-      borderRadius: "none"
-    };
-  }
   
 const styles = theme => ({
   root: {
@@ -25,6 +12,7 @@ const styles = theme => ({
   },
   tabsRoot: {
     borderBottom: '1px solid #e8e8e8',
+    maxHeight:'5vh'
   },
   tabsIndicator: {
     backgroundColor: '#1890ff',
@@ -47,9 +35,9 @@ const styles = theme => ({
       '"Segoe UI Symbol"',
     ].join(','),
     '&:hover': {
-      backgroundColor:'#555',
       color: '#40a9ff',
       opacity: 1,
+      width:"1"
     },
     '&$tabSelected': {
       color: '#1890ff',
@@ -81,20 +69,34 @@ class CustomizedTabs extends React.Component {
   handleChange = (event, value) => {
     this.setState({ value });
   };
-  // will the graph from the call back function in Fetch Graph.js
-  componentDidMount(){
-    // create an object x and add it to the state
-    getGraph( (x) => {this.setState({x});} )
-  }
 
+  // will get the graph src from the call back function in Fetch Graph.js
+  componentDidMount()
+  {
+      // create an object x and add it to the state
+      getGraph('w','18','36050',(x) => {
+      this.setState({x});
+      
+    })
+  }
+ 
 
   render() {
     const { classes } = this.props;
     const { value } = this.state;
-
+   
+    const style = {
+      margin: 'auto',
+      padding:'0',
+      width: "73%",
+      height:'90%',
+      top: 50
+     }
     return (
-      <div className={classes.root}>
+      <div  style={{margin: 'auto', width:"90%",maxHeight: '90vh', overflow: 'auto',}} className={classes.root} >
         <Tabs
+          centered="True"
+          fullWidth="True"
           value={value}
           onChange={this.handleChange}
           classes={{ root: classes.tabsRoot, indicator: classes.tabsIndicator }}
@@ -115,9 +117,9 @@ class CustomizedTabs extends React.Component {
             label="Winter 18"
           />
         </Tabs>
-        <div  style={getModalStyle()}>
-        <img src = {this.state.x}/>
-        </div>
+    
+          <div style={style} dangerouslySetInnerHTML={{__html: this.state.x}} />.
+        
       </div>
     );
   }
