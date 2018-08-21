@@ -9,6 +9,7 @@ import Paper from "@material-ui/core/Paper";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import LoginBtn from "../LogInButton/LButton";
 import Popup from "../CustomEvents/Popup/Popup";
+import {customEvent} from '../CustomEvents/EventObject'
 
 import {
     red,
@@ -31,7 +32,7 @@ class App extends Component {
         super(props);
         this.state = {
             formData: null,
-            classEventsInCalendar: [],
+            classEventsInCalendar: [].concat(customEvent()),
             arrayOfColors: [
                 red[500], pink[500],
                 purple[500], indigo[500],
@@ -101,7 +102,6 @@ class App extends Component {
                                 start: new Date(2018, 0, index + 1, start, startMin),
                                 end: new Date(2018, 0, index + 1, end, endMin)
                             };
-
                             newClasses.push(newClass);
                         }
                     });

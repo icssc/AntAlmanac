@@ -33,13 +33,13 @@ class AlmanacGraph extends React.Component {
   handleClose = () => {
     this.setState({ open: false });
   };
-  
+ 
+
   render() {
     const { classes } = this.props;
     return (
         <React.Fragment>
-            <Typography gutterBottom>Click to see graph in a modal!</Typography>
-            <Button onClick={this.handleOpen}>Open Modal</Button>
+            <Button onClick={this.handleOpen}>Graph</Button>
           
             <Modal
               aria-labelledby="simple-modal-title"

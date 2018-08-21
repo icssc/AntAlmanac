@@ -4,17 +4,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import {getGraph} from './FetchGraph'
-
-function getModalStyle() {
-    return {
-      margin: 'auto',
-      width: "50%",
-      height: "80%",
-      top: 50,
-      backgroundColor: "white",
-      borderRadius: "none"
-    };
-  }
   
 const styles = theme => ({
   root: {
@@ -23,6 +12,7 @@ const styles = theme => ({
   },
   tabsRoot: {
     borderBottom: '1px solid #e8e8e8',
+    maxHeight:'5vh'
   },
   tabsIndicator: {
     backgroundColor: '#1890ff',
@@ -47,6 +37,7 @@ const styles = theme => ({
     '&:hover': {
       color: '#40a9ff',
       opacity: 1,
+      width:"1"
     },
     '&$tabSelected': {
       color: '#1890ff',
@@ -89,13 +80,23 @@ class CustomizedTabs extends React.Component {
     })
   }
  
+
   render() {
     const { classes } = this.props;
     const { value } = this.state;
-
+   
+    const style = {
+      margin: 'auto',
+      padding:'0',
+      width: "73%",
+      height:'90%',
+      top: 50
+     }
     return (
-      <div className={classes.root}>
+      <div  style={{margin: 'auto', width:"90%",maxHeight: '90vh', overflow: 'auto',}} className={classes.root} >
         <Tabs
+          centered="True"
+          fullWidth="True"
           value={value}
           onChange={this.handleChange}
           classes={{ root: classes.tabsRoot, indicator: classes.tabsIndicator }}
@@ -116,7 +117,9 @@ class CustomizedTabs extends React.Component {
             label="Winter 18"
           />
         </Tabs>
-        <div style={getModalStyle()} dangerouslySetInnerHTML={{__html: this.state.x}} />.
+    
+          <div style={style} dangerouslySetInnerHTML={{__html: this.state.x}} />.
+        
       </div>
     );
   }

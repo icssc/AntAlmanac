@@ -1,5 +1,4 @@
 import React from 'react';
-import EventName from "../EventName/EventName";
 import DaySelector from "../DaySelector/DaySelector";
 import DropdownMenu from "../DropdownMenu/DropdownMenu";
 import PropTypes from 'prop-types';
@@ -9,6 +8,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import AddIcon from '@material-ui/icons/Add';
+import EventName from '../EventName/EventName'
 
 const styles = theme => ({
   container: {
@@ -21,40 +22,74 @@ const styles = theme => ({
   },
 });
 
+export const customEvent = () => {
+  return( {
+    color: 'blue',
+    title: "title",
+    start: new Date(2018, 0, 3, 8, 3),
+    end: new Date(2018, 0, 3, 9, 44)
+  })
+};
+
 class DialogSelect extends React.Component {
-  state = {
-    open: false,
-    hour: '',
-    minute: '',
-    meridiem: ''
-  };
+  constructor()
+  {
+    super();
+    this.state = {
+      open: false,
+      calender: {hour: '', minute: '', meridiem: '',eventName:'Custom'}
+    };
+    this.handleChange = this.handleChange.bind(this);
+    this.onClick = this.onClick.bind(this);
+}
 
-  handleChange = event => {
+handleChange = e => {
+  let eventName = this.state.calender.eventName;
+  this.setState({ eventName:e.target.value });
+ 
+}
+
+  handleChangeList = event => {
     this.setState({ [event.target.value]: Number(event.target.value) });
+    this.setState({ eventName: event.target.value });
   };
 
-  handleClickOpen = () => {
-    this.setState({ open: true });
+  openCloseHandle = () => {
+    const open = !this.state.open;
+    this.setState({ open });
   };
 
-  handleClose = () => {
-    this.setState({ open: false });
-  };
-
+  onClick() {
+    console.log(this.state,"state:");
+    console.log(this.props,"props:");
+}
   render() {
+    const style =
+    {
+      position: 'fixed',
+      zIndex: '10',
+      opacity: '0.9',
+      margin: '15px',
+      width: "9%",
+      height: "15",
+      backgroundColor: "#42d9f4",
+      borderRadius:'24%',
+      color:'yellow',
+    };
     const { classes } = this.props;
 
     return (
       <div>
-        <Button onClick={this.handleClickOpen} variant="contained" color="primary">Add Custom Event</Button>
+        <Button style={style} onClick={this.openCloseHandle} variant="contained" ><AddIcon/>Event</Button>
         <Dialog
           disableBackdropClick
           disableEscapeKeyDown
           open={this.state.open}
-          onClose={this.handleClose}
-        >
+          onClose={this.openCloseHandle}>  
           <DialogContent>
-            <EventName/>
+
+            <EventName value={this.state.eventName} onChange={this.props.handleChange}/>
+            
             <h5>Start:</h5>
             <DropdownMenu/>
             <h5>End:</h5>
@@ -63,10 +98,10 @@ class DialogSelect extends React.Component {
           </DialogContent>
 
           <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
+            <Button onClick={this.openCloseHandle} color="primary">
               Cancel
             </Button>
-            <Button onClick={this.handleClose} variant="contained" color="primary">
+            <Button onClick={this.onClick} variant="contained" color="primary">
               Add to Calendar
             </Button>
           </DialogActions>
