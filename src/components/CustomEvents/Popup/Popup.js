@@ -1,13 +1,12 @@
 import React from 'react';
 import DaySelector from "../DaySelector/DaySelector";
-import DropdownMenu from "../DropdownMenu/DropdownMenu";
+import TimePickers from "../DropdownMenu/DropdownMenu";
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import AddIcon from '@material-ui/icons/Add';
 import EventName from '../EventName/EventName'
 
@@ -90,8 +89,8 @@ handleChange = e => {
 
             <EventName value={this.state.eventName} onChange={this.props.handleChange}/>
             
-            <DropdownMenu label="Start Time"/>
-            <DropdownMenu label="End Time"/>
+            <TimePickers label="Start Time"/>
+            <TimePickers label="End Time"/>
             <DaySelector/>
           </DialogContent>
 

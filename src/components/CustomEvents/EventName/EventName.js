@@ -1,63 +1,63 @@
-import React from 'react';
-import classNames from 'classnames';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import TextField from '@material-ui/core/TextField';
 import CalendarToday from "@material-ui/icons/CalendarToday";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles, MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import blue from '@material-ui/core/colors/blue';
 
 const styles = theme => ({
-  root: {
+  
+  container: {
     display: 'flex',
     flexWrap: 'wrap',
   },
   margin: {
     margin: theme.spacing.unit,
   },
-  withoutLabel: {
-    marginTop: theme.spacing.unit * 3,
+  cssLabel: {
+    '&$cssFocused': {
+      color: blue[900],
+    },
   },
-  textField: {
-    flexBasis: 200,
+  cssFocused: {},
+  cssUnderline: {
+    '&:after': {
+      borderBottomColor: blue[900],
+    },
   },
 });
 
-class EventName extends React.Component {
- constructor(props){
-     super(props);
-  
-    }
-  handleChange = (event) => {
-    const val =  event.target.value            
-      //  this.setState((state) => state.person[event.target.name] = newValue);
-      this.setState({value:val});
-    console.log(event.target.value,"from TEXTFIELD");
-    console.log(this.props,"PROPS");
-  };
+function CustomizedInputs(props) {
+  const { classes } = props;
 
-  render() {
-    const { classes } = this.props;
-    return (
-      <div className={classes.root}>
-        <TextField
-          value ={this.props.value}
-          onChange={this.handleChange.bind(this)}
-          placeholder="Event Name"
-          id="simple-start-adornment"
-          className={classNames(classes.margin, classes.textField)}
-          InputProps=
-                    {{ startAdornment: <InputAdornment position="start">
-                        <CalendarToday/>
-                        </InputAdornment>,
-                    }}
-        />   
-      </div>
-    );
-  }
+  return (
+    <div className={classes.container}>
+    
+      <FormControl className={classes.margin}>
+        <InputLabel
+          FormLabelClasses={{
+            root: classes.cssLabel,
+            focused: classes.cssFocused,
+          }}
+          htmlFor="Event-Name-input">
+          
+         <CalendarToday/> Event Name:
+        </InputLabel>
+        <Input
+          classes={{
+            underline: classes.cssUnderline,
+          }}
+          id="Event-Name-input"
+        />
+      </FormControl>     
+    </div>
+  );
 }
 
-EventName.propTypes = {
+CustomizedInputs.propTypes = {
   classes: PropTypes.object.isRequired,
 };
-
-export default withStyles(styles)(EventName);
+export default withStyles(styles)(CustomizedInputs);
