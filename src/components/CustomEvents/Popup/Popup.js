@@ -90,10 +90,8 @@ handleChange = e => {
 
             <EventName value={this.state.eventName} onChange={this.props.handleChange}/>
             
-            <h5>Start:</h5>
-            <DropdownMenu/>
-            <h5>End:</h5>
-            <DropdownMenu/>
+            <DropdownMenu label="Start Time"/>
+            <DropdownMenu label="End Time"/>
             <DaySelector/>
           </DialogContent>
 
