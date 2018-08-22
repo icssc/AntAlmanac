@@ -88,7 +88,7 @@ class CustomizedTabs extends React.Component {
     const style = {
       margin: 'auto',
       padding:'0',
-      width: "73%",
+      width: "100%",
       height:'90%',
       top: 50
      }
