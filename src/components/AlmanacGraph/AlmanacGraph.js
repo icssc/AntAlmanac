@@ -6,15 +6,9 @@ import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
 import availableQuarters from './availableQuarters.json'
 //----------------------------------
-<<<<<<< HEAD
-import SimpleTab from './UITabs'
-import {getGraph} from './FetchGraph'
-=======
 // imports for rendering the graph
 import SimpleTab from './UITabs'
->>>>>>> react
 //---------------------------------
-
 const styles = theme => ({
   paper: {
     position: 'relative',
@@ -38,7 +32,7 @@ class AlmanacGraph extends React.Component {
   handleClose = () => {
     this.setState({ open: false });
   };
-<<<<<<< HEAD
+  
   //UnComment to display graph here then add an img tag inside the Model component
 /*
    // will the graph from the call back function in Fetch Graph.js
@@ -47,27 +41,10 @@ class AlmanacGraph extends React.Component {
     getGraph( (x) => {this.setState({x});} )
   }
 */
-=======
- 
->>>>>>> react
 
   render() {
     const { classes } = this.props;
     return (
-<<<<<<< HEAD
-      <React.Fragment>
-        <Typography gutterBottom>Click to see graph in a modal!</Typography>
-        <Button onClick={this.handleOpen}>Open Modal</Button>
-        <Modal
-          aria-labelledby="simple-modal-title"
-          aria-describedby="simple-modal-description"
-          open={this.state.open} onClose={this.handleClose}>
-                 
-          <SimpleTab/>
-   
-          </Modal>
-      </React.Fragment>
-=======
         <React.Fragment>
             <Button onClick={this.handleOpen}>Graph</Button>
           
@@ -79,7 +56,6 @@ class AlmanacGraph extends React.Component {
               </Modal>
               
         </React.Fragment>
->>>>>>> react
     );
   }
 }
@@ -91,26 +67,3 @@ AlmanacGraph.propTypes = {
 // We need an intermediary variable for handling the recursive nesting.
 const AlmanacGraphWrapped = withStyles(styles)(AlmanacGraph);
 export default AlmanacGraphWrapped;
-<<<<<<< HEAD
-
-/**
- * manuel tabs 
- *  <Tabs defaultIndex={1}>
-            <TabList>
-                <Tab>2018</Tab>
-                <Tab>2017</Tab>
-            </TabList>
-            <TabPanel>
-              <div style={getModalStyle()} className={classes.paper}>
-               <img src = {this.state.x}/>
-             </div> 
-          </TabPanel>
-
-            <TabPanel> <div style={getModalStyle()} className={classes.paper}>
-               <img src = {this.state.x}/>
-             </div> 
-             </TabPanel>
-          </Tabs>
- */
-=======
->>>>>>> react
