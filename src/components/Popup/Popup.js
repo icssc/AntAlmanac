@@ -9,6 +9,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const styles = theme => ({
   container: {
@@ -37,8 +39,16 @@ class DialogSelect extends React.Component {
     this.setState({ open: true });
   };
 
+  handlClick = () => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
+
   handleClose = () => {
     this.setState({ open: false });
+  };
+
+  handleClose2 = () => {
+    this.setState({ anchorEl: null });;
   };
 
   render() {
@@ -66,9 +76,25 @@ class DialogSelect extends React.Component {
             <Button onClick={this.handleClose} color="primary">
               Cancel
             </Button>
+              aria-owns={anchorEl ? 'simple-menu' : null}
+              aria-haspopup="true"
+              onClick={this.handleClick}
+            >
+            Open Menu
+            </Button>
             <Button onClick={this.handleClose} variant="contained" color="primary">
               Add to Calendar
             </Button>
+            <Menu
+              id="simple-menu"
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={this.handleClose2}
+            >
+              <MenuItem onClick={this.handleClose2}>Profile</MenuItem>
+              <MenuItem onClick={this.handleClose2}>My account</MenuItem>
+              <MenuItem onClick={this.handleClose2}>Logout</MenuItem>
+            </Menu>
           </DialogActions>
         </Dialog>
       </div>
