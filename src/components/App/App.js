@@ -2,14 +2,16 @@ import React, {Component} from 'react';
 import {Fragment} from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline'
 import Grid from '@material-ui/core/Grid';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography'
+import AppBar from '@material-ui/core/AppBar';
 import SearchForm from "../SearchForm/SearchForm";
 import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
 import Paper from "@material-ui/core/Paper";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
-import LoginBtn from "../LogInButton/LButton";
 import Popup from "../CustomEvents/Popup/Popup";
-
+import Button from "@material-ui/core/Button";
 import {
     red,
     pink,
@@ -26,51 +28,62 @@ import {
     blueGrey
 } from '@material-ui/core/colors';
 
+const arrayOfColors = [red[500], pink[500],
+    purple[500], indigo[500],
+    deepPurple[500], blue[500],
+    green[500], cyan[500],
+    teal[500], lightGreen[500],
+    lime[500], amber[500],
+    blueGrey[500]];
+
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
             formData: null,
-            classEventsInCalendar: [],
-            arrayOfColors: [
-                red[500], pink[500],
-                purple[500], indigo[500],
-                deepPurple[500], blue[500],
-                green[500], cyan[500],
-                teal[500], lightGreen[500],
-                lime[500], amber[500],
-                blueGrey[500]]
+            schedule0Events: [],
+            schedule1Events: [],
+            schedule2Events: [],
+            schedule3Events: [],
+            currentScheduleIndex: 0,
+            arrayOfColors0: arrayOfColors.slice(0),
+            arrayOfColors1: arrayOfColors.slice(0),
+            arrayOfColors2: arrayOfColors.slice(0),
+            arrayOfColors3: arrayOfColors.slice(0)
         };
 
         this.updateFormData = this.updateFormData.bind(this);
         this.handleAddClass = this.handleAddClass.bind(this);
         this.handleClassDelete = this.handleClassDelete.bind(this);
+        this.handleScheduleChange = this.handleScheduleChange.bind(this);
     }
 
     handleClassDelete(title) {
         let colorFound = false;
 
-        const classEventsInCalendar = this.state.classEventsInCalendar.filter(
+        const classEventsInCalendar = this.state['schedule' + this.state.currentScheduleIndex + 'Events'].filter(
             event => {
                 if (!colorFound && event.title === title && event.color !== undefined) {
-                    this.setState({arrayOfColors: this.state.arrayOfColors.concat(event.color)});
+                    this.setState({['arrayOfColors' + this.state.currentScheduleIndex]: this.state['arrayOfColors' + this.state.currentScheduleIndex].concat(event.color)});
                     colorFound = true;
                 }
                 return event.title !== title;
             }
         );
-        this.setState({classEventsInCalendar: classEventsInCalendar});
+        this.setState({['schedule' + this.state.currentScheduleIndex + 'Events']: classEventsInCalendar});
     }
 
     handleAddClass(section, name) {
-        const random_color = this.state.arrayOfColors[Math.floor(Math.random() * this.state.arrayOfColors.length)];
+        const arrayOfColorsName = 'arrayOfColors' + this.state.currentScheduleIndex;
 
-        const checkExist = this.state.classEventsInCalendar.find((element) =>
+        const random_color = this.state[arrayOfColorsName][Math.floor(Math.random() * this.state[arrayOfColorsName].length)];
+
+        const checkExist = this.state['schedule' + this.state.currentScheduleIndex + 'Events'].find((element) =>
             element.title === section.classCode + " " + name[0]
         );
 
         if (!checkExist) {
-            this.setState({arrayOfColors: this.state.arrayOfColors.filter(color => color !== random_color)});
+            this.setState({[arrayOfColorsName]: this.state[arrayOfColorsName].filter(color => color !== random_color)});
 
             let newClasses = [];
 
@@ -106,7 +119,20 @@ class App extends Component {
                     });
                 }
             });
-            this.setState({classEventsInCalendar: this.state.classEventsInCalendar.concat(newClasses)});
+
+            this.setState({['schedule' + this.state.currentScheduleIndex + 'Events']: this.state['schedule' + this.state.currentScheduleIndex + 'Events'].concat(newClasses)});
+        }
+    }
+
+    handleScheduleChange(direction) {
+        if (direction === 0) {
+            if (this.state.currentScheduleIndex !== 0) {
+                this.setState({currentScheduleIndex: this.state.currentScheduleIndex - 1});
+            }
+        } else if (direction === 1) {
+            if (this.state.currentScheduleIndex !== 3) {
+                this.setState({currentScheduleIndex: this.state.currentScheduleIndex + 1});
+            }
         }
     }
 
@@ -114,24 +140,21 @@ class App extends Component {
     updateFormData(formData) {
         this.setState({formData: formData});
     }
-    handleCustemTime(obj)
-    {
-        this.setState({classEventsInCalendar: this.state.classEventsInCalendar.concat(obj)});
-       
-    }
+
+
     render() {
        
 
         return (
             <Fragment>
                 <CssBaseline/>
-                {/*temporary placement*/}
-                <LoginBtn
-                  onName={this.handleName}
-                  value={this.state.nName}
-                  onSubmit={this.handleSubmit}
-                  onPopup={this.handlePopup}
-                />
+                <AppBar>
+                    <Toolbar variant='dense'>
+                        <Typography variant="title" color="inherit" style={{flexGrow: 1}}>AntAlmanac</Typography>
+                        <Button color="inherit">Load Schedule</Button>
+                        <Button color="inherit">Save Schedule</Button>
+                    </Toolbar>
+                </AppBar>
                 <Grid container>
                     <Grid item lg={12}>
                         <AlmanacGraphWrapped />
@@ -144,16 +167,17 @@ class App extends Component {
                         <SearchForm updateFormData={this.updateFormData}/>
                     </Grid>
                     <Grid item lg={6} xs={12}>
-                        <Paper
-                            style={{maxHeight: '90vh', overflow: 'auto', margin: 10}}>
-                            <Calendar classEventsInCalendar={this.state.classEventsInCalendar}
-                                      onClassDelete={this.handleClassDelete}/>
-                        </Paper>
+                        <div style={{margin: '10px 5px 0px 10px'}}>
+                            <Calendar classEventsInCalendar={this.state['schedule' + this.state.currentScheduleIndex + 'Events']}
+                                      currentScheduleIndex={this.state.currentScheduleIndex}
+                                      onClassDelete={this.handleClassDelete}
+                                      onScheduleChange={this.handleScheduleChange}/>
+                        </div>
                     </Grid>
 
                     <Grid item lg={6} xs={12}>
                         <Paper
-                            style={{height: '90vh', overflow: 'auto', margin: 10}}>
+                            style={{height: '85vh', overflow: 'auto', margin: '10px 10px 0px 5px'}}>
                             <CoursePane
                                 formData={this.state.formData}
                                 handleAddClass={this.handleAddClass}

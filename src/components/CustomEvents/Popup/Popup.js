@@ -37,7 +37,7 @@ class DialogSelect extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.onClick = this.onClick.bind(this);
   }
-
+  //chose a calinder
   handleClick = event => {
     this.setState({ anchorEl: event.currentTarget });
   };

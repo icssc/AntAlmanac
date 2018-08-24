@@ -29,8 +29,8 @@ class SearchForm extends Component {
 
     render() {
         return (
-            <form>
-                <Grid container>
+            <form style={{margin: '15px 10px 0px 10px'}}>
+                <Grid container spacing={8} alignItems='center'>
                     <Grid item lg={3}>
                         <DeptSearchBar setDept={this.setDept}/>
                     </Grid>
@@ -44,7 +44,10 @@ class SearchForm extends Component {
                     </Grid>
 
                     <Grid item lg={3}>
-                        <Button onClick={() => this.props.updateFormData(this.state)}>Search</Button>
+                        <Button
+                            color='primary'
+                            variant='contained'
+                            onClick={() => this.props.updateFormData(this.state)}>Search</Button>
                     </Grid>
                 </Grid>
             </form>
