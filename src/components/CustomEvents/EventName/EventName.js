@@ -47,6 +47,8 @@ function CustomizedInputs(props) {
          <CalendarToday/> Event Name:
         </InputLabel>
         <Input
+          required={true}
+          onChange={props.userEventName}
           classes={{
             underline: classes.cssUnderline,
           }}

@@ -21,6 +21,7 @@ function TimePickers(props) {
   return (
     <form className={classes.container} noValidate>
       <TextField
+        onChange={props.userTime}
         id="time"
         label={props.label}
         type="time"
@@ -40,5 +41,4 @@ function TimePickers(props) {
 TimePickers.propTypes = {
   classes: PropTypes.object.isRequired,
 };
-
-export default withStyles(styles)(TimePickers);
+export default withStyles(styles)(TimePickers); 

@@ -9,7 +9,6 @@ import Paper from "@material-ui/core/Paper";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import LoginBtn from "../LogInButton/LButton";
 import Popup from "../CustomEvents/Popup/Popup";
-import {customEvent} from '../CustomEvents/EventObject'
 
 import {
     red,
@@ -32,7 +31,7 @@ class App extends Component {
         super(props);
         this.state = {
             formData: null,
-            classEventsInCalendar: [].concat(customEvent()),
+            classEventsInCalendar: [],
             arrayOfColors: [
                 red[500], pink[500],
                 purple[500], indigo[500],
@@ -111,11 +110,18 @@ class App extends Component {
         }
     }
 
+    
     updateFormData(formData) {
         this.setState({formData: formData});
     }
-
+    handleCustemTime(obj)
+    {
+        this.setState({classEventsInCalendar: this.state.classEventsInCalendar.concat(obj)});
+       
+    }
     render() {
+       
+
         return (
             <Fragment>
                 <CssBaseline/>
@@ -130,7 +136,11 @@ class App extends Component {
                     <Grid item lg={12}>
                         <AlmanacGraphWrapped />
                         {/* temporary placement */}
-                        <Popup />
+
+                        <Popup callback={this.handleCustemTime.bind(this)}/>
+                        
+                        { console.log(this.state,"app->STATE")}
+
                         <SearchForm updateFormData={this.updateFormData}/>
                     </Grid>
                     <Grid item lg={6} xs={12}>
