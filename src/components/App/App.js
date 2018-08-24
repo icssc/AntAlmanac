@@ -141,6 +141,11 @@ class App extends Component {
         this.setState({formData: formData});
     }
 
+    handleCustemTime(obj)
+    {
+        this.setState({schedule0Events: this.state.schedule0Events.concat(obj)});
+       
+    }
 
     render() {
        
