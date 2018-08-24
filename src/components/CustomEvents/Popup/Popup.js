@@ -9,6 +9,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import AddIcon from '@material-ui/icons/Add';
 import EventName from '../EventName/EventName'
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const styles = theme => ({
   container: {
@@ -34,7 +36,15 @@ class DialogSelect extends React.Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.onClick = this.onClick.bind(this);
-}
+  }
+
+  handleClick = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
+
+  handleClose = () => {
+    this.setState({ anchorEl: null });
+  };
 
 handleChange = e => {
   this.setState({ eventName:e.target.value });
@@ -104,7 +114,8 @@ daysHandler = (selectedDays) =>{
     this.openCloseHandle()
 }
   render() {
-      
+
+    const { anchorEl } = this.state;
     const style =
     {
       position: 'fixed',
@@ -140,9 +151,28 @@ daysHandler = (selectedDays) =>{
             <Button onClick={this.openCloseHandle} color="primary">
               Cancel
             </Button>
-            <Button onClick={this.onClick} variant="contained" color="primary">
-              Add to Calendar
+            <Button
+              aria-owns={anchorEl ? 'simple-menu' : null}
+              aria-haspopup="true"
+              //onClick={this.handleClick}
+               onClick={this.onClick}
+              variant="contained" 
+              color="primary"
+            >
+              Add to
             </Button>
+            <Menu
+              id="simple-menu"
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={this.handleClose}
+            >
+              <MenuItem onClick={this.handleClose}>All Schedules</MenuItem>
+              <MenuItem onClick={this.handleClose}>Schedule 1</MenuItem>
+              <MenuItem onClick={this.handleClose}>Schedule 2</MenuItem>
+              <MenuItem onClick={this.handleClose}>Schedule 3</MenuItem>
+              <MenuItem onClick={this.handleClose}>Schedule 4</MenuItem>
+            </Menu>
           </DialogActions>
         </Dialog>
       </div>
