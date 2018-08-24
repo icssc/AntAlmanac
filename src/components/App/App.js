@@ -158,13 +158,13 @@ class App extends Component {
                         <Typography variant="title" color="inherit" style={{flexGrow: 1}}>AntAlmanac</Typography>
                         <Button color="inherit">Load Schedule</Button>
                         <Button color="inherit">Save Schedule</Button>
-                        <AlmanacGraphWrapped />
+                        <AlmanacGraphWrapped  />
                     </Toolbar>
                 </AppBar>
                 <Grid container>
                     <Grid item lg={12}>
                    
-                        <Popup callback={this.handleCustemTime.bind(this)}/>
+                       
                         
                         {console.log(this.state,"app->STATE")}
                        
@@ -172,6 +172,9 @@ class App extends Component {
                     </Grid>
                     <Grid item lg={6} xs={12}>
                         <div style={{margin: '10px 5px 0px 10px'}}>
+
+                        <Popup callback={this.handleCustemTime.bind(this)}/>
+                        
                             <Calendar classEventsInCalendar={this.state['schedule' + this.state.currentScheduleIndex + 'Events']}
                                       currentScheduleIndex={this.state.currentScheduleIndex}
                                       onClassDelete={this.handleClassDelete}
