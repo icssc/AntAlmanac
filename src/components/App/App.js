@@ -158,17 +158,16 @@ class App extends Component {
                         <Typography variant="title" color="inherit" style={{flexGrow: 1}}>AntAlmanac</Typography>
                         <Button color="inherit">Load Schedule</Button>
                         <Button color="inherit">Save Schedule</Button>
+                        <AlmanacGraphWrapped />
                     </Toolbar>
                 </AppBar>
                 <Grid container>
                     <Grid item lg={12}>
-                        <AlmanacGraphWrapped />
-                        {/* temporary placement */}
-
+                   
                         <Popup callback={this.handleCustemTime.bind(this)}/>
                         
-                        { console.log(this.state,"app->STATE")}
-
+                        {console.log(this.state,"app->STATE")}
+                       
                         <SearchForm updateFormData={this.updateFormData}/>
                     </Grid>
                     <Grid item lg={6} xs={12}>
