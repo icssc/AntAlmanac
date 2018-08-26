@@ -101,7 +101,7 @@ daysHandler = (selectedDays) =>{
   render() {
 
     const { anchorEl } = this.state;
-    
+
     const style =
     {
       position: 'static',
@@ -150,7 +150,7 @@ daysHandler = (selectedDays) =>{
               open={Boolean(anchorEl)}
               onClose={this.handleClose}>
 
-              <MenuItem value={0} onClick={this.handleClose}>All Schedules</MenuItem>
+              <MenuItem value={11} onClick={this.handleClose}>All Schedules</MenuItem>
               <MenuItem value={0} onClick={this.handleClose}>Schedule 1</MenuItem>
               <MenuItem value={1} onClick={this.handleClose}>Schedule 2</MenuItem>
               <MenuItem value={2} onClick={this.handleClose}>Schedule 3</MenuItem>

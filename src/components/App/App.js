@@ -143,7 +143,17 @@ class App extends Component {
 
     handleCustemTime(obj,calendarIndex)
     {
-       this.setState({['schedule' + calendarIndex + 'Events']: this.state['schedule' + calendarIndex + 'Events'].concat(obj)});
+        // why 11? r u gonna have 11 calendars! grow up. ref popup.js line 153
+        if(calendarIndex === 11){
+            this.setState({['schedule' + 0 + 'Events']: this.state['schedule' + 0 + 'Events'].concat(obj)});
+            this.setState({['schedule' + 1 + 'Events']: this.state['schedule' + 1 + 'Events'].concat(obj)});
+            this.setState({['schedule' + 2 + 'Events']: this.state['schedule' + 2 + 'Events'].concat(obj)});
+            this.setState({['schedule' + 3 + 'Events']: this.state['schedule' + 3 + 'Events'].concat(obj)});
+
+        }
+        else{
+            this.setState({['schedule' + calendarIndex + 'Events']: this.state['schedule' + calendarIndex + 'Events'].concat(obj)});
+        }
     }
 
     render() {
