@@ -9,7 +9,6 @@ import availableQuarters from './availableQuarters.json'
 // imports for rendering the graph
 import SimpleTab from './UITabs'
 //---------------------------------
-
 const styles = theme => ({
   paper: {
     position: 'relative',
@@ -34,12 +33,31 @@ class AlmanacGraph extends React.Component {
     this.setState({ open: false });
   };
   
+  //UnComment to display graph here then add an img tag inside the Model component
+/*
+   // will the graph from the call back function in Fetch Graph.js
+   componentDidMount(){
+    // create an object x and add it to the state
+    getGraph( (x) => {this.setState({x});} )
+  }
+*/
+
   render() {
     const { classes } = this.props;
+
+    const style =
+    {
+      position: 'static',
+      float:"right",
+      margin: '5px',
+      width: "9%",
+      height: "15",
+      color:'white',
+    };
+
     return (
         <React.Fragment>
-            <Typography gutterBottom>Click to see graph in a modal!</Typography>
-            <Button onClick={this.handleOpen}>Open Modal</Button>
+            <Button style={style} onClick={this.handleOpen}>Graph</Button>
           
             <Modal
               aria-labelledby="simple-modal-title"

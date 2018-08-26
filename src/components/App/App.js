@@ -10,7 +10,6 @@ import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
 import Paper from "@material-ui/core/Paper";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
-import LoginBtn from "../LogInButton/LButton";
 import Popup from "../CustomEvents/Popup/Popup";
 import Button from "@material-ui/core/Button";
 import {
@@ -115,7 +114,6 @@ class App extends Component {
                                 start: new Date(2018, 0, index + 1, start, startMin),
                                 end: new Date(2018, 0, index + 1, end, endMin)
                             };
-
                             newClasses.push(newClass);
                         }
                     });
@@ -138,12 +136,29 @@ class App extends Component {
         }
     }
 
+    
     updateFormData(formData) {
         this.setState({formData: formData});
     }
 
+    handleCustemTime(obj,calendarIndex)
+    {
+        // why 11? r u gonna have 11 calendars! grow up. ref popup.js line 153
+        if(calendarIndex === 11){
+            this.setState({['schedule' + 0 + 'Events']: this.state['schedule' + 0 + 'Events'].concat(obj)});
+            this.setState({['schedule' + 1 + 'Events']: this.state['schedule' + 1 + 'Events'].concat(obj)});
+            this.setState({['schedule' + 2 + 'Events']: this.state['schedule' + 2 + 'Events'].concat(obj)});
+            this.setState({['schedule' + 3 + 'Events']: this.state['schedule' + 3 + 'Events'].concat(obj)});
+
+        }
+        else{
+            this.setState({['schedule' + calendarIndex + 'Events']: this.state['schedule' + calendarIndex + 'Events'].concat(obj)});
+        }
+    }
 
     render() {
+       
+
         return (
             <Fragment>
                 <CssBaseline/>
@@ -152,16 +167,23 @@ class App extends Component {
                         <Typography variant="title" color="inherit" style={{flexGrow: 1}}>AntAlmanac</Typography>
                         <Button color="inherit">Load Schedule</Button>
                         <Button color="inherit">Save Schedule</Button>
+                        <AlmanacGraphWrapped  />
                     </Toolbar>
                 </AppBar>
                 <Grid container>
                     <Grid item lg={12}>
-                        {/*<AlmanacGraphWrapped/>*/}
-                        <Popup/>
+                   
+                       
+                        
+                        {console.log(this.state,"app->STATE")}
+                       
                         <SearchForm updateFormData={this.updateFormData}/>
                     </Grid>
                     <Grid item lg={6} xs={12}>
                         <div style={{margin: '10px 5px 0px 10px'}}>
+
+                        <Popup callback={this.handleCustemTime.bind(this)}/>
+                        
                             <Calendar classEventsInCalendar={this.state['schedule' + this.state.currentScheduleIndex + 'Events']}
                                       currentScheduleIndex={this.state.currentScheduleIndex}
                                       onClassDelete={this.handleClassDelete}

@@ -1,46 +1,65 @@
+import CalendarToday from "@material-ui/icons/CalendarToday";
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Input from '@material-ui/core/Input';
-import InputLabel from "@material-ui/core/InputLabel";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import CalendarToday from "@material-ui/icons/CalendarToday";
-
+import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import blue from '@material-ui/core/colors/blue';
 
 const styles = theme => ({
+  
   container: {
     display: 'flex',
     flexWrap: 'wrap',
   },
-  input: {
+  margin: {
     margin: theme.spacing.unit,
+  },
+  cssLabel: {
+    '&$cssFocused': {
+      color: blue[900],
+    },
+  },
+  cssFocused: {},
+  cssUnderline: {
+    '&:after': {
+      borderBottomColor: blue[900],
+    },
   },
 });
 
-function Inputs(props) {
+function CustomizedInputs(props) {
   const { classes } = props;
+
   return (
     <div className={classes.container}>
-
-      <Input
-        id="input-with-icon-adornment"
-          startAdornment={
-            <InputAdornment position="start">
-              <CalendarToday/>
-            </InputAdornment>
-          }
-        placeholder="Event Name"
-        className={classes.input}
-        inputProps={{
-          'aria-label': 'Description',
-        }}
-      />
+    
+      <FormControl className={classes.margin}>
+        <InputLabel
+          FormLabelClasses={{
+            root: classes.cssLabel,
+            focused: classes.cssFocused,
+          }}
+          htmlFor="Event-Name-input">
+          
+         <CalendarToday/> Event Name:
+        </InputLabel>
+        <Input
+          required={true}
+          onChange={props.userEventName}
+          classes={{
+            underline: classes.cssUnderline,
+          }}
+          id="Event-Name-input"
+        />
+      </FormControl>     
     </div>
   );
 }
 
-Inputs.propTypes = {
+CustomizedInputs.propTypes = {
   classes: PropTypes.object.isRequired,
 };
-
-export default withStyles(styles)(Inputs);
+export default withStyles(styles)(CustomizedInputs);
