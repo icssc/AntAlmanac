@@ -32,18 +32,22 @@ class DialogSelect extends React.Component {
       start: '07:30',
       end: '07:30',
       eventName:'None',
-      day:[]
+      day:[],
+      anchorEl: null
     };
-    this.handleChange = this.handleChange.bind(this);
-    this.onClick = this.onClick.bind(this);
+    //this.handleChange = this.handleChange.bind(this);
+    this.addEventBtnClicked = this.addEventBtnClicked.bind(this);
   }
   //chose a calinder menu
-  handleClick = event => {
-    this.setState({ anchorEl: event.currentTarget });
-  };
+ // handelScheduleNumber = (event) => { 
+   // this.setState({ anchorEl: event.currentTarget });
+  //};
 
-  handleClose = () => {
+  handleClose = (event) => {
+    const calendarIndex = event.target.value;
+    this.makeCalendarObj(calendarIndex);
     this.setState({ anchorEl: null });
+    this.openCloseHandle();
   };
 
 handleChange = e => {
@@ -58,49 +62,23 @@ daysHandler = (selectedDays) =>{
   this.setState({ day: selectedDays });
 }
 
-/*daysHandler = (event) => {
-  // checkBos is a copy of stat.day so we do it change state imm
-  // get the current days, if the new value true add, else remove it if exitst
-  console.log(event, "DATA FROM CHILD")
-  let checkBox = [...this.state.day];
-  // store the days for the newevent
-  let newDays = [];
-  if(event.target.checked)
-  {
-     checkBox = checkBox.concat(event.target.value) ;
-     newDays = newDays.concat(event.target.value) ;
-    
-  }
-  else
-  {
-   let index = checkBox.indexOf(event.target.value);
-    if(index !== -1)
-      checkBox.splice(index, 1);
-    
-  }
-  // manydays used in onClick to create events for slected days
-  this.setState({ manyDays: newDays });
-
-  this.setState({ day: checkBox });
-}
-*/
-
   openCloseHandle = () => {
     const open = !this.state.open;
     this.setState({ open });
   };
 
-  onClick() {
+  makeCalendarObj = (calendarIndex) =>
+  {
     // slicing according to the time str from state.start and state.end
-  /// pasre str to int it's not required but new Date take int as param for better result
-    const startHour =  parseInt(this.state.start.slice(0, 2));
-    const startMin =   parseInt(this.state.start.slice(3, 5));
-    const endHour = parseInt(this.state.end.slice(0, 2));
-    const endMin = parseInt(this.state.end.slice(3, 5));
+   // pasre str to int it's not required but new Date take int as param for better result
+    let startHour =  parseInt(this.state.start.slice(0, 2));
+    let startMin =   parseInt(this.state.start.slice(3, 5));
+    let endHour = parseInt(this.state.end.slice(0, 2));
+    let endMin = parseInt(this.state.end.slice(3, 5));
     
-    const obj = []
+    let obj = []
     this.state.day.forEach(element => {
-      const addCalender = {
+      let addCalender = {
         color: '#551a8b',
         title: this.state.eventName,
         start: new Date(2018, 0, element, startHour, startMin),
@@ -108,14 +86,22 @@ daysHandler = (selectedDays) =>{
        }
        obj.push(addCalender);
     });
+    // send it as proprs to handleCustomTime <popup/> in App.js 
+    this.props.callback(obj,calendarIndex);
+  }
+
+  addEventBtnClicked(event) {
+
+  this.setState({ anchorEl: event.currentTarget });  
     
-    this.props.callback(obj);
+    //this.props.callback(obj);
     // close the pop up after creating obj
-    this.openCloseHandle()
+    //this.openCloseHandle()
 }
   render() {
 
     const { anchorEl } = this.state;
+    
     const style =
     {
       position: 'static',
@@ -151,28 +137,26 @@ daysHandler = (selectedDays) =>{
             <Button onClick={this.openCloseHandle} color="primary">
               Cancel
             </Button>
+           
             <Button
-              aria-owns={anchorEl ? 'simple-menu' : null}
               aria-haspopup="true"
-              //onClick={this.handleClick}
-               onClick={this.onClick}
+              onClick={this.addEventBtnClicked}
               variant="contained" 
-              color="primary"
-            >
-              Add to
-            </Button>
+              color="primary" > Add Event</Button>
+           
             <Menu
               id="simple-menu"
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
-              onClose={this.handleClose}
-            >
-              <MenuItem onClick={this.handleClose}>All Schedules</MenuItem>
-              <MenuItem onClick={this.handleClose}>Schedule 1</MenuItem>
-              <MenuItem onClick={this.handleClose}>Schedule 2</MenuItem>
-              <MenuItem onClick={this.handleClose}>Schedule 3</MenuItem>
-              <MenuItem onClick={this.handleClose}>Schedule 4</MenuItem>
+              onClose={this.handleClose}>
+
+              <MenuItem value={0} onClick={this.handleClose}>All Schedules</MenuItem>
+              <MenuItem value={0} onClick={this.handleClose}>Schedule 1</MenuItem>
+              <MenuItem value={1} onClick={this.handleClose}>Schedule 2</MenuItem>
+              <MenuItem value={2} onClick={this.handleClose}>Schedule 3</MenuItem>
+              <MenuItem value={3} onClick={this.handleClose}>Schedule 4</MenuItem>
             </Menu>
+            
           </DialogActions>
         </Dialog>
       </div>
