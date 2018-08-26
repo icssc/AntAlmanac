@@ -37,7 +37,7 @@ class DialogSelect extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.onClick = this.onClick.bind(this);
   }
-  //chose a calinder
+  //chose a calinder menu
   handleClick = event => {
     this.setState({ anchorEl: event.currentTarget });
   };
@@ -101,7 +101,7 @@ daysHandler = (selectedDays) =>{
     const obj = []
     this.state.day.forEach(element => {
       const addCalender = {
-        color: 'black',
+        color: '#551a8b',
         title: this.state.eventName,
         start: new Date(2018, 0, element, startHour, startMin),
         end: new Date(2018, 0,  element, endHour, endMin),
@@ -118,15 +118,15 @@ daysHandler = (selectedDays) =>{
     const { anchorEl } = this.state;
     const style =
     {
-      position: 'fixed',
-      zIndex: '10',
+      position: 'static',
+      float:"right",
       opacity: '0.9',
-      margin: '15px',
-      width: "9%",
+      margin: '5px',
+      width: "15%",
       height: "15",
       backgroundColor: "#42d9f4",
       borderRadius:'24%',
-      color:'yellow',
+      color:'white',
     };
     return (
       <div>

@@ -44,9 +44,20 @@ class AlmanacGraph extends React.Component {
 
   render() {
     const { classes } = this.props;
+
+    const style =
+    {
+      position: 'static',
+      float:"right",
+      margin: '5px',
+      width: "9%",
+      height: "15",
+      color:'white',
+    };
+
     return (
         <React.Fragment>
-            <Button onClick={this.handleOpen}>Graph</Button>
+            <Button style={style} onClick={this.handleOpen}>Graph</Button>
           
             <Modal
               aria-labelledby="simple-modal-title"
