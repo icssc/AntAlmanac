@@ -1,0 +1,117 @@
+/*GUYZ PICS HERE LOL*/
+.row{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  background-color: wheat;
+  height: 60%;
+}
+.column {
+    flex: 30%;
+    max-width: 50%;
+    padding: 0 4px;
+    position: relative;
+    top: 80px;
+  }
+  
+
+.picture-container{ 
+    margin: 0 auto;
+     text-align: center;      
+}
+.picture-container img{
+    height: 140px; 
+    width: 140px; 
+    border-radius: 50%;
+    vertical-align: baseline;
+}
+#text-container{
+    text-align: center;
+    color: goldenrod;
+     font-weight: 50;
+     position: absolute;
+    
+}
+#text-container a{
+color: goldenrod;
+font-weight: 700;
+}
+
+#text-container a:hover{
+    color: blue;
+    text-decoration: underline;
+    }
+
+  /* here final*/
+
+  @media (min-width: 700px) {
+    .leading {
+       display: flex;
+       align-items: center;
+     }
+   }
+
+ 
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: 30px;
+  }
+
+  .leading {
+    height: 240px;
+    margin-bottom: 0px;
+    padding: 30px;
+    color: white;
+    background: url('https://media.gettyimages.com/photos/blank-blackboard-with-board-eraser-picture-id478717795') center #333 no-repeat;
+    background-size: cover;
+    color: white;
+    text-shadow: 0px 0px 5px #000;
+  }
+  
+  .leading-bigtext {
+      display: flex;
+    margin-right: 20px;
+    font-weight: bold;
+    font-size: 10px;
+  }
+
+  @media (min-width: 700px) {
+    .leading-bigtext {
+      font-size: 3em;
+    }
+  }
+  
+  .leading-text {
+    max-width: 500px;
+    font-size: 1.2em;
+    line-height: 1.4em;
+  }
+  
+  .cards {
+    max-width: 960px;
+    margin: 0 auto 30px;
+  }
+  
+  article {
+    position: relative;
+    margin: 0 auto;
+  }
+  
+  .article-img {
+    height: 160px;
+    width: 160px;
+    object-fit: cover;
+    border-radius: 50%;
+   
+  }
+  
+  .article-title {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+  }
