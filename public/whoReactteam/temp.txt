@@ -119,3 +119,50 @@ article {
   padding: 10px;
   background-color: rgba(255, 255, 255, 0.2);
 }
+-----------------------------------------------------
+  <div id="wrapper" >
+            <section class="cards">
+               
+                    <article>
+                    <img class="article-img" src="https://static.thenounproject.com/png/547804-200.png"  />
+                    <div id="text-container">
+                            <a href="#" target="_blank">React Team</a>
+                    <div>CompSci 2020 <br>Full Stack Engineer</div>
+                    </div>
+                    </article>
+
+                    <article>
+                            <img class="article-img" src="https://static.thenounproject.com/png/547804-200.png"  />
+                            <div id="text-container">
+                                    <a href="#" target="_blank">React Team</a>
+                            <div>CompSci 2020 <br>Full Stack Engineer</div>
+                            </div>
+                            </article>
+
+
+                            <article>
+                                    <img class="article-img" src="https://static.thenounproject.com/png/547804-200.png"  />
+                                    <div id="text-container">
+                                            <a href="#" target="_blank">React Team</a>
+                                    <div>CompSci 2020 <br>Full Stack Engineer</div>
+                                    </div>
+                                    </article>
+
+                                    <article>
+                                            <img class="article-img" src="https://static.thenounproject.com/png/547804-200.png"  />
+                                            <div id="text-container">
+                                                    <a href="#" target="_blank">React Team</a>
+                                            <div>CompSci 2020 <br>Full Stack Engineer</div>
+                                            </div>
+                                    </article>
+
+                                    <article>
+                                            <img class="article-img" src="https://static.thenounproject.com/png/547804-200.png"  />
+                                            <div id="text-container">
+                                                    <a href="#" target="_blank">React Team</a>
+                                            <div>CompSci 2020 <br>Full Stack Engineer</div>
+                                            </div>
+                                    </article>
+                               
+                </section>
+            </div>
