@@ -167,7 +167,6 @@ class App extends Component {
                         <Typography variant="title" color="inherit" style={{flexGrow: 1}}>AntAlmanac</Typography>
                         <Button color="inherit">Load Schedule</Button>
                         <Button color="inherit">Save Schedule</Button>
-                        <Button color="white"><a href="../whoReactteam/who.html">Who We Are</a></Button>
                         <AlmanacGraphWrapped  />
                     </Toolbar>
                 </AppBar>
