@@ -46,10 +46,12 @@ font-weight: 700;
 #wrapper{
   margin-bottom: 20px;
    height: 90vh;
-   background-color: whitesmoke;
+   background-color:white;;
   width: 100%;
-  background: url('../sample.PNG');
-  object-fit: cover;
+ 
+}
+#wrapper p{
+  color: aqua;
 }
   @media (min-width: 700px) {
     .leading {
