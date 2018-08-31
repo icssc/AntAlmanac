@@ -1,75 +1,63 @@
-import React, {Component, Fragment} from 'react';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import React, {Component} from 'react';
 import AddCircle from '@material-ui/icons/AddCircle'
 import IconButton from "@material-ui/core/IconButton/IconButton";
 
 class SectionTable extends Component {
-    constructor(props) {
-        super(props);
-    }
-
-    static withLinebreak(arr) {
-        return arr.map((item, index) => {
-            return (<Fragment key={index}>{item}<br/></Fragment>);
-        })
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        return this.props.courseDetails !== nextProps.courseDetails;
     }
 
     render() {
-        const sectionInfo = this.props.courseData.sections;
+        const sectionInfo = this.props.courseDetails.sections;
 
         return (
-            <Table padding='none'>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>{}</TableCell>
-                        <TableCell>Code</TableCell>
-                        <TableCell>Type</TableCell>
-                        <TableCell>Sec</TableCell>
-                        <TableCell>Units</TableCell>
-                        <TableCell>Instructors</TableCell>
-                        <TableCell>Time</TableCell>
-                        <TableCell>Place</TableCell>
-                        <TableCell>Enrollment</TableCell>
-                        <TableCell>Restr</TableCell>
-                        <TableCell>Status</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {sectionInfo.map((section) => {
-                        return (
-                            <TableRow key={section.classCode}>
-                                <TableCell>
-                                    <IconButton aria-label="Add Class"
-                                                onClick={() => this.props.handleAddClass(section, this.props.courseData.name)}><AddCircle/></IconButton>
-                                </TableCell>
-                                <TableCell>{section.classCode}</TableCell>
-                                <TableCell>{section.classType}</TableCell>
-                                <TableCell>{section.sectionCode}</TableCell>
-                                <TableCell>{section.units}</TableCell>
-                                <TableCell>{SectionTable.withLinebreak(section.instructors)}</TableCell>
-                                <TableCell
-                                   >{SectionTable.withLinebreak(section.meetings.map(meeting => meeting[0]))}</TableCell>
-                                <TableCell
-                                   >{SectionTable.withLinebreak(section.meetings.map(meeting => meeting[1]))}</TableCell>
-                                <TableCell><p>
-                                    {section.numCurrentlyEnrolled[0]}/{section.maxCapacity}<br/>
-                                    WL: {section.numOnWaitlist}<br/>
-                                    NOR: {section.numNewOnlyReserved}
-                                </p>
-                                </TableCell>
-                                <TableCell>{section.restrictions}</TableCell>
-                                <TableCell>{section.status}</TableCell>
-                            </TableRow>
-                        );
-                    })}
-                </TableBody>
-            </Table>
+            <table>
+                <thead>
+                <tr>
+                    <th className='no_border'>{}</th>
+                    <th>Code</th>
+                    <th>Type</th>
+                    <th>Sec</th>
+                    <th>Units</th>
+                    <th>Instructors</th>
+                    <th>Time</th>
+                    <th>Place</th>
+                    <th>Enrollment</th>
+                    <th>Restrictions</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                {sectionInfo.map((section) => {
+                    return (
+                        <tr>
+                            <td className='no_border'>
+                                <IconButton color='primary'
+                                            onClick={() => this.props.onAddClass(section, this.props.courseDetails.name)}><AddCircle/></IconButton>
+                            </td>
+                            <td>{section.classCode}</td>
+                            <td>{section.classType}</td>
+                            <td>{section.sectionCode}</td>
+                            <td>{section.units}</td>
+                            <td className='multiline'>{section.instructors.join('\n')}</td>
+                            <td className='multiline'>{section.meetings.map(meeting => meeting[0]).join('\n')}</td>
+                            <td className='multiline'>{section.meetings.map(meeting => meeting[1]).join('\n')}</td>
+                            <td className='multiline'>
+                                {
+                                    `${section.numCurrentlyEnrolled[0]}/${section.maxCapacity}
+WL: ${section.numOnWaitlist}
+NOR: ${section.numNewOnlyReserved}`
+                                }
+                            </td>
+                            <td>{section.restrictions}</td>
+                            <td className={section.status}>{section.status}</td>
+                        </tr>
+                    );
+                })}
+                </tbody>
+            </table>
         );
     }
 }
-
+//TODO: Convert CSS Sheet to JSS
 export default SectionTable;

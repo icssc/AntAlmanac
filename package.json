@@ -3,18 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^1.5.0",
-    "@material-ui/icons": "^2.0.0",
+    "@material-ui/core": "^1.5.1",
+    "@material-ui/icons": "^2.0.3",
     "moment": "^2.22.2",
-    "mui-downshift": "^1.0.4",
+    "mui-downshift": "^1.1.1",
     "react": "^16.4.2",
     "react-big-calendar": "^0.19.2",
     "react-dom": "^16.4.2",
-    "react-redux": "^5.0.7",
-    "react-scripts": "1.1.4",
-    "redux": "^4.0.0",
-    "cheerio": "^1.0.0-rc.2",
-    "request": "^2.88.0"
+    "react-scripts": "1.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
