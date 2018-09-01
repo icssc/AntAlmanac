@@ -12,6 +12,7 @@ import Paper from "@material-ui/core/Paper";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import Popup from "../CustomEvents/Popup/Popup";
 import Button from "@material-ui/core/Button";
+import gapi from 'gapi-client';
 import {
     red,
     pink,
@@ -27,6 +28,8 @@ import {
     amber,
     blueGrey
 } from '@material-ui/core/colors';
+
+
 
 const arrayOfColors = [red[500], pink[500],
     purple[500], indigo[500],
@@ -126,11 +129,19 @@ class App extends Component {
 
     handleScheduleChange(direction) {
         if (direction === 0) {
-            if (this.state.currentScheduleIndex !== 0) {
+            if (this.state.currentScheduleIndex === 0)
+            {
+                this.setState({currentScheduleIndex: 3});
+            } 
+            else {
                 this.setState({currentScheduleIndex: this.state.currentScheduleIndex - 1});
             }
-        } else if (direction === 1) {
-            if (this.state.currentScheduleIndex !== 3) {
+        } else if (direction === 1)
+         {
+            if (this.state.currentScheduleIndex === 3) {
+                this.setState({currentScheduleIndex: 0});
+            }
+            else {
                 this.setState({currentScheduleIndex: this.state.currentScheduleIndex + 1});
             }
         }
@@ -156,8 +167,121 @@ class App extends Component {
         }
     }
 
-    render() {
+    handleImportToGoogleCalendar() {
+        //const schedule = [...this.state.schedule0Events];
+        
+        let event = {
+            'summary': 'title here' ,//schedule[0].title,
+            'location': 'Not avaliable',
+            'description': 'Latter',
+            'start': {
+              'dateTime': '2018-08-30T09:00:00-07:00',// schedule[0].start.toISOString(),
+              'timeZone': 'America/Los_Angeles',
+            },
+            'end': {
+              'dateTime': '2018-08-30T11:00:00-07:00',// schedule[0].end.toISOString(),
+              'timeZone': 'America/Los_Angeles',
+            },
+            'recurrence': [
+              'RRULE:FREQ=DAILY;COUNT=2'
+            ],  
+        };
+        
+        const fs = require('fs');
+        const readline = require('readline');
+
+        console.log("the button clicked");
+      //  const {google} = require('googleapis'); 
+        console.log("the button clicked"); 
+        
+        const SCOPES = 'https://www.googleapis.com/auth/calendar';
+        const TOKEN_PATH = '';
        
+        fs.readFile('credentials.json', (err, content) => {
+            if (err) return console.log('Error loading client secret file:', err);
+            // Authorize a client with credentials, then call the Google Calendar API.
+            authorize(JSON.parse(content), listEvents);
+          });
+       
+          /**
+ * Create an OAuth2 client with the given credentials, and then execute the
+ * given callback function.
+ * @param {Object} credentials The authorization client credentials.
+ * @param {function} callback The callback to call with the authorized client.
+ */
+function authorize(credentials, callback) {
+    const {client_secret, client_id, redirect_uris} = credentials.installed;
+    const oAuth2Client = new gapi.auth.OAuth2(
+        client_id, client_secret, redirect_uris[0]);
+  
+    // Check if we have previously stored a token.
+    fs.readFile(TOKEN_PATH, (err, token) => {
+      if (err) return getAccessToken(oAuth2Client, callback);
+      oAuth2Client.setCredentials(JSON.parse(token));
+      callback(oAuth2Client);
+    });
+  }
+
+  function getAccessToken(oAuth2Client, callback) {
+    const authUrl = oAuth2Client.generateAuthUrl({
+      access_type: 'offline',
+      scope: SCOPES,
+    });
+    console.log('Authorize this app by visiting this url:', authUrl);
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    rl.question('Enter the code from that page here: ', (code) => {
+      rl.close();
+      oAuth2Client.getToken(code, (err, token) => {
+        if (err) return console.error('Error retrieving access token', err);
+        oAuth2Client.setCredentials(token);
+        // Store the token to disk for later program executions
+        fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
+          if (err) console.error(err);
+          console.log('Token stored to', TOKEN_PATH);
+        });
+        callback(oAuth2Client);
+      });
+    });
+  }
+
+  function listEvents(auth) { 
+   const calendar = gapi.calendar({version: 'v3'});
+    calendar.events.insert({
+      auth:auth,
+      calendarId: 'primary',
+      resource: event,
+    }, (err, res) => {
+      if (err) {
+        console.log('There was an error contacting the Calendar service: ' + err);
+        return;
+      }
+      console.log('Event created: %s', event.htmlLink);
+    });
+  } 
+
+      /*  calendar.events.insert({
+            auth: auth,
+            calendarId: 'primary',
+            resource: event,
+          }, function(err, event) {
+            if (err) {
+              console.log('There was an error contacting the Calendar service: ' + err);
+              return;
+            }
+            console.log('Event created: %s', event.htmlLink);
+          }); */
+    }
+
+    render() {
+        if( this.state.schedule0Events.length >0){
+       let x = this.state.schedule0Events[0].start;
+       let z =3;// x.toISOString();
+        console.log(this.state,"STATATATAT");
+        }
+        console.log(this.state,"STATATATAT");
 
         return (
             <Fragment>
@@ -167,16 +291,11 @@ class App extends Component {
                         <Typography variant="title" color="inherit" style={{flexGrow: 1}}>AntAlmanac</Typography>
                         <Button color="inherit">Load Schedule</Button>
                         <Button color="inherit">Save Schedule</Button>
-                        <Button color="white"><a href="../whoReactteam/who.html">Who We Are</a></Button>
                         <AlmanacGraphWrapped  />
                     </Toolbar>
                 </AppBar>
                 <Grid container>
                     <Grid item lg={12}>
-                   
-                       
-                        
-                        {console.log(this.state,"app->STATE")}
                        
                         <SearchForm updateFormData={this.updateFormData}/>
                     </Grid>
@@ -188,7 +307,8 @@ class App extends Component {
                             <Calendar classEventsInCalendar={this.state['schedule' + this.state.currentScheduleIndex + 'Events']}
                                       currentScheduleIndex={this.state.currentScheduleIndex}
                                       onClassDelete={this.handleClassDelete}
-                                      onScheduleChange={this.handleScheduleChange}/>
+                                      onScheduleChange={this.handleScheduleChange}
+                                      googleCalendar={this.handleImportToGoogleCalendar}/>
                         </div>
                     </Grid>
 

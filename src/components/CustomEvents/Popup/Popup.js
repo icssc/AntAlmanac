@@ -11,6 +11,7 @@ import AddIcon from '@material-ui/icons/Add';
 import EventName from '../EventName/EventName'
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import DatePicker from '../DatePicker/DatePicker';
 
 const styles = theme => ({
   container: {
@@ -29,13 +30,13 @@ class DialogSelect extends React.Component {
     super();
     this.state = {
       open: false,
-      start: '07:30',
-      end: '07:30',
+      start: '',
+      end: '',
+      date: '',
       eventName:'None',
       day:[],
       anchorEl: null
     };
-    //this.handleChange = this.handleChange.bind(this);
     this.addEventBtnClicked = this.addEventBtnClicked.bind(this);
   }
   //chose a calinder menu
@@ -57,9 +58,13 @@ handleChange = e => {
 endTimeHandler = event => {this.setState({ end: event.target.value });}
 
 startTimeHandler = event => {this.setState({ start: event.target.value });}
-
+// legicty code no need for days slector ++++++++++++++++
 daysHandler = (selectedDays) =>{
   this.setState({ day: selectedDays });
+}
+//+++++++++++++++++++++++++++++++++++++++++++++++
+handleDatePicker = (e) =>{
+  this.setState({ date: e.target.value });
 }
 
   openCloseHandle = () => {
@@ -71,35 +76,42 @@ daysHandler = (selectedDays) =>{
   {
     // slicing according to the time str from state.start and state.end
    // pasre str to int it's not required but new Date take int as param for better result
-    let startHour =  parseInt(this.state.start.slice(0, 2));
+   /* let startHour =  parseInt(this.state.start.slice(0, 2));
     let startMin =   parseInt(this.state.start.slice(3, 5));
     let endHour = parseInt(this.state.end.slice(0, 2));
     let endMin = parseInt(this.state.end.slice(3, 5));
+  
+     1995-12-17T03:24:00 UTC FORMATW
+    */
+    //let d2 = new Date();
+    //d2.setHours(endHour);
+    //d2.setMinutes(endMin);
+  //let old_wayStart =  new Date(2018, 7, element, startHour, startMin);
+  //let old_wayEnd =  new Date(2018, 7,  element, endHour, endMin);
+//*************************************************** */
+    let date = this.state.date;
+    let startDate = new Date(date+'T'+this.state.start);
+    let endDate = new Date(date+'T'+this.state.end);
+    console.log(startDate,endDate,'the date is '); 
     
     let obj = []
-    this.state.day.forEach(element => {
+   
       let addCalender = {
         color: '#551a8b',
         title: this.state.eventName,
-        start: new Date(2018, 0, element, startHour, startMin),
-        end: new Date(2018, 0,  element, endHour, endMin),
-       }
+        start:startDate,
+        end:endDate,
+       } 
        obj.push(addCalender);
-    });
+    
     // send it as proprs to handleCustomTime <popup/> in App.js 
     this.props.callback(obj,calendarIndex);
   }
-
   addEventBtnClicked(event) {
-
   this.setState({ anchorEl: event.currentTarget });  
-    
-    //this.props.callback(obj);
-    // close the pop up after creating obj
-    //this.openCloseHandle()
 }
   render() {
-
+    console.log(this.state);
     const { anchorEl } = this.state;
 
     const style =
@@ -130,6 +142,7 @@ daysHandler = (selectedDays) =>{
             <TimePickers label="End Time"   userTime={this.endTimeHandler} />
             
             <DaySelector userTime={this.daysHandler}/>
+            <DatePicker  userTime={this.handleDatePicker}/>
 
           </DialogContent>
 
