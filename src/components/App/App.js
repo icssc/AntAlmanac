@@ -147,7 +147,7 @@ class App extends Component {
         return (
             <Fragment>
                 <CssBaseline/>
-                <AppBar>
+                <AppBar position='static'>
                     <Toolbar variant='dense'>
                         <Typography variant="title" color="inherit" style={{flexGrow: 1}}>AntAlmanac</Typography>
                         <Button color="inherit">Load Schedule</Button>
@@ -157,7 +157,7 @@ class App extends Component {
                 <Grid container>
                     <Grid item lg={12}>
                         {/*<AlmanacGraphWrapped/>*/}
-                        <Popup/>
+                        {/*<Popup/>*/}
                         <SearchForm updateFormData={this.updateFormData}/>
                     </Grid>
                     <Grid item lg={6} xs={12}>
@@ -171,14 +171,15 @@ class App extends Component {
 
                     <Grid item lg={6} xs={12}>
                         <Paper
-                            style={{height: '85vh', overflow: 'auto', margin: '10px 10px 0px 5px'}}>
+                            style={{height: '85vh', overflow: 'auto', margin: '10px 10px 0px 5px', padding: 10}}>
                             <CoursePane
                                 formData={this.state.formData}
-                                handleAddClass={this.handleAddClass}
+                                onAddClass={this.handleAddClass}
                             />
                         </Paper>
                     </Grid>
-                </Grid></Fragment>
+                </Grid>
+            </Fragment>
         );
     }
 }

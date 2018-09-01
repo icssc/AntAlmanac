@@ -11,16 +11,17 @@ import Paper from "@material-ui/core/Paper";
 BigCalendar.momentLocalizer(moment);
 
 class Calendar extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     static eventStyleGetter(event, start, end, isSelected) {
         return {
             style: {
                 backgroundColor: event.color
             }
         };
+    }
+
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        return this.props.classEventsInCalendar !== nextProps.classEventsInCalendar
+            || this.props.currentScheduleIndex !== nextProps.currentScheduleIndex;
     }
 
     render() {

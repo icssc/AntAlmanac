@@ -15,12 +15,16 @@ class SearchForm extends Component {
 
     }
 
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        return this.state !== nextState;
+    }
+
     setDept(dept) {
-        this.setState(Object.assign({}, this.state, {dept: dept === null ? null : dept.value}));
+        this.setState({dept: dept === null ? null : dept.value});
     }
 
     setGE(ge) {
-        this.setState(Object.assign({}, this.state, {ge: ge}));
+        this.setState({ge: ge});
     }
 
     setTerm(term) {
