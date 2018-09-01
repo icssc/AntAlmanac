@@ -1,6 +1,46 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import AddCircle from '@material-ui/icons/AddCircle'
-import IconButton from "@material-ui/core/IconButton/IconButton";
+import {IconButton, Menu, MenuItem} from "@material-ui/core";
+
+class ScheduleAddSelector extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {anchor: null};
+    }
+
+    handleClick = (event) => {
+        this.setState({anchor: event.currentTarget});
+    };
+
+    handleClose = (scheduleNumber) => {
+        this.setState({anchor: null});
+        if (scheduleNumber !== -1) this.props.onAddClass(this.props.section, this.props.courseDetails.name, scheduleNumber);
+    };
+
+    render() {
+        return (
+            <Fragment>
+                <IconButton
+                    color='primary'
+                    onClick={this.handleClick}
+                >
+                    <AddCircle/>
+                </IconButton>
+                <Menu
+                    anchorEl={this.state.anchor}
+                    open={Boolean(this.state.anchor)}
+                    onClose={() => this.handleClose(-1)}
+                >
+                    <MenuItem onClick={() => this.handleClose(0)}>Add to schedule 1</MenuItem>
+                    <MenuItem onClick={() => this.handleClose(1)}>Add to schedule 2</MenuItem>
+                    <MenuItem onClick={() => this.handleClose(2)}>Add to schedule 3</MenuItem>
+                    <MenuItem onClick={() => this.handleClose(3)}>Add to schedule 4</MenuItem>
+                    <MenuItem onClick={() => this.handleClose(4)}>Add to all</MenuItem>
+                </Menu>
+            </Fragment>
+        );
+    }
+}
 
 class SectionTable extends Component {
     shouldComponentUpdate(nextProps, nextState, nextContext) {
@@ -32,8 +72,9 @@ class SectionTable extends Component {
                     return (
                         <tr>
                             <td className='no_border'>
-                                <IconButton color='primary'
-                                            onClick={() => this.props.onAddClass(section, this.props.courseDetails.name)}><AddCircle/></IconButton>
+                                <ScheduleAddSelector onAddClass={this.props.onAddClass}
+                                                     section={section}
+                                                     courseDetails={this.props.courseDetails}/>
                             </td>
                             <td>{section.classCode}</td>
                             <td>{section.classType}</td>
@@ -44,7 +85,7 @@ class SectionTable extends Component {
                             <td className='multiline'>{section.meetings.map(meeting => meeting[1]).join('\n')}</td>
                             <td className='multiline'>
                                 {
-                                    `${section.numCurrentlyEnrolled[0]}/${section.maxCapacity}
+                                    `${section.numCurrentlyEnrolled[0]} / ${section.maxCapacity}
 WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`
                                 }
@@ -59,5 +100,6 @@ NOR: ${section.numNewOnlyReserved}`
         );
     }
 }
+
 //TODO: Convert CSS Sheet to JSS
 export default SectionTable;
