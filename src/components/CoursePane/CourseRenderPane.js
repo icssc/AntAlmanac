@@ -14,13 +14,14 @@ const styles = theme => ({
         alignItems: 'center',
         flexWrap: 'wrap',
         minHeight: theme.spacing.unit * 6,
-        justifyContent: 'space-between'
     },
     text: {
+        flexGrow: 1,
         display: 'inline',
     },
     icon: {
         cursor: 'pointer',
+        marginLeft: theme.spacing.unit
     },
     modal: {
         position: 'absolute',
