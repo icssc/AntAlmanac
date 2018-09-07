@@ -6,7 +6,6 @@ import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
 import availableQuarters from './availableQuarters.json'
 //----------------------------------
-// imports for rendering the graph
 import SimpleTab from './UITabs'
 //---------------------------------
 const styles = theme => ({
@@ -57,13 +56,14 @@ class AlmanacGraph extends React.Component {
 
     return (
         <React.Fragment>
-            <Button style={style} onClick={this.handleOpen}>Graph</Button>
+            <Typography gutterBottom>Click to see graph!</Typography>
+            <Button onClick={this.handleOpen}>Open Modal</Button>
           
             <Modal
               aria-labelledby="simple-modal-title"
               aria-describedby="simple-modal-description"
               open={this.state.open} onClose={this.handleClose}>     
-                 <SimpleTab/>
+                 <SimpleTab code={this.props.courseCode}  term = {this.props.term} courseDetails={this.props.courseDetails}/>
               </Modal>
               
         </React.Fragment>

@@ -1,12 +1,16 @@
-import React, {Component} from 'react';
-import depts from './depts.json';
+import React from "react";
 import MuiDownshift from 'mui-downshift';
+import depts from "./depts"
 
-class DeptSearchBar extends Component {
+class DeptSearchBar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {filteredItems: depts}; // Inital state is the whole list of depts
         this.handleStateChange = this.handleStateChange.bind(this);
+    }
+
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        return nextState !== this.state;
     }
 
     handleStateChange(changes) {
@@ -32,5 +36,4 @@ class DeptSearchBar extends Component {
         );
     }
 }
-
 export default DeptSearchBar;

@@ -63,7 +63,6 @@ class CheckboxLabels extends React.Component {
     {
       selectedDays.push(5);
     }
-    console.log(selectedDays,'from child class')
     this.props.userTime(new Set(selectedDays));
   };
 
