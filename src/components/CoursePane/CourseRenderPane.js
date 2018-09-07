@@ -1,9 +1,10 @@
 import {withStyles} from '@material-ui/core/styles';
-import {Paper, Button, Typography, Grid, Modal} from "@material-ui/core";
+import {Paper, Button, Typography, Grid, Modal, Tooltip} from "@material-ui/core";
 import {ViewList} from "@material-ui/icons";
 import React, {Component} from 'react';
 import CourseDetailPane from "./CourseDetailPane";
 import SchoolDeptCard from "./SchoolDeptCard";
+import CourseInfo from "./CourseInfo";
 
 const styles = theme => ({
     course: {
@@ -54,12 +55,12 @@ class CourseRenderPane extends Component {
             return (
                 <Grid item md={6} xs={12}>
                     <Paper elevation={3} className={this.props.classes.course} square>
+
+                      <Tooltip title={'Grammar, sentence structure, paragraph and essay organization of formal written English. Prerequisite: Placement into AC ENG 20A. Grading Option: Pass/no pass only.'}>
                         <Typography variant='button' className={this.props.classes.text}>
                             {SOCObject.name[0] + ' ' + SOCObject.name[1]}
                         </Typography>
-                        {SOCObject.prerequisiteLink &&
-                        <Button target='_blank' size='small' href={SOCObject.prerequisiteLink}
-                                color='primary'>Prerequisites</Button>}
+                      </Tooltip>
 
                         <ViewList className={this.props.classes.icon}
                                   onClick={() => this.setState({courseDetailsOpen: true, course: SOCObject})}/>
