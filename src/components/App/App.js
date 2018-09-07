@@ -76,17 +76,24 @@ class App extends Component {
         this.setState({['schedule' + this.state.currentScheduleIndex + 'Events']: classEventsInCalendar});
     }
 
-    handleAddClass(section, name) {
-        const arrayOfColorsName = 'arrayOfColors' + this.state.currentScheduleIndex;
+    handleAddClass(section, name, scheduleNumber) {
+        if (scheduleNumber === 4) {
+            this.handleAddClass(section, name, 0);
+            this.handleAddClass(section, name, 1);
+            this.handleAddClass(section, name, 2);
+            this.handleAddClass(section, name, 3);
+            return;
+        }
+        const arrayOfColorsName = 'arrayOfColors' + scheduleNumber;
 
-        const random_color = this.state[arrayOfColorsName][Math.floor(Math.random() * this.state[arrayOfColorsName].length)];
+        const randomColor = this.state[arrayOfColorsName][this.state[arrayOfColorsName].length - 1];
 
-        const checkExist = this.state['schedule' + this.state.currentScheduleIndex + 'Events'].find((element) =>
+        const checkExist = this.state['schedule' + scheduleNumber + 'Events'].find((element) =>
             element.title === section.classCode + " " + name[0]
         );
 
         if (!checkExist) {
-            this.setState({[arrayOfColorsName]: this.state[arrayOfColorsName].filter(color => color !== random_color)});
+            this.setState({[arrayOfColorsName]: this.state[arrayOfColorsName].filter(color => color !== randomColor)});
 
             let newClasses = [];
 
@@ -112,7 +119,7 @@ class App extends Component {
                     dates.forEach((shouldBeInCal, index) => {
                         if (shouldBeInCal) {
                             const newClass = {
-                                color: random_color,
+                                color: randomColor,
                                 title: section.classCode + " " + name[0],
                                 start: new Date(2018, 0, index + 1, start, startMin),
                                 end: new Date(2018, 0, index + 1, end, endMin)
@@ -123,7 +130,7 @@ class App extends Component {
                 }
             });
 
-            this.setState({['schedule' + this.state.currentScheduleIndex + 'Events']: this.state['schedule' + this.state.currentScheduleIndex + 'Events'].concat(newClasses)});
+            this.setState({['schedule' + scheduleNumber + 'Events']: this.state['schedule' + scheduleNumber + 'Events'].concat(newClasses)});
         }
     }
 
@@ -286,7 +293,7 @@ function authorize(credentials, callback) {
         return (
             <Fragment>
                 <CssBaseline/>
-                <AppBar>
+                <AppBar position='static'>
                     <Toolbar variant='dense'>
                         <Typography variant="title" color="inherit" style={{flexGrow: 1}}>AntAlmanac</Typography>
                         <Button color="inherit">Load Schedule</Button>
@@ -296,7 +303,6 @@ function authorize(credentials, callback) {
                 </AppBar>
                 <Grid container>
                     <Grid item lg={12}>
-                       
                         <SearchForm updateFormData={this.updateFormData}/>
                     </Grid>
                     <Grid item lg={6} xs={12}>
@@ -314,14 +320,16 @@ function authorize(credentials, callback) {
 
                     <Grid item lg={6} xs={12}>
                         <Paper
-                            style={{height: '85vh', overflow: 'auto', margin: '10px 10px 0px 5px'}}>
+                            style={{height: '85vh', overflow: 'auto', margin: '10px 10px 0px 5px', padding: 10}}>
                             <CoursePane
                                 formData={this.state.formData}
-                                handleAddClass={this.handleAddClass}
+                                onAddClass={this.handleAddClass}
+                                term = {this.state.formData}
                             />
                         </Paper>
                     </Grid>
-                </Grid></Fragment>
+                </Grid>
+            </Fragment>
         );
     }
 }

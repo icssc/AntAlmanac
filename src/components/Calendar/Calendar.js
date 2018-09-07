@@ -13,16 +13,17 @@ import FourKIcon from '@material-ui/icons/FourK';
 BigCalendar.momentLocalizer(moment);
 
 class Calendar extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     static eventStyleGetter(event, start, end, isSelected) {
         return {
             style: {
                 backgroundColor: event.color
             }
         };
+    }
+
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        return this.props.classEventsInCalendar !== nextProps.classEventsInCalendar
+            || this.props.currentScheduleIndex !== nextProps.currentScheduleIndex;
     }
 
     render() {
