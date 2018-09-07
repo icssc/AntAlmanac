@@ -144,6 +144,7 @@ class App extends Component {
 
 
     render() {
+ 
         return (
             <Fragment>
                 <CssBaseline/>
@@ -156,7 +157,6 @@ class App extends Component {
                 </AppBar>
                 <Grid container>
                     <Grid item lg={12}>
-                        {/*<AlmanacGraphWrapped/>*/}
                         {/*<Popup/>*/}
                         <SearchForm updateFormData={this.updateFormData}/>
                     </Grid>
@@ -175,6 +175,7 @@ class App extends Component {
                             <CoursePane
                                 formData={this.state.formData}
                                 onAddClass={this.handleAddClass}
+                                term = {this.state.formData}
                             />
                         </Paper>
                     </Grid>

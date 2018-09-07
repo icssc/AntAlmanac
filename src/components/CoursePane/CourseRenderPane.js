@@ -62,6 +62,7 @@ class CourseRenderPane extends Component {
 
                         <ViewList className={this.props.classes.icon}
                                   onClick={() => this.setState({courseDetailsOpen: true, course: SOCObject})}/>
+                                  
                     </Paper>
                 </Grid>
             )
@@ -88,8 +89,11 @@ class CourseRenderPane extends Component {
                     onClose={this.handleDismissDetails}>
                     <CourseDetailPane courseDetails={this.state.course}
                                       onDismissDetails={this.handleDismissDetails}
-                                      onAddClass={this.props.onAddClass}>
+                                      onAddClass={this.props.onAddClass}
+                                      term = {this.props.term}>
+                                      
                     </CourseDetailPane>
+                 
                 </Modal>
 
                 <Grid container spacing={16}>
