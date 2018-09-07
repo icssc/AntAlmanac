@@ -9,11 +9,12 @@ import {getGraph} from './FetchGraph'
 function getModalStyle() {
     return {
       margin: 'auto',
-      width: "60%",
+      width: "50%",
       height: "80%",
       top: 50,
       backgroundColor: "white",
-      borderRadius: "none"
+      borderRadius: "none",
+      maxHeight:"90vh"
     };
   }
   
