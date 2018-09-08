@@ -102,16 +102,18 @@ askForCourseCode = async(term) =>{
 }
 
 parseServeResponse = (arrayOfClasses) =>{
-  let code = this.props.code[0];
+  let code = null;
+  console.log(arrayOfClasses)
   for (let e of arrayOfClasses)
   {
     if(this.props.courseDetails.name[0] === e.name[0]){
-      console.log(e);
+      console.log(this.props.courseDetails.name[0]);
+      console.log(e.name[0])
       code = e.sections[0].classCode
       break;
     }
   }
-  if(code ===  this.props.code[0]){
+  if(!code){
     console.log("this course was not offed that term")
     code = '555'
   }
