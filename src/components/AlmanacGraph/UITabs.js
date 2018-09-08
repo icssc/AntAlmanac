@@ -9,11 +9,13 @@ import {getGraph} from './FetchGraph'
 function getModalStyle() {
     return {
       margin: 'auto',
-      width: "60%",
-      height: "80%",
+      width: "90%",
+      height: "100%",
       top: 50,
       backgroundColor: "white",
-      borderRadius: "none"
+      borderRadius: "none",
+      maxHeight:"80vh",
+      overflow:"scroll",
     };
   }
   
@@ -82,15 +84,15 @@ askForCourseCode = async(term) =>{
 }
 //___________________________________________________
   handleChange = (event, value) => {
-  this.setState({ value});
+  this.setState({ value, load:1});
   
   if(value === 2){
-     getGraph("f", "18",this.props.code[0],(x) => {this.setState({graph:x});})
+     getGraph("f", "18",this.props.code[0],(x) => {this.setState({graph:x,load:0});})
 }
   else if(value === 1){
     this.askForCourseCode("2018 Spring").then(responses =>{
     const courseCode = this.parseServeResponse(CustomizedTabs.flatten(responses))
-      getGraph("s", "18",courseCode,(x) => {this.setState({graph:x});})
+      getGraph("s", "18",courseCode,(x) => {this.setState({graph:x,load:0});})
     });
   }
   else if(value === 0)
@@ -133,15 +135,18 @@ parseServeResponse = (arrayOfClasses) =>{
 }
 
 handleAction = () =>{
-    this.askForCourseCode("2018 Winter").then(responses =>{
-      const courseCode = this.parseServeResponse(CustomizedTabs.flatten(responses))
-      getGraph("w", "18",courseCode,(x) => {this.setState({graph:x});})
+  this.setState({ load:1});
+  this.askForCourseCode("2018 Winter").then(responses =>{
+  const courseCode = this.parseServeResponse(CustomizedTabs.flatten(responses))
+  getGraph("w", "18",courseCode,(x) => {this.setState({graph:x,load:0});})
     });  
    
 }
  whatToRender = () => {
   if (this.state.load === 1) {
-       return( <div style={getModalStyle()}><CircularProgress size={50}/></div>)
+  return( <div style={{height: '100%', width: '100%', display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center'}}><CircularProgress size={50}/></div>)
     }
     else{
      return <div style={getModalStyle()} dangerouslySetInnerHTML={{__html: this.state.graph}} />
