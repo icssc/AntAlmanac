@@ -11,7 +11,7 @@ import Calendar from "../Calendar/Calendar";
 import Paper from "@material-ui/core/Paper";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import LoginBtn from "../LogInButton/LButton";
-import Popup from "../CustomEvents/Popup/Popup";
+import Popup from "../CustomEvents/Popup";
 import Button from "@material-ui/core/Button";
 import {
     red,
@@ -151,6 +151,10 @@ class App extends Component {
         this.setState({formData: formData});
     }
 
+    handleAddCustomEvent = (events, calendarIndex) => {
+
+    };
+
     render() {
         return (
             <Fragment>
@@ -162,16 +166,19 @@ class App extends Component {
                         <Button color="inherit">Save Schedule</Button>
                     </Toolbar>
                 </AppBar>
+
                 <Grid container>
                     <Grid item lg={12}>
                         <SearchForm updateFormData={this.updateFormData}/>
                     </Grid>
                     <Grid item lg={6} xs={12}>
                         <div style={{margin: '10px 5px 0px 10px'}}>
-                            <Calendar classEventsInCalendar={this.state['schedule' + this.state.currentScheduleIndex + 'Events']}
-                                      currentScheduleIndex={this.state.currentScheduleIndex}
-                                      onClassDelete={this.handleClassDelete}
-                                      onScheduleChange={this.handleScheduleChange}/>
+                            <Calendar
+                                classEventsInCalendar={this.state['schedule' + this.state.currentScheduleIndex + 'Events']}
+                                currentScheduleIndex={this.state.currentScheduleIndex}
+                                onClassDelete={this.handleClassDelete}
+                                onScheduleChange={this.handleScheduleChange}
+                                onAddCustomEvent={this.handleAddCustomEvent}/>
                         </div>
                     </Grid>
 
