@@ -10,11 +10,25 @@ import Paper from "@material-ui/core/Paper";
 
 BigCalendar.momentLocalizer(moment);
 
+const CustomEvent = ({ event }) => (
+    <div>
+        <div style={{marginTop: 4, marginBottom: 4, overflow: 'hidden'}}>
+            <div style={{fontWeight: 500, float: 'left'}}>{event.title}</div>
+            <div style={{float: 'right'}}>{event.type}</div>
+        </div>
+        <div style={{clear: 'left'}}>{event.location}</div>
+    </div>
+);
+
 class Calendar extends Component {
     static eventStyleGetter(event, start, end, isSelected) {
         return {
             style: {
-                backgroundColor: event.color
+                backgroundColor: event.color,
+                fontFamily: 'Roboto',
+                fontSize: 14,
+                cursor: 'pointer',
+                borderRadius: 2
             }
         };
     }
@@ -52,6 +66,7 @@ class Calendar extends Component {
                         max={new Date(2018, 0, 1, 23)}
                         events={this.props.classEventsInCalendar}
                         eventPropGetter={Calendar.eventStyleGetter}
+                        components={{event: CustomEvent}}
                         onSelectEvent={event => this.props.onClassDelete(event.title)}
                     />
                 </Paper>

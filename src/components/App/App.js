@@ -95,8 +95,8 @@ class App extends Component {
 
             let newClasses = [];
 
-            section.meetings.forEach(timeString => {
-                timeString = timeString[0].replace(/\s/g, "");
+            section.meetings.forEach(meeting => {
+                const timeString = meeting[0].replace(/\s/g, "");
 
                 if (timeString !== 'TBA') {
 
@@ -119,6 +119,8 @@ class App extends Component {
                             const newClass = {
                                 color: randomColor,
                                 title: section.classCode + " " + name[0],
+                                location: meeting[1],
+                                type: section.classType,
                                 start: new Date(2018, 0, index + 1, start, startMin),
                                 end: new Date(2018, 0, index + 1, end, endMin)
                             };
