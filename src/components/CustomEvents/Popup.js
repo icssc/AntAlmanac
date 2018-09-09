@@ -1,19 +1,30 @@
-import React from 'react';
+import React, {Component} from 'react';
 import DaySelector from "./DaySelector";
-import TimePickers from "./DropdownMenu";
-import Button from '@material-ui/core/Button';
+import {
+    Button,
+    Dialog,
+    TextField,
+    DialogActions,
+    DialogContent,
+    MenuItem,
+    Menu,
+    FormControl,
+    Input,
+    IconButton,
+    InputLabel
+} from '@material-ui/core';
 import {withStyles} from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import AddIcon from '@material-ui/icons/Add';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from "@material-ui/core/FormControl/FormControl";
-import InputLabel from "@material-ui/core/InputLabel/InputLabel";
-import Input from "@material-ui/core/Input/Input";
 import {Add} from "@material-ui/icons";
-import IconButton from "@material-ui/core/IconButton/IconButton";
+
+const styles = () => ({
+    container: {
+        display: 'flex',
+        flexWrap: 'wrap',
+    },
+    textField: {
+        minWidth: 120
+    }
+});
 
 function EventName(props) {
     return (
@@ -31,12 +42,29 @@ function EventName(props) {
     );
 }
 
-const styles = theme => ({
-    container: {
-        display: 'flex',
-        flexWrap: 'wrap',
-    }
-});
+function TimePickers(props) {
+    const {classes} = props;
+
+    return (
+        <form noValidate>
+            <TextField
+                onChange={props.onTimeChange}
+                id="time"
+                label={props.label}
+                type="time"
+                defaultValue="07:30"
+                InputLabelProps={{
+                    shrink: true,
+                }}
+                className={classes.textField}
+                inputProps={{
+                    step: 300
+                }}
+            />
+        </form>
+    );
+}
+TimePickers = withStyles(styles)(TimePickers);
 
 function dayToNum(day) {
     switch (day) {
@@ -53,7 +81,7 @@ function dayToNum(day) {
     }
 }
 
-class DialogSelect extends React.Component {
+class DialogSelect extends Component {
     constructor(props) {
         super(props);
         this.state = {
