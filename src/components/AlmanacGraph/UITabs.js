@@ -9,8 +9,8 @@ import {getGraph} from './FetchGraph'
 function getModalStyle() {
     return {
       margin: 'auto',
-      width: "90%",
-      height: "100%",
+      width: "65%",
+      height: "50%",
       top: 50,
       backgroundColor: "white",
       borderRadius: "none",
