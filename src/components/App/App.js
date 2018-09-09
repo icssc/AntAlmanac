@@ -57,6 +57,7 @@ class App extends Component {
         this.handleAddClass = this.handleAddClass.bind(this);
         this.handleClassDelete = this.handleClassDelete.bind(this);
         this.handleScheduleChange = this.handleScheduleChange.bind(this);
+        this.handleAddCustomEvent = this.handleAddCustomEvent.bind(this);
     }
 
     handleClassDelete(title) {
@@ -151,8 +152,15 @@ class App extends Component {
         this.setState({formData: formData});
     }
 
-    handleAddCustomEvent = (events, calendarIndex) => {
-
+    handleAddCustomEvent(events, calendarIndex) {
+        if (calendarIndex === 4) {
+            this.setState({['schedule' + 0 + 'Events']: this.state['schedule' + 0 + 'Events'].concat(events)});
+            this.setState({['schedule' + 1 + 'Events']: this.state['schedule' + 1 + 'Events'].concat(events)});
+            this.setState({['schedule' + 2 + 'Events']: this.state['schedule' + 2 + 'Events'].concat(events)});
+            this.setState({['schedule' + 3 + 'Events']: this.state['schedule' + 3 + 'Events'].concat(events)});
+        } else {
+            this.setState({['schedule' + calendarIndex + 'Events']: this.state['schedule' + calendarIndex + 'Events'].concat(events)});
+        }
     };
 
     render() {
