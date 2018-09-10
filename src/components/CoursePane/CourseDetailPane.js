@@ -6,20 +6,8 @@ import './sectiontable.css'
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 
 class CourseDetailPane extends Component {
-
-    getCourseCode = () =>{
-        const code= [];
-        this.props.courseDetails.sections.map(elem =>{
-           
-            if(elem.classType === 'Lec')
-                code.push(elem.classCode);
-            
-        });
-        return code;
-    }
-
     render() {
-    
+    console.log(this.props,"YYYYYYYYYYYYYYYYYYYYYYYYY")
         return (
             <div style={{
                 overflow: 'auto',
@@ -37,7 +25,7 @@ class CourseDetailPane extends Component {
                     </Typography>
                     
                 </div>
-                <AlmanacGraphWrapped courseCode={this.getCourseCode()}  term = {this.props.term} courseDetails={this.props.courseDetails}/>
+                <AlmanacGraphWrapped   term = {this.props.term} courseDetails={this.props.courseDetails}/>
                 <SectionTable style={{marginTop: 12}}
                               courseDetails={this.props.courseDetails}
                               onAddClass={this.props.onAddClass}/>

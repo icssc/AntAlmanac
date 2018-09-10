@@ -5,12 +5,13 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import {getGraph} from './FetchGraph'
+import Table from './Table'
 
 function getModalStyle() {
     return {
       margin: 'auto',
-      width: "90%",
-      height: "100%",
+      width: "65%",
+      height: "50%",
       top: 50,
       backgroundColor: "white",
       borderRadius: "none",
@@ -70,6 +71,7 @@ class CustomizedTabs extends React.Component {
   state = {
     value: 0,
     graph:'',
+    graphHeader:'',
     load:0
   };
 //_____________________________________
@@ -103,22 +105,25 @@ askForCourseCode = async(term) =>{
 
 parseServeResponse = (arrayOfClasses) =>{
   let code = null;
+  let codeList = [];
   console.log(arrayOfClasses)
   for (let e of arrayOfClasses)
   {
     if(this.props.courseDetails.name[0] === e.name[0]){
-      console.log(this.props.courseDetails.name[0]);
-      console.log(e.name[0])
-      code = e.sections[0].classCode
+      //console.log(this.props.courseDetails.name[0]);
+     // console.log(e.name[0])
+     this.setState({graphHeader:e})
+      e.sections.forEach( (UCIClass) =>{
+        if(UCIClass.units !== 0)
+        {
+          codeList.push(UCIClass.classCode)
+        }
+      });
+     // code = e.sections[0].classCode
       break;
     }
   }
-  if(!code){
-    console.log("this course was not offed that term")
-    code = '555'
-  }
-  console.log(code)
-  return code;
+  return codeList;
 }
 
   static flatten(data) {
@@ -194,6 +199,4 @@ CustomizedTabs.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(CustomizedTabs);
-
- // const year = (this.props.term.term).substring(2,4);
-    //const quarter = (this.props.term.term)[5];
+// <Table info={this.state.graphHeader} />

@@ -90,12 +90,14 @@ handleDatePicker = (e) =>{
   //let old_wayEnd =  new Date(2018, 7,  element, endHour, endMin);
 //*************************************************** */
     let date = this.state.date;
+    //new Date(2018, 0, 1)
     let startDate = new Date(date+'T'+this.state.start);
     let endDate = new Date(date+'T'+this.state.end);
-    console.log(startDate,endDate,'the date is '); 
+   // console.log(startDate,endDate,'the date is '); 
     
-    let obj = []
-   
+    const obj = []
+    //days = [...this.state.day]
+    //days.forEach(element => {
       let addCalender = {
         color: '#551a8b',
         title: this.state.eventName,
@@ -103,6 +105,8 @@ handleDatePicker = (e) =>{
         end:endDate,
        } 
        obj.push(addCalender);
+    
+     
     
     // send it as proprs to handleCustomTime <popup/> in App.js 
     this.props.callback(obj,calendarIndex);

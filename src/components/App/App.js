@@ -298,7 +298,6 @@ function authorize(credentials, callback) {
                         <Typography variant="title" color="inherit" style={{flexGrow: 1}}>AntAlmanac</Typography>
                         <Button color="inherit">Load Schedule</Button>
                         <Button color="inherit">Save Schedule</Button>
-                        <AlmanacGraphWrapped  />
                     </Toolbar>
                 </AppBar>
                 <Grid container>

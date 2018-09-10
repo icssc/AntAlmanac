@@ -7,7 +7,9 @@ let url_base = "https://summer18.herokuapp.com/";
   var graph_url = url_base + quarter+'/' + year + '/' + code;
   // code for IE7+, Firefox, Chrome, Opera, Safari
   //"https://summer18.herokuapp.com/w/18/36050"
-    let  xmlhttp= new XMLHttpRequest();
+  const ok = fetch(graph_url).then((response)=>callback(response.text()))
+    console.log(ok)
+    /*let  xmlhttp= new XMLHttpRequest();
     xmlhttp.open("GET",graph_url, true );
     xmlhttp.onreadystatechange = () =>
      {
@@ -22,9 +24,9 @@ let url_base = "https://summer18.herokuapp.com/";
               outp.push(arr[1]);
           let str = outp.toString();
           str = str.split(" ");
-         */
+         ///
           callback(imgSrc);
       }
   };
-  xmlhttp.send();    
+  xmlhttp.send();  */  
 }
