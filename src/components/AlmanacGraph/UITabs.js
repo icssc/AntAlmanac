@@ -3,16 +3,19 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import CircularProgress from "@material-ui/core/CircularProgress";
 import {getGraph} from './FetchGraph'
 
 function getModalStyle() {
     return {
       margin: 'auto',
-      width: "50%",
-      height: "80%",
+      width: "65%",
+      height: "50%",
       top: 50,
       backgroundColor: "white",
-      borderRadius: "none"
+      borderRadius: "none",
+      maxHeight:"80vh",
+      overflow:"scroll",
     };
   }
   
@@ -60,50 +63,114 @@ const styles = theme => ({
   typography: {
     padding: theme.spacing.unit * 3,
   },
-/*  paper: {
-    position: 'relative',
-    width: theme.spacing.unit * 50,
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing.unit * 4,
 
-  }*/
 });
 
 class CustomizedTabs extends React.Component {
   state = {
     value: 0,
+    graph:'',
+    load:0
   };
-
+//_____________________________________
+askForCourseCode = async(term) =>{
+  const dept = this.props.term.dept;
+  const url = new URL("https://websocserver.herokuapp.com/");
+  const params = {department: dept, term: term};
+  Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+  const res = await fetch(url.toString());
+  const data = await res.json();
+  return data;
+}
+//___________________________________________________
   handleChange = (event, value) => {
-    this.setState({ value });
-  };
-
-  // will get the graph src from the call back function in Fetch Graph.js
-  componentDidMount()
-  {
-      // create an object x and add it to the state
-      getGraph('w','18','36050',(x) => {
-      this.setState({x});
-      
-    })
+  this.setState({ value, load:1});
+  
+  if(value === 2){
+     getGraph("f", "18",this.props.code[0],(x) => {this.setState({graph:x,load:0});})
+}
+  else if(value === 1){
+    this.askForCourseCode("2018 Spring").then(responses =>{
+    const courseCode = this.parseServeResponse(CustomizedTabs.flatten(responses))
+      getGraph("s", "18",courseCode,(x) => {this.setState({graph:x,load:0});})
+    });
   }
- 
+  else if(value === 0)
+  {
+    this.handleAction();
+  }
+}
+
+parseServeResponse = (arrayOfClasses) =>{
+  let code = this.props.code[0];
+  for (let e of arrayOfClasses)
+  {
+    if(this.props.courseDetails.name[0] === e.name[0]){
+      console.log(e);
+      code = e.sections[0].classCode
+      break;
+    }
+  }
+  if(code ===  this.props.code[0]){
+    console.log("this course was not offed that term")
+    code = '555'
+  }
+  console.log(code)
+  return code;
+}
+
+  static flatten(data) {
+    return data.reduce((accumulator, school) => {
+        accumulator.push(school);
+
+        school.departments.forEach((dept) => {
+            accumulator.push(dept);
+
+            dept.courses.forEach((course) => {
+                accumulator.push(course);
+            })
+        });
+        return accumulator;
+    }, [])
+}
+
+handleAction = () =>{
+  this.setState({ load:1});
+  this.askForCourseCode("2018 Winter").then(responses =>{
+  const courseCode = this.parseServeResponse(CustomizedTabs.flatten(responses))
+  getGraph("w", "18",courseCode,(x) => {this.setState({graph:x,load:0});})
+    });  
+   
+}
+ whatToRender = () => {
+  if (this.state.load === 1) {
+  return( <div style={{height: '100%', width: '100%', display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center'}}><CircularProgress size={50}/></div>)
+    }
+    else{
+     return <div style={getModalStyle()} dangerouslySetInnerHTML={{__html: this.state.graph}} />
+    }
+ }
   render() {
+    console.log(this.state,"\nPROPS",this.props)
     const { classes } = this.props;
     const { value } = this.state;
-
+   
+    
     return (
       <div className={classes.root}>
-        <Tabs
+        <Tabs 
+          centered = {true}
           value={value}
+          action={this.handleAction}
           onChange={this.handleChange}
           classes={{ root: classes.tabsRoot, indicator: classes.tabsIndicator }}
         >
           <Tab
             disableRipple
             classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
-            label="Fall 18"
+            label="Winter 18"
           />
           <Tab
             disableRipple
@@ -113,15 +180,18 @@ class CustomizedTabs extends React.Component {
           <Tab
             disableRipple
             classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
-            label="Winter 18"
+            label="Fall 18"
           />
         </Tabs>
-        <div style={getModalStyle()} dangerouslySetInnerHTML={{__html: this.state.x}} />.
+        {this.whatToRender()}
       </div>
-    );
+        )
   }
 }
 CustomizedTabs.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(CustomizedTabs);
+
+ // const year = (this.props.term.term).substring(2,4);
+    //const quarter = (this.props.term.term)[5];

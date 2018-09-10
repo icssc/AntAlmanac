@@ -31,7 +31,6 @@ class CoursePane extends Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         const {dept, term, ge} = this.props.formData;
-
         if (prevProps !== this.props) {
             this.setState({loading: 1});
             const url = new URL("https://websocserver.herokuapp.com/");
@@ -42,17 +41,20 @@ class CoursePane extends Component {
             fetch(url.toString()).then((resp) => {
                     return resp.json();
                 }
-            ).then((jsonObj) => this.setState({courseData: CoursePane.flatten(jsonObj), loading: 2}));
+            ).then((jsonObj) => {
+                console.log(jsonObj);
+                this.setState({courseData: CoursePane.flatten(jsonObj), loading: 2}
+            
+        )});
         }
     }
 
     render() {
         const {loading, courseData} = this.state;
-
         if (loading === 2) {
             return <CourseRenderPane onAddClass={this.props.onAddClass}
                                      courseData={courseData}
-            />
+                                     term = {this.props.term}/>
         } else if (loading === 1) {
             return (
                 <div style={{height: '100%', width: '100%', display: 'flex',

@@ -57,7 +57,6 @@ class SchoolDeptCard extends Component {
                     <Fragment>
                         <Subject onClick={() => this.setState({commentsOpen: !this.state.commentsOpen})}
                                  className={this.props.classes.icon}/>
-
                         <Collapse in={this.state.commentsOpen} className={this.props.classes.collapse}>
                             <Typography variant='body2'>
                                 {this.props.comment === '' ? 'No comments found' : 'Comments:'}
@@ -65,6 +64,7 @@ class SchoolDeptCard extends Component {
                             <div dangerouslySetInnerHTML={html} className={this.props.classes.comments}>{}</div>
                         </Collapse>
                     </Fragment>
+                   
                 </Paper>
             </Grid>)
     }
