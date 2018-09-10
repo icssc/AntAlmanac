@@ -11,7 +11,7 @@ import Calendar from "../Calendar/Calendar";
 import Paper from "@material-ui/core/Paper";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import LoginBtn from "../LogInButton/LButton";
-import Popup from "../CustomEvents/Popup/Popup";
+import Popup from "../CustomEvents/Popup";
 import Button from "@material-ui/core/Button";
 import {
     red,
@@ -57,6 +57,7 @@ class App extends Component {
         this.handleAddClass = this.handleAddClass.bind(this);
         this.handleClassDelete = this.handleClassDelete.bind(this);
         this.handleScheduleChange = this.handleScheduleChange.bind(this);
+        this.handleAddCustomEvent = this.handleAddCustomEvent.bind(this);
     }
 
     handleClassDelete(title) {
@@ -95,8 +96,8 @@ class App extends Component {
 
             let newClasses = [];
 
-            section.meetings.forEach(timeString => {
-                timeString = timeString[0].replace(/\s/g, "");
+            section.meetings.forEach(meeting => {
+                const timeString = meeting[0].replace(/\s/g, "");
 
                 if (timeString !== 'TBA') {
 
@@ -119,6 +120,8 @@ class App extends Component {
                             const newClass = {
                                 color: randomColor,
                                 title: section.classCode + " " + name[0],
+                                location: meeting[1],
+                                type: section.classType,
                                 start: new Date(2018, 0, index + 1, start, startMin),
                                 end: new Date(2018, 0, index + 1, end, endMin)
                             };
@@ -149,6 +152,17 @@ class App extends Component {
         this.setState({formData: formData});
     }
 
+    handleAddCustomEvent(events, calendarIndex) {
+        if (calendarIndex === 4) {
+            this.setState({['schedule' + 0 + 'Events']: this.state['schedule' + 0 + 'Events'].concat(events)});
+            this.setState({['schedule' + 1 + 'Events']: this.state['schedule' + 1 + 'Events'].concat(events)});
+            this.setState({['schedule' + 2 + 'Events']: this.state['schedule' + 2 + 'Events'].concat(events)});
+            this.setState({['schedule' + 3 + 'Events']: this.state['schedule' + 3 + 'Events'].concat(events)});
+        } else {
+            this.setState({['schedule' + calendarIndex + 'Events']: this.state['schedule' + calendarIndex + 'Events'].concat(events)});
+        }
+    };
+
     render() {
  
         return (
@@ -161,16 +175,19 @@ class App extends Component {
                         <Button color="inherit">Save Schedule</Button>
                     </Toolbar>
                 </AppBar>
+
                 <Grid container>
                     <Grid item lg={12}>
                         <SearchForm updateFormData={this.updateFormData}/>
                     </Grid>
                     <Grid item lg={6} xs={12}>
                         <div style={{margin: '10px 5px 0px 10px'}}>
-                            <Calendar classEventsInCalendar={this.state['schedule' + this.state.currentScheduleIndex + 'Events']}
-                                      currentScheduleIndex={this.state.currentScheduleIndex}
-                                      onClassDelete={this.handleClassDelete}
-                                      onScheduleChange={this.handleScheduleChange}/>
+                            <Calendar
+                                classEventsInCalendar={this.state['schedule' + this.state.currentScheduleIndex + 'Events']}
+                                currentScheduleIndex={this.state.currentScheduleIndex}
+                                onClassDelete={this.handleClassDelete}
+                                onScheduleChange={this.handleScheduleChange}
+                                onAddCustomEvent={this.handleAddCustomEvent}/>
                         </div>
                     </Grid>
 

@@ -28,7 +28,7 @@ class SearchForm extends Component {
     }
 
     setTerm(term) {
-
+        this.setState({term: term});
     }
 
     render() {
