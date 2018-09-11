@@ -64,23 +64,21 @@ class SectionTable extends Component {
     return this.props.courseDetails !== nextProps.courseDetails;
   }
 
-  redirectRMP = (e, name) => {
-    e.preventDefault();
+  redirectRMP = async name => {
     //console.log(name);
     var foundIndex = this.state.url.findIndex(item => item.fullname === name);
-
-    window.open(this.state.url[foundIndex].link, "_blank");
+    var item = await this.renderRMP(name);
+    window.open(item, "_blank");
   };
 
   linkRMP = name => {
-    this.renderRMP(name);
     return name.map(item => {
       if (item !== "STAFF") {
         return (
           <div
             style={{ cursor: "pointer" }}
-            onClick={event => {
-              this.redirectRMP(event, item);
+            onClick={() => {
+              this.redirectRMP(item);
             }}
           >
             {item}
@@ -90,32 +88,49 @@ class SectionTable extends Component {
     });
   };
 
-  renderRMP = async nameA => {
-    nameA.forEach(async name => {
-      if (name !== "STAFF") {
-        var lastName = name.substring(0, name.indexOf(","));
-        const firstName = name.charAt(name.length - 2);
-        var scraptURL = `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`;
-        var url = await getRMP(
-          firstName,
-          lastName,
-          "https://cors-anywhere.herokuapp.com/" + scraptURL
-        ).then(src => src);
-        //console.log("this", url);
-        console.log("rk", name);
-        if (url.length === 1) {
-          console.log("rk", url);
-          this.state.url.push({
-            fullname: name,
-            link: "https://www.ratemyprofessors.com" + url[0]
-          });
-        } else this.state.url.push({ fullname: name, link: scraptURL });
-      }
-    });
-    this.setState({ url: this.state.url }, function() {
-      console.log("say", this.state.url);
-    });
+  renderRMP = async name => {
+    var lastName = name.substring(0, name.indexOf(","));
+    const firstName = name.charAt(name.length - 2);
+    var scraptURL = `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`;
+    var url = await getRMP(
+      firstName,
+      lastName,
+      "https://cors-anywhere.herokuapp.com/" + scraptURL
+    ).then(src => src);
+    //console.log("this", url);
+    console.log("rk", name);
+    if (url.length === 1) {
+      console.log("rk", url);
+      return "https://www.ratemyprofessors.com" + url[0];
+    } else return scraptURL;
   };
+
+  // renderRMP = async nameA => {
+  //   nameA.forEach(async name => {
+  //     if (name !== "STAFF") {
+  //       var lastName = name.substring(0, name.indexOf(","));
+  //       const firstName = name.charAt(name.length - 2);
+  //       var scraptURL = `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`;
+  //       var url = await getRMP(
+  //         firstName,
+  //         lastName,
+  //         "https://cors-anywhere.herokuapp.com/" + scraptURL
+  //       ).then(src => src);
+  //       //console.log("this", url);
+  //       console.log("rk", name);
+  //       if (url.length === 1) {
+  //         console.log("rk", url);
+  //         this.state.url.push({
+  //           fullname: name,
+  //           link: "https://www.ratemyprofessors.com" + url[0]
+  //         });
+  //       } else this.state.url.push({ fullname: name, link: scraptURL });
+  //     }
+  //   });
+  //   this.setState({ url: this.state.url }, function() {
+  //     console.log("say", this.state.url);
+  //   });
+  // };
 
   render() {
     const sectionInfo = this.props.courseDetails.sections;
