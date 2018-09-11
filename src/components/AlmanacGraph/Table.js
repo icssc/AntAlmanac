@@ -10,7 +10,7 @@ import Paper from '@material-ui/core/Paper';
 
 const CustomTableCell = withStyles(theme => ({
   head: {
-    backgroundColor: theme.palette.common.black,
+    backgroundColor: "#b78727",//theme.palette.common.black,
     color: theme.palette.common.white,
   },
   body: {
@@ -25,7 +25,7 @@ const styles = theme => ({
     overflowX: 'auto',
   },
   table: {
-    minWidth: 700,
+    minWidth: 600,
   },
   row: {
     '&:nth-of-type(odd)': {
@@ -35,23 +35,27 @@ const styles = theme => ({
 });
 
 let id = 0;
-function createData(name, calories, fat, carbs, protein) {
+function createData(Code, Type, Units, Instructors, Time) {
   id += 1;
-  return { id, name, calories, fat, carbs, protein };
+  return { id, Code, Type, Units, Instructors, Time };
 }
 
-
+/*const rows = [
+  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
+  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
+  createData('Eclair', 262, 16.0, 24, 6.0),
+  createData('Cupcake', 305, 3.7, 67, 4.3),
+  createData('Gingerbread', 356, 16.0, 49, 3.9),
+];*/
 
 function CustomizedTable(props) {
-    const rows = [
-        createData(props.info.sections[0].classCode,
-                   props.info.sections[0].classType,
-                   props.info.sections[0].Instructors.toString(),
-                   props.info.sections[0].meetings.toString())
-      ];
-      
   const { classes } = props;
-    console.log(props)
+  const info = props.info
+    //console.log(info);
+  const rows = [
+    createData(info.classCode, info.classType +" "+info.sectionCode , info.units, info.instructors[0], info.meetings[0])
+  ];
+
   return (
     <Paper className={classes.root}>
       <Table className={classes.table}>
@@ -59,8 +63,7 @@ function CustomizedTable(props) {
           <TableRow>
             <CustomTableCell>Code</CustomTableCell>
             <CustomTableCell numeric>Type</CustomTableCell>
-            <CustomTableCell numeric>Section</CustomTableCell>
-            <CustomTableCell numeric>Units</CustomTableCell>
+            <CustomTableCell numeric>Units (g)</CustomTableCell>
             <CustomTableCell numeric>Instructors</CustomTableCell>
             <CustomTableCell numeric>Time</CustomTableCell>
           </TableRow>
@@ -70,12 +73,12 @@ function CustomizedTable(props) {
             return (
               <TableRow className={classes.row} key={row.id}>
                 <CustomTableCell component="th" scope="row">
-                  {row.name}
+                  {row.Code}
                 </CustomTableCell>
-                <CustomTableCell numeric>{row.calories}</CustomTableCell>
-                <CustomTableCell numeric>{row.fat}</CustomTableCell>
-                <CustomTableCell numeric>{row.carbs}</CustomTableCell>
-                <CustomTableCell numeric>{row.protein}</CustomTableCell>
+                <CustomTableCell numeric>{row.Type}</CustomTableCell>
+                <CustomTableCell numeric>{row.Units}</CustomTableCell>
+                <CustomTableCell numeric>{row.Instructors}</CustomTableCell>
+                <CustomTableCell numeric>{row.Time}</CustomTableCell>
               </TableRow>
             );
           })}
