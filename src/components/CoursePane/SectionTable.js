@@ -91,7 +91,7 @@ class SectionTable extends Component {
       if (name !== "STAFF") {
         var lastName = name.substring(0, name.indexOf(","));
         const firstName = name.charAt(name.length - 2);
-        var scraptURL = `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`;
+        var scraptURL = `https://cors-anywhere.herokuapp.com/https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`;
         var url = await getRMP(firstName, lastName, scraptURL).then(src => src);
         //console.log("this", url);
         if (url.length === 1)
