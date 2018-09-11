@@ -9,8 +9,7 @@ import SearchForm from "../SearchForm/SearchForm";
 import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
 import Paper from "@material-ui/core/Paper";
-import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
-import Popup from "../CustomEvents/Popup/Popup";
+import Popup from "../CustomEvents/Popup";
 import Button from "@material-ui/core/Button";
 import gapi from 'gapi-client';
 import {
@@ -97,8 +96,8 @@ class App extends Component {
 
             let newClasses = [];
 
-            section.meetings.forEach(timeString => {
-                timeString = timeString[0].replace(/\s/g, "");
+            section.meetings.forEach(meeting => {
+                const timeString = meeting[0].replace(/\s/g, "");
 
                 if (timeString !== 'TBA') {
 
@@ -121,6 +120,8 @@ class App extends Component {
                             const newClass = {
                                 color: randomColor,
                                 title: section.classCode + " " + name[0],
+                                location: meeting[1],
+                                type: section.classType,
                                 start: new Date(2018, 0, index + 1, start, startMin),
                                 end: new Date(2018, 0, index + 1, end, endMin)
                             };
@@ -298,8 +299,9 @@ function authorize(credentials, callback) {
                         <Typography variant="title" color="inherit" style={{flexGrow: 1}}>AntAlmanac</Typography>
                         <Button color="inherit">Load Schedule</Button>
                         <Button color="inherit">Save Schedule</Button>
-                     </Toolbar>
+
                 </AppBar>
+
                 <Grid container>
                     <Grid item lg={12}>
                         <SearchForm updateFormData={this.updateFormData}/>

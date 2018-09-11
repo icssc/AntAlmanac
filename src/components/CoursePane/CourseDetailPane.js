@@ -11,15 +11,15 @@ class CourseDetailPane extends Component {
         const code= [];
         this.props.courseDetails.sections.map(elem =>{
            
-            if(elem.classType === 'Lec')
+            if(elem.units !== '0')
                 code.push(elem.classCode);
             
         });
         return code;
     }
-
-    render() {
     
+    render() {
+    console.log(this.props,"YYYYYYYYYYYYYYYYYYYYYYYYY")
         return (
             <div style={{
                 overflow: 'auto',
@@ -37,7 +37,7 @@ class CourseDetailPane extends Component {
                     </Typography>
                     
                 </div>
-                <AlmanacGraphWrapped courseCode={this.getCourseCode()}  term = {this.props.term} courseDetails={this.props.courseDetails}/>
+                <AlmanacGraphWrapped  courseCode={this.getCourseCode()}  term = {this.props.term} courseDetails={this.props.courseDetails}/>
                 <SectionTable style={{marginTop: 12}}
                               courseDetails={this.props.courseDetails}
                               onAddClass={this.props.onAddClass}/>
