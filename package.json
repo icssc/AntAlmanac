@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^1.5.1",
     "@material-ui/icons": "^2.0.3",
+    "cheerio": "^1.0.0-rc.2",
     "moment": "^2.22.2",
     "mui-downshift": "^1.1.1",
     "react": "^16.4.2",
