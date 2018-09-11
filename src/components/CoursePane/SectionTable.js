@@ -89,7 +89,7 @@ class SectionTable extends Component {
     });
   };
 
-  renderRMP = nameA => {
+  renderRMP = async nameA => {
     nameA.forEach(async name => {
       if (name !== "STAFF") {
         var lastName = name.substring(0, name.indexOf(","));
