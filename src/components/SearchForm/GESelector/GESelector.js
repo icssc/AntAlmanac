@@ -33,7 +33,7 @@ class GESelector extends Component {
                     onChange={this.handleChange}
                     inputProps={{name:'ge', id:'ge-select', fullWidth:true}}
                 >
-                    <MenuItem value={'ANY'}>All: Do not filter for GE</MenuItem>
+                    <MenuItem value={'ANY'}>All: Don't filter for GE</MenuItem>
                     <MenuItem value={'GE-1A'}>GE Ia (1a): Lower Division Writing</MenuItem>
                     <MenuItem value={'GE-1B'}>GE Ib (1b): Upper Division Writing</MenuItem>
                     <MenuItem value={'GE-2'}>GE II (2): Science and Technology</MenuItem>

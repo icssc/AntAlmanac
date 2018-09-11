@@ -4,17 +4,32 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "../../../node_modules/@material-ui/core/IconButton/IconButton";
-import {ChevronLeft, ChevronRight} from "@material-ui/icons";
+import {ChevronLeft, ChevronRight, Add} from "@material-ui/icons";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
+import Popup from "../CustomEvents/Popup";
 
 BigCalendar.momentLocalizer(moment);
+
+const CustomEvent = ({ event }) => (
+    <div>
+        <div style={{marginTop: 4, marginBottom: 4, overflow: 'hidden'}}>
+            <div style={{fontWeight: 500, float: 'left'}}>{event.title}</div>
+            <div style={{float: 'right'}}>{event.type}</div>
+        </div>
+        <div style={{clear: 'left'}}>{event.location}</div>
+    </div>
+);
 
 class Calendar extends Component {
     static eventStyleGetter(event, start, end, isSelected) {
         return {
             style: {
-                backgroundColor: event.color
+                backgroundColor: event.color,
+                fontFamily: 'Roboto',
+                fontSize: 14,
+                cursor: 'pointer',
+                borderRadius: 2
             }
         };
     }
@@ -31,7 +46,8 @@ class Calendar extends Component {
                     <Toolbar variant='dense' style={{backgroundColor: '#5191d6'}}>
                         <IconButton onClick={() => this.props.onScheduleChange(0)}><ChevronLeft/></IconButton>
                         <IconButton onClick={() => this.props.onScheduleChange(1)}><ChevronRight/></IconButton>
-                        <Typography variant='subheading'>{'Schedule ' + (this.props.currentScheduleIndex + 1)}</Typography>
+                        <Typography variant='subheading' style={{flexGrow: 1}}>{'Schedule ' + (this.props.currentScheduleIndex + 1)}</Typography>
+                        <Popup onAddCustomEvent={this.props.onAddCustomEvent}/>
                     </Toolbar>
                 </Paper>
 
@@ -52,6 +68,7 @@ class Calendar extends Component {
                         max={new Date(2018, 0, 1, 23)}
                         events={this.props.classEventsInCalendar}
                         eventPropGetter={Calendar.eventStyleGetter}
+                        components={{event: CustomEvent}}
                         onSelectEvent={event => this.props.onClassDelete(event.title)}
                     />
                 </Paper>
