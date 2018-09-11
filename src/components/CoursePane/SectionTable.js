@@ -64,15 +64,16 @@ class SectionTable extends Component {
     return this.props.courseDetails !== nextProps.courseDetails;
   }
 
-  redirectRMP(e, name) {
+  redirectRMP = (e, name) => {
     e.preventDefault();
     //console.log(name);
     var foundIndex = this.state.url.findIndex(item => item.fullname === name);
 
     window.open(this.state.url[foundIndex].link, "_blank");
-  }
+  };
 
   linkRMP = name => {
+    this.renderRMP(name);
     return name.map(item => {
       if (item !== "STAFF") {
         return (
@@ -138,7 +139,6 @@ class SectionTable extends Component {
         </thead>
         <tbody>
           {sectionInfo.map(section => {
-            this.renderRMP(section.instructors);
             return (
               <tr>
                 <td className="no_border">
@@ -155,7 +155,6 @@ class SectionTable extends Component {
                 <td>{section.sectionCode}</td>
                 <td>{section.units}</td>
                 <td className="multiline">
-                  {" "}
                   {this.linkRMP(section.instructors)}
                 </td>
                 <td className="multiline">
