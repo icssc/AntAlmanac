@@ -76,11 +76,14 @@ class SectionTable extends Component {
     return name.map(item => {
       if (item !== "STAFF") {
         return (
-         
-            <div style={{ cursor: "pointer" }}  onClick={event => {
+          <div
+            style={{ cursor: "pointer" }}
+            onClick={event => {
               this.redirectRMP(event, item);
-            }}>{item}</div>
-         
+            }}
+          >
+            {item}
+          </div>
         );
       } else return item;
     });
@@ -91,15 +94,21 @@ class SectionTable extends Component {
       if (name !== "STAFF") {
         var lastName = name.substring(0, name.indexOf(","));
         const firstName = name.charAt(name.length - 2);
-        var scraptURL = `https://cors-anywhere.herokuapp.com/https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`;
-        var url = await getRMP(firstName, lastName, scraptURL).then(src => src);
+        var scraptURL = `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`;
+        var url = await getRMP(
+          firstName,
+          lastName,
+          "https://cors-anywhere.herokuapp.com/" + scraptURL
+        ).then(src => src);
         //console.log("this", url);
-        if (url.length === 1)
+        console.log("rk", name);
+        if (url.length === 1) {
+          console.log("rk", url);
           this.state.url.push({
             fullname: name,
             link: "https://www.ratemyprofessors.com" + url[0]
           });
-        else this.state.url.push({ fullname: name, link: scraptURL });
+        } else this.state.url.push({ fullname: name, link: scraptURL });
       }
     });
     this.setState({ url: this.state.url }, function() {
