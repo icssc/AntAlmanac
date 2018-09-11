@@ -51,7 +51,8 @@ export function convertToCalendar(
   random_color,
   name,
   deptName,
-  termName
+  termName,
+  meeting
 ) {
   let newClasses = [];
 
@@ -85,7 +86,9 @@ export function convertToCalendar(
         start: new Date(2018, 0, index + 1, start, startMin),
         end: new Date(2018, 0, index + 1, end, endMin),
         courseID: section.classCode,
-        courseTerm: termName
+        courseTerm: termName,
+        location: meeting,
+        type: section.classType
       };
       newClasses.push(newClass);
     }

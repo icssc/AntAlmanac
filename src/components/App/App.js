@@ -357,8 +357,8 @@ class App extends Component {
           color => color !== randomColor
         )
       });
-      section.meetings.forEach(timeString => {
-        timeString = timeString[0].replace(/\s/g, "");
+      section.meetings.forEach(meeting => {
+        const timeString = meeting[0].replace(/\s/g, "");
 
         if (timeString !== "TBA") {
           const newClasses = convertToCalendar(
@@ -367,7 +367,8 @@ class App extends Component {
             randomColor,
             name,
             deptName,
-            termName
+            termName,
+            meeting[1]
           );
           this.setState(
             {
