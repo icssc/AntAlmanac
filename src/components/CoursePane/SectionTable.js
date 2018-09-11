@@ -76,16 +76,11 @@ class SectionTable extends Component {
     return name.map(item => {
       if (item !== "STAFF") {
         return (
-          <a
-            style={{ textDecoration: "none" }}
-            target="_blank"
-            href="#"
-            onClick={event => {
+         
+            <div style={{ cursor: "pointer" }}  onClick={event => {
               this.redirectRMP(event, item);
-            }}
-          >
-            <div>{item}</div>
-          </a>
+            }}>{item}</div>
+         
         );
       } else return item;
     });
