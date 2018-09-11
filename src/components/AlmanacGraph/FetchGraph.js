@@ -1,13 +1,12 @@
-let url_base = "https://summer18.herokuapp.com/";
-
-// AJAX
 //@param callback is a function to pass the url after ready state avaliable
  export async function getGraph(quarter,year,code,callback)
 {
-  var graph_url = url_base + quarter+'/' + year + '/' + code;
-  // code for IE7+, Firefox, Chrome, Opera, Safari
+  const url_base = "https://summer18.herokuapp.com/";
+  let graph_url = url_base + quarter+'/' + year + '/' + code;
+  
+    // code for IE7+, Firefox, Chrome, Opera, Safari
   //"https://summer18.herokuapp.com/w/18/36050"
-    let  xmlhttp= new XMLHttpRequest();
+  let  xmlhttp= new XMLHttpRequest();
     xmlhttp.open("GET",graph_url, true );
     xmlhttp.onreadystatechange = () =>
      {
@@ -26,5 +25,5 @@ let url_base = "https://summer18.herokuapp.com/";
           callback(imgSrc);
       }
   };
- await xmlhttp.send();    
+  xmlhttp.send();    
 }
