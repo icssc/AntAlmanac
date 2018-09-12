@@ -172,13 +172,14 @@ class App extends Component {
 
     //check fetchhelper.js
   };
-
+  
+  //Keyboard shortcuts to undo last delete
   undoEvent = async event => {
     clearTimeout(this.state.timeOut);
     console.log("backupnew", this.state.backupArray);
     if (
       event.keyCode === 90 &&
-      event.ctrlKey &&
+      (event.ctrlKey || event.metaKey) &&
       this.state.backupArray.length > 0
     ) {
       var obj = this.state.backupArray.pop();
