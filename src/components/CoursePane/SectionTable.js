@@ -135,6 +135,11 @@ class SectionTable extends Component {
   render() {
     const sectionInfo = this.props.courseDetails.sections;
 
+    const rmpStyle = {
+      textDecoration: 'underline',
+      color: '#0645AD'
+    };
+
     return (
       <table>
         <thead>
@@ -169,7 +174,7 @@ class SectionTable extends Component {
                 <td>{section.classType}</td>
                 <td>{section.sectionCode}</td>
                 <td>{section.units}</td>
-                <td className="multiline">
+                <td className="multiline" style={rmpStyle}>
                   {this.linkRMP(section.instructors)}
                 </td>
                 <td className="multiline">
