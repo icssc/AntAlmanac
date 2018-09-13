@@ -108,7 +108,7 @@ class App extends Component {
         async function() {
           document.getElementById("introID").innerHTML =
             "Hi! " + this.state.name;
-          this.messageSwitch();
+          this.handleSwitch();
           myJson.schedules.forEach(async element => {
             if (element.customize) {
               const randomNumber = this.setID();
@@ -172,7 +172,7 @@ class App extends Component {
 
     //check fetchhelper.js
   };
-  
+
   //Keyboard shortcuts to undo last delete
   undoEvent = async event => {
     clearTimeout(this.state.timeOut);
