@@ -91,7 +91,7 @@ class App extends Component {
       this.setState(
         {
           logIn: true,
-          autoSaving: false,
+          autoSaving: true, //autosave after logging in
           schedule0Events: [],
           schedule1Events: [],
           schedule2Events: [],
@@ -164,7 +164,7 @@ class App extends Component {
       console.log("saved", this.state.arrayOfID);
       editUser(this.state.name, toSend);
       //check fetchhelper.js
-      this.setState({ logIn: true, autoSaving: false }, function() {
+      this.setState({ logIn: true, autoSaving: true }, function() {
         this.handleSwitch();
         document.getElementById("timeID").innerHTML = "Saved at " + getTime();
       });
@@ -172,7 +172,7 @@ class App extends Component {
 
     //check fetchhelper.js
   };
-  
+
   //Keyboard shortcuts to undo last delete
   undoEvent = async event => {
     clearTimeout(this.state.timeOut);
@@ -469,7 +469,7 @@ class App extends Component {
       this.setState({
         timeOut: setTimeout(() => {
           this.handleSave();
-          document.getElementById("timeID").innerHTML = "Saved at " + getTime();
+          {/*document.getElementById("timeID").innerHTML = "Saved at " + getTime();*/}
         }, 5000)
       });
     }

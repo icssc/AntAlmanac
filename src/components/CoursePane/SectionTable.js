@@ -169,7 +169,7 @@ class SectionTable extends Component {
                 <td>{section.classType}</td>
                 <td>{section.sectionCode}</td>
                 <td>{section.units}</td>
-                <td className="multiline">
+                <td className="multiline" style="color:#0645AD">
                   {this.linkRMP(section.instructors)}
                 </td>
                 <td className="multiline">
