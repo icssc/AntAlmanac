@@ -165,7 +165,7 @@ class App extends Component {
       editUser(this.state.name, toSend);
       //check fetchhelper.js
       this.setState({ logIn: true, autoSaving: true }, function() {
-        this.handleSwitch();
+        //this.handleSwitch();
         document.getElementById("timeID").innerHTML = "Saved at " + getTime();
       });
     }
