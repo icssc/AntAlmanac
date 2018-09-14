@@ -120,9 +120,7 @@ class SectionTable extends Component {
             <th className="no_border">{}</th>
             <th>Code</th>
             <th>Type</th>
-            <th>Sec</th>
-            <th>Units</th>
-            <th>Instructors</th>
+            <th>Instructor</th>
             <th>Time</th>
             <th>Place</th>
             <th>Enrollmt</th>
@@ -148,7 +146,7 @@ class SectionTable extends Component {
                   {
                     `${section.classType}
 Sec ${section.sectionCode}
-${section.units} Unit(s)`
+${section.units} units`
                   }
                 </td>
                 <td className="multiline">
