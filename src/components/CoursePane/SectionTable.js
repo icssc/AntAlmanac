@@ -158,7 +158,7 @@ ${section.units} units`
                 <td className="multiline">
                   {section.meetings.map(meeting => meeting[1]).join("\n")}
                 </td>
-                <td className={["multiline", {section.status}].join(' ')}>
+                <td className={["multiline", section.status].join(' ')}>
                   {`${section.numCurrentlyEnrolled[0]} / ${section.maxCapacity}
 WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
