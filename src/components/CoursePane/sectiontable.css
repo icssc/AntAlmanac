@@ -51,6 +51,18 @@ tr:nth-child(odd) > td:not(:first-child)  {
     color: #e53935;
 }
 
+.secOPEN {
+    background-color: #afe0c3;
+}
+
+.secWaitl {
+    background-color: #a5bdff;
+}
+
+.secFULL {
+    background-color: #ffb1af;
+}
+
 .multiline {
     white-space: pre;
 }
