@@ -108,19 +108,21 @@ class App extends Component {
         async function() {
           document.getElementById("introID").innerHTML =
             "Hi! " + this.state.name;
-          this.handleSwitch();
+          this.messageSwitch();
+          var count = 0;
           myJson.schedules.forEach(async element => {
+            var json = 0;
             if (element.customize) {
               const randomNumber = this.setID();
               const dates = getCustomDate(element, randomNumber);
-
               element.index.forEach(pos => {
                 //console.log("dates", dates, pos);
                 this.handleAddCustomEvent(dates, pos, element.weekdays);
               });
+
               //console.log("eveeee", element, this.state.eventsToStore);
             } else {
-              var json = await getCourseData(element); //check fetchhelper.js
+              json = await getCourseData(element); //check fetchhelper.js
               const section = json[0].departments[0].courses[0].sections[0];
               const courseName = json[0].departments[0].courses[0].name;
               const deptName = json[0].departments[0].name[0];
@@ -129,6 +131,11 @@ class App extends Component {
                 this.handleAddClass(section, courseName, i, deptName, termName);
               });
             }
+            if (count === myJson.schedules.length - 1) {
+              console.log("o");
+              this.handleSwitch();
+            }
+            ++count;
           });
         }
       );
@@ -166,7 +173,7 @@ class App extends Component {
       //check fetchhelper.js
       this.setState({ logIn: true, autoSaving: false }, function() {
         this.handleSwitch();
-        document.getElementById("timeID").innerHTML = "Saved at " + getTime();
+        document.getElementById("timeID").innerHTML = getTime();
       });
     }
 
@@ -258,14 +265,9 @@ class App extends Component {
       });
     }
 
-    if (arrayE.length > 0) arrayE[foundIndex].index = indexArr;
+    if (indexArr.length > 0) arrayE[foundIndex].index = indexArr;
     else {
-      if (arrayE[foundIndex].customize) {
-        var arrayID = this.state.arrayOfID.filter(
-          item => item !== arrayE[foundIndex].courseID
-        );
-        this.setState({ arrayOfID: arrayID });
-      }
+      console.log("dekete");
       arrayE.splice(foundIndex, 1);
     }
 
@@ -416,7 +418,7 @@ class App extends Component {
       this.handleAddCustomEvent(events, 3, dates);
       return;
     }
-
+    clearTimeout(this.state.timeOut);
     var arrayE = this.state.arrayToStore;
     var foundIndex = arrayE.findIndex(function(element) {
       return (
@@ -469,7 +471,7 @@ class App extends Component {
       this.setState({
         timeOut: setTimeout(() => {
           this.handleSave();
-          document.getElementById("timeID").innerHTML = "Saved at " + getTime();
+          document.getElementById("timeID").innerHTML = getTime();
         }, 5000)
       });
     }
