@@ -131,7 +131,7 @@ class SectionTable extends Component {
         <tbody>
           {sectionInfo.map(section => {
             return (
-              <tr className="sec"+{section.status}>
+              <tr className={section.status}>
                 <td className="no_border">
                   <ScheduleAddSelector
                     onAddClass={this.props.onAddClass}
@@ -164,7 +164,7 @@ WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
                 </td>
                 <td>{section.restrictions}</td>
-                <td className={section.status}>{section.status}</td>
+                <td>{section.status}</td>
               </tr>
             );
           })}

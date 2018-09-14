@@ -41,25 +41,16 @@ tr:nth-child(odd) > td:not(:first-child)  {
 
 .OPEN {
     color: #00c853;
+    background-color: #afe0c3;
 }
 
 .Waitl {
     color: #1c44b2;
+    background-color: #a5bdff;
 }
 
 .FULL {
     color: #e53935;
-}
-
-.secOPEN {
-    background-color: #afe0c3;
-}
-
-.secWaitl {
-    background-color: #a5bdff;
-}
-
-.secFULL {
     background-color: #ffb1af;
 }
 
