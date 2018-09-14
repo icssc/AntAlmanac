@@ -125,8 +125,8 @@ class SectionTable extends Component {
             <th>Instructors</th>
             <th>Time</th>
             <th>Place</th>
-            <th>Enrollment</th>
-            <th>Restrictions</th>
+            <th>Enrollmt</th>
+            <th>Rstr</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -144,9 +144,13 @@ class SectionTable extends Component {
                   />
                 </td>
                 <td>{section.classCode}</td>
-                <td>{section.classType}</td>
-                <td>{section.sectionCode}</td>
-                <td>{section.units}</td>
+                <td className="multiline">
+                  {
+                    `${section.classType}
+                    Sec ${section.sectionCode}
+                    ${section.units} Unit(s)`
+                  }
+                </td>
                 <td className="multiline">
                   {this.linkRMP(section.instructors)}
                 </td>
