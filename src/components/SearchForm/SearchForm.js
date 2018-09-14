@@ -56,7 +56,7 @@ class SearchForm extends Component {
                             color='primary'
                             variant='contained'
                             type="submit"
-                            onSubmit={submitSearch}
+                            onSubmit={this.submitSearch}
                             >Search</Button>
                     </Grid>
                 </Grid>
