@@ -31,7 +31,7 @@ class CourseDetailPane extends Component {
               " " +
               this.props.courseDetails.name[1]}
           </Typography>
-          <br>
+          <br />
           <Typography variant="body" style={{ flexGrow: "1", marginTop: 12 }}>
             {"Testing this is the course info"}
           </Typography>
