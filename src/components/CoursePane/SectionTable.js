@@ -131,7 +131,7 @@ class SectionTable extends Component {
         <tbody>
           {sectionInfo.map(section => {
             return (
-              <tr className={section.status}>
+              <tr>
                 <td className="no_border">
                   <ScheduleAddSelector
                     onAddClass={this.props.onAddClass}
@@ -158,13 +158,13 @@ ${section.units} units`
                 <td className="multiline">
                   {section.meetings.map(meeting => meeting[1]).join("\n")}
                 </td>
-                <td className="multiline">
+                <td className=["multiline", {section.status}].join(' ')>
                   {`${section.numCurrentlyEnrolled[0]} / ${section.maxCapacity}
 WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
                 </td>
                 <td>{section.restrictions}</td>
-                <td>{section.status}</td>
+                <td className={section.status}>{section.status}</td>
               </tr>
             );
           })}

@@ -30,6 +30,11 @@ class SearchForm extends Component {
         this.setState({term: term});
     }
 
+    submitSearch(event) {
+        event.preventDefault();
+        this.props.updateFormData(this.state);
+    }
+
     render() {
         return (
             <form style={{margin: '15px 10px 0px 10px'}}>
@@ -50,7 +55,8 @@ class SearchForm extends Component {
                         <Button
                             color='primary'
                             variant='contained'
-                            onClick={() => this.props.updateFormData(this.state)}
+                            type="submit"
+                            onSubmit={submitSearch}
                             >Search</Button>
                     </Grid>
                 </Grid>
