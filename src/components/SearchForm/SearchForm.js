@@ -12,7 +12,13 @@ class SearchForm extends Component {
         this.setDept = this.setDept.bind(this);
         this.setGE = this.setGE.bind(this);
         this.setTerm = this.setTerm.bind(this);
+        document.addEventListener("keydown", this.enterSearch, false);
+    }
 
+    enterSearch = async event =>{
+      if (event.charCode == 13){
+        this.props.updateFormData(this.state);
+      }
     }
 
     shouldComponentUpdate(nextProps, nextState, nextContext) {

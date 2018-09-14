@@ -147,8 +147,8 @@ class SectionTable extends Component {
                 <td className="multiline">
                   {
                     `${section.classType}
-                    Sec ${section.sectionCode}
-                    ${section.units} Unit(s)`
+Sec ${section.sectionCode}
+${section.units} Unit(s)`
                   }
                 </td>
                 <td className="multiline">
