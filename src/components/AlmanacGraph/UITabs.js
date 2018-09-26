@@ -13,7 +13,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 function getModalStyle() {
     return {
       margin: 'auto',
-      width: "70%",
+      width: "65%",
       height: "50%",
       top: 50,
       backgroundColor: "white",
