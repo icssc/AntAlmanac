@@ -12,7 +12,7 @@ import Paper from "@material-ui/core/Paper";
 import Popup from "../CustomEvents/Popup";
 import Button from "@material-ui/core/Button";
 import gapi from 'gapi-client';
-import DomPic from '../AlmanacGraph/DomPic'
+import DomPic from '../AlmanacGraph/DOMPic'
 import {
     red,
     pink,
