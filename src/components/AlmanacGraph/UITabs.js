@@ -76,99 +76,135 @@ class CustomizedTabs extends React.Component {
   state = {
     value: 0,
     load:0,
-    graph:[],
-    courseForTable:[]
+    graphWinter:[],
+    graphSpring:[],
+    graphFall:[],
+    courseForTableSpring:[],
+    courseForTableWinter:[],
+    courseForTableFall:[]
   };
 //_____________________________________
+/**
+ * @param  term which want to get courses for, 2018 Fall, or 2018 Spring
+ * @return call calssObject() which return the course object or -1
+ */
 askForCourseCode = async(term) =>{
-  this.setState({graph:[]})
   const params = {department: this.props.term.dept, term: term};
   const url = new URL("https://websocserver.herokuapp.com/");
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
   const res = await fetch(url).then((response) => response.json())
   const data = [...res[0].departments[0].courses]
   //console.log(data);
-  return data;
+  return this.classObject(data);
 }
-//___________________________________________________
-getGraph = (quarter,year,code,callback) =>{
+//___________________________________________________________________
+/**
+ * @param courses Json from askForCourseCode
+ * @return course whih include comment, name, sections, and prerequisiteLink
+ *          if course was not offered that term will return -1
+ */
+classObject = (arrayOfClasses) =>{
+  for (let e of arrayOfClasses)
+  {
+    if(this.props.courseDetails.name[0] === e.name[0]){
+      console.log(e);
+     return e;
+    }
+  }
+  return -1;
+}
+//___________________________________________________________________
+/**
+ * @param quarter(w,f,s), year(18,17...), code which is course code
+ * @return embed HTML Tag contianing img src
+ */
+getGraph = (quarter,year,code) =>{
   const url_base = "https://summer18.herokuapp.com/";
   const graph_url = url_base + quarter+'/' + year + '/' + code;
   return fetch(graph_url).then((response) =>response.text());
 }
 //___________________________________________________
+listOfCodes = (course) =>{
+  const codeList = []
+  course.sections.forEach( (section) =>{
+    if(section.units !== '0')
+    codeList.push(section.classCode)
+  })
+  return codeList; 
+}
+//___________________________________________________
   handleChange = (event, value) => {
   this.setState({ value, load:1});
-  
+  //fall
   if(value === 2){
-    this.setState({graph:[]})
-    this.setState({courseForTable:this.props.courseDetails})
-    console.log(this.props)
-    this.props.code.forEach( (code) => {
-      this.getGraph("f", "18", code).then((result)=>this.setState({graph:[...this.state.graph, result],load:0}));
+    if(this.state.courseForTableFall.length===0)
+    console.log(!this.state.courseForTableFall.length)
+    this.askForCourseCode('2018 Fall').then(responses =>{
+      if(responses !== -1){
+        this.setState({courseForTableFall:responses})
+        const codes = this.listOfCodes(responses)
+        const gList =[]
+        codes.forEach( (code) => {
+        this.getGraph("f", "18", code).then((result)=>
+       this.setState({graphFall:[...this.state.graphFall, result],load:0}));
+      })
+      }
+      else
+        this.setState({courseForTableFall:null,load:0})
     })
 }
+  // spring
   else if(value === 1){
-    this.askForCourseCode("2018 Spring").then(responses =>{
-    const courseCode = this.extractCode(responses)
-    if(courseCode.length)
-      courseCode.forEach( (code) => {
-        this.getGraph("s", "18",code).then((result)=>this.setState({graph:[...this.state.graph, result],load:0}));
-    })
-    else{
-      this.setState({ load:0});
+    this.askForCourseCode('2018 Spring').then(responses =>{
+      if(responses !== -1){
+        this.setState({courseForTableSpring:responses})
+        const codes = this.listOfCodes(responses)
+        codes.forEach( (code) => {
+        this.getGraph("s", "18", code).then((result)=>this.setState({graphSpring:[...this.state.graphSpring, result],load:0}));})
     }
-    });
-  }
+    else
+        this.setState({courseForTableSpring:null,load:0})
+  })
+}
+  // winter
   else if(value === 0)
   {
     this.handleAction();
   }
 }
 
-extractCode = (arrayOfClasses) =>{
-  
-  let codeList = []
-  for (let e of arrayOfClasses)
-  {
-    if(this.props.courseDetails.name[0] === e.name[0]){
-      console.log(e);
-      this.setState({courseForTable:e})
-      e.sections.forEach( (section) =>{
-        if(section.units !== '0')
-        codeList.push(section.classCode)
-      })
-      break;
-    }
-  }
-  if(!codeList.length){
-    console.log("this course was not offed that term")
-    this.setState({courseForTable: null}) 
- 
-  }
-  console.log(codeList)
-  return codeList;
-}
-
+/**
+ * this will be called when the model open 
+ */
 handleAction = () =>{
-  
-  this.setState({ load:1});
-  this.askForCourseCode("2018 Winter").then(responses =>{
-  const courseCode = this.extractCode(responses)
-  if(courseCode.length)
-     courseCode.forEach( (code) => {
-        this.getGraph("w", "18",code).then((result)=>this.setState({graph:[...this.state.graph, result],load:0})); }) 
-  else {
-    this.setState({ load:0});
-  }   
-});  
-   
+  this.setState({load:1});
+  this.askForCourseCode('2018 Winter').then(responses =>{
+    if(responses !== -1){
+      this.setState({courseForTableWinter:responses})
+      const codes = this.listOfCodes(responses)
+      codes.forEach( (code) => {
+      this.getGraph("w", "18", code).then((result)=>this.setState({graphWinter:[...this.state.graphWinter, result],load:0}));})
+  }
+  else
+  this.setState({courseForTableWinter:null,load:0})})
 }
+/**
+ * reset the state for table and graphs
+ */
  whatToRender = () => {
       const graphs = []
-      if(this.state.graph !== null)
+      if(this.state.value === 0)
       {
-        this.state.graph.forEach( (graphImg) => {
+        this.state.graphWinter.forEach( (graphImg) => {
+          graphs.push( <div style={getModalStyle()} dangerouslySetInnerHTML={{__html: graphImg}}/> );})
+      }
+      else if(this.state.value === 1)
+      {
+        this.state.graphSpring.forEach( (graphImg) => {
+          graphs.push( <div style={getModalStyle()} dangerouslySetInnerHTML={{__html: graphImg}}/> );})
+      }
+      else{
+        this.state.graphFall.forEach( (graphImg) => {
           graphs.push( <div style={getModalStyle()} dangerouslySetInnerHTML={{__html: graphImg}}/> );})
       }
     return graphs
@@ -176,15 +212,23 @@ handleAction = () =>{
  
 table = () =>{
 let all = []
-  if(this.state.courseForTable !== null && this.state.courseForTable.length !==0){
-    this.state.courseForTable.sections.forEach( (classInfo) =>{
+let table = []
+if(this.state.value === 0)
+  table = this.state.courseForTableWinter
+else if(this.state.value === 1)
+  table = this.state.courseForTableSpring
+else
+  table = this.state.courseForTableFall
+console.log(table)
+  if(table !== null && table.length !==0){
+    table.sections.forEach( (classInfo) =>{
       if(classInfo.units !== '0')
         all.push( <Table info={classInfo}/>); })
    }
-   else if (this.state.courseForTable === null) {
+   else if (table === null) {
      all.push( 
        <React.Fragment>
-     <DialogTitle id="scroll-dialog-title">OOPPSS!</DialogTitle>
+     <DialogTitle id="scroll-dialog-title">OPS!</DialogTitle>
      <DialogContent>
        <DialogContentText>
          This Class was not offered that term! Ask UCI office of reserch why at: IRB@research.uci.edu
@@ -195,24 +239,13 @@ let all = []
      </DialogActions>
      </React.Fragment>);
    }
-   else if(!this.state.courseForTable.length){
+   else if(!table.length){
      all.push(<div/>)
    }
    return all
  }
 
-/*showMe = () => {
-  const graphAndInfo = []
-  if(this.state.courseForTable !== null && this.state.courseForTable.length !==0)
-   for(let i =0; i < this.state.courseForTable.sections.length;i++)
-    {
-    graphAndInfo.push(<Table info={this.state.courseForTable.sections[i]}/>);
-    if(this.state.graph !== null)
-    graphAndInfo.push(<div style={getModalStyle()} dangerouslySetInnerHTML={{__html: this.state.graph[i]}}/> )
-    }
-  console.log(graphAndInfo)
-  return graphAndInfo;
-}*/
+
 showMe = () => {
   if (this.state.load === 1) {
     return( <div style={{height: '100%', width: '100%', display: 'flex',
@@ -261,7 +294,6 @@ showMe = () => {
           />
         </Tabs>
         {this.showMe()}
-      
       </div>
         )
   }
@@ -270,5 +302,3 @@ CustomizedTabs.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(CustomizedTabs);
-//{this.table()}
-//{this.whatToRender()}

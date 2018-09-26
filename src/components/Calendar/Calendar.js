@@ -41,8 +41,8 @@ class Calendar extends Component {
 
     render() {
         return (
-            <div>
-                <Paper style={{overflow: 'hidden', marginBottom: 5}}>
+            <div id="cal">
+                <Paper style={{overflow: 'allow', marginBottom: 5}}>
                     <Toolbar variant='dense' style={{backgroundColor: '#5191d6'}}>
                         <IconButton onClick={() => this.props.onScheduleChange(0)}><ChevronLeft/></IconButton>
                         <IconButton onClick={() => this.props.onScheduleChange(1)}><ChevronRight/></IconButton>

@@ -12,26 +12,34 @@ const CustomTableCell = withStyles(theme => ({
   head: {
     backgroundColor: "#b78727",//theme.palette.common.black,
     color: theme.palette.common.white,
+    width:100,
+    height:'60%',
+    fontSize: 20,
+    
   },
   body: {
-    fontSize: 14,
+    height:'60%',
+    fontSize: 20,
   },
 }))(TableCell);
 
 const styles = theme => ({
   root: {
-    width: '100%',
-    marginTop: theme.spacing.unit * 3,
+    width: '80%',
+    marginTop: theme.spacing.unit*3 ,
+    marginBottom: theme.spacing.unit*3 ,
     overflowX: 'auto',
+    margin: "0 auto"
   },
   table: {
-    minWidth: 600,
+    minWidth: 100,
   },
   row: {
     '&:nth-of-type(odd)': {
       backgroundColor: theme.palette.background.default,
     },
   },
+  width:100
 });
 
 let id = 0;
@@ -40,30 +48,22 @@ function createData(Code, Type, Units, Instructors, Time) {
   return { id, Code, Type, Units, Instructors, Time };
 }
 
-/*const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];*/
-
 function CustomizedTable(props) {
   const { classes } = props;
   const info = props.info
     //console.log(info);
   const rows = [
-    createData(info.classCode, info.classType +" "+info.sectionCode , info.units, info.instructors[0], info.meetings[0])
+    createData(info.classCode, info.classType +" "+info.sectionCode , info.units, info.instructors[0], info.meetings[0][0])
   ];
 
   return (
     <Paper className={classes.root}>
-      <Table className={classes.table}>
-        <TableHead>
+      <Table className={classes.table} padding='none'>
+        <TableHead  style={{height: 1}}>
           <TableRow>
             <CustomTableCell>Code</CustomTableCell>
             <CustomTableCell numeric>Type</CustomTableCell>
-            <CustomTableCell numeric>Units (g)</CustomTableCell>
+            <CustomTableCell numeric>Units</CustomTableCell>
             <CustomTableCell numeric>Instructors</CustomTableCell>
             <CustomTableCell numeric>Time</CustomTableCell>
           </TableRow>

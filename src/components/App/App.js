@@ -12,6 +12,8 @@ import Paper from "@material-ui/core/Paper";
 import Popup from "../CustomEvents/Popup";
 import Button from "@material-ui/core/Button";
 import gapi from 'gapi-client';
+import DomPic from '../AlmanacGraph/DomPic'
+import domModel from '../AlmanacGraph/domModel'
 import {
     red,
     pink,
@@ -308,14 +310,14 @@ function authorize(credentials, callback) {
                     </Grid>
                     <Grid item lg={6} xs={12}>
                         <div style={{margin: '10px 5px 0px 10px'}}>
-
-                        <Popup callback={this.handleCustemTime.bind(this)}/>
-                        
+                        <DomPic/>
+                        <domModel/>
                             <Calendar classEventsInCalendar={this.state['schedule' + this.state.currentScheduleIndex + 'Events']}
                                       currentScheduleIndex={this.state.currentScheduleIndex}
                                       onClassDelete={this.handleClassDelete}
                                       onScheduleChange={this.handleScheduleChange}
-                                      googleCalendar={this.handleImportToGoogleCalendar}/>
+                                      googleCalendar={this.handleImportToGoogleCalendar}
+                                      />
                         </div>
                     </Grid>
 

@@ -31,15 +31,6 @@ class AlmanacGraph extends React.Component {
   handleClose = () => {
     this.setState({ open: false });
   };
-  
-  //UnComment to display graph here then add an img tag inside the Model component
-/*
-   // will the graph from the call back function in Fetch Graph.js
-   componentDidMount(){
-    // create an object x and add it to the state
-    getGraph( (x) => {this.setState({x});} )
-  }
-*/
 
   render() {
     const { classes } = this.props;

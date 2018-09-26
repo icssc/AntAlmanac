@@ -8,6 +8,7 @@
     "cheerio": "^1.0.0-rc.2",
     "gapi-client": "0.0.3",
     "googleapis": "^27.0.0",
+    "html2canvas": "^1.0.0-alpha.12",
     "moment": "^2.22.2",
     "mui-downshift": "^1.1.1",
     "react": "^16.4.2",
