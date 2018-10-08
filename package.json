@@ -11,7 +11,8 @@
     "react": "^16.4.2",
     "react-big-calendar": "^0.19.2",
     "react-dom": "^16.4.2",
-    "react-scripts": "1.1.4"
+    "react-scripts": "1.1.4",
+    "request": "2.88.0"
   },
   "scripts": {
     "start": "react-scripts start",
