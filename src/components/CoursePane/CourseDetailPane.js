@@ -3,6 +3,7 @@ import { IconButton, Typography } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import SectionTable from "./SectionTable";
 import "./sectiontable.css";
+import course_info from "./course_info.json";
 
 class CourseDetailPane extends Component {
   render() {
@@ -31,6 +32,15 @@ class CourseDetailPane extends Component {
               " " +
               this.props.courseDetails.name[1]}
           </Typography>
+      
+          <div
+            className="course_info"
+            dangerouslySetInnerHTML={{
+              __html:
+                course_info[this.props.courseDetails.name[0]][this.props.courseDetails.name[1]]
+            }}
+          />
+          </div>
           
         </div>
         <SectionTable
