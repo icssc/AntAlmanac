@@ -32,7 +32,7 @@ class CourseDetailPane extends Component {
               " " +
               this.props.courseDetails.name[1]}
           </Typography>
-      
+      {console.log(course_info)}
           <div
             className="course_info"
             dangerouslySetInnerHTML={{
