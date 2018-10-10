@@ -32,11 +32,7 @@ class CourseDetailPane extends Component {
               " " +
               this.props.courseDetails.name[1]}
           </Typography>
-<<<<<<< HEAD
 
-=======
-      {console.log(course_info)}
->>>>>>> 758049082ce980429324a09c715652f9a62f0696
           <div
             className="course_info"
             style={{ marginTop: 5 }}
