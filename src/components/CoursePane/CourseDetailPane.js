@@ -39,7 +39,7 @@ class CourseDetailPane extends Component {
               __html:
                 course_info[this.props.courseDetails.name[0]][this.props.courseDetails.name[1]]
             }}
-          />
+          >
           </div>
           
         </div>
