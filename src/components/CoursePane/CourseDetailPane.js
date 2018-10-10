@@ -3,9 +3,9 @@ import { IconButton, Typography } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import SectionTable from "./SectionTable";
 import "./sectiontable.css";
-import course_info from "./course_info.json";
 
 class CourseDetailPane extends Component {
+  const course_info = require("json-loader!./course_info.json");
   render() {
     return (
       <div
