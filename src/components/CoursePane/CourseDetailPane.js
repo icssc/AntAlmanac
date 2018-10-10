@@ -36,7 +36,7 @@ class CourseDetailPane extends Component {
           <div
             className="course_info"
             dangerouslySetInnerHTML={{
-              __html: course_info[this.props.courseDetails.deptName][this.props.courseDetails.name[0]]
+              __html: course_info[this.props.deptName][this.props.courseDetails.name[0]]
             }}
           >
           </div>
