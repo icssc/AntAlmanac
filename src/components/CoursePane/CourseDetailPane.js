@@ -27,7 +27,7 @@ class CourseDetailPane extends Component {
             <ArrowBack />
           </IconButton>
 
-          <Typography variant="title" style={{ flexGrow: "1", marginTop: 12, position: "absolute" }}>
+          <Typography variant="title" style={{ flexGrow: "1", marginTop: 12 }}>
             {this.props.courseDetails.name[0] +
               " " +
               this.props.courseDetails.name[1]}
@@ -35,7 +35,7 @@ class CourseDetailPane extends Component {
 
           <div
             style={{
-              position: "relative"
+              clear: "both"
             }}
             className="course_info"
             dangerouslySetInnerHTML={{
