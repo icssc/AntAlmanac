@@ -32,15 +32,18 @@ class CourseDetailPane extends Component {
               " " +
               this.props.courseDetails.name[1]}
           </Typography>
-      
+
           <div
+            style={{
+              position: "relative"
+            }}
             className="course_info"
             dangerouslySetInnerHTML={{
               __html: course_info[this.props.deptName][this.props.courseDetails.name[0]]
             }}
           >
           </div>
-          
+
         </div>
         <SectionTable
           style={{ marginTop: 12 }}
