@@ -20,27 +20,30 @@ class CourseDetailPane extends Component {
             display: "inline-flex"
           }}
         >
-          <IconButton
-            style={{ marginRight: 24 }}
-            onClick={this.props.onDismissDetails}
+          <div>
+            <IconButton
+              style={{ marginRight: 24 }}
+              onClick={this.props.onDismissDetails}
+            >
+              <ArrowBack />
+            </IconButton>
+
+            <Typography variant="title" style={{ flexGrow: "1", marginTop: 12 }}>
+              {this.props.courseDetails.name[0] +
+                " " +
+                this.props.courseDetails.name[1]}
+            </Typography>
+          </div>
+
+          <div
+            style={{ margin: 20 }}
+            className="course_info"
+            dangerouslySetInnerHTML={{
+              __html: course_info[this.props.deptName][this.props.courseDetails.name[0]]
+            }}
           >
-            <ArrowBack />
-          </IconButton>
+          </div>
 
-          <Typography variant="title" style={{ flexGrow: "1", marginTop: 12 }}>
-            {this.props.courseDetails.name[0] +
-              " " +
-              this.props.courseDetails.name[1]}
-          </Typography>
-        </div>
-
-        <div
-          
-          className="course_info"
-          dangerouslySetInnerHTML={{
-            __html: course_info[this.props.deptName][this.props.courseDetails.name[0]]
-          }}
-        >
         </div>
 
 
