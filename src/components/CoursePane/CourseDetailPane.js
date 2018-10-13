@@ -27,7 +27,7 @@ class CourseDetailPane extends Component {
             <ArrowBack />
           </IconButton>
 
-          <Typography variant="title" style={{ flexGrow: "1", marginTop: 12 }}>
+          <Typography variant="title" style={{ flexGrow: "1", marginTop: 12, position: "absolute" }}>
             {this.props.courseDetails.name[0] +
               " " +
               this.props.courseDetails.name[1]}
