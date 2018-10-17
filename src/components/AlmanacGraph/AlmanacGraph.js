@@ -49,14 +49,14 @@ class AlmanacGraph extends React.Component {
 
     return (
         <React.Fragment>
-            <Typography gutterBottom>Open the Almanac</Typography>
-            <Button onClick={this.handleOpen}>Open Modal</Button>
+            <Typography gutterBottom></Typography>
+            <Button onClick={this.handleOpen}>Open the Almanac</Button>
 
             <Modal
               aria-labelledby="simple-modal-title"
               aria-describedby="simple-modal-description"
               open={this.state.open} onClose={this.handleClose}>
-                  <SimpleTab code={this.props.courseCode}  term = {this.props.term} courseDetails={this.props.courseDetails}/> 
+                  <SimpleTab code={this.props.courseCode}  term = {this.props.term} courseDetails={this.props.courseDetails}/>
               </Modal>
 
         </React.Fragment>
