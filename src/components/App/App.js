@@ -14,6 +14,8 @@ import Button from "@material-ui/core/Button";
 import gapi from 'gapi-client';
 import DomPic from '../AlmanacGraph/DomPic'
 import domModel from '../AlmanacGraph/domModel'
+import logo from './logo_wide.png';
+
 import {
   getCourseData,
   convertToCalendar,
@@ -497,9 +499,7 @@ class App extends Component {
         <CssBaseline />
         <AppBar position="static">
           <Toolbar variant="dense">
-            <Typography variant="title" color="inherit" style={{ flexGrow: 1 }}>
-              AntAlmanac
-            </Typography>
+            <img src={logo} style={{ flexGrow: 1}} alt="logo" />
             <Typography
               variant="title"
               id="introID"
