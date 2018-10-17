@@ -8,6 +8,9 @@ import { ChevronLeft, ChevronRight, Add } from "@material-ui/icons";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import DialogSelect from "../CustomEvents/Popup";
+import gapi from 'gapi-client';
+import DomPic from '../AlmanacGraph/DomPic'
+import domModel from '../AlmanacGraph/domModel'
 
 BigCalendar.momentLocalizer(moment);
 
@@ -55,6 +58,8 @@ class Calendar extends Component {
             <Typography variant="subheading" style={{ flexGrow: 1 }}>
               {"Schedule " + (this.props.currentScheduleIndex + 1)}
             </Typography>
+            <DomPic/>
+            <domModel/>
             <DialogSelect
               onAddCustomEvent={this.props.onAddCustomEvent}
               setID={this.props.setID}

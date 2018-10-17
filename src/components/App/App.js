@@ -561,6 +561,7 @@ class App extends Component {
               <CoursePane
                 formData={this.state.formData}
                 onAddClass={this.handleAddClass}
+                term = {this.state.formData}
               />
             </Paper>
           </Grid>
