@@ -9,10 +9,11 @@ import SearchForm from "../SearchForm/SearchForm";
 import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
 import Paper from "@material-ui/core/Paper";
-import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
-import LoginBtn from "../LogInButton/LButton";
 import Popup from "../CustomEvents/Popup";
 import Button from "@material-ui/core/Button";
+import gapi from 'gapi-client';
+import DomPic from '../AlmanacGraph/DomPic'
+import domModel from '../AlmanacGraph/domModel'
 import {
   getCourseData,
   convertToCalendar,

@@ -4,8 +4,21 @@ import { ArrowBack } from "@material-ui/icons";
 import SectionTable from "./SectionTable";
 import "./sectiontable.css";
 import course_info from "./course_info.json";
+import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 
 class CourseDetailPane extends Component {
+
+  getCourseCode = () =>{
+    const code= [];
+    this.props.courseDetails.sections.map(elem =>{
+
+        if(elem.units !== '0')
+            code.push(elem.classCode);
+
+    });
+    return code;
+  }
+
   render() {
     return (
       <div
@@ -32,6 +45,12 @@ class CourseDetailPane extends Component {
               " " +
               this.props.courseDetails.name[1]}
           </Typography>
+
+          <AlmanacGraphWrapped
+            courseCode={this.getCourseCode()}
+            term = {this.props.term}
+            courseDetails={this.props.courseDetails}
+          />
         </div>
 
         <div

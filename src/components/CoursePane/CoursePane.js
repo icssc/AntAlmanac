@@ -72,6 +72,7 @@ class CoursePane extends Component {
           courseData={courseData}
           deptName={this.state.deptName}
           termName={this.state.termName}
+          term = {this.props.term}
         />
       );
     } else if (loading === 1) {
