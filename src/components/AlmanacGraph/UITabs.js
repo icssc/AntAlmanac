@@ -116,7 +116,7 @@ classObject = (arrayOfClasses) =>{
  * @return embed HTML Tag contianing img src
  */
 getGraph = (quarter,year,code) =>{
-  const url_base = "https://summer18.herokuapp.com/";
+  const url_base = "https://l5qp88skv9.execute-api.us-west-1.amazonaws.com/dev/";
   const graph_url = url_base + quarter+'/' + year + '/' + code;
   return fetch(graph_url).then((response) =>response.text());
 }
@@ -294,4 +294,4 @@ console.log(table)
 CustomizedTabs.propTypes = {
   classes: PropTypes.object.isRequired,
 };
-export default withStyles(styles)(CustomizedTabs); 
+export default withStyles(styles)(CustomizedTabs);
