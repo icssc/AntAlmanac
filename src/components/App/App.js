@@ -495,7 +495,7 @@ class App extends Component {
         <CssBaseline />
         <AppBar position="static">
           <Toolbar variant="dense">
-            <img src={logo} style={{ flexGrow: 1}} alt="logo" />
+            <img src={logo} style={{ flexGrow: 1, margin: 3 }} alt="logo" />
             <Typography
               variant="title"
               id="introID"
