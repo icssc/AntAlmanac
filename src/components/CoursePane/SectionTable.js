@@ -68,8 +68,7 @@ class SectionTable extends Component {
     //console.log(name);
     var foundIndex = this.state.url.findIndex(item => item.fullname === name);
     var item = await this.renderRMP(name);
-    var win = window.open(item, "_blank");
-    win.focus();
+    window.open(item, "_blank");
   };
 
   linkRMP = name => {
