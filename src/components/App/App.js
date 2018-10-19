@@ -395,17 +395,13 @@ class App extends Component {
 
   handleScheduleChange = direction => {
     if (direction === 0) {
-      if (this.state.currentScheduleIndex !== 0) {
-        this.setState({
-          currentScheduleIndex: this.state.currentScheduleIndex - 1
-        });
-      }
+      this.setState({
+        currentScheduleIndex: (this.state.currentScheduleIndex - 1 + 4)%4
+      });
     } else if (direction === 1) {
-      if (this.state.currentScheduleIndex !== 3) {
-        this.setState({
-          currentScheduleIndex: this.state.currentScheduleIndex + 1
-        });
-      }
+      this.setState({
+        currentScheduleIndex: (this.state.currentScheduleIndex + 1)%4
+      });
     }
   };
 

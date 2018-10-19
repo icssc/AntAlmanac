@@ -1,8 +1,8 @@
-import React from 'react'; 
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
-import PhotoCamera from '@material-ui/icons/PhotoCamera';
+import GetApp from '@material-ui/icons/GetApp';
 import html2canvas from 'html2canvas';
 
 
@@ -41,7 +41,7 @@ function IconButtons(props) {
                }
         });
         }} color="primary" className={classes.button} component="span">
-          <PhotoCamera />
+          <GetApp />
         </IconButton>
     </div>
   );

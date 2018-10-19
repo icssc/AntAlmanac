@@ -69,7 +69,6 @@ class Calendar extends Component {
 
         <Paper style={{ overflow: "auto", maxHeight: "80vh" }}>
           <BigCalendar
-            selectable
             toolbar={false}
             formats={{
               timeGutterFormat: (date, culture, localizer) =>

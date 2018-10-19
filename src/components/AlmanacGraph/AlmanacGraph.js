@@ -49,8 +49,11 @@ class AlmanacGraph extends React.Component {
 
     return (
         <React.Fragment>
-            <Typography gutterBottom></Typography>
-            <Button onClick={this.handleOpen}>Open the Almanac</Button>
+            <Button
+              onClick={this.handleOpen}
+              style={{ backgroundColor: "#5191d6", marginLeft: 7 }}>
+                Open the Almanac
+            </Button>
 
             <Modal
               aria-labelledby="simple-modal-title"
