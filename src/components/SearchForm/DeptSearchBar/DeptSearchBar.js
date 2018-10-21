@@ -31,6 +31,7 @@ class DeptSearchBar extends React.Component {
                     label: 'Department',
                     required: true,
                 })}
+                menuHeight={400}
                 {...this.props} //Pass down other props to the Downshift layer
             />
         );
