@@ -9,7 +9,7 @@ import availableQuarters from './availableQuarters.json'
 // imports for rendering the graph
 import SimpleTab from './UITabs'
 //---------------------------------
-
+ 
 const styles = theme => ({
   paper: {
     position: 'relative',

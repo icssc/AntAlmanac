@@ -11,10 +11,11 @@ import Calendar from "../Calendar/Calendar";
 import Paper from "@material-ui/core/Paper";
 import Popup from "../CustomEvents/Popup";
 import Button from "@material-ui/core/Button";
-import gapi from 'gapi-client';
 import DomPic from '../AlmanacGraph/DomPic'
 import domModel from '../AlmanacGraph/domModel'
 import logo from './logo_wide.png';
+// pop up for log in 
+import LogApp from '../logIn/popUp'
 
 import {
   getCourseData,
@@ -457,8 +458,9 @@ class App extends Component {
     return randomNumber;
   };
   handleChange = name => {
-    console.log(name.target.value);
-    this.setState({ name: name.target.value });
+    console.log('called',name);
+    this.setState({name});
+    
   };
 
   autoSaveFunction = () => {
@@ -514,7 +516,11 @@ class App extends Component {
               OFF
             </Typography>
             <span id="timeID" />
-            <input type="text" id="idInput" onChange={this.handleChange} />
+
+            <LogApp act={this.handleChange} />
+
+            <a style={{color:'#fafad2'}}href={'https://almanac-team.herokuapp.com/index.html'} target="_blank" >AntAlmanac Team</a>
+          
             <Button color="inherit" onClick={this.handleLoad}>
               Load Schedule
             </Button>
