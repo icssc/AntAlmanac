@@ -535,7 +535,7 @@ class App extends Component {
             <SearchForm updateFormData={this.updateFormData} />
           </Grid>
           <Grid item lg={6} xs={12}>
-            <div style={{ margin: "10px 5px 0px 10px" }}>
+            <div  style={{ margin: "10px 5px 0px 10px" }}>
               <Calendar
                 classEventsInCalendar={
                   this.state[

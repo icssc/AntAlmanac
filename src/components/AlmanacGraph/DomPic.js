@@ -14,13 +14,13 @@ const styles = theme => ({
     display: 'none',
   },
 });
-
+ // h2ml2CAnvas will take screen show make sure to pass tag ID
 function IconButtons(props) {
   const { classes } = props;
   return (
     <div>
         <IconButton onClick={()=>{
-           html2canvas(document.getElementById("cal")).then(function(canvas) {
+           html2canvas(document.getElementById("ScreenShot")).then(function(canvas) {
            let img = canvas.toDataURL("image/png");
            let lnk = document.createElement('a'), e;
                /// the key here is to set the download attribute of the a tag

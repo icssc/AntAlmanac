@@ -9,7 +9,6 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import DialogSelect from "../CustomEvents/Popup";
 import DomPic from '../AlmanacGraph/DomPic'
-import domModel from '../AlmanacGraph/domModel'
 
 BigCalendar.momentLocalizer(moment);
 
@@ -45,7 +44,7 @@ class Calendar extends Component {
 
   render() {
     return (
-      <div  id="cal">
+      <div>
         <Paper style={{ overflow: "allow", marginBottom: 5 }}>
           <Toolbar variant="dense" style={{ backgroundColor: "#5191d6" }}>
             <IconButton onClick={() => this.props.onScheduleChange(0)}>
@@ -67,7 +66,8 @@ class Calendar extends Component {
         </Paper>
 
         <Paper style={{ overflow: "auto", maxHeight: "80vh" }}>
-          <BigCalendar
+        < div id="ScreenShot">
+          <BigCalendar 
             toolbar={false}
             formats={{
               timeGutterFormat: (date, culture, localizer) =>
@@ -90,6 +90,7 @@ class Calendar extends Component {
               this.props.onClassDelete(event.courseID, event.courseTerm)
             }
           />
+          </div>
         </Paper>
       </div>
     );
