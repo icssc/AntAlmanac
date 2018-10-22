@@ -50,7 +50,7 @@ class SearchForm extends Component {
                         <Button
                             color='primary'
                             variant='contained'
-                            onClick={this.props.updateFormData(this.state)}
+                            onClick={() => this.props.updateFormData(this.state)}
                             >Search</Button>
                     </Grid>
                 </Grid>
