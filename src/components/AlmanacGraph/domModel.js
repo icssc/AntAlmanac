@@ -36,12 +36,14 @@ import html2canvas from 'html2canvas';
    handleClose = () => {
     this.setState({ open: false });
   };
+  /* why I have this code ?
    snap = ()=>{
-     html2canvas(document.getElementById("cal")).then(function(canvas) {
+     html2canvas(document.getElementById("Atoos")).then(function(canvas) {
         let img = canvas.toDataURL("image/png")
         let lnk = document.getElementById('cal2');
     });
-   }
+   }*/
+
    render() {
     const { classes } = this.props;
      return (
@@ -54,7 +56,8 @@ import html2canvas from 'html2canvas';
           onClose={this.handleClose}
         >
           <div id="cal2" style={getModalStyle()} className={classes.paper}>
-            {this.snap()}
+           {//this.snap()
+           }
           </div>
         </Modal>
       </div>
