@@ -113,7 +113,7 @@ class CourseRenderPane extends Component {
             termName={this.props.termName}
             onDismissDetails={this.handleDismissDetails}
             onAddClass={this.props.onAddClass}
-            term = {this.props.term}
+            term={this.props.term}
           />
         </Modal>
 

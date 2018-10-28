@@ -40,13 +40,15 @@ class CoursePane extends Component {
 
     if (prevProps !== this.props) {
       this.setState({ loading: 1 });
-      const url = new URL("https://websocserver.herokuapp.com/");
+      const url = new URL(
+        "https://j4j70ejkmg.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?"
+      );
 
       const params = { department: dept, term: term, GE: ge };
       Object.keys(params).forEach(key =>
         url.searchParams.append(key, params[key])
       );
-
+      console.log(url);
       fetch(url.toString())
         .then(resp => {
           return resp.json();
@@ -72,7 +74,7 @@ class CoursePane extends Component {
           courseData={courseData}
           deptName={this.state.deptName}
           termName={this.state.termName}
-          term = {this.props.term}
+          term={this.props.term}
         />
       );
     } else if (loading === 1) {

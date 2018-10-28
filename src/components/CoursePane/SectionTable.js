@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import AddCircle from "@material-ui/icons/AddCircle";
 import { IconButton, Menu, MenuItem } from "@material-ui/core";
-import { getRMP } from "./RMP";
+import rmpData from "./RMP.json";
 class ScheduleAddSelector extends Component {
   constructor(props) {
     super(props);
@@ -19,7 +19,7 @@ class ScheduleAddSelector extends Component {
         this.props.section,
         this.props.courseDetails.name,
         scheduleNumber,
-        this.props.deptName,
+
         this.props.termName
       );
   };
@@ -66,9 +66,14 @@ class SectionTable extends Component {
 
   redirectRMP = async name => {
     //console.log(name);
-    var foundIndex = this.state.url.findIndex(item => item.fullname === name);
-    var item = await this.renderRMP(name);
-    window.open(item, "_blank");
+    var lastName = name.substring(0, name.indexOf(","));
+    var nameP = rmpData[0][name];
+    if (nameP != undefined)
+      window.open("https://www.ratemyprofessors.com" + nameP);
+    else
+      window.open(
+        `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
+      );
   };
 
   linkRMP = name => {
@@ -91,23 +96,6 @@ class SectionTable extends Component {
         );
       } else return item;
     });
-  };
-
-  renderRMP = async name => {
-    var lastName = name.substring(0, name.indexOf(","));
-    const firstName = name.charAt(name.length - 2);
-    var scraptURL = `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`;
-    var url = await getRMP(
-      firstName,
-      lastName,
-      "https://cors-anywhere.herokuapp.com/" + scraptURL
-    ).then(src => src);
-    //console.log("this", url);
-    console.log("rk", name);
-    if (url.length === 1) {
-      console.log("rk", url);
-      return "https://www.ratemyprofessors.com" + url[0];
-    } else return scraptURL;
   };
 
   render() {
@@ -137,17 +125,14 @@ class SectionTable extends Component {
                     onAddClass={this.props.onAddClass}
                     section={section}
                     courseDetails={this.props.courseDetails}
-                    deptName={this.props.deptName}
                     termName={this.props.termName}
                   />
                 </td>
                 <td>{section.classCode}</td>
                 <td className="multiline">
-                  {
-                    `${section.classType}
+                  {`${section.classType}
 Sec ${section.sectionCode}
-${section.units} units`
-                  }
+${section.units} units`}
                 </td>
                 <td className="multiline">
                   {this.linkRMP(section.instructors)}
@@ -158,7 +143,7 @@ ${section.units} units`
                 <td className="multiline">
                   {section.meetings.map(meeting => meeting[1]).join("\n")}
                 </td>
-                <td className={["multiline", section.status].join(' ')}>
+                <td className={["multiline", section.status].join(" ")}>
                   {`${section.numCurrentlyEnrolled[0]} / ${section.maxCapacity}
 WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}

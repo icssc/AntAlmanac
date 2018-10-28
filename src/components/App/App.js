@@ -11,19 +11,18 @@ import Calendar from "../Calendar/Calendar";
 import Paper from "@material-ui/core/Paper";
 import Popup from "../CustomEvents/Popup";
 import Button from "@material-ui/core/Button";
-import DomPic from '../AlmanacGraph/DomPic'
-import domModel from '../AlmanacGraph/domModel'
-import logo from './logo_wide.png';
-// pop up for log in 
-import LogApp from '../logIn/popUp'
+import DomPic from "../AlmanacGraph/DomPic";
+import domModel from "../AlmanacGraph/domModel";
+import logo from "./logo_wide.png";
+// pop up for log in
+import LogApp from "../logIn/popUp";
 
 import {
   getCourseData,
   convertToCalendar,
   getTime,
-  editUser,
+  saveUserDB,
   getUser,
-  getRandom,
   getCustomDate
 } from "./FetchHelper";
 import {
@@ -61,21 +60,21 @@ const arrayOfColors = [
 class App extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       logIn: false,
       timeOut: undefined,
       name: undefined,
-      autoSaving: false,
       formData: null,
-      onLoad: false,
       schedule0Events: [],
       schedule1Events: [],
       schedule2Events: [],
       schedule3Events: [],
       currentScheduleIndex: 0,
-      arrayToStore: [],
+      coursesEvents: [],
+      customEvents: [],
       backupArray: [],
-      arrayOfID: [],
+      arrayOfID: [0],
       arrayOfColors0: arrayOfColors.slice(0),
       arrayOfColors1: arrayOfColors.slice(0),
       arrayOfColors2: arrayOfColors.slice(0),
@@ -84,25 +83,21 @@ class App extends Component {
     document.addEventListener("keydown", this.undoEvent, false);
   }
 
-  handleLoad = async () => {
-    clearTimeout(this.state.timeOut);
-    document.getElementById("idInput").value = "";
-    if (this.state.name !== undefined) {
-      var myJson = await getUser(this.state.name); //check fetchhelper.js
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      //save schedule  to eventsToStore
-      //reset everything before loading newdata
+  handleLoad = async () => {
+    if (this.state.name !== undefined) {
       this.setState(
         {
           logIn: true,
-          autoSaving: false,
           schedule0Events: [],
           schedule1Events: [],
           schedule2Events: [],
           schedule3Events: [],
-          arrayOfID: [],
+          arrayOfID: [0],
           backupArray: [],
-          arrayToStore: [],
+          coursesEvents: [],
+          customEvents: [],
           currentScheduleIndex: 0,
           arrayOfColors0: arrayOfColors.slice(0),
           arrayOfColors1: arrayOfColors.slice(0),
@@ -112,138 +107,150 @@ class App extends Component {
         async function() {
           document.getElementById("introID").innerHTML =
             "Hi! " + this.state.name;
-          this.messageSwitch();
-          var count = 0;
-          myJson.schedules.forEach(async element => {
-            var json = 0;
-            if (element.customize) {
-              const randomNumber = this.setID();
-              const dates = getCustomDate(element, randomNumber);
-              element.index.forEach(pos => {
-                //console.log("dates", dates, pos);
-                this.handleAddCustomEvent(dates, pos, element.weekdays);
-              });
 
-              //console.log("eveeee", element, this.state.eventsToStore);
-            } else {
-              json = await getCourseData(element); //check fetchhelper.js
+          var myJson = await getUser(this.state.name);
+          var test = false;
+          for (var prop in myJson) {
+            if (myJson.hasOwnProperty(prop)) {
+              test = true;
+              break;
+            }
+          }
+          if (test) {
+            var ob2 = new Array(4);
+            ob2[0] = [];
+            ob2[1] = [];
+            ob2[2] = [];
+            ob2[3] = [];
+            var arrayOFID = [0];
+            var colors = new Array(4);
+            colors[0] = this.state.arrayOfColors0;
+            colors[1] = this.state.arrayOfColors1;
+            colors[2] = this.state.arrayOfColors2;
+            colors[3] = this.state.arrayOfColors3;
+
+            for (var element of myJson.schedules.custom) {
+              const dates = getCustomDate(element, element.courseID);
+
+              arrayOFID.push(element.courseID);
+
+              element.index.forEach(pos => {
+                ob2[pos] = ob2[pos].concat(dates);
+              });
+              this.state.customEvents.push(element);
+            }
+
+            for (var element of myJson.schedules.normal) {
+              var json = await getCourseData(element);
               const section = json[0].departments[0].courses[0].sections[0];
               const courseName = json[0].departments[0].courses[0].name;
-              const deptName = json[0].departments[0].name[0];
               const termName = element.courseTerm;
-              element.index.forEach(i => {
-                this.handleAddClass(section, courseName, i, deptName, termName);
+
+              element.index.forEach(pos => {
+                colors[pos] = colors[pos].filter(
+                  color => color !== element.color
+                );
+                section.meetings.forEach(meeting => {
+                  const timeString = meeting[0].replace(/\s/g, "");
+                  colors.push(element.color);
+                  const newClasses = convertToCalendar(
+                    section,
+                    timeString,
+                    element.color,
+                    courseName,
+                    termName,
+                    meeting[1]
+                  );
+
+                  ob2[pos] = ob2[pos].concat(newClasses);
+                });
               });
+              this.state.coursesEvents.push(element);
             }
-            if (count === myJson.schedules.length - 1) {
-              console.log("o");
-              this.handleSwitch();
-            }
-            ++count;
-          });
+
+            this.setState({
+              schedule0Events: ob2[0],
+              schedule1Events: ob2[1],
+              schedule2Events: ob2[2],
+              schedule3Events: ob2[3],
+              customEvents: this.state.customEvents,
+              coursesEvents: this.state.coursesEvents,
+              arrayOfID: arrayOFID,
+              arrayOfColors0: colors[0],
+              arrayOfColors1: colors[1],
+              arrayOfColors2: colors[2],
+              arrayOfColors3: colors[3]
+            });
+          }
         }
       );
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   handleSave = async () => {
     if (this.state.name !== undefined) {
-      await getUser(this.state.name); //check fetchhelper.js
-
-      //this.setState({ logIn: true });
-      var toSend = [];
-      console.log("arraayiddda", this.state.arrayToStore);
-      this.state.arrayToStore.forEach(element => {
-        if (element.customize) {
-          toSend.push({
-            title: element.title,
-            start: [element.start[0], element.start[1]],
-            end: [element.end[0], element.end[1]],
-            index: element.index,
-            customize: true,
-            weekdays: element.weekdays
-          });
-        } else
-          toSend.push({
-            courseID: element.courseID,
-            courseTerm: element.courseTerm,
-            index: element.index,
-            customize: false
-          });
+      saveUserDB(this.state.name, {
+        normal: this.state.coursesEvents,
+        custom: this.state.customEvents
       });
 
-      console.log("saved", this.state.arrayOfID);
-      editUser(this.state.name, toSend);
-      //check fetchhelper.js
-      this.setState({ logIn: true, autoSaving: false }, function() {
-        this.handleSwitch();
-        document.getElementById("timeID").innerHTML = getTime();
-      });
+      document.getElementById("timeID").innerHTML = getTime();
     }
-
-    //check fetchhelper.js
   };
 
-  //Keyboard shortcuts to undo last delete
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   undoEvent = async event => {
-    clearTimeout(this.state.timeOut);
-    console.log("backupnew", this.state.backupArray);
     if (
       event.keyCode === 90 &&
       (event.ctrlKey || event.metaKey) &&
       this.state.backupArray.length > 0
     ) {
       var obj = this.state.backupArray.pop();
-      //console.log("bckobj", obj);
       if (obj.customize) {
-        //console.log("array", this.state.eventsToStore);
         const dates = getCustomDate(obj, -1);
         this.setState({ currentScheduleIndex: obj.index }, function() {
-          this.handleAddCustomEvent(dates, obj.index, obj, obj.weekdays);
+          this.handleAddCustomEvent(dates, obj.index, obj.weekdays);
         });
       } else {
         var json = await getCourseData(obj); //check fetchhelper.js
+
         const section = json[0].departments[0].courses[0].sections[0];
         const courseName = json[0].departments[0].courses[0].name;
         const deptName = json[0].departments[0].name[0];
         const termName = obj.courseTerm;
-        //console.log(section, courseName, deptName, termName);
         this.setState({ currentScheduleIndex: obj.index }, function() {
-          this.handleAddClass(
-            section,
-            courseName,
-            obj.index,
-            deptName,
-            termName
-          );
+          this.handleAddClass(section, courseName, obj.index, termName);
         });
       }
-      this.setState(
-        {
-          backupArray: this.state.backupArray
-        },
-        function() {
-          this.autoSaveFunction();
-        }
-      );
-      //console.log("backupnew", this.state.backupEvents);
+      this.setState({
+        backupArray: this.state.backupArray
+      });
     }
   };
 
-  handleClassDelete = (courseID, courseTerm) => {
-    console.log("this.bac", this.state.arrayToStore);
-    clearTimeout(this.state.timeOut);
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  handleClassDelete = (courseID, courseTerm, isCustom) => {
     let colorFound = false;
-    var arrayE = this.state.arrayToStore;
+    var arrayE = [1];
+
+    if (isCustom) arrayE = this.state.customEvents;
+    else arrayE = this.state.coursesEvents;
+
     var foundIndex = arrayE.findIndex(function(element) {
-      return element.courseID === courseID && element.courseTerm === courseTerm;
+      return (
+        element.courseID === courseID &&
+        (isCustom || element.courseTerm === courseTerm)
+      );
     });
 
     var indexArr = arrayE[foundIndex].index.filter(
       item => item !== this.state.currentScheduleIndex
     );
 
-    if (!arrayE[foundIndex].customize) {
+    if (!isCustom) {
       this.state.backupArray = this.state.backupArray.filter(
         item =>
           item.courseID !== courseID ||
@@ -259,7 +266,6 @@ class App extends Component {
     } else {
       this.state.backupArray.push({
         courseID: arrayE[foundIndex].courseID,
-        courseTerm: arrayE[foundIndex].courseTerm,
         index: this.state.currentScheduleIndex,
         start: arrayE[foundIndex].start,
         end: arrayE[foundIndex].end,
@@ -268,10 +274,10 @@ class App extends Component {
         weekdays: arrayE[foundIndex].weekdays
       });
     }
-
+    var colorR = false;
     if (indexArr.length > 0) arrayE[foundIndex].index = indexArr;
     else {
-      console.log("dekete");
+      colorR = true;
       arrayE.splice(foundIndex, 1);
     }
 
@@ -283,13 +289,14 @@ class App extends Component {
         event.courseID === courseID &&
         event.courseTerm === courseTerm &&
         event.color !== undefined &&
-        !event.customize
+        !event.customize &&
+        colorR
       ) {
-        this.setState({
-          ["arrayOfColors" + this.state.currentScheduleIndex]: this.state[
-            "arrayOfColors" + this.state.currentScheduleIndex
-          ].concat(event.color)
-        });
+        this.state[
+          "arrayOfColors" + this.state.currentScheduleIndex
+        ] = this.state[
+          "arrayOfColors" + this.state.currentScheduleIndex
+        ].concat(event.color);
         colorFound = true;
       }
       return event.courseID !== courseID || event.courseTerm !== courseTerm;
@@ -300,26 +307,29 @@ class App extends Component {
         ["schedule" +
         this.state.currentScheduleIndex +
         "Events"]: classEventsInCalendar,
-        arrayToStore: arrayE,
-        backupArray: this.state.backupArray
+        backupArray: this.state.backupArray,
+        ["arrayOfColors" + this.state.currentScheduleIndex]: this.state[
+          "arrayOfColors" + this.state.currentScheduleIndex
+        ]
       },
       function() {
-        this.autoSaveFunction();
+        if (isCustom) this.setState({ customEvents: arrayE });
+        else this.setState({ coursesEvents: arrayE });
       }
     );
   };
 
-  handleAddClass = (section, name, scheduleNumber, deptName, termName) => {
-    console.log("deptname", section, termName);
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  handleAddClass = (section, name, scheduleNumber, termName) => {
     if (scheduleNumber === 4) {
-      this.handleAddClass(section, name, 0, deptName, termName);
-      this.handleAddClass(section, name, 1, deptName, termName);
-      this.handleAddClass(section, name, 2, deptName, termName);
-      this.handleAddClass(section, name, 3, deptName, termName);
+      this.handleAddClass(section, name, 0, termName);
+      this.handleAddClass(section, name, 1, termName);
+      this.handleAddClass(section, name, 2, termName);
+      this.handleAddClass(section, name, 3, termName);
       return;
     }
-    console.log("arrtowStore", this.state.arrayToStore);
-    var arrayE = this.state.arrayToStore;
+    var arrayE = this.state.coursesEvents;
     var foundIndex = arrayE.findIndex(function(element) {
       return (
         element.courseID === section.classCode &&
@@ -329,17 +339,15 @@ class App extends Component {
 
     var randomColor;
     var allowToAdd = false;
-    console.log("foundIndex", foundIndex);
     const arrayOfColorsName = "arrayOfColors" + scheduleNumber;
     if (foundIndex > -1) {
       var exist = arrayE[foundIndex].index.findIndex(
         item => item == scheduleNumber
       );
-      console.log("exist", exist);
       if (exist < 0) {
         arrayE[foundIndex].index.push(scheduleNumber);
         randomColor = arrayE[foundIndex].color;
-        this.state.arrayToStore = arrayE;
+        this.state.coursesEvents = arrayE;
         allowToAdd = true;
       }
     } else {
@@ -348,22 +356,21 @@ class App extends Component {
         this.state[arrayOfColorsName].length - 1
       ];
 
-      this.state.arrayToStore.push({
+      this.state.coursesEvents.push({
         courseID: section.classCode,
         courseTerm: termName,
         index: [scheduleNumber],
-        color: randomColor,
-        customize: false
+        color: randomColor
       });
     }
 
     if (allowToAdd) {
-      clearTimeout(this.state.timeOut);
       this.setState({
         [arrayOfColorsName]: this.state[arrayOfColorsName].filter(
           color => color !== randomColor
         )
       });
+      var cal = [];
       section.meetings.forEach(meeting => {
         const timeString = meeting[0].replace(/\s/g, "");
 
@@ -373,122 +380,82 @@ class App extends Component {
             timeString,
             randomColor,
             name,
-            deptName,
             termName,
             meeting[1]
           );
-          this.setState(
-            {
-              ["schedule" + scheduleNumber + "Events"]: this.state[
-                "schedule" + scheduleNumber + "Events"
-              ].concat(newClasses)
-            },
-            function() {
-              this.autoSaveFunction();
-            }
-          );
+
+          cal = cal.concat(newClasses);
         }
+      });
+      this.setState({
+        ["schedule" + scheduleNumber + "Events"]: this.state[
+          "schedule" + scheduleNumber + "Events"
+        ].concat(cal)
       });
     }
 
-    this.setState({ arrayToStore: this.state.arrayToStore });
+    this.setState({ coursesEvents: this.state.coursesEvents });
   };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   handleScheduleChange = direction => {
     if (direction === 0) {
       this.setState({
-        currentScheduleIndex: (this.state.currentScheduleIndex - 1 + 4)%4
+        currentScheduleIndex: (this.state.currentScheduleIndex - 1 + 4) % 4
       });
     } else if (direction === 1) {
       this.setState({
-        currentScheduleIndex: (this.state.currentScheduleIndex + 1)%4
+        currentScheduleIndex: (this.state.currentScheduleIndex + 1) % 4
       });
     }
   };
-
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   updateFormData = formData => {
     this.setState({ formData: formData });
   };
-
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   handleAddCustomEvent = (events, calendarIndex, dates) => {
-    if (calendarIndex === 4) {
-      this.handleAddCustomEvent(events, 0, dates);
-      this.handleAddCustomEvent(events, 1, dates);
-      this.handleAddCustomEvent(events, 2, dates);
-      this.handleAddCustomEvent(events, 3, dates);
-      return;
-    }
-    clearTimeout(this.state.timeOut);
-    var arrayE = this.state.arrayToStore;
+    var arrayE = this.state.customEvents;
     var foundIndex = arrayE.findIndex(function(element) {
-      return (
-        element.courseID === events[0].courseID &&
-        element.courseTerm === events[0].courseTerm
-      );
+      return element.courseID === events[0].courseID;
     });
 
     if (foundIndex > -1) {
       arrayE[foundIndex].index.push(calendarIndex);
-      this.state.arrayToStore = arrayE;
+      this.state.customEvents = arrayE;
     } else {
-      this.state.arrayToStore.push({
+      this.state.customEvents.push({
         title: events[0].title,
         start: [events[0].start.getHours(), events[0].start.getMinutes()],
         end: [events[0].end.getHours(), events[0].end.getMinutes()],
         courseID: events[0].courseID,
-        courseTerm: events[0].courseTerm,
         index: [calendarIndex],
-        customize: true,
         weekdays: dates
       });
     }
+    this.state["schedule" + calendarIndex + "Events"].concat(events);
 
     this.setState({
       ["schedule" + calendarIndex + "Events"]: this.state[
         "schedule" + calendarIndex + "Events"
-      ].concat(events),
-      arrayToStore: this.state.arrayToStore
+      ].concat(events)
     });
+    this.setState({ customEvents: this.state.customEvents }, function() {});
   };
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //get id for the custom event
   setID = () => {
-    var randomNumber = getRandom(this.state.arrayOfID);
-    this.state.arrayOfID.push(randomNumber);
+    var id = this.state.arrayOfID[this.state.arrayOfID.length - 1] + 1;
+    this.state.arrayOfID.push(id);
     this.setState({ arrayOfID: this.state.arrayOfID });
-    return randomNumber;
+    return id;
   };
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   handleChange = name => {
-    console.log('called',name);
-    this.setState({name});
-    
-  };
-
-  autoSaveFunction = () => {
-    if (
-      this.state.name !== undefined &&
-      this.state.logIn &&
-      this.state.autoSaving
-    ) {
-      this.setState({
-        timeOut: setTimeout(() => {
-          this.handleSave();
-          document.getElementById("timeID").innerHTML = getTime();
-        }, 5000)
-      });
-    }
-  };
-
-  handleSwitch = () => {
-    if (this.state.logIn)
-      this.setState({ autoSaving: !this.state.autoSaving }, function() {
-        this.messageSwitch();
-      });
-  };
-
-  messageSwitch = () => {
-    if (this.state.autoSaving)
-      document.getElementById("saveMode").innerHTML = "ON";
-    else document.getElementById("saveMode").innerHTML = "OFF";
+    this.setState({ name, logIn: true });
   };
 
   render() {
@@ -497,36 +464,31 @@ class App extends Component {
         <CssBaseline />
         <AppBar position="static">
           <Toolbar variant="dense">
-            <img src={logo} style={{ flexGrow: 1, margin: 3 }} alt="logo" />
+            <img
+              src={logo}
+              style={{ width: 478, height: 79, margin: 3 }}
+              alt="logo"
+            />
             <Typography
               variant="title"
               id="introID"
               color="inherit"
               style={{ flexGrow: 2 }}
             />
-            <Button color="inherit" onClick={this.handleSwitch}>
-              Auto-saving mode:
-            </Button>
-            <Typography
-              id="saveMode"
-              variant="subheading"
-              color="inherit"
-              style={{ flexGrow: 2 }}
-            >
-              OFF
-            </Typography>
+
             <span id="timeID" />
-
-            <LogApp act={this.handleChange} />
-
-            <a style={{color:'#fafad2'}}href={'https://almanac-team.herokuapp.com/index.html'} target="_blank" >AntAlmanac Team</a>
-          
-            <Button color="inherit" onClick={this.handleLoad}>
-              Load Schedule
-            </Button>
+            <span id="introID" />
+            <LogApp act={this.handleChange} load={this.handleLoad} />
             <Button color="inherit" onClick={this.handleSave}>
               Save Schedule
             </Button>
+            <a
+              style={{ color: "#fafad2" }}
+              href={"https://almanac-team.herokuapp.com/index.html"}
+              target="_blank"
+            >
+              AntAlmanac Team
+            </a>
           </Toolbar>
         </AppBar>
 
@@ -535,7 +497,7 @@ class App extends Component {
             <SearchForm updateFormData={this.updateFormData} />
           </Grid>
           <Grid item lg={6} xs={12}>
-            <div  style={{ margin: "10px 5px 0px 10px" }}>
+            <div style={{ margin: "10px 5px 0px 10px" }}>
               <Calendar
                 classEventsInCalendar={
                   this.state[
@@ -563,7 +525,7 @@ class App extends Component {
               <CoursePane
                 formData={this.state.formData}
                 onAddClass={this.handleAddClass}
-                term = {this.state.formData}
+                term={this.state.formData}
               />
             </Paper>
           </Grid>
