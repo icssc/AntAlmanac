@@ -19,7 +19,6 @@ class DeptSearchBar extends React.Component {
       const filteredItems = depts.filter(item =>
         item.label.toLowerCase().includes(changes.inputValue.toLowerCase())
       );
-      console.log("h", filteredItems, changes);
       this.setState({ filteredItems });
     }
   }
