@@ -80,9 +80,14 @@ class App extends Component {
       arrayOfColors2: arrayOfColors.slice(0),
       arrayOfColors3: arrayOfColors.slice(0)
     };
-    document.addEventListener("keydown", this.undoEvent, false);
   }
 
+  componentDidMount() {
+    document.addEventListener("keydown", this.undoEvent, false);
+  }
+  componentWillUnmount() {
+    document.addEventListener("keydown", this.undoEvent, false);
+  }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   handleLoad = async () => {
