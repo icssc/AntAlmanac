@@ -9,14 +9,11 @@ import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 class CourseDetailPane extends Component {
   getCourseCode = () => {
     const code = [];
-    console.log(
-      "dsadxcz",
-      this.props.deptName,
-      this.props.courseDetails.name[0]
-    );
+
     this.props.courseDetails.sections.map(elem => {
       if (elem.units !== "0") code.push(elem.classCode);
     });
+
     return code;
   };
 
@@ -59,7 +56,7 @@ class CourseDetailPane extends Component {
           className="course_info"
           dangerouslySetInnerHTML={{
             __html:
-              course_info[this.props.deptName][this.props.courseDetails.name[0]]
+              course_info[this.props.deptName][this.props.courseDetails.name[1]]
           }}
         />
 

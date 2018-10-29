@@ -48,7 +48,7 @@ class CoursePane extends Component {
       Object.keys(params).forEach(key =>
         url.searchParams.append(key, params[key])
       );
-      console.log(url);
+
       fetch(url.toString())
         .then(resp => {
           return resp.json();

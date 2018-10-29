@@ -91,9 +91,10 @@ class CustomizedTabs extends React.Component {
     Object.keys(params).forEach(key =>
       url.searchParams.append(key, params[key])
     );
+    //console.log("dsdsadsad", url);
     const res = await fetch(url).then(response => response.json());
     const data = [...res[0].departments[0].courses];
-    //console.log(data);
+    //console.log("dsadsa", data);
     return this.classObject(data);
   };
   //___________________________________________________________________
@@ -104,8 +105,8 @@ class CustomizedTabs extends React.Component {
    */
   classObject = arrayOfClasses => {
     for (let e of arrayOfClasses) {
-      if (this.props.courseDetails.name[0] === e.name[0]) {
-        console.log(e);
+      if (this.props.courseDetails.name[2] === e.name[2]) {
+        //console.log(e);
         return e;
       }
     }
@@ -116,11 +117,11 @@ class CustomizedTabs extends React.Component {
    * @param quarter(w,f,s), year(18,17...), code which is course code
    * @return embed HTML Tag contianing img src
    */
-  getGraph = (quarter, year, code) => {
+  getGraph = async (quarter, year, code) => {
     const url_base =
       "https://l5qp88skv9.execute-api.us-west-1.amazonaws.com/dev/";
     const graph_url = url_base + quarter + "/" + year + "/" + code;
-    return fetch(graph_url).then(response => response.text());
+    return await fetch(graph_url).then(response => response.text());
   };
   //___________________________________________________
   listOfCodes = course => {
@@ -128,44 +129,47 @@ class CustomizedTabs extends React.Component {
     course.sections.forEach(section => {
       if (section.units !== "0") codeList.push(section.classCode);
     });
+    //console.log("codelist", codeList);
     return codeList;
   };
   //___________________________________________________
-  handleChange = (event, value) => {
+  handleChange = async (event, value) => {
     this.setState({ value, load: 1 });
     //fall
     if (value === 2) {
       if (this.state.courseForTableFall.length === 0)
-        console.log(!this.state.courseForTableFall.length);
-      this.askForCourseCode("2018 Fall").then(responses => {
-        if (responses !== -1) {
-          this.setState({ courseForTableFall: responses });
-          const codes = this.listOfCodes(responses);
-          const gList = [];
-          codes.forEach(code => {
-            this.getGraph("f", "18", code).then(result =>
-              this.setState({
-                graphFall: [...this.state.graphFall, result],
-                load: 0
-              })
-            );
-          });
-        } else this.setState({ courseForTableFall: null, load: 0 });
-      });
+        //console.log(!this.state.courseForTableFall.length);
+        this.askForCourseCode("2018 Fall").then(async responses => {
+          if (responses !== -1) {
+            this.setState({ courseForTableFall: responses });
+            const codes = this.listOfCodes(responses);
+            const gList = [];
+            for (var code of codes) {
+              this.state.graphFall.push(
+                await this.getGraph("f", "18", code).then(result => result)
+              );
+            }
+            this.setState({
+              graphFall: this.state.graphFall,
+              load: 0
+            });
+          } else this.setState({ courseForTableFall: null, load: 0 });
+        });
     }
     // spring
     else if (value === 1) {
-      this.askForCourseCode("2018 Spring").then(responses => {
+      this.askForCourseCode("2018 Spring").then(async responses => {
         if (responses !== -1) {
           this.setState({ courseForTableSpring: responses });
           const codes = this.listOfCodes(responses);
-          codes.forEach(code => {
-            this.getGraph("s", "18", code).then(result =>
-              this.setState({
-                graphSpring: [...this.state.graphSpring, result],
-                load: 0
-              })
+          for (var code of codes) {
+            this.state.graphSpring.push(
+              await this.getGraph("s", "18", code).then(result => result)
             );
+          }
+          this.setState({
+            graphSpring: this.state.graphSpring,
+            load: 0
           });
         } else this.setState({ courseForTableSpring: null, load: 0 });
       });
@@ -178,19 +182,20 @@ class CustomizedTabs extends React.Component {
   /**
    * this will be called when the model open
    */
-  handleAction = () => {
+  handleAction = async () => {
     this.setState({ load: 1 });
-    this.askForCourseCode("2018 Winter").then(responses => {
+    await this.askForCourseCode("2018 Winter").then(async responses => {
       if (responses !== -1) {
         this.setState({ courseForTableWinter: responses });
         const codes = this.listOfCodes(responses);
-        codes.forEach(code => {
-          this.getGraph("w", "18", code).then(result =>
-            this.setState({
-              graphWinter: [...this.state.graphWinter, result],
-              load: 0
-            })
+        for (var code of codes) {
+          this.state.graphWinter.push(
+            await this.getGraph("w", "18", code).then(result => result)
           );
+        }
+        this.setState({
+          graphWinter: this.state.graphWinter,
+          load: 0
         });
       } else this.setState({ courseForTableWinter: null, load: 0 });
     });
@@ -237,7 +242,7 @@ class CustomizedTabs extends React.Component {
     if (this.state.value === 0) table = this.state.courseForTableWinter;
     else if (this.state.value === 1) table = this.state.courseForTableSpring;
     else table = this.state.courseForTableFall;
-    console.log(table);
+    //console.log(table);
     if (table !== null && table.length !== 0) {
       table.sections.forEach(classInfo => {
         if (classInfo.units !== "0") all.push(<Table info={classInfo} />);
@@ -287,7 +292,7 @@ class CustomizedTabs extends React.Component {
     }
   };
   render() {
-    console.log(this.state, "\nPROPS", this.props);
+    //console.log(this.state, "\nPROPS", this.props);
     const { classes } = this.props;
     const { value } = this.state;
 
