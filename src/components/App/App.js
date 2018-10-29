@@ -16,7 +16,7 @@ import domModel from "../AlmanacGraph/domModel";
 import logo from "./logo_wide.png";
 // pop up for log in
 import LogApp from "../logIn/popUp";
-
+import LoadApp from "../saveApp/saveButton";
 import {
   getCourseData,
   convertToCalendar,
@@ -484,9 +484,9 @@ class App extends Component {
             <span id="timeID" />
             <span id="introID" />
             <LogApp act={this.handleChange} load={this.handleLoad} />
-            <Button color="inherit" onClick={this.handleSave}>
-              Save Schedule
-            </Button>
+
+            <LoadApp act={this.handleChange} save={this.handleSave} />
+
             <a
               style={{ color: "#fafad2" }}
               href={"https://almanac-team.herokuapp.com/index.html"}
