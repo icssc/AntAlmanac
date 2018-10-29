@@ -110,9 +110,6 @@ class App extends Component {
           arrayOfColors3: arrayOfColors.slice(0)
         },
         async function() {
-          document.getElementById("introID").innerHTML =
-            "Hi! " + this.state.name;
-
           var myJson = await getUser(this.state.name);
           var test = false;
           for (var prop in myJson) {
@@ -200,8 +197,6 @@ class App extends Component {
         normal: this.state.coursesEvents,
         custom: this.state.customEvents
       });
-
-      document.getElementById("timeID").innerHTML = getTime();
     }
   };
 
@@ -481,8 +476,6 @@ class App extends Component {
               style={{ flexGrow: 2 }}
             />
 
-            <span id="timeID" />
-            <span id="introID" />
             <LogApp act={this.handleChange} load={this.handleLoad} />
 
             <LoadApp act={this.handleChange} save={this.handleSave} />
