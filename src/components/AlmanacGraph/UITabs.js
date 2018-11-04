@@ -4,21 +4,28 @@ import { withStyles } from "@material-ui/core/styles";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Table from "./Table";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-function getModalStyle() {
-  return {
-    margin: "auto",
-    width: "65%",
-    height: "50%",
-    top: 50,
-    backgroundColor: "white",
-    borderRadius: "none"
-  };
-}
+
+import Table from './Table'
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Tooltip from '@material-ui/core/Tooltip';
+import H from '@material-ui/icons/HelpSharp';
+
+ function getModalStyle() {
+    return {
+      margin: 'auto',
+      width: "65%",
+      height: "50%",
+      top: 50,
+      backgroundColor: "white",
+      borderRadius: "none",
+
+
+    };
+  }
+
 
 const styles = theme => ({
   root: {
@@ -320,6 +327,10 @@ class CustomizedTabs extends React.Component {
             classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
             label="Fall 18"
           />
+          <Tooltip title="How to read!">
+          <a style={{color:'#b78727',
+                    fontSize:"48px" }}href={'https://almanac-team.herokuapp.com/index.html#support'} target="_blank" > <H  color="secondary"/> </a>
+          </Tooltip>
         </Tabs>
         {this.showMe()}
       </div>

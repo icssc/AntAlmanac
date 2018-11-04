@@ -11,12 +11,16 @@ import Calendar from "../Calendar/Calendar";
 import Paper from "@material-ui/core/Paper";
 import Popup from "../CustomEvents/Popup";
 import Button from "@material-ui/core/Button";
-import DomPic from "../AlmanacGraph/DomPic";
-import domModel from "../AlmanacGraph/domModel";
-import logo from "./logo_wide.png";
-// pop up for log in
-import LogApp from "../logIn/popUp";
-import LoadApp from "../saveApp/saveButton";
+import DomPic from '../AlmanacGraph/DomPic'
+import domModel from '../AlmanacGraph/domModel'
+import Tooltip from '@material-ui/core/Tooltip';
+import logo from './logo_wide.png';
+// pop up for log in 
+import LogApp from '../logIn/popUp'
+import Info from '@material-ui/icons/InfoSharp';
+
+
+
 import {
   getCourseData,
   convertToCalendar,
@@ -88,7 +92,6 @@ class App extends Component {
   componentWillUnmount() {
     document.addEventListener("keydown", this.undoEvent, false);
   }
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   handleLoad = async () => {
     if (this.state.name !== undefined) {
@@ -480,13 +483,21 @@ class App extends Component {
 
             <LoadApp act={this.handleChange} save={this.handleSave} />
 
-            <a
-              style={{ color: "#fafad2" }}
-              href={"https://almanac-team.herokuapp.com/index.html"}
-              target="_blank"
-            >
-              AntAlmanac Team
-            </a>
+         
+
+            </Typography>
+            <span id="timeID" />
+
+            <LogApp act={this.handleChange} />
+            <Button color="inherit" onClick={this.handleLoad}>
+              Load 
+            </Button>
+            <Button color="inherit" onClick={this.handleSave}>
+              Save 
+            </Button>
+            <Tooltip title="Info">
+            <a style={{color:'white'}}href={'https://almanac-team.herokuapp.com/index.html'} target="_blank" ><Info fontSize="48px" color="white"/></a>
+            </Tooltip>
           </Toolbar>
         </AppBar>
 
