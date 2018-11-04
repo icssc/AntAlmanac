@@ -13,6 +13,7 @@ import Popup from "../CustomEvents/Popup";
 import Button from "@material-ui/core/Button";
 import DomPic from '../AlmanacGraph/DomPic'
 import domModel from '../AlmanacGraph/domModel'
+import Tooltip from '@material-ui/core/Tooltip';
 import logo from './logo_wide.png';
 // pop up for log in 
 import LogApp from '../logIn/popUp'
@@ -518,9 +519,9 @@ class App extends Component {
             <span id="timeID" />
 
             <LogApp act={this.handleChange} />
-
-            <a style={{color:'#fafad2'}}href={'https://almanac-team.herokuapp.com/index.html'} target="_blank" >AntAlmanac Team</a>
-          
+            <Tooltip title="Info">
+            <a style={{color:'#fafad2'}}href={'https://almanac-team.herokuapp.com/index.html'} target="_blank" ><img src={require('./i.png')} /></a>
+            </Tooltip>
             <Button color="inherit" onClick={this.handleLoad}>
               Load Schedule
             </Button>
