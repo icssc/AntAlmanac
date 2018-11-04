@@ -103,30 +103,28 @@ class DialogSelect extends Component {
 
   handleClose = calendarIndex => {
     if (calendarIndex !== -1) {
-      if (calendarIndex !== -1) {
-        this.setState(
-          {
-            id: this.props.setID()
-          },
-          function() {
-            this.handleAddToCalendar(calendarIndex);
-            this.setState({
-              open: false,
-              start: "07:00",
-              end: "08:00",
-              eventName: "Untitled",
-              days: {
-                monday: false,
-                tuesday: false,
-                wednesday: false,
-                thursday: false,
-                friday: false
-              },
-              anchorEl: null
-            });
-          }
-        );
-      }
+      this.setState(
+        {
+          id: this.props.setID()
+        },
+        function() {
+          this.handleAddToCalendar(calendarIndex);
+          this.setState({
+            open: false,
+            start: "07:00",
+            end: "08:00",
+            eventName: "Untitled",
+            days: {
+              monday: false,
+              tuesday: false,
+              wednesday: false,
+              thursday: false,
+              friday: false
+            },
+            anchorEl: null
+          });
+        }
+      );
     } else {
       this.setState({
         open: false,
@@ -178,12 +176,19 @@ class DialogSelect extends Component {
           start: new Date(2018, 0, dayToNum(day), startHour, startMin),
           end: new Date(2018, 0, dayToNum(day), endHour, endMin),
           courseID: this.state.id,
-          courseTerm: this.state.id
+          customize: true
         });
       }
     });
-    console.log("dates", dates);
-    this.props.onAddCustomEvent(events, calendarIndex, dates);
+
+    if (events.length > 0) {
+      if (calendarIndex === 4) {
+        this.props.onAddCustomEvent(events, 0, dates);
+        this.props.onAddCustomEvent(events, 1, dates);
+        this.props.onAddCustomEvent(events, 2, dates);
+        this.props.onAddCustomEvent(events, 3, dates);
+      } else this.props.onAddCustomEvent(events, calendarIndex, dates);
+    }
   };
 
   handleAddEventButtonClicked(event) {

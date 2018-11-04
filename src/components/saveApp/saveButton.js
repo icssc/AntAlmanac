@@ -22,7 +22,7 @@ export default class FormDialog extends React.Component {
 
   handleCloseYes = () => {
     this.setState({ open: false });
-    this.props.load();
+    this.props.save();
   };
 
   loginClicked = () => {
@@ -33,7 +33,7 @@ export default class FormDialog extends React.Component {
     return (
       <div>
         <Button onClick={this.handleClickOpen} color="inherit">
-          Load
+          Save
         </Button>
         <Dialog
           style={{
@@ -46,7 +46,7 @@ export default class FormDialog extends React.Component {
           <DialogTitle id="form-dialog-title">LogIn</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              To load to this website, please enter your User ID here.
+              To save to this website, please enter your User ID here.
             </DialogContentText>
             <TextField
               autoFocus
@@ -65,7 +65,7 @@ export default class FormDialog extends React.Component {
               Cancel
             </Button>
             <Button onClick={this.handleCloseYes} color="primary">
-              Load
+              Save
             </Button>
           </DialogActions>
         </Dialog>

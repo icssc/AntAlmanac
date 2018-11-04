@@ -1,10 +1,10 @@
-export async function editUser(param, arrayToStore) {
-  console.log("before", arrayToStore);
+export async function saveUserDB(name, arrayToStore) {
   const response = await fetch(
     // `https://gentle-inlet-23513.herokuapp.com/api/${param}`,
-    `https://gentle-inlet-23513.herokuapp.com/api/${param}`,
+
+    `https://hqyhurqrgh.execute-api.us-west-1.amazonaws.com/latest/create`,
     {
-      method: "Put", // *GET, POST, PUT, DELETE, etc.
+      method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, cors, *same-origin
       cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
       credentials: "same-origin", // include, same-origin, *omit
@@ -14,7 +14,7 @@ export async function editUser(param, arrayToStore) {
       },
       redirect: "follow", // manual, *follow, error
       referrer: "no-referrer", // no-referrer, *client
-      body: JSON.stringify({ schedules: arrayToStore }) // body data type must match "Content-Type" header
+      body: JSON.stringify({ username: name, schedules: arrayToStore }) // body data type must match "Content-Type" header
     }
   );
   const json = await response.json();
@@ -23,7 +23,7 @@ export async function editUser(param, arrayToStore) {
 export async function getUser(param) {
   const response = await fetch(
     // `https://gentle-inlet-23513.herokuapp.com/api/${param}`
-    `https://gentle-inlet-23513.herokuapp.com/api/${param}`
+    `https://hqyhurqrgh.execute-api.us-west-1.amazonaws.com/latest/${param}`
   );
   const json = await response.json();
 
@@ -32,9 +32,9 @@ export async function getUser(param) {
 
 export async function getCourseData(course) {
   const response = await fetch(
-    `https://websocserver.herokuapp.com/?courseCodes=${course.courseID}&term=${
-      course.courseTerm
-    }`
+    `https://j4j70ejkmg.execute-api.us-west-1.amazonaws.com/latest/api/websoc?courseCodes=${
+      course.courseID
+    }&term=${course.courseTerm}`
   );
   const json = await response.json();
   return json;
@@ -50,7 +50,6 @@ export function convertToCalendar(
   timeString,
   random_color,
   name,
-  deptName,
   termName,
   meeting
 ) {
@@ -82,13 +81,14 @@ export function convertToCalendar(
     if (shouldBeInCal) {
       const newClass = {
         color: random_color,
-        title: section.classCode + " " + deptName + " " + name[0],
+        title: section.classCode + " " + name[0] + " " + name[1],
         start: new Date(2018, 0, index + 1, start, startMin),
         end: new Date(2018, 0, index + 1, end, endMin),
         courseID: section.classCode,
         courseTerm: termName,
         location: meeting,
-        type: section.classType
+        type: section.classType,
+        customize: false
       };
       newClasses.push(newClass);
     }
@@ -96,34 +96,19 @@ export function convertToCalendar(
   return newClasses;
 }
 
-export function getCustomDate(event, randomNumber) {
+export function getCustomDate(event, id) {
   let obj = [];
-  if (randomNumber < 0) randomNumber = event.courseID;
+  if (id < 0) id = event.courseID;
   event.weekdays.forEach(item => {
     let addCalender = {
       color: "#551a8b",
       title: event.title,
       start: new Date(2018, 0, item, event.start[0], event.start[1]),
       end: new Date(2018, 0, item, event.end[0], event.end[1]),
-      courseID: randomNumber,
-      courseTerm: randomNumber
+      courseID: id,
+      customize: true
     };
     obj.push(addCalender);
   });
-  console.log("cusevent", event);
   return obj;
-}
-
-export function getRandom(arrayOfID) {
-  var randomNumber = 0;
-  var found = false;
-  console.log("iddd", arrayOfID);
-  do {
-    randomNumber = Math.floor(Math.random() * 100);
-    found = arrayOfID.find(function(item) {
-      return item === randomNumber;
-    });
-  } while (found);
-  console.log("aaa", randomNumber);
-  return randomNumber;
 }

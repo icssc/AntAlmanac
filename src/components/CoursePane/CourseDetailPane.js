@@ -7,17 +7,15 @@ import course_info from "./course_info.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 
 class CourseDetailPane extends Component {
+  getCourseCode = () => {
+    const code = [];
 
-  getCourseCode = () =>{
-    const code= [];
-    this.props.courseDetails.sections.map(elem =>{
-
-        if(elem.units !== '0')
-            code.push(elem.classCode);
-
+    this.props.courseDetails.sections.map(elem => {
+      if (elem.units !== "0") code.push(elem.classCode);
     });
+
     return code;
-  }
+  };
 
   render() {
     return (
@@ -48,7 +46,7 @@ class CourseDetailPane extends Component {
 
           <AlmanacGraphWrapped
             courseCode={this.getCourseCode()}
-            term = {this.props.term}
+            term={this.props.term}
             courseDetails={this.props.courseDetails}
           />
         </div>
@@ -57,16 +55,15 @@ class CourseDetailPane extends Component {
           style={{ margin: 20 }}
           className="course_info"
           dangerouslySetInnerHTML={{
-            __html: course_info[this.props.deptName][this.props.courseDetails.name[0]]
+            __html:
+              course_info[this.props.deptName][this.props.courseDetails.name[1]]
           }}
-        >
-        </div>
+        />
 
         <SectionTable
           style={{ marginTop: 12 }}
           courseDetails={this.props.courseDetails}
           onAddClass={this.props.onAddClass}
-          deptName={this.props.deptName}
           termName={this.props.termName}
         />
       </div>

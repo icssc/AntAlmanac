@@ -63,7 +63,7 @@ class CourseRenderPane extends Component {
         <Grid item md={6} xs={12}>
           <Paper elevation={3} className={this.props.classes.course} square>
             <Typography variant="button" className={this.props.classes.text}>
-              {SOCObject.name[0] + " " + SOCObject.name[1]}
+              {SOCObject.name[1] + " " + SOCObject.name[2]}
             </Typography>
             {SOCObject.prerequisiteLink && (
               <Button
@@ -113,7 +113,7 @@ class CourseRenderPane extends Component {
             termName={this.props.termName}
             onDismissDetails={this.handleDismissDetails}
             onAddClass={this.props.onAddClass}
-            term = {this.props.term}
+            term={this.props.term}
           />
         </Modal>
 

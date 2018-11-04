@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronRight, Add } from "@material-ui/icons";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import DialogSelect from "../CustomEvents/Popup";
-import DomPic from '../AlmanacGraph/DomPic'
+import DomPic from "../AlmanacGraph/DomPic";
 
 BigCalendar.momentLocalizer(moment);
 
@@ -56,8 +56,8 @@ class Calendar extends Component {
             <Typography variant="subheading" style={{ flexGrow: 1 }}>
               {"Schedule " + (this.props.currentScheduleIndex + 1)}
             </Typography>
-            <DomPic/>
-            <domModel/>
+            <DomPic />
+            <domModel />
             <DialogSelect
               onAddCustomEvent={this.props.onAddCustomEvent}
               setID={this.props.setID}
@@ -66,30 +66,34 @@ class Calendar extends Component {
         </Paper>
 
         <Paper style={{ overflow: "auto", maxHeight: "80vh" }}>
-        < div id="ScreenShot">
-          <BigCalendar 
-            toolbar={false}
-            formats={{
-              timeGutterFormat: (date, culture, localizer) =>
-                date.getMinutes() > 0
-                  ? ""
-                  : localizer.format(date, "h A", culture),
-              dayFormat: "ddd"
-            }}
-            defaultView={BigCalendar.Views.WORK_WEEK}
-            views={["work_week"]}
-            step={15}
-            timeslots={2}
-            defaultDate={new Date(2018, 0, 1)}
-            min={new Date(2018, 0, 1, 7)}
-            max={new Date(2018, 0, 1, 23)}
-            events={this.props.classEventsInCalendar}
-            eventPropGetter={Calendar.eventStyleGetter}
-            components={{ event: CustomEvent }}
-            onSelectEvent={event =>
-              this.props.onClassDelete(event.courseID, event.courseTerm)
-            }
-          />
+          <div id="ScreenShot">
+            <BigCalendar
+              toolbar={false}
+              formats={{
+                timeGutterFormat: (date, culture, localizer) =>
+                  date.getMinutes() > 0
+                    ? ""
+                    : localizer.format(date, "h A", culture),
+                dayFormat: "ddd"
+              }}
+              defaultView={BigCalendar.Views.WORK_WEEK}
+              views={["work_week"]}
+              step={15}
+              timeslots={2}
+              defaultDate={new Date(2018, 0, 1)}
+              min={new Date(2018, 0, 1, 7)}
+              max={new Date(2018, 0, 1, 23)}
+              events={this.props.classEventsInCalendar}
+              eventPropGetter={Calendar.eventStyleGetter}
+              components={{ event: CustomEvent }}
+              onSelectEvent={event =>
+                this.props.onClassDelete(
+                  event.courseID,
+                  event.courseTerm,
+                  event.customize
+                )
+              }
+            />
           </div>
         </Paper>
       </div>
