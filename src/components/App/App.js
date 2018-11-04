@@ -9,18 +9,12 @@ import SearchForm from "../SearchForm/SearchForm";
 import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
 import Paper from "@material-ui/core/Paper";
-import Popup from "../CustomEvents/Popup";
-import Button from "@material-ui/core/Button";
-import DomPic from '../AlmanacGraph/DomPic'
-import domModel from '../AlmanacGraph/domModel'
 import Tooltip from '@material-ui/core/Tooltip';
 import logo from './logo_wide.png';
 // pop up for log in 
 import LogApp from '../logIn/popUp'
 import Info from '@material-ui/icons/InfoSharp';
-
-
-
+import LoadApp from "../saveApp/saveButton";
 import {
   getCourseData,
   convertToCalendar,
@@ -482,20 +476,11 @@ class App extends Component {
             <LogApp act={this.handleChange} load={this.handleLoad} />
 
             <LoadApp act={this.handleChange} save={this.handleSave} />
-
-         
-
-            </Typography>
             <span id="timeID" />
 
             <LogApp act={this.handleChange} />
-            <Button color="inherit" onClick={this.handleLoad}>
-              Load 
-            </Button>
-            <Button color="inherit" onClick={this.handleSave}>
-              Save 
-            </Button>
-            <Tooltip title="Info">
+           
+            <Tooltip title="Info page">
             <a style={{color:'white'}}href={'https://almanac-team.herokuapp.com/index.html'} target="_blank" ><Info fontSize="48px" color="white"/></a>
             </Tooltip>
           </Toolbar>
