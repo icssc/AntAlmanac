@@ -17,6 +17,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import logo from './logo_wide.png';
 // pop up for log in 
 import LogApp from '../logIn/popUp'
+import Info from '@material-ui/icons/InfoSharp';
+
 
 import {
   getCourseData,
@@ -519,15 +521,15 @@ class App extends Component {
             <span id="timeID" />
 
             <LogApp act={this.handleChange} />
-            <Tooltip title="Info">
-            <a style={{color:'#fafad2'}}href={'https://almanac-team.herokuapp.com/index.html'} target="_blank" ><img src={require('./i.png')} /></a>
-            </Tooltip>
             <Button color="inherit" onClick={this.handleLoad}>
-              Load Schedule
+              Load 
             </Button>
             <Button color="inherit" onClick={this.handleSave}>
-              Save Schedule
+              Save 
             </Button>
+            <Tooltip title="Info">
+            <a style={{color:'white'}}href={'https://almanac-team.herokuapp.com/index.html'} target="_blank" ><Info fontSize="48px" color="white"/></a>
+            </Tooltip>
           </Toolbar>
         </AppBar>
 

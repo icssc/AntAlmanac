@@ -10,6 +10,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Tooltip from '@material-ui/core/Tooltip';
+import H from '@material-ui/icons/HelpSharp';
 
  function getModalStyle() {
     return {
@@ -288,7 +289,8 @@ console.log(table)
             label="Fall 18"
           />
           <Tooltip title="How to read!">
-          <a style={{color:'#fafad2'}}href={'https://almanac-team.herokuapp.com/index.html#support'} target="_blank" > <img src={require('./h.png')}/></a>
+          <a style={{color:'#b78727',
+                    fontSize:"48px" }}href={'https://almanac-team.herokuapp.com/index.html#support'} target="_blank" > <H  color="secondary"/> </a>
           </Tooltip>
         </Tabs>
         {this.showMe()}
