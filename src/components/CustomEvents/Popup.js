@@ -11,10 +11,12 @@ import {
   FormControl,
   Input,
   IconButton,
-  InputLabel
+  InputLabel,
+  Tooltip
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { Add } from "@material-ui/icons";
+
 
 const styles = () => ({
   container: {
@@ -201,7 +203,9 @@ class DialogSelect extends Component {
     return (
       <div>
         <IconButton onClick={() => this.setState({ open: true })}>
+        <Tooltip title="Add Event">
           <Add />
+          </Tooltip>
         </IconButton>
         <Dialog
           disableBackdropClick

@@ -9,6 +9,8 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import DialogSelect from "../CustomEvents/Popup";
 import DomPic from "../AlmanacGraph/DomPic";
+import Tooltip from '@material-ui/core/Tooltip';
+
 
 BigCalendar.momentLocalizer(moment);
 
@@ -48,20 +50,33 @@ class Calendar extends Component {
         <Paper style={{ overflow: "allow", marginBottom: 5 }}>
           <Toolbar variant="dense" style={{ backgroundColor: "#5191d6" }}>
             <IconButton onClick={() => this.props.onScheduleChange(0)}>
+              
+            <Tooltip title="Pervious Schedule">
               <ChevronLeft />
+              </Tooltip >
             </IconButton>
+
             <IconButton onClick={() => this.props.onScheduleChange(1)}>
+            <Tooltip title="Next Schedule">
               <ChevronRight />
+              </Tooltip>
+
             </IconButton>
+
             <Typography variant="subheading" style={{ flexGrow: 1 }}>
               {"Schedule " + (this.props.currentScheduleIndex + 1)}
             </Typography>
+
+             
             <DomPic />
+          
             <domModel />
+            
             <DialogSelect
               onAddCustomEvent={this.props.onAddCustomEvent}
               setID={this.props.setID}
             />
+            
           </Toolbar>
         </Paper>
 

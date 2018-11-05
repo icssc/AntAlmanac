@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import GetApp from '@material-ui/icons/GetApp';
 import html2canvas from 'html2canvas';
+import Tooltip from '@material-ui/core/Tooltip';
 
 
 const styles = theme => ({
@@ -41,7 +42,9 @@ function IconButtons(props) {
                }
         });
         }} color="primary" className={classes.button} component="span">
+        <Tooltip title="Download Schedule">
           <GetApp />
+          </Tooltip>
         </IconButton>
     </div>
   );
