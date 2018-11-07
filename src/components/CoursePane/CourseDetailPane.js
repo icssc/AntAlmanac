@@ -16,7 +16,14 @@ class CourseDetailPane extends Component {
 
     return code;
   };
+  deptInfo = () => {
+    var a = undefined;
+    try {
+      a = course_info[this.props.deptName][this.props.courseDetails.name[1]];
+    } catch (err) {}
 
+    return a;
+  };
   render() {
     return (
       <div
@@ -55,8 +62,7 @@ class CourseDetailPane extends Component {
           style={{ margin: 20 }}
           className="course_info"
           dangerouslySetInnerHTML={{
-            __html:
-              course_info[this.props.deptName][this.props.courseDetails.name[1]]
+            __html: this.deptInfo()
           }}
         />
 

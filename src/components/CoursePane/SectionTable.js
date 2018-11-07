@@ -97,7 +97,26 @@ class SectionTable extends Component {
       } else return item;
     });
   };
-
+  disableTBA = section => {
+    console.log(section.meetings[0] != "TBA", section.meetings[0]);
+    var test = false;
+    for (var element of section.meetings[0]) {
+      if (element === "TBA") {
+        test = true;
+        break;
+      }
+    }
+    if (!test)
+      return (
+        <ScheduleAddSelector
+          onAddClass={this.props.onAddClass}
+          section={section}
+          courseDetails={this.props.courseDetails}
+          termName={this.props.termName}
+        />
+      );
+    else return;
+  };
   render() {
     const sectionInfo = this.props.courseDetails.sections;
 
@@ -120,14 +139,7 @@ class SectionTable extends Component {
           {sectionInfo.map(section => {
             return (
               <tr>
-                <td className="no_border">
-                  <ScheduleAddSelector
-                    onAddClass={this.props.onAddClass}
-                    section={section}
-                    courseDetails={this.props.courseDetails}
-                    termName={this.props.termName}
-                  />
-                </td>
+                <td className="no_border">{this.disableTBA(section)}</td>
                 <td>{section.classCode}</td>
                 <td className="multiline">
                   {`${section.classType}

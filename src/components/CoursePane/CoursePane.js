@@ -41,7 +41,7 @@ class CoursePane extends Component {
     if (prevProps !== this.props) {
       this.setState({ loading: 1 });
       const url = new URL(
-        "https://j4j70ejkmg.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?"
+        "https://j4j70ejkmg.execute-api.us-west-1.amazonaws.com/latest/api/websoc?"
       );
 
       const params = { department: dept, term: term, GE: ge };

@@ -4,7 +4,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "../../../node_modules/@material-ui/core/IconButton/IconButton";
-import { ChevronLeft, ChevronRight, Add } from "@material-ui/icons";
+import { ChevronLeft, ChevronRight, Add, Undo } from "@material-ui/icons";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import DialogSelect from "../CustomEvents/Popup";
@@ -16,9 +16,8 @@ const CustomEvent = ({ event }) => (
   <div>
     <div style={{ marginTop: 4, marginBottom: 4, overflow: "hidden" }}>
       <div style={{ fontWeight: 500, float: "left" }}>{event.title}</div>
-      <div style={{ float: "right" }}>{event.type}</div>
     </div>
-    <div style={{ clear: "left" }}>{event.location}</div>
+    <div>{event.type + " " + event.location}</div>
   </div>
 );
 
@@ -56,6 +55,9 @@ class Calendar extends Component {
             <Typography variant="subheading" style={{ flexGrow: 1 }}>
               {"Schedule " + (this.props.currentScheduleIndex + 1)}
             </Typography>
+            <IconButton onClick={this.props.clickToUndo}>
+              <Undo />
+            </IconButton>
             <DomPic />
             <domModel />
             <DialogSelect

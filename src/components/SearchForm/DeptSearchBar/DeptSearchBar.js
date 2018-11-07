@@ -1,5 +1,5 @@
 import React from "react";
-import MuiDownshift from "mui-downshift";
+import DownshiftInputField from "mui-downshift";
 import depts from "./depts";
 
 class DeptSearchBar extends React.Component {
@@ -25,7 +25,7 @@ class DeptSearchBar extends React.Component {
 
   render() {
     return (
-      <MuiDownshift
+      <DownshiftInputField
         items={this.state.filteredItems}
         onStateChange={this.handleStateChange}
         onChange={this.props.setDept}
@@ -34,7 +34,7 @@ class DeptSearchBar extends React.Component {
           label: "Department",
           required: true
         })}
-        menuHeight={400}
+        menuHeight={200}
         {...this.props} //Pass down other props to the Downshift layer
       />
     );
