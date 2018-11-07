@@ -12,14 +12,26 @@ import DomPic from "../AlmanacGraph/DomPic";
 
 BigCalendar.momentLocalizer(moment);
 
-const CustomEvent = ({ event }) => (
-  <div>
-    <div style={{ marginTop: 4, marginBottom: 4, overflow: "hidden" }}>
-      <div style={{ fontWeight: 500, float: "left" }}>{event.title}</div>
-    </div>
-    <div>{event.type + " " + event.location}</div>
-  </div>
-);
+const CustomEvent = ({ event }) => {
+  if (!event.customize)
+    return (
+      <div>
+        <div style={{ marginTop: 4, marginBottom: 4, overflow: "hidden" }}>
+          <div style={{ fontWeight: 500, float: "left" }}>{event.title}</div>
+        </div>
+        <div>{event.type + " " + event.location}</div>
+      </div>
+    );
+  else {
+    return (
+      <div>
+        <div style={{ marginTop: 4, marginBottom: 4, overflow: "hidden" }}>
+          <div style={{ fontWeight: 500, float: "left" }}>{event.title}</div>
+        </div>
+      </div>
+    );
+  }
+};
 
 class Calendar extends Component {
   static eventStyleGetter(event, start, end, isSelected) {
