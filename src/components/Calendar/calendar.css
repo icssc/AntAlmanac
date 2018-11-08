@@ -1,0 +1,7 @@
+.rbc-time-content {
+    border-top: none;
+    padding-top: 0px;
+}
+.rbc-time-header.rbc-header-overflowing > .rbc-row:nth-of-type(2) {
+    display: none;
+}
