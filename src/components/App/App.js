@@ -445,7 +445,7 @@ class App extends Component {
             <Tooltip title="Info page">
               <a
                 style={{ color: "white" }}
-                href={"https://almanac-team.herokuapp.com/index.html"}
+                href={"https://the-antalmanac.herokuapp.com/index.html"}
                 target="_blank"
               >
                 <Info fontSize="48px" color="white" />

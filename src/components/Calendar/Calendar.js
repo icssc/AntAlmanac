@@ -94,7 +94,7 @@ class Calendar extends Component {
             <IconButton
               onClick={() => this.moreInfoURL(this.props.coursesEvents)}
             >
-              <Undo />
+              <OpenInBrowser />
             </IconButton>
             <DialogSelect
               onAddCustomEvent={this.props.onAddCustomEvent}
