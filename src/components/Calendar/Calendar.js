@@ -54,13 +54,13 @@ class Calendar extends Component {
   }
 
   moreInfoURL = (events) => {
-    url = "https://www.reg.uci.edu/perl/WebSoc?YearTerm=2019-03&ShowFinals=1&ShowComments=1&CourseCodes=";
+    let url = "https://www.reg.uci.edu/perl/WebSoc?YearTerm=2019-03&ShowFinals=1&ShowComments=1&CourseCodes=";
     for(var event in events){
           //if (event.index.includes(this.props.currentScheduleIndex)){
-            base += event.courseID;
-            base += "%2C";
-    return url;
+      url += event.courseID;
+      url += "%2C";
     }
+    return url;
   }
 
   render() {
