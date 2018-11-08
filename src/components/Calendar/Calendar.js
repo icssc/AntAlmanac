@@ -118,11 +118,9 @@ class Calendar extends Component {
               views={["work_week"]}
               step={15}
               timeslots={2}
-              popup={true}
               defaultDate={new Date(2018, 0, 1)}
-              min={new Date(2018, 0, 1, 8)}
+              min={new Date(2018, 0, 1, 7)}
               max={new Date(2018, 0, 1, 23)}
-              scrollToTime={new Date(2018, 0, 1, 11)}
               events={this.props.classEventsInCalendar}
               eventPropGetter={Calendar.eventStyleGetter}
               components={{ event: CustomEvent }}
