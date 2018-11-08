@@ -8,7 +8,7 @@ import AppBar from "@material-ui/core/AppBar";
 import SearchForm from "../SearchForm/SearchForm";
 import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
-import "./calendar.css";
+import "../Calendar/calendar.css";
 import Paper from "@material-ui/core/Paper";
 import Popup from "../CustomEvents/Popup";
 import Button from "@material-ui/core/Button";
