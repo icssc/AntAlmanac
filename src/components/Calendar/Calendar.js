@@ -4,7 +4,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "../../../node_modules/@material-ui/core/IconButton/IconButton";
-import { ChevronLeft, ChevronRight, Add, Undo } from "@material-ui/icons";
+import { ChevronLeft, ChevronRight, Add, Undo, OpenInBrowser } from "@material-ui/icons";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import DialogSelect from "../CustomEvents/Popup";
@@ -53,6 +53,16 @@ class Calendar extends Component {
     );
   }
 
+  moreInfoURL = (events) => {
+    url = "https://www.reg.uci.edu/perl/WebSoc?YearTerm=2019-03&ShowFinals=1&ShowComments=1&CourseCodes=";
+    for(var event in events){
+          //if (event.index.includes(this.props.currentScheduleIndex)){
+            base += event.courseID;
+            base += "%2C";
+    return url;
+    }
+  }
+
   render() {
     return (
       <div>
@@ -72,6 +82,7 @@ class Calendar extends Component {
             </IconButton>
             <DomPic />
             <domModel />
+            <a href={this.moreInfoURL(this.props.classEventsInCalendar)}><OpenInBrowser /></a>
             <DialogSelect
               onAddCustomEvent={this.props.onAddCustomEvent}
               setID={this.props.setID}
