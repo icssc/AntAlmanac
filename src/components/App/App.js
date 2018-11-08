@@ -466,6 +466,7 @@ class App extends Component {
                     "schedule" + this.state.currentScheduleIndex + "Events"
                   ]
                 }
+                coursesEvents={this.state.coursesEvents}
                 clickToUndo={this.clickToUndo}
                 currentScheduleIndex={this.state.currentScheduleIndex}
                 onClassDelete={this.handleClassDelete}
