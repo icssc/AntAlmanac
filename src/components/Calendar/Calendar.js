@@ -120,6 +120,8 @@ class Calendar extends Component {
               step={15}
               timeslots={2}
               defaultDate={new Date(2018, 0, 1)}
+              scrollToTime={new Date(2018, 0, 1, 11)}
+              showMultiDayTimes={true}
               min={new Date(2018, 0, 1, 7)}
               max={new Date(2018, 0, 1, 23)}
               events={this.props.classEventsInCalendar}
