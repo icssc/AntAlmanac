@@ -13,7 +13,7 @@ import {
   Delete
 } from "@material-ui/icons";
 import Typography from "@material-ui/core/Typography";
-import "./calendar.css"
+import "./calendar.css";
 import Paper from "@material-ui/core/Paper";
 import DialogSelect from "../CustomEvents/Popup";
 import DomPic from "../AlmanacGraph/DomPic";
@@ -82,13 +82,13 @@ class Calendar extends Component {
             <IconButton onClick={() => this.props.onScheduleChange(0)}>
               <ChevronLeft />
             </IconButton>
-            <Typography variant="subheading" style={{ flexGrow: 1 }}>
+            <Typography variant="subheading">
               {this.props.currentScheduleIndex + 1}
             </Typography>
             <IconButton onClick={() => this.props.onScheduleChange(1)}>
               <ChevronRight />
             </IconButton>
-            
+            <Typography style={{ flexGrow: 1 }} />
             <IconButton onClick={this.props.clickToUndo}>
               <Undo />
             </IconButton>
