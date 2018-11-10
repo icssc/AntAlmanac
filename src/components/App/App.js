@@ -9,7 +9,7 @@ import SearchForm from "../SearchForm/SearchForm";
 import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
 import Paper from "@material-ui/core/Paper";
-import Popup from "../CustomEvents/Popup";
+
 import Button from "@material-ui/core/Button";
 import DomPic from "../AlmanacGraph/DomPic";
 import domModel from "../AlmanacGraph/domModel";
@@ -19,6 +19,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 
 // pop up for log in
 import LogApp from "../logIn/popUp";
+import LoadUser from "../cacheMes/cacheM";
 import LoadApp from "../saveApp/saveButton";
 import {
   convertToCalendar,
@@ -33,10 +34,8 @@ import {
 class App extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       Uclick: false,
-      name: undefined,
       formData: null,
       schedule0Events: [],
       schedule1Events: [],
@@ -46,119 +45,122 @@ class App extends Component {
       coursesEvents: [],
       customEvents: [],
       backupArray: [],
-      cusID: 0,
-      enter: false
+      cusID: 0
     };
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
     document.addEventListener("keydown", this.undoEvent, false);
-  }
+  };
   componentWillUnmount() {
     document.addEventListener("keydown", this.undoEvent, false);
   }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  handleLoad = async () => {
-    if (this.state.name !== undefined) {
-      this.setState(
-        {
-          Uclick: false,
-          schedule0Events: [],
-          schedule1Events: [],
-          schedule2Events: [],
-          schedule3Events: [],
-          cusID: 0,
-          backupArray: [],
-          coursesEvents: [],
-          customEvents: [],
-          currentScheduleIndex: 0
-        },
-        async function() {
-          var myJson = await getUser(this.state.name);
-          var test = false;
-          for (var prop in myJson) {
-            if (myJson.hasOwnProperty(prop)) {
-              test = true;
-              break;
-            }
-          }
-          if (test) {
-            var ob2 = new Array(4);
-            ob2[0] = [];
-            ob2[1] = [];
-            ob2[2] = [];
-            ob2[3] = [];
+  convertToDateObject = schedule => {
+    for (var event of schedule) {
+      event.start = new Date(event.start);
+      event.end = new Date(event.end);
+    }
+  };
 
-            if (myJson.schedules.custom.length > 0) {
-              for (var element of myJson.schedules.custom) {
-                this.state.cusID += 1;
-                element["courseID"] = this.state.cusID;
-                const dates = getCustomDate(element, element.courseID);
-
-                element.index.forEach(pos => {
-                  ob2[pos] = ob2[pos].concat(dates);
-                });
-                this.state.customEvents.push(element);
-              }
-            }
-            if (myJson.schedules.normal.length > 0) {
-              await getCoursesData(
-                myJson.schedules.normal,
-                ob2,
-                this.state.coursesEvents
-              );
-
-              this.state.coursesEvents = myJson.schedules.normal;
-            }
-
-            console.log(ob2[0]);
-            this.setState({
-              schedule0Events: ob2[0],
-              schedule1Events: ob2[1],
-              schedule2Events: ob2[2],
-              schedule3Events: ob2[3],
-              customEvents: this.state.customEvents,
-              coursesEvents: this.state.coursesEvents,
-              cusID: this.state.cusID
-            });
+  handleLoad = async name => {
+    this.setState(
+      {
+        Uclick: false,
+        schedule0Events: [],
+        schedule1Events: [],
+        schedule2Events: [],
+        schedule3Events: [],
+        cusID: 0,
+        backupArray: [],
+        coursesEvents: [],
+        customEvents: [],
+        currentScheduleIndex: 0
+      },
+      async function() {
+        var myJson = await getUser(name);
+        var test = false;
+        for (var prop in myJson) {
+          if (myJson.hasOwnProperty(prop)) {
+            test = true;
+            break;
           }
         }
-      );
-    }
+        if (test) {
+          var ob2 = new Array(4);
+          ob2[0] = [];
+          ob2[1] = [];
+          ob2[2] = [];
+          ob2[3] = [];
+
+          if (myJson.schedules.custom.length > 0) {
+            for (var element of myJson.schedules.custom) {
+              this.state.cusID += 1;
+              element["courseID"] = this.state.cusID;
+              const dates = getCustomDate(element, element.courseID);
+
+              element.index.forEach(pos => {
+                ob2[pos] = ob2[pos].concat(dates);
+              });
+              this.state.customEvents.push(element);
+            }
+          }
+          if (myJson.schedules.normal.length > 0) {
+            await getCoursesData(
+              myJson.schedules.normal,
+              ob2,
+              this.state.coursesEvents
+            );
+
+            this.state.coursesEvents = myJson.schedules.normal;
+          }
+          this.setState({
+            schedule0Events: ob2[0],
+            schedule1Events: ob2[1],
+            schedule2Events: ob2[2],
+            schedule3Events: ob2[3],
+            customEvents: this.state.customEvents,
+            coursesEvents: this.state.coursesEvents,
+            cusID: this.state.cusID
+          });
+          window.localStorage.setItem("name", name);
+        }
+      }
+    );
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  handleSave = async () => {
-    console.log(this.state.customEvents);
-    var toStore = [];
-
-    this.state.customEvents.forEach(element => {
-      toStore.push({
-        end: element.end,
-        index: element.index,
-        start: element.start,
-        title: element.title,
-        weekdays: element.weekdays
-      });
-    });
-    var toSoteN = [];
-
-    this.state.coursesEvents.forEach(element => {
-      toSoteN.push({
-        color: element.color,
-        courseID: element.courseID,
-        courseTerm: element.courseTerm,
-        index: element.index
-      });
-    });
-
+  handleSave = async name => {
     if (
-      this.state.name !== undefined &&
-      (toSoteN.length > 0 || toStore.length > 0)
+      this.state.customEvents.length > 0 ||
+      this.state.coursesEvents.length > 0
     ) {
-      saveUserDB(this.state.name, {
+      window.localStorage.setItem("name", name);
+
+      var toStore = [];
+
+      this.state.customEvents.forEach(element => {
+        toStore.push({
+          end: element.end,
+          index: element.index,
+          start: element.start,
+          title: element.title,
+          weekdays: element.weekdays
+        });
+      });
+      var toSoteN = [];
+
+      this.state.coursesEvents.forEach(element => {
+        toSoteN.push({
+          color: element.color,
+          courseID: element.courseID,
+          courseTerm: element.courseTerm,
+          index: element.index
+        });
+      });
+      saveUserDB(name, {
         normal: toSoteN,
         custom: toStore
       });
@@ -216,7 +218,6 @@ class App extends Component {
           item.courseTerm !== courseTerm ||
           item.index !== this.state.currentScheduleIndex
       );
-      console.log("xxxxxxxxxxxxx", arrayE[foundIndex].section);
       this.state.backupArray.push({
         courseID: arrayE[foundIndex].courseID,
         courseTerm: arrayE[foundIndex].courseTerm,
@@ -399,24 +400,30 @@ class App extends Component {
     });
   };
 
-  loadEnter = () => {
-    var person = prompt("Please enter your name");
-    if (person != undefined) {
-      console.log("");
-      this.setState({ name: person }, function() {
-        this.handleLoad();
+  clearSchedule = () => {
+    if (
+      window.confirm(
+        "Are you sure you want to clear all the schedules? (you can still recover the schedules by loading from the database)"
+      )
+    ) {
+      // Save it!
+      this.setState({
+        Uclick: false,
+        schedule0Events: [],
+        schedule1Events: [],
+        schedule2Events: [],
+        schedule3Events: [],
+        cusID: 0,
+        backupArray: [],
+        coursesEvents: [],
+        customEvents: [],
+        currentScheduleIndex: 0
       });
+    } else {
+      // Do nothing!
     }
   };
-  saveEnter = () => {
-    var person = prompt("Please enter your name");
-    if (person != undefined) {
-      console.log("");
-      this.setState({ name: person }, function() {
-        this.handleSave();
-      });
-    }
-  };
+
   render() {
     return (
       <Fragment>
@@ -430,13 +437,7 @@ class App extends Component {
               style={{ flexGrow: 2 }}
             />
 
-            <Button onClick={this.loadEnter} color="inherit">
-              Load
-            </Button>
-
-            <Button onClick={this.saveEnter} color="inherit">
-              Save
-            </Button>
+            <LoadUser load={this.handleLoad} save={this.handleSave} />
 
             {/* <LogApp act={this.handleChange} load={this.handleLoad} />
 
@@ -473,6 +474,7 @@ class App extends Component {
                 onScheduleChange={this.handleScheduleChange}
                 onAddCustomEvent={this.handleAddCustomEvent}
                 setID={this.setID}
+                clear={this.clearSchedule}
               />
             </div>
           </Grid>

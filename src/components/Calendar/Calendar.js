@@ -9,7 +9,8 @@ import {
   ChevronRight,
   Add,
   Undo,
-  OpenInBrowser
+  OpenInBrowser,
+  Delete
 } from "@material-ui/icons";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
@@ -84,11 +85,12 @@ class Calendar extends Component {
               <ChevronRight />
             </IconButton>
             <Typography variant="subheading" style={{ flexGrow: 1 }}>
-              {"Schedule " + (this.props.currentScheduleIndex + 1)}
+              {this.props.currentScheduleIndex + 1}
             </Typography>
             <IconButton onClick={this.props.clickToUndo}>
               <Undo />
             </IconButton>
+
             <DomPic />
             <domModel />
             <IconButton
@@ -100,6 +102,9 @@ class Calendar extends Component {
               onAddCustomEvent={this.props.onAddCustomEvent}
               setID={this.props.setID}
             />
+            <IconButton onClick={this.props.clear}>
+              <Delete />
+            </IconButton>
           </Toolbar>
         </Paper>
 
