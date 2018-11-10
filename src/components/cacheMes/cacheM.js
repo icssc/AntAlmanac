@@ -110,18 +110,22 @@ class CustomizedSnackbars extends React.Component {
   };
   handleClick = async () => {
     var person = prompt("Please enter your name");
-    if (person != null && person.replace(/\s+/g, "").length > 0) {
-      this.setState({ open: true, message: "hello! " + person });
-
-      await this.props.load(person);
+    if (person != null) {
+      person = person.replace(/\s+/g, "");
+      if (person.length > 0) {
+        this.setState({ open: true, message: "hello! " + person });
+        await this.props.load(person);
+      }
     }
   };
   handleClickS = async () => {
     var person = prompt("Please enter your name");
-    if (person != null && person.replace(/\s+/g, "").length > 0) {
-      this.setState({ open: true, message: "saved !" + person });
-
-      await this.props.save(person);
+    if (person != null) {
+      person = person.replace(/\s+/g, "");
+      if (person.length > 0) {
+        this.setState({ open: true, message: "saved !" + person });
+        await this.props.save(person);
+      }
     }
   };
 
