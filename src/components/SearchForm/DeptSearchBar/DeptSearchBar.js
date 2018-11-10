@@ -1,6 +1,7 @@
 import React from "react";
 import DownshiftInputField from "mui-downshift";
 import depts from "./depts";
+import {isMobile} from 'react-device-detect';
 
 class DeptSearchBar extends React.Component {
   constructor(props) {
@@ -11,6 +12,11 @@ class DeptSearchBar extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     return nextState !== this.state;
+  }
+
+  determineDropdownLength() {
+    if (isMobile) {return 80;}
+    return 450;
   }
 
   handleStateChange(changes) {
@@ -34,7 +40,7 @@ class DeptSearchBar extends React.Component {
           label: "Department",
           required: true
         })}
-        menuHeight={200}
+        menuHeight={this.determineDropdownLength()}
         {...this.props} //Pass down other props to the Downshift layer
       />
     );
