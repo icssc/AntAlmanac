@@ -82,12 +82,13 @@ class Calendar extends Component {
             <IconButton onClick={() => this.props.onScheduleChange(0)}>
               <ChevronLeft />
             </IconButton>
-            <IconButton onClick={() => this.props.onScheduleChange(1)}>
-              <ChevronRight />
-            </IconButton>
             <Typography variant="subheading" style={{ flexGrow: 1 }}>
               {this.props.currentScheduleIndex + 1}
             </Typography>
+            <IconButton onClick={() => this.props.onScheduleChange(1)}>
+              <ChevronRight />
+            </IconButton>
+            
             <IconButton onClick={this.props.clickToUndo}>
               <Undo />
             </IconButton>
