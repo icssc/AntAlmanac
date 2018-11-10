@@ -13,6 +13,7 @@ import {
   Delete
 } from "@material-ui/icons";
 import Typography from "@material-ui/core/Typography";
+import "./calendar.css"
 import Paper from "@material-ui/core/Paper";
 import DialogSelect from "../CustomEvents/Popup";
 import DomPic from "../AlmanacGraph/DomPic";
