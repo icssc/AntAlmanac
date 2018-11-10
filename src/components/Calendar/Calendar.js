@@ -15,6 +15,7 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import DialogSelect from "../CustomEvents/Popup";
 import DomPic from "../AlmanacGraph/DomPic";
+import Media from "react-media";
 
 BigCalendar.momentLocalizer(moment);
 
@@ -83,10 +84,20 @@ class Calendar extends Component {
             <IconButton onClick={() => this.props.onScheduleChange(1)}>
               <ChevronRight />
             </IconButton>
+            <Media query="(max-width: 1000px)">
+              {matches =>
+                matches ? (
+                ) : (
+                  <Typography variant="subheading" style={{ flexGrow: 1 }}>
+                    {"Schedule"}
+                  </Typography>
+                )
+              }
+            </Media>
             <Typography variant="subheading" style={{ flexGrow: 1 }}>
-              {"Schedule " + (this.props.currentScheduleIndex + 1)}
+              {(this.props.currentScheduleIndex + 1)}
             </Typography>
-            <IconButton onClick={this.props.clickToUndo}>
+            <IconButton onClick={this.props.clickToUndo} style={{margin: 0}}>
               <Undo />
             </IconButton>
             <DomPic />
