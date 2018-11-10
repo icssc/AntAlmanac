@@ -87,25 +87,29 @@ class Calendar extends Component {
             <Media query="(max-width: 1000px)">
               {matches =>
                 matches ? (
-                  <IconButton onClick={() => this.props.onScheduleChange(0)}>
-                    <ChevronLeft />
-                  </IconButton>
-                  <Typography variant="subheading" style={{ flexGrow: 1 }}>
-                    {(this.props.currentScheduleIndex + 1)}
-                  </Typography>
-                  <IconButton onClick={() => this.props.onScheduleChange(1)}>
-                    <ChevronRight />
-                  </IconButton>
+                  <div>
+                    <IconButton onClick={() => this.props.onScheduleChange(0)}>
+                      <ChevronLeft />
+                    </IconButton>
+                    <Typography variant="subheading" style={{ flexGrow: 1 }}>
+                      {(this.props.currentScheduleIndex + 1)}
+                    </Typography>
+                    <IconButton onClick={() => this.props.onScheduleChange(1)}>
+                      <ChevronRight />
+                    </IconButton>
+                  </div>
                 ) : (
-                  <IconButton onClick={() => this.props.onScheduleChange(0)}>
-                    <ChevronLeft />
-                  </IconButton>
-                  <Typography variant="subheading" style={{ flexGrow: 1 }}>
-                    {"Schedule " + (this.props.currentScheduleIndex + 1)}
-                  </Typography>
-                  <IconButton onClick={() => this.props.onScheduleChange(1)}>
-                    <ChevronRight />
-                  </IconButton>
+                  <div>
+                    <IconButton onClick={() => this.props.onScheduleChange(0)}>
+                      <ChevronLeft />
+                    </IconButton>
+                    <Typography variant="subheading" style={{ flexGrow: 1 }}>
+                      {"Schedule " + (this.props.currentScheduleIndex + 1)}
+                    </Typography>
+                    <IconButton onClick={() => this.props.onScheduleChange(1)}>
+                      <ChevronRight />
+                    </IconButton>
+                  </div>
                 )
               }
             </Media>
