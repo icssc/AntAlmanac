@@ -86,7 +86,6 @@ class CoursePane extends Component {
         </div>
       );
     } else {
-<<<<<<< HEAD
       return (
         <Fragment>
           <div
@@ -102,15 +101,6 @@ class CoursePane extends Component {
           </div>{" "}
         </Fragment>
       );
-=======
-      return <Fragment><div style={{
-          height: '100%', width: '100%', display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
-      }}>
-          Did you know that you can widescreen the calendar by zooming in?
-      </div> </Fragment>;
->>>>>>> ed95829b276b8830e05f47bbdd3560e060f1810e
     }
   }
 }
