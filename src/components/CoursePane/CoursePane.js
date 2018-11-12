@@ -2,6 +2,7 @@ import React, { Component, Fragment } from "react";
 import loadingGif from "./loading.mp4";
 import querystring from "querystring";
 import CourseRenderPane from "./CourseRenderPane";
+import ctrlZ from "./ctrlZ.png"
 
 class CoursePane extends Component {
   constructor(props) {
@@ -97,10 +98,11 @@ class CoursePane extends Component {
               alignItems: "center"
             }}
           >
-            Did you know that you can widescreen the calendar by zooming in?
+            <img src={ctrlZ} />
           </div>{" "}
         </Fragment>
       );
+
     }
   }
 }

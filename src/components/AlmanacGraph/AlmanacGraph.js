@@ -1,6 +1,8 @@
 import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/core/styles";
+import { Tooltip } from "@material-ui/core";
 import querystring from "querystring";
+import { Help } from "@material-ui/icons";
 
 import {
   Modal,
@@ -107,6 +109,11 @@ class AlmanacGraph extends Component {
                 " " +
                 this.props.courseDetails.name[1]}
             </Typography>
+            <Tooltip title="Need Help with Graphs?">
+              <a href="https://the-antalmanac.herokuapp.com/index.html#support" target="_blank">
+                <Help />
+              </a>
+            </Tooltip>
             <FormControl fullWidth>
               <InputLabel htmlFor="term-select">Term</InputLabel>
               <Select

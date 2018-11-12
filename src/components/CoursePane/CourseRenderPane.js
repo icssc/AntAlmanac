@@ -4,6 +4,7 @@ import React, {Component} from 'react';
 import CourseDetailPane from "./CourseDetailPane";
 import SchoolDeptCard from "./SchoolDeptCard";
 import MiniSectionTable from "./MiniSectionTable";
+import NoNothing from "./no_results.png"
 
 const styles = theme => ({
     course: {
@@ -99,7 +100,7 @@ class CourseRenderPane extends Component {
                         justifyContent: 'center',
                         alignItems: 'center'
                     }}>
-                        Sorry, that search returned no courses. Please try again.
+                        <img src={NoNothing} />
                     </div> :
                     <Grid container spacing={16}>
                         {this.props.courseData.map((item) => this.getGrid(item))}
