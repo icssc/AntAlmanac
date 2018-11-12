@@ -12,8 +12,8 @@ const styles = theme => ({
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: '60%',
-        height: '75%',
+        width: '75%',
+        height: '85%',
         backgroundColor: theme.palette.background.paper,
         boxShadow: theme.shadows[5],
         padding: theme.spacing.unit * 4,
@@ -25,7 +25,7 @@ class AlmanacGraph extends Component {
         super(props);
         this.state = {
             open: false,
-            term: '',
+            term: "2018 Winter",
             sections: []
         };
         this.handleOpen = this.handleOpen.bind(this);
@@ -85,7 +85,7 @@ class AlmanacGraph extends Component {
                 <Button
                     variant='contained'
                     onClick={this.handleOpen}>
-                    See course history
+                    Past Enrollment
                 </Button>
 
                 <Modal
