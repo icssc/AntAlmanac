@@ -90,26 +90,28 @@ class Calendar extends Component {
                         </IconButton>
                         <Typography style={{flexGrow: 1}}/>
                         <Tooltip title="Undo Last Delete">
-                        <IconButton onClick={this.props.clickToUndo}>
-                            <Undo/>
-                        </IconButton>
+                          <IconButton onClick={this.props.clickToUndo}>
+                              <Undo/>
+                          </IconButton>
                         </Tooltip>
                         <DomPic/>
                         <Tooltip title="More Info on Selected Classes">
-                        <IconButton
-                            onClick={() => this.moreInfoURL(this.props.coursesEvents)}
-                        >
-                            <OpenInBrowser/>
-                        </IconButton>
+                          <IconButton
+                              onClick={() => this.moreInfoURL(this.props.coursesEvents)}
+                          >
+                              <OpenInBrowser/>
+                          </IconButton>
                         </Tooltip>
                         <Tooltip title="Add Custom Event">
-                        <DialogSelect
-                            onAddCustomEvent={this.props.onAddCustomEvent}
-                            setID={this.props.setID}
-                        />
-                        <IconButton onClick={this.props.clear}>
-                            <Delete/>
-                        </IconButton>
+                          <DialogSelect
+                              onAddCustomEvent={this.props.onAddCustomEvent}
+                              setID={this.props.setID}
+                          />
+                        </Tooltip>
+                        <Tooltip title="Clear All">
+                          <IconButton onClick={this.props.clear}>
+                              <Delete/>
+                          </IconButton>
                         </Tooltip>
                     </Toolbar>
                 </Paper>

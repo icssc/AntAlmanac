@@ -467,7 +467,7 @@ class App extends Component {
 
             <LoadApp act={this.handleChange} save={this.handleSave} /> */}
 
-            <Tooltip title="Info page">
+            <Tooltip title="Info Page">
               <a
                 style={{ color: "white" }}
                 href={"https://the-antalmanac.herokuapp.com/index.html"}
