@@ -67,7 +67,7 @@ Units: ${this.props.section.units}`
                     </tr>
                     </tbody>
                 </table>
-                {<div style={{width: '90%'}} dangerouslySetInnerHTML={this.state.graph}/>}
+                {<div style={{width: '85%'}} dangerouslySetInnerHTML={this.state.graph}/>}
             </div>
         );
     }

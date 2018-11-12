@@ -160,7 +160,13 @@ ${section.units} units`}
 WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
                 </td>
-                <td>{section.restrictions}</td>
+                <td>
+                    <a
+                      href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
+                      target="_blank">
+                        {section.restrictions}
+                    </a>
+                </td>
                 <td className={section.status}>{section.status}</td>
               </tr>
             );
