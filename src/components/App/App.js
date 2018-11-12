@@ -434,7 +434,7 @@ class App extends Component {
                 <AppBar position="static" style={{marginBottom: 8}}>
                     <Toolbar variant="dense">
                         <img src={logo}
-                            style={{flexGrow: 1, height: 50}}
+                            style={{flexGrow: 1, height: 50, width: 200}}
                             className="App-logo"
                             alt="logo" />
 
