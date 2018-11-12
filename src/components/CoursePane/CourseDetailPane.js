@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 
->>>>>>> Stashed changes
 import { IconButton, Typography } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import SectionTable from "./SectionTable";
@@ -9,7 +8,6 @@ import course_info from "./course_info.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 
 class CourseDetailPane extends Component {
-
   deptInfo = () => {
     var a = undefined;
     try {
