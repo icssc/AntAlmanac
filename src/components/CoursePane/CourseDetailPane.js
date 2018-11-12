@@ -1,10 +1,4 @@
 import React, { Component } from "react";
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
-=======
 
 >>>>>>> Stashed changes
 import { IconButton, Typography } from "@material-ui/core";
@@ -15,8 +9,7 @@ import course_info from "./course_info.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 
 class CourseDetailPane extends Component {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+
   deptInfo = () => {
     var a = undefined;
     try {
@@ -71,59 +64,6 @@ class CourseDetailPane extends Component {
           }}
         />
 
-=======
-=======
->>>>>>> Stashed changes
-  render() {
-    return (
-      <div
-        style={{
-          overflow: "auto",
-          height: "100%",
-          backgroundColor: "white"
-        }}
-      >
-        <div
-          style={{
-            overflow: "auto",
-            display: "inline-flex"
-          }}
-        >
-          <IconButton
-            style={{ marginRight: 24 }}
-            onClick={this.props.onDismissDetails}
-          >
-            <ArrowBack />
-          </IconButton>
-
-          <Typography variant="title" style={{ flexGrow: 1, marginTop: 12 }}>
-            {this.props.courseDetails.name[0] +
-              " " +
-              this.props.courseDetails.name[1]}
-            &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-          </Typography>
-
-          <AlmanacGraphWrapped
-            term={this.props.term}
-            courseDetails={this.props.courseDetails}
-          />
-        </div>
-
-        <div
-          style={{ margin: 20 }}
-          className="course_info"
-          dangerouslySetInnerHTML={{
-            __html:
-              course_info[this.props.courseDetails.name[0]][
-                this.props.courseDetails.name[1]
-              ]
-          }}
-        />
-
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
         <SectionTable
           style={{ marginTop: 12 }}
           courseDetails={this.props.courseDetails}
