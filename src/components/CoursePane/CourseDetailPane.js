@@ -4,7 +4,6 @@ import {ArrowBack} from '@material-ui/icons';
 import SectionTable from "./SectionTable";
 import "./sectiontable.css";
 import course_info from "./course_info.json";
-import Paper from "@material-ui/core/Paper";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 
 class CourseDetailPane extends Component {
@@ -14,9 +13,9 @@ class CourseDetailPane extends Component {
                 overflow: 'auto',
                 height: '100%',
                 backgroundColor: 'white'}}>
-                <Paper style={{
+                <div style={{
                     overflow: 'auto',
-                    display: 'inline'
+                    display: 'inline-flex'
                 }}>
                     <IconButton style={{marginRight: 24}} onClick={this.props.onDismissDetails}>
                         <ArrowBack/>
@@ -27,7 +26,7 @@ class CourseDetailPane extends Component {
                     </Typography>
 
                     <AlmanacGraphWrapped term = {this.props.term} courseDetails={this.props.courseDetails}/>
-                </Paper>
+                </div>
 
                 <div
                     style={{ margin: 20 }}

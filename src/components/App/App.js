@@ -456,7 +456,7 @@ class App extends Component {
             <img
               src={logo}
               ariaLabel="logo"
-              style={{ height: 40, width: 110 }}
+              style={{ height: 40, width: 161 }}
               className="App-logo"
               alt="logo"
             />
