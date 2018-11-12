@@ -93,6 +93,9 @@ class AlmanacGraph extends Component {
                     onClose={this.handleClose}>
 
                     <Paper className={this.props.classes.paper}>
+                        <Typography variant='title' style={{flexGrow: '1'}}>
+                            {"Historical Enrollments for " + this.props.courseDetails.name[0] + " " + this.props.courseDetails.name[1]}
+                        </Typography>
                         <FormControl fullWidth>
                             <InputLabel htmlFor="term-select">Term</InputLabel>
                             <Select
