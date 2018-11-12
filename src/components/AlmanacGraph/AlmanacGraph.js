@@ -2,7 +2,7 @@ import React, {Component, Fragment} from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import querystring from 'querystring';
 
-import {Modal, Button, Paper, FormControl, InputLabel, Select, MenuItem} from '@material-ui/core';
+import {Modal, Button, Paper, FormControl, InputLabel, Select, MenuItem, Typography} from '@material-ui/core';
 import GraphRenderPane from "./GraphRenderPane";
 
 const styles = theme => ({
@@ -12,8 +12,8 @@ const styles = theme => ({
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: '60%',
-        height: '75%',
+        width: '75%',
+        height: '85%',
         backgroundColor: theme.palette.background.paper,
         boxShadow: theme.shadows[5],
         padding: theme.spacing.unit * 4,
@@ -25,7 +25,7 @@ class AlmanacGraph extends Component {
         super(props);
         this.state = {
             open: false,
-            term: '',
+            term: "2018 Winter",
             sections: []
         };
         this.handleOpen = this.handleOpen.bind(this);
@@ -85,7 +85,7 @@ class AlmanacGraph extends Component {
                 <Button
                     variant='contained'
                     onClick={this.handleOpen}>
-                    See course history
+                    Past Enrollment
                 </Button>
 
                 <Modal
@@ -93,6 +93,9 @@ class AlmanacGraph extends Component {
                     onClose={this.handleClose}>
 
                     <Paper className={this.props.classes.paper}>
+                        <Typography variant='title' style={{flexGrow: '1'}}>
+                            {"Historical Enrollments for " + this.props.courseDetails.name[0] + " " + this.props.courseDetails.name[1]}
+                        </Typography>
                         <FormControl fullWidth>
                             <InputLabel htmlFor="term-select">Term</InputLabel>
                             <Select

@@ -15,7 +15,12 @@ import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
 import { ListAlt, Dns } from "@material-ui/icons";
 import Info from "@material-ui/icons/InfoSharp";
+<<<<<<< HEAD
 import ShowE from "../showEvents/showE";
+=======
+import logo from './logo.png';
+
+>>>>>>> 3d8fa52ee99e4287ff9ecf0d2b607f5e6784021a
 // pop up for log in
 import LogApp from "../logIn/popUp";
 import LoadUser from "../cacheMes/cacheM";
@@ -346,6 +351,7 @@ class App extends Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+<<<<<<< HEAD
   handleScheduleChange = direction => {
     if (direction === 0) {
       this.setState({
@@ -444,6 +450,18 @@ class App extends Component {
       // Do nothing!
     }
   };
+=======
+    render() {
+        return (
+            <Fragment>
+                <CssBaseline/>
+                <AppBar position="static" style={{marginBottom: 8}}>
+                    <Toolbar variant="dense">
+                        <img src={logo}
+                            style={{flexGrow: 1, height: 50}}
+                            className="App-logo"
+                            alt="logo" />
+>>>>>>> 3d8fa52ee99e4287ff9ecf0d2b607f5e6784021a
 
   render() {
     return (

@@ -13,9 +13,7 @@ class CourseDetailPane extends Component {
                 overflow: 'auto',
                 height: '100%',
                 backgroundColor: 'white'}}>
-                <div style={{
-                    display: 'inline-flex'
-                }}>
+                <div>
                     <IconButton style={{marginRight: 24}} onClick={this.props.onDismissDetails}>
                         <ArrowBack/>
                     </IconButton>
@@ -23,6 +21,8 @@ class CourseDetailPane extends Component {
                     <Typography variant='title' style={{flexGrow: '1', marginTop: 12}}>
                         {this.props.courseDetails.name[0] + ' ' + this.props.courseDetails.name[1]}
                     </Typography>
+
+                    <AlmanacGraphWrapped term = {this.props.term} courseDetails={this.props.courseDetails}/>
                 </div>
 
                 <div
@@ -33,8 +33,6 @@ class CourseDetailPane extends Component {
                             course_info[this.props.courseDetails.name[0]][this.props.courseDetails.name[1]]
                     }}
                 />
-
-                <AlmanacGraphWrapped term = {this.props.term} courseDetails={this.props.courseDetails}/>
 
                 <SectionTable style={{marginTop: 12}}
                               courseDetails={this.props.courseDetails}
