@@ -13,9 +13,7 @@ class CourseDetailPane extends Component {
                 overflow: 'auto',
                 height: '100%',
                 backgroundColor: 'white'}}>
-                <div style={{
-                    display: 'inline-flex'
-                }}>
+                <div>
                     <IconButton style={{marginRight: 24}} onClick={this.props.onDismissDetails}>
                         <ArrowBack/>
                     </IconButton>
