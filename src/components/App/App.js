@@ -7,7 +7,7 @@ import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
 import {ListAlt, Dns} from "@material-ui/icons"
 import Info from "@material-ui/icons/InfoSharp";
-import Logo from './logo.svg';
+import logo from './logo.svg';
 
 // pop up for log in
 import LogApp from "../logIn/popUp";
@@ -433,12 +433,10 @@ class App extends Component {
                 <CssBaseline/>
                 <AppBar position="static" style={{marginBottom: 8}}>
                     <Toolbar variant="dense">
-                        <Logo
-                            className='App-logo'
-                            ariaLabel='logo'
-                            id="introID"
+                        <img src={logo}
                             style={{flexGrow: 2, height: 60}}
-                        />
+                            className="App-logo"
+                            alt="logo" />
 
                         <LoadUser load={this.handleLoad} save={this.handleSave}/>
 
