@@ -2,7 +2,7 @@ import React, {Component, Fragment} from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import querystring from 'querystring';
 
-import {Modal, Button, Paper, FormControl, InputLabel, Select, MenuItem} from '@material-ui/core';
+import {Modal, Button, Paper, FormControl, InputLabel, Select, MenuItem, Typography} from '@material-ui/core';
 import GraphRenderPane from "./GraphRenderPane";
 
 const styles = theme => ({
