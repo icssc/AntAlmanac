@@ -15,12 +15,9 @@ import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
 import { ListAlt, Dns } from "@material-ui/icons";
 import Info from "@material-ui/icons/InfoSharp";
-<<<<<<< HEAD
 import ShowE from "../showEvents/showE";
-=======
 import logo from './logo.png';
 
->>>>>>> 3d8fa52ee99e4287ff9ecf0d2b607f5e6784021a
 // pop up for log in
 import LogApp from "../logIn/popUp";
 import LoadUser from "../cacheMes/cacheM";
