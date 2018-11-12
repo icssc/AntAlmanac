@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
-import AddCircle from "@material-ui/icons/AddCircle";
-import { IconButton, Menu, MenuItem } from "@material-ui/core";
+
 import rmpData from "../CoursePane/RMP.json";
 
 import Button from "@material-ui/core/Button";

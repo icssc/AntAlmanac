@@ -453,13 +453,8 @@ class App extends Component {
         <CssBaseline />
         <AppBar position="static" style={{ marginBottom: 8 }}>
           <Toolbar variant="dense">
-            <img
-              src={logo}
-              ariaLabel="logo"
-              style={{ height: 40, width: 248 }}
-              className="App-logo"
-              alt="logo"
-            />
+            <img src={logo} style={{ height: 40, width: 161 }} />
+
             <Typography
               variant="title"
               id="introID"

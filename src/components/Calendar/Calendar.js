@@ -26,9 +26,8 @@ const CustomEvent = ({ event }) => {
       <div>
         <div style={{ marginTop: 4, marginBottom: 4, overflow: "hidden" }}>
           <div style={{ fontWeight: 500, float: "left" }}>{event.title}</div>
-          <div style={{ float: "right" }}>{event.type}</div>
         </div>
-        <div style={{ clear: "left" }}>{event.location}</div>
+        <div>{event.type + " " + event.location}</div>
       </div>
     );
   else {
