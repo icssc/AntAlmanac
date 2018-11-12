@@ -62,7 +62,7 @@ class SchoolDeptCard extends Component {
                             <Typography variant='body2'>
                                 {this.props.comment === '' ? 'No comments found' : 'Comments:'}
                             </Typography>
-                            <div dangerouslySetInnerHTML={html} className={this.props.classes.comments}>{}</div>
+                            <div dangerouslySetInnerHTML={html} className={this.props.classes.comments}/>
                         </Collapse>
                     </Fragment>
                 </Paper>
