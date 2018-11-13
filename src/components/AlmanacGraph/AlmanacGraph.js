@@ -140,6 +140,7 @@ class AlmanacGraph extends Component {
                 }}>
                     <Typography variant="h1">
                     {"This course was not offered in " + this.state.term}
+                    </Typography>
                 </div>
 
                 :
