@@ -177,7 +177,7 @@ export function convertToCalendar(
     dates.includes("Th"),
     dates.includes("F")
   ];
-
+  console.log("ok", name);
   if (ampm === "p" && end !== 12) {
     start += 12;
     end += 12;
@@ -189,7 +189,7 @@ export function convertToCalendar(
     if (shouldBeInCal) {
       const newClass = {
         color: random_color,
-        title: name[0] + " " + name[1],
+        title: section.classCode + " " + name[0] + " " + name[1],
         start: new Date(2018, 0, index + 1, start, startMin),
         end: new Date(2018, 0, index + 1, end, endMin),
         courseID: section.classCode,
