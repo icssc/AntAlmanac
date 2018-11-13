@@ -48,6 +48,7 @@ class CourseRenderPane extends Component {
   }
 
   toRender = SOCObject => {
+    console.log("dddd", SOCObject);
     window.localStorage.setItem(
       "location",
       document.getElementById("foo1").scrollTop
@@ -112,8 +113,11 @@ class CourseRenderPane extends Component {
         {this.state.courseDetailsOpen ? (
           <CourseDetailPane
             courseDetails={this.state.course}
+            deptName={this.props.deptName}
+            termName={this.props.termName}
             onDismissDetails={this.handleDismissDetails}
             onAddClass={this.props.onAddClass}
+            term={this.props.term}
           />
         ) : (
           <div
