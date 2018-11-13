@@ -115,7 +115,6 @@ class CourseRenderPane extends Component {
             courseDetails={this.state.course}
             deptName={this.props.deptName}
             termName={this.props.termName}
-            onDismissDetails={this.handleDismissDetails}
             onAddClass={this.props.onAddClass}
             term={this.props.term}
           />

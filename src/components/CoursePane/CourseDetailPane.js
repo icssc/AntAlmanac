@@ -68,6 +68,7 @@ class CourseDetailPane extends Component {
 
           <SectionTable
             style={{ marginTop: 12 }}
+            termName={this.props.termName}
             courseDetails={this.props.courseDetails}
             onAddClass={this.props.onAddClass}
           />

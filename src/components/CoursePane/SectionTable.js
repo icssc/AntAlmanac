@@ -107,7 +107,8 @@ class SectionTable extends Component {
         break;
       }
     }
-    if (!test)
+    if (!test) {
+      console.log("tj", this.props.termName);
       return (
         <ScheduleAddSelector
           onAddClass={this.props.onAddClass}
@@ -116,7 +117,7 @@ class SectionTable extends Component {
           termName={this.props.termName}
         />
       );
-    else return;
+    } else return;
   };
   render() {
     const sectionInfo = this.props.courseDetails.sections;

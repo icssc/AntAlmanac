@@ -2,12 +2,17 @@ import React, { Component, Fragment } from "react";
 import loadingGif from "./loading.mp4";
 import querystring from "querystring";
 import CourseRenderPane from "./CourseRenderPane";
-import zoom from "./zoom.png"
+import zoom from "./zoom.png";
 
 class CoursePane extends Component {
   constructor(props) {
     super(props);
-    this.state = { courseData: null, loading: 0 };
+    this.state = {
+      courseData: null,
+      loading: 0,
+      termName: null,
+      deptName: null
+    };
   }
 
   shouldComponentUpdate(nextProps, nextState, nextContext) {
@@ -68,6 +73,8 @@ class CoursePane extends Component {
           onAddClass={this.props.onAddClass}
           courseData={courseData}
           view={this.props.view}
+          deptName={this.state.deptName}
+          termName={this.state.termName}
         />
       );
     } else if (loading === 1) {
@@ -102,7 +109,6 @@ class CoursePane extends Component {
           </div>{" "}
         </Fragment>
       );
-
     }
   }
 }
