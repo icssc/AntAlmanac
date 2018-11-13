@@ -504,12 +504,16 @@ class App extends Component {
           <Grid item lg={6} xs={12}>
             <Paper style={{ overflow: "hidden", margin: "10px 10px 0px 5px" }}>
               <Toolbar variant="dense" style={{ backgroundColor: "#5191d6" }}>
-                <IconButton onClick={() => this.setView(0)}>
-                  <ListAlt />
-                </IconButton>
-                <IconButton onClick={() => this.setView(1)}>
-                  <Dns />
-                </IconButton>
+                <Tooltip title="List View">
+                  <IconButton onClick={() => this.setView(0)}>
+                    <ListAlt />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Tile View">
+                  <IconButton onClick={() => this.setView(1)}>
+                    <Dns />
+                  </IconButton>
+                </Tooltip>
               </Toolbar>
             </Paper>
             <Paper
