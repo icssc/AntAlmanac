@@ -194,7 +194,7 @@ class App extends Component {
           this.handleAddCustomEvent(dates, obj.index, obj.weekdays);
         });
       } else {
-        console.log(obj.section, obj.name, obj.index, obj.courseTerm);
+        //console.log(obj.section, obj.name, obj.index, obj.courseTerm);
         this.setState({ currentScheduleIndex: obj.index }, function() {
           this.handleAddClass(obj.section, obj.name, obj.index, obj.courseTerm);
         });
@@ -309,7 +309,7 @@ class App extends Component {
     } else {
       allowToAdd = true;
       randomColor = getColor();
-      console.log("ssss", section);
+      //console.log("ssss", section);
       this.state.coursesEvents.push({
         courseID: section.classCode,
         courseTerm: termName,
@@ -408,7 +408,7 @@ class App extends Component {
   };
 
   clickToUndo = () => {
-    console.log("dsadcccccc");
+    //console.log("dsadcccccc");
     this.setState({ Uclick: true }, () => {
       this.undoEvent();
       this.setState({ Uclick: false });
@@ -440,7 +440,7 @@ class App extends Component {
   };
 
   moreInfoF = () => {
-    console.log("okkkkkkk");
+    //console.log("okkkkkkk");
     this.setState({ showMore: !this.state.showMore }, function() {
       if (this.state.showMore == true) this.setState({ formData: null });
       else this.setState({ formData: this.state.prevFormData });
