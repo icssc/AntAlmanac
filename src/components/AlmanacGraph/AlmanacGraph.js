@@ -108,12 +108,15 @@ class AlmanacGraph extends Component {
                 this.props.courseDetails.name[0] +
                 " " +
                 this.props.courseDetails.name[1]}
+
+                <Tooltip title="Need Help with Graphs?">
+                  <a href="https://the-antalmanac.herokuapp.com/index.html#support" target="_blank">
+                    <Help />
+                  </a>
+                </Tooltip>
+
             </Typography>
-            <Tooltip title="Need Help with Graphs?">
-              <a href="https://the-antalmanac.herokuapp.com/index.html#support" target="_blank">
-                <Help />
-              </a>
-            </Tooltip>
+
             <FormControl fullWidth>
               <InputLabel htmlFor="term-select">Term</InputLabel>
               <Select

@@ -95,12 +95,10 @@ class Calendar extends Component {
                 <OpenInBrowser />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Add Custom Event">
-              <DialogSelect
-                onAddCustomEvent={this.props.onAddCustomEvent}
-                setID={this.props.setID}
-              />
-            </Tooltip>
+            <DialogSelect
+              onAddCustomEvent={this.props.onAddCustomEvent}
+              setID={this.props.setID}
+            />
             <Tooltip title="Clear All">
               <IconButton onClick={this.props.clear}>
                 <Delete />

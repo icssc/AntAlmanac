@@ -11,7 +11,8 @@ import {
   FormControl,
   Input,
   IconButton,
-  InputLabel
+  InputLabel,
+  Tooltip
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { Add } from "@material-ui/icons";
@@ -200,9 +201,11 @@ class DialogSelect extends Component {
 
     return (
       <div>
+        <Tooltip title="Add Custom Event">
         <IconButton onClick={() => this.setState({ open: true })}>
           <Add />
         </IconButton>
+        </Tooltip>
         <Dialog
           disableBackdropClick
           disableEscapeKeyDown
