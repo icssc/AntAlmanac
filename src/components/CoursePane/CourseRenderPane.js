@@ -82,9 +82,9 @@ class CourseRenderPane extends Component {
                     disablePortal
                     hideBackdrop
                     container={this.ref}
-
+                    disableAutoFocus
                     disableBackdropClick
-                    
+                    disableEnforceFocus
                     disableEscapeKeyDown
                     open={this.state.courseDetailsOpen}
                     onClose={this.handleDismissDetails}>
