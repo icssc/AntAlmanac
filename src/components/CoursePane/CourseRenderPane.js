@@ -99,13 +99,13 @@ class CourseRenderPane extends Component {
     }
   }
 
-  handleDismissDetails() {
+  handleDismissDetails = () => {
     this.setState({ courseDetailsOpen: false, course: null }, () => {
       var a = window.localStorage.getItem("location");
 
       document.getElementById("foo1").scrollTop = a;
     });
-  }
+  };
 
   render() {
     return (
