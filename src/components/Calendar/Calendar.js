@@ -58,16 +58,16 @@ class Calendar extends Component {
       this.props.currentScheduleIndex !== nextProps.currentScheduleIndex
     );
   }
-
-  moreInfoURL = events => {
-    let url =
-      "https://www.reg.uci.edu/perl/WebSoc?YearTerm=2019-03&ShowFinals=1&ShowComments=1&CourseCodes=";
-    for (let event of events) {
-      url += event.courseID;
-      url += "%2C";
-    }
-    window.open(url);
-  };
+  //sorry boss
+  // moreInfoURL = events => {
+  //   let url =
+  //     "https://www.reg.uci.edu/perl/WebSoc?YearTerm=2019-03&ShowFinals=1&ShowComments=1&CourseCodes=";
+  //   for (let event of events) {
+  //     url += event.courseID;
+  //     url += "%2C";
+  //   }
+  //   window.open(url);
+  // };
 
   render() {
     return (
@@ -91,9 +91,7 @@ class Calendar extends Component {
             </Tooltip>
             <DomPic />
             <Tooltip title="More Info on Selected Classes">
-              <IconButton
-                onClick={() => this.moreInfoURL(this.props.coursesEvents)}
-              >
+              <IconButton onClick={this.props.moreInfoF}>
                 <OpenInBrowser />
               </IconButton>
             </Tooltip>
