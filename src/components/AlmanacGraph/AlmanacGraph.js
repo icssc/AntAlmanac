@@ -131,13 +131,27 @@ class AlmanacGraph extends Component {
                 <MenuItem value={"2018 Winter"}>2018 Winter Quarter</MenuItem>
               </Select>
             </FormControl>
-            {this.state.sections.map(section => (
-              <GraphRenderPane
-                section={section}
-                quarter={this.state.term[5].toLowerCase()}
-                year={this.state.term.substring(2, 4)}
-              />
-            ))}
+
+            {this.state.sections.length === 0 ?
+                <div style={{
+                    height: '100%', width: '100%', display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    <Typography variant="h1">
+                    {"This course was not offered in " + this.state.term}
+                </div>
+
+                :
+
+                {this.state.sections.map(section => (
+                  <GraphRenderPane
+                    section={section}
+                    quarter={this.state.term[5].toLowerCase()}
+                    year={this.state.term.substring(2, 4)}
+                  />
+                ))}
+              }
           </Paper>
         </Modal>
       </Fragment>
