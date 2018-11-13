@@ -78,6 +78,7 @@ class App extends Component {
   };
 
   handleLoad = async name => {
+    console.log("f me");
     this.setState(
       {
         Uclick: false,
@@ -523,6 +524,7 @@ class App extends Component {
                 margin: "10px 10px 0px 5px",
                 padding: 10
               }}
+              id="foo1"
             >
               {this.state.showMore ? (
                 <ShowE events={this.state.coursesEvents} />
