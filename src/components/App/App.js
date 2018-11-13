@@ -72,7 +72,7 @@ class App extends Component {
   }
   
   resizeLogo() {
-    this.setState({ isDesktop: window.innerWidth > 1450 });
+    this.setState({ isDesktop: window.innerWidth > 1000 });
   }
 
   setView = viewNum => {
