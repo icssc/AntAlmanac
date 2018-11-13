@@ -107,11 +107,13 @@ class AlmanacGraph extends Component {
               {"Historical Enrollments for " +
                 this.props.courseDetails.name[0] +
                 " " +
-                this.props.courseDetails.name[1]}
+                this.props.courseDetails.name[1] + "   "}
 
                 <Tooltip title="Need Help with Graphs?">
-                  <a href="https://the-antalmanac.herokuapp.com/index.html#support" target="_blank">
-                    <Help />
+                  <a href="https://the-antalmanac.herokuapp.com/index.html#support"
+                     target="_blank"
+                     style={{ color: "black" }}>
+                    <Help fontSize="48px"/>
                   </a>
                 </Tooltip>
 
