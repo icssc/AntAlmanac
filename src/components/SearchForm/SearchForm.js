@@ -52,7 +52,7 @@ class SearchForm extends Component {
         alignItems="center"
         alignContent="center"
         justify="center"
-        spacing={16}
+        spacing={0}
       >
         <Grid item lg={3} xs={12}>
           <DeptSearchBar setDept={this.setDept} />
@@ -71,9 +71,7 @@ class SearchForm extends Component {
             color="primary"
             variant="contained"
             onClick={() => this.props.updateFormData(this.state)}
-          >
-            Search
-          </Button>
+          >Search</Button>
         </Grid>
       </Grid>
     );
