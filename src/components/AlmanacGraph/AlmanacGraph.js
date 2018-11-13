@@ -144,14 +144,15 @@ class AlmanacGraph extends Component {
                 </div>
 
                 :
-
-                {this.state.sections.map(section => (
-                  <GraphRenderPane
-                    section={section}
-                    quarter={this.state.term[5].toLowerCase()}
-                    year={this.state.term.substring(2, 4)}
-                  />
-                ))}
+                <Grid container spacing={16}>
+                  {this.state.sections.map(section => (
+                    <GraphRenderPane
+                      section={section}
+                      quarter={this.state.term[5].toLowerCase()}
+                      year={this.state.term.substring(2, 4)}
+                    />
+                  ))}
+                </Grid>
               }
           </Paper>
         </Modal>
