@@ -15,7 +15,8 @@ import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
 import { ListAlt, Dns } from "@material-ui/icons";
 import Info from "@material-ui/icons/InfoSharp";
-import logo from "./logo.png";
+import logo_tight from "./logo_tight.png";
+import logo_wide from "./logo_wide.png";
 import ShowE from "../showEvents/showE";
 // pop up for log in
 import LogApp from "../logIn/popUp";
@@ -52,16 +53,26 @@ class App extends Component {
       cusID: 0,
       enter: false,
       view: 1,
-      showMore: false
+      showMore: false,
+      isDesktop: false 
     };
+    
+    this.resizeLogo = this.resizeLogo.bind(this);
   }
 
   componentDidMount() {
     document.addEventListener("keydown", this.undoEvent, false);
+    this.resizeLogo();
+    window.addEventListener("resize", this.resizeLogo);
   }
 
   componentWillUnmount() {
     document.removeEventListener("keydown", this.undoEvent, false);
+    window.removeEventListener("resize", this.resizeLogo);
+  }
+  
+  resizeLogo() {
+    this.setState({ isDesktop: window.innerWidth > 1450 });
   }
 
   setView = viewNum => {
@@ -454,7 +465,14 @@ class App extends Component {
         <CssBaseline />
         <AppBar position="static" style={{ marginBottom: 8 }}>
           <Toolbar variant="dense">
-            <img src={logo} style={{ height: 30, width: 180 }} />
+            <div>
+              {this.state.isDesktop ? (
+                <img src={logo_wide} style={{ height: 35, width: 394 }} />
+              ) : (
+                <img src={logo_tight} style={{ height: 45, width: 202 }} />
+              )}
+            </div>
+            
 
             <Typography
               variant="title"
