@@ -117,6 +117,7 @@ class CourseRenderPane extends Component {
             termName={this.props.termName}
             onAddClass={this.props.onAddClass}
             term={this.props.term}
+            onDismissDetails={this.handleDismissDetails}
           />
         ) : (
           <div
