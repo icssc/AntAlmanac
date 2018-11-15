@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import { Tooltip, Grid } from "@material-ui/core";
+import { Tooltip } from "@material-ui/core";
 import querystring from "querystring";
 import { Help } from "@material-ui/icons";
 
@@ -58,7 +58,6 @@ class AlmanacGraph extends Component {
     const url =
       "https://j4j70ejkmg.execute-api.us-west-1.amazonaws.com/latest/api/websoc?" +
       querystring.stringify(params);
-    // console.log(url);
 
     fetch(url.toString())
       .then(resp => resp.json())
@@ -114,6 +113,7 @@ class AlmanacGraph extends Component {
                 <a
                   href="https://the-antalmanac.herokuapp.com/index.html#support"
                   target="_blank"
+                  rel="noopener noreferrer"
                   style={{ color: "black" }}
                 >
                   <Help fontSize="48px" />

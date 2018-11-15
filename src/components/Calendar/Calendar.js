@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import BigCalendar from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
@@ -7,7 +7,6 @@ import IconButton from "@material-ui/core/IconButton/IconButton";
 import {
   ChevronLeft,
   ChevronRight,
-  Add,
   Undo,
   OpenInBrowser,
   Delete

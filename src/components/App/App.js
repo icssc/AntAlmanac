@@ -7,7 +7,6 @@ import {
   Typography,
   AppBar,
   Paper,
-  Button,
   Tooltip
 } from "@material-ui/core";
 import SearchForm from "../SearchForm/SearchForm";
@@ -19,12 +18,11 @@ import logo_tight from "./logo_tight.png";
 import logo_wide from "./logo_wide.png";
 import ShowE from "../showEvents/showE";
 // pop up for log in
-import LogApp from "../logIn/popUp";
+//import LogApp from "../logIn/popUp";
 import LoadUser from "../cacheMes/cacheM";
-import LoadApp from "../saveApp/saveButton";
+//import LoadApp from "../saveApp/saveButton";
 import {
   convertToCalendar,
-  getTime,
   saveUserDB,
   getUser,
   getCustomDate,
@@ -38,8 +36,6 @@ class App extends Component {
     super(props);
 
     this.state = {
-      Uclick: false,
-      name: undefined,
       formData: null,
       prevFormData: null,
       schedule0Events: [],
@@ -51,12 +47,11 @@ class App extends Component {
       customEvents: [],
       backupArray: [],
       cusID: 0,
-      enter: false,
       view: 1,
       showMore: false,
-      isDesktop: false 
+      isDesktop: false
     };
-    
+
     this.resizeLogo = this.resizeLogo.bind(this);
   }
 
@@ -70,7 +65,7 @@ class App extends Component {
     document.removeEventListener("keydown", this.undoEvent, false);
     window.removeEventListener("resize", this.resizeLogo);
   }
-  
+
   resizeLogo() {
     this.setState({ isDesktop: window.innerWidth > 1000 });
   }
@@ -89,10 +84,8 @@ class App extends Component {
   };
 
   handleLoad = async name => {
-    console.log("f me");
     this.setState(
       {
-        Uclick: false,
         schedule0Events: [],
         schedule1Events: [],
         schedule2Events: [],
@@ -193,30 +186,47 @@ class App extends Component {
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  undoEvent = async event => {
+  undoEvent = event => {
     if (
       this.state.backupArray.length > 0 &&
-      (this.state.Uclick ||
-        (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))
+      (event.keyCode === 90 && (event.ctrlKey || event.metaKey))
     ) {
+      this.undoEventHelp();
+    }
+  };
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  undoEventHelp = () => {
+    if (this.state.backupArray.length > 0) {
       var obj = this.state.backupArray.pop();
       if (obj.customize) {
         const dates = getCustomDate(obj, -1);
-        this.setState({ currentScheduleIndex: obj.index }, function() {
-          this.handleAddCustomEvent(dates, obj.index, obj.weekdays);
-        });
+        this.setState(
+          {
+            currentScheduleIndex: obj.index,
+            backupArray: this.state.backupArray
+          },
+          () => {
+            this.handleAddCustomEvent(dates, obj.index, obj.weekdays);
+          }
+        );
       } else {
-        //console.log(obj.section, obj.name, obj.index, obj.courseTerm);
-        this.setState({ currentScheduleIndex: obj.index }, function() {
-          this.handleAddClass(obj.section, obj.name, obj.index, obj.courseTerm);
-        });
+        this.setState(
+          {
+            currentScheduleIndex: obj.index,
+            backupArray: this.state.backupArray
+          },
+          () => {
+            this.handleAddClass(
+              obj.section,
+              obj.name,
+              obj.index,
+              obj.courseTerm
+            );
+          }
+        );
       }
-      this.setState({
-        backupArray: this.state.backupArray
-      });
     }
   };
-
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   handleClassDelete = (courseID, courseTerm, isCustom) => {
@@ -235,15 +245,15 @@ class App extends Component {
     var indexArr = arrayE[foundIndex].index.filter(
       item => item !== this.state.currentScheduleIndex
     );
-
+    var backup = this.state.backupArray;
     if (!isCustom) {
-      this.state.backupArray = this.state.backupArray.filter(
+      backup = backup.filter(
         item =>
           item.courseID !== courseID ||
           item.courseTerm !== courseTerm ||
           item.index !== this.state.currentScheduleIndex
       );
-      this.state.backupArray.push({
+      backup.push({
         courseID: arrayE[foundIndex].courseID,
         courseTerm: arrayE[foundIndex].courseTerm,
         index: this.state.currentScheduleIndex,
@@ -252,7 +262,7 @@ class App extends Component {
         name: arrayE[foundIndex].name
       });
     } else {
-      this.state.backupArray.push({
+      backup.push({
         courseID: arrayE[foundIndex].courseID,
         index: this.state.currentScheduleIndex,
         start: arrayE[foundIndex].start,
@@ -279,7 +289,7 @@ class App extends Component {
         ["schedule" +
         this.state.currentScheduleIndex +
         "Events"]: classEventsInCalendar,
-        backupArray: this.state.backupArray
+        backupArray: backup
       },
       function() {
         if (isCustom) this.setState({ customEvents: arrayE });
@@ -310,19 +320,18 @@ class App extends Component {
     var allowToAdd = false;
     if (foundIndex > -1) {
       var exist = arrayE[foundIndex].index.findIndex(
-        item => item == scheduleNumber
+        item => item === scheduleNumber
       );
       if (exist < 0) {
         arrayE[foundIndex].index.push(scheduleNumber);
         randomColor = arrayE[foundIndex].color;
-        this.state.coursesEvents = arrayE;
         allowToAdd = true;
       }
     } else {
       allowToAdd = true;
       randomColor = getColor();
-      //console.log("ssss", section);
-      this.state.coursesEvents.push({
+
+      arrayE.push({
         courseID: section.classCode,
         courseTerm: termName,
         index: [scheduleNumber],
@@ -349,11 +358,10 @@ class App extends Component {
       this.setState({
         ["schedule" + scheduleNumber + "Events"]: this.state[
           "schedule" + scheduleNumber + "Events"
-        ].concat(cal)
+        ].concat(cal),
+        coursesEvents: arrayE
       });
-    }
-
-    this.setState({ coursesEvents: this.state.coursesEvents });
+    } else this.setState({ coursesEvents: arrayE });
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -371,8 +379,10 @@ class App extends Component {
   };
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   updateFormData = formData => {
-    this.setState({ showMore: false }, function() {
-      this.setState({ formData: formData, prevFormData: formData });
+    this.setState({
+      showMore: false,
+      formData: formData,
+      prevFormData: formData
     });
   };
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -384,9 +394,8 @@ class App extends Component {
 
     if (foundIndex > -1) {
       arrayE[foundIndex].index.push(calendarIndex);
-      this.state.customEvents = arrayE;
     } else {
-      this.state.customEvents.push({
+      arrayE.push({
         title: events[0].title,
         start: [events[0].start.getHours(), events[0].start.getMinutes()],
         end: [events[0].end.getHours(), events[0].end.getMinutes()],
@@ -395,37 +404,27 @@ class App extends Component {
         weekdays: dates
       });
     }
-    //this.state["schedule" + calendarIndex + "Events"].concat(events);
 
     this.setState({
       ["schedule" + calendarIndex + "Events"]: this.state[
         "schedule" + calendarIndex + "Events"
-      ].concat(events)
+      ].concat(events),
+      customEvents: arrayE
     });
-    this.setState({ customEvents: this.state.customEvents });
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //get id for the custom event
   setID = () => {
-    this.state.cusID = this.state.cusID + 1;
-
-    this.setState({ cusID: this.state.cusID });
-    return this.state.cusID;
+    var id = this.state.cusID + 1;
+    this.setState({ cusID: id });
+    return id;
   };
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  handleChange = name => {
-    this.setState({ name });
-  };
-
-  clickToUndo = () => {
-    //console.log("dsadcccccc");
-    this.setState({ Uclick: true }, () => {
-      this.undoEvent();
-      this.setState({ Uclick: false });
-    });
-  };
+  // handleChange = name => {
+  //   this.setState({ name });
+  // };
 
   clearSchedule = () => {
     if (
@@ -435,7 +434,6 @@ class App extends Component {
     ) {
       // Save it!
       this.setState({
-        Uclick: false,
         schedule0Events: [],
         schedule1Events: [],
         schedule2Events: [],
@@ -447,14 +445,12 @@ class App extends Component {
         currentScheduleIndex: 0
       });
     } else {
-      // Do nothing!
     }
   };
 
   moreInfoF = () => {
-    //console.log("okkkkkkk");
     this.setState({ showMore: !this.state.showMore }, function() {
-      if (this.state.showMore == true) this.setState({ formData: null });
+      if (this.state.showMore === true) this.setState({ formData: null });
       else this.setState({ formData: this.state.prevFormData });
     });
   };
@@ -467,12 +463,19 @@ class App extends Component {
           <Toolbar variant="dense">
             <div>
               {this.state.isDesktop ? (
-                <img src={logo_wide} style={{ height: 35, width: 394 }} />
+                <img
+                  src={logo_wide}
+                  style={{ height: 35, width: 394 }}
+                  alt="XD"
+                />
               ) : (
-                <img src={logo_tight} style={{ height: 45, width: 202 }} />
+                <img
+                  src={logo_tight}
+                  style={{ height: 45, width: 202 }}
+                  alt=":("
+                />
               )}
             </div>
-            
 
             <Typography
               variant="title"
@@ -509,7 +512,7 @@ class App extends Component {
                   ]
                 }
                 moreInfoF={this.moreInfoF}
-                clickToUndo={this.clickToUndo}
+                clickToUndo={this.undoEventHelp}
                 currentScheduleIndex={this.state.currentScheduleIndex}
                 onClassDelete={this.handleClassDelete}
                 onScheduleChange={this.handleScheduleChange}

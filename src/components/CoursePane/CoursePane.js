@@ -105,7 +105,7 @@ class CoursePane extends Component {
               alignItems: "center"
             }}
           >
-            <img src={zoom} />
+            <img src={zoom} alt="my face" />
           </div>{" "}
         </Fragment>
       );

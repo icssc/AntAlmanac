@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-
 import { IconButton, Typography } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import SectionTable from "./SectionTable";
@@ -21,58 +20,53 @@ class CourseDetailPane extends Component {
   };
   render() {
     return (
-      <div>
+      <div
+        style={{
+          overflow: "auto",
+          height: "100%",
+          backgroundColor: "white"
+        }}
+      >
         <div
-        // style={{
-        //   overflow: "auto",
-        //   height: "100%",
-        //   backgroundColor: "white"
-        // }}
+          style={{
+            display: "inline-flex"
+          }}
         >
-          <div
-            style={{
-              overflow: "auto",
-              display: "inline-flex"
-            }}
+          <IconButton
+            style={{ marginRight: 24 }}
+            onClick={this.props.onDismissDetails}
           >
-            <IconButton
-              style={{ marginRight: 24 }}
-              onClick={this.props.onDismissDetails}
-            >
-              <ArrowBack />
-            </IconButton>
-
-            <Typography
-              variant="title"
-              style={{ flexGrow: "2", marginTop: 12 }}
-            >
-              {this.props.courseDetails.name[0] +
-                " " +
-                this.props.courseDetails.name[1]}
-              &nbsp;&nbsp;&nbsp;&nbsp;
-            </Typography>
-
-            <AlmanacGraphWrapped
-              term={this.props.term}
-              courseDetails={this.props.courseDetails}
-            />
-          </div>
-
-          <div
-            style={{ margin: 20 }}
-            className="course_info"
-            dangerouslySetInnerHTML={{
-              __html: this.deptInfo()
-            }}
-          />
-
-          <SectionTable
-            style={{ marginTop: 12 }}
-            termName={this.props.termName}
+            <ArrowBack />
+          </IconButton>
+          <Typography variant="title" style={{ flexGrow: "2", marginTop: 12 }}>
+            {this.props.courseDetails.name[0] +
+              " " +
+              this.props.courseDetails.name[1]}
+            &nbsp;&nbsp;&nbsp;&nbsp;
+          </Typography>
+          <AlmanacGraphWrapped
+            term={this.props.term}
             courseDetails={this.props.courseDetails}
-            onAddClass={this.props.onAddClass}
           />
         </div>
+
+        <div
+          style={{ margin: 20 }}
+          className="course_info"
+          dangerouslySetInnerHTML={{
+            __html:
+              course_info[this.props.courseDetails.name[0]][
+                this.props.courseDetails.name[1]
+              ]
+          }}
+        />
+
+        <SectionTable
+          style={{ marginTop: 12 }}
+          courseDetails={this.props.courseDetails}
+          onAddClass={this.props.onAddClass}
+          termName={this.props.termName}
+        />
       </div>
     );
   }

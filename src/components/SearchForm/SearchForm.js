@@ -2,7 +2,7 @@ import Grid from "@material-ui/core/Grid";
 import DeptSearchBar from "./DeptSearchBar/DeptSearchBar";
 import GESelector from "./GESelector/GESelector";
 import TermSelector from "./TermSelector";
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
 
 class SearchForm extends Component {
@@ -22,9 +22,10 @@ class SearchForm extends Component {
   }
   enterEvent = event => {
     var charCode = event.which ? event.which : event.keyCode;
-    if (charCode === 13) {
-      event.preventDefault();
+    if (charCode === 13 || charCode == 10) {
       this.props.updateFormData(this.state);
+      event.preventDefault();
+
       return false;
     }
   };
@@ -71,7 +72,9 @@ class SearchForm extends Component {
             color="primary"
             variant="contained"
             onClick={() => this.props.updateFormData(this.state)}
-          >Search</Button>
+          >
+            Search
+          </Button>
         </Grid>
       </Grid>
     );

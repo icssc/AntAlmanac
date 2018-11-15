@@ -95,10 +95,10 @@ const styles2 = theme => ({
 
 class CustomizedSnackbars extends React.Component {
   state = {
-    message: "hello!"
+    message: "hello! "
   };
 
-  componentWillMount = async () => {
+  componentDidMount = async () => {
     if (typeof Storage !== "undefined") {
       var a = window.localStorage.getItem("name");
 
@@ -109,7 +109,7 @@ class CustomizedSnackbars extends React.Component {
     }
   };
   handleClick = async () => {
-    var person = prompt("Please enter your name");
+    var person = prompt("Please enter your username");
     if (person != null) {
       person = person.replace(/\s+/g, "");
       if (person.length > 0) {
@@ -119,7 +119,7 @@ class CustomizedSnackbars extends React.Component {
     }
   };
   handleClickS = async () => {
-    var person = prompt("Please enter your name");
+    var person = prompt("Please enter your unique username");
     if (person != null) {
       person = person.replace(/\s+/g, "");
       if (person.length > 0) {

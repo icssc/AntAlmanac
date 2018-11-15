@@ -107,7 +107,7 @@ export async function getCoursesData(courses, ob2) {
 }
 
 export async function saveUserDB(name, arrayToStore) {
-  const response = await fetch(
+  await fetch(
     // `https://gentle-inlet-23513.herokuapp.com/api/${param}`,
     `https://hqyhurqrgh.execute-api.us-west-1.amazonaws.com/latest/create`,
     {
@@ -124,7 +124,6 @@ export async function saveUserDB(name, arrayToStore) {
       body: JSON.stringify({ username: name, schedules: arrayToStore }) // body data type must match "Content-Type" header
     }
   );
-  const json = await response.json();
 }
 
 export async function getUser(param) {
@@ -177,7 +176,7 @@ export function convertToCalendar(
     dates.includes("Th"),
     dates.includes("F")
   ];
-  console.log("ok", name);
+
   if (ampm === "p" && end !== 12) {
     start += 12;
     end += 12;

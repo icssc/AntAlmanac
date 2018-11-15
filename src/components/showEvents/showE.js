@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 
 import rmpData from "../CoursePane/RMP.json";
 
-import Button from "@material-ui/core/Button";
+//import Button from "@material-ui/core/Button";
 
 class showE extends Component {
   constructor(props) {
@@ -14,7 +14,7 @@ class showE extends Component {
     //console.log(name);
     var lastName = name.substring(0, name.indexOf(","));
     var nameP = rmpData[0][name];
-    if (nameP != undefined)
+    if (nameP !== undefined)
       window.open("https://www.ratemyprofessors.com" + nameP);
     else
       window.open(

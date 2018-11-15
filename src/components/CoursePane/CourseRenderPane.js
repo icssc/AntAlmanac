@@ -48,7 +48,6 @@ class CourseRenderPane extends Component {
   }
 
   toRender = SOCObject => {
-    console.log("dddd", SOCObject);
     window.localStorage.setItem(
       "location",
       document.getElementById("foo1").scrollTop
@@ -99,38 +98,18 @@ class CourseRenderPane extends Component {
     }
   }
 
-  handleDismissDetails = () => {
+  handleDismissDetails() {
     this.setState({ courseDetailsOpen: false, course: null }, () => {
       var a = window.localStorage.getItem("location");
 
       document.getElementById("foo1").scrollTop = a;
     });
-  };
+  }
 
   render() {
     return (
-      <div>
-        {this.state.courseDetailsOpen ? (
-          <CourseDetailPane
-            courseDetails={this.state.course}
-            deptName={this.props.deptName}
-            termName={this.props.termName}
-            onAddClass={this.props.onAddClass}
-            term={this.props.term}
-            onDismissDetails={this.handleDismissDetails}
-          />
-        ) : (
-          <div
-            id="foo"
-            style={{
-              height: "100%",
-              overflow: "visible"
-            }}
-            // onScroll={this.handleScroll}
-            // className={this.props.classes.root}
-            // ref={ref => (this.ref = ref)}
-          >
-            {/* {
+      <div className={this.props.classes.root} ref={ref => (this.ref = ref)}>
+        {
           <Modal
             className={this.props.classes.modal}
             disablePortal
@@ -147,34 +126,27 @@ class CourseRenderPane extends Component {
               courseDetails={this.state.course}
               onDismissDetails={this.handleDismissDetails}
               onAddClass={this.props.onAddClass}
+              termName={this.props.termName}
             />
           </Modal>
-        } */}
-            {/* {this.state.courseDetailsOpen ? (
-              <CourseDetailPane
-                courseDetails={this.state.course}
-                onDismissDetails={this.handleDismissDetails}
-                onAddClass={this.props.onAddClass}
-              />
-            ) : null} */}
-            {this.props.courseData.length === 0 ? (
-              <div
-                style={{
-                  height: "100%",
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center"
-                }}
-              >
-                <img src={NoNothing} />
-              </div>
-            ) : (
-              <Grid container spacing={16}>
-                {this.props.courseData.map(item => this.getGrid(item))}
-              </Grid>
-            )}
+        }
+
+        {this.props.courseData.length === 0 ? (
+          <div
+            style={{
+              height: "100%",
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
+            <img src={NoNothing} alt="your face" />
           </div>
+        ) : (
+          <Grid container spacing={16}>
+            {this.props.courseData.map(item => this.getGrid(item))}
+          </Grid>
         )}
       </div>
     );
