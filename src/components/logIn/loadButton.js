@@ -22,7 +22,9 @@ export default class FormDialog extends React.Component {
   };
 
   handleCloseYes = () => {
-    this.setState({ open: false });
+    this.setState({ open: false }, () => {
+      this.props.handleLoad(this.state.name);
+    });
   };
 
   loginClicked = () => {
@@ -42,8 +44,10 @@ export default class FormDialog extends React.Component {
       document.activeElement.id == "name"
     ) {
       event.preventDefault();
-      this.handleClose();
-      this.props.handleLoad(this.state.name);
+      this.setState({ open: false }, () => {
+        this.props.handleLoad(this.state.name);
+      });
+
       // this.refs.input.blur();
       return false;
     }

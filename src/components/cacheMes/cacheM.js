@@ -151,7 +151,11 @@ class CustomizedSnackbars extends React.Component {
     if (person != null) {
       person = person.replace(/\s+/g, "");
       if (person.length > 0) {
-        this.setState({ open: true, message: "saved !" + person });
+        this.setState({
+          variant: "success",
+          open: true,
+          message: "saved !" + person
+        });
         await this.props.save(person);
       }
     }
