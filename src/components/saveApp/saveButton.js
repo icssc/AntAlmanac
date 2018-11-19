@@ -9,7 +9,8 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 
 export default class FormDialog extends React.Component {
   state = {
-    open: false
+    open: false,
+    name: null
   };
 
   handleClickOpen = () => {
@@ -27,6 +28,29 @@ export default class FormDialog extends React.Component {
 
   loginClicked = () => {
     this.setState({ open: false });
+  };
+
+  componentDidMount() {
+    document.addEventListener("keydown", this.enterEvent, false);
+  }
+  componentWillUnmount() {
+    document.addEventListener("keydown", this.enterEvent, false);
+  }
+  enterEvent = event => {
+    var charCode = event.which ? event.which : event.keyCode;
+    if (
+      (charCode === 13 || charCode == 10) &&
+      document.activeElement.id == "nameSave"
+    ) {
+      event.preventDefault();
+      this.handleClose();
+      this.props.handleSave(this.state.name);
+      // this.refs.input.blur();
+      return false;
+    }
+  };
+  setName = event => {
+    this.setState({ name: event.target.value });
   };
 
   render() {
@@ -51,13 +75,13 @@ export default class FormDialog extends React.Component {
             <TextField
               autoFocus
               margin="dense"
-              id="name"
+              id="nameSave"
               label="User ID"
               type="text"
               fullWidth
               placeholder="Enter here"
               // call the parent function handle change
-              onChange={e => this.props.act(e.target.value)}
+              onChange={this.setName}
             />
           </DialogContent>
           <DialogActions>

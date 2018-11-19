@@ -22,10 +22,15 @@ class SearchForm extends Component {
   }
   enterEvent = event => {
     var charCode = event.which ? event.which : event.keyCode;
-    if (charCode === 13 || charCode == 10) {
+    if (
+      (charCode === 13 || charCode == 10) &&
+      document.activeElement.id == "downshift-0-input"
+    ) {
       this.props.updateFormData(this.state);
       event.preventDefault();
+      console.log("dddxxxxx", document.activeElement.id);
 
+      // this.refs.input.blur();
       return false;
     }
   };

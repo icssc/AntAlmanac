@@ -9,6 +9,8 @@ import {
   Paper,
   Tooltip
 } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import MessengerCustomerChat from "react-messenger-customer-chat";
 import SearchForm from "../SearchForm/SearchForm";
 import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
@@ -24,10 +26,10 @@ import LoadUser from "../cacheMes/cacheM";
 import {
   convertToCalendar,
   saveUserDB,
-  getUser,
   getCustomDate,
   getColor,
-  getCoursesData
+  helpDelete,
+  helpAdd
 } from "./FetchHelper";
 import IconButton from "@material-ui/core/IconButton/IconButton";
 
@@ -48,6 +50,7 @@ class App extends Component {
       backupArray: [],
       cusID: 0,
       view: 1,
+      chat: false,
       showMore: false,
       isDesktop: false
     };
@@ -59,6 +62,13 @@ class App extends Component {
     document.addEventListener("keydown", this.undoEvent, false);
     this.resizeLogo();
     window.addEventListener("resize", this.resizeLogo);
+
+    // const script = document.createElement("script");
+
+    // script.src = "https://www.rumbletalk.com/client/?FuP32ilf&1";
+    // script.async = true;
+
+    // document.body.appendChild(script);
   }
 
   componentWillUnmount() {
@@ -83,69 +93,18 @@ class App extends Component {
     }
   };
 
-  handleLoad = async name => {
-    this.setState(
-      {
-        schedule0Events: [],
-        schedule1Events: [],
-        schedule2Events: [],
-        schedule3Events: [],
-        cusID: 0,
-        backupArray: [],
-        coursesEvents: [],
-        customEvents: [],
-        currentScheduleIndex: 0
-      },
-      async function() {
-        var myJson = await getUser(name);
-        var test = false;
-        for (var prop in myJson) {
-          if (myJson.hasOwnProperty(prop)) {
-            test = true;
-            break;
-          }
-        }
-        if (test) {
-          var ob2 = new Array(4);
-          ob2[0] = [];
-          ob2[1] = [];
-          ob2[2] = [];
-          ob2[3] = [];
-
-          if (myJson.schedules.custom.length > 0) {
-            for (var element of myJson.schedules.custom) {
-              this.state.cusID += 1;
-              element["courseID"] = this.state.cusID;
-              const dates = getCustomDate(element, element.courseID);
-
-              element.index.forEach(pos => {
-                ob2[pos] = ob2[pos].concat(dates);
-              });
-              this.state.customEvents.push(element);
-            }
-          }
-          if (myJson.schedules.normal.length > 0) {
-            await getCoursesData(
-              myJson.schedules.normal,
-              ob2,
-              this.state.coursesEvents
-            );
-
-            this.state.coursesEvents = myJson.schedules.normal;
-          }
-          this.setState({
-            schedule0Events: ob2[0],
-            schedule1Events: ob2[1],
-            schedule2Events: ob2[2],
-            schedule3Events: ob2[3],
-            customEvents: this.state.customEvents,
-            coursesEvents: this.state.coursesEvents,
-            cusID: this.state.cusID
-          });
-          window.localStorage.setItem("name", name);
-        }
-      }
-    );
+  handleLoad = userData => {
+    this.setState({
+      schedule0Events: userData.calEvents[0],
+      schedule1Events: userData.calEvents[1],
+      schedule2Events: userData.calEvents[2],
+      schedule3Events: userData.calEvents[3],
+      customEvents: userData.customE,
+      coursesEvents: userData.normalE,
+      cusID: userData.ID,
+      backupArray: [],
+      currentScheduleIndex: 0
+    });
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -231,52 +190,21 @@ class App extends Component {
 
   handleClassDelete = (courseID, courseTerm, isCustom) => {
     var arrayE = [];
+    var backup = this.state.backupArray;
+
+    var currentScheduleIndex = this.state.currentScheduleIndex;
 
     if (isCustom) arrayE = this.state.customEvents;
     else arrayE = this.state.coursesEvents;
 
-    var foundIndex = arrayE.findIndex(function(element) {
-      return (
-        element.courseID === courseID &&
-        (isCustom || element.courseTerm === courseTerm)
-      );
-    });
-
-    var indexArr = arrayE[foundIndex].index.filter(
-      item => item !== this.state.currentScheduleIndex
+    backup = helpDelete(
+      courseID,
+      courseTerm,
+      isCustom,
+      arrayE,
+      backup,
+      currentScheduleIndex
     );
-    var backup = this.state.backupArray;
-    if (!isCustom) {
-      backup = backup.filter(
-        item =>
-          item.courseID !== courseID ||
-          item.courseTerm !== courseTerm ||
-          item.index !== this.state.currentScheduleIndex
-      );
-      backup.push({
-        courseID: arrayE[foundIndex].courseID,
-        courseTerm: arrayE[foundIndex].courseTerm,
-        index: this.state.currentScheduleIndex,
-        customize: false,
-        section: arrayE[foundIndex].section,
-        name: arrayE[foundIndex].name
-      });
-    } else {
-      backup.push({
-        courseID: arrayE[foundIndex].courseID,
-        index: this.state.currentScheduleIndex,
-        start: arrayE[foundIndex].start,
-        end: arrayE[foundIndex].end,
-        customize: true,
-        title: arrayE[foundIndex].title,
-        weekdays: arrayE[foundIndex].weekdays
-      });
-    }
-
-    if (indexArr.length > 0) arrayE[foundIndex].index = indexArr;
-    else {
-      arrayE.splice(foundIndex, 1);
-    }
 
     const classEventsInCalendar = this.state[
       "schedule" + this.state.currentScheduleIndex + "Events"
@@ -309,46 +237,17 @@ class App extends Component {
       return;
     }
     var arrayE = this.state.coursesEvents;
-    var foundIndex = arrayE.findIndex(function(element) {
-      return (
-        element.courseID === section.classCode &&
-        element.courseTerm === termName
-      );
-    });
 
-    var randomColor;
-    var allowToAdd = false;
-    if (foundIndex > -1) {
-      var exist = arrayE[foundIndex].index.findIndex(
-        item => item === scheduleNumber
-      );
-      if (exist < 0) {
-        arrayE[foundIndex].index.push(scheduleNumber);
-        randomColor = arrayE[foundIndex].color;
-        allowToAdd = true;
-      }
-    } else {
-      allowToAdd = true;
-      randomColor = getColor();
+    var eventData = helpAdd(arrayE, section, name, scheduleNumber, termName);
 
-      arrayE.push({
-        courseID: section.classCode,
-        courseTerm: termName,
-        index: [scheduleNumber],
-        color: randomColor,
-        section: section,
-        name: name
-      });
-    }
-
-    if (allowToAdd) {
+    if (eventData.allowToAdd) {
       var cal = [];
       section.meetings.forEach(meeting => {
         const timeString = meeting[0].replace(/\s/g, "");
         const newClasses = convertToCalendar(
           section,
           timeString,
-          randomColor,
+          eventData.randomColor,
           name,
           termName,
           meeting[1]
@@ -458,6 +357,12 @@ class App extends Component {
   render() {
     return (
       <Fragment>
+        <div>
+          {/* <MessengerCustomerChat
+            pageId="2131899073693927"
+            appId="343457496213889"
+          /> */}
+        </div>
         <CssBaseline />
         <AppBar position="static" style={{ marginBottom: 8 }}>
           <Toolbar variant="dense">
@@ -500,7 +405,6 @@ class App extends Component {
             </Tooltip>
           </Toolbar>
         </AppBar>
-
         <Grid container>
           <SearchForm updateFormData={this.updateFormData} />
           <Grid item lg={6} xs={12}>
@@ -555,6 +459,8 @@ class App extends Component {
                   formData={this.state.formData}
                   onAddClass={this.handleAddClass}
                   term={this.state.formData}
+                  showMore={this.state.showMore}
+                  coursesEvents={this.state.coursesEvents}
                 />
               )}
             </Paper>

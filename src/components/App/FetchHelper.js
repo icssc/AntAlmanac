@@ -132,8 +132,40 @@ export async function getUser(param) {
     `https://hqyhurqrgh.execute-api.us-west-1.amazonaws.com/latest/${param}`
   );
   const json = await response.json();
+  var test = false;
+  for (var prop in json) {
+    if (json.hasOwnProperty(prop)) {
+      test = true;
+      break;
+    }
+  }
+  if (test) {
+    var ob2 = new Array(4);
+    ob2[0] = [];
+    ob2[1] = [];
+    ob2[2] = [];
+    ob2[3] = [];
+    var id = 0;
+    var customE = [];
+    var normalE = [];
+    if (json.schedules.custom.length > 0) {
+      for (var element of json.schedules.custom) {
+        element["courseID"] = id;
+        const dates = getCustomDate(element, element.courseID);
 
-  return json;
+        element.index.forEach(pos => {
+          ob2[pos] = ob2[pos].concat(dates);
+        });
+        customE.push(element);
+        id += 1;
+      }
+    }
+    if (json.schedules.normal.length > 0) {
+      await getCoursesData(json.schedules.normal, ob2);
+      normalE = json.schedules.normal;
+    }
+    return { calEvents: ob2, customE: customE, normalE: normalE, ID: id };
+  } else return -1;
 }
 
 // export async function getCourseData(course) {
@@ -220,4 +252,90 @@ export function getCustomDate(event, id) {
     obj.push(addCalendar);
   });
   return obj;
+}
+
+export function helpDelete(
+  courseID,
+  courseTerm,
+  isCustom,
+  arrayE,
+  backup,
+  currentScheduleIndex
+) {
+  var foundIndex = arrayE.findIndex(function(element) {
+    return (
+      element.courseID === courseID &&
+      (isCustom || element.courseTerm === courseTerm)
+    );
+  });
+
+  var indexArr = arrayE[foundIndex].index.filter(
+    item => item !== currentScheduleIndex
+  );
+
+  if (!isCustom) {
+    backup = backup.filter(
+      item =>
+        item.courseID !== courseID ||
+        item.courseTerm !== courseTerm ||
+        item.index !== currentScheduleIndex
+    );
+    backup.push({
+      courseID: arrayE[foundIndex].courseID,
+      courseTerm: arrayE[foundIndex].courseTerm,
+      index: currentScheduleIndex,
+      customize: false,
+      section: arrayE[foundIndex].section,
+      name: arrayE[foundIndex].name
+    });
+  } else {
+    backup.push({
+      courseID: arrayE[foundIndex].courseID,
+      index: currentScheduleIndex,
+      start: arrayE[foundIndex].start,
+      end: arrayE[foundIndex].end,
+      customize: true,
+      title: arrayE[foundIndex].title,
+      weekdays: arrayE[foundIndex].weekdays
+    });
+  }
+
+  if (indexArr.length > 0) arrayE[foundIndex].index = indexArr;
+  else {
+    arrayE.splice(foundIndex, 1);
+  }
+  return backup;
+}
+export function helpAdd(arrayE, section, name, scheduleNumber, termName) {
+  var allowToAdd = false;
+  var foundIndex = arrayE.findIndex(function(element) {
+    return (
+      element.courseID === section.classCode && element.courseTerm === termName
+    );
+  });
+
+  var randomColor;
+
+  if (foundIndex > -1) {
+    var exist = arrayE[foundIndex].index.findIndex(
+      item => item === scheduleNumber
+    );
+    if (exist < 0) {
+      arrayE[foundIndex].index.push(scheduleNumber);
+      randomColor = arrayE[foundIndex].color;
+      allowToAdd = true;
+    }
+  } else {
+    allowToAdd = true;
+    randomColor = getColor();
+    arrayE.push({
+      courseID: section.classCode,
+      courseTerm: termName,
+      index: [scheduleNumber],
+      color: randomColor,
+      section: section,
+      name: name
+    });
+  }
+  return { allowToAdd: allowToAdd, randomColor: randomColor };
 }

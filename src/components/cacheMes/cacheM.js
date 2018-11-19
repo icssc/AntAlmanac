@@ -13,7 +13,11 @@ import Snackbar from "@material-ui/core/Snackbar";
 import SnackbarContent from "@material-ui/core/SnackbarContent";
 import WarningIcon from "@material-ui/icons/Warning";
 import { withStyles } from "@material-ui/core/styles";
+import { getUser } from "../App/FetchHelper";
+import LoadB from "../logIn/loadButton";
+import SaveB from "../saveApp/saveButton";
 
+import { Fragment } from "react";
 const variantIcon = {
   success: CheckCircleIcon,
   warning: WarningIcon,
@@ -95,31 +99,55 @@ const styles2 = theme => ({
 
 class CustomizedSnackbars extends React.Component {
   state = {
-    message: "hello! "
+    message: "hello! ",
+    variant: "success"
   };
 
   componentDidMount = async () => {
     if (typeof Storage !== "undefined") {
-      var a = window.localStorage.getItem("name");
-
-      if (a != null) {
-        this.setState({ message: "hello! " + a, open: true });
-        await this.props.load(a);
+      var user = window.localStorage.getItem("name");
+      if (user != null) {
+        this.setState({ message: "hello! " + user, open: true }, async () => {
+          var myJson = await getUser(user);
+          console.log("Dsac", myJson);
+          if (myJson !== -1) await this.props.load(myJson);
+        });
       }
     }
   };
-  handleClick = async () => {
-    var person = prompt("Please enter your username");
+  handleLoad = async person => {
+    // var person = prompt("Please enter your username");
     if (person != null) {
       person = person.replace(/\s+/g, "");
       if (person.length > 0) {
-        this.setState({ open: true, message: "hello! " + person });
-        await this.props.load(person);
+        var myJson = await getUser(person);
+
+        if (myJson !== -1) {
+          this.setState(
+            {
+              open: true,
+              message: "Load !" + person,
+              variant: "success"
+            },
+            async () => {
+              console.log(myJson);
+              this.props.load(myJson);
+              window.localStorage.setItem("name", person);
+            }
+          );
+        } else {
+          this.setState({
+            open: true,
+            message: "no record found for " + person + " !",
+            variant: "warning"
+          });
+        }
       }
     }
   };
-  handleClickS = async () => {
-    var person = prompt("Please enter your unique username");
+
+  handleSave = async person => {
+    // var person = prompt("Please enter your unique username");
     if (person != null) {
       person = person.replace(/\s+/g, "");
       if (person.length > 0) {
@@ -141,13 +169,9 @@ class CustomizedSnackbars extends React.Component {
     const { classes } = this.props;
 
     return (
-      <div>
-        <Button onClick={this.handleClick} color="inherit">
-          Load
-        </Button>
-        <Button onClick={this.handleClickS} color="inherit">
-          Save
-        </Button>
+      <Fragment>
+        <LoadB handleLoad={this.handleLoad}> </LoadB>
+        <SaveB handleSave={this.handleSave} />
         <Snackbar
           anchorOrigin={{
             vertical: "top",
@@ -159,11 +183,11 @@ class CustomizedSnackbars extends React.Component {
         >
           <MySnackbarContentWrapper
             onClose={this.handleClose}
-            variant="success"
+            variant={this.state.variant}
             message={this.state.message}
           />
         </Snackbar>
-      </div>
+      </Fragment>
     );
   }
 }
