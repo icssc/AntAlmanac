@@ -20,6 +20,7 @@ class SearchForm extends Component {
   componentWillUnmount() {
     document.addEventListener("keydown", this.enterEvent, false);
   }
+
   enterEvent = event => {
     var charCode = event.which ? event.which : event.keyCode;
     if (
@@ -34,6 +35,7 @@ class SearchForm extends Component {
       return false;
     }
   };
+  
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     return this.state !== nextState;
   }

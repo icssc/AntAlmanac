@@ -37,7 +37,8 @@ class AlmanacGraph extends Component {
     this.state = {
       open: false,
       term: "2018 Winter",
-      sections: []
+      sections: [],
+      length: 0
     };
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
@@ -74,7 +75,9 @@ class AlmanacGraph extends Component {
           return accumulator;
         }, []);
 
-        this.setState({ sections: sections });
+        this.setState({ length: sections.length }, () => {
+          this.setState({ sections: sections });
+        });
       });
   }
 
@@ -150,13 +153,16 @@ class AlmanacGraph extends Component {
               </div>
             ) : (
               <div>
-                {this.state.sections.map(section => (
-                  <GraphRenderPane
-                    section={section}
-                    quarter={this.state.term[5].toLowerCase()}
-                    year={this.state.term.substring(2, 4)}
-                  />
-                ))}
+                {this.state.sections.map(section => {
+                  return (
+                    <GraphRenderPane
+                      section={section}
+                      quarter={this.state.term[5].toLowerCase()}
+                      year={this.state.term.substring(2, 4)}
+                      length={this.state.length}
+                    />
+                  );
+                })}
               </div>
             )}
           </Paper>

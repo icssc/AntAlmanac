@@ -63,14 +63,11 @@ export default class FormDialog extends React.Component {
           Save
         </Button>
         <Dialog
-          style={{
-            marginBottom: "30%"
-          }}
           open={this.state.open}
           onClose={this.handleClose}
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id="form-dialog-title">LogIn</DialogTitle>
+          <DialogTitle id="form-dialog-title">Save</DialogTitle>
           <DialogContent>
             <DialogContentText>
               To save to this website, please enter your User ID here.

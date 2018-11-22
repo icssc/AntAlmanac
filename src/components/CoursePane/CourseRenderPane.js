@@ -57,6 +57,7 @@ class CourseRenderPane extends Component {
   };
 
   getGrid(SOCObject) {
+    console.log("ccxczx", SOCObject);
     if ("departments" in SOCObject) {
       return (
         <SchoolDeptCard
@@ -74,8 +75,8 @@ class CourseRenderPane extends Component {
         />
       );
     } else {
-      return (
-        <Grid item md={this.props.view === 0 ? 12 : 6} xs={12}>
+      return this.props.view === 1 ? (
+        <Grid item md={6} xs={12}>
           <Paper
             elevation={3}
             className={this.props.classes.course}
@@ -89,10 +90,22 @@ class CourseRenderPane extends Component {
                 " | " +
                 SOCObject.name[2]}
             </Typography>
-            {this.props.view === 0 ? (
-              <MiniSectionTable courseDetails={SOCObject} />
-            ) : null}
           </Paper>
+        </Grid>
+      ) : (
+        <Grid item>
+          <MiniSectionTable
+            name={
+              SOCObject.name[0] +
+              " " +
+              SOCObject.name[1] +
+              " | " +
+              SOCObject.name[2]
+            }
+            courseDetails={SOCObject}
+            onAddClass={this.props.onAddClass}
+            termName={this.props.termName}
+          />
         </Grid>
       );
     }
@@ -108,6 +121,7 @@ class CourseRenderPane extends Component {
 
   render() {
     return (
+      //this.props.view === 1 ? (
       <div className={this.props.classes.root} ref={ref => (this.ref = ref)}>
         {
           <Modal
@@ -149,6 +163,11 @@ class CourseRenderPane extends Component {
           </Grid>
         )}
       </div>
+      // ) : (
+      //   <Grid container spacing={16}>
+      //     {this.props.courseData.map(item => this.getGrid(item))}
+      //   </Grid>
+      // );
     );
   }
 }

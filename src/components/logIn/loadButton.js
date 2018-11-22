@@ -62,14 +62,15 @@ export default class FormDialog extends React.Component {
           Load
         </Button>
         <Dialog
-          style={{
-            marginBottom: "30%"
-          }}
+          //    classes={{
+          //   root: classes.dialog,
+          //   paper: classes.paper
+          // }}
           open={this.state.open}
           onClose={this.handleClose}
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id="form-dialog-title">LogIn</DialogTitle>
+          <DialogTitle id="form-dialog-title">Load</DialogTitle>
           <DialogContent>
             <DialogContentText>
               To load to this website, please enter your User ID here.
@@ -86,6 +87,7 @@ export default class FormDialog extends React.Component {
               onChange={this.setName}
             />
           </DialogContent>
+
           <DialogActions>
             <Button onClick={this.handleClose} color="primary">
               Cancel

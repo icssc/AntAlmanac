@@ -57,7 +57,6 @@ class ScheduleAddSelector extends Component {
 class SectionTable extends Component {
   constructor(props) {
     super(props);
-    this.state = { url: [] };
   }
 
   shouldComponentUpdate(nextProps, nextState, nextContext) {
