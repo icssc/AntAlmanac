@@ -93,7 +93,7 @@ class CourseRenderPane extends Component {
           </Paper>
         </Grid>
       ) : (
-        <Grid item>
+        <Grid item md={12} xs={12}>
           <MiniSectionTable
             name={
               SOCObject.name[0] +
