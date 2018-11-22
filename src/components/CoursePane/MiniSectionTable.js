@@ -12,6 +12,13 @@ class ScheduleAddSelector extends Component {
 
   handleClick = event => {
     this.setState({ anchor: event.currentTarget });
+    // this.props.onAddClass(
+    //   this.props.section,
+    //   this.props.courseDetails.name,
+    //   0,
+
+    //   this.props.termName
+    // );
   };
 
   handleClose = scheduleNumber => {
@@ -26,12 +33,88 @@ class ScheduleAddSelector extends Component {
       );
   };
 
+  redirectRMP = (e, name) => {
+    if (!e) var e = window.event;
+    e.cancelBubble = true;
+    if (e.stopPropagation) e.stopPropagation();
+
+    var lastName = name.substring(0, name.indexOf(","));
+    var nameP = rmpData[0][name];
+    if (nameP !== undefined)
+      window.open("https://www.ratemyprofessors.com" + nameP);
+    else
+      window.open(
+        `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
+      );
+  };
+
+  linkRMP = name => {
+    const rmpStyle = {
+      textDecoration: "underline",
+      color: "#0645AD",
+      cursor: "pointer"
+    };
+    return name.map(item => {
+      if (item !== "STAFF") {
+        return (
+          <div
+            style={rmpStyle}
+            onClick={e => {
+              this.redirectRMP(e, item);
+            }}
+          >
+            {item}
+          </div>
+        );
+      } else return item;
+    });
+  };
+
+  disableTBA = section => {
+    //console.log(section.meetings[0] != "TBA", section.meetings[0]);
+    var test = false;
+    for (var element of section.meetings[0]) {
+      if (element === "TBA") {
+        test = true;
+        break;
+      }
+    }
+    return test;
+  };
   render() {
+    var section = this.props.section;
     return (
       <Fragment>
-        <IconButton color="primary" onClick={this.handleClick}>
-          <AddCircle />
-        </IconButton>
+        <tr
+          {...(!this.disableTBA(section)
+            ? { onClick: this.handleClick, style: { cursor: "pointer" } }
+            : {})}
+        >
+          {/* <td className="no_border">{this.disableTBA(section)}</td> */}
+
+          <td>{section.classCode}</td>
+          <td className="multiline">
+            {`${section.classType}
+Section: ${section.sectionCode}
+Units: ${section.units}`}
+          </td>
+          <td className="multiline">{this.linkRMP(section.instructors)}</td>
+          <td className="multiline">
+            {section.meetings.map(meeting => meeting[0]).join("\n")}
+          </td>
+          <td className="multiline">
+            {section.meetings.map(meeting => meeting[1]).join("\n")}
+          </td>
+          <td className={["multiline", section.status].join(" ")}>
+            <strong>{`${section.numCurrentlyEnrolled[0]} / ${
+              section.maxCapacity
+            }`}</strong>
+            {`
+WL: ${section.numOnWaitlist}
+NOR: ${section.numNewOnlyReserved}`}
+          </td>
+          <td className={section.status}>{section.status}</td>
+        </tr>
         <Menu
           anchorEl={this.state.anchor}
           open={Boolean(this.state.anchor)}
@@ -61,63 +144,34 @@ class MiniSectionTable extends Component {
     return this.props.courseDetails !== nextProps.courseDetails;
   }
 
-  redirectRMP = async name => {
-    //(name);
-    var lastName = name.substring(0, name.indexOf(","));
-    var nameP = rmpData[0][name];
-    if (nameP !== undefined)
-      window.open("https://www.ratemyprofessors.com" + nameP);
-    else
-      window.open(
-        `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
-      );
-  };
+  // disableTBA = section => {
+  //   //console.log(section.meetings[0] != "TBA", section.meetings[0]);
+  //   var test = false;
+  //   for (var element of section.meetings[0]) {
+  //     if (element === "TBA") {
+  //       test = true;
+  //       break;
+  //     }
+  //   }
+  //   if (!test) {
+  //     return (
+  //       <ScheduleAddSelector
+  //         onAddClass={this.props.onAddClass}
+  //         section={section}
+  //         courseDetails={this.props.courseDetails}
+  //         termName={this.props.termName}
+  //       />
+  //     );
+  //   } else
+  //     return (
+  //       <IconButton color="error">
+  //         <Block />
+  //       </IconButton>
+  //     );
+  // };
 
-  linkRMP = name => {
-    const rmpStyle = {
-      textDecoration: "underline",
-      color: "#0645AD",
-      cursor: "pointer"
-    };
-    return name.map(item => {
-      if (item !== "STAFF") {
-        return (
-          <div
-            style={rmpStyle}
-            onClick={() => {
-              this.redirectRMP(item);
-            }}
-          >
-            {item}
-          </div>
-        );
-      } else return item;
-    });
-  };
-  disableTBA = section => {
-    //console.log(section.meetings[0] != "TBA", section.meetings[0]);
-    var test = false;
-    for (var element of section.meetings[0]) {
-      if (element === "TBA") {
-        test = true;
-        break;
-      }
-    }
-    if (!test) {
-      return (
-        <ScheduleAddSelector
-          onAddClass={this.props.onAddClass}
-          section={section}
-          courseDetails={this.props.courseDetails}
-          termName={this.props.termName}
-        />
-      );
-    } else
-      return (
-        <IconButton color="error">
-          <Block />
-        </IconButton>
-      );
+  say = () => {
+    console.log("dddd");
   };
   render() {
     const sectionInfo = this.props.courseDetails.sections;
@@ -140,7 +194,8 @@ class MiniSectionTable extends Component {
         <table>
           <thead>
             <tr>
-              <th className="no_border">{}</th>
+              {/* <th className="no_border">{}</th> */}
+
               <th>Code</th>
               <th>Type</th>
               <th>Instructors</th>
@@ -153,33 +208,42 @@ class MiniSectionTable extends Component {
           <tbody>
             {sectionInfo.map(section => {
               return (
-                <tr>
-                  <td className="no_border">{this.disableTBA(section)}</td>
-                  <td>{section.classCode}</td>
-                  <td className="multiline">
-                    {`${section.classType}
-Section: ${section.sectionCode}
-Units: ${section.units}`}
-                  </td>
-                  <td className="multiline">
-                    {this.linkRMP(section.instructors)}
-                  </td>
-                  <td className="multiline">
-                    {section.meetings.map(meeting => meeting[0]).join("\n")}
-                  </td>
-                  <td className="multiline">
-                    {section.meetings.map(meeting => meeting[1]).join("\n")}
-                  </td>
-                  <td className={["multiline", section.status].join(" ")}>
-                    <strong>{`${section.numCurrentlyEnrolled[0]} / ${
-                      section.maxCapacity
-                    }`}</strong>
-                    {`
-WL: ${section.numOnWaitlist}
-NOR: ${section.numNewOnlyReserved}`}
-                  </td>
-                  <td className={section.status}>{section.status}</td>
-                </tr>
+                <ScheduleAddSelector
+                  onAddClass={this.props.onAddClass}
+                  section={section}
+                  courseDetails={this.props.courseDetails}
+                  termName={this.props.termName}
+                />
+
+                //                 <tr onClick={this.say} style={{ cursor: "pointer" }}>
+                //                 {this.disableTBA(section)}
+                //                   {/* <td className="no_border">{this.disableTBA(section)}</td> */}
+
+                //                   <td>{section.classCode}</td>
+                //                   <td className="multiline">
+                //                     {`${section.classType}
+                // Section: ${section.sectionCode}
+                // Units: ${section.units}`}
+                //                   </td>
+                //                   <td className="multiline">
+                //                     {this.linkRMP(section.instructors)}
+                //                   </td>
+                //                   <td className="multiline">
+                //                     {section.meetings.map(meeting => meeting[0]).join("\n")}
+                //                   </td>
+                //                   <td className="multiline">
+                //                     {section.meetings.map(meeting => meeting[1]).join("\n")}
+                //                   </td>
+                //                   <td className={["multiline", section.status].join(" ")}>
+                //                     <strong>{`${section.numCurrentlyEnrolled[0]} / ${
+                //                       section.maxCapacity
+                //                     }`}</strong>
+                //                     {`
+                // WL: ${section.numOnWaitlist}
+                // NOR: ${section.numNewOnlyReserved}`}
+                //                   </td>
+                //                   <td className={section.status}>{section.status}</td>
+                //                 </tr>
               );
             })}
           </tbody>
