@@ -4,6 +4,7 @@ import { Block, AddCircle } from "@material-ui/icons";
 import { Typography, IconButton, Menu, MenuItem } from "@material-ui/core";
 import rmpData from "./RMP.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
+import POPOVER from "./PopOver";
 class ScheduleAddSelector extends Component {
   constructor(props) {
     super(props);
@@ -113,6 +114,15 @@ Units: ${section.units}`}
 WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
           </td>
+          <td>
+            <a
+              href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {section.restrictions}
+            </a>
+          </td>
           <td className={section.status}>{section.status}</td>
         </tr>
         <Menu
@@ -183,9 +193,13 @@ class MiniSectionTable extends Component {
             display: "inline-flex"
           }}
         >
-          <Typography variant="title" style={{ flexGrow: "2", marginTop: 12 }}>
+          <POPOVER
+            name={this.props.name}
+            courseDetails={this.props.courseDetails}
+          />
+          {/* <Typography variant="title" style={{ flexGrow: "2", marginTop: 12 }}>
             {this.props.name} &nbsp;&nbsp;&nbsp;&nbsp;
-          </Typography>
+          </Typography> */}
           <AlmanacGraphWrapped
             term={this.props.term}
             courseDetails={this.props.courseDetails}
@@ -202,6 +216,7 @@ class MiniSectionTable extends Component {
               <th>Times</th>
               <th>Places</th>
               <th>Enrollment</th>
+              <th>Rstr</th>
               <th>Status</th>
             </tr>
           </thead>

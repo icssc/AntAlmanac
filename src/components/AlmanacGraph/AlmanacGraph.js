@@ -99,7 +99,7 @@ class AlmanacGraph extends Component {
     return (
       <Fragment>
         <Typography style={{ flexGrow: 1 }} />
-        <Button variant="contained" onClick={this.handleOpen}>
+        <Button variant="contained" color="secondary" onClick={this.handleOpen}>
           Past Enrollment
         </Button>
 
