@@ -3,7 +3,7 @@ A tool that provides UCI anteaters with historical course information in a visua
 
 Currently deployed at: https://antalmanac.com/
 
-Find out more about our project at: https://the-antalmanac.herokuapp.com/index.html
+Find out more about our project at: https://www.ics.uci.edu/~rang1/AntAlmanac/index.html
 
 
 
