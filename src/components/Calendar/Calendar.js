@@ -107,8 +107,8 @@ class Calendar extends Component {
             </Tooltip>
           </Toolbar>
         </Paper>
-        <Paper   id="screenshot">
-          <div>
+        <Paper   >
+          <div id="screenshot">
             <BigCalendar
               style={{ maxHeight: [this.props.heighSize]+"vh" }}
               toolbar={false}
