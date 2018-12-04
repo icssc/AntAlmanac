@@ -12,9 +12,8 @@ import Snackbar from "@material-ui/core/Snackbar";
 import SnackbarContent from "@material-ui/core/SnackbarContent";
 import WarningIcon from "@material-ui/icons/Warning";
 import { withStyles } from "@material-ui/core/styles";
-import { getUser } from "../App/FetchHelper";
-import LoadB from "../logIn/loadButton";
-import SaveB from "../saveApp/saveButton";
+import SPopover from './CoursePane/popover_findspot'
+
 
 import { Fragment } from "react";
 const variantIcon = {
@@ -102,59 +101,25 @@ class CustomizedSnackbars extends React.Component {
     variant: "success"
   };
 
-  componentDidMount = async () => {
-    if (typeof Storage !== "undefined") {
-      var user = window.localStorage.getItem("name");
-      if (user != null) {
-        this.setState({ message: "Hey " + user+" !", open: true }, async () => {
-          var myJson = await getUser(user);
-          if (myJson !== -1) await this.props.load(myJson);
-        });
-      }
-    }
-  };
-  handleLoad = async person => {
-    // var person = prompt("Please enter your username");
-    if (person != null) {
-      person = person.replace(/\s+/g, "");
-      if (person.length > 0) {
-        var myJson = await getUser(person);
+  
 
-        if (myJson !== -1) {
-          this.setState(
-            {
-              open: true,
-              message: "Hello " + person+" !",
-              variant: "success"
-            },
-            async () => {
-              this.props.load(myJson);
-              window.localStorage.setItem("name", person);
-            }
-          );
-        } else {
-          this.setState({
-            open: true,
-            message: "No record found for " + person + " !",
-            variant: "warning"
-          });
-        }
-      }
-    }
-  };
-
-  handleSave = async person => {
+  handleSave =  (check,email,code) => {
     // var person = prompt("Please enter your unique username");
-    if (person != null) {
-      person = person.replace(/\s+/g, "");
-      if (person.length > 0) {
+    if(check ===-1)
+    {
         this.setState({
-          variant: "success",
-          open: true,
-          message: "saved under " + person+" !"
-        });
-        await this.props.save(person);
-      }
+            variant: "error",
+            open: true,
+            message: "invalid email, " + email+" !"
+          });
+    }
+    else
+    {
+        this.setState({
+            variant: "success",
+            open: true,
+            message: email+" added to the notification list for "+ code +" !!!"
+          });
     }
   };
 
@@ -167,12 +132,15 @@ class CustomizedSnackbars extends React.Component {
   };
 
   render() {
-   
+    
 
     return (
       <Fragment>
-        <LoadB handleLoad={this.handleLoad}> </LoadB>
-        <SaveB handleSave={this.handleSave} />
+     <SPopover  handleSave={this.handleSave} full={this.props.full} code={this.props.code} name={this.props.name}/>
+
+      
+        {/* <Button variant="text" color="primary" className={classes.button} onClick={this.getMeSpot}>
+            Add</Button> */}
         <Snackbar
           anchorOrigin={{
             vertical: "top",

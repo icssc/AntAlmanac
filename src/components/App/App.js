@@ -9,12 +9,12 @@ import {
   Paper,
   Tooltip
 } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
+
 import MessengerCustomerChat from "react-messenger-customer-chat";
 import SearchForm from "../SearchForm/SearchForm";
 import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
-import { ListAlt, Dns } from "@material-ui/icons";
+import { ListAlt, Dns, Redeem } from "@material-ui/icons";
 import Info from "@material-ui/icons/InfoSharp";
 import logo_tight from "./logo_tight.png";
 import logo_wide from "./logo_wide.png";
@@ -27,7 +27,6 @@ import {
   convertToCalendar,
   saveUserDB,
   getCustomDate,
-  getColor,
   helpDelete,
   helpAdd
 } from "./FetchHelper";
@@ -49,16 +48,31 @@ class App extends Component {
       customEvents: [],
       backupArray: [],
       cusID: 0,
-      view: 1,
+      view: 0,
       chat: false,
       showMore: false,
-      isDesktop: false
+      isDesktop: false,
+      hS: 80
     };
 
     this.resizeLogo = this.resizeLogo.bind(this);
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
+    var c =
+      (document.getElementById("fox").scrollHeight /
+        document.documentElement.clientHeight) *
+      100;
+    var c2 =
+      (document.getElementById("ok").scrollHeight /
+        document.documentElement.clientHeight) *
+      100;
+    var c3 =
+      (document.getElementById("search").scrollHeight /
+        document.documentElement.clientHeight) *
+      100;
+    this.setState({ hS: 100 - (c + c2 + c3 + 4) });
+
     document.addEventListener("keydown", this.undoEvent, false);
     this.resizeLogo();
     window.addEventListener("resize", this.resizeLogo);
@@ -69,7 +83,7 @@ class App extends Component {
     // script.async = true;
 
     // document.body.appendChild(script);
-  }
+  };
 
   componentWillUnmount() {
     document.removeEventListener("keydown", this.undoEvent, false);
@@ -278,10 +292,8 @@ class App extends Component {
   };
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   updateFormData = formData => {
-    this.setState({
-      showMore: false,
-      formData: formData,
-      prevFormData: formData
+    this.setState({ showMore: false }, function() {
+      this.setState({ formData: formData, prevFormData: formData });
     });
   };
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -354,17 +366,20 @@ class App extends Component {
     });
   };
 
+ 
   render() {
+    console.log("%cDonate "+"%cPlease!!!","color:green","color:red");
     return (
       <Fragment>
         <div>
-          {/* <MessengerCustomerChat
-            pageId="2131899073693927"
+          
+          <MessengerCustomerChat
+            pageId="2286387408050026"
             appId="343457496213889"
-          /> */}
+          />
         </div>
         <CssBaseline />
-        <AppBar position="static" style={{ marginBottom: 8 }}>
+        <AppBar id="fox" position="static" style={{ marginBottom: 8 }}>
           <Toolbar variant="dense">
             <div>
               {this.state.isDesktop ? (
@@ -397,7 +412,7 @@ class App extends Component {
             <Tooltip title="Info Page">
               <a
                 style={{ color: "white" }}
-                href={"https://the-antalmanac.herokuapp.com/index.html"}
+                href={"https://www.ics.uci.edu/~rang1/AntAlmanac/index.html"}
                 target="_blank"
               >
                 <Info fontSize="48px" color="white" />
@@ -415,6 +430,7 @@ class App extends Component {
                     "schedule" + this.state.currentScheduleIndex + "Events"
                   ]
                 }
+                heighSize ={this.state.hS}
                 moreInfoF={this.moreInfoF}
                 clickToUndo={this.undoEventHelp}
                 currentScheduleIndex={this.state.currentScheduleIndex}
@@ -440,11 +456,12 @@ class App extends Component {
                     <Dns />
                   </IconButton>
                 </Tooltip>
+              
               </Toolbar>
             </Paper>
             <Paper
               style={{
-                height: "80vh",
+                height: [this.state.hS] + "vh",
                 overflow: "auto",
                 margin: "10px 10px 0px 5px",
                 padding: 10
@@ -452,7 +469,10 @@ class App extends Component {
               id="foo1"
             >
               {this.state.showMore ? (
-                <ShowE events={this.state.coursesEvents} />
+                <ShowE
+                  events={this.state.coursesEvents}
+                  moreInfoF={this.moreInfoF}
+                />
               ) : (
                 <CoursePane
                   view={this.state.view}

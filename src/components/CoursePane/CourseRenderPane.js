@@ -57,7 +57,6 @@ class CourseRenderPane extends Component {
   };
 
   getGrid(SOCObject) {
-    console.log("ccxczx", SOCObject);
     if ("departments" in SOCObject) {
       return (
         <SchoolDeptCard

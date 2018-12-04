@@ -32,6 +32,12 @@ export default class FormDialog extends React.Component {
   };
 
   componentDidMount() {
+    if (typeof Storage !== "undefined") {
+      var user = window.localStorage.getItem("name");
+      if (user !== null) {
+        this.setState({ name: user });
+      }
+    }
     document.addEventListener("keydown", this.enterEvent, false);
   }
   componentWillUnmount() {
@@ -40,8 +46,8 @@ export default class FormDialog extends React.Component {
   enterEvent = event => {
     var charCode = event.which ? event.which : event.keyCode;
     if (
-      (charCode === 13 || charCode == 10) &&
-      document.activeElement.id == "nameSave"
+      (charCode === 13 || charCode === 10) &&
+      document.activeElement.id === "nameSave"
     ) {
       event.preventDefault();
       this.setState({ open: false }, () => {
@@ -80,9 +86,12 @@ export default class FormDialog extends React.Component {
               type="text"
               fullWidth
               placeholder="Enter here"
+            defaultValue={this.state.name}
               // call the parent function handle change
               onChange={this.setName}
             />
+         
+            
           </DialogContent>
           <DialogActions>
             <Button onClick={this.handleClose} color="primary">

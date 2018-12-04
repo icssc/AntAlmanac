@@ -1,10 +1,11 @@
 import React, { Component, Fragment } from "react";
 
-import { Block, AddCircle } from "@material-ui/icons";
-import { Typography, IconButton, Menu, MenuItem } from "@material-ui/core";
+import {  Menu, MenuItem } from "@material-ui/core";
 import rmpData from "./RMP.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import POPOVER from "./PopOver";
+import Notification from '../Notification'
+
 class ScheduleAddSelector extends Component {
   constructor(props) {
     super(props);
@@ -35,7 +36,7 @@ class ScheduleAddSelector extends Component {
   };
 
   redirectRMP = (e, name) => {
-    if (!e) var e = window.event;
+    if (!e)  e = window.event;
     e.cancelBubble = true;
     if (e.stopPropagation) e.stopPropagation();
 
@@ -82,6 +83,17 @@ class ScheduleAddSelector extends Component {
     }
     return test;
   };
+
+  
+  statusforFindingSpot = (section,classCode) => {
+    if(section === 'OPEN')
+    {return section;}
+    else{
+      return <Notification  full={section} code={classCode} name={this.props.courseDetails.name}/>
+    }
+   
+ };
+
   render() {
     var section = this.props.section;
     return (
@@ -96,7 +108,7 @@ class ScheduleAddSelector extends Component {
           <td>{section.classCode}</td>
           <td className="multiline">
             {`${section.classType}
-Section: ${section.sectionCode}
+Sec: ${section.sectionCode}
 Units: ${section.units}`}
           </td>
           <td className="multiline">{this.linkRMP(section.instructors)}</td>
@@ -123,7 +135,7 @@ NOR: ${section.numNewOnlyReserved}`}
               {section.restrictions}
             </a>
           </td>
-          <td className={section.status}>{section.status}</td>
+          <td className={section.status}>{this.statusforFindingSpot(section.status,section.classCode)}</td>
         </tr>
         <Menu
           anchorEl={this.state.anchor}
@@ -180,9 +192,7 @@ class MiniSectionTable extends Component {
   //     );
   // };
 
-  say = () => {
-    console.log("dddd");
-  };
+
   render() {
     const sectionInfo = this.props.courseDetails.sections;
 

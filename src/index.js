@@ -23,7 +23,7 @@ const theme = createMuiTheme({
 
 ReactDOM.render(
   <MuiThemeProvider theme={theme}>
-    <App />
+    <App style ={{height:"100%"}}/>
   </MuiThemeProvider>,
   document.getElementById("root")
 );

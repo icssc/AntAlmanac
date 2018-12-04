@@ -1,6 +1,10 @@
 import React, { Component, Fragment } from "react";
-
+import {  IconButton} from "@material-ui/core";
 import rmpData from "../CoursePane/RMP.json";
+import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
+import POPOVER from "../CoursePane/PopOver";
+import { ArrowBack } from "@material-ui/icons";
+import Notification from '../Notification'
 
 //import Button from "@material-ui/core/Button";
 
@@ -10,6 +14,10 @@ class showE extends Component {
     this.state = { url: [] };
   }
 
+  appear =()=>
+  {
+
+  }
   redirectRMP = async name => {
     //console.log(name);
     var lastName = name.substring(0, name.indexOf(","));
@@ -44,19 +52,45 @@ class showE extends Component {
     });
   };
 
+  statusforFindingSpot = (section,classCode,name) => {
+    if(section === 'OPEN')
+    {return section;}
+    else{
+      return <Notification  full={section} code={classCode} name={name}/>
+    }
+ };
   render() {
     return (
       <Fragment>
+        <IconButton style={{ marginRight: 24 }} onClick={this.props.moreInfoF}>
+          <ArrowBack />
+        </IconButton>
         {this.props.events.map(event => {
           return (
             <div>
-              <strong>
+              {/* <strong>
                 {event.name[0] + " " + event.name[1] + " " + event.name[2]}
-              </strong>
+              </strong> */}
+              <div
+                style={{
+                  display: "inline-flex"
+                }}
+              >
+                <POPOVER
+                  name={
+                    event.name[0] + " " + event.name[1] + " | " + event.name[2]
+                  }
+                  courseDetails={event}
+                />
+
+                <AlmanacGraphWrapped
+                  term={event.courseTerm}
+                  courseDetails={event}
+                />
+              </div>
               <table>
                 <thead>
                   <tr>
-                    <th className="no_border">{}</th>
                     <th>Code</th>
                     <th>Type</th>
                     <th>Instructor</th>
@@ -69,7 +103,6 @@ class showE extends Component {
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="no_border">{}</td>
                     <td>{event.courseID}</td>
                     <td className="multiline">
                       {`${event.section.classType}
@@ -100,7 +133,7 @@ NOR: ${event.section.numNewOnlyReserved}`}
                     </td>
                     <td>{event.section.restrictions}</td>
                     <td className={event.section.status}>
-                      {event.section.status}
+                    {this.statusforFindingSpot(event.section.status,event.section.classCode, event.name)}
                     </td>
                   </tr>
                 </tbody>
@@ -108,6 +141,8 @@ NOR: ${event.section.numNewOnlyReserved}`}
             </div>
           );
         })}
+     
+      
       </Fragment>
     );
   }

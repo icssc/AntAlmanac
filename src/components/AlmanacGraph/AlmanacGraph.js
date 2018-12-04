@@ -114,7 +114,7 @@ class AlmanacGraph extends Component {
 
               <Tooltip title="Need Help with Graphs?">
                 <a
-                  href="https://the-antalmanac.herokuapp.com/index.html#support"
+                  href="https://www.ics.uci.edu/~rang1/AntAlmanac/index.html#support"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: "black" }}
@@ -163,8 +163,10 @@ class AlmanacGraph extends Component {
                     />
                   );
                 })}
+                  
               </div>
             )}
+            
           </Paper>
         </Modal>
       </Fragment>

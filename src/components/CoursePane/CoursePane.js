@@ -1,8 +1,8 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import loadingGif from "./loading.mp4";
 import querystring from "querystring";
 import CourseRenderPane from "./CourseRenderPane";
-import zoom from "./zoom.png";
+import welcome from "./calvin.png";
 
 class CoursePane extends Component {
   constructor(props) {
@@ -64,6 +64,7 @@ class CoursePane extends Component {
     }
   }
 
+  
   render() {
     const { loading, courseData } = this.state;
 
@@ -95,19 +96,23 @@ class CoursePane extends Component {
       );
     } else {
       return (
-        <Fragment>
-          <div
-            style={{
-              height: "100%",
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          >
-            <img src={zoom} alt="my face" />
-          </div>{" "}
-        </Fragment>
+        //<Grid item md={6} xs={12}>
+          <div style={{
+            display: "flex", 
+            justifyContent: "center",
+            alignItems: "center" 
+            }}>
+            <img
+              src={welcome}
+              alt="my face"
+              
+              style={{ 
+                width: "390", 
+                height: "600"
+              }}
+            />
+          </div>
+        //</Grid>
       );
     }
   }

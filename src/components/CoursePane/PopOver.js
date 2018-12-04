@@ -68,6 +68,7 @@ function RenderPropsPopover(props) {
                     __html: deptInfo()
                   }}
                 />
+             
               </Typography>
             </Popover>
           </React.Fragment>

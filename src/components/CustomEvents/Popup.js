@@ -202,9 +202,9 @@ class DialogSelect extends Component {
     return (
       <div>
         <Tooltip title="Add Custom Event">
-        <IconButton onClick={() => this.setState({ open: true })}>
-          <Add />
-        </IconButton>
+          <IconButton onClick={() => this.setState({ open: true })}>
+            <Add />
+          </IconButton>
         </Tooltip>
         <Dialog
           disableBackdropClick
@@ -225,6 +225,7 @@ class DialogSelect extends Component {
               onTimeChange={this.handleEndTimeChange}
             />
             <DaySelector onSelectDay={this.handleDayChange} />
+           
           </DialogContent>
 
           <DialogActions>

@@ -39,6 +39,7 @@ const CustomEvent = ({ event }) => {
 };
 
 class Calendar extends Component {
+
   static eventStyleGetter(event, start, end, isSelected) {
     return {
       style: {
@@ -51,10 +52,11 @@ class Calendar extends Component {
     };
   }
 
+ 
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     return (
       this.props.classEventsInCalendar !== nextProps.classEventsInCalendar ||
-      this.props.currentScheduleIndex !== nextProps.currentScheduleIndex
+      this.props.currentScheduleIndex !== nextProps.currentScheduleIndex||this.props.heighSize !== nextProps.heighSize
     );
   }
   //sorry boss
@@ -71,7 +73,7 @@ class Calendar extends Component {
   render() {
     return (
       <div>
-        <Paper style={{ overflow: "auto", marginBottom: 8 }}>
+        <Paper id="ok" style={{ overflow: "auto", marginBottom: 8 }}>
           <Toolbar variant="dense" style={{ backgroundColor: "#5191d6" }}>
             <IconButton onClick={() => this.props.onScheduleChange(0)}>
               <ChevronLeft />
@@ -105,10 +107,10 @@ class Calendar extends Component {
             </Tooltip>
           </Toolbar>
         </Paper>
-        <Paper id="screenshot">
+        <Paper   id="screenshot">
           <div>
             <BigCalendar
-              style={{ maxHeight: "80vh" }}
+              style={{ maxHeight: [this.props.heighSize]+"vh" }}
               toolbar={false}
               formats={{
                 timeGutterFormat: (date, culture, localizer) =>

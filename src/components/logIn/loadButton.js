@@ -40,8 +40,8 @@ export default class FormDialog extends React.Component {
   enterEvent = event => {
     var charCode = event.which ? event.which : event.keyCode;
     if (
-      (charCode === 13 || charCode == 10) &&
-      document.activeElement.id == "name"
+      (charCode === 13 || charCode === 10) &&
+      document.activeElement.id === "name"
     ) {
       event.preventDefault();
       this.setState({ open: false }, () => {

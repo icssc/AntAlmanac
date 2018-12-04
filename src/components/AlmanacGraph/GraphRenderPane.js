@@ -14,9 +14,7 @@ class GraphRenderPane extends Component {
   }
 
   componentDidMount() {
-    console.log("lenga", this.props.length);
     if (this.props.length < 4) {
-      console.log("leng", this.props.length);
       this.setState({ open: true }, () => {
         this.fetchGraph(
           this.props.quarter,
@@ -32,7 +30,6 @@ class GraphRenderPane extends Component {
   //   }
 
   componentDidUpdate(prevProps, prevState, prevContext) {
-    console.log("lengas", this.props.length);
     if (prevProps !== this.props && this.props.length < 4) {
       this.setState({ open: true }, () => {
         this.fetchGraph(
@@ -113,6 +110,7 @@ Units: ${this.props.section.units}`}
             ) : null}
           </div>
         }
+       
       </div>
     );
   }
