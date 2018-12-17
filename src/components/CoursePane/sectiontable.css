@@ -2,7 +2,7 @@ table {
   border-collapse: collapse;
   box-sizing: border-box;
   font-family: Roboto, sans-serif;
-  margin: 16px;
+  margin-top: 8px;
 }
 thead {
   position: sticky;
