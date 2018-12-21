@@ -86,12 +86,10 @@ class ScheduleAddSelector extends Component {
 
   
   statusforFindingSpot = (section,classCode) => {
-    if(section === 'OPEN')
-    {return section;}
-    else{
-      return <Notification  full={section} code={classCode} name={this.props.courseDetails.name}/>
-    }
-   
+    if(section === 'FULL')
+    return <Notification  full={section} code={classCode} name={this.props.courseDetails.name}/>
+    else
+    return section;
  };
 
   render() {
@@ -166,32 +164,6 @@ class MiniSectionTable extends Component {
     return this.props.courseDetails !== nextProps.courseDetails;
   }
 
-  // disableTBA = section => {
-  //   //console.log(section.meetings[0] != "TBA", section.meetings[0]);
-  //   var test = false;
-  //   for (var element of section.meetings[0]) {
-  //     if (element === "TBA") {
-  //       test = true;
-  //       break;
-  //     }
-  //   }
-  //   if (!test) {
-  //     return (
-  //       <ScheduleAddSelector
-  //         onAddClass={this.props.onAddClass}
-  //         section={section}
-  //         courseDetails={this.props.courseDetails}
-  //         termName={this.props.termName}
-  //       />
-  //     );
-  //   } else
-  //     return (
-  //       <IconButton color="error">
-  //         <Block />
-  //       </IconButton>
-  //     );
-  // };
-
 
   render() {
     const sectionInfo = this.props.courseDetails.sections;
@@ -239,36 +211,6 @@ class MiniSectionTable extends Component {
                   courseDetails={this.props.courseDetails}
                   termName={this.props.termName}
                 />
-
-                //                 <tr onClick={this.say} style={{ cursor: "pointer" }}>
-                //                 {this.disableTBA(section)}
-                //                   {/* <td className="no_border">{this.disableTBA(section)}</td> */}
-
-                //                   <td>{section.classCode}</td>
-                //                   <td className="multiline">
-                //                     {`${section.classType}
-                // Section: ${section.sectionCode}
-                // Units: ${section.units}`}
-                //                   </td>
-                //                   <td className="multiline">
-                //                     {this.linkRMP(section.instructors)}
-                //                   </td>
-                //                   <td className="multiline">
-                //                     {section.meetings.map(meeting => meeting[0]).join("\n")}
-                //                   </td>
-                //                   <td className="multiline">
-                //                     {section.meetings.map(meeting => meeting[1]).join("\n")}
-                //                   </td>
-                //                   <td className={["multiline", section.status].join(" ")}>
-                //                     <strong>{`${section.numCurrentlyEnrolled[0]} / ${
-                //                       section.maxCapacity
-                //                     }`}</strong>
-                //                     {`
-                // WL: ${section.numOnWaitlist}
-                // NOR: ${section.numNewOnlyReserved}`}
-                //                   </td>
-                //                   <td className={section.status}>{section.status}</td>
-                //                 </tr>
               );
             })}
           </tbody>

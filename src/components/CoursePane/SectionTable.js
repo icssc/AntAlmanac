@@ -118,11 +118,10 @@ class SectionTable extends Component {
   };
 
   statusforFindingSpot = (section,classCode) => {
-    if(section === 'OPEN')
-    {return section;}
-    else{
-      return <Notification full={section} code={classCode} name={this.props.courseDetails.name}/>
-    }
+    if(section === 'FULL')
+    return <Notification full={section} code={classCode} name={this.props.courseDetails.name}/>
+    else
+    return section;
  };
 
   render() {

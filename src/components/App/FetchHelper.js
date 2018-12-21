@@ -227,7 +227,9 @@ export function convertToCalendar(
         courseTerm: termName,
         location: meeting,
         type: section.classType,
-        customize: false
+        customize: false,
+        section: section,
+        name:name
       };
       newClasses.push(newClass);
     }

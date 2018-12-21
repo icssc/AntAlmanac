@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./components/App/App";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-import registerServiceWorker from "./registerServiceWorker";
+import{unregister} from "./registerServiceWorker";
 
 const theme = createMuiTheme({
   palette: {
@@ -28,4 +28,4 @@ ReactDOM.render(
   document.getElementById("root")
 );
 
-registerServiceWorker();
+unregister();

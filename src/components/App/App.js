@@ -14,7 +14,7 @@ import MessengerCustomerChat from "react-messenger-customer-chat";
 import SearchForm from "../SearchForm/SearchForm";
 import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
-import { ListAlt, Dns, Redeem } from "@material-ui/icons";
+import { ListAlt, Dns } from "@material-ui/icons";
 import Info from "@material-ui/icons/InfoSharp";
 import logo_tight from "./logo_tight.png";
 import logo_wide from "./logo_wide.png";
@@ -169,6 +169,7 @@ class App extends Component {
   };
   ////////////////////////////////////////////////////////////////////////////////////////////////
   undoEventHelp = () => {
+    console.log("noep");
     if (this.state.backupArray.length > 0) {
       var obj = this.state.backupArray.pop();
       if (obj.customize) {
@@ -423,7 +424,7 @@ class App extends Component {
         <Grid container>
           <SearchForm updateFormData={this.updateFormData} />
           <Grid item lg={6} xs={12}>
-            <div style={{ margin: "10px 5px 0px 10px" }}>
+            <div  style={{ margin: "10px 5px 0px 10px" }}>
               <Calendar
                 classEventsInCalendar={
                   this.state[
@@ -471,6 +472,7 @@ class App extends Component {
               {this.state.showMore ? (
                 <ShowE
                   events={this.state.coursesEvents}
+                  onAddClass={this.handleAddClass}
                   moreInfoF={this.moreInfoF}
                 />
               ) : (
