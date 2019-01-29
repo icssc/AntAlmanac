@@ -1,12 +1,11 @@
 import React, { Component, Fragment } from "react";
-import {  IconButton, Menu, MenuItem} from "@material-ui/core";
+import {IconButton, Menu, MenuItem, Tooltip} from "@material-ui/core";
 import rmpData from "../CoursePane/RMP.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import POPOVER from "../CoursePane/PopOver";
-import { ArrowBack } from "@material-ui/icons";
+import {ArrowBack, List} from "@material-ui/icons";
 import Notification from '../Notification'
 
-//import Button from "@material-ui/core/Button";
 class ScheduleAddSelector extends Component {
   constructor(props) {
     super(props);
@@ -15,13 +14,6 @@ class ScheduleAddSelector extends Component {
 
   handleClick = event => {
     this.setState({ anchor: event.currentTarget });
-    // this.props.onAddClass(
-    //   this.props.section,
-    //   this.props.courseDetails.name,
-    //   0,
-
-    //   this.props.termName
-    // );
   };
 
   handleClose = scheduleNumber => {
@@ -31,7 +23,6 @@ class ScheduleAddSelector extends Component {
         this.props.section,
         this.props.name,
         scheduleNumber,
-
         this.props.termName
       );
   };
@@ -167,10 +158,9 @@ NOR: ${section.numNewOnlyReserved}`}
   }
 }
 
-class showE extends Component {
+class scheduleTableDisplay extends Component {
   constructor(props) {
     super(props);
-    this.state = { url: [] };
   }
 
   redirectRMP = async name => {
@@ -207,114 +197,14 @@ class showE extends Component {
     });
   };
 
-  statusforFindingSpot = (section,classCode,name) => {
-    if(section === 'FULL')
-    return <Notification  full={section} code={classCode} name={name}/>
-    else
-    return section;
- };
-
-
-
-
   render() {
-    var schedules =[];
-    const events = this.props.events;
-    for(var i =0;i<4;++i)
-    {
-     schedules.push(events.filter(event=>event.index.includes(i)));
-    }
-    var newArr = new Array([],[],[],[]);
-   
-    var i =0;
-    var foundIndex =0;
-    for(var schedule of schedules)
-    {
-      for(var event of schedule)
-      {
-        foundIndex = newArr[i].findIndex(function(element){
-         return ( element.name.join() === event.name.join()&& element.courseTerm ===event.courseTerm);
-       });
- 
-       if(foundIndex == -1)
-         {
-           newArr[i].push({
-             name : event.name,
-             section :[event.section],
-             courseID:event.courseID,
-             courseTerm :event.courseTerm
-           }
-           );
-         }
-         else
-             newArr[i][foundIndex].section.push(event.section);
-      }
-      i++;
-    }
-
     return (
-      <Fragment>
-        <IconButton style={{ marginRight: 24 }} onClick={this.props.moreInfoF}>
-          <ArrowBack />
-        </IconButton>
-        {newArr.map((schedule,index) =>{
-     return (<div> {schedule.length>0 ?( <h2>
-     Schedule {index + 1}</h2>):null}{schedule.map(event =>{
-       return ( <div>
-        {/* <strong>
-          {event.name[0] + " " + event.name[1] + " " + event.name[2]}
-        </strong> */}
-        <div
-          style={{
-            display: "inline-flex"
-          }}
-        >
-          <POPOVER
-            name={
-             event.name[0] + " " + event.name[1] + " | " + event.name[2]
-            }
-            courseDetails={event}
-          />
-
-          <AlmanacGraphWrapped
-            term={event.courseTerm}
-            courseDetails={event}
-          />
-          </div>      
-          {/* {event.section.finalExam.length>3 ?(<Typography style={{ margin: "10px 5px 0px 10px" }} variant="button" gutterBottom>
-        Final: {event.section.finalExam}
-      </Typography>):null} */}
-              
-              <table>
-                <thead>
-                  <tr>
-                    <th>Code</th>
-                    <th>Type</th>
-                    <th>Instructor</th>
-                    <th>Time</th>
-                    <th>Place</th>
-                    <th>Enrollmt</th>
-                    <th>Rstr</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>{event.section.map(section=>
-        {return (
-          <ScheduleAddSelector
-                  onAddClass={this.props.onAddClass}
-                  section={section}
-                  name={ event.name}
-                  termName={ event.courseTerm}
-                />
-
-        );})} </tbody></table></div>)
-      })}</div>);    
-   })}
-        {/* {this.showEvent(this.props.events)} */}
-      </Fragment>
-    );
+    <Tooltip title="See All Courses">
+      <IconButton>
+        <List/>
+      </IconButton>
+    </Tooltip>
+    )
   }
 }
-
-//TODO: Convert CSS Sheet to JSS
-export default showE;
+export default scheduleTableDisplay;

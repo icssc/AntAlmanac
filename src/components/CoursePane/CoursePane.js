@@ -1,8 +1,10 @@
-import React, { Component } from "react";
+import React, {Component, Fragment} from "react";
 import loadingGif from "./loading.mp4";
 import querystring from "querystring";
 import CourseRenderPane from "./CourseRenderPane";
 import welcome from "./calvin.png";
+import {IconButton} from "@material-ui/core";
+import {ArrowBack} from "@material-ui/icons";
 
 class CoursePane extends Component {
   constructor(props) {
@@ -11,9 +13,17 @@ class CoursePane extends Component {
       courseData: null,
       loading: 0,
       termName: null,
-      deptName: null
+      deptName: null,
+      showDismissButton: true
     };
   }
+
+  handleToggleDismissButton = () => {
+      if (this.state.showDismissButton)
+          this.setState({showDismissButton: false});
+      else
+          this.setState({showDismissButton: true});
+  };
 
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     return (
@@ -70,13 +80,32 @@ class CoursePane extends Component {
 
     if (loading === 2) {
       return (
+          <Fragment>
+              {this.state.showDismissButton ? <div
+              style={{
+                  position: "sticky",
+                  width: '100%',
+                  top: 0,
+                  background: 'red',
+                  zIndex: 3,
+                  marginBottom: 8
+              }}
+          >
+              <IconButton
+                  onClick={this.props.onDismissSearchResults}
+              >
+                  <ArrowBack />
+              </IconButton>
+          </div> : <Fragment/>}
         <CourseRenderPane
           onAddClass={this.props.onAddClass}
+          onToggleDismissButton={this.handleToggleDismissButton}
           courseData={courseData}
           view={this.props.view}
           deptName={this.state.deptName}
           termName={this.state.termName}
         />
+          </Fragment>
       );
     } else if (loading === 1) {
       return (
@@ -96,7 +125,6 @@ class CoursePane extends Component {
       );
     } else {
       return (
-        //<Grid item md={6} xs={12}>
           <div style={{
             display: "flex", 
             justifyContent: "center",
@@ -112,7 +140,6 @@ class CoursePane extends Component {
               }}
             />
           </div>
-        //</Grid>
       );
     }
   }

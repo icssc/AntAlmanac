@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { Button } from "@material-ui/core";
+import PropTypes from "prop-types";
 const styles = () => ({
   multiline: {
     whiteSpace: "pre"
@@ -24,10 +25,6 @@ class GraphRenderPane extends Component {
       });
     }
   }
-
-  //   componentWillUnmount() {
-  //     this.controller.abort();
-  //   }
 
   componentDidUpdate(prevProps, prevState, prevContext) {
     if (prevProps !== this.props && this.props.length < 4) {
@@ -110,10 +107,29 @@ Units: ${this.props.section.units}`}
             ) : null}
           </div>
         }
-       
       </div>
     );
   }
 }
+
+GraphRenderPane.propTypes = {
+  section: PropTypes.shape({
+    meetings: PropTypes.array,
+    classCode: PropTypes.string,
+    classType: PropTypes.string,
+    sectionCode: PropTypes.string,
+    units: PropTypes.string,
+    instructors: PropTypes.array,
+    numCurrentlyEnrolled: PropTypes.string,
+    maxCapacity: PropTypes.string,
+    numOnWaitlist: PropTypes.string,
+    numNewOnlyReserved: PropTypes.string,
+    restrictions: PropTypes.string,
+    status: PropTypes.string
+  }),
+  length: PropTypes.number,
+  quarter: PropTypes.string,
+  year: PropTypes.string
+};
 
 export default withStyles(styles)(GraphRenderPane);

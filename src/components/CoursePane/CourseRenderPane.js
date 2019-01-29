@@ -1,10 +1,11 @@
 import { withStyles } from "@material-ui/core/styles";
-import { Paper, Typography, Grid, Modal } from "@material-ui/core";
+import {Paper, Typography, Grid, Modal, IconButton} from "@material-ui/core";
 import React, { Component } from "react";
 import CourseDetailPane from "./CourseDetailPane";
 import SchoolDeptCard from "./SchoolDeptCard";
 import MiniSectionTable from "./MiniSectionTable";
 import NoNothing from "./no_results.png";
+import {ArrowBack} from "@material-ui/icons";
 
 const styles = theme => ({
   course: {
@@ -45,13 +46,12 @@ class CourseRenderPane extends Component {
       course: null
     };
     this.ref = null;
+    this.scrollPos = null;
   }
 
   toRender = SOCObject => {
-    window.localStorage.setItem(
-      "location",
-      document.getElementById("foo1").scrollTop
-    );
+    this.props.onToggleDismissButton();
+    this.scrollPos = document.getElementById("foo1").scrollTop;
     document.getElementById("foo1").scrollTop = 0;
     this.setState({ course: SOCObject, courseDetailsOpen: true });
   };
@@ -72,7 +72,7 @@ class CourseRenderPane extends Component {
           comment={SOCObject.comments.join("\n")}
           type={"dept"}
         />
-      );
+      )
     } else {
       return this.props.view === 1 ? (
         <Grid item md={6} xs={12}>
@@ -83,11 +83,7 @@ class CourseRenderPane extends Component {
             onClick={() => this.toRender(SOCObject)}
           >
             <Typography variant="button" className={this.props.classes.text}>
-              {SOCObject.name[0] +
-                " " +
-                SOCObject.name[1] +
-                " | " +
-                SOCObject.name[2]}
+              {SOCObject.name[0] + " " + SOCObject.name[1] + " | " + SOCObject.name[2]}
             </Typography>
           </Paper>
         </Grid>
@@ -111,18 +107,15 @@ class CourseRenderPane extends Component {
   }
 
   handleDismissDetails() {
+    this.props.onToggleDismissButton();
     this.setState({ courseDetailsOpen: false, course: null }, () => {
-      var a = window.localStorage.getItem("location");
-
-      document.getElementById("foo1").scrollTop = a;
+      document.getElementById("foo1").scrollTop = this.scrollPos;
     });
   }
 
   render() {
     return (
-      //this.props.view === 1 ? (
       <div className={this.props.classes.root} ref={ref => (this.ref = ref)}>
-        {
           <Modal
             className={this.props.classes.modal}
             disablePortal
@@ -142,7 +135,6 @@ class CourseRenderPane extends Component {
               termName={this.props.termName}
             />
           </Modal>
-        }
 
         {this.props.courseData.length === 0 ? (
           <div
@@ -162,11 +154,6 @@ class CourseRenderPane extends Component {
           </Grid>
         )}
       </div>
-      // ) : (
-      //   <Grid container spacing={16}>
-      //     {this.props.courseData.map(item => this.getGrid(item))}
-      //   </Grid>
-      // );
     );
   }
 }

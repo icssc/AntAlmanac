@@ -58,7 +58,6 @@ export function getColor() {
 }
 
 export async function getCoursesData(courses, ob2) {
-  //console.log(courses);
   const params = {};
   for (var i = 0; i < courses.length; ++i) {
     params["courseCodes" + i] = courses[i].courseID;
@@ -85,7 +84,7 @@ export async function getCoursesData(courses, ob2) {
         element1.courseTerm === termName
       );
     });
-    //console.log(foundIndex);
+
     courses[foundIndex]["section"] = section;
     courses[foundIndex]["name"] = courseName;
     for (var pos of courses[foundIndex].index) {
@@ -220,7 +219,7 @@ export function convertToCalendar(
     if (shouldBeInCal) {
       const newClass = {
         color: random_color,
-        title: section.classCode + " " + name[0] + " " + name[1],
+        title: name[0] + " " + name[1],
         start: new Date(2018, 0, index + 1, start, startMin),
         end: new Date(2018, 0, index + 1, end, endMin),
         courseID: section.classCode,

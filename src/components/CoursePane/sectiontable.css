@@ -3,6 +3,7 @@ table {
   box-sizing: border-box;
   font-family: Roboto, sans-serif;
   margin-top: 8px;
+  width: 100%;
 }
 thead {
   position: sticky;
@@ -20,7 +21,7 @@ th {
 
 td {
   border: 1px solid rgb(222, 226, 230);
-  font-size: 14px;
+  font-size: 12px;
   padding: 6px 9px 6px 9px;
   text-align: left;
   vertical-align: top;
