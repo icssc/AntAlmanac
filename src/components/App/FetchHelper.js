@@ -307,6 +307,7 @@ export function helpDelete(
   }
   return backup;
 }
+
 export function helpAdd(arrayE, section, name, scheduleNumber, termName) {
   var allowToAdd = false;
   var foundIndex = arrayE.findIndex(function(element) {

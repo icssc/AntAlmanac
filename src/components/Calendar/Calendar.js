@@ -41,13 +41,13 @@ const styles = {
 const CustomEvent = ({classes}) => event => {
     let actualEvent = event.event;
 
-    if (!actualEvent.customize)
+    if (!actualEvent.isCustomEvent)
         return (
             <div>
                 <div className={classes.courseEventContainer}> {actualEvent.title}</div>
                 <div>
-                    <div className={classes.courseEventType}>{actualEvent.type}</div>
-                    <div className={classes.courseEventCourseID}>{actualEvent.courseID}</div>
+                    <div className={classes.courseEventType}>{actualEvent.courseType}</div>
+                    <div className={classes.courseEventCourseID}>{actualEvent.courseCode}</div>
                 </div>
                 <div className={classes.courseEventLocation}>{actualEvent.location}</div>
             </div>
@@ -73,8 +73,6 @@ class Calendar extends Component {
             this.setState({screenshotting: false});
         });
     };
-
-    handle
 
     static eventStyleGetter = (event) => {
         return {
@@ -103,7 +101,6 @@ class Calendar extends Component {
                     onScheduleChange={this.props.onScheduleChange}
                     onClearSchedule={this.props.onClearSchedule}
                     onClassDelete={this.props.onClassDelete}
-                    setID={this.props.setID}
                     onAddCustomEvent={this.props.onAddCustomEvent}
                     onTakeScreenshot={this.handleTakeScreenshot}
                     currentScheduleIndex={this.props.currentScheduleIndex}
@@ -134,11 +131,7 @@ class Calendar extends Component {
                             showMultiDayTimes={false}
                             components={{event: CustomEvent({classes})}}
                             onSelectEvent={event =>
-                                this.props.onClassDelete(
-                                    event.courseID,
-                                    event.courseTerm,
-                                    event.customize
-                                )
+                                this.props.onClassDelete(event)
                             }
                         />
                     </div>

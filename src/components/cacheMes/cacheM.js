@@ -57,9 +57,8 @@ function MySnackbarContent(props) {
   return (
     <SnackbarContent
       className={classNames(classes[variant], className)}
-      aria-describedby="client-snackbar"
       message={
-        <span id="client-snackbar" className={classes.message}>
+        <span className={classes.message}>
           <Icon className={classNames(classes.icon, classes.iconVariant)} />
           {message}
         </span>
@@ -67,7 +66,6 @@ function MySnackbarContent(props) {
       action={[
         <IconButton
           key="close"
-          aria-label="Close"
           color="inherit"
           className={classes.close}
           onClick={onClose}

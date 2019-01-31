@@ -4,13 +4,11 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import {
     Grid,
     Toolbar,
-    Typography,
     AppBar,
     Paper,
     Tooltip
 } from "@material-ui/core";
 
-import MessengerCustomerChat from "react-messenger-customer-chat";
 import SearchForm from "../SearchForm/SearchForm";
 import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
@@ -25,7 +23,30 @@ import {
     helpDelete,
     helpAdd
 } from "./FetchHelper";
+import {
+    red,
+    pink,
+    purple,
+    indigo,
+    deepPurple,
+    blue,
+    green,
+    cyan,
+    teal,
+    lightGreen,
+    lime,
+    amber,
+    blueGrey
+} from '@material-ui/core/colors';
 import IconButton from "@material-ui/core/IconButton/IconButton";
+
+const arrayOfColors = [red[500], pink[500],
+    purple[500], indigo[500],
+    deepPurple[500], blue[500],
+    green[500], cyan[500],
+    teal[500], lightGreen[500],
+    lime[500], amber[500],
+    blueGrey[500]];
 
 class App extends Component {
     constructor(props) {
@@ -34,37 +55,24 @@ class App extends Component {
         this.state = {
             formData: null,
             prevFormData: null,
-            schedule0Events: [],
-            schedule1Events: [],
-            schedule2Events: [],
-            schedule3Events: [],
             currentScheduleIndex: 0,
-            coursesEvents: [],
-            customEvents: [],
-            backupArray: [],
-            cusID: 0,
             view: 0,
-            chat: false,
             showMore: false,
-            isDesktop: false,
-            showSearch: true
-        };
+            showSearch: true,
+            courseEvents: [],
+            unavailableColors: [], //{{color: '#FFFFFF', scheduleIndex: 1}
 
-        this.resizeLogo = this.resizeLogo.bind(this);
+            backupArray: [],
+            chat: false,
+        };
     }
 
     componentDidMount = () => {
         document.addEventListener("keydown", this.undoEvent, false);
-        window.addEventListener("resize", this.resizeLogo);
     };
 
     componentWillUnmount() {
         document.removeEventListener("keydown", this.undoEvent, false);
-        window.removeEventListener("resize", this.resizeLogo);
-    }
-
-    resizeLogo() {
-        this.setState({isDesktop: window.innerWidth > 1000});
     }
 
     setView = viewNum => {
@@ -162,77 +170,115 @@ class App extends Component {
         }
     };
 
-    handleClassDelete = (courseID, courseTerm, isCustom) => {
-        var arrayE = [];
-        var backup = this.state.backupArray;
+    handleClassDelete = (event) => {
+        const eventsAfterRemovingItem = [];
 
-        var currentScheduleIndex = this.state.currentScheduleIndex;
+        this.state.courseEvents.forEach(eventInArray =>  {
+            if (eventInArray.isCustomEvent && event.isCustomEvent
+                && event.customEventID === eventInArray.customEventID
+                && event.scheduleIndex === eventInArray.scheduleIndex) {
 
-        if (isCustom) arrayE = this.state.customEvents;
-        else arrayE = this.state.coursesEvents;
+                if (event.scheduleIndex === 4 && !eventsAfterRemovingItem.includes(eventInArray)) {
+                    const scheduleIndicesToAddTo = [0, 1, 2, 3].filter(index => index !== this.state.currentScheduleIndex);
+                    eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[0]}));
+                    eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[1]}));
+                    eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[2]}));
+                }
+            } else if (!eventInArray.isCustomEvent && !eventInArray.isCustomEvent
+                && event.courseCode === eventInArray.courseCode
+                && event.scheduleIndex === eventInArray.scheduleIndex) {
 
-        backup = helpDelete(
-            courseID,
-            courseTerm,
-            isCustom,
-            arrayE,
-            backup,
-            currentScheduleIndex
-        );
-
-        const classEventsInCalendar = this.state[
-        "schedule" + this.state.currentScheduleIndex + "Events"
-            ].filter(event => {
-            return event.courseID !== courseID || event.courseTerm !== courseTerm;
-        });
-
-        this.setState(
-            {
-                ["schedule" +
-                this.state.currentScheduleIndex +
-                "Events"]: classEventsInCalendar,
-                backupArray: backup
-            },
-            function () {
-                if (isCustom) this.setState({customEvents: arrayE});
-                else this.setState({coursesEvents: arrayE});
+                if (event.scheduleIndex === 4 && !eventsAfterRemovingItem.includes(eventInArray)) {
+                    const scheduleIndicesToAddTo = [0, 1, 2, 3].filter(index => index !== this.state.currentScheduleIndex);
+                    eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[0]}));
+                    eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[1]}));
+                    eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[2]}));
+                }
+                const addBackColor = this.state.unavailableColors.filter(colorAndScheduleIndex => {
+                    return !(colorAndScheduleIndex.color === event.color && event.scheduleIndex === 4 ?
+                        colorAndScheduleIndex.scheduleIndex === this.state.currentScheduleIndex :
+                        colorAndScheduleIndex.scheduleIndex === event.scheduleIndex)
+                });
+                this.setState({unavailableColors: addBackColor});
+            } else {
+                eventsAfterRemovingItem.push(eventInArray);
             }
-        );
+        });
+        this.setState({courseEvents: eventsAfterRemovingItem});
     };
 
-    handleAddClass = (section, name, scheduleNumber, termName) => {
-        if (scheduleNumber === 4) {
-            this.handleAddClass(section, name, 0, termName);
-            this.handleAddClass(section, name, 1, termName);
-            this.handleAddClass(section, name, 2, termName);
-            this.handleAddClass(section, name, 3, termName);
-            return;
-        }
-        const arrayE = this.state.coursesEvents;
+    handleAddClass = (section, name, scheduleIndex, termName) => {
+        //TODO: Can we speed up this operation?
+        const randomColor = arrayOfColors.find(color => {
+            let isAvailableColor = true;
+            this.state.unavailableColors.forEach(colorAndScheduleIndex => {
+                if (colorAndScheduleIndex.color === color && (colorAndScheduleIndex.scheduleIndex === scheduleIndex || scheduleIndex === 4)) {
+                    isAvailableColor = false;
+                    return;
+                }
+            });
+            return isAvailableColor;
+        });
 
-        const eventData = helpAdd(arrayE, section, name, scheduleNumber, termName);
+        const doesExist = this.state.courseEvents.find(course =>
+            course.courseCode === section.classCode && (course.scheduleIndex === scheduleIndex || scheduleIndex === 4)
+        );
 
-        if (eventData.allowToAdd) {
-            let cal = [];
+        if (!doesExist) {
+            if (scheduleIndex === 4)
+                this.setState({unavailableColors: this.state.unavailableColors.concat([
+                    {color: randomColor, scheduleIndex: 0},
+                    {color: randomColor, scheduleIndex: 1},
+                    {color: randomColor, scheduleIndex: 2},
+                    {color: randomColor, scheduleIndex: 3},
+                    ])});
+            else
+                this.setState({unavailableColors: this.state.unavailableColors.concat({color: randomColor, scheduleIndex: scheduleIndex})});
+
+            let newCourses = [];
+
             section.meetings.forEach(meeting => {
                 const timeString = meeting[0].replace(/\s/g, "");
-                const newClasses = convertToCalendar(
-                    section,
-                    timeString,
-                    eventData.randomColor,
-                    name,
-                    termName,
-                    meeting[1]
-                );
-                cal = cal.concat(newClasses);
+
+                if (timeString !== 'TBA') {
+
+                    let [_, dates, start, startMin, end, endMin, ampm] = timeString.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
+
+                    start = parseInt(start, 10);
+                    startMin = parseInt(startMin, 10);
+                    end = parseInt(end, 10);
+                    endMin = parseInt(endMin, 10);
+                    dates = [dates.includes('M'), dates.includes('Tu'), dates.includes('W'), dates.includes('Th'), dates.includes('F')];
+
+                    if (ampm === 'p' && end !== 12) {
+                        start += 12;
+                        end += 12;
+                        if (start > end) start -= 12;
+                    }
+
+                    dates.forEach((shouldBeInCal, index) => {
+                        if (shouldBeInCal) {
+                            const newCourse = {
+                                color: randomColor,
+                                courseTerm: termName,
+                                title: name[0] + ' ' + name[1],
+                                location: meeting[1],
+                                courseCode: section.classCode,
+                                courseType: section.classType,
+                                start: new Date(2018, 0, index + 1, start, startMin),
+                                end: new Date(2018, 0, index + 1, end, endMin),
+                                isCustomEvent: false,
+                                scheduleIndex: scheduleIndex
+                            };
+
+                            newCourses.push(newCourse);
+                        }
+                    });
+                }
             });
-            this.setState({
-                ["schedule" + scheduleNumber + "Events"]: this.state[
-                "schedule" + scheduleNumber + "Events"
-                    ].concat(cal),
-                coursesEvents: arrayE
-            });
-        } else this.setState({coursesEvents: arrayE});
+
+            this.setState({courseEvents: this.state.courseEvents.concat(newCourses)});
+        }
     };
 
     handleScheduleChange = direction => {
@@ -257,38 +303,8 @@ class App extends Component {
         });
     };
 
-    handleAddCustomEvent = (events, calendarIndex, dates) => {
-        var arrayE = this.state.customEvents;
-        var foundIndex = arrayE.findIndex(function (element) {
-            return element.courseID === events[0].courseID;
-        });
-
-        if (foundIndex > -1) {
-            arrayE[foundIndex].index.push(calendarIndex);
-        } else {
-            arrayE.push({
-                title: events[0].title,
-                start: [events[0].start.getHours(), events[0].start.getMinutes()],
-                end: [events[0].end.getHours(), events[0].end.getMinutes()],
-                courseID: events[0].courseID,
-                index: [calendarIndex],
-                weekdays: dates
-            });
-        }
-
-        this.setState({
-            ["schedule" + calendarIndex + "Events"]: this.state[
-            "schedule" + calendarIndex + "Events"
-                ].concat(events),
-            customEvents: arrayE
-        });
-    };
-
-    //get id for the custom event
-    setID = () => {
-        const id = this.state.cusID + 1;
-        this.setState({cusID: id});
-        return id;
+    handleAddCustomEvent = (events) => {
+        this.setState({courseEvents: this.state.courseEvents.concat(events)});
     };
 
     handleClearSchedule = () => {
@@ -321,14 +337,9 @@ class App extends Component {
     render() {
         return (
             <Fragment>
-                <div>
-                    <MessengerCustomerChat
-                        pageId="2286387408050026"
-                        appId="343457496213889"
-                    />
-                </div>
+
                 <CssBaseline/>
-                <AppBar id="fox" position='static' style={{marginBottom: '8px'}}>
+                <AppBar position='static' style={{marginBottom: '8px'}}>
                     <Toolbar variant="dense">
                         <div>
                             {/*{this.state.isDesktop ? (*/}
@@ -345,14 +356,7 @@ class App extends Component {
                                 {/*/>*/}
                             {/*)}*/}
                         </div>
-
-                        <Typography
-                            variant="title"
-                            id="introID"
-                            color="inherit"
-                            style={{flexGrow: 2}}
-                        />
-                        <LoadUser load={this.handleLoad} save={this.handleSave}/>
+                        {/*<LoadUser load={this.handleLoad} save={this.handleSave}/>*/}
 
                         <Tooltip title="Info Page">
                             <a
@@ -370,11 +374,8 @@ class App extends Component {
                         <div>
                             <Calendar
                                 classEventsInCalendar={
-                                    this.state[
-                                    "schedule" + this.state.currentScheduleIndex + "Events"
-                                        ]
+                                    this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))
                                 }
-                                heighSize={this.state.hS}
                                 moreInfoF={this.moreInfoF}
                                 clickToUndo={this.undoEventHelp}
                                 currentScheduleIndex={this.state.currentScheduleIndex}
