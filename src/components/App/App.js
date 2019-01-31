@@ -310,19 +310,12 @@ class App extends Component {
     handleClearSchedule = () => {
         if (
             window.confirm(
-                "Are you sure you want to clear all the schedules? (you can still recover the schedules by loading from the database)"
+                "Are you sure you want to clear all your schedules?"
             )
         ) {
             this.setState({
-                schedule0Events: [],
-                schedule1Events: [],
-                schedule2Events: [],
-                schedule3Events: [],
-                cusID: 0,
-                backupArray: [],
-                coursesEvents: [],
-                customEvents: [],
-                currentScheduleIndex: 0
+                courseEvents: [],
+                unavailableColors: [], //{{color: '#FFFFFF', scheduleIndex: 1}
             });
         }
     };
