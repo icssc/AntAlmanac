@@ -140,6 +140,7 @@ class DialogSelect extends Component {
     const endMin = parseInt(this.state.end.slice(3, 5));
 
     const events = [];
+    const id = Math.floor(Math.random() * 1000000);
 
     Object.keys(this.state.days).forEach(day => {
       if (this.state.days[day]) {
@@ -149,7 +150,8 @@ class DialogSelect extends Component {
           scheduleIndex: scheduleIndex,
           start: new Date(2018, 0, dayToNum(day), startHour, startMin),
           end: new Date(2018, 0, dayToNum(day), endHour, endMin),
-          isCustomEvent: true
+          isCustomEvent: true,
+          customEventID: id
         });
       }
     });
