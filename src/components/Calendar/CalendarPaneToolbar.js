@@ -34,7 +34,7 @@ class CalendarPaneToolbar extends Component {
                     </IconButton>
                     <Typography style={{flexGrow: 1}}/>
                     <Tooltip title="Undo Last Delete">
-                        <IconButton onClick={this.props.clickToUndo}>
+                        <IconButton onClick={() => this.props.onUndo(null)}>
                             <Undo/>
                         </IconButton>
                     </Tooltip>
@@ -62,7 +62,7 @@ class CalendarPaneToolbar extends Component {
 CalendarPaneToolbar.propTypes = {
     onScheduleChange: PropTypes.func,
     onClearSchedule: PropTypes.func,
-    onClassDelete: PropTypes.func,
+    onUndo: PropTypes.func,
     setID: PropTypes.func,
     onAddCustomEvent: PropTypes.func,
     onTakeScreenshot: PropTypes.func,

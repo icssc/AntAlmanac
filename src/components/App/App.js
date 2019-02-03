@@ -61,14 +61,13 @@ class App extends Component {
             showSearch: true,
             courseEvents: [],
             unavailableColors: [], //{{color: '#FFFFFF', scheduleIndex: 1}
-
             backupArray: [],
             chat: false,
         };
     }
 
     componentDidMount = () => {
-        document.addEventListener("keydown", this.undoEvent, false);
+        document.addEventListener("keydown", this.handleUndo, false);
     };
 
     componentWillUnmount() {
@@ -128,86 +127,80 @@ class App extends Component {
         }
     };
 
-    undoEvent = event => {
-        if (
-            this.state.backupArray.length > 0 &&
-            (event.keyCode === 90 && (event.ctrlKey || event.metaKey))
-        ) {
-            this.undoEventHelp();
-        }
-    };
+    handleUndo = (event) => {
+        // console.log(event);
+        if (this.state.backupArray.length > 0 && (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))) {
+            if (this.state.backupArray.length > 0) {
+                const lastDeletedEvent = this.state.backupArray[this.state.backupArray.length - 1];
 
-    undoEventHelp = () => {
-        if (this.state.backupArray.length > 0) {
-            var obj = this.state.backupArray.pop();
-            if (obj.customize) {
-                const dates = getCustomDate(obj, -1);
-                this.setState(
-                    {
-                        currentScheduleIndex: obj.index,
-                        backupArray: this.state.backupArray
-                    },
-                    () => {
-                        this.handleAddCustomEvent(dates, obj.index, obj.weekdays);
-                    }
-                );
-            } else {
-                this.setState(
-                    {
-                        currentScheduleIndex: obj.index,
-                        backupArray: this.state.backupArray
-                    },
-                    () => {
-                        this.handleAddClass(
-                            obj.section,
-                            obj.name,
-                            obj.index,
-                            obj.courseTerm
-                        );
-                    }
-                );
+                if (lastDeletedEvent.isCustomEvent) {
+                    this.setState(
+                        {
+                            currentScheduleIndex: lastDeletedEvent.scheduleIndex,
+                            backupArray: this.state.backupArray.slice(this.state.backupArray.length - 1, this.state.backupArray.length)
+                        },
+                        () => {
+                            this.handleAddCustomEvent(lastDeletedEvent);
+                        }
+                    );
+                } else {
+                    this.setState(
+                        {
+                            currentScheduleIndex: lastDeletedEvent.scheduleIndex,
+                            backupArray: this.state.backupArray.slice(0, this.state.backupArray.length - 1)
+                        },
+                        () => {
+                            this.handleAddClass(
+                                lastDeletedEvent.section,
+                                lastDeletedEvent.name,
+                                lastDeletedEvent.scheduleIndex,
+                                lastDeletedEvent.courseTerm
+                            );
+                        }
+                    );
+                }
             }
         }
     };
 
-    handleClassDelete = (event) => {
+    handleClassDelete = (deletedEvent) => {
         const eventsAfterRemovingItem = [];
 
         this.state.courseEvents.forEach(eventInArray =>  {
-            if (eventInArray.isCustomEvent && event.isCustomEvent
-                && event.customEventID === eventInArray.customEventID
-                && event.scheduleIndex === eventInArray.scheduleIndex) {
+            if (eventInArray.isCustomEvent && deletedEvent.isCustomEvent
+                && deletedEvent.customEventID === eventInArray.customEventID
+                && deletedEvent.scheduleIndex === eventInArray.scheduleIndex) {
 
-                if (event.scheduleIndex === 4 && !eventsAfterRemovingItem.includes(eventInArray)) {
+                if (deletedEvent.scheduleIndex === 4 && !eventsAfterRemovingItem.includes(eventInArray)) {
                     const scheduleIndicesToAddTo = [0, 1, 2, 3].filter(index => index !== this.state.currentScheduleIndex);
                     eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[0]}));
                     eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[1]}));
                     eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[2]}));
                 }
             } else if (!eventInArray.isCustomEvent && !eventInArray.isCustomEvent
-                && event.courseCode === eventInArray.courseCode
-                && event.scheduleIndex === eventInArray.scheduleIndex) {
+                && deletedEvent.courseCode === eventInArray.courseCode
+                && deletedEvent.scheduleIndex === eventInArray.scheduleIndex) {
 
-                if (event.scheduleIndex === 4 && !eventsAfterRemovingItem.includes(eventInArray)) {
+                if (deletedEvent.scheduleIndex === 4 && !eventsAfterRemovingItem.includes(eventInArray)) {
                     const scheduleIndicesToAddTo = [0, 1, 2, 3].filter(index => index !== this.state.currentScheduleIndex);
                     eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[0]}));
                     eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[1]}));
                     eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[2]}));
                 }
                 const addBackColor = this.state.unavailableColors.filter(colorAndScheduleIndex => {
-                    return !(colorAndScheduleIndex.color === event.color && event.scheduleIndex === 4 ?
-                        colorAndScheduleIndex.scheduleIndex === this.state.currentScheduleIndex :
-                        colorAndScheduleIndex.scheduleIndex === event.scheduleIndex)
+                    return !(colorAndScheduleIndex.color === deletedEvent.color &&
+                        colorAndScheduleIndex.scheduleIndex === this.state.currentScheduleIndex)
                 });
                 this.setState({unavailableColors: addBackColor});
             } else {
                 eventsAfterRemovingItem.push(eventInArray);
             }
         });
-        this.setState({courseEvents: eventsAfterRemovingItem});
+
+        this.setState({courseEvents: eventsAfterRemovingItem, backupArray: this.state.backupArray.concat(deletedEvent)});
     };
 
-    handleAddClass = (section, name, scheduleIndex, termName) => {
+    handleAddClass = (section, name, scheduleIndex, courseTerm) => {
         //TODO: Can we speed up this operation?
         const randomColor = arrayOfColors.find(color => {
             let isAvailableColor = true;
@@ -259,10 +252,12 @@ class App extends Component {
                     dates.forEach((shouldBeInCal, index) => {
                         if (shouldBeInCal) {
                             const newCourse = {
+                                name: name,
                                 color: randomColor,
-                                courseTerm: termName,
+                                courseTerm: courseTerm,
                                 title: name[0] + ' ' + name[1],
                                 location: meeting[1],
+                                section:section,
                                 courseCode: section.classCode,
                                 courseType: section.classType,
                                 start: new Date(2018, 0, index + 1, start, startMin),
@@ -314,8 +309,9 @@ class App extends Component {
             )
         ) {
             this.setState({
+                backupArray: this.state.backupArray.concat(this.state.courseEvents),
                 courseEvents: [],
-                unavailableColors: [], //{{color: '#FFFFFF', scheduleIndex: 1}
+                unavailableColors: [],
             });
         }
     };
@@ -370,7 +366,7 @@ class App extends Component {
                                     this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))
                                 }
                                 moreInfoF={this.moreInfoF}
-                                clickToUndo={this.undoEventHelp}
+                                onUndo={this.handleUndo}
                                 currentScheduleIndex={this.state.currentScheduleIndex}
                                 onClassDelete={this.handleClassDelete}
                                 onScheduleChange={this.handleScheduleChange}
