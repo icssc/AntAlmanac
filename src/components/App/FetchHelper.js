@@ -48,36 +48,54 @@ function calendarize(section, color, courseTerm, scheduleIndex, name) {
 async function getCoursesData(userData) {
   //TODO: Change this API to use POST, integrate into WebSoc-API, decrapify this functionality
   const courses = userData.courseEvents;
-
   const params = {};
-  params["length"] = courses.length;
+  let numClasses = 0;
+
   for (let i = 0; i < courses.length; ++i) {
-    params["courseCodes" + i] = courses[i].courseCode;
-    params["term" + i] = courses[i].courseTerm;
+    if (!courses[i].isCustomEvent) {
+      params["courseCodes" + i] = courses[i].courseCode;
+      params["term" + i] = courses[i].courseTerm;
+      numClasses++;
+    }
   }
-
-  const url = new URL(
-    "https://j4j70ejkmg.execute-api.us-west-1.amazonaws.com/latest/api/codes?"
-  );
-
-  Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-  console.log(url.toString());
-
-  const response = await fetch(url.toString());
-  const json = await response.json(); //is it an array or obj
+  params["length"] = numClasses;
 
   const events = [];
 
-  for (const course of json) {
-    let stripped = null;
+  if (numClasses > 0) {
+    const url = new URL(
+      "https://j4j70ejkmg.execute-api.us-west-1.amazonaws.com/latest/api/codes?"
+    );
 
-    for (const strippedCourse of courses) {
-      if (course.section.classCode === strippedCourse.courseCode) { // name parity shit, pls fix
-        stripped = strippedCourse;
+    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+    console.log(url.toString());
+
+    const response = await fetch(url.toString());
+    const json = await response.json(); //is it an array or obj
+
+
+
+    for (const savedEvent of json) {
+      let stripped = null;
+
+      for (const strippedCourse of courses) {
+        if (savedEvent.section.classCode === strippedCourse.courseCode) { // name parity shit, pls fix
+          stripped = strippedCourse;
+        }
       }
+
+      events.push(...calendarize(savedEvent.section, stripped.color, savedEvent.term, stripped.scheduleIndex, savedEvent.courseName));
     }
 
-    events.push(...calendarize(course.section, stripped.color, course.term, stripped.scheduleIndex, course.courseName));
+    for (const possibleCustomEvent of courses) {
+      if (possibleCustomEvent.isCustomEvent) {
+        events.push({...possibleCustomEvent, start: new Date(possibleCustomEvent.start), end: new Date(possibleCustomEvent.end)});
+      }
+    }
+  } else {
+    for (const customEvent of courses) {
+      events.push({...customEvent, start: new Date(customEvent.start), end: new Date(customEvent.end)});
+    }
   }
 
   return {courseEvents: events, unavailableColors: userData.unavailableColors};

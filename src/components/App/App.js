@@ -79,7 +79,6 @@ class App extends Component {
       courseEvents: userData.courseEvents,
       unavailableColors: userData.unavailableColors,
       backupArray: [],
-      //TODO: userID: userData.userID
     })
   };
 
@@ -88,12 +87,12 @@ class App extends Component {
     const map = new Map();
 
     this.state.courseEvents.forEach((event) => {
-      if(!map.has(event.courseCode)){
-        map.set(event.courseCode, true);
-
+      if (event.isCustomEvent || (!event.isCustomEvent && !map.has(event.courseCode))) {
         if (event.isCustomEvent) {
           eventsToSave.push(event);
         } else {
+          map.set(event.courseCode, true);
+
           eventsToSave.push({
             color: event.color,
             courseCode: event.courseCode,
