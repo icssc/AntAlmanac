@@ -5,6 +5,7 @@ import {ChevronLeft, ChevronRight, Delete, Undo, FormatListBulleted} from "@mate
 import ScreenshotButton from "./ScreenshotButton";
 import CustomEventsDialog from '../CustomEvents/Popup';
 import PropTypes from "prop-types";
+import Sharing from "./Sharing";
 
 const styles = {
     toolbarContainer: {
@@ -53,6 +54,8 @@ class CalendarPaneToolbar extends Component {
                             <Delete/>
                         </IconButton>
                     </Tooltip>
+                    <Sharing takePic={this.takePic} />
+
                 </Toolbar>
             </Paper>
         )

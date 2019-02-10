@@ -6,7 +6,8 @@ import {
   Toolbar,
   AppBar,
   Paper,
-  Tooltip
+  Tooltip,
+  Typography
 } from "@material-ui/core";
 
 import SearchForm from "../SearchForm/SearchForm";
@@ -62,6 +63,18 @@ class App extends Component {
 
   componentDidMount = () => {
     document.addEventListener("keydown", this.handleUndo, false);
+    const script = document.createElement("script");
+
+    const scriptText = document.createTextNode(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2&appId=343457496213889&autoLogAppEvents=1';
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+    script.appendChild(scriptText);
+    document.head.appendChild(script);
   };
 
   componentWillUnmount() {
@@ -326,6 +339,7 @@ class App extends Component {
                 <Info fontSize="48px" color="white"/>
               </a>
             </Tooltip>
+         
           </Toolbar>
         </AppBar>
         <Grid container>
@@ -359,6 +373,14 @@ class App extends Component {
                     <Dns/>
                   </IconButton>
                 </Tooltip>
+                <Typography style={{ flexGrow: 1 }} />
+                  {/* <FBcomments/> */}
+                  <div class="fb-messengermessageus"
+          messenger_app_id="343457496213889"
+            page_id="2286387408050026"
+              />
+
+                <div class="fb-like" data-href="https://www.facebook.com/AntAlmanac" data-layout="button_count" data-action="like" data-size="large" data-show-faces="true" data-share="true"></div>
               </Toolbar>
             </Paper>
             <Paper
