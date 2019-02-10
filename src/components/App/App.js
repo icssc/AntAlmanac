@@ -103,11 +103,11 @@ class App extends Component {
     const map = new Map();
 
     this.state.courseEvents.forEach((event) => {
-      if (event.isCustomEvent || (!event.isCustomEvent && !map.has(event.courseCode))) {
+      if (event.isCustomEvent || (!event.isCustomEvent && (!map.has(event.courseCode) || (map.get(event.courseCode) !== event.scheduleIndex)))) {
         if (event.isCustomEvent) {
           eventsToSave.push(event);
         } else {
-          map.set(event.courseCode, true);
+          map.set(event.courseCode, event.scheduleIndex);
 
           eventsToSave.push({
             color: event.color,
