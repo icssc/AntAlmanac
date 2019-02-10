@@ -5,6 +5,7 @@ import rmpData from "./RMP.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import POPOVER from "./PopOver";
 import Notification from '../Notification'
+import RstrPopover from "./RstrPopover"
 
 class ScheduleAddSelector extends Component {
   constructor(props) {
@@ -84,7 +85,7 @@ class ScheduleAddSelector extends Component {
     return test;
   };
 
-  
+
   statusforFindingSpot = (section,classCode) => {
     if(section === 'FULL')
     return <Notification  full={section} code={classCode} name={this.props.courseDetails.name}/>
@@ -125,13 +126,9 @@ WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
           </td>
           <td>
-            <a
-              href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {section.restrictions}
-            </a>
+            <RstrPopover
+              restrictions = {section.restrictions}
+            />
           </td>
           <td className={section.status}>{this.statusforFindingSpot(section.status,section.classCode)}</td>
         </tr>
