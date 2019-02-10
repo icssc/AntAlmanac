@@ -1,103 +1,116 @@
 import DeptSearchBar from "./DeptSearchBar/DeptSearchBar";
-import GESelector from "./GESelector/GESelector";
+import GESelector from "./GESelector";
 import TermSelector from "./TermSelector";
 import React, {Component} from "react";
-import Button from "@material-ui/core/Button";
+import {Button} from "@material-ui/core";
 import {withStyles} from '@material-ui/core/styles';
+import AdvancedSearchTextFields from "./AdvancedSearch";
 
 const styles = {
-    container: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%'
-    },
-    search: {
-        display: 'flex',
-        justifyContent: 'center',
-        borderTop: 'solid 8px transparent',
-        boxSizing: 'border-box'
-    },
-    margin: {
-        borderTop: 'solid 8px transparent',
-        boxSizing: 'border-box'
-    }
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%'
+  },
+  search: {
+    display: 'flex',
+    justifyContent: 'center',
+    borderTop: 'solid 8px transparent',
+  },
+  margin: {
+    borderTop: 'solid 8px transparent',
+  }
 };
 
 class SearchForm extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {dept: null, ge: "ANY", term: "2019 Winter"};
-        this.setDept = this.setDept.bind(this);
-        this.setGE = this.setGE.bind(this);
-        this.setTerm = this.setTerm.bind(this);
-    }
-
-    componentDidMount() {
-        document.addEventListener("keydown", this.enterEvent, false);
-    }
-
-    componentWillUnmount() {
-        document.addEventListener("keydown", this.enterEvent, false);
-    }
-
-    enterEvent = event => {
-        const charCode = event.which ? event.which : event.keyCode;
-        if (
-            (charCode === 13 || charCode === 10) &&
-            document.activeElement.id === "downshift-0-input"
-        ) {
-            this.props.updateFormData(this.state);
-            event.preventDefault();
-
-            return false;
-        }
+  constructor(props) {
+    super(props);
+    this.state = {
+      dept: null,
+      ge: "ANY",
+      term: "2019 Spring",
+      courseNum: "",
+      courseCode: "",
+      instructor: "",
+      units: "",
+      endTime: "",
+      startTime: "",
+      coursesFull: 'ANY'
     };
+  }
 
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
-        return this.state !== nextState;
+  componentDidMount = () => {
+    document.addEventListener("keydown", this.enterEvent, false);
+  };
+
+  componentWillUnmount = () => {
+    document.addEventListener("keydown", this.enterEvent, false);
+  };
+
+  enterEvent = event => {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (
+      (charCode === 13 || charCode === 10) &&
+      document.activeElement.id === "downshift-0-input"
+    ) {
+      this.props.updateFormData(this.state);
+      event.preventDefault();
+
+      return false;
     }
+  };
 
-    setDept(dept) {
-        this.setState({dept: dept === null ? null : dept.value});
-    }
+  shouldComponentUpdate = (nextProps, nextState) => {
+    return this.state !== nextState;
+  };
 
-    setGE(ge) {
-        this.setState({ge: ge});
-    }
+  setDept = dept => {
+    this.setState({dept: dept === null ? null : dept.value});
+  };
 
-    setTerm(term) {
-        this.setState({term: term});
-    }
+  handleAdvancedSearchChange = (advancedSearchState) => {
+    this.setState(advancedSearchState);
+  };
 
-    render() {
-        const {classes} = this.props;
+  setGE = ge => {
+    this.setState({ge: ge});
+  };
 
-        return (
-            <div className={classes.container}>
-                <div className={classes.margin}>
-                    <DeptSearchBar setDept={this.setDept}/>
-                </div>
+  setTerm = term => {
+    this.setState({term: term});
+  };
 
-                <div className={classes.margin}>
-                    <GESelector setGE={this.setGE}/>
-                </div>
+  render() {
+    const {classes} = this.props;
 
-                <div className={classes.margin}>
-                    <TermSelector setTerm={this.setTerm}/>
-                </div>
+    return (
+      <div className={classes.container}>
+        <div className={classes.margin}>
+          <DeptSearchBar setDept={this.setDept}/>
+        </div>
 
-                <div className={classes.search}>
-                    <Button
-                        color="primary"
-                        variant="contained"
-                        onClick={() => this.props.updateFormData(this.state)}
-                    >
-                        Search
-                    </Button>
-                </div>
-            </div>
-        );
-    }
+        <div className={classes.margin}>
+          <GESelector setGE={this.setGE}/>
+        </div>
+
+        <div className={classes.margin}>
+          <TermSelector setTerm={this.setTerm}/>
+        </div>
+
+        <AdvancedSearchTextFields onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
+
+        <div className={classes.search}>
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={() => this.props.updateFormData(this.state)}
+          >
+            Search
+          </Button>
+        </div>
+      </div>
+    );
+  }
 }
 
 export default withStyles(styles)(SearchForm);

@@ -19,10 +19,10 @@ class CoursePane extends Component {
   }
 
   handleToggleDismissButton = () => {
-      if (this.state.showDismissButton)
-          this.setState({showDismissButton: false});
-      else
-          this.setState({showDismissButton: true});
+    if (this.state.showDismissButton)
+      this.setState({showDismissButton: false});
+    else
+      this.setState({showDismissButton: true});
   };
 
   shouldComponentUpdate(nextProps, nextState, nextContext) {
@@ -50,11 +50,34 @@ class CoursePane extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    const { dept, term, ge } = this.props.formData;
+    const {
+      dept,
+      term,
+      ge,
+      courseNum,
+      courseCode,
+      instructor,
+      units,
+      endTime,
+      startTime,
+      coursesFull
+    } = this.props.formData;
 
     if (prevProps.formData !== this.props.formData) {
-      this.setState({ loading: 1 });
-      const params = { department: dept, term: term, GE: ge };
+      this.setState({loading: 1});
+      //TODO: Name parity
+      const params = {
+        department: dept,
+        term: term,
+        GE: ge,
+        courseNum: courseNum,
+        courseCodes: courseCode,
+        instructorName: instructor,
+        units: units,
+        endTime: endTime,
+        startTime: startTime,
+        fullCourses: coursesFull
+      };
       const url =
         "https://j4j70ejkmg.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?" +
         querystring.stringify(params);
@@ -74,38 +97,37 @@ class CoursePane extends Component {
     }
   }
 
-  
+
   render() {
-    const { loading, courseData } = this.state;
+    const {loading, courseData} = this.state;
 
     if (loading === 2) {
       return (
-          <Fragment>
-              {this.state.showDismissButton ? <div
-              style={{
-                  position: "sticky",
-                  width: '100%',
-                  top: 0,
-                  background: 'red',
-                  zIndex: 3,
-                  marginBottom: 8
-              }}
+        <Fragment>
+          {this.state.showDismissButton ? <div
+            style={{
+              position: "sticky",
+              width: '100%',
+              top: 0,
+              zIndex: 3,
+              marginBottom: 8
+            }}
           >
-              <IconButton
-                  onClick={this.props.onDismissSearchResults}
-              >
-                  <ArrowBack />
-              </IconButton>
+            <IconButton
+              onClick={this.props.onDismissSearchResults}
+            >
+              <ArrowBack/>
+            </IconButton>
           </div> : <Fragment/>}
-        <CourseRenderPane
-          onAddClass={this.props.onAddClass}
-          onToggleDismissButton={this.handleToggleDismissButton}
-          courseData={courseData}
-          view={this.props.view}
-          deptName={this.state.deptName}
-          termName={this.state.termName}
-        />
-          </Fragment>
+          <CourseRenderPane
+            onAddClass={this.props.onAddClass}
+            onToggleDismissButton={this.handleToggleDismissButton}
+            courseData={courseData}
+            view={this.props.view}
+            deptName={this.state.deptName}
+            termName={this.state.termName}
+          />
+        </Fragment>
       );
     } else if (loading === 1) {
       return (
@@ -119,27 +141,27 @@ class CoursePane extends Component {
           }}
         >
           <video autoPlay>
-            <source src={loadingGif} type="video/mp4" />
+            <source src={loadingGif} type="video/mp4"/>
           </video>
         </div>
       );
     } else {
       return (
-          <div style={{
-            display: "flex", 
-            justifyContent: "center",
-            alignItems: "center" 
-            }}>
-            <img
-              src={welcome}
-              alt="my face"
-              
-              style={{ 
-                width: "390", 
-                height: "600"
-              }}
-            />
-          </div>
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}>
+          <img
+            src={welcome}
+            alt="my face"
+
+            style={{
+              width: "390",
+              height: "600"
+            }}
+          />
+        </div>
       );
     }
   }

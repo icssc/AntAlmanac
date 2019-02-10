@@ -52,7 +52,6 @@ class App extends Component {
       formData: null,
       currentScheduleIndex: 0,
       view: 0,
-      showMore: false,
       showSearch: true,
       courseEvents: [],
       unavailableColors: [],
@@ -70,7 +69,7 @@ class App extends Component {
   }
 
   setView = viewNum => {
-    if (this.state.formData != null) this.setState({view: viewNum});
+    if (this.state.showSearch === false) this.setState({view: viewNum});
   };
 
   handleLoad = userData => {
@@ -284,7 +283,7 @@ class App extends Component {
   };
 
   updateFormData = formData => {
-    this.setState({showMore: false, showSearch: false}, function () {
+    this.setState({showSearch: false}, function () {
       this.setState({formData: formData});
     });
   };
@@ -377,7 +376,6 @@ class App extends Component {
                   onAddClass={this.handleAddClass}
                   onDismissSearchResults={this.handleDismissSearchResults}
                   term={this.state.formData}
-                  showMore={this.state.showMore}
                   coursesEvents={this.state.coursesEvents}/>}
             </Paper>
           </Grid>
