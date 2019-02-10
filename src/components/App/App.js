@@ -12,8 +12,12 @@ import {
 import SearchForm from "../SearchForm/SearchForm";
 import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
-import {ListAlt, Dns} from "@material-ui/icons";
-import Info from "@material-ui/icons/InfoSharp";
+import {
+  Info,
+  ListAlt,
+  Dns,
+  ImportContacts
+} from "@material-ui/icons";
 import LoadSaveScheduleFunctionality from "../cacheMes/cacheM";
 
 import {
@@ -316,6 +320,16 @@ class App extends Component {
               {/*logo*/}
             </div>
             <LoadSaveScheduleFunctionality onLoad={this.handleLoad} onSave={this.handleSave}/>
+
+            <Tooltip title="Blue Book Giveaway!">
+              <a
+                style={{ color: "white" }}
+                href={"https://goo.gl/forms/KI6MkNCZsyzIVkF42"}
+                target="_blank"
+              >
+                <ImportContacts style={{ marginLeft: 15, marginRight: 30 }} fontSize="48px" color="white" />
+              </a>
+            </Tooltip>
 
             <Tooltip title="Info Page">
               <a

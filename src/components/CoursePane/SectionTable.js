@@ -3,6 +3,7 @@ import AddCircle from "@material-ui/icons/AddCircle";
 import { IconButton, Menu, MenuItem } from "@material-ui/core";
 import rmpData from "./RMP.json";
 import Notification from '../Notification'
+import RstrPopover from "./RstrPopover"
 
 class ScheduleAddSelector extends Component {
   constructor(props) {
@@ -57,7 +58,7 @@ class ScheduleAddSelector extends Component {
 }
 
 class SectionTable extends Component {
- 
+
 
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     return this.props.courseDetails !== nextProps.courseDetails;
@@ -168,13 +169,9 @@ WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
                 </td>
                 <td>
-                  <a
-                    href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {section.restrictions}
-                  </a>
+                  <RstrPopover
+                    restrictions = {section.restrictions}
+                  />
                 </td>
                 <td className={section.status}>{this.statusforFindingSpot(section.status,section.classCode)}</td>
               </tr>
