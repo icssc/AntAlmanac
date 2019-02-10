@@ -9,6 +9,7 @@ import {
   Tooltip,
   Typography
 } from "@material-ui/core";
+import Logo from './logo.svg';
 
 import SearchForm from "../SearchForm/SearchForm";
 import CoursePane from "../CoursePane/CoursePane";
@@ -330,20 +331,19 @@ class App extends Component {
         <AppBar position='static' style={{marginBottom: '8px'}}>
           <Toolbar variant="dense">
             <div>
-              {/*logo*/}
+              <img src={Logo} height={42} alt={"logo"}/>
             </div>
             <LoadSaveScheduleFunctionality onLoad={this.handleLoad} onSave={this.handleSave}/>
 
             <Tooltip title="Blue Book Giveaway!">
               <a
-                style={{ color: "white" }}
+                style={{color: "white"}}
                 href={"https://goo.gl/forms/KI6MkNCZsyzIVkF42"}
                 target="_blank"
               >
-                <ImportContacts style={{ marginLeft: 15, marginRight: 30 }} fontSize="48px" color="white" />
+                <ImportContacts style={{marginLeft: 15, marginRight: 30}} fontSize="48px" color="white"/>
               </a>
             </Tooltip>
-
             <Tooltip title="Info Page">
               <a
                 style={{color: "white"}}

@@ -71,20 +71,19 @@ async function getCoursesData(userData) {
     console.log(url.toString());
 
     const response = await fetch(url.toString());
-    const json = await response.json(); //is it an array or obj
+    const json = await response.json();
 
+    for (const courseEvent of courses) {
+      let foundData = null;
 
-
-    for (const savedEvent of json) {
-      let stripped = null;
-
-      for (const strippedCourse of courses) {
-        if (savedEvent.section.classCode === strippedCourse.courseCode) { // name parity shit, pls fix
-          stripped = strippedCourse;
+      for (const courseData of json) {
+        if (courseData.section.classCode === courseEvent.courseCode) { // name parity shit, pls fix
+          foundData = courseData;
+          break;
         }
       }
 
-      events.push(...calendarize(savedEvent.section, stripped.color, savedEvent.term, stripped.scheduleIndex, savedEvent.courseName));
+      events.push(...calendarize(foundData.section, courseEvent.color, courseEvent.term, courseEvent.scheduleIndex, foundData.courseName));
     }
 
     for (const possibleCustomEvent of courses) {
