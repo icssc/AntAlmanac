@@ -53,8 +53,8 @@ async function getCoursesData(userData) {
 
   for (let i = 0; i < courses.length; ++i) {
     if (!courses[i].isCustomEvent) {
-      params["courseCodes" + i] = courses[i].courseCode;
-      params["term" + i] = courses[i].courseTerm;
+      params["courseCodes" + numClasses] = courses[i].courseCode;
+      params["term" + numClasses] = courses[i].courseTerm;
       numClasses++;
     }
   }
@@ -68,23 +68,23 @@ async function getCoursesData(userData) {
     );
 
     Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-    console.log(url.toString());
 
     const response = await fetch(url.toString());
-    const json = await response.json(); //is it an array or obj
+    const json = await response.json();
 
+    for (const courseEvent of courses) {
+      let foundData = null;
 
-
-    for (const savedEvent of json) {
-      let stripped = null;
-
-      for (const strippedCourse of courses) {
-        if (savedEvent.section.classCode === strippedCourse.courseCode) { // name parity shit, pls fix
-          stripped = strippedCourse;
+      if (!courseEvent.isCustomEvent) {
+        for (const courseData of json) {
+          if (courseData.section.classCode === courseEvent.courseCode) { // name parity shit, pls fix
+            foundData = courseData;
+            break;
+          }
         }
-      }
 
-      events.push(...calendarize(savedEvent.section, stripped.color, savedEvent.term, stripped.scheduleIndex, savedEvent.courseName));
+        events.push(...calendarize(foundData.section, courseEvent.color, courseEvent.courseTerm, courseEvent.scheduleIndex, foundData.courseName));
+      }
     }
 
     for (const possibleCustomEvent of courses) {

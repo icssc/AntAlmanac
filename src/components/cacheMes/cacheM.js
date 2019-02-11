@@ -113,6 +113,7 @@ class LoadSaveScheduleFunctionality extends React.Component {
             }
           );
         } catch (err) {
+          console.log(err);
           this.setState({
             open: true,
             message: "No schedule found for username '" + userID + "'.",
