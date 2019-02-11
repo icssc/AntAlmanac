@@ -100,7 +100,7 @@ class LoadSaveScheduleFunctionality extends React.Component {
       if (userID.length > 0) {
         try {
           const userData = await loadUserData(userID);
-
+          console.log(userData);
           this.setState(
             {
               open: true,

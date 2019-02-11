@@ -324,6 +324,18 @@ class App extends Component {
     }
   };
 
+  colorChange =(course,color)=>
+  {
+    let courses = this.state.courseEvents;
+    let preColor = course.color;
+    for(var item of courses)
+    {
+      if(item.courseCode==course.courseCode && item.courseTerm==course.courseTerm)
+      item.color=color;
+    }
+    this.setState({courseEvents:courses});
+  }
+
   render() {
     return (
       <Fragment>
@@ -370,6 +382,7 @@ class App extends Component {
                 onAddCustomEvent={this.handleAddCustomEvent}
                 setID={this.setID}
                 onClearSchedule={this.handleClearSchedule}
+                colorChange={this.colorChange}
               />
             </div>
           </Grid>

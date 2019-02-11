@@ -1,11 +1,51 @@
 import React, {Component} from 'react';
+import ColorPicker from './colorPicker'
 
 class TabularView extends Component {
-  render() {
+
+  render() {    
+    const events = this.props.classEventsInCalendar;
+
+    let result =[];
+
+    for(var item of events)
+      if(undefined === result.find(function(element){return element.courseCode===item.courseCode;}))
+        result.push(item);
+
+    
+    console.log(result,"ll");
+
+    // var i =0;
+    // var foundIndex =0;
+    // for(var schedule of schedules)
+    // {
+    //   for(var event of schedule)
+    //   {
+    //     foundIndex = newArr[i].findIndex(function(element){
+    //      return ( element.name.join() === event.name.join()&& element.courseTerm ===event.courseTerm);
+    //    });
+
+    //    if(foundIndex === -1)
+    //      {
+    //        newArr[i].push({
+    //          name : event.name,
+    //          section :[{sec:event.section,color:event.color}],
+    //          courseID:event.courseID,
+    //          courseTerm :event.courseTerm
+    //        }
+    //        );
+    //      }
+    //      else
+    //          newArr[i][foundIndex].section.push({sec:event.section,color:event.color});
+    //   }
+    //   i++;
+    // }
+
     return (
       <table>
         <thead>
         <tr>
+          <th>Color</th>
           <th>Code</th>
           <th>Type</th>
           <th>Instructor</th>
@@ -17,11 +57,12 @@ class TabularView extends Component {
         </tr>
         </thead>
         <tbody>
-        {this.props.classEventsInCalendar.map(event => {
+        {result.map(event => {
           if (!event.isCustomEvent) {
             const section = event.section;
             return (
               <tr>
+        <ColorPicker  colorChange={this.props.colorChange} event ={event} />
                 <td>{section.classCode}</td>
                 <td className="multiline">
                   {`${section.classType}

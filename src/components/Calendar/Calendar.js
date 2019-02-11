@@ -112,7 +112,7 @@ class Calendar extends Component {
                     currentScheduleIndex={this.props.currentScheduleIndex}
                 />
                 <Paper>
-                    {this.state.showTabularView ? <TabularView classEventsInCalendar={classEventsInCalendar}/> :  <div id="screenshot"
+                    {this.state.showTabularView ? <TabularView classEventsInCalendar={classEventsInCalendar} colorChange={this.props.colorChange}/> :  <div id="screenshot"
                                                           style={(!this.state.screenshotting ? {height: "calc(100vh - 96px - 24px)"} :
                                                             {height: '100%'})
                                                           }>

@@ -54,7 +54,7 @@ class CalendarPaneToolbar extends Component {
                             <Delete/>
                         </IconButton>
                     </Tooltip>
-                    <Sharing takePic={this.takePic} />
+                    <Sharing onTakeScreenshot={this.props.onTakeScreenshot} />
 
                 </Toolbar>
             </Paper>
