@@ -89,7 +89,6 @@ class LoadSaveScheduleFunctionality extends React.Component {
             this.setState({ message: "Schedule that was saved under " + savedUserID + " loaded.", open: true });
             await this.props.onLoad(userData);
           }
-      
       }
     }
   };
@@ -99,9 +98,10 @@ class LoadSaveScheduleFunctionality extends React.Component {
       userID = userID.replace(/\s+/g, "");
 
       if (userID.length > 0) {
-        try {
           const userData = await loadUserData(userID);
           console.log(userData);
+          if(userData !==-1)
+          {
           this.setState(
             {
               open: true,
@@ -113,8 +113,8 @@ class LoadSaveScheduleFunctionality extends React.Component {
               window.localStorage.setItem("userID", userID);
             }
           );
-        } catch (err) {
-          console.log(err);
+        } else {
+         
           this.setState({
             open: true,
             message: "No schedule found for username '" + userID + "'.",
