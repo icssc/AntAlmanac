@@ -47,7 +47,6 @@ function calendarize(section, color, courseTerm, scheduleIndex, name) {
 
 async function getCoursesData(userData) {
   //TODO: Change this API to use POST, integrate into WebSoc-API, decrapify this functionality
-  console.log(userData);
   const courses = userData.courseEvents;
   const params = {};
   let numClasses = 0;
@@ -69,7 +68,6 @@ async function getCoursesData(userData) {
     );
 
     Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-    console.log(url.toString());
 
     const response = await fetch(url.toString());
     const json = await response.json();
