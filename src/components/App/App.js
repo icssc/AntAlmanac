@@ -107,6 +107,7 @@ class App extends Component {
         }
       }
     });
+    console.log(eventsToSave);
 
     await saveUserData(userID, {
       courseEvents: eventsToSave,

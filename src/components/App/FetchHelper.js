@@ -47,14 +47,15 @@ function calendarize(section, color, courseTerm, scheduleIndex, name) {
 
 async function getCoursesData(userData) {
   //TODO: Change this API to use POST, integrate into WebSoc-API, decrapify this functionality
+  console.log(userData);
   const courses = userData.courseEvents;
   const params = {};
   let numClasses = 0;
 
   for (let i = 0; i < courses.length; ++i) {
     if (!courses[i].isCustomEvent) {
-      params["courseCodes" + i] = courses[i].courseCode;
-      params["term" + i] = courses[i].courseTerm;
+      params["courseCodes" + numClasses] = courses[i].courseCode;
+      params["term" + numClasses] = courses[i].courseTerm;
       numClasses++;
     }
   }
@@ -76,14 +77,16 @@ async function getCoursesData(userData) {
     for (const courseEvent of courses) {
       let foundData = null;
 
-      for (const courseData of json) {
-        if (courseData.section.classCode === courseEvent.courseCode) { // name parity shit, pls fix
-          foundData = courseData;
-          break;
+      if (!courseEvent.isCustomEvent) {
+        for (const courseData of json) {
+          if (courseData.section.classCode === courseEvent.courseCode) { // name parity shit, pls fix
+            foundData = courseData;
+            break;
+          }
         }
-      }
 
-      events.push(...calendarize(foundData.section, courseEvent.color, courseEvent.term, courseEvent.scheduleIndex, foundData.courseName));
+        events.push(...calendarize(foundData.section, courseEvent.color, courseEvent.courseTerm, courseEvent.scheduleIndex, foundData.courseName));
+      }
     }
 
     for (const possibleCustomEvent of courses) {
