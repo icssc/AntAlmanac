@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import {IconButton, Paper, Toolbar, Tooltip, Typography} from "@material-ui/core";
-import {ChevronLeft, ChevronRight, Delete, Undo, FormatListBulleted} from "@material-ui/icons";
+import {ChevronLeft, ChevronRight, Delete, Undo, FormatListBulleted,CalendarToday} from "@material-ui/icons";
 import ScreenshotButton from "./ScreenshotButton";
 import CustomEventsDialog from '../CustomEvents/Popup';
 import PropTypes from "prop-types";
@@ -39,11 +39,16 @@ class CalendarPaneToolbar extends Component {
                             <Undo/>
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title="Show Tabular View">
+                    {!this.props.showTabularView ?(<Tooltip title="Show Tabular View">
                         <IconButton onClick={this.props.onToggleShowTabularView}>
                             <FormatListBulleted/>
                         </IconButton>
-                    </Tooltip>
+                    </Tooltip>):(<Tooltip title="Show Calendar View">
+                        <IconButton onClick={this.props.onToggleShowTabularView}>
+                            <CalendarToday/>
+                        </IconButton>
+                    </Tooltip>)}
+                    
                     <ScreenshotButton onTakeScreenshot={this.props.onTakeScreenshot}/>
                     <CustomEventsDialog
                         onAddCustomEvent={this.props.onAddCustomEvent}

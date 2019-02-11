@@ -110,6 +110,7 @@ class Calendar extends Component {
                     onAddCustomEvent={this.props.onAddCustomEvent}
                     onTakeScreenshot={this.handleTakeScreenshot}
                     currentScheduleIndex={this.props.currentScheduleIndex}
+                    showTabularView={this.state.showTabularView} 
                 />
                 <Paper>
                     {this.state.showTabularView ? <TabularView classEventsInCalendar={classEventsInCalendar} colorChange={this.props.colorChange}/> :  <div id="screenshot"
