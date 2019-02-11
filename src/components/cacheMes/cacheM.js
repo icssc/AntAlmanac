@@ -79,19 +79,20 @@ class LoadSaveScheduleFunctionality extends React.Component {
     };
   }
 
-  // componentDidMount = async () => {
-  //   if (typeof Storage !== "undefined") {
-  //     const savedUserID = window.localStorage.getItem("userID");
-  //     if (savedUserID != null) {
-  //       this.setState({ message: "Schedule that was saved under " + savedUserID + " loaded.", open: true }, async () => {
-  //         const userData = await loadUserData(savedUserID); // this shit gotta do promise joint
-  //
-  //         if (userData !== -1)
-  //           await this.props.onLoad(userData);
-  //       });
-  //     }
-  //   }
-  // };
+  componentDidMount = async () => {
+    if (typeof Storage !== "undefined") {
+      const savedUserID = window.localStorage.getItem("userID");
+      if (savedUserID != null) {    
+          const userData = await loadUserData(savedUserID); // this shit gotta do promise joint
+          if (userData !== -1)
+          {
+            this.setState({ message: "Schedule that was saved under " + savedUserID + " loaded.", open: true });
+            await this.props.onLoad(userData);
+          }
+      
+      }
+    }
+  };
 
   handleLoad = async userID => {
     if (userID != null) {

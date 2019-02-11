@@ -47,6 +47,8 @@ function calendarize(section, color, courseTerm, scheduleIndex, name) {
 
 async function getCoursesData(userData) {
   //TODO: Change this API to use POST, integrate into WebSoc-API, decrapify this functionality
+  if(userData!==undefined)
+  {
   const courses = userData.courseEvents;
   const params = {};
   let numClasses = 0;
@@ -99,6 +101,9 @@ async function getCoursesData(userData) {
   }
 
   return {courseEvents: events, unavailableColors: userData.unavailableColors};
+}
+else
+return -1;
 }
 
 export async function saveUserData(userID, objectToStore) {
