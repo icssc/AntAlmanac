@@ -327,13 +327,18 @@ class App extends Component {
   {
     let courses = this.state.courseEvents;
     let preColor = course.color;
+
+  if(undefined ==this.state.unavailableColors.find(function(element){return element.color == color&&element.scheduleIndex ==course.scheduleIndex}))
+  {  
     for(var item of courses)
     {
-      if(item.courseCode==course.courseCode && item.courseTerm==course.courseTerm)
+      if(item.scheduleIndex==course.scheduleIndex&& item.courseCode==course.courseCode && item.courseTerm==course.courseTerm)
       item.color=color;
     }
-    this.setState({courseEvents:courses});
+    this.setState({courseEvents:courses, unavailableColors: this.state.unavailableColors.concat(
+      {color: color, scheduleIndex: course.scheduleIndex})});
   }
+}
 
   render() {
     return (

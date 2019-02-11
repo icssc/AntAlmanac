@@ -54,7 +54,7 @@ class CPicker extends React.Component {
 
     return (
 
-  <td bgcolor={this.state.color}  aria-owns={open ? 'simple-popper' : undefined}
+  <td bgcolor={this.props.event.color}  aria-owns={open ? 'simple-popper' : undefined}
           aria-haspopup="true"
           onClick={e => {this.handleClick(e)}}>
 
