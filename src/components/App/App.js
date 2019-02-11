@@ -6,7 +6,7 @@ import {
   Toolbar,
   AppBar,
   Paper,
-  Tooltip
+  Tooltip, Typography
 } from "@material-ui/core";
 import Logo from './logo.svg';
 
@@ -317,9 +317,10 @@ class App extends Component {
         <CssBaseline/>
         <AppBar position='static' style={{marginBottom: '8px'}}>
           <Toolbar variant="dense">
-            <div>
-              <img src={Logo} height={42} alt={"logo"}/>
-            </div>
+            <img src={Logo} height={42} alt={"logo"}/>
+            <Typography variant="title" style={{flexGrow: 1, color: 'white'}}>
+              AntAlmanac
+            </Typography>
             <LoadSaveScheduleFunctionality onLoad={this.handleLoad} onSave={this.handleSave}/>
 
             <Tooltip title="Blue Book Giveaway!">
