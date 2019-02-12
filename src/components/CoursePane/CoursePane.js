@@ -1,8 +1,10 @@
-import React, { Component, Fragment } from "react";
+import React, {Component, Fragment} from "react";
 import loadingGif from "./loading.mp4";
 import querystring from "querystring";
 import CourseRenderPane from "./CourseRenderPane";
-import zoom from "./zoom.png";
+import welcome from "./calvin.png";
+import {IconButton} from "@material-ui/core";
+import {ArrowBack} from "@material-ui/icons";
 
 class CoursePane extends Component {
   constructor(props) {
@@ -11,9 +13,17 @@ class CoursePane extends Component {
       courseData: null,
       loading: 0,
       termName: null,
-      deptName: null
+      deptName: null,
+      showDismissButton: true
     };
   }
+
+  handleToggleDismissButton = () => {
+    if (this.state.showDismissButton)
+      this.setState({showDismissButton: false});
+    else
+      this.setState({showDismissButton: true});
+  };
 
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     return (
@@ -40,11 +50,34 @@ class CoursePane extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    const { dept, term, ge } = this.props.formData;
+    const {
+      dept,
+      term,
+      ge,
+      courseNum,
+      courseCode,
+      instructor,
+      units,
+      endTime,
+      startTime,
+      coursesFull
+    } = this.props.formData;
 
     if (prevProps.formData !== this.props.formData) {
-      this.setState({ loading: 1 });
-      const params = { department: dept, term: term, GE: ge };
+      this.setState({loading: 1});
+      //TODO: Name parity
+      const params = {
+        department: dept,
+        term: term,
+        GE: ge,
+        courseNum: courseNum,
+        courseCodes: courseCode,
+        instructorName: instructor,
+        units: units,
+        endTime: endTime,
+        startTime: startTime,
+        fullCourses: coursesFull
+      };
       const url =
         "https://j4j70ejkmg.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?" +
         querystring.stringify(params);
@@ -64,18 +97,37 @@ class CoursePane extends Component {
     }
   }
 
+
   render() {
-    const { loading, courseData } = this.state;
+    const {loading, courseData} = this.state;
 
     if (loading === 2) {
       return (
-        <CourseRenderPane
-          onAddClass={this.props.onAddClass}
-          courseData={courseData}
-          view={this.props.view}
-          deptName={this.state.deptName}
-          termName={this.state.termName}
-        />
+        <Fragment>
+          {this.state.showDismissButton ? <div
+            style={{
+              position: "sticky",
+              width: '100%',
+              top: 0,
+              zIndex: 3,
+              marginBottom: 8
+            }}
+          >
+            <IconButton
+              onClick={this.props.onDismissSearchResults}
+            >
+              <ArrowBack/>
+            </IconButton>
+          </div> : <Fragment/>}
+          <CourseRenderPane
+            onAddClass={this.props.onAddClass}
+            onToggleDismissButton={this.handleToggleDismissButton}
+            courseData={courseData}
+            view={this.props.view}
+            deptName={this.state.deptName}
+            termName={this.state.termName}
+          />
+        </Fragment>
       );
     } else if (loading === 1) {
       return (
@@ -89,25 +141,27 @@ class CoursePane extends Component {
           }}
         >
           <video autoPlay>
-            <source src={loadingGif} type="video/mp4" />
+            <source src={loadingGif} type="video/mp4"/>
           </video>
         </div>
       );
     } else {
       return (
-        <Fragment>
-          <div
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}>
+          <img
+            src={welcome}
+            alt="my face"
+
             style={{
-              height: "100%",
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center"
+              width: "390",
+              height: "600"
             }}
-          >
-            <img src={zoom} alt="my face" />
-          </div>{" "}
-        </Fragment>
+          />
+        </div>
       );
     }
   }

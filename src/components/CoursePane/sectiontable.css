@@ -1,56 +1,61 @@
 table {
-    border-collapse: collapse;
-    box-sizing: border-box;
-    font-family: Roboto, sans-serif;
-    margin: 16px;
+  border-collapse: collapse;
+  box-sizing: border-box;
+  font-family: Roboto, sans-serif;
+  margin-top: 8px;
+  width: 100%;
 }
 thead {
-    position: sticky;
+  position: sticky;
 }
 
 th {
-    border: 1px solid rgb(222, 226, 230);
-    font-size: 12px;
-    font-weight: 500;
-    padding: 6px 9px 6px 9px;
-    color: rgba(0, 0, 0, 0.54);
-    text-align: left;
-    vertical-align: bottom;
+  border: 1px solid rgb(222, 226, 230);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 9px 6px 9px;
+  color: rgba(0, 0, 0, 0.54);
+  text-align: left;
+  vertical-align: bottom;
 }
 
 td {
-    border: 1px solid rgb(222, 226, 230);
-    font-size: 14px;
-    padding: 6px 9px 6px 9px;
-    text-align: left;
-    vertical-align: top;
+  border: 1px solid rgb(222, 226, 230);
+  font-size: 12px;
+  padding: 6px 9px 6px 9px;
+  text-align: left;
+  vertical-align: top;
+}
+
+tr:hover {
+  color: blueviolet;
 }
 
 tr > td:first-child {
-    padding: 0 5px 0 0;
-    vertical-align: middle;
+  padding: 0 5px 0 0;
+  vertical-align: middle;
 }
 
-tr:nth-child(odd) > td:not(:first-child)  {
-    background-color: #f5f5f5;
+tr:nth-child(odd) > td:not(:first-child) {
+  background-color: #f5f5f5;
 }
 
 .no_border {
-    border: none;
+  border: none;
 }
 
 .OPEN {
-    color: #00c853;
+  color: #00c853;
 }
 
 .Waitl {
-    color: #1c44b2;
+  color: #1c44b2;
 }
 
 .FULL {
-    color: #e53935;
+  color: #e53935;
 }
 
 .multiline {
-    white-space: pre;
+  white-space: pre;
 }

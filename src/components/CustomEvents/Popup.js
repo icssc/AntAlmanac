@@ -97,51 +97,24 @@ class DialogSelect extends Component {
       anchorEl: null,
       id: 0
     };
-    this.handleAddEventButtonClicked = this.handleAddEventButtonClicked.bind(
-      this
-    );
   }
 
   handleClose = calendarIndex => {
-    if (calendarIndex !== -1) {
-      this.setState(
-        {
-          id: this.props.setID()
-        },
-        function() {
-          this.handleAddToCalendar(calendarIndex);
-          this.setState({
-            open: false,
-            start: "07:00",
-            end: "08:00",
-            eventName: "Untitled",
-            days: {
-              monday: false,
-              tuesday: false,
-              wednesday: false,
-              thursday: false,
-              friday: false
-            },
-            anchorEl: null
-          });
-        }
-      );
-    } else {
-      this.setState({
-        open: false,
-        start: "07:00",
-        end: "08:00",
-        eventName: "Untitled",
-        days: {
-          monday: false,
-          tuesday: false,
-          wednesday: false,
-          thursday: false,
-          friday: false
-        },
-        anchorEl: null
-      });
-    }
+    if (calendarIndex !== -1) this.handleAddToCalendar(calendarIndex);
+    this.setState({
+      open: false,
+      start: "07:00",
+      end: "08:00",
+      eventName: "Untitled",
+      days: {
+        monday: false,
+        tuesday: false,
+        wednesday: false,
+        thursday: false,
+        friday: false
+      },
+      anchorEl: null
+    });
   };
 
   handleEventNameChange = event => {
@@ -160,41 +133,35 @@ class DialogSelect extends Component {
     this.setState({ days: days });
   };
 
-  handleAddToCalendar = calendarIndex => {
+  handleAddToCalendar = scheduleIndex => {
     const startHour = parseInt(this.state.start.slice(0, 2));
     const startMin = parseInt(this.state.start.slice(3, 5));
     const endHour = parseInt(this.state.end.slice(0, 2));
     const endMin = parseInt(this.state.end.slice(3, 5));
 
     const events = [];
-    const dates = [];
+    const id = Math.floor(Math.random() * 1000000);
+
     Object.keys(this.state.days).forEach(day => {
       if (this.state.days[day]) {
-        dates.push(dayToNum(day));
         events.push({
           color: "#551a8b",
           title: this.state.eventName,
+          scheduleIndex: scheduleIndex,
           start: new Date(2018, 0, dayToNum(day), startHour, startMin),
           end: new Date(2018, 0, dayToNum(day), endHour, endMin),
-          courseID: this.state.id,
-          customize: true
+          isCustomEvent: true,
+          customEventID: id
         });
       }
     });
 
-    if (events.length > 0) {
-      if (calendarIndex === 4) {
-        this.props.onAddCustomEvent(events, 0, dates);
-        this.props.onAddCustomEvent(events, 1, dates);
-        this.props.onAddCustomEvent(events, 2, dates);
-        this.props.onAddCustomEvent(events, 3, dates);
-      } else this.props.onAddCustomEvent(events, calendarIndex, dates);
-    }
+    if (events.length > 0) this.props.onAddCustomEvent(events)
   };
 
-  handleAddEventButtonClicked(event) {
+  handleAddEventButtonClicked = (event) => {
     this.setState({ anchorEl: event.currentTarget });
-  }
+  };
 
   render() {
     const { anchorEl } = this.state;
@@ -202,9 +169,9 @@ class DialogSelect extends Component {
     return (
       <div>
         <Tooltip title="Add Custom Event">
-        <IconButton onClick={() => this.setState({ open: true })}>
-          <Add />
-        </IconButton>
+          <IconButton onClick={() => this.setState({ open: true })}>
+            <Add />
+          </IconButton>
         </Tooltip>
         <Dialog
           disableBackdropClick
@@ -225,6 +192,7 @@ class DialogSelect extends Component {
               onTimeChange={this.handleEndTimeChange}
             />
             <DaySelector onSelectDay={this.handleDayChange} />
+           
           </DialogContent>
 
           <DialogActions>

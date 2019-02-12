@@ -1,70 +1,93 @@
-import React from "react";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
+import React, {Component} from "react";
+import {Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@material-ui/core";
 
-export default class FormDialog extends React.Component {
-  state = {
-    open: false
-  };
+export default class FormDialog extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false,
+      name: null
+    };
+  }
 
-  handleClickOpen = () => {
+  handleOpen = () => {
     this.setState({ open: true });
   };
 
-  handleClose = () => {
-    this.setState({ open: false });
+  handleClose = (wasCancelled) => {
+    if (wasCancelled)
+      this.setState({ open: false });
+    else
+      this.setState({ open: false }, () => {
+        this.props.handleSave(this.state.name);
+      });
   };
 
-  handleCloseYes = () => {
-    this.setState({ open: false });
-    this.props.save();
+  componentDidMount() {
+    if (typeof Storage !== "undefined") {
+      const user = window.localStorage.getItem("userID");
+      if (user !== null) {
+        this.setState({ name: user });
+      }
+    }
+
+    document.addEventListener("keydown", this.enterEvent, false);
+  }
+
+  componentWillUnmount() {
+    document.addEventListener("keydown", this.enterEvent, false);
+  }
+
+  enterEvent = event => {
+    const charCode = event.which ? event.which : event.keyCode;
+
+    if ((charCode === 13 || charCode === 10) && document.activeElement.id === "nameSave") {
+      event.preventDefault();
+      this.setState({ open: false }, () => {
+        this.props.handleSave(this.state.name);
+      });
+
+      return false;
+    }
   };
 
-  loginClicked = () => {
-    this.setState({ open: false });
+  setName = event => {
+    this.setState({ name: event.target.value });
   };
 
   render() {
     return (
       <div>
-        <Button onClick={this.handleClickOpen} color="inherit">
+        <Button onClick={this.handleOpen} color="inherit">
           Save
         </Button>
         <Dialog
-          style={{
-            marginBottom: "30%"
-          }}
           open={this.state.open}
-          onClose={this.handleClose}
-          aria-labelledby="form-dialog-title"
+          onClose={() => this.handleClose(true)}
         >
-          <DialogTitle id="form-dialog-title">LogIn</DialogTitle>
+          <DialogTitle id="form-dialog-title">Save</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              To save to this website, please enter your User ID here.
+              Enter your username here to save your schedules.
             </DialogContentText>
             <TextField
               autoFocus
               margin="dense"
-              id="name"
+              id="nameSave"
               label="User ID"
               type="text"
               fullWidth
               placeholder="Enter here"
-              // call the parent function handle change
-              onChange={e => this.props.act(e.target.value)}
+              defaultValue={this.state.name}
+              onChange={this.setName}
             />
+
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
+            <Button onClick={() => this.handleClose(true)} color="primary">
               Cancel
             </Button>
-            <Button onClick={this.handleCloseYes} color="primary">
+            <Button onClick={() => this.handleClose(false)} color="primary">
               Save
             </Button>
           </DialogActions>

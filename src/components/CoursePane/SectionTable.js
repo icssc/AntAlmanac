@@ -2,6 +2,9 @@ import React, { Component, Fragment } from "react";
 import AddCircle from "@material-ui/icons/AddCircle";
 import { IconButton, Menu, MenuItem } from "@material-ui/core";
 import rmpData from "./RMP.json";
+import Notification from '../Notification'
+import RstrPopover from "./RstrPopover"
+
 class ScheduleAddSelector extends Component {
   constructor(props) {
     super(props);
@@ -55,10 +58,7 @@ class ScheduleAddSelector extends Component {
 }
 
 class SectionTable extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { url: [] };
-  }
+
 
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     return this.props.courseDetails !== nextProps.courseDetails;
@@ -117,6 +117,14 @@ class SectionTable extends Component {
       );
     } else return;
   };
+
+  statusforFindingSpot = (section,classCode) => {
+    if(section === 'FULL')
+    return <Notification full={section} code={classCode} name={this.props.courseDetails.name}/>
+    else
+    return section;
+ };
+
   render() {
     const sectionInfo = this.props.courseDetails.sections;
 
@@ -161,15 +169,11 @@ WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
                 </td>
                 <td>
-                  <a
-                    href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {section.restrictions}
-                  </a>
+                  <RstrPopover
+                    restrictions = {section.restrictions}
+                  />
                 </td>
-                <td className={section.status}>{section.status}</td>
+                <td className={section.status}>{this.statusforFindingSpot(section.status,section.classCode)}</td>
               </tr>
             );
           })}

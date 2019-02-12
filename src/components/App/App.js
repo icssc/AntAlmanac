@@ -1,35 +1,53 @@
-import React, { Component } from "react";
-import { Fragment } from "react";
+import React, {Component} from "react";
+import {Fragment} from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import {
   Grid,
   Toolbar,
-  Typography,
   AppBar,
   Paper,
-  Tooltip
+  Tooltip, Typography
 } from "@material-ui/core";
+import Logo from './logo.svg';
+
 import SearchForm from "../SearchForm/SearchForm";
 import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
-import { ListAlt, Dns } from "@material-ui/icons";
-import Info from "@material-ui/icons/InfoSharp";
-import logo_tight from "./logo_tight.png";
-import logo_wide from "./logo_wide.png";
-import ShowE from "../showEvents/showE";
-// pop up for log in
-//import LogApp from "../logIn/popUp";
-import LoadUser from "../cacheMes/cacheM";
-//import LoadApp from "../saveApp/saveButton";
 import {
-  convertToCalendar,
-  saveUserDB,
-  getUser,
-  getCustomDate,
-  getColor,
-  getCoursesData
+  Info,
+  ListAlt,
+  Dns,
+  ImportContacts
+} from "@material-ui/icons";
+import LoadSaveScheduleFunctionality from "../cacheMes/cacheM";
+
+import {
+  saveUserData,
 } from "./FetchHelper";
+import {
+  red,
+  pink,
+  purple,
+  indigo,
+  deepPurple,
+  blue,
+  green,
+  cyan,
+  teal,
+  lightGreen,
+  lime,
+  amber,
+  blueGrey
+} from '@material-ui/core/colors';
 import IconButton from "@material-ui/core/IconButton/IconButton";
+
+const arrayOfColors = [red[500], pink[500],
+  purple[500], indigo[500],
+  deepPurple[500], blue[500],
+  green[500], cyan[500],
+  teal[500], lightGreen[500],
+  lime[500], amber[500],
+  blueGrey[500]];
 
 class App extends Component {
   constructor(props) {
@@ -37,334 +55,233 @@ class App extends Component {
 
     this.state = {
       formData: null,
-      prevFormData: null,
-      schedule0Events: [],
-      schedule1Events: [],
-      schedule2Events: [],
-      schedule3Events: [],
       currentScheduleIndex: 0,
-      coursesEvents: [],
-      customEvents: [],
+      view: 0,
+      showSearch: true,
+      courseEvents: [],
+      unavailableColors: [],
       backupArray: [],
-      cusID: 0,
-      view: 1,
-      showMore: false,
-      isDesktop: false
+      userID: null,
     };
-
-    this.resizeLogo = this.resizeLogo.bind(this);
   }
 
-  componentDidMount() {
-    document.addEventListener("keydown", this.undoEvent, false);
-    this.resizeLogo();
-    window.addEventListener("resize", this.resizeLogo);
-  }
+  componentDidMount = () => {
+    document.addEventListener("keydown", this.handleUndo, false);
+    const script = document.createElement("script");
+
+    const scriptText = document.createTextNode(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2&appId=343457496213889&autoLogAppEvents=1';
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+    script.appendChild(scriptText);
+    document.head.appendChild(script);
+  };
 
   componentWillUnmount() {
     document.removeEventListener("keydown", this.undoEvent, false);
-    window.removeEventListener("resize", this.resizeLogo);
-  }
-
-  resizeLogo() {
-    this.setState({ isDesktop: window.innerWidth > 1000 });
   }
 
   setView = viewNum => {
-    if (this.state.formData != null) this.setState({ view: viewNum });
+    if (this.state.showSearch === false) this.setState({view: viewNum});
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  convertToDateObject = schedule => {
-    for (var event of schedule) {
-      event.start = new Date(event.start);
-      event.end = new Date(event.end);
-    }
+  handleLoad = userData => {
+    this.setState({
+      currentScheduleIndex: 0,
+      courseEvents: userData.courseEvents,
+      unavailableColors: userData.unavailableColors,
+      backupArray: [],
+    })
   };
 
-  handleLoad = async name => {
-    this.setState(
-      {
-        schedule0Events: [],
-        schedule1Events: [],
-        schedule2Events: [],
-        schedule3Events: [],
-        cusID: 0,
-        backupArray: [],
-        coursesEvents: [],
-        customEvents: [],
-        currentScheduleIndex: 0
-      },
-      async function() {
-        var myJson = await getUser(name);
-        var test = false;
-        for (var prop in myJson) {
-          if (myJson.hasOwnProperty(prop)) {
-            test = true;
-            break;
-          }
-        }
-        if (test) {
-          var ob2 = new Array(4);
-          ob2[0] = [];
-          ob2[1] = [];
-          ob2[2] = [];
-          ob2[3] = [];
+  handleSave = async userID => {
+    const eventsToSave = [];
+    const map = new Map();
 
-          if (myJson.schedules.custom.length > 0) {
-            for (var element of myJson.schedules.custom) {
-              this.state.cusID += 1;
-              element["courseID"] = this.state.cusID;
-              const dates = getCustomDate(element, element.courseID);
+    this.state.courseEvents.forEach((event) => {
+      if (event.isCustomEvent || (!event.isCustomEvent && (!map.has(event.courseCode) || (map.get(event.courseCode) !== event.scheduleIndex)))) {
+        if (event.isCustomEvent) {
+          eventsToSave.push(event);
+        } else {
+          map.set(event.courseCode, event.scheduleIndex);
 
-              element.index.forEach(pos => {
-                ob2[pos] = ob2[pos].concat(dates);
-              });
-              this.state.customEvents.push(element);
-            }
-          }
-          if (myJson.schedules.normal.length > 0) {
-            await getCoursesData(
-              myJson.schedules.normal,
-              ob2,
-              this.state.coursesEvents
-            );
-
-            this.state.coursesEvents = myJson.schedules.normal;
-          }
-          this.setState({
-            schedule0Events: ob2[0],
-            schedule1Events: ob2[1],
-            schedule2Events: ob2[2],
-            schedule3Events: ob2[3],
-            customEvents: this.state.customEvents,
-            coursesEvents: this.state.coursesEvents,
-            cusID: this.state.cusID
+          eventsToSave.push({
+            color: event.color,
+            courseCode: event.courseCode,
+            courseTerm: event.courseTerm,
+            scheduleIndex: event.scheduleIndex,
+            isCustomEvent: false
           });
-          window.localStorage.setItem("name", name);
         }
       }
-    );
+    });
+
+    await saveUserData(userID, {
+      courseEvents: eventsToSave,
+      unavailableColors: this.state.unavailableColors,
+    });
+
+    this.setState({userID: userID});
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  handleUndo = (event) => {
+    if (this.state.backupArray.length > 0 && (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))) {
+      if (this.state.backupArray.length > 0) {
+        const lastDeletedEvent = this.state.backupArray[this.state.backupArray.length - 1];
 
-  handleSave = async name => {
-    if (
-      this.state.customEvents.length > 0 ||
-      this.state.coursesEvents.length > 0
-    ) {
-      window.localStorage.setItem("name", name);
-
-      var toStore = [];
-
-      this.state.customEvents.forEach(element => {
-        toStore.push({
-          end: element.end,
-          index: element.index,
-          start: element.start,
-          title: element.title,
-          weekdays: element.weekdays
-        });
-      });
-      var toSoteN = [];
-
-      this.state.coursesEvents.forEach(element => {
-        toSoteN.push({
-          color: element.color,
-          courseID: element.courseID,
-          courseTerm: element.courseTerm,
-          index: element.index
-        });
-      });
-      saveUserDB(name, {
-        normal: toSoteN,
-        custom: toStore
-      });
+        if (lastDeletedEvent.isCustomEvent) {
+          this.setState(
+            {
+              currentScheduleIndex: lastDeletedEvent.scheduleIndex,
+              backupArray: this.state.backupArray.slice(this.state.backupArray.length - 1, this.state.backupArray.length)
+            },
+            () => {
+              this.handleAddCustomEvent(lastDeletedEvent);
+            }
+          );
+        } else {
+          this.setState(
+            {
+              currentScheduleIndex: lastDeletedEvent.scheduleIndex,
+              backupArray: this.state.backupArray.slice(0, this.state.backupArray.length - 1)
+            },
+            () => {
+              this.handleAddClass(
+                lastDeletedEvent.section,
+                lastDeletedEvent.name,
+                lastDeletedEvent.scheduleIndex,
+                lastDeletedEvent.courseTerm
+              );
+            }
+          );
+        }
+      }
     }
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  undoEvent = event => {
-    if (
-      this.state.backupArray.length > 0 &&
-      (event.keyCode === 90 && (event.ctrlKey || event.metaKey))
-    ) {
-      this.undoEventHelp();
-    }
-  };
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-  undoEventHelp = () => {
-    if (this.state.backupArray.length > 0) {
-      var obj = this.state.backupArray.pop();
-      if (obj.customize) {
-        const dates = getCustomDate(obj, -1);
-        this.setState(
-          {
-            currentScheduleIndex: obj.index,
-            backupArray: this.state.backupArray
-          },
-          () => {
-            this.handleAddCustomEvent(dates, obj.index, obj.weekdays);
-          }
-        );
+  handleClassDelete = (deletedEvent) => {
+    const eventsAfterRemovingItem = [];
+
+    this.state.courseEvents.forEach(eventInArray => {
+      if (eventInArray.isCustomEvent && deletedEvent.isCustomEvent
+        && deletedEvent.customEventID === eventInArray.customEventID
+        && deletedEvent.scheduleIndex === eventInArray.scheduleIndex) {
+
+        if (deletedEvent.scheduleIndex === 4 && !eventsAfterRemovingItem.includes(eventInArray)) {
+          const scheduleIndicesToAddTo = [0, 1, 2, 3].filter(index => index !== this.state.currentScheduleIndex);
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[0]}));
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[1]}));
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[2]}));
+        }
+      } else if (!eventInArray.isCustomEvent && !eventInArray.isCustomEvent
+        && deletedEvent.courseCode === eventInArray.courseCode
+        && deletedEvent.scheduleIndex === eventInArray.scheduleIndex) {
+
+        if (deletedEvent.scheduleIndex === 4 && !eventsAfterRemovingItem.includes(eventInArray)) {
+          const scheduleIndicesToAddTo = [0, 1, 2, 3].filter(index => index !== this.state.currentScheduleIndex);
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[0]}));
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[1]}));
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[2]}));
+        }
+        const addBackColor = this.state.unavailableColors.filter(colorAndScheduleIndex => {
+          return !(colorAndScheduleIndex.color === deletedEvent.color &&
+            colorAndScheduleIndex.scheduleIndex === this.state.currentScheduleIndex)
+        });
+        this.setState({unavailableColors: addBackColor});
       } else {
-        this.setState(
-          {
-            currentScheduleIndex: obj.index,
-            backupArray: this.state.backupArray
-          },
-          () => {
-            this.handleAddClass(
-              obj.section,
-              obj.name,
-              obj.index,
-              obj.courseTerm
-            );
-          }
-        );
+        eventsAfterRemovingItem.push(eventInArray);
       }
-    }
-  };
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  handleClassDelete = (courseID, courseTerm, isCustom) => {
-    var arrayE = [];
-
-    if (isCustom) arrayE = this.state.customEvents;
-    else arrayE = this.state.coursesEvents;
-
-    var foundIndex = arrayE.findIndex(function(element) {
-      return (
-        element.courseID === courseID &&
-        (isCustom || element.courseTerm === courseTerm)
-      );
     });
 
-    var indexArr = arrayE[foundIndex].index.filter(
-      item => item !== this.state.currentScheduleIndex
-    );
-    var backup = this.state.backupArray;
-    if (!isCustom) {
-      backup = backup.filter(
-        item =>
-          item.courseID !== courseID ||
-          item.courseTerm !== courseTerm ||
-          item.index !== this.state.currentScheduleIndex
-      );
-      backup.push({
-        courseID: arrayE[foundIndex].courseID,
-        courseTerm: arrayE[foundIndex].courseTerm,
-        index: this.state.currentScheduleIndex,
-        customize: false,
-        section: arrayE[foundIndex].section,
-        name: arrayE[foundIndex].name
-      });
-    } else {
-      backup.push({
-        courseID: arrayE[foundIndex].courseID,
-        index: this.state.currentScheduleIndex,
-        start: arrayE[foundIndex].start,
-        end: arrayE[foundIndex].end,
-        customize: true,
-        title: arrayE[foundIndex].title,
-        weekdays: arrayE[foundIndex].weekdays
-      });
-    }
-
-    if (indexArr.length > 0) arrayE[foundIndex].index = indexArr;
-    else {
-      arrayE.splice(foundIndex, 1);
-    }
-
-    const classEventsInCalendar = this.state[
-      "schedule" + this.state.currentScheduleIndex + "Events"
-    ].filter(event => {
-      return event.courseID !== courseID || event.courseTerm !== courseTerm;
-    });
-
-    this.setState(
-      {
-        ["schedule" +
-        this.state.currentScheduleIndex +
-        "Events"]: classEventsInCalendar,
-        backupArray: backup
-      },
-      function() {
-        if (isCustom) this.setState({ customEvents: arrayE });
-        else this.setState({ coursesEvents: arrayE });
-      }
-    );
+    this.setState({courseEvents: eventsAfterRemovingItem, backupArray: this.state.backupArray.concat(deletedEvent)});
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  handleAddClass = (section, name, scheduleNumber, termName) => {
-    if (scheduleNumber === 4) {
-      this.handleAddClass(section, name, 0, termName);
-      this.handleAddClass(section, name, 1, termName);
-      this.handleAddClass(section, name, 2, termName);
-      this.handleAddClass(section, name, 3, termName);
-      return;
-    }
-    var arrayE = this.state.coursesEvents;
-    var foundIndex = arrayE.findIndex(function(element) {
-      return (
-        element.courseID === section.classCode &&
-        element.courseTerm === termName
-      );
+  handleAddClass = (section, name, scheduleIndex, courseTerm) => {
+    //TODO: Can we speed up this operation?
+    const randomColor = arrayOfColors.find(color => {
+      let isAvailableColor = true;
+      this.state.unavailableColors.forEach(colorAndScheduleIndex => {
+        if (colorAndScheduleIndex.color === color && (colorAndScheduleIndex.scheduleIndex === scheduleIndex || scheduleIndex === 4)) {
+          isAvailableColor = false;
+          return;
+        }
+      });
+      return isAvailableColor;
     });
 
-    var randomColor;
-    var allowToAdd = false;
-    if (foundIndex > -1) {
-      var exist = arrayE[foundIndex].index.findIndex(
-        item => item === scheduleNumber
-      );
-      if (exist < 0) {
-        arrayE[foundIndex].index.push(scheduleNumber);
-        randomColor = arrayE[foundIndex].color;
-        allowToAdd = true;
-      }
-    } else {
-      allowToAdd = true;
-      randomColor = getColor();
+    const doesExist = this.state.courseEvents.find(course =>
+      course.courseCode === section.classCode && (course.scheduleIndex === scheduleIndex || scheduleIndex === 4)
+    );
 
-      arrayE.push({
-        courseID: section.classCode,
-        courseTerm: termName,
-        index: [scheduleNumber],
-        color: randomColor,
-        section: section,
-        name: name
-      });
-    }
+    if (!doesExist) {
+      if (scheduleIndex === 4)
+        this.setState({
+          unavailableColors: this.state.unavailableColors.concat([
+            {color: randomColor, scheduleIndex: 0},
+            {color: randomColor, scheduleIndex: 1},
+            {color: randomColor, scheduleIndex: 2},
+            {color: randomColor, scheduleIndex: 3},
+          ])
+        });
+      else
+        this.setState({
+          unavailableColors: this.state.unavailableColors.concat({
+            color: randomColor,
+            scheduleIndex: scheduleIndex
+          })
+        });
 
-    if (allowToAdd) {
-      var cal = [];
+      let newCourses = [];
+
       section.meetings.forEach(meeting => {
         const timeString = meeting[0].replace(/\s/g, "");
-        const newClasses = convertToCalendar(
-          section,
-          timeString,
-          randomColor,
-          name,
-          termName,
-          meeting[1]
-        );
-        cal = cal.concat(newClasses);
-      });
-      this.setState({
-        ["schedule" + scheduleNumber + "Events"]: this.state[
-          "schedule" + scheduleNumber + "Events"
-        ].concat(cal),
-        coursesEvents: arrayE
-      });
-    } else this.setState({ coursesEvents: arrayE });
-  };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (timeString !== 'TBA') {
+
+          let [_, dates, start, startMin, end, endMin, ampm] = timeString.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
+
+          start = parseInt(start, 10);
+          startMin = parseInt(startMin, 10);
+          end = parseInt(end, 10);
+          endMin = parseInt(endMin, 10);
+          dates = [dates.includes('M'), dates.includes('Tu'), dates.includes('W'), dates.includes('Th'), dates.includes('F')];
+
+          if (ampm === 'p' && end !== 12) {
+            start += 12;
+            end += 12;
+            if (start > end) start -= 12;
+          }
+
+          dates.forEach((shouldBeInCal, index) => {
+            if (shouldBeInCal) {
+              const newCourse = {
+                name: name,
+                color: randomColor,
+                courseTerm: courseTerm,
+                title: name[0] + ' ' + name[1],
+                location: meeting[1],
+                section: section,
+                courseCode: section.classCode,
+                courseType: section.classType,
+                start: new Date(2018, 0, index + 1, start, startMin),
+                end: new Date(2018, 0, index + 1, end, endMin),
+                isCustomEvent: false,
+                scheduleIndex: scheduleIndex
+              };
+
+              newCourses.push(newCourse);
+            }
+          });
+        }
+      });
+
+      this.setState({courseEvents: this.state.courseEvents.concat(newCourses)});
+    }
+  };
 
   handleScheduleChange = direction => {
     if (direction === 0) {
@@ -377,186 +294,143 @@ class App extends Component {
       });
     }
   };
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  handleDismissSearchResults = () => {
+    this.setState({showSearch: true});
+  };
+
   updateFormData = formData => {
-    this.setState({
-      showMore: false,
-      formData: formData,
-      prevFormData: formData
-    });
-  };
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  handleAddCustomEvent = (events, calendarIndex, dates) => {
-    var arrayE = this.state.customEvents;
-    var foundIndex = arrayE.findIndex(function(element) {
-      return element.courseID === events[0].courseID;
-    });
-
-    if (foundIndex > -1) {
-      arrayE[foundIndex].index.push(calendarIndex);
-    } else {
-      arrayE.push({
-        title: events[0].title,
-        start: [events[0].start.getHours(), events[0].start.getMinutes()],
-        end: [events[0].end.getHours(), events[0].end.getMinutes()],
-        courseID: events[0].courseID,
-        index: [calendarIndex],
-        weekdays: dates
-      });
-    }
-
-    this.setState({
-      ["schedule" + calendarIndex + "Events"]: this.state[
-        "schedule" + calendarIndex + "Events"
-      ].concat(events),
-      customEvents: arrayE
+    this.setState({showSearch: false}, function () {
+      this.setState({formData: formData});
     });
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  //get id for the custom event
-  setID = () => {
-    var id = this.state.cusID + 1;
-    this.setState({ cusID: id });
-    return id;
+  handleAddCustomEvent = (events) => {
+    this.setState({courseEvents: this.state.courseEvents.concat(events)});
   };
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // handleChange = name => {
-  //   this.setState({ name });
-  // };
 
-  clearSchedule = () => {
+  handleClearSchedule = () => {
     if (
       window.confirm(
-        "Are you sure you want to clear all the schedules? (you can still recover the schedules by loading from the database)"
+        "Are you sure you want to clear all your schedules?"
       )
     ) {
-      // Save it!
       this.setState({
-        schedule0Events: [],
-        schedule1Events: [],
-        schedule2Events: [],
-        schedule3Events: [],
-        cusID: 0,
-        backupArray: [],
-        coursesEvents: [],
-        customEvents: [],
-        currentScheduleIndex: 0
+        backupArray: this.state.backupArray.concat(this.state.courseEvents),
+        courseEvents: [],
+        unavailableColors: [],
       });
-    } else {
     }
   };
 
-  moreInfoF = () => {
-    this.setState({ showMore: !this.state.showMore }, function() {
-      if (this.state.showMore === true) this.setState({ formData: null });
-      else this.setState({ formData: this.state.prevFormData });
-    });
-  };
+  colorChange =(course,color)=>
+  {
+    let courses = this.state.courseEvents;
+    let preColor = course.color;
+
+  if(undefined ==this.state.unavailableColors.find(function(element){return element.color == color&&element.scheduleIndex ==course.scheduleIndex}))
+  {  
+    for(var item of courses)
+    {
+      if(item.scheduleIndex==course.scheduleIndex&& item.courseCode==course.courseCode && item.courseTerm==course.courseTerm)
+      item.color=color;
+    }
+    this.setState({courseEvents:courses, unavailableColors: this.state.unavailableColors.concat(
+      {color: color, scheduleIndex: course.scheduleIndex})});
+  }
+}
 
   render() {
     return (
       <Fragment>
-        <CssBaseline />
-        <AppBar position="static" style={{ marginBottom: 8 }}>
+        <CssBaseline/>
+        <AppBar position='static' style={{marginBottom: '8px'}}>
           <Toolbar variant="dense">
-            <div>
-              {this.state.isDesktop ? (
-                <img
-                  src={logo_wide}
-                  style={{ height: 35, width: 394 }}
-                  alt="XD"
-                />
-              ) : (
-                <img
-                  src={logo_tight}
-                  style={{ height: 45, width: 202 }}
-                  alt=":("
-                />
-              )}
-            </div>
+            <img src={Logo} height={42} alt={"logo"}/>
+            <Typography variant="title" style={{flexGrow: 1, color: 'white'}}>
+              AntAlmanac
+            </Typography>
+            <LoadSaveScheduleFunctionality onLoad={this.handleLoad} onSave={this.handleSave}/>
 
-            <Typography
-              variant="title"
-              id="introID"
-              color="inherit"
-              style={{ flexGrow: 2 }}
-            />
-            <LoadUser load={this.handleLoad} save={this.handleSave} />
-
-            {/* <LogApp act={this.handleChange} load={this.handleLoad} />
-
-            <LoadApp act={this.handleChange} save={this.handleSave} /> */}
-
-            <Tooltip title="Info Page">
+            <Tooltip title="Blue Book Giveaway!">
               <a
-                style={{ color: "white" }}
-                href={"https://the-antalmanac.herokuapp.com/index.html"}
+                style={{color: "white"}}
+                href={"https://goo.gl/forms/KI6MkNCZsyzIVkF42"}
                 target="_blank"
               >
-                <Info fontSize="48px" color="white" />
+                <ImportContacts style={{marginLeft: 15, marginRight: 30}} fontSize="48px" color="white"/>
               </a>
             </Tooltip>
+            <Tooltip title="Info Page">
+              <a
+                style={{color: "white"}}
+                href={"https://www.ics.uci.edu/~rang1/AntAlmanac/index.html"}
+                target="_blank"
+              >
+                <Info fontSize="48px" color="white"/>
+              </a>
+            </Tooltip>
+         
           </Toolbar>
         </AppBar>
-
         <Grid container>
-          <SearchForm updateFormData={this.updateFormData} />
           <Grid item lg={6} xs={12}>
-            <div style={{ margin: "10px 5px 0px 10px" }}>
+            <div>
               <Calendar
                 classEventsInCalendar={
-                  this.state[
-                    "schedule" + this.state.currentScheduleIndex + "Events"
-                  ]
+                  this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))
                 }
-                moreInfoF={this.moreInfoF}
-                clickToUndo={this.undoEventHelp}
+                onUndo={this.handleUndo}
                 currentScheduleIndex={this.state.currentScheduleIndex}
                 onClassDelete={this.handleClassDelete}
                 onScheduleChange={this.handleScheduleChange}
                 onAddCustomEvent={this.handleAddCustomEvent}
                 setID={this.setID}
-                clear={this.clearSchedule}
+                onClearSchedule={this.handleClearSchedule}
+                colorChange={this.colorChange}
               />
             </div>
           </Grid>
 
           <Grid item lg={6} xs={12}>
-            <Paper style={{ overflow: "hidden", margin: "10px 10px 0px 5px" }}>
-              <Toolbar variant="dense" style={{ backgroundColor: "#5191d6" }}>
+            <Paper elevation={0} style={{overflow: "hidden", marginBottom: '8px'}}>
+              <Toolbar variant="dense" style={{backgroundColor: "#5191d6"}}>
                 <Tooltip title="List View">
                   <IconButton onClick={() => this.setView(0)}>
-                    <ListAlt />
+                    <ListAlt/>
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Tile View">
                   <IconButton onClick={() => this.setView(1)}>
-                    <Dns />
+                    <Dns/>
                   </IconButton>
                 </Tooltip>
+                <Typography style={{ flexGrow: 1 }} />
+                  {/* <FBcomments/> */}
+                  <div class="fb-messengermessageus"
+          messenger_app_id="343457496213889"
+            page_id="2286387408050026"
+              />
+
+                <div class="fb-like" data-href="https://www.facebook.com/AntAlmanac" data-layout="button_count" data-action="like" data-size="large" data-show-faces="true" data-share="true"></div>
               </Toolbar>
             </Paper>
             <Paper
               style={{
-                height: "80vh",
                 overflow: "auto",
-                margin: "10px 10px 0px 5px",
-                padding: 10
+                padding: 10,
+                height: 'calc(100vh - 96px - 24px)'
               }}
-              id="foo1"
+              id='foo1'
             >
-              {this.state.showMore ? (
-                <ShowE events={this.state.coursesEvents} />
-              ) : (
+              {this.state.showSearch ? <SearchForm updateFormData={this.updateFormData}/> :
                 <CoursePane
                   view={this.state.view}
                   formData={this.state.formData}
                   onAddClass={this.handleAddClass}
+                  onDismissSearchResults={this.handleDismissSearchResults}
                   term={this.state.formData}
-                />
-              )}
+                  coursesEvents={this.state.coursesEvents}/>}
             </Paper>
           </Grid>
         </Grid>

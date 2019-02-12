@@ -1,73 +1,105 @@
-import Grid from "@material-ui/core/Grid";
 import DeptSearchBar from "./DeptSearchBar/DeptSearchBar";
-import GESelector from "./GESelector/GESelector";
+import GESelector from "./GESelector";
 import TermSelector from "./TermSelector";
-import React, { Component } from "react";
-import Button from "@material-ui/core/Button";
+import React, {Component} from "react";
+import {Button} from "@material-ui/core";
+import {withStyles} from '@material-ui/core/styles';
+import AdvancedSearchTextFields from "./AdvancedSearch";
+
+const styles = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%'
+  },
+  search: {
+    display: 'flex',
+    justifyContent: 'center',
+    borderTop: 'solid 8px transparent',
+  },
+  margin: {
+    borderTop: 'solid 8px transparent',
+  }
+};
 
 class SearchForm extends Component {
   constructor(props) {
     super(props);
-    this.state = { dept: null, ge: "ANY", term: "2019 Winter" };
-    this.setDept = this.setDept.bind(this);
-    this.setGE = this.setGE.bind(this);
-    this.setTerm = this.setTerm.bind(this);
+    this.state = {
+      dept: null,
+      ge: "ANY",
+      term: "2019 Spring",
+      courseNum: "",
+      courseCode: "",
+      instructor: "",
+      units: "",
+      endTime: "",
+      startTime: "",
+      coursesFull: 'ANY'
+    };
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     document.addEventListener("keydown", this.enterEvent, false);
-  }
-  componentWillUnmount() {
+  };
+
+  componentWillUnmount = () => {
     document.addEventListener("keydown", this.enterEvent, false);
-  }
+  };
+
   enterEvent = event => {
-    var charCode = event.which ? event.which : event.keyCode;
-    if (charCode === 13 || charCode == 10) {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (
+      (charCode === 13 || charCode === 10) &&
+      document.activeElement.id === "downshift-0-input"
+    ) {
       this.props.updateFormData(this.state);
       event.preventDefault();
 
       return false;
     }
   };
-  shouldComponentUpdate(nextProps, nextState, nextContext) {
+
+  shouldComponentUpdate = (nextProps, nextState) => {
     return this.state !== nextState;
-  }
+  };
 
-  setDept(dept) {
-    this.setState({ dept: dept === null ? null : dept.value });
-  }
+  setDept = dept => {
+    this.setState({dept: dept === null ? null : dept.value});
+  };
 
-  setGE(ge) {
-    this.setState({ ge: ge });
-  }
+  handleAdvancedSearchChange = (advancedSearchState) => {
+    this.setState(advancedSearchState);
+  };
 
-  setTerm(term) {
-    this.setState({ term: term });
-  }
+  setGE = ge => {
+    this.setState({ge: ge});
+  };
+
+  setTerm = term => {
+    this.setState({term: term});
+  };
 
   render() {
+    const {classes} = this.props;
+
     return (
-      <Grid
-        container
-        item
-        alignItems="center"
-        alignContent="center"
-        justify="center"
-        spacing={0}
-      >
-        <Grid item lg={3} xs={12}>
-          <DeptSearchBar setDept={this.setDept} />
-        </Grid>
+      <div className={classes.container}>
+        <div className={classes.margin}>
+          <DeptSearchBar setDept={this.setDept}/>
+        </div>
 
-        <Grid item lg={3} xs={12}>
-          <GESelector setGE={this.setGE} />
-        </Grid>
+        <div className={classes.margin}>
+          <GESelector setGE={this.setGE}/>
+        </div>
 
-        <Grid item lg={3} xs={12}>
-          <TermSelector setTerm={this.setTerm} />
-        </Grid>
+        <div className={classes.margin}>
+          <TermSelector setTerm={this.setTerm}/>
+        </div>
 
-        <Grid item lg={1} xs={6}>
+        <AdvancedSearchTextFields onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
+
+        <div className={classes.search}>
           <Button
             color="primary"
             variant="contained"
@@ -75,10 +107,10 @@ class SearchForm extends Component {
           >
             Search
           </Button>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     );
   }
 }
 
-export default SearchForm;
+export default withStyles(styles)(SearchForm);

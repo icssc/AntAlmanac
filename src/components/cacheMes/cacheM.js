@@ -1,43 +1,31 @@
-import React from "react";
+import React, {Fragment} from "react";
 import PropTypes from "prop-types";
-import classNames from "classnames";
-import Button from "@material-ui/core/Button";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import ErrorIcon from "@material-ui/icons/Error";
-import InfoIcon from "@material-ui/icons/Info";
-import CloseIcon from "@material-ui/icons/Close";
-import green from "@material-ui/core/colors/green";
-import amber from "@material-ui/core/colors/amber";
-import IconButton from "@material-ui/core/IconButton";
-import Snackbar from "@material-ui/core/Snackbar";
-import SnackbarContent from "@material-ui/core/SnackbarContent";
-import WarningIcon from "@material-ui/icons/Warning";
-import { withStyles } from "@material-ui/core/styles";
+import {CheckCircle, Error, Close, Warning} from "@material-ui/icons";
+import {green, amber} from "@material-ui/core/colors";
+import {IconButton, Snackbar, SnackbarContent} from "@material-ui/core";
+import {withStyles} from "@material-ui/core/styles";
+import {loadUserData} from "../App/FetchHelper";
+import LoadButton from "../logIn/loadButton";
+import SaveButton from "../saveApp/saveButton";
 
-const variantIcon = {
-  success: CheckCircleIcon,
-  warning: WarningIcon,
-  error: ErrorIcon,
-  info: InfoIcon
+const iconVariants = {
+  success: CheckCircle,
+  warning: Warning,
+  error: Error,
 };
 
-const styles1 = theme => ({
+const snackbarStyles = theme => ({
   success: {
     backgroundColor: green[600]
   },
   error: {
     backgroundColor: theme.palette.error.dark
   },
-  info: {
-    backgroundColor: theme.palette.primary.dark
-  },
   warning: {
     backgroundColor: amber[700]
   },
   icon: {
-    fontSize: 20
-  },
-  iconVariant: {
+    fontSize: 20,
     opacity: 0.9,
     marginRight: theme.spacing.unit
   },
@@ -47,129 +35,149 @@ const styles1 = theme => ({
   }
 });
 
-function MySnackbarContent(props) {
-  const { classes, className, message, onClose, variant, ...other } = props;
-  const Icon = variantIcon[variant];
+const SnackBarMessageDisplay = withStyles(snackbarStyles)(props => {
+  const {classes, message, onClose, variant, ...other} = props;
+  const Icon = iconVariants[variant];
 
   return (
     <SnackbarContent
-      className={classNames(classes[variant], className)}
-      aria-describedby="client-snackbar"
+      className={classes[variant]}
       message={
-        <span id="client-snackbar" className={classes.message}>
-          <Icon className={classNames(classes.icon, classes.iconVariant)} />
+        <span className={classes.message}>
+          <Icon className={classes.icon}/>
           {message}
         </span>
       }
       action={[
         <IconButton
           key="close"
-          aria-label="Close"
           color="inherit"
           className={classes.close}
           onClick={onClose}
         >
-          <CloseIcon className={classes.icon} />
+          <Close className={classes.icon}/>
         </IconButton>
       ]}
       {...other}
     />
   );
-}
+});
 
-MySnackbarContent.propTypes = {
-  classes: PropTypes.object.isRequired,
-  className: PropTypes.string,
+SnackBarMessageDisplay.propTypes = {
+  classes: PropTypes.object,
   message: PropTypes.node,
   onClose: PropTypes.func,
   variant: PropTypes.oneOf(["success", "warning", "error", "info"]).isRequired
 };
 
-const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
-
-const styles2 = theme => ({
-  margin: {
-    margin: theme.spacing.unit
+class LoadSaveScheduleFunctionality extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      message: "",
+      variant: "success"
+    };
   }
-});
-
-class CustomizedSnackbars extends React.Component {
-  state = {
-    message: "hello! "
-  };
 
   componentDidMount = async () => {
     if (typeof Storage !== "undefined") {
-      var a = window.localStorage.getItem("name");
-
-      if (a != null) {
-        this.setState({ message: "hello! " + a, open: true });
-        await this.props.load(a);
-      }
-    }
-  };
-  handleClick = async () => {
-    var person = prompt("Please enter your username");
-    if (person != null) {
-      person = person.replace(/\s+/g, "");
-      if (person.length > 0) {
-        this.setState({ open: true, message: "hello! " + person });
-        await this.props.load(person);
-      }
-    }
-  };
-  handleClickS = async () => {
-    var person = prompt("Please enter your unique username");
-    if (person != null) {
-      person = person.replace(/\s+/g, "");
-      if (person.length > 0) {
-        this.setState({ open: true, message: "saved !" + person });
-        await this.props.save(person);
+      const savedUserID = window.localStorage.getItem("userID");
+      if (savedUserID != null) {    
+          const userData = await loadUserData(savedUserID); // this shit gotta do promise joint
+          if (userData !== -1)
+          {
+            this.setState({ message: "Schedule that was saved under " + savedUserID + " loaded.", open: true });
+            await this.props.onLoad(userData);
+          }
       }
     }
   };
 
-  handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
+  handleLoad = async userID => {
+    if (userID != null) {
+      userID = userID.replace(/\s+/g, "");
 
-    this.setState({ open: false });
+      if (userID.length > 0) {
+          const userData = await loadUserData(userID);
+          console.log(userData);
+          if(userData !==-1)
+          {
+          this.setState(
+            {
+              open: true,
+              message: "Schedule that was saved under '" + userID + "' loaded.",
+              variant: "success"
+            },
+            async () => {
+              this.props.onLoad(userData);
+              window.localStorage.setItem("userID", userID);
+            }
+          );
+        } else {
+         
+          this.setState({
+            open: true,
+            message: "No schedule found for username '" + userID + "'.",
+            variant: "warning"
+          });
+        }
+      }
+    }
+  };
+
+  handleSave = async userID => {
+    if (userID != null) {
+      userID = userID.replace(/\s+/g, "");
+
+      if (userID.length > 0) {
+        try {
+          await this.props.onSave(userID);
+
+          this.setState({
+            variant: "success",
+            open: true,
+            message: "Schedule saved under username '" + userID + "'."
+          });
+          window.localStorage.setItem("userID", userID);
+        } catch (err) {
+          this.setState({
+            open: true,
+            message: "No schedule found for username '" + userID + "'.",
+            variant: "warning"
+          });
+        }
+      }
+    }
+  };
+
+  handleClose = (reason) => {
+    if (reason !== "clickaway")
+      this.setState({open: false});
   };
 
   render() {
-    const { classes } = this.props;
-
     return (
-      <div>
-        <Button onClick={this.handleClick} color="inherit">
-          Load
-        </Button>
-        <Button onClick={this.handleClickS} color="inherit">
-          Save
-        </Button>
+      <Fragment>
+        <LoadButton handleLoad={this.handleLoad}> </LoadButton>
+        <SaveButton handleSave={this.handleSave}/>
         <Snackbar
           anchorOrigin={{
             vertical: "top",
             horizontal: "center"
           }}
           open={this.state.open}
-          autoHideDuration={2000}
+          autoHideDuration={4000}
           onClose={this.handleClose}
         >
-          <MySnackbarContentWrapper
+          <SnackBarMessageDisplay
             onClose={this.handleClose}
-            variant="success"
+            variant={this.state.variant}
             message={this.state.message}
           />
         </Snackbar>
-      </div>
+      </Fragment>
     );
   }
 }
 
-CustomizedSnackbars.propTypes = {
-  classes: PropTypes.object.isRequired
-};
-
-export default withStyles(styles2)(CustomizedSnackbars);
+export default LoadSaveScheduleFunctionality;

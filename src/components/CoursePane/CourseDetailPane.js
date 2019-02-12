@@ -54,10 +54,7 @@ class CourseDetailPane extends Component {
           style={{ margin: 20 }}
           className="course_info"
           dangerouslySetInnerHTML={{
-            __html:
-              course_info[this.props.courseDetails.name[0]][
-                this.props.courseDetails.name[1]
-              ]
+            __html: this.deptInfo()
           }}
         />
 

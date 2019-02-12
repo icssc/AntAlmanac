@@ -42,6 +42,7 @@ class DeptSearchBar extends React.Component {
           label: "Department",
           required: true
         })}
+        //getInputProps={() => <input />}
         menuHeight={this.determineDropdownLength()}
         {...this.props} //Pass down other props to the Downshift layer
       />

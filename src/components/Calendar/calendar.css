@@ -1,6 +1,5 @@
-.rbc-calendar {
-    overflow: auto;
-    max-height: 500px;
+* {
+    font-family: Roboto, sans-serif;
 }
 
 .rbc-time-view .rbc-row {
