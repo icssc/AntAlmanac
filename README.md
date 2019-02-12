@@ -6,6 +6,7 @@ Currently deployed at: https://antalmanac.com/
 
 Find out more about our project at: https://www.ics.uci.edu/~rang1/AntAlmanac/index.html
 
+
 ### To start development:
 
 #### 1. Install npm and node js
