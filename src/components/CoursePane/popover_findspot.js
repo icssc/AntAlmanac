@@ -47,7 +47,7 @@ class SPopover extends React.Component {
     const name = this.props.name[1] + " " + this.props.name[2]
    
 
-    let url = "https://mediaont.herokuapp.com/"
+    let url = "https://pxvtmbq17a.execute-api.us-west-1.amazonaws.com/dev/email/"
 
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if(!re.test(email))
