@@ -107,7 +107,7 @@ class CoursePane extends Component {
           {this.state.showDismissButton ? <div
             style={{
               position: "sticky",
-              width: '100%',
+              width: 50,
               top: 0,
               zIndex: 3,
               marginBottom: 8
