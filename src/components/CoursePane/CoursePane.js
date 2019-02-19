@@ -115,7 +115,7 @@ class CoursePane extends Component {
           >
             <IconButton
               onClick={this.props.onDismissSearchResults}
-              style={{backgroundColor:"#00000020"}}
+              style={{backgroundColor:"rgba(236, 236, 236, 1)"}}
             >
               <ArrowBack/>
             </IconButton>
