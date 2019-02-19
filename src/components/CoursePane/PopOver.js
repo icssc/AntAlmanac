@@ -37,7 +37,7 @@ function RenderPropsPopover(props) {
               aria-owns={open ? "render-props-popover" : undefined}
               aria-haspopup="true"
               variant="contained"
-              color="primary"
+              style={{backgroundColor:"#5191d6D0"}}
               onClick={event => {
                 updateAnchorEl(event.currentTarget);
               }}
@@ -68,7 +68,7 @@ function RenderPropsPopover(props) {
                     __html: deptInfo()
                   }}
                 />
-             
+
               </Typography>
             </Popover>
           </React.Fragment>

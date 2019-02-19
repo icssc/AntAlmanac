@@ -48,7 +48,7 @@ class CalendarPaneToolbar extends Component {
                             <CalendarToday/>
                         </IconButton>
                     </Tooltip>)}
-                    
+
                     <ScreenshotButton onTakeScreenshot={this.props.onTakeScreenshot}/>
                     <CustomEventsDialog
                         onAddCustomEvent={this.props.onAddCustomEvent}

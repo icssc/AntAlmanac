@@ -8,7 +8,8 @@ import {
   Paper,
   Tooltip, Typography
 } from "@material-ui/core";
-import Logo from './logo.svg';
+import Logo_tight from './logo_tight.png';
+import Logo_wide from './logo_wide.png';
 
 import SearchForm from "../SearchForm/SearchForm";
 import CoursePane from "../CoursePane/CoursePane";
@@ -61,8 +62,10 @@ class App extends Component {
       courseEvents: [],
       unavailableColors: [],
       backupArray: [],
-      userID: null,
+      userID: null
     };
+
+    this.resizeLogo = this.resizeLogo.bind(this);
   }
 
   componentDidMount = () => {
@@ -79,10 +82,18 @@ class App extends Component {
 
     script.appendChild(scriptText);
     document.head.appendChild(script);
+
+    this.resizeLogo();
+    window.addEventListener("resize", this.resizeLogo);
   };
 
   componentWillUnmount() {
     document.removeEventListener("keydown", this.undoEvent, false);
+    window.removeEventListener("resize", this.resizeLogo);
+  }
+
+  resizeLogo() {
+    this.setState({ isDesktop: window.innerWidth > 1000 });
   }
 
   setView = viewNum => {
@@ -329,7 +340,7 @@ class App extends Component {
     let preColor = course.color;
 
   if(undefined ==this.state.unavailableColors.find(function(element){return element.color == color&&element.scheduleIndex ==course.scheduleIndex}))
-  {  
+  {
     for(var item of courses)
     {
       if(item.scheduleIndex==course.scheduleIndex&& item.courseCode==course.courseCode && item.courseTerm==course.courseTerm)
@@ -346,10 +357,14 @@ class App extends Component {
         <CssBaseline/>
         <AppBar position='static' style={{marginBottom: '8px'}}>
           <Toolbar variant="dense">
-            <img src={Logo} height={42} alt={"logo"}/>
-            <Typography variant="title" style={{flexGrow: 1, color: 'white'}}>
-              AntAlmanac
-            </Typography>
+            <Typography style={{ flexGrow: 1 }}>
+              {this.state.isDesktop ? (
+                <img src={Logo_wide} height={36} alt={"logo"} style={{marginTop: 5}}/>
+               ) : (
+                <img src={Logo_tight} height={36} alt={"logo"} style={{marginTop: 5}}/>
+               )}
+             </Typography>
+
             <LoadSaveScheduleFunctionality onLoad={this.handleLoad} onSave={this.handleSave}/>
 
             <Tooltip title="Blue Book Giveaway!">
@@ -370,7 +385,7 @@ class App extends Component {
                 <Info fontSize="48px" color="white"/>
               </a>
             </Tooltip>
-         
+
           </Toolbar>
         </AppBar>
         <Grid container>
@@ -394,23 +409,31 @@ class App extends Component {
 
           <Grid item lg={6} xs={12}>
             <Paper elevation={0} style={{overflow: "hidden", marginBottom: '8px'}}>
-              <Toolbar variant="dense" style={{backgroundColor: "#5191d6"}}>
-                <Tooltip title="List View">
-                  <IconButton onClick={() => this.setView(0)}>
-                    <ListAlt/>
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Tile View">
-                  <IconButton onClick={() => this.setView(1)}>
-                    <Dns/>
-                  </IconButton>
-                </Tooltip>
+              <Toolbar variant="dense" style={{backgroundColor: "#5191d6", marginRight:8}}>
+                {this.state.view ? (
+                  <Tooltip title="List View">
+                    <IconButton onClick={() => this.setView(0)}>
+                      <ListAlt />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title="Tile View">
+                    <IconButton onClick={() => this.setView(1)}>
+                      <Dns />
+                    </IconButton>
+                  </Tooltip>
+                )}
+
                 <Typography style={{ flexGrow: 1 }} />
                   {/* <FBcomments/> */}
-                  <div class="fb-messengermessageus"
-          messenger_app_id="343457496213889"
-            page_id="2286387408050026"
-              />
+                  <div
+                    class="fb-messengermessageus"
+                    messenger_app_id="343457496213889"
+                    page_id="2286387408050026"
+                    style = {{
+                      marginRight: 4.5
+                    }}
+                  />
 
                 <div class="fb-like" data-href="https://www.facebook.com/AntAlmanac" data-layout="button_count" data-action="like" data-size="large" data-show-faces="true" data-share="true"></div>
               </Toolbar>
@@ -419,7 +442,8 @@ class App extends Component {
               style={{
                 overflow: "auto",
                 padding: 10,
-                height: 'calc(100vh - 96px - 24px)'
+                height: 'calc(100vh - 96px - 24px)',
+                marginRight: 8
               }}
               id='foo1'
             >
