@@ -5,17 +5,24 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Popover from '@material-ui/core/Popover';
 import Input from '@material-ui/core/Input';
+import SMS from "./smsInput"
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
 
 const styles = theme => ({
   typography: {
     margin: theme.spacing.unit * 2,
+  },
+  formControl: {
+    margin: theme.spacing.unit,
   },
 });
 
 class SPopover extends React.Component {
   state = {
     anchorEl: null,
-    userEmail:""
+    userEmail:"",
+    addMessageOn:false
   };
 
 
@@ -51,20 +58,14 @@ class SPopover extends React.Component {
 
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if(!re.test(email))
-    this.setState({
-        anchorEl: null,
-      },()=>{
-      this.props.handleSave(-1,email,code)});
+     console.log("dd");
     else
     {
         url = url + code +"/"+ name + "/" + email;
         window.localStorage.setItem("email", email);
-        this.setState({
-            anchorEl: null,
-          },()=>{
-            fetch(url)
-            this.props.handleSave(1,email,code);
-          });
+            fetch(url);
+        this.setState({addMessageOn:true});
+
     }
     // url = url + code +"/"+ name + "/" + email;
     // window.localStorage.setItem("email", email);
@@ -79,6 +80,13 @@ class SPopover extends React.Component {
     if (event.stopPropagation) event.stopPropagation();
     this.setState({userEmail: event.target.value})
   }
+
+  inputPhone = sms =>
+  {
+console.log("pop",sms);
+
+  }
+
   render() {
     const { classes } = this.props;
     const { anchorEl } = this.state;
@@ -115,25 +123,27 @@ class SPopover extends React.Component {
           }}
         >
           <Typography className={classes.typography}>Get notified when  a spot opens!</Typography>
-          
+          {this.state.addMessageOn?( <Typography  className={classes.typography}> <p><font color="green">Added email to watch list!!!</font></p></Typography>):(null)}
           <div className={classes.container}>
-      
-         
+          <FormControl className={classes.formControl}>
+
+          <InputLabel htmlFor="formatted-email-input">react-text-mask</InputLabel>
           <Input
-           style={{ margin: 10 }}
             onChange={this.inputChange}
             placeholder="Email"
             className={classes.input}
             defaultValue={this.state.userEmail}
-
+            id="formatted-email-input"
             inputProps={{
               'aria-label': 'Description',
             }}
           />
-   
+                  </FormControl>
+
           <Button variant="text" color="primary" className={classes.button} onClick={this.getMeSpot}>
             Add</Button>
-           
+            <SMS code={this.props.code} name={this.props.name}/>
+        
         </div>
 
         </Popover>

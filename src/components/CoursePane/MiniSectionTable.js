@@ -6,7 +6,6 @@ import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import POPOVER from "./PopOver";
 import Notification from '../Notification'
 import RstrPopover from "./RstrPopover"
-
 class ScheduleAddSelector extends Component {
   constructor(props) {
     super(props);
@@ -27,6 +26,8 @@ class ScheduleAddSelector extends Component {
   handleClose = scheduleNumber => {
     this.setState({ anchor: null });
     if (scheduleNumber !== -1)
+    {
+      console.log("kj",scheduleNumber);
       this.props.onAddClass(
         this.props.section,
         this.props.courseDetails.name,
@@ -34,6 +35,8 @@ class ScheduleAddSelector extends Component {
 
         this.props.termName
       );
+
+    }
   };
 
   redirectRMP = (e, name) => {

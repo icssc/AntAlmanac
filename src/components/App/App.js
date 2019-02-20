@@ -227,8 +227,8 @@ class App extends Component {
     const doesExist = this.state.courseEvents.find(course =>
       course.courseCode === section.classCode && (course.scheduleIndex === scheduleIndex || scheduleIndex === 4)
     );
-
-    if (!doesExist) {
+console.log("okk",scheduleIndex,doesExist);
+    if (doesExist === undefined) {
       if (scheduleIndex === 4)
         this.setState({
           unavailableColors: this.state.unavailableColors.concat([
@@ -239,12 +239,13 @@ class App extends Component {
           ])
         });
       else
+      {
         this.setState({
           unavailableColors: this.state.unavailableColors.concat({
             color: randomColor,
             scheduleIndex: scheduleIndex
           })
-        });
+        })};
 
       let newCourses = [];
 
@@ -267,6 +268,34 @@ class App extends Component {
             if (start > end) start -= 12;
           }
 
+          if(scheduleIndex ===4)
+          {
+          for(let i =0;i<4;++i)
+          {
+            dates.forEach((shouldBeInCal, index) => {
+              if (shouldBeInCal) {
+                const newCourse = {
+                  name: name,
+                  color: randomColor,
+                  courseTerm: courseTerm,
+                  title: name[0] + ' ' + name[1],
+                  location: meeting[1],
+                  section: section,
+                  courseCode: section.classCode,
+                  courseType: section.classType,
+                  start: new Date(2018, 0, index + 1, start, startMin),
+                  end: new Date(2018, 0, index + 1, end, endMin),
+                  isCustomEvent: false,
+                  scheduleIndex: i
+                };
+  
+                newCourses.push(newCourse);
+              }
+            });
+          }
+        }
+        else
+        {
           dates.forEach((shouldBeInCal, index) => {
             if (shouldBeInCal) {
               const newCourse = {
@@ -287,6 +316,7 @@ class App extends Component {
               newCourses.push(newCourse);
             }
           });
+        }
         }
       });
 
