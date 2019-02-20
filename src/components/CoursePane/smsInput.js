@@ -10,6 +10,9 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 const styles = theme => ({
+    typography: {
+        margin: theme.spacing.unit * 2,
+      },
   container: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -101,12 +104,12 @@ var matches = this.state.number.match(regex);
     const { textmask } = this.state;
 
     return (
-        <div>       {this.state.smsOn?( <Typography  className={classes.typography}> <p><font color="green">Added phone to watch list!!!</font></p></Typography>):(null)}
-       
+        <React.Fragment>
+        {this.state.smsOn?( <Typography  className={classes.typography}> <p><font color="green">Added phone to watch list!!!</font></p></Typography>):(null)}
       <div className={classes.container}>
           <div className={classes.container}></div>
         <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="formatted-text-mask-input">react-text-mask</InputLabel>
+          <InputLabel htmlFor="formatted-text-mask-input">Enter phone number:</InputLabel>
           <Input
             value={textmask}
             onChange={this.handleChange('textmask')}
@@ -118,7 +121,7 @@ var matches = this.state.number.match(regex);
         <Button variant="text" color="primary" className={classes.button} onClick={this.getMeSpotSMS}>
             Add</Button>
       </div>
-      </div>
+      </React.Fragment>
     );
   }
 }

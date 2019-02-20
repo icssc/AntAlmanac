@@ -127,7 +127,7 @@ console.log("pop",sms);
           <div className={classes.container}>
           <FormControl className={classes.formControl}>
 
-          <InputLabel htmlFor="formatted-email-input">react-text-mask</InputLabel>
+          <InputLabel htmlFor="formatted-email-input">Enter email:</InputLabel>
           <Input
             onChange={this.inputChange}
             placeholder="Email"
