@@ -5,12 +5,14 @@ import React, {Component} from "react";
 import {Button} from "@material-ui/core";
 import {withStyles} from '@material-ui/core/styles';
 import AdvancedSearchTextFields from "./AdvancedSearch";
+import MIUCI from "./MIUCI.png"
 
 const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    height: '100%'
+    height: '100%',
+    position: "relative"
   },
   search: {
     display: 'flex',
@@ -19,6 +21,15 @@ const styles = {
   },
   margin: {
     borderTop: 'solid 8px transparent',
+  },
+  miuci: {
+    width: "35%",
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
   }
 };
 
@@ -35,7 +46,8 @@ class SearchForm extends Component {
       units: "",
       endTime: "",
       startTime: "",
-      coursesFull: 'ANY'
+      coursesFull: 'ANY',
+      location: ""
     };
   }
 
@@ -108,6 +120,9 @@ class SearchForm extends Component {
             Search
           </Button>
         </div>
+
+        <img src={MIUCI} variant="contained" alt="Made_in_UCI" className={classes.miuci}/>
+
       </div>
     );
   }

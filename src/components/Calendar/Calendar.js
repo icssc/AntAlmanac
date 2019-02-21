@@ -7,7 +7,6 @@ import {Paper} from "@material-ui/core";
 import PropTypes from 'prop-types';
 import "./calendar.css";
 import CalendarPaneToolbar from "./CalendarPaneToolbar";
-import TabularView from './TabularView';
 
 BigCalendar.momentLocalizer(moment);
 
@@ -65,7 +64,7 @@ const CustomEvent = ({classes}) => event => {
 class Calendar extends Component {
     constructor(props) {
         super(props);
-        this.state = {screenshotting: false, showTabularView: false};
+        this.state = {screenshotting: false};
     }
 
     handleTakeScreenshot = async (html2CanvasScreenshot) => {
@@ -73,10 +72,6 @@ class Calendar extends Component {
             await html2CanvasScreenshot();
             this.setState({screenshotting: false});
         });
-    };
-
-    handleToggleShowTabularView = () => {
-        this.setState(previousState => ({showTabularView: !previousState.showTabularView}));
     };
 
     static eventStyleGetter = (event) => {
@@ -93,7 +88,7 @@ class Calendar extends Component {
     shouldComponentUpdate(nextProps, nextState, nextContext) {
         return (
             this.state.screenshotting !== nextState.screenshotting || this.props.classEventsInCalendar !== nextProps.classEventsInCalendar ||
-            this.props.currentScheduleIndex !== nextProps.currentScheduleIndex || this.state.showTabularView !== nextState.showTabularView
+            this.props.currentScheduleIndex !== nextProps.currentScheduleIndex
         );
     }
 
@@ -106,17 +101,16 @@ class Calendar extends Component {
                     onScheduleChange={this.props.onScheduleChange}
                     onClearSchedule={this.props.onClearSchedule}
                     onUndo={this.props.onUndo}
-                    onToggleShowTabularView={this.handleToggleShowTabularView}
                     onAddCustomEvent={this.props.onAddCustomEvent}
                     onTakeScreenshot={this.handleTakeScreenshot}
                     currentScheduleIndex={this.props.currentScheduleIndex}
-                    showTabularView={this.state.showTabularView} 
                 />
                 <Paper>
-                    {this.state.showTabularView ? <TabularView classEventsInCalendar={classEventsInCalendar} colorChange={this.props.colorChange}/> :  <div id="screenshot"
-                                                          style={(!this.state.screenshotting ? {height: "calc(100vh - 96px - 24px)"} :
-                                                            {height: '100%'})
-                                                          }>
+                    <div id="screenshot"
+                         style={(!this.state.screenshotting ?
+                           {height: "calc(100vh - 96px - 24px)"} :
+                           {height: '100%'})
+                    }>
                         <BigCalendar
                           toolbar={false}
                           formats={{

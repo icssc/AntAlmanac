@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import {IconButton, Paper, Toolbar, Tooltip, Typography} from "@material-ui/core";
-import {ChevronLeft, ChevronRight, Delete, Undo, FormatListBulleted,CalendarToday} from "@material-ui/icons";
+import {ChevronLeft, ChevronRight, Delete, Undo} from "@material-ui/icons";
 import ScreenshotButton from "./ScreenshotButton";
 import CustomEventsDialog from '../CustomEvents/Popup';
 import PropTypes from "prop-types";
@@ -28,28 +28,18 @@ class CalendarPaneToolbar extends Component {
                         <ChevronLeft/>
                     </IconButton>
                     <Typography variant="subheading">
-                        {'Schedule ' + (this.props.currentScheduleIndex + 1)}
+                        {'Sch ' + (this.props.currentScheduleIndex + 1)}
                     </Typography>
                     <IconButton onClick={() => this.props.onScheduleChange(1)}>
                         <ChevronRight/>
                     </IconButton>
                     <Typography style={{flexGrow: 1}}/>
+
                     <Tooltip title="Undo Last Delete">
                         <IconButton onClick={() => this.props.onUndo(null)}>
                             <Undo/>
                         </IconButton>
                     </Tooltip>
-                    {!this.props.showTabularView ?(<Tooltip title="Show Tabular View">
-                        <IconButton onClick={this.props.onToggleShowTabularView}>
-                            <FormatListBulleted/>
-                        </IconButton>
-                    </Tooltip>):(<Tooltip title="Show Calendar View">
-                        <IconButton onClick={this.props.onToggleShowTabularView}>
-                            <CalendarToday/>
-                        </IconButton>
-                    </Tooltip>)}
-
-                    <ScreenshotButton onTakeScreenshot={this.props.onTakeScreenshot}/>
                     <CustomEventsDialog
                         onAddCustomEvent={this.props.onAddCustomEvent}
                         setID={this.props.setID}
@@ -59,6 +49,8 @@ class CalendarPaneToolbar extends Component {
                             <Delete/>
                         </IconButton>
                     </Tooltip>
+
+                    <ScreenshotButton onTakeScreenshot={this.props.onTakeScreenshot}/>
                     <Sharing onTakeScreenshot={this.props.onTakeScreenshot} />
 
                 </Toolbar>

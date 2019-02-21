@@ -6,7 +6,9 @@ import {
   Toolbar,
   AppBar,
   Paper,
-  Tooltip, Typography
+  Tooltip,
+  Typography,
+  IconButton
 } from "@material-ui/core";
 import Logo_tight from './logo_tight.png';
 import Logo_wide from './logo_wide.png';
@@ -18,7 +20,9 @@ import {
   Info,
   ListAlt,
   Dns,
-  ImportContacts
+  ImportContacts,
+  FormatListBulleted,
+  Search
 } from "@material-ui/icons";
 import LoadSaveScheduleFunctionality from "../cacheMes/cacheM";
 
@@ -40,7 +44,7 @@ import {
   amber,
   blueGrey
 } from '@material-ui/core/colors';
-import IconButton from "@material-ui/core/IconButton/IconButton";
+import TabularView from './TabularView';
 
 const arrayOfColors = [red[500], pink[500],
   purple[500], indigo[500],
@@ -62,7 +66,8 @@ class App extends Component {
       courseEvents: [],
       unavailableColors: [],
       backupArray: [],
-      userID: null
+      userID: null,
+      showTabularView: false
     };
 
     this.resizeLogo = this.resizeLogo.bind(this);
@@ -95,6 +100,10 @@ class App extends Component {
   resizeLogo() {
     this.setState({ isDesktop: window.innerWidth > 1000 });
   }
+
+  handleToggleShowTabularView = () => {
+      this.setState(previousState => ({showTabularView: !previousState.showTabularView}));
+  };
 
   setView = viewNum => {
     if (this.state.showSearch === false) this.setState({view: viewNum});
@@ -288,7 +297,7 @@ console.log("okk",scheduleIndex,doesExist);
                   isCustomEvent: false,
                   scheduleIndex: i
                 };
-  
+
                 newCourses.push(newCourse);
               }
             });
@@ -432,7 +441,6 @@ console.log("okk",scheduleIndex,doesExist);
                 onAddCustomEvent={this.handleAddCustomEvent}
                 setID={this.setID}
                 onClearSchedule={this.handleClearSchedule}
-                colorChange={this.colorChange}
               />
             </div>
           </Grid>
@@ -454,6 +462,16 @@ console.log("okk",scheduleIndex,doesExist);
                   </Tooltip>
                 )}
 
+                {!this.state.showTabularView ?(<Tooltip title="Show Tabular View">
+                    <IconButton onClick={this.handleToggleShowTabularView}>
+                        <FormatListBulleted/>
+                    </IconButton>
+                </Tooltip>):(<Tooltip title="Show Search View">
+                    <IconButton onClick={this.handleToggleShowTabularView}>
+                        <Search/>
+                    </IconButton>
+                </Tooltip>)}
+
                 <Typography style={{ flexGrow: 1 }} />
                   {/* <FBcomments/> */}
                   <div
@@ -468,24 +486,28 @@ console.log("okk",scheduleIndex,doesExist);
                 <div class="fb-like" data-href="https://www.facebook.com/AntAlmanac" data-layout="button_count" data-action="like" data-size="large" data-show-faces="true" data-share="true"></div>
               </Toolbar>
             </Paper>
-            <Paper
-              style={{
-                overflow: "auto",
-                padding: 10,
-                height: 'calc(100vh - 96px - 24px)',
-                marginRight: 8
-              }}
-              id='foo1'
-            >
-              {this.state.showSearch ? <SearchForm updateFormData={this.updateFormData}/> :
-                <CoursePane
-                  view={this.state.view}
-                  formData={this.state.formData}
-                  onAddClass={this.handleAddClass}
-                  onDismissSearchResults={this.handleDismissSearchResults}
-                  term={this.state.formData}
-                  coursesEvents={this.state.coursesEvents}/>}
-            </Paper>
+            {this.state.showTabularView ?
+              <TabularView classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))} colorChange={this.colorChange}/>
+              :
+              (  <Paper
+                    style={{
+                      overflow: "auto",
+                      padding: 10,
+                      height: 'calc(100vh - 96px - 24px)',
+                      marginRight: 8
+                    }}
+                    id='foo1'
+                  >
+                  {this.state.showSearch ? <SearchForm updateFormData={this.updateFormData}/> :
+                    <CoursePane
+                      view={this.state.view}
+                      formData={this.state.formData}
+                      onAddClass={this.handleAddClass}
+                      onDismissSearchResults={this.handleDismissSearchResults}
+                      term={this.state.formData}
+                      coursesEvents={this.state.coursesEvents}/>}
+                </Paper>
+              )}
           </Grid>
         </Grid>
       </Fragment>
