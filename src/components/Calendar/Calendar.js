@@ -135,7 +135,7 @@ class Calendar extends Component {
                             this.props.onClassDelete(event)
                           }
                         />
-                    </div>}
+                    </div>
                 </Paper>
             </div>
         );

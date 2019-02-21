@@ -26,10 +26,7 @@ const styles = {
     width: "35%",
     position: "absolute",
     bottom: 0,
-    right: 0,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center"
+    right: 0
   }
 };
 
