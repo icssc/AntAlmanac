@@ -30,6 +30,7 @@ class CheckboxLabels extends React.Component {
                             checked={this.state.monday}
                             onChange={this.handleChange("monday")}
                             value="1"
+                            color="primary"
                         />
                     }
                     label="Monday"
@@ -41,6 +42,7 @@ class CheckboxLabels extends React.Component {
                             checked={this.state.tuesday}
                             onChange={this.handleChange("tuesday")}
                             value="2"
+                            color="primary"
                         />
                     }
                     label="Tuesday"
@@ -52,6 +54,7 @@ class CheckboxLabels extends React.Component {
                             checked={this.state.wednesday}
                             onChange={this.handleChange("wednesday")}
                             value="3"
+                            color="primary"
                         />
                     }
                     label="Wednesday"
@@ -63,6 +66,7 @@ class CheckboxLabels extends React.Component {
                             checked={this.state.thursday}
                             onChange={this.handleChange("thursday")}
                             value="4"
+                            color="primary"
                         />
                     }
                     label="Thursday"
@@ -74,6 +78,7 @@ class CheckboxLabels extends React.Component {
                             checked={this.state.friday}
                             onChange={this.handleChange("friday")}
                             value="5"
+                            color="primary"
                         />
                     }
                     label="Friday"

@@ -103,6 +103,7 @@ class App extends Component {
 
   handleToggleShowTabularView = () => {
       this.setState(previousState => ({showTabularView: !previousState.showTabularView}));
+      this.handleDismissSearchResults();
   };
 
   setView = viewNum => {
@@ -236,6 +237,7 @@ class App extends Component {
     const doesExist = this.state.courseEvents.find(course =>
       course.courseCode === section.classCode && (course.scheduleIndex === scheduleIndex || scheduleIndex === 4)
     );
+
     if (doesExist === undefined) {
       if (scheduleIndex === 4)
         this.setState({
@@ -263,6 +265,7 @@ class App extends Component {
         if (timeString !== 'TBA') {
 
           let [_, dates, start, startMin, end, endMin, ampm] = timeString.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
+
           start = parseInt(start, 10);
           startMin = parseInt(startMin, 10);
           end = parseInt(end, 10);
@@ -470,18 +473,7 @@ class App extends Component {
                     </IconButton>
                 </Tooltip>)}
 
-                <Typography style={{ flexGrow: 1 }} />
-                  {/* <FBcomments/> */}
-                  <div
-                    class="fb-messengermessageus"
-                    messenger_app_id="343457496213889"
-                    page_id="2286387408050026"
-                    style = {{
-                      marginRight: 4.5
-                    }}
-                  />
 
-                <div class="fb-like" data-href="https://www.facebook.com/AntAlmanac" data-layout="button_count" data-action="like" data-size="large" data-show-faces="true" data-share="true"></div>
               </Toolbar>
             </Paper>
             {this.state.showTabularView ?

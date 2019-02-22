@@ -44,7 +44,7 @@ class SearchForm extends Component {
       endTime: "",
       startTime: "",
       coursesFull: 'ANY',
-      location: ""
+      building: ""
     };
   }
 

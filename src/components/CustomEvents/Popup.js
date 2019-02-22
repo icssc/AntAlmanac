@@ -10,9 +10,8 @@ import {
   Menu,
   FormControl,
   Input,
-  IconButton,
   InputLabel,
-  Tooltip
+  ClickAwayListener
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { Add } from "@material-ui/icons";
@@ -163,21 +162,26 @@ class DialogSelect extends Component {
     this.setState({ anchorEl: event.currentTarget });
   };
 
+  handleClickAway = () => {
+    this.setState({
+      open: false,
+    });
+  };
+
   render() {
     const { anchorEl } = this.state;
 
     return (
       <div>
-        <Tooltip title="Add Custom Event">
-          <IconButton onClick={() => this.setState({ open: true })}>
-            <Add />
-          </IconButton>
-        </Tooltip>
+        <Button onClick={() => this.setState({ open: true })}>
+          <Add /> Add Custom
+        </Button>
         <Dialog
           disableBackdropClick
           disableEscapeKeyDown
           open={this.state.open}
         >
+        <ClickAwayListener onClickAway={this.handleClickAway}>
           <DialogContent>
             <EventName
               value={this.state.eventName}
@@ -192,7 +196,7 @@ class DialogSelect extends Component {
               onTimeChange={this.handleEndTimeChange}
             />
             <DaySelector onSelectDay={this.handleDayChange} />
-           
+
           </DialogContent>
 
           <DialogActions>
@@ -230,6 +234,7 @@ class DialogSelect extends Component {
               </MenuItem>
             </Menu>
           </DialogActions>
+        </ClickAwayListener>
         </Dialog>
       </div>
     );

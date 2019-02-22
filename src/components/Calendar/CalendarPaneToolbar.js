@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import {IconButton, Paper, Toolbar, Tooltip, Typography} from "@material-ui/core";
-import {ChevronLeft, ChevronRight, Delete, Undo} from "@material-ui/icons";
+import {ChevronLeft, ChevronRight, Undo} from "@material-ui/icons";
 import ScreenshotButton from "./ScreenshotButton";
-import CustomEventsDialog from '../CustomEvents/Popup';
 import PropTypes from "prop-types";
-import Sharing from "./Sharing";
+import Submenu from "./Submenu"
 
 const styles = {
     toolbarContainer: {
@@ -28,7 +27,7 @@ class CalendarPaneToolbar extends Component {
                         <ChevronLeft/>
                     </IconButton>
                     <Typography variant="subheading">
-                        {'Sch ' + (this.props.currentScheduleIndex + 1)}
+                        {'Schedule ' + (this.props.currentScheduleIndex + 1)}
                     </Typography>
                     <IconButton onClick={() => this.props.onScheduleChange(1)}>
                         <ChevronRight/>
@@ -40,19 +39,17 @@ class CalendarPaneToolbar extends Component {
                             <Undo/>
                         </IconButton>
                     </Tooltip>
-                    <CustomEventsDialog
-                        onAddCustomEvent={this.props.onAddCustomEvent}
-                        setID={this.props.setID}
-                    />
-                    <Tooltip title="Clear All">
-                        <IconButton onClick={this.props.onClearSchedule}>
-                            <Delete/>
-                        </IconButton>
-                    </Tooltip>
 
                     <ScreenshotButton onTakeScreenshot={this.props.onTakeScreenshot}/>
-                    <Sharing onTakeScreenshot={this.props.onTakeScreenshot} />
 
+                    <Tooltip title="More">
+                        <Submenu
+                          onAddCustomEvent={this.props.onAddCustomEvent}
+                          setID={this.props.setID}
+                          onClearSchedule={this.props.onClearSchedule}
+                          onTakeScreenshot={this.props.onTakeScreenshot}
+                        />
+                      </Tooltip>
                 </Toolbar>
             </Paper>
         )

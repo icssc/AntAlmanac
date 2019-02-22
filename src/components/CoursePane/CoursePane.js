@@ -10,8 +10,8 @@ class CoursePane extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      courseData: null,
-      loading: 0,
+      courseData: [],
+      loading: 2,
       termName: null,
       deptName: null,
       showDismissButton: true
@@ -60,7 +60,8 @@ class CoursePane extends Component {
       units,
       endTime,
       startTime,
-      coursesFull
+      coursesFull,
+      building
     } = this.props.formData;
 
     if (prevProps.formData !== this.props.formData) {
@@ -76,10 +77,11 @@ class CoursePane extends Component {
         units: units,
         endTime: endTime,
         startTime: startTime,
-        fullCourses: coursesFull
+        fullCourses: coursesFull,
+        building: building
       };
       const url =
-        "https://2r7p77ujv6.execute-api.us-west-1.amazonaws.com/latest/api/websoc?" +
+        "https://2r7p77ujv6.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?" +
         querystring.stringify(params);
 
       fetch(url)
