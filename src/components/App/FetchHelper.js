@@ -50,29 +50,37 @@ async function getCoursesData(userData) {
   if(userData!==undefined)
   {
   const courses = userData.courseEvents;
-  const params = {};
-  let numClasses = 0;
+  const dataToSend = [];
 
   for (let i = 0; i < courses.length; ++i) {
     if (!courses[i].isCustomEvent) {
-      params["courseCodes" + numClasses] = courses[i].courseCode;
-      params["term" + numClasses] = courses[i].courseTerm;
-      numClasses++;
+      dataToSend.push({
+        courseCodes : courses[i].courseCode,
+        term : courses[i].courseTerm
+      });
     }
   }
-  params["length"] = numClasses;
 
-  const events = [];
+  var events =[];
 
-  if (numClasses > 0) {
-    const url = new URL(
-      "https://j4j70ejkmg.execute-api.us-west-1.amazonaws.com/latest/api/codes?"
-    );
+  if (dataToSend.length > 0) {
+    const response = await fetch(
+      `https://2r7p77ujv6.execute-api.us-west-1.amazonaws.com/latest/api/codes`,
+      {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        redirect: "follow",
+        referrer: "no-referrer",
+        body: JSON.stringify({dataToSend:dataToSend})
+      });
 
-    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-
-    const response = await fetch(url.toString());
     const json = await response.json();
+    console.log(json,"ljson");
 
     for (const courseEvent of courses) {
       let foundData = null;
@@ -84,7 +92,8 @@ async function getCoursesData(userData) {
             break;
           }
         }
-
+        console.log(foundData,"k");
+        if(foundData!==null)
         events.push(...calendarize(foundData.section, courseEvent.color, courseEvent.courseTerm, courseEvent.scheduleIndex, foundData.courseName));
       }
     }

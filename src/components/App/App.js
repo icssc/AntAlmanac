@@ -227,7 +227,6 @@ class App extends Component {
     const doesExist = this.state.courseEvents.find(course =>
       course.courseCode === section.classCode && (course.scheduleIndex === scheduleIndex || scheduleIndex === 4)
     );
-console.log("okk",scheduleIndex,doesExist);
     if (doesExist === undefined) {
       if (scheduleIndex === 4)
         this.setState({
@@ -255,7 +254,6 @@ console.log("okk",scheduleIndex,doesExist);
         if (timeString !== 'TBA') {
 
           let [_, dates, start, startMin, end, endMin, ampm] = timeString.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
-
           start = parseInt(start, 10);
           startMin = parseInt(startMin, 10);
           end = parseInt(end, 10);

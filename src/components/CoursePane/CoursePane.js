@@ -79,7 +79,7 @@ class CoursePane extends Component {
         fullCourses: coursesFull
       };
       const url =
-        "https://j4j70ejkmg.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?" +
+        "https://2r7p77ujv6.execute-api.us-west-1.amazonaws.com/latest/api/websoc?" +
         querystring.stringify(params);
 
       fetch(url)

@@ -133,12 +133,16 @@ class CustomizedSnackbars extends React.Component {
 
   render() {
     
-
+console.log(this.props.full,"filll");
     return (
       <Fragment>
-     <SPopover  
+        {this.props.termName === "2019 Spring"?( <SPopover  
      //handleSave={this.handleSave} 
      full={this.props.full} code={this.props.code} name={this.props.name}/>
+):null}
+     {/* <SPopover  
+     //handleSave={this.handleSave} 
+     full={this.props.full} code={this.props.code} name={this.props.name}/> */}
 
       
         {/* <Button variant="text" color="primary" className={classes.button} onClick={this.getMeSpot}>

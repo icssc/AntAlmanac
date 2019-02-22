@@ -99,7 +99,12 @@ class Calendar extends Component {
 
     render() {
         const {classes, classEventsInCalendar} = this.props;
-
+        if(classEventsInCalendar.length>0)
+        {
+ console.log("final",classEventsInCalendar);
+ var a = classEventsInCalendar[0].section.finalExam.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
+ console.log("ass",a);
+        }
         return (
             <div className={classes.container}>
                 <CalendarPaneToolbar

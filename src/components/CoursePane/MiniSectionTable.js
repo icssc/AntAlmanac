@@ -90,8 +90,9 @@ class ScheduleAddSelector extends Component {
 
 
   statusforFindingSpot = (section,classCode) => {
+    console.log("lkkl",this.props.courseDetails);
     if(section === 'FULL')
-    return <Notification  full={section} code={classCode} name={this.props.courseDetails.name}/>
+    return <Notification  termName={this.props.termName} full={section} code={classCode} name={this.props.courseDetails.name}/>
     else
     return section;
  };
