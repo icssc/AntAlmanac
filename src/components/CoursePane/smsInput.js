@@ -8,6 +8,11 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 const styles = theme => ({
     typography: {
@@ -68,7 +73,7 @@ NumberFormatCustom.propTypes = {
 };
 
 class FormattedInputs extends React.Component {
- 
+
   constructor(props) {
     super(props);
     this.state = {
@@ -95,8 +100,11 @@ var matches = this.state.textmask.match(regex);
       if(matches>999999999)
       {
         this.setState({smsOn:true},()=>{
-            window.localStorage.setItem("sms", this.state.textmask);;
+            window.localStorage.setItem("sms", this.state.textmask);
             fetch("https://pxvtmbq17a.execute-api.us-west-1.amazonaws.com/dev/sms/"+code+"/"+name+"/"+matches)});
+            if (window.localStorage.getItem("sms") === null){
+              this.setState({ open: true});
+            }
       }
   }
 
@@ -104,11 +112,11 @@ var matches = this.state.textmask.match(regex);
     const { classes } = this.props;
     const { textmask } = this.state;
 
-  
+
 
     return (
         <React.Fragment>
-        {this.state.smsOn?( <Typography  className={classes.typography}> <p><font color="green">Added phone to watch list!!!</font></p></Typography>):(null)}
+        {this.state.smsOn?( <Typography  className={classes.typography}> <p><font color="green">Added number to watchlist!!!</font></p></Typography>):(null)}
       <div className={classes.container}>
           <div className={classes.container}></div>
         <FormControl className={classes.formControl}>
@@ -119,11 +127,37 @@ var matches = this.state.textmask.match(regex);
             id="formatted-text-mask-input"
             inputComponent={TextMaskCustom}
           />
-          
+
         </FormControl>
         <Button variant="text" color="primary" className={classes.button} onClick={this.getMeSpotSMS}>
             Add</Button>
       </div>
+
+      <Dialog
+        open={this.state.open}
+        onClose={() => {this.setState({open: false})}}
+        aria-labelledby="alert-dialog"
+        aria-describedby="alert-dialog-desc"
+      >
+        <DialogTitle id="alert-dialog-title">{"SMS Paul Revere Notifications"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            <p>Did you know that sending text messages is really expensive? Well it is, and we really don't want to put any of our features behind a pay wall.</p>
+
+            <p>This is why instead, we are asking you for a simple favor: please share our app with someone! If you like what we do and want us to do more of what we do, please like and share our <a href="https://facebook.com/AntAlmanac" target="_blank">Facebook Page</a>!</p>
+
+            <p>Or please provide us with a small piece of feedback using our <a href="" target="_blank">feedback form</a>!</p>
+
+            <p>Because we don't like to monitor our users like Facebook does, this is an honor system! We cannot keep bringing you new features without your love and support!!! Thank you!</p>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {this.setState({open: false})}} color="primary">
+            Done!
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       </React.Fragment>
     );
   }

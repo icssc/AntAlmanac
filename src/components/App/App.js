@@ -8,7 +8,8 @@ import {
   Paper,
   Tooltip,
   Typography,
-  IconButton
+  IconButton,
+  Button
 } from "@material-ui/core";
 import Logo_tight from './logo_tight.png';
 import Logo_wide from './logo_wide.png';
@@ -463,16 +464,27 @@ class App extends Component {
                   </Tooltip>
                 )}
 
-                {!this.state.showTabularView ?(<Tooltip title="Show Tabular View">
+                {!this.state.showTabularView ?(
+                  <Tooltip title="Show Tabular View">
                     <IconButton onClick={this.handleToggleShowTabularView}>
                         <FormatListBulleted/>
                     </IconButton>
-                </Tooltip>):(<Tooltip title="Show Search View">
+                  </Tooltip>
+                ):(
+                  <Tooltip title="Show Search View">
                     <IconButton onClick={this.handleToggleShowTabularView}>
                         <Search/>
                     </IconButton>
-                </Tooltip>)}
+                  </Tooltip>
+                )}
 
+                <Typography style={{flexGrow: 1}}/>
+
+                <Button href="https://www.facebook.com/AntAlmanac/">
+                  <Typography>
+                    Message Us!
+                  </Typography>
+                </Button>
 
               </Toolbar>
             </Paper>

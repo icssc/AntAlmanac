@@ -37,9 +37,9 @@ class SPopover extends React.Component {
          email = window.localStorage.getItem("email");
          sms = window.localStorage.getItem("sms");
       }
-      
+
       this.setState({ anchorEl: event.currentTarget,userEmail: email,cacheSMS:sms });
-    
+
   };
 
   handleClose = (event) => {
@@ -55,7 +55,7 @@ class SPopover extends React.Component {
     const code = this.props.code;
     const email = this.state.userEmail;
     const name = this.props.name[1] + " " + this.props.name[2]
-   
+
 
     let url = "https://pxvtmbq17a.execute-api.us-west-1.amazonaws.com/dev/email/"
 
@@ -93,7 +93,7 @@ class SPopover extends React.Component {
 
     return (
       <React.Fragment>
-       
+
         <Button
           aria-owns={open ? 'simple-popper' : undefined}
           aria-haspopup="true"
@@ -122,7 +122,7 @@ class SPopover extends React.Component {
           }}
         >
           <Typography className={classes.typography}>Get notified when  a spot opens!</Typography>
-          {this.state.addMessageOn?( <Typography  className={classes.typography}> <p><font color="green">Added email to watch list!!!</font></p></Typography>):(null)}
+          {this.state.addMessageOn?( <Typography  className={classes.typography}> <p><font color="green">Added email to watchlist!!!</font></p></Typography>):(null)}
           <div className={classes.container}>
           <FormControl className={classes.formControl}>
 
@@ -142,7 +142,7 @@ class SPopover extends React.Component {
           <Button variant="text" color="primary" className={classes.button} onClick={this.getMeSpot}>
             Add</Button>
             <SMS code={this.props.code} cacheSMS={this.state.cacheSMS} name={this.props.name}/>
-        
+
         </div>
 
         </Popover>
