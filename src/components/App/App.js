@@ -75,18 +75,18 @@ class App extends Component {
 
   componentDidMount = () => {
     document.addEventListener("keydown", this.handleUndo, false);
-    const script = document.createElement("script");
+    // const script = document.createElement("script");
 
-    const scriptText = document.createTextNode(function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2&appId=343457496213889&autoLogAppEvents=1';
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
+    // const scriptText = document.createTextNode(function(d, s, id) {
+    //   var js, fjs = d.getElementsByTagName(s)[0];
+    //   if (d.getElementById(id)) return;
+    //   js = d.createElement(s); js.id = id;
+    //   js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2&appId=343457496213889&autoLogAppEvents=1';
+    //   fjs.parentNode.insertBefore(js, fjs);
+    // }(document, 'script', 'facebook-jssdk'));
 
-    script.appendChild(scriptText);
-    document.head.appendChild(script);
+    // script.appendChild(scriptText);
+    // document.head.appendChild(script);
 
     this.resizeLogo();
     window.addEventListener("resize", this.resizeLogo);
