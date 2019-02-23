@@ -22,7 +22,8 @@ class SPopover extends React.Component {
   state = {
     anchorEl: null,
     userEmail:"",
-    addMessageOn:false
+    addMessageOn:false,
+    cacheSMS:"(  )    -    "
   };
 
 
@@ -31,11 +32,13 @@ class SPopover extends React.Component {
     event.cancelBubble = true;
     if (event.stopPropagation) event.stopPropagation();
     var email ="";
+    var sms ="(  )    -    ";
     if (typeof Storage !== "undefined") {
          email = window.localStorage.getItem("email");
+         sms = window.localStorage.getItem("sms");
       }
       
-      this.setState({ anchorEl: event.currentTarget,userEmail: email });
+      this.setState({ anchorEl: event.currentTarget,userEmail: email,cacheSMS:sms });
     
   };
 
@@ -81,11 +84,7 @@ class SPopover extends React.Component {
     this.setState({userEmail: event.target.value})
   }
 
-  inputPhone = sms =>
-  {
-console.log("pop",sms);
 
-  }
 
   render() {
     const { classes } = this.props;
@@ -142,7 +141,7 @@ console.log("pop",sms);
 
           <Button variant="text" color="primary" className={classes.button} onClick={this.getMeSpot}>
             Add</Button>
-            <SMS code={this.props.code} name={this.props.name}/>
+            <SMS code={this.props.code} cacheSMS={this.state.cacheSMS} name={this.props.name}/>
         
         </div>
 

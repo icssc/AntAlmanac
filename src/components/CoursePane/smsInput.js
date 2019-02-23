@@ -72,17 +72,15 @@ class FormattedInputs extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        textmask: '(  )    -    ',
+        textmask: this.props.cacheSMS,
         numberformat: '1320',
         smsOn:false,
         number :0
       };
   }
   handleChange = name => event => {
-      console.log("dsda",event.target.value,name);
     this.setState({
       [name]: event.target.value,
-      number: event.target.value
     });
   };
 
@@ -90,18 +88,23 @@ class FormattedInputs extends React.Component {
   {
     const code = this.props.code;
     const name = this.props.name[1] + " " + this.props.name[2];
-    console.log(this.state.number,"dsdscccc");
     var regex = /\d+/g;
-var matches = this.state.number.match(regex);
+var matches = this.state.textmask.match(regex);
  matches = matches.join('');
 
       if(matches>999999999)
-        this.setState({smsOn:true},()=>{fetch("https://pxvtmbq17a.execute-api.us-west-1.amazonaws.com/dev/sms/"+code+"/"+name+"/"+matches)});
+      {
+        this.setState({smsOn:true},()=>{
+            window.localStorage.setItem("sms", this.state.textmask);;
+            fetch("https://pxvtmbq17a.execute-api.us-west-1.amazonaws.com/dev/sms/"+code+"/"+name+"/"+matches)});
+      }
   }
 
   render() {
     const { classes } = this.props;
     const { textmask } = this.state;
+
+  
 
     return (
         <React.Fragment>
