@@ -87,9 +87,9 @@ class LoadSaveScheduleFunctionality extends React.Component {
           if (userData !== -1)
           {
             if(!userData.canceledClass)
-            this.setState({ message: "Schedule that was saved under " + savedUserID + " loaded.", open: true });
+            this.setState({ message: "Schedule that was saved under " + savedUserID + " loaded.", open: true ,variant: "success"});
             else
-            this.setState({ message: "Schedule that was saved under " + savedUserID + " loaded; however, one or more classes have been cancelled!!!", open: true,variant: "warning" });
+            this.setState({ message: "Schedule that was saved under " + savedUserID + " loaded; however, one or more classes have been cancelled!!!",variant: "warning", open: true });
 
             await this.props.onLoad(userData);
           }
@@ -105,11 +105,24 @@ class LoadSaveScheduleFunctionality extends React.Component {
           const userData = await loadUserData(userID);
           if(userData !==-1)
           {
+            var message ="";
+            var variant="";
+
+            if(!userData.canceledClass)
+           { message = "Schedule that was saved under '" + userID + "' loaded.";
+           variant ="success";
+          }
+          else
+          {
+            message =  "Schedule that was saved under " + userID + " loaded; however, one or more classes have been cancelled!!!"
+           variant ="warning";
+          }
+
           this.setState(
             {
               open: true,
-              message: "Schedule that was saved under '" + userID + "' loaded.",
-              variant: "success"
+              message: message,
+              variant: variant
             },
             async () => {
               this.props.onLoad(userData);
