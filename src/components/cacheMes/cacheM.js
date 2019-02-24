@@ -86,7 +86,11 @@ class LoadSaveScheduleFunctionality extends React.Component {
           const userData = await loadUserData(savedUserID); // this shit gotta do promise joint
           if (userData !== -1)
           {
+            if(!userData.canceledClass)
             this.setState({ message: "Schedule that was saved under " + savedUserID + " loaded.", open: true });
+            else
+            this.setState({ message: "Schedule that was saved under " + savedUserID + " loaded; however, one or more classes have been cancelled!!!", open: true,variant: "warning" });
+
             await this.props.onLoad(userData);
           }
       }

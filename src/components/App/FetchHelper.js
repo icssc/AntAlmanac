@@ -108,8 +108,10 @@ async function getCoursesData(userData) {
       events.push({...customEvent, start: new Date(customEvent.start), end: new Date(customEvent.end)});
     }
   }
-
-  return {courseEvents: events, unavailableColors: userData.unavailableColors};
+var canceledClass =false;
+ if(dataToSend.length>events.length)
+  canceledClass = true;
+  return {canceledClass :canceledClass,courseEvents: events, unavailableColors: userData.unavailableColors};
 }
 else
 return -1;
