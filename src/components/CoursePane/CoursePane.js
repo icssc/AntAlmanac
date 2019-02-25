@@ -140,7 +140,7 @@ class CoursePane extends Component {
             alignItems: "center"
           }}
         >
-          <video autoPlay>
+          <video autoplay loop>
             <source src={loadingGif} type="video/mp4"/>
           </video>
         </div>
