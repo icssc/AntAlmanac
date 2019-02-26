@@ -58,12 +58,12 @@ class AdvancedSearchTextFields extends Component {
   handleChange = name => event => {
     if (name === "endTime" || name === "startTime") {
       if (event.target.value !== "") {
-        if (parseInt(event.target.value.slice(0, 2)) > 12)
-          this.setState({[name]: (parseInt(event.target.value.slice(0, 2)) - 12) + ":00pm"}, () => {
+        if (parseInt(event.target.value.slice(0, 2), 10) > 12)
+          this.setState({[name]: (parseInt(event.target.value.slice(0, 2), 10) - 12) + ":00pm"}, () => {
             this.props.onAdvancedSearchChange(this.state)
           });
         else
-          this.setState({[name]: parseInt(event.target.value.slice(0, 2)) + ":00am"}, () => {
+          this.setState({[name]: parseInt(event.target.value.slice(0, 2), 10) + ":00am"}, () => {
             this.props.onAdvancedSearchChange(this.state)
           });
       } else {

@@ -1,11 +1,10 @@
 import { withStyles } from "@material-ui/core/styles";
-import {Paper, Typography, Grid, Modal, IconButton} from "@material-ui/core";
+import { Paper, Typography, Grid, Modal } from "@material-ui/core";
 import React, { Component } from "react";
 import CourseDetailPane from "./CourseDetailPane";
 import SchoolDeptCard from "./SchoolDeptCard";
 import MiniSectionTable from "./MiniSectionTable";
 import NoNothing from "./no_results.png";
-import {ArrowBack} from "@material-ui/icons";
 
 const styles = theme => ({
   course: {

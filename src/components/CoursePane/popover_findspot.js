@@ -15,7 +15,7 @@ const styles = theme => ({
 class SPopover extends React.Component {
   state = {
     anchorEl: null,
-    userEmail:""
+    userEmail: ""
   };
 
 
@@ -32,8 +32,8 @@ class SPopover extends React.Component {
     
   };
 
-  handleClose = (event) => {
-    if (!event) var event = window.event;
+  handleClose = event => {
+    if (!event) event = window.event;
     event.cancelBubble = true;
     if (event.stopPropagation) event.stopPropagation();
     this.setState({
@@ -41,7 +41,7 @@ class SPopover extends React.Component {
     });
   };
 
-  getMeSpot = () =>{
+  getMeSpot = () => {
     const code = this.props.code;
     const email = this.state.userEmail;
     const name = this.props.name[1] + " " + this.props.name[2]
@@ -49,7 +49,7 @@ class SPopover extends React.Component {
 
     let url = "https://mediaont.herokuapp.com/"
 
-    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if(!re.test(email))
     this.setState({
         anchorEl: null,
@@ -102,7 +102,7 @@ class SPopover extends React.Component {
           open={open}
           anchorEl={anchorEl}
           onClose={this.handleClose}
-          onClick={event=>{if (!event) var event = window.event;
+          onClick={event=>{if (!event) event = window.event;
             event.cancelBubble = true;
             if (event.stopPropagation) event.stopPropagation();}}
           anchorOrigin={{

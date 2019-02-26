@@ -70,7 +70,7 @@ class App extends Component {
     const script = document.createElement("script");
 
     const scriptText = document.createTextNode(function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
+      let js, fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) return;
       js = d.createElement(s); js.id = id;
       js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2&appId=343457496213889&autoLogAppEvents=1';
@@ -242,7 +242,7 @@ class App extends Component {
 
         if (timeString !== 'TBA') {
 
-          let [_, dates, start, startMin, end, endMin, ampm] = timeString.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
+          let [, dates, start, startMin, end, endMin, ampm] = timeString.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
 
           start = parseInt(start, 10);
           startMin = parseInt(startMin, 10);
@@ -323,17 +323,16 @@ class App extends Component {
     }
   };
 
-  colorChange =(course,color)=>
+  colorChange = (course, color) =>
   {
     let courses = this.state.courseEvents;
-    let preColor = course.color;
 
-  if(undefined ==this.state.unavailableColors.find(function(element){return element.color == color&&element.scheduleIndex ==course.scheduleIndex}))
-  {  
-    for(var item of courses)
+  if (undefined === this.state.unavailableColors.find(element => element.color === color && element.scheduleIndex === course.scheduleIndex))
+  {
+    for(const item of courses)
     {
-      if(item.scheduleIndex==course.scheduleIndex&& item.courseCode==course.courseCode && item.courseTerm==course.courseTerm)
-      item.color=color;
+      if (item.scheduleIndex === course.scheduleIndex && item.courseCode === course.courseCode && item.courseTerm === course.courseTerm)
+      item.color = color;
     }
     this.setState({courseEvents:courses, unavailableColors: this.state.unavailableColors.concat(
       {color: color, scheduleIndex: course.scheduleIndex})});

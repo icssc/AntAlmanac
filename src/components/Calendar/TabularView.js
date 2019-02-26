@@ -6,14 +6,11 @@ class TabularView extends Component {
   render() {    
     const events = this.props.classEventsInCalendar;
 
-    let result =[];
+    let result = [];
 
-    for(var item of events)
-      if(undefined === result.find(function(element){return element.courseCode===item.courseCode;}))
+    for(const item of events)
+      if(undefined === result.find(element => element.courseCode === item.courseCode))
         result.push(item);
-
-    
-    console.log(result,"ll");
 
     // var i =0;
     // var foundIndex =0;

@@ -134,10 +134,10 @@ class DialogSelect extends Component {
   };
 
   handleAddToCalendar = scheduleIndex => {
-    const startHour = parseInt(this.state.start.slice(0, 2));
-    const startMin = parseInt(this.state.start.slice(3, 5));
-    const endHour = parseInt(this.state.end.slice(0, 2));
-    const endMin = parseInt(this.state.end.slice(3, 5));
+    const startHour = parseInt(this.state.start.slice(0, 2), 10);
+    const startMin = parseInt(this.state.start.slice(3, 5), 10);
+    const endHour = parseInt(this.state.end.slice(0, 2), 10);
+    const endMin = parseInt(this.state.end.slice(3, 5), 10);
 
     const events = [];
     const id = Math.floor(Math.random() * 1000000);
