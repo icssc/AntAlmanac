@@ -488,10 +488,7 @@ class App extends Component {
 
               </Toolbar>
             </Paper>
-            {this.state.showTabularView ?
-              <TabularView classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))} colorChange={this.colorChange}/>
-              :
-              (  <Paper
+            <Paper
                     style={{
                       overflow: "auto",
                       padding: 10,
@@ -500,16 +497,20 @@ class App extends Component {
                     }}
                     id='foo1'
                   >
-                  {this.state.showSearch ? <SearchForm updateFormData={this.updateFormData}/> :
+            {this.state.showTabularView ?
+              <TabularView classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))} colorChange={this.colorChange}/>
+              :
+              (  
+                  this.state.showSearch ? <SearchForm updateFormData={this.updateFormData}/> :
                     <CoursePane
                       view={this.state.view}
                       formData={this.state.formData}
                       onAddClass={this.handleAddClass}
                       onDismissSearchResults={this.handleDismissSearchResults}
                       term={this.state.formData}
-                      coursesEvents={this.state.coursesEvents}/>}
-                </Paper>
+                      coursesEvents={this.state.coursesEvents}/>
               )}
+              </Paper>
           </Grid>
         </Grid>
       </Fragment>

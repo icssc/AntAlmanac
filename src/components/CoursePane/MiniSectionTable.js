@@ -28,7 +28,6 @@ class ScheduleAddSelector extends Component {
     this.setState({ anchor: null });
     if (scheduleNumber !== -1)
     {
-      console.log("kj",scheduleNumber);
       this.props.onAddClass(
         this.props.section,
         this.props.courseDetails.name,

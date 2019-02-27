@@ -41,7 +41,6 @@ class CPicker extends React.Component {
     this.setState({
       anchorEl: null
     });
-    console.log('fdfdf')
 ;  };
   handleChange = (color) => {
     this.setState({ color: color.hex },()=>{ this.props.colorChange(this.props.event,this.state.color);

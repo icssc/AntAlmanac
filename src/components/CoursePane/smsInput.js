@@ -101,7 +101,7 @@ var matches = this.state.textmask.match(regex);
       {
         this.setState({smsOn:true},()=>{
             window.localStorage.setItem("sms", this.state.textmask);
-            fetch("https://pxvtmbq17a.execute-api.us-west-1.amazonaws.com/dev/sms/"+code+"/"+name+"/"+matches)});
+            fetch("https://3jbsyx3se1.execute-api.us-west-1.amazonaws.com/dev/sms/"+code+"/"+name+"/"+matches)});
             if (window.localStorage.getItem("sms") === null){
               this.setState({ open: true});
             }

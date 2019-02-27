@@ -80,7 +80,6 @@ async function getCoursesData(userData) {
       });
 
     const json = await response.json();
-    console.log(json,"ljson");
 
     for (const courseEvent of courses) {
       let foundData = null;
@@ -92,7 +91,6 @@ async function getCoursesData(userData) {
             break;
           }
         }
-        console.log(foundData,"k");
         if(foundData!==null)
         events.push(...calendarize(foundData.section, courseEvent.color, courseEvent.courseTerm, courseEvent.scheduleIndex, foundData.courseName));
       }
