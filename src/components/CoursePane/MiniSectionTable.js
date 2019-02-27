@@ -1,11 +1,12 @@
 import React, { Component, Fragment } from "react";
-
 import {  Menu, MenuItem } from "@material-ui/core";
 import rmpData from "./RMP.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import POPOVER from "./PopOver";
-import Notification from '../Notification'
-import RstrPopover from "./RstrPopover"
+import Notification from '../Notification';
+import RstrPopover from "./RstrPopover";
+import locations from "./locations.json";
+
 class ScheduleAddSelector extends Component {
   constructor(props) {
     super(props);
@@ -88,6 +89,14 @@ class ScheduleAddSelector extends Component {
     return test;
   };
 
+  genMapLink = location => {
+    try {
+      var location_id = locations[location.split(" ")[0]];
+      return "https://map.uci.edu/?id=463#!m/"+location_id;
+    } catch (err) {
+      return "https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034";
+    }
+  };
 
   statusforFindingSpot = (section,classCode) => {
     console.log("lkkl",this.props.courseDetails);
@@ -119,7 +128,18 @@ Units: ${section.units}`}
             {section.meetings.map(meeting => meeting[0]).join("\n")}
           </td>
           <td className="multiline">
-            {section.meetings.map(meeting => meeting[1]).join("\n")}
+            {section.meetings.map(meeting => {
+              return (meeting[1] !== "ON LINE") ? (
+                <div>
+                  <a href={this.genMapLink(meeting[1])} target="_blank">
+                    {meeting[1]}
+                  </a>
+                  <br />
+                </div>
+              ) : (
+                meeting[1]
+              );
+            })}
           </td>
           <td className={["multiline", section.status].join(" ")}>
             <strong>{`${section.numCurrentlyEnrolled[0]} / ${

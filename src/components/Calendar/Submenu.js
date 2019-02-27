@@ -3,7 +3,6 @@ import {
   Menu,
   MenuItem,
   MenuList,
-  Tooltip,
   Button,
   IconButton
 } from '@material-ui/core/';

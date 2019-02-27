@@ -4,6 +4,7 @@ import { IconButton, Menu, MenuItem } from "@material-ui/core";
 import rmpData from "./RMP.json";
 import Notification from '../Notification'
 import RstrPopover from "./RstrPopover"
+import locations from "./locations.json"
 
 class ScheduleAddSelector extends Component {
   constructor(props) {
@@ -125,6 +126,15 @@ class SectionTable extends Component {
     return section;
  };
 
+ genMapLink = location => {
+   try {
+     var location_id = locations[location.split(" ")[0]];
+     return "https://map.uci.edu/?id=463#!m/"+location_id;
+   } catch (err) {
+     return "https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034";
+   }
+ };
+
   render() {
     const sectionInfo = this.props.courseDetails.sections;
 
@@ -161,7 +171,18 @@ ${section.units} units`}
                   {section.meetings.map(meeting => meeting[0]).join("\n")}
                 </td>
                 <td className="multiline">
-                  {section.meetings.map(meeting => meeting[1]).join("\n")}
+                  {section.meetings.map(meeting => {
+                    return (meeting[1] !== "ON LINE") ? (
+                      <div>
+                        <a href={this.genMapLink(meeting[1])} target="_blank">
+                          {meeting[1]}
+                        </a>
+                        <br />
+                      </div>
+                    ) : (
+                      meeting[1]
+                    );
+                  })}
                 </td>
                 <td className={["multiline", section.status].join(" ")}>
                   {`${section.numCurrentlyEnrolled[0]} / ${section.maxCapacity}
