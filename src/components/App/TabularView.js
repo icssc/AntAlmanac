@@ -7,11 +7,7 @@ import RstrPopover from "../CoursePane/RstrPopover";
 import POPOVER from "../CoursePane/PopOver";
 import Notification from '../Notification';
 
-const styles = {
-  container: {
-    marginTop: 100
-  }
-}
+
 class TabularView extends Component {
 
   redirectRMP = (e, name) => {
@@ -60,13 +56,12 @@ class TabularView extends Component {
     }
   };
 
-  statusforFindingSpot = (section,classCode,name) => {
+  statusforFindingSpot = (section,classCode,termName,name) => {
     if(section === 'FULL')
-    return <Notification  termName={this.props.termName} full={section} code={classCode} name={name}/>
+    return <Notification  termName={termName} full={section} code={classCode} name={name}/>
     else
     return section;
-  };
-
+ };
   render() {
     const events = this.props.classEventsInCalendar;
 
@@ -182,7 +177,7 @@ NOR: ${secEach.numNewOnlyReserved}`}
               restrictions = {secEach.restrictions}
             />
           </td>
-          <td className={secEach.status}>{this.statusforFindingSpot(secEach.status,secEach.classCode,event.name)}</td>
+          <td className={secEach.status}>{this.statusforFindingSpot(secEach.status,secEach.classCode,item.courseTerm,item.name)}</td>
         </tr>
 );
      }

@@ -498,8 +498,7 @@ class App extends Component {
                     id='foo1'
                   >
             {this.state.showTabularView ?
-              <TabularView classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))} colorChange={this.colorChange}/>
-              :
+              <TabularView classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}  colorChange={this.colorChange}/>              :
               (
                   this.state.showSearch ? <SearchForm updateFormData={this.updateFormData}/> :
                     <CoursePane
