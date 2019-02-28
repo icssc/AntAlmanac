@@ -3,14 +3,11 @@ import ColorPicker from './colorPicker'
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import rmpData from "../CoursePane/RMP.json";
 import locations from "../CoursePane/locations.json";
+import Notification from '../Notification';
 
 import POPOVER from "../CoursePane/PopOver";
 
-const styles = {
-  container: {
-    marginTop: 100
-  }
-}
+
 class TabularView extends Component {
 
   redirectRMP = (e, name) => {
@@ -58,6 +55,13 @@ class TabularView extends Component {
       return "https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034";
     }
   };
+
+  statusforFindingSpot = (section,classCode,termName,name) => {
+    if(section === 'FULL')
+    return <Notification  termName={termName} full={section} code={classCode} name={name}/>
+    else
+    return section;
+ };
   render() {    
     const events = this.props.classEventsInCalendar;
 
@@ -178,7 +182,7 @@ NOR: ${secEach.numNewOnlyReserved}`}
               {secEach.restrictions}
             </a>
           </td>
-          <td className={secEach.status}>{secEach.status}</td>
+          <td className={secEach.status}>{this.statusforFindingSpot(secEach.status,secEach.classCode,item.courseTerm,item.name)}</td>
         </tr>
 );
      }
