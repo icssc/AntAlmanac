@@ -2,10 +2,17 @@ import DeptSearchBar from "./DeptSearchBar/DeptSearchBar";
 import GESelector from "./GESelector";
 import TermSelector from "./TermSelector";
 import React, {Component} from "react";
-import {Button, Typography} from "@material-ui/core";
+import {
+  Button,
+  Typography,
+  ExpansionPanel,
+  ExpansionPanelSummary,
+  ExpansionPanelDetails
+} from "@material-ui/core";
 import {withStyles} from '@material-ui/core/styles';
 import AdvancedSearchTextFields from "./AdvancedSearch";
-import MIUCI from "./MIUCI.png"
+import MIUCI from "./MIUCI.png";
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const styles = {
   container: {
@@ -112,7 +119,14 @@ class SearchForm extends Component {
           <TermSelector setTerm={this.setTerm}/>
         </div>
 
-        <AdvancedSearchTextFields onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
+        <ExpansionPanel style={{marginTop: 8, marginBottom: 5}}>
+          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography className="title">Advanced Search</Typography>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails>
+            <AdvancedSearchTextFields onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
 
         <div className={classes.search}>
           <Button
@@ -125,10 +139,10 @@ class SearchForm extends Component {
         </div>
 
         <div className={classes.new}>
-          <Typography variant="title">
+          <Typography>
             <b><u>New on AntAlmanac:</u></b><br/>
-            Text message notifications!<br/>
-            Links to interactive campus map!
+            Text message notifications<br/>
+            Links to interactive campus map
           </Typography>
         </div>
 

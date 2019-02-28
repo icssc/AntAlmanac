@@ -378,7 +378,6 @@ class App extends Component {
   colorChange =(course,color)=>
   {
     let courses = this.state.courseEvents;
-    let preColor = course.color;
 
   if(undefined===this.state.unavailableColors.find(function(element){return element.color === color&&element.scheduleIndex===course.scheduleIndex}))
   {
