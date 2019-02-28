@@ -4,7 +4,7 @@ import {Button, TextField, Dialog, DialogActions, DialogContent, DialogContentTe
 export default class LoadDialog extends Component {
   constructor(props) {
     super(props);
-    this. state = {
+    this.state = {
       open: false,
       name: null
     };

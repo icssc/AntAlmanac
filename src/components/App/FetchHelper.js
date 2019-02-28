@@ -5,7 +5,7 @@ function calendarize(section, color, courseTerm, scheduleIndex, name) {
     const timeString = meeting[0].replace(/\s/g, "");
 
     if (timeString !== 'TBA') {
-      let [_, dates, start, startMin, end, endMin, ampm] = timeString.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
+      let [, dates, start, startMin, end, endMin, ampm] = timeString.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
 
       start = parseInt(start, 10);
       startMin = parseInt(startMin, 10);
