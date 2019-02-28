@@ -128,7 +128,7 @@ Units: ${section.units}`}
           </td>
           <td className="multiline">
             {section.meetings.map(meeting => {
-              return (meeting[1] !== "ON LINE") ? (
+              return (meeting[1] !== "ON LINE" && meeting[1] !== "TBA") ? (
                 <div>
                   <a href={this.genMapLink(meeting[1])} target="_blank">
                     {meeting[1]}

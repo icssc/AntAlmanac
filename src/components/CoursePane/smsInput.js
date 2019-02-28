@@ -144,9 +144,9 @@ var matches = this.state.textmask.match(regex);
           <DialogContentText id="alert-dialog-description">
             <p>Did you know that sending text messages is really expensive? Well it is, and we really don't want to put any of our features behind a pay wall.</p>
 
-            <p>This is why instead, we are asking you for a simple favor: please share our app with someone! If you like what we do and want us to do more of what we do, please like and share our <a href="https://facebook.com/AntAlmanac" target="_blank">Facebook Page</a>!</p>
+            <p>This is why instead, we are asking you for a simple favor: please share our app with someone! If you like what we do and want us to do more of what we do, please like and share our <a href="https://facebook.com/AntAlmanac" target="_blank" rel="noopener noreferrer">Facebook Page</a>!</p>
 
-            <p>Or please provide us with a small piece of feedback using our <a href="https://goo.gl/forms/4Q41TmjObbOCeK7Z2" target="_blank">feedback form</a>!</p>
+            <p>Or please provide us with a small piece of feedback using our <a href="https://goo.gl/forms/4Q41TmjObbOCeK7Z2" target="_blank" rel="noopener noreferrer">feedback form</a>!</p>
 
             <p>Because we don't like to monitor our users like Facebook does, this is an honor system! We cannot keep bringing you new features without your love and support!!! Thank you!</p>
           </DialogContentText>

@@ -2,7 +2,7 @@ import DeptSearchBar from "./DeptSearchBar/DeptSearchBar";
 import GESelector from "./GESelector";
 import TermSelector from "./TermSelector";
 import React, {Component} from "react";
-import {Button} from "@material-ui/core";
+import {Button, Typography} from "@material-ui/core";
 import {withStyles} from '@material-ui/core/styles';
 import AdvancedSearchTextFields from "./AdvancedSearch";
 import MIUCI from "./MIUCI.png"
@@ -27,6 +27,12 @@ const styles = {
     position: "absolute",
     bottom: 0,
     right: 0
+  },
+  new: {
+    width: "55%",
+    position: "absolute",
+    bottom: 0,
+    left: 0
   }
 };
 
@@ -118,7 +124,20 @@ class SearchForm extends Component {
           </Button>
         </div>
 
-        <img src={MIUCI} variant="contained" alt="Made_in_UCI" className={classes.miuci}/>
+        <div className={classes.new}>
+          <Typography variant="title">
+            <b><u>New on AntAlmanac:</u></b><br/>
+            Text message notifications!<br/>
+            Links to interactive campus map!
+          </Typography>
+        </div>
+
+        <img
+          src={MIUCI}
+          variant="contained"
+          alt="Made_in_UCI"
+          className={classes.miuci}
+        />
 
       </div>
     );

@@ -380,11 +380,11 @@ class App extends Component {
     let courses = this.state.courseEvents;
     let preColor = course.color;
 
-  if(undefined ==this.state.unavailableColors.find(function(element){return element.color == color&&element.scheduleIndex ==course.scheduleIndex}))
+  if(undefined===this.state.unavailableColors.find(function(element){return element.color === color&&element.scheduleIndex===course.scheduleIndex}))
   {
     for(var item of courses)
     {
-      if(item.scheduleIndex==course.scheduleIndex&& item.courseCode==course.courseCode && item.courseTerm==course.courseTerm)
+      if(item.scheduleIndex===course.scheduleIndex&& item.courseCode===course.courseCode && item.courseTerm===course.courseTerm)
       item.color=color;
     }
     this.setState({courseEvents:courses, unavailableColors: this.state.unavailableColors.concat(
@@ -465,7 +465,7 @@ class App extends Component {
                 )}
 
                 {!this.state.showTabularView ?(
-                  <Tooltip title="Show Tabular View">
+                  <Tooltip title="Show Tabular View: More Info on Selected Courses">
                     <IconButton onClick={this.handleToggleShowTabularView}>
                         <FormatListBulleted/>
                     </IconButton>
@@ -500,7 +500,7 @@ class App extends Component {
             {this.state.showTabularView ?
               <TabularView classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))} colorChange={this.colorChange}/>
               :
-              (  
+              (
                   this.state.showSearch ? <SearchForm updateFormData={this.updateFormData}/> :
                     <CoursePane
                       view={this.state.view}

@@ -3,8 +3,9 @@ import ColorPicker from './colorPicker'
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import rmpData from "../CoursePane/RMP.json";
 import locations from "../CoursePane/locations.json";
-
+import RstrPopover from "../CoursePane/RstrPopover";
 import POPOVER from "../CoursePane/PopOver";
+import Notification from '../Notification';
 
 const styles = {
   container: {
@@ -58,7 +59,15 @@ class TabularView extends Component {
       return "https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034";
     }
   };
-  render() {    
+
+  statusforFindingSpot = (section,classCode,name) => {
+    if(section === 'FULL')
+    return <Notification  termName={this.props.termName} full={section} code={classCode} name={name}/>
+    else
+    return section;
+  };
+
+  render() {
     const events = this.props.classEventsInCalendar;
 
     let result =[];
@@ -66,7 +75,7 @@ class TabularView extends Component {
     for(let item of events)
       if(!item.isCustomEvent&& undefined === result.find(function(element){return element.courseCode===item.courseCode;}))
         result.push(item);
-  
+
         let foundIndex =0;
         let classes =[];
 
@@ -90,7 +99,7 @@ class TabularView extends Component {
             classes[foundIndex].lecAndDis.push(course);
       }
 
-    
+
     return (
       <Fragment>
     {classes.map(event=>{
@@ -101,8 +110,7 @@ class TabularView extends Component {
     }}
   >
     <POPOVER
-      name={  event.name[0] + " " + event.name[1] + " | " + event.name[2]
-    }
+      name={  event.name[0] + " " + event.name[1] + " | " + event.name[2]}
       courseDetails={event}
     />
        <AlmanacGraphWrapped
@@ -152,7 +160,7 @@ ${secEach.units} units`}
           </td>
           <td className="multiline">
           {secEach.meetings.map(meeting => {
-              return (meeting[1] !== "ON LINE") ? (
+              return (meeting[1] !== "ON LINE" && meeting[1] !== "TBA") ? (
                 <div>
                   <a href={this.genMapLink(meeting[1])} target="_blank">
                     {meeting[1]}
@@ -170,78 +178,18 @@ WL: ${secEach.numOnWaitlist}
 NOR: ${secEach.numNewOnlyReserved}`}
           </td>
           <td>
-            <a
-              href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {secEach.restrictions}
-            </a>
+            <RstrPopover
+              restrictions = {secEach.restrictions}
+            />
           </td>
-          <td className={secEach.status}>{secEach.status}</td>
+          <td className={secEach.status}>{this.statusforFindingSpot(secEach.status,secEach.classCode,event.name)}</td>
         </tr>
 );
      }
     )
   }</tbody> </table></div>);
 })}
-      {/* <table>
-        <thead>
-        <tr>
-          <th>Color</th>
-          <th>Code</th>
-          <th>Type</th>
-          <th>Instructor</th>
-          <th>Time</th>
-          <th>Place</th>
-          <th>Enrollmt</th>
-          <th>Rstr</th>
-          <th>Status</th>
-        </tr>
-        </thead>
-        <tbody>
-        {result.map(event => {
-          if (!event.isCustomEvent) {
-            const section = event.section;
-            return (
-              <tr>
-        <ColorPicker  colorChange={this.props.colorChange} event ={event} />
-                <td>{section.classCode}</td>
-                <td className="multiline">
-                  {`${section.classType}
-Sec ${section.sectionCode}
-${section.units} units`}
-                </td>
-                <td className="multiline">
-                  {section.instructors.join("\n")}
-                </td>
-                <td className="multiline">
-                  {section.meetings.map(meeting => meeting[0]).join("\n")}
-                </td>
-                <td className="multiline">
-                  {section.meetings.map(meeting => meeting[1]).join("\n")}
-                </td>
-                <td className={["multiline", section.status].join(" ")}>
-                  {`${section.numCurrentlyEnrolled[0]} / ${section.maxCapacity}
-WL: ${section.numOnWaitlist}
-NOR: ${section.numNewOnlyReserved}`}
-                </td>
-                <td>
-                  <a
-                    href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {section.restrictions}
-                  </a>
-                </td>
-                <td className={section.status}>{section.status}</td>
-              </tr>
-            );
-          }
-        })}
-        </tbody>
-      </table> */}
+
       </Fragment>
     );
   }
