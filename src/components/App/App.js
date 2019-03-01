@@ -23,7 +23,8 @@ import {
   Dns,
   ImportContacts,
   FormatListBulleted,
-  Search
+  Search,
+  Assignment
 } from "@material-ui/icons";
 import LoadSaveScheduleFunctionality from "../cacheMes/cacheM";
 
@@ -414,6 +415,15 @@ class App extends Component {
                 target="_blank"
               >
                 <ImportContacts style={{marginLeft: 15, marginRight: 30}} fontSize="48px" color="white"/>
+              </a>
+            </Tooltip>
+            <Tooltip title="Give Us Feedback!">
+              <a
+                style={{color: "white"}}
+                href={"https://goo.gl/forms/eIHy4kp56pZKP9fK2"}
+                target="_blank"
+              >
+                <Assignment style={{marginRight: 27, marginTop: 5}} fontSize="48px" color="white"/>
               </a>
             </Tooltip>
             <Tooltip title="Info Page">
