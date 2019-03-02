@@ -148,7 +148,8 @@ Sec ${secEach.sectionCode}
 ${secEach.units} units`}
           </td>
           <td className="multiline">
-          {this.linkRMP(secEach.instructors)}
+          {/* {this.linkRMP(secEach.instructors)} */}
+          {secEach.instructors.join("\n")}
           </td>
           <td className="multiline">
             {secEach.meetings.map(meeting => meeting[0]).join("\n")}

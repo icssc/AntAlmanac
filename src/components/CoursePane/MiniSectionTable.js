@@ -122,7 +122,10 @@ class ScheduleAddSelector extends Component {
 Sec: ${section.sectionCode}
 Units: ${section.units}`}
           </td>
-          <td className="multiline">{this.linkRMP(section.instructors)}</td>
+          <td className="multiline">
+          {/* {this.linkRMP(section.instructors)} */}
+          {section.instructors.join("\n")}
+          </td>
           <td className="multiline">
             {section.meetings.map(meeting => meeting[0]).join("\n")}
           </td>
