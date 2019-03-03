@@ -50,8 +50,8 @@ class CourseRenderPane extends Component {
 
   toRender = SOCObject => {
     this.props.onToggleDismissButton();
-    this.scrollPos = document.getElementById("foo1").scrollTop;
-    document.getElementById("foo1").scrollTop = 0;
+    this.scrollPos = document.getElementById("rightPane").scrollTop;
+    document.getElementById("rightPane").scrollTop = 0;
     this.setState({ course: SOCObject, courseDetailsOpen: true });
   };
 
@@ -109,7 +109,7 @@ class CourseRenderPane extends Component {
   handleDismissDetails() {
     this.props.onToggleDismissButton();
     this.setState({ courseDetailsOpen: false, course: null }, () => {
-      document.getElementById("foo1").scrollTop = this.scrollPos;
+      document.getElementById("rightPane").scrollTop = this.scrollPos;
     });
   }
 

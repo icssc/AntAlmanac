@@ -148,24 +148,6 @@ class CoursePane extends Component {
           </video>
         </div>
       );
-    } else {
-      return (
-        <div style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-        }}>
-          <img
-            src={welcome}
-            alt="my face"
-
-            style={{
-              width: "390",
-              height: "600"
-            }}
-          />
-        </div>
-      );
     }
   }
 }

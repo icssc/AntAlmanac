@@ -26,7 +26,7 @@ import {
   Search,
   Assignment
 } from "@material-ui/icons";
-import LoadSaveScheduleFunctionality from "../cacheMes/cacheM";
+import LoadSaveScheduleFunctionality from "../cacheMes/LoadSaveFunctionality";
 
 import {
   saveUserData,
@@ -77,18 +77,6 @@ class App extends Component {
 
   componentDidMount = () => {
     document.addEventListener("keydown", this.handleUndo, false);
-    // const script = document.createElement("script");
-
-    // const scriptText = document.createTextNode(function(d, s, id) {
-    //   var js, fjs = d.getElementsByTagName(s)[0];
-    //   if (d.getElementById(id)) return;
-    //   js = d.createElement(s); js.id = id;
-    //   js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2&appId=343457496213889&autoLogAppEvents=1';
-    //   fjs.parentNode.insertBefore(js, fjs);
-    // }(document, 'script', 'facebook-jssdk'));
-
-    // script.appendChild(scriptText);
-    // document.head.appendChild(script);
 
     this.resizeLogo();
     window.addEventListener("resize", this.resizeLogo);
@@ -504,7 +492,7 @@ class App extends Component {
                       height: 'calc(100vh - 96px - 24px)',
                       marginRight: 8
                     }}
-                    id='foo1'
+                    id='rightPane'
                   >
             {this.state.showTabularView ?
               <TabularView classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}  colorChange={this.colorChange}/>              :
@@ -515,8 +503,7 @@ class App extends Component {
                       formData={this.state.formData}
                       onAddClass={this.handleAddClass}
                       onDismissSearchResults={this.handleDismissSearchResults}
-                      term={this.state.formData}
-                      coursesEvents={this.state.coursesEvents}/>
+                      term={this.state.formData}/>
               )}
               </Paper>
           </Grid>

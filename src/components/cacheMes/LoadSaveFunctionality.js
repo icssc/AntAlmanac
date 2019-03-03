@@ -5,8 +5,8 @@ import {green, amber} from "@material-ui/core/colors";
 import {IconButton, Snackbar, SnackbarContent} from "@material-ui/core";
 import {withStyles} from "@material-ui/core/styles";
 import {loadUserData} from "../App/FetchHelper";
-import LoadButton from "../logIn/loadButton";
-import SaveButton from "../saveApp/saveButton";
+import LoadButton from "./LoadButton";
+import SaveButton from "./SaveButton";
 
 const iconVariants = {
   success: CheckCircle,
@@ -89,7 +89,7 @@ class LoadSaveScheduleFunctionality extends React.Component {
             if(!userData.canceledClass)
             this.setState({ message: "Schedule that was saved under " + savedUserID + " loaded.", open: true ,variant: "success"});
             else
-            this.setState({ message: "Schedule that was saved under " + savedUserID + " loaded; however, one or more classes have been cancelled!!!",variant: "warning", open: true });
+            this.setState({ message: "Schedule that was saved under " + savedUserID + " loaded; however, one or more classes have been cancelled!",variant: "warning", open: true });
 
             await this.props.onLoad(userData);
           }
