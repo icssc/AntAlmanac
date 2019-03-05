@@ -27,6 +27,7 @@ function calendarize(section, color, courseTerm, scheduleIndex, name) {
             courseTerm: courseTerm,
             title: name[0] + ' ' + name[1],
             location: meeting[1],
+            final: section.finalExam,
             section: section,
             courseCode: section.classCode,
             courseType: section.classType,

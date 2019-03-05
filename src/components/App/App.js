@@ -69,7 +69,9 @@ class App extends Component {
       unavailableColors: [],
       backupArray: [],
       userID: null,
-      showTabularView: false
+      showTabularView: false,
+      finalSchedule:[],
+      showFinalSchedule:false
     };
 
     this.resizeLogo = this.resizeLogo.bind(this);
@@ -92,7 +94,11 @@ class App extends Component {
   }
 
   handleToggleShowTabularView = () => {
-      this.setState(previousState => ({showTabularView: !previousState.showTabularView}));
+      this.setState(previousState => ({showTabularView: !previousState.showTabularView}),()=>{
+        if(!this.state.showTabularView)
+        this.setState({showFinalSchedule:false})
+      }
+      );
       this.handleDismissSearchResults();
   };
 
@@ -327,11 +333,11 @@ class App extends Component {
   handleScheduleChange = direction => {
     if (direction === 0) {
       this.setState({
-        currentScheduleIndex: (this.state.currentScheduleIndex - 1 + 4) % 4
+        showFinalSchedule:false,  currentScheduleIndex: (this.state.currentScheduleIndex - 1 + 4) % 4
       });
     } else if (direction === 1) {
       this.setState({
-        currentScheduleIndex: (this.state.currentScheduleIndex + 1) % 4
+        showFinalSchedule:false, currentScheduleIndex: (this.state.currentScheduleIndex + 1) % 4
       });
     }
   };
@@ -379,6 +385,22 @@ class App extends Component {
       {color: color, scheduleIndex: course.scheduleIndex})});
   }
 }
+
+displayFinal =(schedule)=>
+{
+
+
+  this.setState({
+    showFinalSchedule:!this.state.showFinalSchedule},()=>{
+      if(this.state.showFinalSchedule)
+      {
+        console.log("finalc",schedule);
+       this.setState({finalSchedule:schedule});
+      }
+    });
+
+}
+
 
   render() {
     return (
@@ -430,9 +452,11 @@ class App extends Component {
           <Grid item lg={6} xs={12}>
             <div>
               <Calendar
-                classEventsInCalendar={
+                classEventsInCalendar={this.state.showFinalSchedule?this.state.finalSchedule:
                   this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))
                 }
+                storeFinal={this.storeFinal}
+                showFinalSchedul={this.state.showFinalSchedule}
                 onUndo={this.handleUndo}
                 currentScheduleIndex={this.state.currentScheduleIndex}
                 onClassDelete={this.handleClassDelete}
@@ -440,6 +464,7 @@ class App extends Component {
                 onAddCustomEvent={this.handleAddCustomEvent}
                 setID={this.setID}
                 onClearSchedule={this.handleClearSchedule}
+                showFinalSchedul={this.showFinalSchedule}
               />
             </div>
           </Grid>
@@ -495,7 +520,7 @@ class App extends Component {
                     id='rightPane'
                   >
             {this.state.showTabularView ?
-              <TabularView classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}  colorChange={this.colorChange}/>              :
+              <TabularView showFinalSchedule ={this.state.showFinalSchedule} displayFinal={this.displayFinal} classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}  colorChange={this.colorChange}/>              :
               (
                   this.state.showSearch ? <SearchForm updateFormData={this.updateFormData}/> :
                     <CoursePane

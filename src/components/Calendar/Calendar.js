@@ -94,12 +94,10 @@ class Calendar extends Component {
 
     render() {
         const {classes, classEventsInCalendar} = this.props;
-        if(classEventsInCalendar.length>0)
-        {
- console.log("final",classEventsInCalendar);
- var a = classEventsInCalendar[0].section.finalExam.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
- console.log("ass",a);
-        }
+        let c ="Jun 10 Mon 12:30-3:30pm";
+        let f ="TuTh12:30- 1:50p";
+        
+     
         return (
             <div className={classes.container}>
                 <CalendarPaneToolbar
@@ -136,8 +134,12 @@ class Calendar extends Component {
                           eventPropGetter={Calendar.eventStyleGetter}
                           showMultiDayTimes={false}
                           components={{event: CustomEvent({classes})}}
-                          onSelectEvent={event =>
-                            this.props.onClassDelete(event)
+                          onSelectEvent={event =>{
+                              if(!this.props.showFinalSchedul)
+                            return this.props.onClassDelete(event);
+                            else
+                            null
+                          }
                           }
                         />
                     </div>
