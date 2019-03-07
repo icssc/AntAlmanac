@@ -8,8 +8,7 @@ import {
   Paper,
   Tooltip,
   Typography,
-  IconButton,
-  Button
+  IconButton
 } from "@material-ui/core";
 import Logo_tight from './logo_tight.png';
 import Logo_wide from './logo_wide.png';
@@ -24,7 +23,8 @@ import {
   ImportContacts,
   FormatListBulleted,
   Search,
-  Assignment
+  Assignment,
+  Forum
 } from "@material-ui/icons";
 import LoadSaveScheduleFunctionality from "../cacheMes/LoadSaveFunctionality";
 
@@ -406,7 +406,7 @@ displayFinal =(schedule)=>
     return (
       <Fragment>
         <CssBaseline/>
-        <AppBar position='static' style={{marginBottom: '8px'}}>
+        <AppBar position='static' style={{marginBottom: '7px', boxShadow:"none", backgroundColor:"#305db7"}}>
           <Toolbar variant="dense">
             <Typography style={{ flexGrow: 1 }}>
               {this.state.isDesktop ? (
@@ -436,6 +436,18 @@ displayFinal =(schedule)=>
                 <Assignment style={{marginRight: 27, marginTop: 5}} fontSize="48px" color="white"/>
               </a>
             </Tooltip>
+
+
+            <Tooltip title="Message Us on FB!">
+              <a
+                style={{color: "white"}}
+                href={"https://www.facebook.com/AntAlmanac/"}
+                target="_blank"
+              >
+                <Forum style={{marginRight: 27, marginTop: 5}} fontSize="48px" color="white"/>
+              </a>
+            </Tooltip>
+
             <Tooltip title="Info Page">
               <a
                 style={{color: "white"}}
@@ -471,7 +483,7 @@ displayFinal =(schedule)=>
 
           <Grid item lg={6} xs={12}>
             <Paper elevation={0} style={{overflow: "hidden", marginBottom: '8px'}}>
-              <Toolbar variant="dense" style={{backgroundColor: "#5191d6", marginRight:8}}>
+              <Toolbar variant="dense" style={{ backgroundColor: "#dfe2e5", marginRight:8, borderRadius: '0px'}}>
                 {this.state.view ? (
                   <Tooltip title="List View">
                     <IconButton onClick={() => this.setView(0)}>
@@ -500,14 +512,6 @@ displayFinal =(schedule)=>
                   </Tooltip>
                 )}
 
-                <Typography style={{flexGrow: 1}}/>
-
-                <Button href="https://www.facebook.com/AntAlmanac/">
-                  <Typography>
-                    Message Us!
-                  </Typography>
-                </Button>
-
               </Toolbar>
             </Paper>
             <Paper
@@ -515,12 +519,14 @@ displayFinal =(schedule)=>
                       overflow: "auto",
                       padding: 10,
                       height: 'calc(100vh - 96px - 24px)',
-                      marginRight: 8
+                      marginRight: 8,
+                      boxShadow:"none"
                     }}
                     id='rightPane'
                   >
             {this.state.showTabularView ?
-              <TabularView showFinalSchedule ={this.state.showFinalSchedule} displayFinal={this.displayFinal} classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}  colorChange={this.colorChange}/>              :
+              <TabularView showFinalSchedule ={this.state.showFinalSchedule} displayFinal={this.displayFinal} classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}  colorChange={this.colorChange} scheduleIndex={this.state.currentScheduleIndex}/>
+              :
               (
                   this.state.showSearch ? <SearchForm updateFormData={this.updateFormData}/> :
                     <CoursePane

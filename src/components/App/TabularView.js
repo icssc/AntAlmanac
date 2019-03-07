@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import ColorPicker from './colorPicker'
+import {Typography} from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
 import rmpData from '../CoursePane/RMP.json'
 import locations from '../CoursePane/locations.json'
@@ -7,29 +8,6 @@ import RstrPopover from '../CoursePane/RstrPopover'
 import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
 import FinalSwitch from './FinalSwitch'
-import {
-
-  Tooltip,
-  Typography,
-  IconButton,
-  Button
-} from "@material-ui/core";
-
-
-const styles = theme => ({
-  typography: {
-      margin: theme.spacing.unit * 2,
-    },
-container: {
-  display: 'flex',
-  flexWrap: 'wrap',
-},
-formControl: {
-  margin: theme.spacing.unit,
-},
-});
-
-
 
 class TabularView extends Component {
   constructor(props) {
@@ -119,7 +97,7 @@ class TabularView extends Component {
       })
 
       let final = course.section.finalExam;
-     
+
       if(final.length>5)
       {
         let [,,, date, start, startMin, end, endMin, ampm] = final.match(/([A-za-z]+) *(\d{1,2}) *([A-za-z]+) *(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
@@ -165,14 +143,18 @@ class TabularView extends Component {
       if (!isNaN(Number(course.section.units)))
         totalUnits += Number(course.section.units);
     }
-   
+
    console.log(classes,"plese");
     return (
       <Fragment>
         <div className={classes.container}>
-        <div>{"Total units: " + totalUnits}</div>
-       < FinalSwitch  displayFinal={this.props.displayFinal} schedule={finalSchedule} showFinalSchedule = {this.props.showFinalSchedule}/>
-       </div>
+          <Typography variant="title">
+            Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)
+          </Typography>
+          <Typography>
+            <FinalSwitch  displayFinal={this.props.displayFinal} schedule={finalSchedule} showFinalSchedule = {this.props.showFinalSchedule}/>
+          </Typography>
+        </div>
         {classes.map(event => {
           return (<div>
             <div
@@ -185,6 +167,9 @@ class TabularView extends Component {
                 name={event.name[0] + ' ' + event.name[1] + ' | ' + event.name[2]}
                 courseDetails={event}
               />
+              <Typography variant="title" style={{ flexGrow: "2"}}>
+                &nbsp;
+              </Typography>
               <AlmanacGraphWrapped
                 term={event.courseTerm}
                 courseDetails={event}
@@ -258,8 +243,8 @@ NOR: ${secEach.numNewOnlyReserved}`}
             </table>
           </div>)
         })}
-      
-                
+
+
       </Fragment>
     )
   }

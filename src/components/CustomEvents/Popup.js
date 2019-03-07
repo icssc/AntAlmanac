@@ -205,6 +205,7 @@ class DialogSelect extends Component {
               onClick={this.handleAddEventButtonClicked}
               variant="contained"
               color="primary"
+              style={{boxShadow:"none"}}
             >
               {" "}
               Add Event

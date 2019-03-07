@@ -94,10 +94,10 @@ class Calendar extends Component {
 
     render() {
         const {classes, classEventsInCalendar} = this.props;
-        let c ="Jun 10 Mon 12:30-3:30pm";
-        let f ="TuTh12:30- 1:50p";
-        
-     
+        {/* let c ="Jun 10 Mon 12:30-3:30pm"; */}
+        {/* let f ="TuTh12:30- 1:50p"; */}
+
+
         return (
             <div className={classes.container}>
                 <CalendarPaneToolbar
@@ -108,7 +108,7 @@ class Calendar extends Component {
                     onTakeScreenshot={this.handleTakeScreenshot}
                     currentScheduleIndex={this.props.currentScheduleIndex}
                 />
-                <Paper>
+                <Paper style = {{boxShadow:"none"}}>
                     <div id="screenshot"
                          style={(!this.state.screenshotting ?
                            {height: "calc(100vh - 96px - 24px)"} :

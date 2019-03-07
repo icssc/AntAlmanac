@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import {  Menu, MenuItem } from "@material-ui/core";
+import {  Menu, MenuItem, Typography } from "@material-ui/core";
 import rmpData from "./RMP.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import POPOVER from "./PopOver";
@@ -202,9 +202,11 @@ class MiniSectionTable extends Component {
             name={this.props.name}
             courseDetails={this.props.courseDetails}
           />
-          {/* <Typography variant="title" style={{ flexGrow: "2", marginTop: 12 }}>
-            {this.props.name} &nbsp;&nbsp;&nbsp;&nbsp;
-          </Typography> */}
+
+          <Typography variant="title" style={{ flexGrow: "2"}}>
+            &nbsp;
+          </Typography>
+
           <AlmanacGraphWrapped
             term={this.props.term}
             courseDetails={this.props.courseDetails}

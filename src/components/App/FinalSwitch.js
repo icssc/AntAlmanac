@@ -2,9 +2,6 @@ import React from 'react';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
-
-
-
 const styles = theme => ({
   typography: {
       margin: theme.spacing.unit * 2,
@@ -42,13 +39,13 @@ class Switches extends React.Component {
               checked={this.props.showFinalSchedule}
               onChange={this.handleChange('checkedA')}
               value="checkedA"
-              color="secondary"
+              color="primary"
 
             />
           }
           label="Final Schedule"
         />
-   
+
       </div>
     );
   }

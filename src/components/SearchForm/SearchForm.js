@@ -120,7 +120,7 @@ class SearchForm extends Component {
         </div>
 
         <ExpansionPanel style={{marginTop: 8, marginBottom: 5}}>
-          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} >
             <Typography className="title">Advanced Search</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
@@ -133,6 +133,7 @@ class SearchForm extends Component {
             color="primary"
             variant="contained"
             onClick={() => this.props.updateFormData(this.state)}
+            style = {{boxShadow:"none"}}
           >
             Search
           </Button>
@@ -142,7 +143,8 @@ class SearchForm extends Component {
           <Typography>
             <b><u>New on AntAlmanac:</u></b><br/>
             Text message notifications<br/>
-            Links to interactive campus map
+            Links to interactive campus map<br/>
+            See finals schedules
           </Typography>
         </div>
 

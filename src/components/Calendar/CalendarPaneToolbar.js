@@ -12,7 +12,8 @@ const styles = {
         marginBottom: '8px'
     },
     toolbar: {
-        backgroundColor: "#5191d6"
+        backgroundColor: "#dfe2e5",
+        borderRadius: 0
     }
 };
 

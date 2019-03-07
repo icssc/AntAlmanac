@@ -7,6 +7,8 @@ import Popover from "@material-ui/core/Popover";
 import toRenderProps from "recompose/toRenderProps";
 import withState from "recompose/withState";
 import course_info from "./course_info.json";
+import { ExpandMore } from "@material-ui/icons";
+
 const WithState = toRenderProps(withState("anchorEl", "updateAnchorEl", null));
 
 const styles = theme => ({
@@ -37,12 +39,12 @@ function RenderPropsPopover(props) {
               aria-owns={open ? "render-props-popover" : undefined}
               aria-haspopup="true"
               variant="contained"
-              style={{backgroundColor:"#5191d6D0"}}
+              style={{backgroundColor:"#72a9ed", boxShadow:"none"}}
               onClick={event => {
                 updateAnchorEl(event.currentTarget);
               }}
             >
-              {name}&nbsp;&nbsp;&nbsp;&nbsp;
+              {name}&nbsp;&nbsp;<ExpandMore />
             </Button>
             <Popover
               id="render-props-popover"

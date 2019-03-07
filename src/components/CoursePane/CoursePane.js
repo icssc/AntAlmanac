@@ -2,7 +2,6 @@ import React, {Component, Fragment} from "react";
 import loadingGif from "./loading.mp4";
 import querystring from "querystring";
 import CourseRenderPane from "./CourseRenderPane";
-import welcome from "./calvin.png";
 import {IconButton} from "@material-ui/core";
 import {ArrowBack} from "@material-ui/icons";
 
