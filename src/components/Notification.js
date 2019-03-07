@@ -101,27 +101,27 @@ class CustomizedSnackbars extends React.Component {
     variant: "success"
   };
 
-  
 
-  handleSave =  (check,email,code) => {
-    // var person = prompt("Please enter your unique username");
-    if(check ===-1)
-    {
-        this.setState({
-            variant: "error",
-            open: true,
-            message: "invalid email, " + email+" !"
-          });
-    }
-    else
-    {
-        this.setState({
-            variant: "success",
-            open: true,
-            message: email+" added to the notification list for "+ code +" !!!"
-          });
-    }
-  };
+
+  //handleSave =  (check,email,code) => {
+  //   // var person = prompt("Please enter your unique username");
+  //   if(check ===-1)
+  //   {
+  //       this.setState({
+  //           variant: "error",
+  //           open: true,
+  //           message: "invalid email, " + email+" !"
+  //         });
+  //   }
+  //   else
+  //   {
+  //       this.setState({
+  //           variant: "success",
+  //           open: true,
+  //           message: email+" added to the notification list for "+ code +" !!!"
+  //         });
+  //   }
+  // };
 
   handleClose = ( reason) => {
     if (reason === "clickaway") {
@@ -132,13 +132,19 @@ class CustomizedSnackbars extends React.Component {
   };
 
   render() {
-    
 
+console.log(this.props.full,"filll");
     return (
       <Fragment>
-     <SPopover  handleSave={this.handleSave} full={this.props.full} code={this.props.code} name={this.props.name}/>
+        {this.props.termName === "2019 Spring"?( <SPopover
+     //handleSave={this.handleSave}
+     full={this.props.full} code={this.props.code} name={this.props.name}/>
+):"FULL"}
+     {/* <SPopover
+     //handleSave={this.handleSave}
+     full={this.props.full} code={this.props.code} name={this.props.name}/> */}
 
-      
+
         {/* <Button variant="text" color="primary" className={classes.button} onClick={this.getMeSpot}>
             Add</Button> */}
         <Snackbar

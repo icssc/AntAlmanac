@@ -2,12 +2,13 @@ import React from "react";
 import { Fragment } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
-import Popover from "@material-ui/core/Popover";
-import IconButton from "@material-ui/core/IconButton";
+import {
+  Typography,
+  Popover,
+  Button
+} from "@material-ui/core";
 import Share from "@material-ui/icons/Share";
 import html2canvas from "html2canvas";
-import Tooltip from "@material-ui/core/Tooltip";
 import { FacebookShareButton, FacebookIcon } from "react-share";
 const styles = theme => ({
   typography: {
@@ -96,16 +97,16 @@ class Sharing extends React.Component {
 
     return (
       <Fragment>
-        <IconButton
+        <Button
           aria-owns={open ? "simple-popper" : undefined}
           aria-haspopup="true"
-          variant="contained"
           onClick={this.handleClick}
+          style={{
+            width:"100%"
+          }}
         >
-          <Tooltip title="Share Your Schedule on FB!">
-            <Share />
-          </Tooltip>
-        </IconButton>
+            <Share /> FB Share
+        </Button>
         <Popover
           id="simple-popper"
           open={open}
@@ -113,11 +114,11 @@ class Sharing extends React.Component {
           onClose={this.handleClose}
           anchorOrigin={{
             vertical: "bottom",
-            horizontal: "center"
+            horizontal: "left"
           }}
           transformOrigin={{
-            vertical: "top",
-            horizontal: "center"
+            vertical: "bottom",
+            horizontal: "right"
           }}
         >
           {/* {!this.state.loading ? (

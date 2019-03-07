@@ -66,7 +66,7 @@ class AlmanacGraph extends Component {
         };
 
         const url =
-            "https://j4j70ejkmg.execute-api.us-west-1.amazonaws.com/latest/api/websoc?" +
+            "https://2r7p77ujv6.execute-api.us-west-1.amazonaws.com/latest/api/websoc?" +
             querystring.stringify(params);
 
         fetch(url.toString())
@@ -108,7 +108,7 @@ class AlmanacGraph extends Component {
         return (
             <Fragment>
                 <Typography className={this.props.classes.flex}/>
-                <Button variant="contained" color="secondary" onClick={this.handleOpen}>
+                <Button variant="contained" onClick={this.handleOpen} style={{backgroundColor: "#f8f17c", boxShadow: "none"}}>
                     Past Enrollment
                 </Button>
 

@@ -5,8 +5,8 @@ import {green, amber} from "@material-ui/core/colors";
 import {IconButton, Snackbar, SnackbarContent} from "@material-ui/core";
 import {withStyles} from "@material-ui/core/styles";
 import {loadUserData} from "../App/FetchHelper";
-import LoadButton from "../logIn/loadButton";
-import SaveButton from "../saveApp/saveButton";
+import LoadButton from "./LoadButton";
+import SaveButton from "./SaveButton";
 
 const iconVariants = {
   success: CheckCircle,
@@ -86,7 +86,11 @@ class LoadSaveScheduleFunctionality extends React.Component {
           const userData = await loadUserData(savedUserID); // this shit gotta do promise joint
           if (userData !== -1)
           {
-            this.setState({ message: "Schedule that was saved under " + savedUserID + " loaded.", open: true });
+            if(!userData.canceledClass)
+            this.setState({ message: "Schedule that was saved under " + savedUserID + " loaded.", open: true ,variant: "success"});
+            else
+            this.setState({ message: "Schedule that was saved under " + savedUserID + " loaded; however, one or more classes have been cancelled!",variant: "warning", open: true });
+
             await this.props.onLoad(userData);
           }
       }
@@ -99,14 +103,26 @@ class LoadSaveScheduleFunctionality extends React.Component {
 
       if (userID.length > 0) {
           const userData = await loadUserData(userID);
-          console.log(userData);
           if(userData !==-1)
           {
+            var message ="";
+            var variant="";
+
+            if(!userData.canceledClass)
+           { message = "Schedule that was saved under '" + userID + "' loaded.";
+           variant ="success";
+          }
+          else
+          {
+            message =  "Schedule that was saved under " + userID + " loaded; however, one or more classes have been cancelled!!!"
+           variant ="warning";
+          }
+
           this.setState(
             {
               open: true,
-              message: "Schedule that was saved under '" + userID + "' loaded.",
-              variant: "success"
+              message: message,
+              variant: variant
             },
             async () => {
               this.props.onLoad(userData);

@@ -1,5 +1,13 @@
 import React, {Component} from 'react';
-import {MenuItem, Select, TextField, FormControl, InputLabel} from "@material-ui/core";
+import {
+  MenuItem,
+  Select,
+  TextField,
+  FormControl,
+  InputLabel,
+  Switch,
+  FormControlLabel
+} from "@material-ui/core";
 import {withStyles} from '@material-ui/core/styles';
 
 const styles = {
@@ -51,23 +59,34 @@ class AdvancedSearchTextFields extends Component {
       units: "",
       endTime: "",
       startTime: "",
-      coursesFull: 'ANY'
+      coursesFull: 'ANY',
+      building: ""
     }
   }
 
   handleChange = name => event => {
     if (name === "endTime" || name === "startTime") {
       if (event.target.value !== "") {
-        if (parseInt(event.target.value.slice(0, 2)) > 12)
-          this.setState({[name]: (parseInt(event.target.value.slice(0, 2)) - 12) + ":00pm"}, () => {
+        if (parseInt(event.target.value.slice(0, 2), 10) > 12)
+          this.setState({[name]: (parseInt(event.target.value.slice(0, 2), 10) - 12) + ":00pm"}, () => {
             this.props.onAdvancedSearchChange(this.state)
           });
         else
-          this.setState({[name]: parseInt(event.target.value.slice(0, 2)) + ":00am"}, () => {
+          this.setState({[name]: parseInt(event.target.value.slice(0, 2), 10) + ":00am"}, () => {
             this.props.onAdvancedSearchChange(this.state)
           });
       } else {
         this.setState({[name]: ""}, () => {
+          this.props.onAdvancedSearchChange(this.state)
+        });
+      }
+    } else if (name === "online"){
+      if (event.target.checked){
+        this.setState({ building: "ON" }, () => {
+          this.props.onAdvancedSearchChange(this.state)
+        });
+      } else {
+        this.setState({ building: "" }, () => {
           this.props.onAdvancedSearchChange(this.state)
         });
       }
@@ -124,7 +143,7 @@ class AdvancedSearchTextFields extends Component {
         />
 
         <FormControl className={classes.coursesFull}>
-          <InputLabel>Term</InputLabel>
+          <InputLabel>Class Full Option</InputLabel>
           <Select
             value={this.state.coursesFull}
             onChange={this.handleChange('coursesFull')}
@@ -136,6 +155,17 @@ class AdvancedSearchTextFields extends Component {
             <MenuItem value={"Overenrolled"}>Show only over-enrolled courses</MenuItem>
           </Select>
         </FormControl>
+
+        <FormControlLabel
+          control={
+            <Switch
+              onChange={this.handleChange('online')}
+              value="online"
+              color="primary"
+            />
+          }
+          label="Online Classes Only"
+        />
 
         <form className={classes.timePicker}>
           <TextField
@@ -150,6 +180,7 @@ class AdvancedSearchTextFields extends Component {
             }}
           />
         </form>
+
         <form className={classes.timePicker}>
           <TextField
             onChange={this.handleChange('endTime')}

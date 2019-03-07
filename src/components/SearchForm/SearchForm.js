@@ -2,15 +2,24 @@ import DeptSearchBar from "./DeptSearchBar/DeptSearchBar";
 import GESelector from "./GESelector";
 import TermSelector from "./TermSelector";
 import React, {Component} from "react";
-import {Button} from "@material-ui/core";
+import {
+  Button,
+  Typography,
+  ExpansionPanel,
+  ExpansionPanelSummary,
+  ExpansionPanelDetails
+} from "@material-ui/core";
 import {withStyles} from '@material-ui/core/styles';
 import AdvancedSearchTextFields from "./AdvancedSearch";
+import MIUCI from "./MIUCI.png";
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    height: '100%'
+    height: '100%',
+    position: "relative"
   },
   search: {
     display: 'flex',
@@ -19,6 +28,18 @@ const styles = {
   },
   margin: {
     borderTop: 'solid 8px transparent',
+  },
+  miuci: {
+    width: "35%",
+    position: "absolute",
+    bottom: 0,
+    right: 0
+  },
+  new: {
+    width: "55%",
+    position: "absolute",
+    bottom: 0,
+    left: 0
   }
 };
 
@@ -35,7 +56,8 @@ class SearchForm extends Component {
       units: "",
       endTime: "",
       startTime: "",
-      coursesFull: 'ANY'
+      coursesFull: 'ANY',
+      building: ""
     };
   }
 
@@ -97,17 +119,42 @@ class SearchForm extends Component {
           <TermSelector setTerm={this.setTerm}/>
         </div>
 
-        <AdvancedSearchTextFields onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
+        <ExpansionPanel style={{marginTop: 8, marginBottom: 5}}>
+          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} >
+            <Typography className="title">Advanced Search</Typography>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails>
+            <AdvancedSearchTextFields onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
 
         <div className={classes.search}>
           <Button
             color="primary"
             variant="contained"
             onClick={() => this.props.updateFormData(this.state)}
+            style = {{boxShadow:"none"}}
           >
             Search
           </Button>
         </div>
+
+        <div className={classes.new}>
+          <Typography>
+            <b><u>New on AntAlmanac:</u></b><br/>
+            Text message notifications<br/>
+            Links to interactive campus map<br/>
+            See finals schedules
+          </Typography>
+        </div>
+
+        <img
+          src={MIUCI}
+          variant="contained"
+          alt="Made_in_UCI"
+          className={classes.miuci}
+        />
+
       </div>
     );
   }

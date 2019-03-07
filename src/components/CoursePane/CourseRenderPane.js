@@ -1,11 +1,10 @@
 import { withStyles } from "@material-ui/core/styles";
-import {Paper, Typography, Grid, Modal, IconButton} from "@material-ui/core";
+import {Paper, Typography, Grid, Modal } from "@material-ui/core";
 import React, { Component } from "react";
 import CourseDetailPane from "./CourseDetailPane";
 import SchoolDeptCard from "./SchoolDeptCard";
 import MiniSectionTable from "./MiniSectionTable";
 import NoNothing from "./no_results.png";
-import {ArrowBack} from "@material-ui/icons";
 
 const styles = theme => ({
   course: {
@@ -51,12 +50,13 @@ class CourseRenderPane extends Component {
 
   toRender = SOCObject => {
     this.props.onToggleDismissButton();
-    this.scrollPos = document.getElementById("foo1").scrollTop;
-    document.getElementById("foo1").scrollTop = 0;
+    this.scrollPos = document.getElementById("rightPane").scrollTop;
+    document.getElementById("rightPane").scrollTop = 0;
     this.setState({ course: SOCObject, courseDetailsOpen: true });
   };
 
   getGrid(SOCObject) {
+    console.log("gerg",SOCObject);
     if ("departments" in SOCObject) {
       return (
         <SchoolDeptCard
@@ -109,7 +109,7 @@ class CourseRenderPane extends Component {
   handleDismissDetails() {
     this.props.onToggleDismissButton();
     this.setState({ courseDetailsOpen: false, course: null }, () => {
-      document.getElementById("foo1").scrollTop = this.scrollPos;
+      document.getElementById("rightPane").scrollTop = this.scrollPos;
     });
   }
 

@@ -8,14 +8,14 @@ const styles = theme => ({
         flexWrap: 'wrap',
         ...theme.mixins.gutters(),
         paddingTop: theme.spacing.unit * 2,
-        paddingBottom: theme.spacing.unit * 2,
+        paddingBottom: theme.spacing.unit * 2
     },
     dept: {
         display: 'flex',
         flexWrap: 'wrap',
         ...theme.mixins.gutters(),
         paddingTop: theme.spacing.unit * 1.5,
-        paddingBottom: theme.spacing.unit * 1.5,
+        paddingBottom: theme.spacing.unit * 1.5
     },
     text: {
         flexBasis: '50%',

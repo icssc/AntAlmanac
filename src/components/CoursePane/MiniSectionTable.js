@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from "react";
-
-import {  Menu, MenuItem } from "@material-ui/core";
+import {  Menu, MenuItem, Typography } from "@material-ui/core";
 import rmpData from "./RMP.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import POPOVER from "./PopOver";
-import Notification from '../Notification'
-import RstrPopover from "./RstrPopover"
+import Notification from '../Notification';
+import RstrPopover from "./RstrPopover";
+import locations from "./locations.json";
 
 class ScheduleAddSelector extends Component {
   constructor(props) {
@@ -27,6 +27,7 @@ class ScheduleAddSelector extends Component {
   handleClose = scheduleNumber => {
     this.setState({ anchor: null });
     if (scheduleNumber !== -1)
+    {
       this.props.onAddClass(
         this.props.section,
         this.props.courseDetails.name,
@@ -34,6 +35,8 @@ class ScheduleAddSelector extends Component {
 
         this.props.termName
       );
+
+    }
   };
 
   redirectRMP = (e, name) => {
@@ -85,10 +88,19 @@ class ScheduleAddSelector extends Component {
     return test;
   };
 
+  genMapLink = location => {
+    try {
+      var location_id = locations[location.split(" ")[0]];
+      return "https://map.uci.edu/?id=463#!m/"+location_id;
+    } catch (err) {
+      return "https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034";
+    }
+  };
 
   statusforFindingSpot = (section,classCode) => {
+    console.log("lkkl",this.props.courseDetails);
     if(section === 'FULL')
-    return <Notification  full={section} code={classCode} name={this.props.courseDetails.name}/>
+    return <Notification  termName={this.props.termName} full={section} code={classCode} name={this.props.courseDetails.name}/>
     else
     return section;
  };
@@ -110,12 +122,26 @@ class ScheduleAddSelector extends Component {
 Sec: ${section.sectionCode}
 Units: ${section.units}`}
           </td>
-          <td className="multiline">{this.linkRMP(section.instructors)}</td>
+          <td className="multiline">
+          {/* {this.linkRMP(section.instructors)} */}
+          {section.instructors.join("\n")}
+          </td>
           <td className="multiline">
             {section.meetings.map(meeting => meeting[0]).join("\n")}
           </td>
           <td className="multiline">
-            {section.meetings.map(meeting => meeting[1]).join("\n")}
+            {section.meetings.map(meeting => {
+              return (meeting[1] !== "ON LINE" && meeting[1] !== "TBA") ? (
+                <div>
+                  <a href={this.genMapLink(meeting[1])} target="_blank">
+                    {meeting[1]}
+                  </a>
+                  <br />
+                </div>
+              ) : (
+                meeting[1]
+              );
+            })}
           </td>
           <td className={["multiline", section.status].join(" ")}>
             <strong>{`${section.numCurrentlyEnrolled[0]} / ${
@@ -176,9 +202,11 @@ class MiniSectionTable extends Component {
             name={this.props.name}
             courseDetails={this.props.courseDetails}
           />
-          {/* <Typography variant="title" style={{ flexGrow: "2", marginTop: 12 }}>
-            {this.props.name} &nbsp;&nbsp;&nbsp;&nbsp;
-          </Typography> */}
+
+          <Typography variant="title" style={{ flexGrow: "2"}}>
+            &nbsp;
+          </Typography>
+
           <AlmanacGraphWrapped
             term={this.props.term}
             courseDetails={this.props.courseDetails}

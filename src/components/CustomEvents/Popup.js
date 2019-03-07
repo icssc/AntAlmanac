@@ -10,9 +10,7 @@ import {
   Menu,
   FormControl,
   Input,
-  IconButton,
-  InputLabel,
-  Tooltip
+  InputLabel
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { Add } from "@material-ui/icons";
@@ -74,7 +72,7 @@ function dayToNum(day) {
       return 3;
     case "thursday":
       return 4;
-    case "friday":
+    default: //case "friday" cuz friday's always the best
       return 5;
   }
 }
@@ -134,10 +132,10 @@ class DialogSelect extends Component {
   };
 
   handleAddToCalendar = scheduleIndex => {
-    const startHour = parseInt(this.state.start.slice(0, 2));
-    const startMin = parseInt(this.state.start.slice(3, 5));
-    const endHour = parseInt(this.state.end.slice(0, 2));
-    const endMin = parseInt(this.state.end.slice(3, 5));
+    const startHour = parseInt(this.state.start.slice(0, 2), 10);
+    const startMin = parseInt(this.state.start.slice(3, 5), 10);
+    const endHour = parseInt(this.state.end.slice(0, 2), 10);
+    const endMin = parseInt(this.state.end.slice(3, 5), 10);
 
     const events = [];
     const id = Math.floor(Math.random() * 1000000);
@@ -163,20 +161,23 @@ class DialogSelect extends Component {
     this.setState({ anchorEl: event.currentTarget });
   };
 
+  handleClickAway = () => {
+    this.setState({
+      open: false,
+    });
+  };
+
   render() {
     const { anchorEl } = this.state;
 
     return (
       <div>
-        <Tooltip title="Add Custom Event">
-          <IconButton onClick={() => this.setState({ open: true })}>
-            <Add />
-          </IconButton>
-        </Tooltip>
+        <Button onClick={() => this.setState({ open: true })}>
+          <Add /> Add Custom
+        </Button>
         <Dialog
-          disableBackdropClick
-          disableEscapeKeyDown
           open={this.state.open}
+          onClose={this.handleClickAway}
         >
           <DialogContent>
             <EventName
@@ -192,7 +193,7 @@ class DialogSelect extends Component {
               onTimeChange={this.handleEndTimeChange}
             />
             <DaySelector onSelectDay={this.handleDayChange} />
-           
+
           </DialogContent>
 
           <DialogActions>
@@ -204,6 +205,7 @@ class DialogSelect extends Component {
               onClick={this.handleAddEventButtonClicked}
               variant="contained"
               color="primary"
+              style={{boxShadow:"none"}}
             >
               {" "}
               Add Event

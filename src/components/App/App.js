@@ -6,9 +6,12 @@ import {
   Toolbar,
   AppBar,
   Paper,
-  Tooltip, Typography
+  Tooltip,
+  Typography,
+  IconButton
 } from "@material-ui/core";
-import Logo from './logo.svg';
+import Logo_tight from './logo_tight.png';
+import Logo_wide from './logo_wide.png';
 
 import SearchForm from "../SearchForm/SearchForm";
 import CoursePane from "../CoursePane/CoursePane";
@@ -17,9 +20,13 @@ import {
   Info,
   ListAlt,
   Dns,
-  ImportContacts
+  ImportContacts,
+  FormatListBulleted,
+  Search,
+  Assignment,
+  Forum
 } from "@material-ui/icons";
-import LoadSaveScheduleFunctionality from "../cacheMes/cacheM";
+import LoadSaveScheduleFunctionality from "../cacheMes/LoadSaveFunctionality";
 
 import {
   saveUserData,
@@ -39,7 +46,7 @@ import {
   amber,
   blueGrey
 } from '@material-ui/core/colors';
-import IconButton from "@material-ui/core/IconButton/IconButton";
+import TabularView from './TabularView';
 
 const arrayOfColors = [red[500], pink[500],
   purple[500], indigo[500],
@@ -62,28 +69,38 @@ class App extends Component {
       unavailableColors: [],
       backupArray: [],
       userID: null,
+      showTabularView: false,
+      finalSchedule:[],
+      showFinalSchedule:false
     };
+
+    this.resizeLogo = this.resizeLogo.bind(this);
   }
 
   componentDidMount = () => {
     document.addEventListener("keydown", this.handleUndo, false);
-    const script = document.createElement("script");
 
-    const scriptText = document.createTextNode(function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2&appId=343457496213889&autoLogAppEvents=1';
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-
-    script.appendChild(scriptText);
-    document.head.appendChild(script);
+    this.resizeLogo();
+    window.addEventListener("resize", this.resizeLogo);
   };
 
   componentWillUnmount() {
     document.removeEventListener("keydown", this.undoEvent, false);
+    window.removeEventListener("resize", this.resizeLogo);
   }
+
+  resizeLogo() {
+    this.setState({ isDesktop: window.innerWidth > 1000 });
+  }
+
+  handleToggleShowTabularView = () => {
+      this.setState(previousState => ({showTabularView: !previousState.showTabularView}),()=>{
+        if(!this.state.showTabularView)
+        this.setState({showFinalSchedule:false})
+      }
+      );
+      this.handleDismissSearchResults();
+  };
 
   setView = viewNum => {
     if (this.state.showSearch === false) this.setState({view: viewNum});
@@ -217,7 +234,7 @@ class App extends Component {
       course.courseCode === section.classCode && (course.scheduleIndex === scheduleIndex || scheduleIndex === 4)
     );
 
-    if (!doesExist) {
+    if (doesExist === undefined) {
       if (scheduleIndex === 4)
         this.setState({
           unavailableColors: this.state.unavailableColors.concat([
@@ -228,12 +245,13 @@ class App extends Component {
           ])
         });
       else
+      {
         this.setState({
           unavailableColors: this.state.unavailableColors.concat({
             color: randomColor,
             scheduleIndex: scheduleIndex
           })
-        });
+        })};
 
       let newCourses = [];
 
@@ -242,7 +260,7 @@ class App extends Component {
 
         if (timeString !== 'TBA') {
 
-          let [_, dates, start, startMin, end, endMin, ampm] = timeString.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
+          let [, dates, start, startMin, end, endMin, ampm] = timeString.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
 
           start = parseInt(start, 10);
           startMin = parseInt(startMin, 10);
@@ -256,6 +274,34 @@ class App extends Component {
             if (start > end) start -= 12;
           }
 
+          if(scheduleIndex ===4)
+          {
+          for(let i =0;i<4;++i)
+          {
+            dates.forEach((shouldBeInCal, index) => {
+              if (shouldBeInCal) {
+                const newCourse = {
+                  name: name,
+                  color: randomColor,
+                  courseTerm: courseTerm,
+                  title: name[0] + ' ' + name[1],
+                  location: meeting[1],
+                  section: section,
+                  courseCode: section.classCode,
+                  courseType: section.classType,
+                  start: new Date(2018, 0, index + 1, start, startMin),
+                  end: new Date(2018, 0, index + 1, end, endMin),
+                  isCustomEvent: false,
+                  scheduleIndex: i
+                };
+
+                newCourses.push(newCourse);
+              }
+            });
+          }
+        }
+        else
+        {
           dates.forEach((shouldBeInCal, index) => {
             if (shouldBeInCal) {
               const newCourse = {
@@ -277,6 +323,7 @@ class App extends Component {
             }
           });
         }
+        }
       });
 
       this.setState({courseEvents: this.state.courseEvents.concat(newCourses)});
@@ -286,11 +333,11 @@ class App extends Component {
   handleScheduleChange = direction => {
     if (direction === 0) {
       this.setState({
-        currentScheduleIndex: (this.state.currentScheduleIndex - 1 + 4) % 4
+        showFinalSchedule:false,  currentScheduleIndex: (this.state.currentScheduleIndex - 1 + 4) % 4
       });
     } else if (direction === 1) {
       this.setState({
-        currentScheduleIndex: (this.state.currentScheduleIndex + 1) % 4
+        showFinalSchedule:false, currentScheduleIndex: (this.state.currentScheduleIndex + 1) % 4
       });
     }
   };
@@ -326,13 +373,12 @@ class App extends Component {
   colorChange =(course,color)=>
   {
     let courses = this.state.courseEvents;
-    let preColor = course.color;
 
-  if(undefined ==this.state.unavailableColors.find(function(element){return element.color == color&&element.scheduleIndex ==course.scheduleIndex}))
-  {  
+  if(undefined===this.state.unavailableColors.find(function(element){return element.color === color&&element.scheduleIndex===course.scheduleIndex}))
+  {
     for(var item of courses)
     {
-      if(item.scheduleIndex==course.scheduleIndex&& item.courseCode==course.courseCode && item.courseTerm==course.courseTerm)
+      if(item.scheduleIndex===course.scheduleIndex&& item.courseCode===course.courseCode && item.courseTerm===course.courseTerm)
       item.color=color;
     }
     this.setState({courseEvents:courses, unavailableColors: this.state.unavailableColors.concat(
@@ -340,16 +386,36 @@ class App extends Component {
   }
 }
 
+displayFinal =(schedule)=>
+{
+
+
+  this.setState({
+    showFinalSchedule:!this.state.showFinalSchedule},()=>{
+      if(this.state.showFinalSchedule)
+      {
+        console.log("finalc",schedule);
+       this.setState({finalSchedule:schedule});
+      }
+    });
+
+}
+
+
   render() {
     return (
       <Fragment>
         <CssBaseline/>
-        <AppBar position='static' style={{marginBottom: '8px'}}>
+        <AppBar position='static' style={{marginBottom: '7px', boxShadow:"none", backgroundColor:"#305db7"}}>
           <Toolbar variant="dense">
-            <img src={Logo} height={42} alt={"logo"}/>
-            <Typography variant="title" style={{flexGrow: 1, color: 'white'}}>
-              AntAlmanac
-            </Typography>
+            <Typography style={{ flexGrow: 1 }}>
+              {this.state.isDesktop ? (
+                <img src={Logo_wide} height={36} alt={"logo"} style={{marginTop: 5}}/>
+               ) : (
+                <img src={Logo_tight} height={36} alt={"logo"} style={{marginTop: 5}}/>
+               )}
+             </Typography>
+
             <LoadSaveScheduleFunctionality onLoad={this.handleLoad} onSave={this.handleSave}/>
 
             <Tooltip title="Blue Book Giveaway!">
@@ -361,6 +427,27 @@ class App extends Component {
                 <ImportContacts style={{marginLeft: 15, marginRight: 30}} fontSize="48px" color="white"/>
               </a>
             </Tooltip>
+            <Tooltip title="Give Us Feedback!">
+              <a
+                style={{color: "white"}}
+                href={"https://goo.gl/forms/eIHy4kp56pZKP9fK2"}
+                target="_blank"
+              >
+                <Assignment style={{marginRight: 27, marginTop: 5}} fontSize="48px" color="white"/>
+              </a>
+            </Tooltip>
+
+
+            <Tooltip title="Message Us on FB!">
+              <a
+                style={{color: "white"}}
+                href={"https://www.facebook.com/AntAlmanac/"}
+                target="_blank"
+              >
+                <Forum style={{marginRight: 27, marginTop: 5}} fontSize="48px" color="white"/>
+              </a>
+            </Tooltip>
+
             <Tooltip title="Info Page">
               <a
                 style={{color: "white"}}
@@ -370,16 +457,18 @@ class App extends Component {
                 <Info fontSize="48px" color="white"/>
               </a>
             </Tooltip>
-         
+
           </Toolbar>
         </AppBar>
         <Grid container>
           <Grid item lg={6} xs={12}>
             <div>
               <Calendar
-                classEventsInCalendar={
+                classEventsInCalendar={this.state.showFinalSchedule?this.state.finalSchedule:
                   this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))
                 }
+                storeFinal={this.storeFinal}
+                showFinalSchedul={this.state.showFinalSchedule}
                 onUndo={this.handleUndo}
                 currentScheduleIndex={this.state.currentScheduleIndex}
                 onClassDelete={this.handleClassDelete}
@@ -387,51 +476,67 @@ class App extends Component {
                 onAddCustomEvent={this.handleAddCustomEvent}
                 setID={this.setID}
                 onClearSchedule={this.handleClearSchedule}
-                colorChange={this.colorChange}
+                showFinalSchedul={this.showFinalSchedule}
               />
             </div>
           </Grid>
 
           <Grid item lg={6} xs={12}>
             <Paper elevation={0} style={{overflow: "hidden", marginBottom: '8px'}}>
-              <Toolbar variant="dense" style={{backgroundColor: "#5191d6"}}>
-                <Tooltip title="List View">
-                  <IconButton onClick={() => this.setView(0)}>
-                    <ListAlt/>
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Tile View">
-                  <IconButton onClick={() => this.setView(1)}>
-                    <Dns/>
-                  </IconButton>
-                </Tooltip>
-                <Typography style={{ flexGrow: 1 }} />
-                  {/* <FBcomments/> */}
-                  <div class="fb-messengermessageus"
-          messenger_app_id="343457496213889"
-            page_id="2286387408050026"
-              />
+              <Toolbar variant="dense" style={{ backgroundColor: "#dfe2e5", marginRight:8, borderRadius: '0px'}}>
+                {this.state.view ? (
+                  <Tooltip title="List View">
+                    <IconButton onClick={() => this.setView(0)}>
+                      <ListAlt />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title="Tile View">
+                    <IconButton onClick={() => this.setView(1)}>
+                      <Dns />
+                    </IconButton>
+                  </Tooltip>
+                )}
 
-                <div class="fb-like" data-href="https://www.facebook.com/AntAlmanac" data-layout="button_count" data-action="like" data-size="large" data-show-faces="true" data-share="true"></div>
+                {!this.state.showTabularView ?(
+                  <Tooltip title="Show Tabular View: More Info on Selected Courses">
+                    <IconButton onClick={this.handleToggleShowTabularView}>
+                        <FormatListBulleted/>
+                    </IconButton>
+                  </Tooltip>
+                ):(
+                  <Tooltip title="Show Search View">
+                    <IconButton onClick={this.handleToggleShowTabularView}>
+                        <Search/>
+                    </IconButton>
+                  </Tooltip>
+                )}
+
               </Toolbar>
             </Paper>
             <Paper
-              style={{
-                overflow: "auto",
-                padding: 10,
-                height: 'calc(100vh - 96px - 24px)'
-              }}
-              id='foo1'
-            >
-              {this.state.showSearch ? <SearchForm updateFormData={this.updateFormData}/> :
-                <CoursePane
-                  view={this.state.view}
-                  formData={this.state.formData}
-                  onAddClass={this.handleAddClass}
-                  onDismissSearchResults={this.handleDismissSearchResults}
-                  term={this.state.formData}
-                  coursesEvents={this.state.coursesEvents}/>}
-            </Paper>
+                    style={{
+                      overflow: "auto",
+                      padding: 10,
+                      height: 'calc(100vh - 96px - 24px)',
+                      marginRight: 8,
+                      boxShadow:"none"
+                    }}
+                    id='rightPane'
+                  >
+            {this.state.showTabularView ?
+              <TabularView showFinalSchedule ={this.state.showFinalSchedule} displayFinal={this.displayFinal} classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}  colorChange={this.colorChange} scheduleIndex={this.state.currentScheduleIndex}/>
+              :
+              (
+                  this.state.showSearch ? <SearchForm updateFormData={this.updateFormData}/> :
+                    <CoursePane
+                      view={this.state.view}
+                      formData={this.state.formData}
+                      onAddClass={this.handleAddClass}
+                      onDismissSearchResults={this.handleDismissSearchResults}
+                      term={this.state.formData}/>
+              )}
+              </Paper>
           </Grid>
         </Grid>
       </Fragment>

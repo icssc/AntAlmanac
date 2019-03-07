@@ -16,9 +16,13 @@ class DeptSearchBar extends React.Component {
 
   determineDropdownLength() {
     if (isMobile) {
-      return 80;
+      return 3;
     }
-    return 450;
+    console.log('dsd',document.documentElement.scrollHeight
+    );
+    // return document.documentElement.scrollHeight
+    // - 96 - 24;
+    return 6;
   }
 
   handleStateChange(changes) {
@@ -43,7 +47,8 @@ class DeptSearchBar extends React.Component {
           required: true
         })}
         //getInputProps={() => <input />}
-        menuHeight={this.determineDropdownLength()}
+        menuItemCount={this.determineDropdownLength()}
+       // menuHeight={this.determineDropdownLength()}
         {...this.props} //Pass down other props to the Downshift layer
       />
     );

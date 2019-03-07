@@ -5,7 +5,7 @@ function calendarize(section, color, courseTerm, scheduleIndex, name) {
     const timeString = meeting[0].replace(/\s/g, "");
 
     if (timeString !== 'TBA') {
-      let [_, dates, start, startMin, end, endMin, ampm] = timeString.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
+      let [, dates, start, startMin, end, endMin, ampm] = timeString.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
 
       start = parseInt(start, 10);
       startMin = parseInt(startMin, 10);
@@ -27,6 +27,7 @@ function calendarize(section, color, courseTerm, scheduleIndex, name) {
             courseTerm: courseTerm,
             title: name[0] + ' ' + name[1],
             location: meeting[1],
+            final: section.finalExam,
             section: section,
             courseCode: section.classCode,
             courseType: section.classType,
@@ -50,28 +51,35 @@ async function getCoursesData(userData) {
   if(userData!==undefined)
   {
   const courses = userData.courseEvents;
-  const params = {};
-  let numClasses = 0;
+  const dataToSend = [];
 
   for (let i = 0; i < courses.length; ++i) {
     if (!courses[i].isCustomEvent) {
-      params["courseCodes" + numClasses] = courses[i].courseCode;
-      params["term" + numClasses] = courses[i].courseTerm;
-      numClasses++;
+      dataToSend.push({
+        courseCodes : courses[i].courseCode,
+        term : courses[i].courseTerm
+      });
     }
   }
-  params["length"] = numClasses;
 
-  const events = [];
+  var events =[];
 
-  if (numClasses > 0) {
-    const url = new URL(
-      "https://j4j70ejkmg.execute-api.us-west-1.amazonaws.com/latest/api/codes?"
-    );
+  if (dataToSend.length > 0) {
+    const response = await fetch(
+      `https://2r7p77ujv6.execute-api.us-west-1.amazonaws.com/latest/api/codes`,
+      {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        redirect: "follow",
+        referrer: "no-referrer",
+        body: JSON.stringify({dataToSend:dataToSend})
+      });
 
-    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-
-    const response = await fetch(url.toString());
     const json = await response.json();
 
     for (const courseEvent of courses) {
@@ -84,7 +92,7 @@ async function getCoursesData(userData) {
             break;
           }
         }
-
+        if(foundData!==null)
         events.push(...calendarize(foundData.section, courseEvent.color, courseEvent.courseTerm, courseEvent.scheduleIndex, foundData.courseName));
       }
     }
@@ -99,8 +107,10 @@ async function getCoursesData(userData) {
       events.push({...customEvent, start: new Date(customEvent.start), end: new Date(customEvent.end)});
     }
   }
-
-  return {courseEvents: events, unavailableColors: userData.unavailableColors};
+var canceledClass =false;
+ if(dataToSend.length>events.length)
+  canceledClass = true;
+  return {canceledClass :canceledClass,courseEvents: events, unavailableColors: userData.unavailableColors};
 }
 else
 return -1;
