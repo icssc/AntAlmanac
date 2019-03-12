@@ -141,7 +141,9 @@ class SearchForm extends Component {
 
         <div className={classes.new}>
           <Typography>
-            <b><u>New on AntAlmanac:</u></b><br/>
+            <b><u>We Are Recruiting!!</u></b><br/>
+            <a href="https://www.reddit.com/r/UCI/comments/azlqcl/antalmanac_were_recruiting_coding_marketing_and/" target="_blank">Coding, Marketing, Everything!</a><br/>
+            <b>New on AntAlmanac:</b><br/>
             Text message notifications<br/>
             Links to interactive campus map<br/>
             See finals schedules
