@@ -18,8 +18,6 @@ class DeptSearchBar extends React.Component {
     if (isMobile) {
       return 3;
     }
-    console.log('dsd',document.documentElement.scrollHeight
-    );
     // return document.documentElement.scrollHeight
     // - 96 - 24;
     return 6;

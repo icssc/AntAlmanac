@@ -24,7 +24,8 @@ import {
   FormatListBulleted,
   Search,
   Assignment,
-  Forum
+  Forum,
+  Refresh
 } from "@material-ui/icons";
 import LoadSaveScheduleFunctionality from "../cacheMes/LoadSaveFunctionality";
 
@@ -71,7 +72,8 @@ class App extends Component {
       userID: null,
       showTabularView: false,
       finalSchedule:[],
-      showFinalSchedule:false
+      showFinalSchedule:false,
+      refresh:false
     };
 
     this.resizeLogo = this.resizeLogo.bind(this);
@@ -99,7 +101,7 @@ class App extends Component {
           this.setState({showFinalSchedule:false});
       }
       );
-      this.handleDismissSearchResults();
+      this.setState({showSearch: true});
   };
 
   setView = viewNum => {
@@ -343,7 +345,7 @@ class App extends Component {
   };
 
   handleDismissSearchResults = () => {
-    this.setState({showSearch: true});
+    this.setState({showSearch: true, formData: null});
   };
 
   updateFormData = formData => {
@@ -511,6 +513,17 @@ displayFinal =(schedule)=>
                   </Tooltip>
                 )}
 
+                <Typography style={{flexGrow: 1}}/>
+
+                <Tooltip title="Refresh Search Results">
+                  <IconButton onClick={() => {
+                    if (!this.state.showSearch)
+                      this.setState({refresh: true});
+                  }}>
+                    <Refresh />
+                  </IconButton>
+                </Tooltip>
+
               </Toolbar>
             </Paper>
             <Paper
@@ -542,7 +555,9 @@ displayFinal =(schedule)=>
                       formData={this.state.formData}
                       onAddClass={this.handleAddClass}
                       onDismissSearchResults={this.handleDismissSearchResults}
-                      term={this.state.formData}/>
+                      term={this.state.formData}
+                      refresh={this.state.refresh}
+                      finishRefresh={() => this.setState({refresh: false})}/>
               )
             }
               </Paper>

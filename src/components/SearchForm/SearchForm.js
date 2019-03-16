@@ -46,19 +46,49 @@ const styles = {
 class SearchForm extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      dept: null,
-      ge: "ANY",
-      term: "2019 Spring",
-      courseNum: "",
-      courseCode: "",
-      instructor: "",
-      units: "",
-      endTime: "",
-      startTime: "",
-      coursesFull: 'ANY',
-      building: ""
-    };
+    if (this.props.prevFormData){
+      const {
+        dept,
+        term,
+        ge,
+        courseNum,
+        courseCode,
+        instructor,
+        units,
+        endTime,
+        startTime,
+        coursesFull,
+        building
+      } = this.props.prevFormData;
+      this.state = {
+          dept: dept,
+          ge: ge,
+          term: term,
+          courseNum: courseNum,
+          courseCode: courseCode,
+          instructor: instructor,
+          units: units,
+          endTime: endTime,
+          startTime: startTime,
+          coursesFull: coursesFull,
+          building: building
+        };
+        this.props.updateFormData(this.state);
+    }else{
+      this.state = {
+        dept: null,
+        ge: "ANY",
+        term: "2019 Spring",
+        courseNum: "",
+        courseCode: "",
+        instructor: "",
+        units: "",
+        endTime: "",
+        startTime: "",
+        coursesFull: 'ANY',
+        building: ""
+      };
+    }
   }
 
   componentDidMount = () => {
@@ -142,7 +172,7 @@ class SearchForm extends Component {
         <div className={classes.new}>
           <Typography>
             <b><u>We Are Recruiting!!</u></b><br/>
-            <a href="https://www.reddit.com/r/UCI/comments/azlqcl/antalmanac_were_recruiting_coding_marketing_and/" target="_blank">Coding, Marketing, Everything!</a><br/>
+            <a href="https://www.reddit.com/r/UCI/comments/azlqcl/antalmanac_were_recruiting_coding_marketing_and/" target="_blank" rel="noopener noreferrer">Coding, Marketing, Everything!</a><br/>
             <b>New on AntAlmanac:</b><br/>
             Text message notifications<br/>
             Links to interactive campus map<br/>

@@ -28,7 +28,8 @@ class CoursePane extends Component {
     return (
       this.state !== nextState ||
       nextProps.formData !== this.props.formData ||
-      nextProps.view !== this.props.view
+      nextProps.view !== this.props.view ||
+      nextProps.refresh !== this.props.refresh
     );
   }
 
@@ -63,7 +64,7 @@ class CoursePane extends Component {
       building
     } = this.props.formData;
 
-    if (prevProps.formData !== this.props.formData) {
+    if (prevProps.formData !== this.props.formData || this.props.refresh) {
       this.setState({loading: 1});
       //TODO: Name parity
       const params = {
@@ -96,6 +97,7 @@ class CoursePane extends Component {
           })
         );
     }
+    this.props.finishRefresh();
   }
 
 
