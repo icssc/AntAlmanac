@@ -42,8 +42,8 @@ class SPopover extends React.Component {
 
   };
 
-  handleClose = (event) => {
-    if (!event) var event = window.event;
+  handleClose = event => {
+    if (!event) event = window.event;
     event.cancelBubble = true;
     if (event.stopPropagation) event.stopPropagation();
     this.setState({
@@ -109,7 +109,7 @@ class SPopover extends React.Component {
           open={open}
           anchorEl={anchorEl}
           onClose={this.handleClose}
-          onClick={event=>{if (!event) var event = window.event;
+          onClick={event=>{if (!event) event = window.event;
             event.cancelBubble = true;
             if (event.stopPropagation) event.stopPropagation();}}
           anchorOrigin={{

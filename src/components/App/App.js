@@ -96,7 +96,7 @@ class App extends Component {
   handleToggleShowTabularView = () => {
       this.setState(previousState => ({showTabularView: !previousState.showTabularView}),()=>{
         if(!this.state.showTabularView)
-        this.setState({showFinalSchedule:false})
+          this.setState({showFinalSchedule:false});
       }
       );
       this.handleDismissSearchResults();
@@ -476,7 +476,6 @@ displayFinal =(schedule)=>
                 onAddCustomEvent={this.handleAddCustomEvent}
                 setID={this.setID}
                 onClearSchedule={this.handleClearSchedule}
-                showFinalSchedul={this.showFinalSchedule}
               />
             </div>
           </Grid>
@@ -525,17 +524,27 @@ displayFinal =(schedule)=>
                     id='rightPane'
                   >
             {this.state.showTabularView ?
-              <TabularView showFinalSchedule ={this.state.showFinalSchedule} displayFinal={this.displayFinal} classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}  colorChange={this.colorChange} scheduleIndex={this.state.currentScheduleIndex}/>
+              <TabularView
+                showFinalSchedule ={this.state.showFinalSchedule}
+                displayFinal={this.displayFinal}
+                classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}
+                colorChange={this.colorChange}
+                scheduleIndex={this.state.currentScheduleIndex}/>
               :
               (
-                  this.state.showSearch ? <SearchForm prevFormData={this.formData} updateFormData={this.updateFormData}/> :
+                  this.state.showSearch ?
+                    <SearchForm
+                      prevFormData={this.state.formData}
+                      updateFormData={this.updateFormData}/>
+                    :
                     <CoursePane
                       view={this.state.view}
                       formData={this.state.formData}
                       onAddClass={this.handleAddClass}
                       onDismissSearchResults={this.handleDismissSearchResults}
                       term={this.state.formData}/>
-              )}
+              )
+            }
               </Paper>
           </Grid>
         </Grid>

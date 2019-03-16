@@ -38,30 +38,6 @@ function EventName(props) {
   );
 }
 
-function TimePickers(props) {
-  const { classes } = props;
-
-  return (
-    <form noValidate>
-      <TextField
-        onChange={props.onTimeChange}
-        id="time"
-        label={props.label}
-        type="time"
-        defaultValue="07:30"
-        InputLabelProps={{
-          shrink: true
-        }}
-        className={classes.textField}
-        inputProps={{
-          step: 300
-        }}
-      />
-    </form>
-  );
-}
-TimePickers = withStyles(styles)(TimePickers);
-
 function dayToNum(day) {
   switch (day) {
     case "monday":
@@ -82,8 +58,8 @@ class DialogSelect extends Component {
     super(props);
     this.state = {
       open: false,
-      start: "07:00",
-      end: "08:00",
+      start: "10:30",
+      end: "15:30",
       eventName: "Untitled",
       days: {
         monday: false,
@@ -101,8 +77,8 @@ class DialogSelect extends Component {
     if (calendarIndex !== -1) this.handleAddToCalendar(calendarIndex);
     this.setState({
       open: false,
-      start: "07:00",
-      end: "08:00",
+      start: "10:30",
+      end: "15:30",
       eventName: "Untitled",
       days: {
         monday: false,
@@ -184,14 +160,37 @@ class DialogSelect extends Component {
               value={this.state.eventName}
               userEventName={this.handleEventNameChange}
             />
-            <TimePickers
-              label="Start Time"
-              onTimeChange={this.handleStartTimeChange}
-            />
-            <TimePickers
-              label="End Time"
-              onTimeChange={this.handleEndTimeChange}
-            />
+            <form noValidate>
+              <TextField
+                onChange={this.handleStartTimeChange}
+                id="time"
+                label="Start Time"
+                type="time"
+                defaultValue="10:30"
+                InputLabelProps={{
+                  shrink: true
+                }}
+                className="textField"
+                inputProps={{
+                  step: 300
+                }}
+                style={{marginRight: 5, marginTop:5}}
+              />
+              <TextField
+                onChange={this.handleEndTimeChange}
+                id="time"
+                label="End Time"
+                type="time"
+                defaultValue="15:30"
+                InputLabelProps={{
+                  shrink: true
+                }}
+                className="textField"
+                inputProps={{
+                  step: 300
+                }}
+              />
+            </form>
             <DaySelector onSelectDay={this.handleDayChange} />
 
           </DialogContent>

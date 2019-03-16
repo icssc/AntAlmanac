@@ -34,6 +34,7 @@ function Inputs(props) {
         inputProps={{
           'aria-label': 'Description',
         }}
+        style={{marginBottom:5}}
       />
     </div>
   );

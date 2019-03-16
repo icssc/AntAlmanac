@@ -133,9 +133,9 @@ class Calendar extends Component {
                           components={{event: CustomEvent({classes})}}
                           onSelectEvent={event =>{
                               if(!this.props.showFinalSchedul)
-                            return this.props.onClassDelete(event);
-                            else
-                            null
+                                return this.props.onClassDelete(event);
+                              else
+                                return null;
                           }
                           }
                         />
