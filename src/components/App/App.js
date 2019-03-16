@@ -528,7 +528,7 @@ displayFinal =(schedule)=>
               <TabularView showFinalSchedule ={this.state.showFinalSchedule} displayFinal={this.displayFinal} classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}  colorChange={this.colorChange} scheduleIndex={this.state.currentScheduleIndex}/>
               :
               (
-                  this.state.showSearch ? <SearchForm updateFormData={this.updateFormData}/> :
+                  this.state.showSearch ? <SearchForm prevFormData={this.formData} updateFormData={this.updateFormData}/> :
                     <CoursePane
                       view={this.state.view}
                       formData={this.state.formData}

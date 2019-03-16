@@ -94,9 +94,6 @@ class Calendar extends Component {
 
     render() {
         const {classes, classEventsInCalendar} = this.props;
-        {/* let c ="Jun 10 Mon 12:30-3:30pm"; */}
-        {/* let f ="TuTh12:30- 1:50p"; */}
-
 
         return (
             <div className={classes.container}>
