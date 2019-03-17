@@ -22,7 +22,7 @@ class CalendarPaneToolbar extends Component {
         const {classes} = this.props;
 
         return (
-            <Paper elevation={0} className={classes.toolbarContainer}>
+            <Paper square elevation={0} className={classes.toolbarContainer}>
                 <Toolbar variant="dense" className={classes.toolbar}>
                     <IconButton onClick={() => this.props.onScheduleChange(0)}>
                         <ChevronLeft/>

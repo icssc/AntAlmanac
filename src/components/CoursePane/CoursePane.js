@@ -2,8 +2,8 @@ import React, {Component, Fragment} from "react";
 import loadingGif from "./loading.mp4";
 import querystring from "querystring";
 import CourseRenderPane from "./CourseRenderPane";
-import {IconButton} from "@material-ui/core";
-import {ArrowBack} from "@material-ui/icons";
+import {IconButton, Tooltip} from "@material-ui/core";
+import {ArrowBack, Dns, ListAlt, Refresh} from "@material-ui/icons";
 
 class CoursePane extends Component {
   constructor(props) {
@@ -13,7 +13,9 @@ class CoursePane extends Component {
       loading: 2,
       termName: null,
       deptName: null,
-      showDismissButton: true
+      showDismissButton: true,
+      view: 0,
+      refresh: false
     };
   }
 
@@ -27,9 +29,7 @@ class CoursePane extends Component {
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     return (
       this.state !== nextState ||
-      nextProps.formData !== this.props.formData ||
-      nextProps.view !== this.props.view ||
-      nextProps.refresh !== this.props.refresh
+      nextProps.formData !== this.props.formData
     );
   }
 
@@ -50,6 +50,11 @@ class CoursePane extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevProps.formData !== this.props.formData)
+      this.fetchSearch();
+  }
+
+  fetchSearch = () => {
     const {
       dept,
       term,
@@ -64,42 +69,38 @@ class CoursePane extends Component {
       building
     } = this.props.formData;
 
-    if (prevProps.formData !== this.props.formData || this.props.refresh) {
-      this.setState({loading: 1});
-      //TODO: Name parity
-      const params = {
-        department: dept,
-        term: term,
-        GE: ge,
-        courseNum: courseNum,
-        courseCodes: courseCode,
-        instructorName: instructor,
-        units: units,
-        endTime: endTime,
-        startTime: startTime,
-        fullCourses: coursesFull,
-        building: building
-      };
-      const url =
-        "https://2r7p77ujv6.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?" +
-        querystring.stringify(params);
+    this.setState({loading: 1});
+    //TODO: Name parity
+    const params = {
+      department: dept,
+      term: term,
+      GE: ge,
+      courseNum: courseNum,
+      courseCodes: courseCode,
+      instructorName: instructor,
+      units: units,
+      endTime: endTime,
+      startTime: startTime,
+      fullCourses: coursesFull,
+      building: building
+    };
+    const url =
+      "https://2r7p77ujv6.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?" +
+      querystring.stringify(params);
 
-      fetch(url)
-        .then(resp => {
-          return resp.json();
+    fetch(url)
+      .then(resp => {
+        return resp.json();
+      })
+      .then(jsonObj =>
+        this.setState({
+          courseData: CoursePane.flatten(jsonObj),
+          loading: 2,
+          termName: term,
+          deptName: dept
         })
-        .then(jsonObj =>
-          this.setState({
-            courseData: CoursePane.flatten(jsonObj),
-            loading: 2,
-            termName: term,
-            deptName: dept
-          })
-        );
-    }
-    this.props.finishRefresh();
-  }
-
+      );
+  };
 
   render() {
     const {loading, courseData} = this.state;
@@ -107,27 +108,53 @@ class CoursePane extends Component {
     if (loading === 2) {
       return (
         <Fragment>
-          {this.state.showDismissButton ? <div
-            style={{
-              position: "sticky",
-              width: 50,
-              top: 0,
-              zIndex: 3,
-              marginBottom: 8
-            }}
-          >
-            <IconButton
-              onClick={this.props.onDismissSearchResults}
-              style={{backgroundColor:"rgba(236, 236, 236, 1)"}}
+          {this.state.showDismissButton ?
+            <div
+              style={{
+                position: "sticky",
+                width: "100%",
+                top: 0,
+                zIndex: 3,
+                marginBottom: 8
+              }}
             >
-              <ArrowBack/>
-            </IconButton>
-          </div> : <Fragment/>}
+              <Tooltip title="Clear Search">
+                <IconButton
+                  onClick={this.props.onDismissSearchResults}
+                  style={{backgroundColor:"rgba(236, 236, 236, 1)",
+                          marginRight: 5}}
+                >
+                  <ArrowBack/>
+                </IconButton>
+              </Tooltip>
+
+              {this.state.view ? (
+                <Tooltip title="List View">
+                  <IconButton onClick={() => this.setState({view: 0})} style={{backgroundColor:"rgba(236, 236, 236, 1)", marginRight: 5}}>
+                    <ListAlt />
+                  </IconButton>
+                </Tooltip>
+              ) : (
+                <Tooltip title="Tile View">
+                  <IconButton onClick={() => this.setState({view: 1})} style={{backgroundColor:"rgba(236, 236, 236, 1)", marginRight: 5}}>
+                    <Dns />
+                  </IconButton>
+                </Tooltip>
+              )}
+
+              <Tooltip title="Refresh Search Results">
+                <IconButton onClick={this.fetchSearch} style={{backgroundColor:"rgba(236, 236, 236, 1)"}}>
+                  <Refresh />
+                </IconButton>
+              </Tooltip>
+            </div>
+          :
+          <Fragment/>}
           <CourseRenderPane
             onAddClass={this.props.onAddClass}
             onToggleDismissButton={this.handleToggleDismissButton}
             courseData={courseData}
-            view={this.props.view}
+            view={this.state.view}
             deptName={this.state.deptName}
             termName={this.state.termName}
           />

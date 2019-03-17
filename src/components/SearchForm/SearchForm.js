@@ -63,7 +63,8 @@ class SearchForm extends Component {
       } = this.props.prevFormData;
       this.state = {
           dept: dept,
-          label:label,
+
+          label: label,
           ge: ge,
           term: term,
           courseNum: courseNum,
@@ -78,7 +79,7 @@ class SearchForm extends Component {
     }else{
       this.state = {
         dept: null,
-        label:null,
+        label: null,
         ge: "ANY",
         term: "2019 Spring",
         courseNum: "",
@@ -119,12 +120,10 @@ class SearchForm extends Component {
   };
 
   setDept = dept => {
-    console.log(dept,"dddd");
     if(dept==null)
-    this.setState({dept: null});
+      this.setState({dept: null});
     else
-    this.setState({dept: dept.value,label:dept.label});
-
+      this.setState({dept: dept.value,label:dept.label});
   };
 
   handleAdvancedSearchChange = (advancedSearchState) => {
@@ -149,7 +148,7 @@ class SearchForm extends Component {
         </div>
 
         <div className={classes.margin}>
-          <GESelector ge={this.state.ge}setGE={this.setGE}/>
+          <GESelector ge={this.state.ge} setGE={this.setGE}/>
         </div>
 
         <div className={classes.margin}>
@@ -161,7 +160,7 @@ class SearchForm extends Component {
             <Typography className="title">Advanced Search</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <AdvancedSearchTextFields onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
+            <AdvancedSearchTextFields params={this.state} onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
           </ExpansionPanelDetails>
         </ExpansionPanel>
 

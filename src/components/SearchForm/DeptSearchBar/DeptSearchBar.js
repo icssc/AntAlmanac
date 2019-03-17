@@ -37,15 +37,17 @@ class DeptSearchBar extends React.Component {
     return { label: this.props.dept, value: 0 };
   }
 
+  defautlRen =()=>{
+    return { label: this.props.dept, value: 0 };
+  }
+
   render() {
     return (
       <Downshift
         items={this.state.filteredItems}
         onStateChange={this.handleStateChange}
-      
         defaultSelectedItem={this.defautlRen()}
-         onChange={this.props.setDept}
-
+        onChange={this.props.setDept}
         getInputProps={() => ({
           // Downshift requires this syntax to pass down these props to the text field
           label: "Department",

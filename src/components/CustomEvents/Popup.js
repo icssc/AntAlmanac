@@ -189,6 +189,7 @@ class DialogSelect extends Component {
                 inputProps={{
                   step: 300
                 }}
+                style={{marginRight: 5, marginTop:5}}
               />
             </form>
             <DaySelector onSelectDay={this.handleDayChange} />
