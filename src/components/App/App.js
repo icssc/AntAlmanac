@@ -62,6 +62,7 @@ class App extends Component {
     super(props);
 
     this.state = {
+      prevFormData: null,
       formData: null,
       currentScheduleIndex: 0,
       view: 0,
@@ -94,11 +95,16 @@ class App extends Component {
   resizeLogo() {
     this.setState({ isDesktop: window.innerWidth > 1000 });
   }
+  
 
   handleToggleShowTabularView = () => {
       this.setState(previousState => ({showTabularView: !previousState.showTabularView}),()=>{
         if(!this.state.showTabularView)
-          this.setState({showFinalSchedule:false});
+        {
+          console.log("ddd",this.state.formData,this.state.prevFormData);
+          
+        }
+
       }
       );
       this.setState({showSearch: true});
@@ -350,7 +356,7 @@ class App extends Component {
 
   updateFormData = formData => {
     this.setState({showSearch: false}, function () {
-      this.setState({formData: formData});
+      this.setState({formData: formData, prevFormData: formData});
     });
   };
 
@@ -547,7 +553,7 @@ displayFinal =(schedule)=>
               (
                   this.state.showSearch ?
                     <SearchForm
-                      prevFormData={this.state.formData}
+                      prevFormData={this.state.prevFormData}
                       updateFormData={this.updateFormData}/>
                     :
                     <CoursePane
