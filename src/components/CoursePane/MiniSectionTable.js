@@ -213,7 +213,7 @@ class MiniSectionTable extends Component {
           />
 
           {this.props.courseDetails.prerequisiteLink ? (
-              <Typography variant='h1' style={{ flexGrow: "2", marginTop: 9 }}>
+              <Typography variant='h9' style={{ flexGrow: "2", marginTop: 9 }}>
                 &nbsp;&nbsp;
                 <a target="blank" style={{ textDecoration: "none", color: "#72a9ed" }} href={this.props.courseDetails.prerequisiteLink} rel="noopener noreferrer">
                   Prerequisites
