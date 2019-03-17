@@ -8,7 +8,8 @@ import {
   Paper,
   Tooltip,
   Typography,
-  IconButton
+  Tabs,
+  Tab
 } from "@material-ui/core";
 import Logo_tight from './logo_tight.png';
 import Logo_wide from './logo_wide.png';
@@ -18,14 +19,9 @@ import CoursePane from "../CoursePane/CoursePane";
 import Calendar from "../Calendar/Calendar";
 import {
   Info,
-  ListAlt,
-  Dns,
   ImportContacts,
-  FormatListBulleted,
-  Search,
   Assignment,
-  Forum,
-  Refresh
+  Forum
 } from "@material-ui/icons";
 import LoadSaveScheduleFunctionality from "../cacheMes/LoadSaveFunctionality";
 
@@ -64,16 +60,14 @@ class App extends Component {
     this.state = {
       formData: null,
       currentScheduleIndex: 0,
-      view: 0,
       showSearch: true,
       courseEvents: [],
       unavailableColors: [],
       backupArray: [],
       userID: null,
-      showTabularView: false,
+      rightPaneView: 0,
       finalSchedule:[],
-      showFinalSchedule:false,
-      refresh:false
+      showFinalSchedule:false
     };
 
     this.resizeLogo = this.resizeLogo.bind(this);
@@ -95,17 +89,12 @@ class App extends Component {
     this.setState({ isDesktop: window.innerWidth > 1000 });
   }
 
-  handleToggleShowTabularView = () => {
-      this.setState(previousState => ({showTabularView: !previousState.showTabularView}),()=>{
-        if(!this.state.showTabularView)
-          this.setState({showFinalSchedule:false});
-      }
-      );
-      this.setState({showSearch: true});
-  };
-
-  setView = viewNum => {
-    if (this.state.showSearch === false) this.setState({view: viewNum});
+  handleRightPaneViewChange = (event, rightPaneView) => {
+    this.setState({ rightPaneView });
+    this.setState({showSearch: true});
+    //turn off finals viewing when in search?
+    //if(this.state.rightPaneView === 1) //will be switched to search view
+      //    this.setState({showFinalSchedule:false});
   };
 
   handleLoad = userData => {
@@ -483,60 +472,29 @@ displayFinal =(schedule)=>
           </Grid>
 
           <Grid item lg={6} xs={12}>
-            <Paper elevation={0} style={{overflow: "hidden", marginBottom: '8px'}}>
-              <Toolbar variant="dense" style={{ backgroundColor: "#dfe2e5", marginRight:8, borderRadius: '0px'}}>
-                {this.state.view ? (
-                  <Tooltip title="List View">
-                    <IconButton onClick={() => this.setView(0)}>
-                      <ListAlt />
-                    </IconButton>
-                  </Tooltip>
-                ) : (
-                  <Tooltip title="Tile View">
-                    <IconButton onClick={() => this.setView(1)}>
-                      <Dns />
-                    </IconButton>
-                  </Tooltip>
-                )}
-
-                {!this.state.showTabularView ?(
-                  <Tooltip title="Show Tabular View: More Info on Selected Courses">
-                    <IconButton onClick={this.handleToggleShowTabularView}>
-                        <FormatListBulleted/>
-                    </IconButton>
-                  </Tooltip>
-                ):(
-                  <Tooltip title="Show Search View">
-                    <IconButton onClick={this.handleToggleShowTabularView}>
-                        <Search/>
-                    </IconButton>
-                  </Tooltip>
-                )}
-
-                <Typography style={{flexGrow: 1}}/>
-
-                <Tooltip title="Refresh Search Results">
-                  <IconButton onClick={() => {
-                    if (!this.state.showSearch)
-                      this.setState({refresh: true});
-                  }}>
-                    <Refresh />
-                  </IconButton>
-                </Tooltip>
-
-              </Toolbar>
+            <Paper square elevation={0} style={{overflow: "hidden", marginBottom: '8px', marginRight: '8px', backgroundColor: "#dfe2e5"}}>
+                <Tabs value={this.state.rightPaneView}
+                      onChange={this.handleRightPaneViewChange}
+                      indicatorColor="primary"
+                      textColor="primary"
+                      variant="fullWidth"
+                      fullWidth
+                      centered>
+                  <Tab label="Search View" />
+                  <Tab label="Tabular View" />
+                </Tabs>
             </Paper>
             <Paper
-                    style={{
-                      overflow: "auto",
-                      padding: 10,
-                      height: 'calc(100vh - 96px - 24px)',
-                      marginRight: 8,
-                      boxShadow:"none"
-                    }}
-                    id='rightPane'
-                  >
-            {this.state.showTabularView ?
+              style={{
+                overflow: "auto",
+                padding: 10,
+                height: 'calc(100vh - 96px - 24px)',
+                marginRight: 8,
+                boxShadow:"none"
+              }}
+              id='rightPane'
+            >
+            {this.state.rightPaneView ?
               <TabularView
                 showFinalSchedule ={this.state.showFinalSchedule}
                 displayFinal={this.displayFinal}
@@ -551,13 +509,10 @@ displayFinal =(schedule)=>
                       updateFormData={this.updateFormData}/>
                     :
                     <CoursePane
-                      view={this.state.view}
                       formData={this.state.formData}
                       onAddClass={this.handleAddClass}
                       onDismissSearchResults={this.handleDismissSearchResults}
-                      term={this.state.formData}
-                      refresh={this.state.refresh}
-                      finishRefresh={() => this.setState({refresh: false})}/>
+                      term={this.state.formData}/>
               )
             }
               </Paper>
