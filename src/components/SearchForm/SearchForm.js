@@ -63,6 +63,7 @@ class SearchForm extends Component {
       } = this.props.prevFormData;
       this.state = {
           dept: dept,
+
           label: label,
           ge: ge,
           term: term,

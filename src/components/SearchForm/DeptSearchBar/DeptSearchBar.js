@@ -32,6 +32,10 @@ class DeptSearchBar extends React.Component {
       this.setState({ filteredItems });
     }
   }
+  defautlRen =()=>{
+
+    return { label: this.props.dept, value: 0 };
+  }
 
   defautlRen =()=>{
     return { label: this.props.dept, value: 0 };

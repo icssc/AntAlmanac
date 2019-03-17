@@ -89,6 +89,7 @@ class App extends Component {
   resizeLogo() {
     this.setState({ isDesktop: window.innerWidth > 1000 });
   }
+  
 
   handleRightPaneViewChange = (event, rightPaneView) => {
     this.setState({ rightPaneView });
@@ -96,6 +97,7 @@ class App extends Component {
     //turn off finals viewing when in search?
     //if(this.state.rightPaneView === 1) //will be switched to search view
       //    this.setState({showFinalSchedule:false});
+
   };
 
   handleLoad = userData => {
