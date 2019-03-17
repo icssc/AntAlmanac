@@ -63,7 +63,6 @@ class SearchForm extends Component {
       } = this.props.prevFormData;
       this.state = {
           dept: dept,
-
           label: label,
           ge: ge,
           term: term,
@@ -166,10 +165,9 @@ class SearchForm extends Component {
 
         <div className={classes.search}>
           <Button
-            color="primary"
             variant="contained"
             onClick={() => this.props.updateFormData(this.state)}
-            style = {{boxShadow:"none"}}
+            style = {{backgroundColor:"#72a9ed", boxShadow:"none"}}
           >
             Search
           </Button>
