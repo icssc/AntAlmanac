@@ -29,7 +29,7 @@ class GESelector extends Component {
             <FormControl fullWidth>
                 <InputLabel htmlFor='ge-select'>General Education</InputLabel>
                 <Select
-                    value={this.state.ge}
+                    value={this.props.ge}
                     onChange={this.handleChange}
                     inputProps={{name:'ge', id:'ge-select', fullWidth:true}}
                 >
