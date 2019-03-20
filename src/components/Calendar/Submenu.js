@@ -30,8 +30,6 @@ class Submenu extends React.Component {
     return (
       <div>
         <IconButton
-          aria-owns={anchorEl ? 'simple-menu' : undefined}
-          aria-haspopup="true"
           onClick={this.handleClick}
         >
           <MoreVert />

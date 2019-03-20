@@ -15,19 +15,19 @@ const styles = {
         margin: '0px 8px 8px 8px',
     },
     courseEventContainer: {
-        marginTop: 4, marginBottom: 2, fontWeight: 500
+        display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: 2, marginBottom: 2, fontWeight: 500, fontSize: 12
     },
     courseEventType: {
-        float: 'left', fontSize: 13
-    },
-    courseEventCourseID: {
-        float: 'right', fontSize: 13
+        float: 'right', fontSize: 12
     },
     courseEventLocation: {
-        fontSize: 13, clear: 'both'
+        float: 'left', fontSize: 12
+    },
+    courseEventCourseID: {
+        float: 'right', fontSize: 12
     },
     customEventContainer: {
-        marginTop: 4, marginBottom: 2
+        marginTop: 2, marginBottom: 2
     },
     customEventTitle: {
         fontWeight: 500
@@ -44,12 +44,14 @@ const CustomEvent = ({classes}) => event => {
     if (!actualEvent.isCustomEvent)
         return (
             <div>
-                <div className={classes.courseEventContainer}> {actualEvent.title}</div>
+                <div className={classes.courseEventContainer}>
+                    <div> {actualEvent.title}</div>
+                    <div style={{fontSize: 11}}> {actualEvent.courseType}</div>
+                </div>
                 <div>
-                    <div className={classes.courseEventType}>{actualEvent.courseType}</div>
+                    <div className={classes.courseEventLocation}>{actualEvent.location}</div>
                     <div className={classes.courseEventCourseID}>{actualEvent.courseCode}</div>
                 </div>
-                <div className={classes.courseEventLocation}>{actualEvent.location}</div>
             </div>
         );
     else {

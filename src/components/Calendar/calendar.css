@@ -5,3 +5,7 @@
 .rbc-time-view .rbc-row {
     min-height: 0;
 }
+
+.rbc-timeslot-group {
+    min-height: 30px;
+}

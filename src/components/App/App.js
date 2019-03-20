@@ -455,7 +455,7 @@ displayFinal =(schedule)=>
           </Toolbar>
         </AppBar>
         <Grid container>
-          <Grid item lg={6} xs={12}>
+          <Grid item xs={6}>
             <div>
               <Calendar
                 classEventsInCalendar={this.state.showFinalSchedule?this.state.finalSchedule:
@@ -474,7 +474,7 @@ displayFinal =(schedule)=>
             </div>
           </Grid>
 
-          <Grid item lg={6} xs={12}>
+          <Grid item xs={6}>
             <Paper square elevation={0} style={{overflow: "hidden", marginBottom: '8px', marginRight: '8px', backgroundColor: "#dfe2e5"}}>
                 <Tabs value={this.state.rightPaneView}
                       onChange={this.handleRightPaneViewChange}
