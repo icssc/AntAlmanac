@@ -14,20 +14,17 @@ const styles = {
     container: {
         margin: '0px 8px 8px 8px',
     },
-    courseEventContainer: {
-        display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: 2, marginBottom: 2, fontWeight: 500, fontSize: 12
+    firstLineContainer: {
+        display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontWeight: 500, fontSize: "0.85rem"
     },
-    courseEventType: {
-        float: 'right', fontSize: 12
+    courseType: {
+        fontSize: "0.8rem"
     },
-    courseEventLocation: {
-        float: 'left', fontSize: 12
-    },
-    courseEventCourseID: {
-        float: 'right', fontSize: 12
+    secondLineContainer: {
+        display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontSize: "0.8rem"
     },
     customEventContainer: {
-        marginTop: 2, marginBottom: 2
+        marginTop: 2, marginBottom: 2, fontSize: "0.85rem"
     },
     customEventTitle: {
         fontWeight: 500
@@ -44,13 +41,13 @@ const CustomEvent = ({classes}) => event => {
     if (!actualEvent.isCustomEvent)
         return (
             <div>
-                <div className={classes.courseEventContainer}>
+                <div className={classes.firstLineContainer}>
                     <div> {actualEvent.title}</div>
-                    <div style={{fontSize: 11}}> {actualEvent.courseType}</div>
+                    <div className={classes.courseType}> {actualEvent.courseType}</div>
                 </div>
-                <div>
-                    <div className={classes.courseEventLocation}>{actualEvent.location}</div>
-                    <div className={classes.courseEventCourseID}>{actualEvent.courseCode}</div>
+                <div className={classes.secondLineContainer}>
+                    <div>{actualEvent.location}</div>
+                    <div>{actualEvent.courseCode}</div>
                 </div>
             </div>
         );

@@ -7,5 +7,34 @@
 }
 
 .rbc-timeslot-group {
-    min-height: 30px;
+    min-height: 25px;
+}
+
+.rbc-event-label {
+    font-size: 0.8rem;
+}
+
+.rbc-label {
+    font-size: 0.9rem;
+}
+
+@media
+(min-resolution: 96dpi){
+    .rbc-timeslot-group {
+        min-height: 28px;
+    }
+}
+
+@media
+(min-resolution: 120dpi){
+    .rbc-timeslot-group {
+        min-height: 25px;
+    }
+}
+
+@media
+(min-resolution: 144dpi){
+    .rbc-timeslot-group {
+        min-height: 22px;
+    }
 }

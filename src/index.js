@@ -5,6 +5,10 @@ import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import{unregister} from "./registerServiceWorker";
 
 const theme = createMuiTheme({
+  typography: {
+    htmlFontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size')),
+    fontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size')) * 0.9,
+  },
   palette: {
     primary: {
       light: "#5191d6",
