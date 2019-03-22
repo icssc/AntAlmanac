@@ -180,7 +180,7 @@ class SearchForm extends Component {
             <b>New on AntAlmanac:</b><br/>
             Text message notifications<br/>
             Links to interactive campus map<br/>
-            See finals schedules
+            See finals schedules in tabular view
           </Typography>
         </div>
 
