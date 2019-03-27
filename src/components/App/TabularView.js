@@ -8,6 +8,69 @@ import RstrPopover from '../CoursePane/RstrPopover'
 import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
 import FinalSwitch from './FinalSwitch'
+import {withStyles} from '@material-ui/core/styles';
+
+const styles = {
+  colorPicker: {
+    '& > div': {
+      height: '1.5rem',
+      width: '1.5rem',
+      borderRadius: '50%',
+      margin: 'auto',
+    }
+  },
+  table: {
+    borderCollapse: "collapse",
+    boxSizing: "border-box",
+    width: "100%",
+    marginTop: '0.285rem',
+
+    "& thead": {
+      position: "sticky",
+
+      "& th": {
+        border: "1px solid rgb(222, 226, 230)",
+        fontSize: "0.85rem",
+        fontWeight: "500",
+        color: "rgba(0, 0, 0, 0.54)",
+        textAlign: "left",
+        verticalAlign: "bottom"
+      }
+    }
+  },
+  tr: {
+    fontSize: "0.85rem",
+    '&:nth-child(odd)': {
+      backgroundColor: '#f5f5f5'
+    },
+
+    "&:hover": {
+      color: "blueviolet"
+    },
+
+    "& td": {
+      border: "1px solid rgb(222, 226, 230)",
+      textAlign: "left",
+      verticalAlign: "top",
+    },
+
+    "& $colorPicker": {
+      verticalAlign: 'middle'
+    }
+  },
+  open: {
+    color: '#00c853'
+  },
+  waitl: {
+    color: '#1c44b2'
+  },
+  full: {
+    color: '#e53935'
+  },
+  multiline: {
+    whiteSpace: 'pre'
+  }
+};
 
 class TabularView extends Component {
   constructor(props) {
@@ -18,8 +81,7 @@ class TabularView extends Component {
     };
   }
   redirectRMP = (e, name) => {
-    if (!e) e = window.event
-    e.cancelBubble = true
+    if (!e) e = window.event;
     if (e.stopPropagation) e.stopPropagation()
 
     var lastName = name.substring(0, name.indexOf(','))
@@ -88,11 +150,11 @@ class TabularView extends Component {
       if (!item.isCustomEvent && result.find(function (element) {return element.courseCode === item.courseCode}) === undefined)
         result.push(item);
 
-    const classes = [];
+    const courses = [];
     let totalUnits = 0;
 
     for (let course of result) {
-      let foundIndex = classes.findIndex(function (element) {
+      let foundIndex = courses.findIndex(function (element) {
         return (course.name.join() === element.name.join() && element.courseTerm === course.courseTerm)
       })
 
@@ -128,7 +190,7 @@ class TabularView extends Component {
       }
 
       if (foundIndex === -1) {
-        classes.push({
+        courses.push({
             name: course.name,
             lecAndDis: [course],
             final:course.section.finalExam,
@@ -137,14 +199,15 @@ class TabularView extends Component {
           }
         )
       } else {
-        classes[foundIndex].lecAndDis.push(course)
+        courses[foundIndex].lecAndDis.push(course)
       }
 
       if (!isNaN(Number(course.section.units)))
         totalUnits += Number(course.section.units);
     }
 
-   console.log(classes,"plese");
+    const {classes} = this.props;
+
     return (
       <Fragment>
         <div className={classes.container}>
@@ -155,7 +218,7 @@ class TabularView extends Component {
             <FinalSwitch  displayFinal={this.props.displayFinal} schedule={finalSchedule} showFinalSchedule = {this.props.showFinalSchedule}/>
           </Typography>
         </div>
-        {classes.map(event => {
+        {courses.map(event => {
           return (<div>
             <div
               style={{
@@ -175,7 +238,7 @@ class TabularView extends Component {
                 courseDetails={event}
               />
             </div>
-            <table>
+            <table className={classes.table}>
               <thead>
               <tr>
                 <th>Color</th>
@@ -192,24 +255,25 @@ class TabularView extends Component {
               <tbody>{
                 event.lecAndDis.map(
                   item => {
-                    const secEach = item.section
+                    const secEach = item.section;
+
                     return (
-                      <tr>
-                        <ColorPicker displayFinal={this.props.displayFinal} schedule={finalSchedule} colorChange={this.props.colorChange} event={item}/>
+                      <tr className={classes.tr}>
+                        <td className={classes.colorPicker}><ColorPicker onColorChange={this.props.onColorChange} event={item}/></td>
                         <td>{secEach.classCode}</td>
-                        <td className="multiline">
+                        <td className={classes.multiline}>
                           {`${secEach.classType}
 Sec ${secEach.sectionCode}
 ${secEach.units} units`}
                         </td>
-                        <td className="multiline">
+                        <td className={classes.multiline}>
                           {/* {this.linkRMP(secEach.instructors)} */}
                           {secEach.instructors.join('\n')}
                         </td>
-                        <td className="multiline">
+                        <td className={classes.multiline}>
                           {secEach.meetings.map(meeting => meeting[0]).join('\n')}
                         </td>
-                        <td className="multiline">
+                        <td className={classes.multiline}>
                           {secEach.meetings.map(meeting => {
                             return (meeting[1] !== 'ON LINE' && meeting[1] !== 'TBA') ? (
                               <div>
@@ -223,7 +287,7 @@ ${secEach.units} units`}
                             )
                           })}
                         </td>
-                        <td className={['multiline', secEach.status].join(' ')}>
+                        <td className={classes.multiline + " " + secEach.status.toLowerCase()}>
                           {`${secEach.numCurrentlyEnrolled[0]} / ${secEach.maxCapacity}
 WL: ${secEach.numOnWaitlist}
 NOR: ${secEach.numNewOnlyReserved}`}
@@ -234,7 +298,7 @@ NOR: ${secEach.numNewOnlyReserved}`}
                           />
                         </td>
                         <td
-                          className={secEach.status}>{this.statusforFindingSpot(secEach.status, secEach.classCode, item.courseTerm, item.name)}</td>
+                          className={secEach.status.toLowerCase()}>{this.statusforFindingSpot(secEach.status, secEach.classCode, item.courseTerm, item.name)}</td>
                       </tr>
                     )
                   }
@@ -250,4 +314,4 @@ NOR: ${secEach.numNewOnlyReserved}`}
   }
 }
 
-export default TabularView
+export default withStyles(styles)(TabularView);

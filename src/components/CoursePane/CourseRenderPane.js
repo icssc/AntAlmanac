@@ -56,7 +56,6 @@ class CourseRenderPane extends Component {
   };
 
   getGrid(SOCObject) {
-    console.log("gerg",SOCObject);
     if ("departments" in SOCObject) {
       return (
         <SchoolDeptCard
@@ -146,7 +145,7 @@ class CourseRenderPane extends Component {
               alignItems: "center"
             }}
           >
-            <img src={NoNothing} alt="your face" />
+            <img src={NoNothing} alt="" />
           </div>
         ) : (
           <Grid container spacing={16}>

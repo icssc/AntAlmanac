@@ -1,12 +1,12 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import {
   Menu,
   MenuItem,
   MenuList,
   Button,
   IconButton
-} from '@material-ui/core/';
-import {MoreVert, Delete} from '@material-ui/icons/';
+} from '@material-ui/core';
+import {MoreVert, Delete} from '@material-ui/icons';
 import CustomEventsDialog from '../CustomEvents/Popup';
 import Sharing from "./Sharing";
 
@@ -28,11 +28,11 @@ class Submenu extends React.Component {
     const { anchorEl } = this.state;
 
     return (
-      <div>
+      <Fragment>
         <IconButton
           onClick={this.handleClick}
         >
-          <MoreVert />
+          <MoreVert fontSize='small'/>
         </IconButton>
         <Menu
           id="submenu"
@@ -52,7 +52,6 @@ class Submenu extends React.Component {
             <MenuItem>
               <CustomEventsDialog
                   onAddCustomEvent={this.props.onAddCustomEvent}
-                  setID={this.props.setID}
               />
             </MenuItem>
             <MenuItem>
@@ -65,7 +64,7 @@ class Submenu extends React.Component {
             </MenuItem>
           </MenuList>
         </Menu>
-      </div>
+      </Fragment>
     );
   }
 }

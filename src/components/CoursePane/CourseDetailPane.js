@@ -2,7 +2,6 @@ import React, { Component, Fragment } from "react";
 import { IconButton, Typography } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import SectionTable from "./SectionTable";
-import "./sectiontable.css";
 import course_info from "./course_info.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 

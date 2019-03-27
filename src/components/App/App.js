@@ -67,8 +67,8 @@ class App extends Component {
       backupArray: [],
       userID: null,
       rightPaneView: 0,
-      finalSchedule:[],
-      showFinalSchedule:false
+      finalSchedule: [],
+      showFinalSchedule: false
     };
 
     this.resizeLogo = this.resizeLogo.bind(this);
@@ -87,16 +87,16 @@ class App extends Component {
   }
 
   resizeLogo() {
-    this.setState({ isDesktop: window.innerWidth > 1000 });
+    this.setState({isDesktop: window.innerWidth > 1000});
   }
-  
+
 
   handleRightPaneViewChange = (event, rightPaneView) => {
-    this.setState({ rightPaneView });
+    this.setState({rightPaneView});
     this.setState({showSearch: true});
     //turn off finals viewing when in search?
     //if(this.state.rightPaneView === 1) //will be switched to search view
-      //    this.setState({showFinalSchedule:false});
+    //    this.setState({showFinalSchedule:false});
 
   };
 
@@ -147,7 +147,7 @@ class App extends Component {
         if (lastDeletedEvent.isCustomEvent) {
           this.setState(
             {
-              currentScheduleIndex: lastDeletedEvent.scheduleIndex,
+              currentScheduleIndex: lastDeletedEvent.scheduleIndex === 4 ? 3 : lastDeletedEvent.scheduleIndex,
               backupArray: this.state.backupArray.slice(this.state.backupArray.length - 1, this.state.backupArray.length)
             },
             () => {
@@ -157,7 +157,7 @@ class App extends Component {
         } else {
           this.setState(
             {
-              currentScheduleIndex: lastDeletedEvent.scheduleIndex,
+              currentScheduleIndex: lastDeletedEvent.scheduleIndex === 4 ? 3 : lastDeletedEvent.scheduleIndex,
               backupArray: this.state.backupArray.slice(0, this.state.backupArray.length - 1)
             },
             () => {
@@ -175,7 +175,9 @@ class App extends Component {
   };
 
   handleClassDelete = (deletedEvent) => {
+    //TODO: Pretty much need to rewrite this actually
     const eventsAfterRemovingItem = [];
+    const newBackupArray = [];
 
     this.state.courseEvents.forEach(eventInArray => {
       if (eventInArray.isCustomEvent && deletedEvent.isCustomEvent
@@ -187,6 +189,9 @@ class App extends Component {
           eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[0]}));
           eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[1]}));
           eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[2]}));
+          newBackupArray.push({...deletedEvent, scheduleIndex: this.state.currentScheduleIndex});
+        } else {
+          newBackupArray.push(deletedEvent);
         }
       } else if (!eventInArray.isCustomEvent && !eventInArray.isCustomEvent
         && deletedEvent.courseCode === eventInArray.courseCode
@@ -197,6 +202,9 @@ class App extends Component {
           eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[0]}));
           eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[1]}));
           eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[2]}));
+          newBackupArray.push({...deletedEvent, scheduleIndex: this.state.currentScheduleIndex});
+        } else {
+          newBackupArray.push(deletedEvent);
         }
         const addBackColor = this.state.unavailableColors.filter(colorAndScheduleIndex => {
           return !(colorAndScheduleIndex.color === deletedEvent.color &&
@@ -208,7 +216,7 @@ class App extends Component {
       }
     });
 
-    this.setState({courseEvents: eventsAfterRemovingItem, backupArray: this.state.backupArray.concat(deletedEvent)});
+    this.setState({courseEvents: eventsAfterRemovingItem, backupArray: this.state.backupArray.concat(newBackupArray)});
   };
 
   handleAddClass = (section, name, scheduleIndex, courseTerm) => {
@@ -238,14 +246,15 @@ class App extends Component {
             {color: randomColor, scheduleIndex: 3},
           ])
         });
-      else
-      {
+      else {
         this.setState({
           unavailableColors: this.state.unavailableColors.concat({
             color: randomColor,
             scheduleIndex: scheduleIndex
           })
-        })};
+        })
+      }
+      ;
 
       let newCourses = [];
 
@@ -268,10 +277,30 @@ class App extends Component {
             if (start > end) start -= 12;
           }
 
-          if(scheduleIndex ===4)
-          {
-          for(let i =0;i<4;++i)
-          {
+          if (scheduleIndex === 4) {
+            for (let i = 0; i < 4; ++i) {
+              dates.forEach((shouldBeInCal, index) => {
+                if (shouldBeInCal) {
+                  const newCourse = {
+                    name: name,
+                    color: randomColor,
+                    courseTerm: courseTerm,
+                    title: name[0] + ' ' + name[1],
+                    location: meeting[1],
+                    section: section,
+                    courseCode: section.classCode,
+                    courseType: section.classType,
+                    start: new Date(2018, 0, index + 1, start, startMin),
+                    end: new Date(2018, 0, index + 1, end, endMin),
+                    isCustomEvent: false,
+                    scheduleIndex: i
+                  };
+
+                  newCourses.push(newCourse);
+                }
+              });
+            }
+          } else {
             dates.forEach((shouldBeInCal, index) => {
               if (shouldBeInCal) {
                 const newCourse = {
@@ -286,37 +315,13 @@ class App extends Component {
                   start: new Date(2018, 0, index + 1, start, startMin),
                   end: new Date(2018, 0, index + 1, end, endMin),
                   isCustomEvent: false,
-                  scheduleIndex: i
+                  scheduleIndex: scheduleIndex
                 };
 
                 newCourses.push(newCourse);
               }
             });
           }
-        }
-        else
-        {
-          dates.forEach((shouldBeInCal, index) => {
-            if (shouldBeInCal) {
-              const newCourse = {
-                name: name,
-                color: randomColor,
-                courseTerm: courseTerm,
-                title: name[0] + ' ' + name[1],
-                location: meeting[1],
-                section: section,
-                courseCode: section.classCode,
-                courseType: section.classType,
-                start: new Date(2018, 0, index + 1, start, startMin),
-                end: new Date(2018, 0, index + 1, end, endMin),
-                isCustomEvent: false,
-                scheduleIndex: scheduleIndex
-              };
-
-              newCourses.push(newCourse);
-            }
-          });
-        }
         }
       });
 
@@ -327,11 +332,11 @@ class App extends Component {
   handleScheduleChange = direction => {
     if (direction === 0) {
       this.setState({
-        showFinalSchedule:false,  currentScheduleIndex: (this.state.currentScheduleIndex - 1 + 4) % 4
+        showFinalSchedule: false, currentScheduleIndex: (this.state.currentScheduleIndex - 1 + 4) % 4
       });
     } else if (direction === 1) {
       this.setState({
-        showFinalSchedule:false, currentScheduleIndex: (this.state.currentScheduleIndex + 1) % 4
+        showFinalSchedule: false, currentScheduleIndex: (this.state.currentScheduleIndex + 1) % 4
       });
     }
   };
@@ -364,51 +369,51 @@ class App extends Component {
     }
   };
 
-  colorChange =(course,color)=>
-  {
+  handleColorChange = (course, color) => {
     let courses = this.state.courseEvents;
 
-  if(undefined===this.state.unavailableColors.find(function(element){return element.color === color&&element.scheduleIndex===course.scheduleIndex}))
-  {
-    for(var item of courses)
-    {
-      if(item.scheduleIndex===course.scheduleIndex&& item.courseCode===course.courseCode && item.courseTerm===course.courseTerm)
-      item.color=color;
+    if (undefined === this.state.unavailableColors.find(function (element) {
+      return element.color === color && element.scheduleIndex === course.scheduleIndex
+    })) {
+      for (var item of courses) {
+        if (item.scheduleIndex === course.scheduleIndex && item.courseCode === course.courseCode && item.courseTerm === course.courseTerm)
+          item.color = color;
+      }
+      this.setState({
+        courseEvents: courses, unavailableColors: this.state.unavailableColors.concat(
+          {color: color, scheduleIndex: course.scheduleIndex})
+      });
     }
-    this.setState({courseEvents:courses, unavailableColors: this.state.unavailableColors.concat(
-      {color: color, scheduleIndex: course.scheduleIndex})});
   }
-}
 
-displayFinal =(schedule)=>
-{
+  displayFinal = (schedule) => {
 
 
-  this.setState({
-    showFinalSchedule:!this.state.showFinalSchedule},()=>{
-      if(this.state.showFinalSchedule)
-      {
-        console.log("finalc",schedule);
-       this.setState({finalSchedule:schedule});
+    this.setState({
+      showFinalSchedule: !this.state.showFinalSchedule
+    }, () => {
+      if (this.state.showFinalSchedule) {
+        console.log("finalc", schedule);
+        this.setState({finalSchedule: schedule});
       }
     });
 
-}
+  }
 
 
   render() {
     return (
       <Fragment>
         <CssBaseline/>
-        <AppBar position='static' style={{marginBottom: '7px', boxShadow:"none", backgroundColor:"#305db7"}}>
+        <AppBar position='static' style={{marginBottom: '4px', boxShadow: "none", backgroundColor: "#305db7"}}>
           <Toolbar variant="dense">
-            <Typography style={{ flexGrow: 1 }}>
+            <Typography style={{flexGrow: 1}}>
               {this.state.isDesktop ? (
                 <img src={Logo_wide} height={36} alt={"logo"} style={{marginTop: 5}}/>
-               ) : (
+              ) : (
                 <img src={Logo_tight} height={36} alt={"logo"} style={{marginTop: 5}}/>
-               )}
-             </Typography>
+              )}
+            </Typography>
 
             <LoadSaveScheduleFunctionality onLoad={this.handleLoad} onSave={this.handleSave}/>
 
@@ -418,7 +423,7 @@ displayFinal =(schedule)=>
                 href={"https://goo.gl/forms/KI6MkNCZsyzIVkF42"}
                 target="_blank"
               >
-                <ImportContacts style={{marginLeft: 15, marginRight: 30}} fontSize="48px" color="white"/>
+                <ImportContacts style={{marginLeft: 15, marginRight: 30}} color="white"/>
               </a>
             </Tooltip>
             <Tooltip title="Give Us Feedback!">
@@ -427,7 +432,7 @@ displayFinal =(schedule)=>
                 href={"https://goo.gl/forms/eIHy4kp56pZKP9fK2"}
                 target="_blank"
               >
-                <Assignment style={{marginRight: 27, marginTop: 5}} fontSize="48px" color="white"/>
+                <Assignment style={{marginRight: 27, marginTop: 5}} color="white"/>
               </a>
             </Tooltip>
 
@@ -438,7 +443,7 @@ displayFinal =(schedule)=>
                 href={"https://www.facebook.com/AntAlmanac/"}
                 target="_blank"
               >
-                <Forum style={{marginRight: 27, marginTop: 5}} fontSize="48px" color="white"/>
+                <Forum style={{marginRight: 27, marginTop: 5}} color="white"/>
               </a>
             </Tooltip>
 
@@ -448,7 +453,7 @@ displayFinal =(schedule)=>
                 href={"https://www.ics.uci.edu/~rang1/AntAlmanac/index.html"}
                 target="_blank"
               >
-                <Info fontSize="48px" color="white"/>
+                <Info color="white"/>
               </a>
             </Tooltip>
 
@@ -458,54 +463,52 @@ displayFinal =(schedule)=>
           <Grid item xs={6}>
             <div>
               <Calendar
-                classEventsInCalendar={this.state.showFinalSchedule?this.state.finalSchedule:
+                classEventsInCalendar={this.state.showFinalSchedule ? this.state.finalSchedule :
                   this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))
                 }
-                storeFinal={this.storeFinal}
-                showFinalSchedul={this.state.showFinalSchedule}
-                onUndo={this.handleUndo}
                 currentScheduleIndex={this.state.currentScheduleIndex}
+                onUndo={this.handleUndo}
+                onColorChange={this.handleColorChange}
                 onClassDelete={this.handleClassDelete}
                 onScheduleChange={this.handleScheduleChange}
                 onAddCustomEvent={this.handleAddCustomEvent}
-                setID={this.setID}
                 onClearSchedule={this.handleClearSchedule}
               />
             </div>
           </Grid>
 
           <Grid item xs={6}>
-            <Paper square elevation={0} style={{overflow: "hidden", marginBottom: '8px', marginRight: '8px', backgroundColor: "#dfe2e5"}}>
-                <Tabs value={this.state.rightPaneView}
-                      onChange={this.handleRightPaneViewChange}
-                      indicatorColor="primary"
-                      textColor="primary"
-                      variant="fullWidth"
-                      fullWidth
-                      centered>
-                  <Tab label="Search View" />
-                  <Tab label="Tabular View" />
-                </Tabs>
-            </Paper>
-            <Paper
+            <div
+                   style={{overflow: "hidden", marginBottom: '4px', marginRight: '4px', backgroundColor: "#dfe2e5"}}>
+              <Tabs value={this.state.rightPaneView}
+                    onChange={this.handleRightPaneViewChange}
+                    indicatorColor="primary"
+                    textColor="primary"
+                    variant="fullWidth"
+                    centered>
+                <Tab label="Search View"/>
+                <Tab label="Tabular View"/>
+              </Tabs>
+            </div>
+            <div
               style={{
                 overflow: "auto",
                 padding: 10,
-                height: 'calc(100vh - 96px - 24px)',
-                marginRight: 8,
-                boxShadow:"none"
+                height: 'calc(100vh - 96px - 12px)',
+                marginRight: 4,
+                boxShadow: "none"
               }}
               id='rightPane'
             >
-            {this.state.rightPaneView ?
-              <TabularView
-                showFinalSchedule ={this.state.showFinalSchedule}
-                displayFinal={this.displayFinal}
-                classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}
-                colorChange={this.colorChange}
-                scheduleIndex={this.state.currentScheduleIndex}/>
-              :
-              (
+              {this.state.rightPaneView ?
+                <TabularView
+                  showFinalSchedule={this.state.showFinalSchedule}
+                  displayFinal={this.displayFinal}
+                  classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}
+                  onColorChange={this.handleColorChange}
+                  scheduleIndex={this.state.currentScheduleIndex}/>
+                :
+                (
                   this.state.showSearch ?
                     <SearchForm
                       prevFormData={this.state.prevFormData}
@@ -516,9 +519,9 @@ displayFinal =(schedule)=>
                       onAddClass={this.handleAddClass}
                       onDismissSearchResults={this.handleDismissSearchResults}
                       term={this.state.formData}/>
-              )
-            }
-              </Paper>
+                )
+              }
+            </div>
           </Grid>
         </Grid>
       </Fragment>

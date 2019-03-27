@@ -21,7 +21,7 @@ function RenderPropsPopover(props) {
   const { classes, name, courseDetails } = props;
 
   function deptInfo() {
-    var a = undefined;
+    let a = undefined;
     try {
       a = course_info[courseDetails.name[0]][courseDetails.name[1]];
     } catch (err) {}
@@ -36,8 +36,6 @@ function RenderPropsPopover(props) {
         return (
           <React.Fragment>
             <Button
-              aria-owns={open ? "render-props-popover" : undefined}
-              aria-haspopup="true"
               variant="contained"
               style={{backgroundColor:"#72a9ed", boxShadow:"none"}}
               onClick={event => {
@@ -47,7 +45,6 @@ function RenderPropsPopover(props) {
               {name}&nbsp;&nbsp;<ExpandMore />
             </Button>
             <Popover
-              id="render-props-popover"
               open={open}
               anchorEl={anchorEl}
               onClose={() => {
@@ -64,7 +61,7 @@ function RenderPropsPopover(props) {
             >
               <Typography className={classes.typography}>
                 <div
-                  style={{ margin: 10 }}
+                  style={{ margin: 10, maxWidth: 500}}
                   className="course_info"
                   dangerouslySetInnerHTML={{
                     __html: deptInfo()
