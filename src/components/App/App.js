@@ -5,7 +5,6 @@ import {
   Grid,
   Toolbar,
   AppBar,
-  Paper,
   Tooltip,
   Typography,
   Tabs,
