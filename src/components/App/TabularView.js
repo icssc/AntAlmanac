@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import ColorPicker from './colorPicker'
-import {Typography, Button} from "@material-ui/core";
+import {Typography} from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
 import rmpData from '../CoursePane/RMP.json'
 import locations from '../CoursePane/locations.json'
@@ -161,7 +161,7 @@ class TabularView extends Component {
             display: 'flex',
             marginTop: 10
           }}>
-            <Button>Custom Events</Button>
+            <Typography variant="h6">Custom Events</Typography>
           </div>
           <table className={classes.table}>
             <thead>
