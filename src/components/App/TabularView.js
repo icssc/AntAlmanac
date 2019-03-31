@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import ColorPicker from './colorPicker'
-import {Typography} from "@material-ui/core";
+import {Typography, Button} from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
 import rmpData from '../CoursePane/RMP.json'
 import locations from '../CoursePane/locations.json'
@@ -140,15 +140,74 @@ class TabularView extends Component {
    })
  }
 
+ showCustomEvents = (customEvents, classes) => {
+   if (customEvents.length === 0) {
+     return
+   } else {
+       const getTimeString = event => {
+         let startHours = event.start.getHours(), startMinutes = event.start.getMinutes();
+         let endHours = event.end.getHours(), endMinutes = event.end.getMinutes();
+         if (startMinutes < 10) {startMinutes = `0${startMinutes}`};
+         if (endMinutes < 10) {endMinutes = `0${endMinutes}`};
+         let startTime = `${(startHours % 12).toString()}:${startMinutes}`;
+         let endTime = `${(endHours % 12).toString()}:${endMinutes}`;
+         if (endHours > 12) {endTime += "p"};
+         return `${event.days.join().replace(",","")} ${startTime}-${endTime}`
+       }
+
+       return (
+        <div>
+          <div style={{
+            display: 'flex',
+            marginTop: 10
+          }}>
+            <Button>Custom Events</Button>
+          </div>
+          <table className={classes.table}>
+            <thead>
+              <tr>
+                <th>Color</th>
+                <th>Title</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {customEvents.map(event => {return (
+                <tr className={classes.tr}>
+                  <td className={classes.colorPicker} width="50" height="40"><ColorPicker onColorChange={this.props.onColorChange} event={event}/></td>
+                  <td>{event.title}</td>
+                  <td>{getTimeString(event)}</td>
+                </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      )
+    }
+ }
+
   render () {
 
     const events = this.props.classEventsInCalendar
 
     let result = [];
-    let finalSchedule =[];
+    let finalSchedule = [];
+    let customEvents = [];
     for (let item of events)
       if (!item.isCustomEvent && result.find(function (element) {return element.courseCode === item.courseCode}) === undefined)
         result.push(item);
+
+      else if (item.isCustomEvent) {
+        let day = item.start.toDateString().substring(0,1);
+        if (day === "T") {day = item.start.toDateString().substring(0,2)};
+
+        let ce = customEvents.find(event => event.customEventID === item.customEventID);
+        if ( ce === undefined) {
+          item.days = [day];
+          customEvents.push(item);
+        } else {ce.days.push(day)}; //
+      }
 
     const courses = [];
     let totalUnits = 0;
@@ -210,6 +269,7 @@ class TabularView extends Component {
 
     return (
       <Fragment>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></link>
         <div className={classes.container}>
           <Typography variant="title">
             Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)
@@ -308,6 +368,7 @@ NOR: ${secEach.numNewOnlyReserved}`}
           </div>)
         })}
 
+      {this.showCustomEvents(customEvents, classes)}
 
       </Fragment>
     )
