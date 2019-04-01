@@ -375,7 +375,11 @@ class App extends Component {
       return element.color === color && element.scheduleIndex === course.scheduleIndex
     })) {
       for (var item of courses) {
-        if (item.scheduleIndex === course.scheduleIndex && item.courseCode === course.courseCode && item.courseTerm === course.courseTerm)
+        if (course.isCustomEvent) {
+          if (item.scheduleIndex === course.scheduleIndex && item.customEventID === course.customEventID)
+            item.color = color;
+        }
+        else if (item.scheduleIndex === course.scheduleIndex && item.courseCode === course.courseCode && item.courseTerm === course.courseTerm)
           item.color = color;
       }
       this.setState({
