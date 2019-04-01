@@ -18,7 +18,7 @@ import Calendar from '../Calendar/Calendar'
 import {
   Info,
   Search,
-  ViewList,
+  CalendarToday,
   Assignment,
   Forum
 } from '@material-ui/icons'
@@ -526,8 +526,8 @@ class App extends Component {
                   indicatorColor="primary"
                   textColor="primary"
                 >
+                  <Tab icon={<CalendarToday/>}/>
                   <Tab icon={<Search/>}/>
-                  <Tab icon={<ViewList/>}/>
                 </Tabs>
               </div>
             </Grid>
