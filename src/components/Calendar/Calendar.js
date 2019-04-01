@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import "./calendar.css";
 import CalendarPaneToolbar from "./CalendarPaneToolbar";
 import CourseCalendarEvent from "./CourseCalendarEvent";
+import MobileCalendar from './MobileCalendar'
 
 BigCalendar.momentLocalizer(moment);
 
@@ -32,8 +33,8 @@ const styles = {
   }
 };
 
-const CustomEvent = ({classes}) => event => {
-  let actualEvent = event.event;
+const CustomEvent = ({classes}) => (event) => {
+  const actualEvent = event.event;
 
   if (!actualEvent.isCustomEvent)
     return (
@@ -99,7 +100,6 @@ class Calendar extends Component {
 
   render() {
     const {classes, classEventsInCalendar} = this.props;
-
     return (
       <div className={classes.container} onClick={this.handleClosePopover}>
         <CalendarPaneToolbar
@@ -113,7 +113,7 @@ class Calendar extends Component {
         <div>
           <div id="screenshot"
                style={(!this.state.screenshotting ?
-                 {height: "calc(100vh - 96px - 12px)"} :
+                 {height: `calc(100vh - 96px - 12px - ${this.props.isDesktop ? '0px' : '48px'})`} :
                  {height: '100%'})
                }>
             <Popper
@@ -137,7 +137,7 @@ class Calendar extends Component {
                 onColorChange={this.props.onColorChange}
               /> : null}
             </Popper>
-            <BigCalendar
+            {this.props.isDesktop ? <BigCalendar
               toolbar={false}
               formats={{
                 timeGutterFormat: (date, culture, localizer) =>
@@ -159,6 +159,10 @@ class Calendar extends Component {
               components={{event: CustomEvent({classes})}}
               onSelectEvent={this.handleEventClick}
             />
+            : <MobileCalendar
+                classEventsInCalendar={classEventsInCalendar}
+                EventBox={CustomEvent({classes})}
+              />}
           </div>
         </div>
       </div>

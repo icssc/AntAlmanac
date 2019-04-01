@@ -34,8 +34,8 @@ class CalendarPaneToolbar extends Component {
         <Typography variant="subheading" className={classes.inline}>
           {'Schedule ' + (this.props.currentScheduleIndex + 1)}
         </Typography>
-        <IconButton onClick={() => this.props.onScheduleChange(1)} fontSize='small'>
-          <ChevronRight/>
+        <IconButton onClick={() => this.props.onScheduleChange(1)}>
+          <ChevronRight fontSize='small'/>
         </IconButton>
 
         <div className={classes.spacer}> </div>
@@ -45,8 +45,6 @@ class CalendarPaneToolbar extends Component {
             <Undo fontSize='small'/>
           </IconButton>
         </Tooltip>
-
-
 
         <ScreenshotButton onTakeScreenshot={this.props.onTakeScreenshot}/>
 
