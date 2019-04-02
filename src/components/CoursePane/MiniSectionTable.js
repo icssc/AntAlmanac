@@ -246,7 +246,7 @@ class MiniSectionTable extends Component {
       };
 
       const url =
-        "https://j4j70ejkmg.execute-api.us-west-1.amazonaws.com/latest/api/websoc?" +
+        "https://2r7p77ujv6.execute-api.us-west-1.amazonaws.com/latest/api/websoc?" +
         querystring.stringify(params);
      await  fetch(url.toString())
         .then(resp => resp.json())
@@ -285,6 +285,7 @@ class MiniSectionTable extends Component {
 
           <AlmanacGraphWrapped
             term={this.props.term}
+            sectionInfo={this.state.sectionInfo}
             courseDetails={this.props.courseDetails}
           />
 

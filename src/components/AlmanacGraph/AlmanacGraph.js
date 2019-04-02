@@ -47,48 +47,15 @@ class AlmanacGraph extends Component {
             open: false,
             term: "2018 Spring",
             sections: [],
-            length: 0
+            length: 0,
         };
         this.handleOpen = this.handleOpen.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        this.fetchCourseData = this.fetchCourseData.bind(this);
         this.handleChange = this.handleChange.bind(this);
 
-        this.fetchCourseData();
     }
 
-    fetchCourseData() {
-        const params = {
-            department: this.props.courseDetails.name[0],
-            term: this.state.term,
-            courseTitle: this.props.courseDetails.name[2],
-            courseNum: this.props.courseDetails.name[1]
-        };
-
-        const url =
-            "https://2r7p77ujv6.execute-api.us-west-1.amazonaws.com/latest/api/websoc?" +
-            querystring.stringify(params);
-
-        fetch(url.toString())
-            .then(resp => resp.json())
-            .then(json => {
-                const sections = json.reduce((accumulator, school) => {
-                    school.departments.forEach(dept => {
-                        dept.courses.forEach(course => {
-                            course.sections.forEach(section => {
-                                if (section.units !== "0") accumulator.push(section);
-                            });
-                        });
-                    });
-
-                    return accumulator;
-                }, []);
-
-                this.setState({length: sections.length}, () => {
-                    this.setState({sections: sections});
-                });
-            });
-    }
+   
 
     handleChange(event) {
         this.setState({[event.target.name]: event.target.value}, () =>
@@ -146,7 +113,7 @@ class AlmanacGraph extends Component {
                             </Select>
                         </FormControl>
 
-                        {this.state.sections.length === 0 ? (
+                        {this.props.sectionInfo.length === 0 ? (
                             <div className={this.props.classes.courseNotOfferedContainer}>
                                 <Typography variant="h1">
                                     {"This course was not offered in " + this.state.term}
@@ -154,13 +121,13 @@ class AlmanacGraph extends Component {
                             </div>
                         ) : (
                             <div>
-                                {this.state.sections.map(section => {
+                                {this.props.sectionInfo.map(section => {
                                     return (
                                         <GraphRenderPane
                                             section={section}
                                             quarter={this.state.term[5].toLowerCase()}
                                             year={this.state.term.substring(2, 4)}
-                                            length={this.state.length}
+                                            length={this.props.sectionInfo.length}
                                         />
                                     );
                                 })}

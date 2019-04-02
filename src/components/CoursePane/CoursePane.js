@@ -87,7 +87,7 @@ class CoursePane extends Component {
     const url =
       "https://2r7p77ujv6.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?" +
       querystring.stringify(params);
-
+  console.log("lllllllllllllll");
     fetch(url)
       .then(resp => {
         return resp.json();
