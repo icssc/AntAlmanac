@@ -151,6 +151,7 @@ class CoursePane extends Component {
           :
           <Fragment/>}
           <CourseRenderPane
+          formData={this.props.formData}
             onAddClass={this.props.onAddClass}
             onToggleDismissButton={this.handleToggleDismissButton}
             courseData={courseData}

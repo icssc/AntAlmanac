@@ -1,6 +1,6 @@
 import React from 'react';
 import {Paper} from "@material-ui/core";
-import {withStyles} from "@material-ui/core/es/styles";
+import {withStyles} from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import ColorPicker from '../App/colorPicker.js';
 import {Delete} from '@material-ui/icons';

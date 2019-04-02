@@ -7,6 +7,7 @@ import POPOVER from "./PopOver";
 import Notification from '../Notification';
 import RstrPopover from "./RstrPopover";
 import locations from "./locations.json";
+import querystring from "querystring";
 
 const styles = {
   table: {
@@ -224,12 +225,50 @@ NOR: ${section.numNewOnlyReserved}`}
 }
 
 class MiniSectionTable extends Component {
-  shouldComponentUpdate(nextProps, nextState, nextContext) {
-    return this.props.courseDetails !== nextProps.courseDetails;
+  constructor(props)
+  {
+    super(props);
+    this.state={  sectionInfo : this.props.courseDetails.sections};
+  }
+
+  // shouldComponentUpdate(nextProps, nextState, nextContext) {
+  //   return this.props.courseDetails !== nextProps.courseDetails;
+  // }
+  componentDidMount = async () => {
+ let {building,courseCode,courseNum,coursesFull,dept,endTime,ge,instructor,label,startTime,term,units}=this.props.formData; 
+    if(ge!=="ANY" &&dept===null) //please put all the form's props condition in to prevent search bugs
+    {
+      const params = {
+        department: this.props.courseDetails.name[0],
+        term: this.props.termName,
+        courseTitle: this.props.courseDetails.name[2],
+        courseNum: this.props.courseDetails.name[1]
+      };
+
+      const url =
+        "https://j4j70ejkmg.execute-api.us-west-1.amazonaws.com/latest/api/websoc?" +
+        querystring.stringify(params);
+     await  fetch(url.toString())
+        .then(resp => resp.json())
+        .then(json => {
+          const sections = json.reduce((accumulator, school) => {
+            school.departments.forEach(dept => {
+              dept.courses.forEach(course => {
+                course.sections.forEach(section => {
+                 accumulator.push(section);
+                });
+              });
+            });
+
+            return accumulator;
+          }, []);
+
+          this.setState({ sectionInfo: sections });
+        });
+    }
   }
 
   render() {
-    const sectionInfo = this.props.courseDetails.sections;
     const {classes} = this.props;
 
     return (
@@ -273,7 +312,7 @@ class MiniSectionTable extends Component {
           </tr>
           </thead>
           <tbody>
-          {sectionInfo.map(section => {
+          {this.state.sectionInfo.map(section => {
             return (
               <ScheduleAddSelector
                 classes={classes}
