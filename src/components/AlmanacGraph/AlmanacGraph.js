@@ -58,8 +58,7 @@ class AlmanacGraph extends Component {
    
 
     handleChange(event) {
-        this.setState({[event.target.name]: event.target.value}, () =>
-            this.fetchCourseData()
+        this.setState({[event.target.name]: event.target.value}
         );
     }
 
@@ -150,3 +149,4 @@ AlmanacGraph.propTypes = {
 };
 
 export default withStyles(styles)(AlmanacGraph);
+
