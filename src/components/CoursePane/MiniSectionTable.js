@@ -283,10 +283,18 @@ class MiniSectionTable extends Component {
             courseDetails={this.props.courseDetails}
           />
 
+          <Typography variant="title" style={{ flexGrow: "2"}}>
+            &nbsp;
+          </Typography>
+
           <AlmanacGraphWrapped
             term={this.props.term}
             courseDetails={this.props.courseDetails}
           />
+
+          <Typography variant="title" style={{ flexGrow: "2"}}>
+            &nbsp;
+          </Typography>
 
           {this.props.courseDetails.prerequisiteLink ? (
             <Typography variant='h9' style={{flexGrow: "2", marginTop: 9}}>

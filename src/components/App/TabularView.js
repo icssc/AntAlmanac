@@ -186,13 +186,20 @@ class TabularView extends Component {
                 name={event.name[0] + ' ' + event.name[1] + ' | ' + event.name[2]}
                 courseDetails={event}
               />
+
               <Typography variant="title" style={{ flexGrow: "2"}}>
                 &nbsp;
               </Typography>
+
               <AlmanacGraphWrapped
                 term={event.courseTerm}
                 courseDetails={event}
               />
+              
+              <Typography variant="title" style={{ flexGrow: "2"}}>
+                &nbsp;
+              </Typography>
+
               {event.prerequisiteLink ? (
                 <Typography variant='h9' style={{flexGrow: "2", marginTop: 9}}>
                   <a target="blank" style={{textDecoration: "none", color: "#72a9ed"}}
