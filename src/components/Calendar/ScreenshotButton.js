@@ -9,7 +9,7 @@ function ScreenshotButton(props) {
 
   return (
     <Fragment>
-      <Tooltip title="Screenshot Schedule">
+      <Tooltip title="Download .png">
         <IconButton
           onClick={() => {
             onTakeScreenshot(() => {

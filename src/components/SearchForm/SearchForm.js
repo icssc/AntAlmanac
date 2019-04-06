@@ -176,9 +176,9 @@ class SearchForm extends Component {
         <div className={classes.new}>
           <Typography>
             <b>New on AntAlmanac:</b><br/>
-            Text message notifications<br/>
+            Download .ics files of your calendars!<br/>
             Links to interactive campus map<br/>
-            See finals schedules in tabular view
+            See finals schedules
           </Typography>
         </div>
 

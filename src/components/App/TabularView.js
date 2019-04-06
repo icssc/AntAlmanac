@@ -131,20 +131,11 @@ class TabularView extends Component {
       return section
   }
 
- showFinal =schedule=>
- {
-   this.setState({showFinal:!this.state.showFinal},()=>{
-     if(this.state.showFinal)
-     this.props.displayFinal(schedule);
-   })
- }
-
   render () {
-
-    const events = this.props.classEventsInCalendar
+    const {classes} = this.props;
+    const events = this.props.eventsInCalendar;
 
     let result = [];
-    let finalSchedule =[];
     for (let item of events)
       if (!item.isCustomEvent && result.find(function (element) {return element.courseCode === item.courseCode}) === undefined)
         result.push(item);
@@ -156,37 +147,6 @@ class TabularView extends Component {
       let foundIndex = courses.findIndex(function (element) {
         return (course.name.join() === element.name.join() && element.courseTerm === course.courseTerm)
       })
-
-      let final = course.section.finalExam;
-
-      if(final.length>5)
-      {
-        let [,,, date, start, startMin, end, endMin, ampm] = final.match(/([A-za-z]+) *(\d{1,2}) *([A-za-z]+) *(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
-        start = parseInt(start, 10);
-        startMin = parseInt(startMin, 10);
-        end = parseInt(end, 10);
-        endMin = parseInt(endMin, 10);
-        date = [date.includes('M'), date.includes('Tu'), date.includes('W'), date.includes('Th'), date.includes('F')];
-        if (ampm === 'p' && end !== 12) {
-          start += 12;
-          end += 12;
-          if (start > end) start -= 12;
-        }
-
-        date.forEach((shouldBeInCal, index) => {
-          if(shouldBeInCal)
-          finalSchedule.push({
-            title:course.title,
-            courseType: "Fin",
-            courseCode:course.courseCode,
-            location:course.location,
-            color:course.color,
-            isCustomEvent:false,
-            start: new Date(2018, 0, index + 1, start, startMin),
-            end: new Date(2018, 0, index + 1, end, endMin),
-          })
-        });
-      }
 
       if (foundIndex === -1) {
         courses.push({
@@ -205,8 +165,6 @@ class TabularView extends Component {
         totalUnits += Number(course.section.units);
     }
 
-    const {classes} = this.props;
-
     return (
       <Fragment>
         <div className={classes.container}>
@@ -215,6 +173,7 @@ class TabularView extends Component {
           </Typography>
         </div>
         {courses.map(event => {
+          console.log(event)
           return (<div>
             <div
               style={{
@@ -233,6 +192,15 @@ class TabularView extends Component {
                 term={event.courseTerm}
                 courseDetails={event}
               />
+              {event.prerequisiteLink ? (
+                <Typography variant='h9' style={{flexGrow: "2", marginTop: 9}}>
+                  <a target="blank" style={{textDecoration: "none", color: "#72a9ed"}}
+                     href={event.prerequisiteLink} rel="noopener noreferrer">
+                    Prerequisites
+                  </a>
+                </Typography>
+              ) : <Fragment/>
+              }
             </div>
             <table className={classes.table}>
               <thead>
@@ -283,7 +251,7 @@ ${secEach.units} units`}
                             )
                           })}
                         </td>
-                        <td className={classes.multiline + " " + secEach.status.toLowerCase()}>
+                        <td className={classes.multiline + " " + classes[secEach.status.toLowerCase()]}>
                           {`${secEach.numCurrentlyEnrolled[0]} / ${secEach.maxCapacity}
 WL: ${secEach.numOnWaitlist}
 NOR: ${secEach.numNewOnlyReserved}`}
@@ -293,8 +261,7 @@ NOR: ${secEach.numNewOnlyReserved}`}
                             restrictions={secEach.restrictions}
                           />
                         </td>
-                        <td
-                          className={secEach.status.toLowerCase()}>{this.statusforFindingSpot(secEach.status, secEach.classCode, item.courseTerm, item.name)}</td>
+                        <td className={classes[secEach.status.toLowerCase()]}>{this.statusforFindingSpot(secEach.status, secEach.classCode, item.courseTerm, item.name)}</td>
                       </tr>
                     )
                   }

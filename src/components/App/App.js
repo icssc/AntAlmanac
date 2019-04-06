@@ -496,9 +496,7 @@ class App extends Component {
               >
                 {this.state.rightPaneView ?
                   <TabularView
-                    showFinalSchedule={this.state.showFinalSchedule}
-                    displayFinal={this.displayFinal}
-                    classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}
+                    eventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}
                     onColorChange={this.handleColorChange}
                     scheduleIndex={this.state.currentScheduleIndex}/>
                   :

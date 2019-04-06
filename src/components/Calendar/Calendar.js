@@ -111,7 +111,6 @@ class Calendar extends Component {
           onTakeScreenshot={this.handleTakeScreenshot}
           currentScheduleIndex={this.props.currentScheduleIndex}
           eventsInCalendar={this.props.eventsInCalendar}
-          classEventsInCalendar={this.props.classEventsInCalendar}
           showFinalSchedule={this.props.showFinalSchedule}
           displayFinal={this.props.displayFinal}
         />
