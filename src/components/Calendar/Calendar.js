@@ -109,6 +109,9 @@ class Calendar extends Component {
           onAddCustomEvent={this.props.onAddCustomEvent}
           onTakeScreenshot={this.handleTakeScreenshot}
           currentScheduleIndex={this.props.currentScheduleIndex}
+          classEventsInCalendar={this.props.classEventsInCalendar}
+          showFinalSchedule={this.props.showFinalSchedule}
+          displayFinal={this.props.displayFinal}
         />
         <div>
           <div id="screenshot"
