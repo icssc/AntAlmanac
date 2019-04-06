@@ -455,9 +455,9 @@ class App extends Component {
                 classEventsInCalendar={this.state.showFinalSchedule ? this.state.finalSchedule :
                   this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))
                 }
-
                 eventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}
-
+                showFinalSchedule={this.state.showFinalSchedule}
+                displayFinal={this.displayFinal}
                 isDesktop={this.state.isDesktop}
                 currentScheduleIndex={this.state.currentScheduleIndex}
                 onUndo={this.handleUndo}

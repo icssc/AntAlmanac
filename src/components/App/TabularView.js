@@ -7,7 +7,6 @@ import locations from '../CoursePane/locations.json'
 import RstrPopover from '../CoursePane/RstrPopover'
 import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
-import FinalSwitch from './FinalSwitch'
 import {withStyles} from '@material-ui/core/styles';
 
 const styles = {
@@ -213,9 +212,6 @@ class TabularView extends Component {
         <div className={classes.container}>
           <Typography variant="title">
             Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)
-          </Typography>
-          <Typography>
-            <FinalSwitch  displayFinal={this.props.displayFinal} schedule={finalSchedule} showFinalSchedule = {this.props.showFinalSchedule}/>
           </Typography>
         </div>
         {courses.map(event => {

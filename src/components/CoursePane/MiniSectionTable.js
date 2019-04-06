@@ -235,7 +235,7 @@ class MiniSectionTable extends Component {
   //   return this.props.courseDetails !== nextProps.courseDetails;
   // }
   componentDidMount = async () => {
- let {building,courseCode,courseNum,coursesFull,dept,endTime,ge,instructor,label,startTime,term,units}=this.props.formData; 
+ let {building,courseCode,courseNum,coursesFull,dept,endTime,ge,instructor,label,startTime,term,units}=this.props.formData;
     if(ge!=="ANY" &&dept===null) //please put all the form's props condition in to prevent search bugs
     {
       const params = {
@@ -285,7 +285,6 @@ class MiniSectionTable extends Component {
 
           <AlmanacGraphWrapped
             term={this.props.term}
-            sectionInfo={this.state.sectionInfo}
             courseDetails={this.props.courseDetails}
           />
 
