@@ -100,6 +100,7 @@ class Calendar extends Component {
 
   render() {
     const {classes, classEventsInCalendar} = this.props;
+
     return (
       <div className={classes.container} onClick={this.handleClosePopover}>
         <CalendarPaneToolbar
@@ -109,6 +110,9 @@ class Calendar extends Component {
           onAddCustomEvent={this.props.onAddCustomEvent}
           onTakeScreenshot={this.handleTakeScreenshot}
           currentScheduleIndex={this.props.currentScheduleIndex}
+
+          eventsInCalendar={this.props.eventsInCalendar}
+
         />
         <div>
           <div id="screenshot"
@@ -131,35 +135,35 @@ class Calendar extends Component {
               open={this.state.moreInfoOpen}
             >
               {this.state.moreInfoOpen ?
-              <CourseCalendarEvent
-                courseInMoreInfo={this.state.courseInMoreInfo}
-                onClassDelete={() => this.props.onClassDelete(this.state.courseInMoreInfo)}
-                onColorChange={this.props.onColorChange}
-              /> : null}
+                <CourseCalendarEvent
+                  courseInMoreInfo={this.state.courseInMoreInfo}
+                  onClassDelete={() => this.props.onClassDelete(this.state.courseInMoreInfo)}
+                  onColorChange={this.props.onColorChange}
+                /> : null}
             </Popper>
             {this.props.isDesktop ? <BigCalendar
-              toolbar={false}
-              formats={{
-                timeGutterFormat: (date, culture, localizer) =>
-                  date.getMinutes() > 0
-                    ? ""
-                    : localizer.format(date, "h A", culture),
-                dayFormat: "ddd"
-              }}
-              defaultView={BigCalendar.Views.WORK_WEEK}
-              views={[BigCalendar.Views.WORK_WEEK]}
-              step={15}
-              timeslots={2}
-              defaultDate={new Date(2018, 0, 1)}
-              min={new Date(2018, 0, 1, 7)}
-              max={new Date(2018, 0, 1, 23)}
-              events={classEventsInCalendar}
-              eventPropGetter={Calendar.eventStyleGetter}
-              showMultiDayTimes={false}
-              components={{event: CustomEvent({classes})}}
-              onSelectEvent={this.handleEventClick}
-            />
-            : <MobileCalendar
+                toolbar={false}
+                formats={{
+                  timeGutterFormat: (date, culture, localizer) =>
+                    date.getMinutes() > 0
+                      ? ""
+                      : localizer.format(date, "h A", culture),
+                  dayFormat: "ddd"
+                }}
+                defaultView={BigCalendar.Views.WORK_WEEK}
+                views={[BigCalendar.Views.WORK_WEEK]}
+                step={15}
+                timeslots={2}
+                defaultDate={new Date(2018, 0, 1)}
+                min={new Date(2018, 0, 1, 7)}
+                max={new Date(2018, 0, 1, 23)}
+                events={classEventsInCalendar}
+                eventPropGetter={Calendar.eventStyleGetter}
+                showMultiDayTimes={false}
+                components={{event: CustomEvent({classes})}}
+                onSelectEvent={this.handleEventClick}
+              />
+              : <MobileCalendar
                 classEventsInCalendar={classEventsInCalendar}
                 EventBox={CustomEvent({classes})}
               />}
@@ -189,7 +193,20 @@ Calendar.propTypes = {
   onClearSchedule: PropTypes.func,
   onClassDelete: PropTypes.func,
   onAddCustomEvent: PropTypes.func,
-  onColorChange: PropTypes.func
+  onColorChange: PropTypes.func,
+  eventsInCalendar: PropTypes.shape({
+    color: PropTypes.string,
+    title: PropTypes.string,
+    start: PropTypes.instanceOf(Date),
+    end: PropTypes.instanceOf(Date),
+    courseID: PropTypes.string,
+    courseTerm: PropTypes.string,
+    location: PropTypes.string,
+    type: PropTypes.string,
+    isCustomEvent: PropTypes.bool,
+    section: PropTypes.object,
+    name: PropTypes.string
+  })
 };
 
 export default withStyles(styles)(Calendar);
