@@ -134,7 +134,7 @@ class TabularView extends Component {
   render () {
     const {classes} = this.props;
     const events = this.props.eventsInCalendar;
-
+    console.log("dddd",events);
     let result = [];
     for (let item of events)
       if (!item.isCustomEvent && result.find(function (element) {return element.courseCode === item.courseCode}) === undefined)
@@ -152,6 +152,7 @@ class TabularView extends Component {
         courses.push({
             name: course.name,
             lecAndDis: [course],
+            prerequisiteLink:course.prerequisiteLink,
             final:course.section.finalExam,
             //  courseID:event.courseID,
             courseTerm: course.courseTerm

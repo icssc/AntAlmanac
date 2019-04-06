@@ -124,7 +124,8 @@ class App extends Component {
             courseCode: event.courseCode,
             courseTerm: event.courseTerm,
             scheduleIndex: event.scheduleIndex,
-            isCustomEvent: false
+            isCustomEvent: false,
+            
           })
         }
       }
@@ -225,7 +226,7 @@ class App extends Component {
     this.setState({activeTab: value});
   }
 
-  handleAddClass = (section, name, scheduleIndex, courseTerm) => {
+  handleAddClass = (section, courseDetails, scheduleIndex, courseTerm) => {
     //TODO: Can we speed up this operation?
     const randomColor = arrayOfColors.find(color => {
       let isAvailableColor = true
@@ -287,10 +288,10 @@ class App extends Component {
               dates.forEach((shouldBeInCal, index) => {
                 if (shouldBeInCal) {
                   const newCourse = {
-                    name: name,
+                    name: courseDetails.name,
                     color: randomColor,
                     courseTerm: courseTerm,
-                    title: name[0] + ' ' + name[1],
+                    title: courseDetails.name[0] + ' ' + courseDetails.name[1],
                     location: meeting[1],
                     section: section,
                     courseCode: section.classCode,
@@ -298,7 +299,8 @@ class App extends Component {
                     start: new Date(2018, 0, index + 1, start, startMin),
                     end: new Date(2018, 0, index + 1, end, endMin),
                     isCustomEvent: false,
-                    scheduleIndex: i
+                    scheduleIndex: i,
+                    prerequisiteLink:courseDetails.prerequisiteLink
                   }
 
                   newCourses.push(newCourse)
@@ -309,10 +311,10 @@ class App extends Component {
             dates.forEach((shouldBeInCal, index) => {
               if (shouldBeInCal) {
                 const newCourse = {
-                  name: name,
+                  name: courseDetails.name,
                   color: randomColor,
                   courseTerm: courseTerm,
-                  title: name[0] + ' ' + name[1],
+                  title: courseDetails.name[0] + ' ' + courseDetails.name[1],
                   location: meeting[1],
                   section: section,
                   courseCode: section.classCode,
