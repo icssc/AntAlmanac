@@ -53,7 +53,6 @@ class AlmanacGraph extends Component {
         this.handleClose = this.handleClose.bind(this);
         this.fetchCourseData = this.fetchCourseData.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.fetchCourseData();
     }
 
     fetchCourseData() {
@@ -97,6 +96,8 @@ class AlmanacGraph extends Component {
 
     handleOpen() {
         this.setState({open: true});
+        this.fetchCourseData();
+
     }
 
     handleClose() {
