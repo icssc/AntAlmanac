@@ -1,4 +1,4 @@
-function calendarize(section, color, courseTerm, scheduleIndex, name) {
+function calendarize(section, color, courseTerm, scheduleIndex, name,prerequisiteLink) {
   const events = [];
 
   section.meetings.forEach(meeting => {
@@ -34,7 +34,8 @@ function calendarize(section, color, courseTerm, scheduleIndex, name) {
             start: new Date(2018, 0, index + 1, start, startMin),
             end: new Date(2018, 0, index + 1, end, endMin),
             isCustomEvent: false,
-            scheduleIndex: scheduleIndex
+            scheduleIndex: scheduleIndex,
+            prerequisiteLink:prerequisiteLink
           };
 
           events.push(newEvent);
@@ -66,7 +67,7 @@ async function getCoursesData(userData) {
 
   if (dataToSend.length > 0) {
     const response = await fetch(
-      `https://2r7p77ujv6.execute-api.us-west-1.amazonaws.com/latest/api/codes`,
+      `https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/codes`,
       {
         method: "POST",
         mode: "cors",
@@ -92,8 +93,9 @@ async function getCoursesData(userData) {
             break;
           }
         }
+        console.log(foundData);
         if(foundData!==null)
-        events.push(...calendarize(foundData.section, courseEvent.color, courseEvent.courseTerm, courseEvent.scheduleIndex, foundData.courseName));
+        events.push(...calendarize(foundData.section, courseEvent.color, courseEvent.courseTerm, courseEvent.scheduleIndex, foundData.courseName,foundData.prerequisiteLink));
       }
     }
 

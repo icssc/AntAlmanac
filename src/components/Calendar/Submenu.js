@@ -26,7 +26,7 @@ class Submenu extends React.Component {
 
   render() {
 
-    const events = this.props.classEventsInCalendar
+    const events = this.props.eventsInCalendar
 
     let result = [];
     let finalSchedule =[];

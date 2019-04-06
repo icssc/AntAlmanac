@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Fragment } from 'react'
+import React, {Component} from 'react'
+import {Fragment} from 'react'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import {
   Grid,
@@ -53,7 +53,7 @@ const arrayOfColors = [red[500], pink[500],
   blueGrey[500]]
 
 class App extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
 
     this.state = {
@@ -81,18 +81,18 @@ class App extends Component {
     window.addEventListener('resize', this.resizeLogo)
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     document.removeEventListener('keydown', this.undoEvent, false)
     window.removeEventListener('resize', this.resizeLogo)
   }
 
-  resizeLogo () {
-    this.setState({ isDesktop: window.innerWidth > 960 })
+  resizeLogo() {
+    this.setState({isDesktop: window.innerWidth > 960})
   }
 
   handleRightPaneViewChange = (event, rightPaneView) => {
-    this.setState({ rightPaneView })
-    this.setState({ showSearch: true })
+    this.setState({rightPaneView})
+    this.setState({showSearch: true})
     //turn off finals viewing when in search?
     //if(this.state.rightPaneView === 1) //will be switched to search view
     //    this.setState({showFinalSchedule:false});
@@ -124,7 +124,8 @@ class App extends Component {
             courseCode: event.courseCode,
             courseTerm: event.courseTerm,
             scheduleIndex: event.scheduleIndex,
-            isCustomEvent: false
+            isCustomEvent: false,
+            
           })
         }
       }
@@ -135,7 +136,7 @@ class App extends Component {
       unavailableColors: this.state.unavailableColors,
     })
 
-    this.setState({ userID: userID })
+    this.setState({userID: userID})
   }
 
   handleUndo = (event) => {
@@ -185,10 +186,10 @@ class App extends Component {
 
         if (deletedEvent.scheduleIndex === 4 && !eventsAfterRemovingItem.includes(eventInArray)) {
           const scheduleIndicesToAddTo = [0, 1, 2, 3].filter(index => index !== this.state.currentScheduleIndex)
-          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, { scheduleIndex: scheduleIndicesToAddTo[0] }))
-          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, { scheduleIndex: scheduleIndicesToAddTo[1] }))
-          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, { scheduleIndex: scheduleIndicesToAddTo[2] }))
-          newBackupArray.push({ ...deletedEvent, scheduleIndex: this.state.currentScheduleIndex })
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[0]}))
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[1]}))
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[2]}))
+          newBackupArray.push({...deletedEvent, scheduleIndex: this.state.currentScheduleIndex})
         } else {
           newBackupArray.push(deletedEvent)
         }
@@ -198,10 +199,10 @@ class App extends Component {
 
         if (deletedEvent.scheduleIndex === 4 && !eventsAfterRemovingItem.includes(eventInArray)) {
           const scheduleIndicesToAddTo = [0, 1, 2, 3].filter(index => index !== this.state.currentScheduleIndex)
-          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, { scheduleIndex: scheduleIndicesToAddTo[0] }))
-          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, { scheduleIndex: scheduleIndicesToAddTo[1] }))
-          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, { scheduleIndex: scheduleIndicesToAddTo[2] }))
-          newBackupArray.push({ ...deletedEvent, scheduleIndex: this.state.currentScheduleIndex })
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[0]}))
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[1]}))
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[2]}))
+          newBackupArray.push({...deletedEvent, scheduleIndex: this.state.currentScheduleIndex})
         } else {
           newBackupArray.push(deletedEvent)
         }
@@ -209,7 +210,7 @@ class App extends Component {
           return !(colorAndScheduleIndex.color === deletedEvent.color &&
             colorAndScheduleIndex.scheduleIndex === this.state.currentScheduleIndex)
         })
-        this.setState({ unavailableColors: addBackColor })
+        this.setState({unavailableColors: addBackColor})
       } else {
         eventsAfterRemovingItem.push(eventInArray)
       }
@@ -222,10 +223,10 @@ class App extends Component {
   }
 
   handleTabChange = (event, value) => {
-    this.setState({ activeTab: value});
+    this.setState({activeTab: value});
   }
 
-  handleAddClass = (section, name, scheduleIndex, courseTerm) => {
+  handleAddClass = (section, courseDetails, scheduleIndex, courseTerm) => {
     //TODO: Can we speed up this operation?
     const randomColor = arrayOfColors.find(color => {
       let isAvailableColor = true
@@ -246,10 +247,10 @@ class App extends Component {
       if (scheduleIndex === 4)
         this.setState({
           unavailableColors: this.state.unavailableColors.concat([
-            { color: randomColor, scheduleIndex: 0 },
-            { color: randomColor, scheduleIndex: 1 },
-            { color: randomColor, scheduleIndex: 2 },
-            { color: randomColor, scheduleIndex: 3 },
+            {color: randomColor, scheduleIndex: 0},
+            {color: randomColor, scheduleIndex: 1},
+            {color: randomColor, scheduleIndex: 2},
+            {color: randomColor, scheduleIndex: 3},
           ])
         })
       else {
@@ -287,10 +288,10 @@ class App extends Component {
               dates.forEach((shouldBeInCal, index) => {
                 if (shouldBeInCal) {
                   const newCourse = {
-                    name: name,
+                    name: courseDetails.name,
                     color: randomColor,
                     courseTerm: courseTerm,
-                    title: name[0] + ' ' + name[1],
+                    title: courseDetails.name[0] + ' ' + courseDetails.name[1],
                     location: meeting[1],
                     section: section,
                     courseCode: section.classCode,
@@ -298,7 +299,8 @@ class App extends Component {
                     start: new Date(2018, 0, index + 1, start, startMin),
                     end: new Date(2018, 0, index + 1, end, endMin),
                     isCustomEvent: false,
-                    scheduleIndex: i
+                    scheduleIndex: i,
+                    prerequisiteLink:courseDetails.prerequisiteLink
                   }
 
                   newCourses.push(newCourse)
@@ -309,10 +311,10 @@ class App extends Component {
             dates.forEach((shouldBeInCal, index) => {
               if (shouldBeInCal) {
                 const newCourse = {
-                  name: name,
+                  name: courseDetails.name,
                   color: randomColor,
                   courseTerm: courseTerm,
-                  title: name[0] + ' ' + name[1],
+                  title: courseDetails.name[0] + ' ' + courseDetails.name[1],
                   location: meeting[1],
                   section: section,
                   courseCode: section.classCode,
@@ -330,7 +332,7 @@ class App extends Component {
         }
       })
 
-      this.setState({ courseEvents: this.state.courseEvents.concat(newCourses) })
+      this.setState({courseEvents: this.state.courseEvents.concat(newCourses)})
     }
   }
 
@@ -347,17 +349,17 @@ class App extends Component {
   }
 
   handleDismissSearchResults = () => {
-    this.setState({ showSearch: true, formData: null })
+    this.setState({showSearch: true, formData: null})
   }
 
   updateFormData = formData => {
-    this.setState({ showSearch: false }, function () {
-      this.setState({ formData: formData, prevFormData: formData })
+    this.setState({showSearch: false}, function () {
+      this.setState({formData: formData, prevFormData: formData})
     })
   }
 
   handleAddCustomEvent = (events) => {
-    this.setState({ courseEvents: this.state.courseEvents.concat(events) })
+    this.setState({courseEvents: this.state.courseEvents.concat(events)})
   }
 
   handleClearSchedule = () => {
@@ -386,7 +388,7 @@ class App extends Component {
       }
       this.setState({
         courseEvents: courses, unavailableColors: this.state.unavailableColors.concat(
-          { color: color, scheduleIndex: course.scheduleIndex })
+          {color: color, scheduleIndex: course.scheduleIndex})
       })
     }
   }
@@ -396,29 +398,29 @@ class App extends Component {
       showFinalSchedule: !this.state.showFinalSchedule
     }, () => {
       if (this.state.showFinalSchedule) {
-        this.setState({ finalSchedule: schedule })
+        this.setState({finalSchedule: schedule})
       }
     });
   }
 
-  render () {
+  render() {
     return (
       <Fragment>
         <CssBaseline/>
-        <AppBar position='static' style={{ marginBottom: '4px', boxShadow: 'none', backgroundColor: '#305db7' }}>
+        <AppBar position='static' style={{marginBottom: '4px', boxShadow: 'none', backgroundColor: '#305db7'}}>
           <Toolbar variant="dense">
-            <div style={{ flexGrow: 1 }}>
+            <div style={{flexGrow: 1}}>
               {this.state.isDesktop ? (
-                <img src={Logo_wide} height={36} alt={'logo'} style={{ marginTop: 5 }}/>
+                <img src={Logo_wide} height={36} alt={'logo'} style={{marginTop: 5}}/>
               ) : (
-                <img src={Logo_tight} height={36} alt={'logo'} style={{ marginTop: 5 }}/>
+                <img src={Logo_tight} height={36} alt={'logo'} style={{marginTop: 5}}/>
               )}
             </div>
 
             <LoadSaveScheduleFunctionality onLoad={this.handleLoad} onSave={this.handleSave}/>
             <Tooltip title="Give Us Feedback!">
               <a
-                style={{ color: 'white', marginLeft: 16}}
+                style={{color: 'white', marginLeft: 16}}
                 href={'https://goo.gl/forms/eIHy4kp56pZKP9fK2'}
                 target="_blank"
               >
@@ -428,17 +430,17 @@ class App extends Component {
 
             <Tooltip title="Message Us on FB!">
               <a
-                style={{ color: 'white', marginLeft: 16 }}
+                style={{color: 'white', marginLeft: 16}}
                 href={'https://www.facebook.com/AntAlmanac/'}
                 target="_blank"
               >
-                <Forum style={{ marginTop: 5 }} color="white"/>
+                <Forum style={{marginTop: 5}} color="white"/>
               </a>
             </Tooltip>
 
             <Tooltip title="Info Page">
               <a
-                style={{ color: 'white', marginLeft: 16}}
+                style={{color: 'white', marginLeft: 16}}
                 href={'https://www.ics.uci.edu/~rang1/AntAlmanac/index.html'}
                 target="_blank"
               >
@@ -450,11 +452,12 @@ class App extends Component {
         </AppBar>
         <Grid container>
           <Grid item xs={12} s={6} md={6} lg={6} xl={6}>
-            <div style={{ display: this.state.activeTab === 0 || this.state.isDesktop ? 'block' : 'none' }}>
+            <div style={{display: this.state.activeTab === 0 || this.state.isDesktop ? 'block' : 'none'}}>
               <Calendar
                 classEventsInCalendar={this.state.showFinalSchedule ? this.state.finalSchedule :
                   this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))
                 }
+                eventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}
                 showFinalSchedule={this.state.showFinalSchedule}
                 displayFinal={this.displayFinal}
                 isDesktop={this.state.isDesktop}
@@ -472,7 +475,7 @@ class App extends Component {
           <Grid item xs={12} s={6} md={6} lg={6} xl={6}>
             <div style={{display: this.state.activeTab === 1 || this.state.isDesktop ? 'block' : 'none'}}>
               <div
-                style={{ overflow: 'hidden', marginBottom: '4px', marginRight: '4px', backgroundColor: '#dfe2e5' }}>
+                style={{overflow: 'hidden', marginBottom: '4px', marginRight: '4px', backgroundColor: '#dfe2e5'}}>
                 <Tabs value={this.state.rightPaneView}
                       onChange={this.handleRightPaneViewChange}
                       indicatorColor="primary"
@@ -495,9 +498,7 @@ class App extends Component {
               >
                 {this.state.rightPaneView ?
                   <TabularView
-                    showFinalSchedule={this.state.showFinalSchedule}
-                    displayFinal={this.displayFinal}
-                    classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}
+                    eventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}
                     onColorChange={this.handleColorChange}
                     scheduleIndex={this.state.currentScheduleIndex}/>
                   :

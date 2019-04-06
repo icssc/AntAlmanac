@@ -85,7 +85,7 @@ class CoursePane extends Component {
       building: building
     };
     const url =
-      "https://2r7p77ujv6.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?" +
+      "https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?" +
       querystring.stringify(params);
     fetch(url)
       .then(resp => {

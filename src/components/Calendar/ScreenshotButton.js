@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react';
 import IconButton from '@material-ui/core/IconButton';
-import GetApp from '@material-ui/icons/GetApp';
+import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import html2canvas from 'html2canvas';
 import Tooltip from '@material-ui/core/Tooltip';
 
@@ -9,7 +9,7 @@ function ScreenshotButton(props) {
 
   return (
     <Fragment>
-      <Tooltip title="Download Schedule">
+      <Tooltip title="Download .png">
         <IconButton
           onClick={() => {
             onTakeScreenshot(() => {
@@ -31,7 +31,7 @@ function ScreenshotButton(props) {
               });
             });
           }}>
-          <GetApp fontSize='small'/>
+          <PhotoCamera fontSize='small'/>
         </IconButton>
       </Tooltip>
     </Fragment>

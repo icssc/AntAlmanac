@@ -5,6 +5,7 @@ import {ChevronLeft, ChevronRight, Undo} from "@material-ui/icons";
 import ScreenshotButton from "./ScreenshotButton";
 import PropTypes from "prop-types";
 import Submenu from "./Submenu"
+import ExportButton from "./ExportCalendar";
 
 const styles = {
   toolbar: {
@@ -38,7 +39,7 @@ class CalendarPaneToolbar extends Component {
           <ChevronRight fontSize='small'/>
         </IconButton>
 
-        <div className={classes.spacer}> </div>
+        <div className={classes.spacer}></div>
 
         <Tooltip title="Undo Last Delete">
           <IconButton onClick={() => this.props.onUndo(null)}>
@@ -48,12 +49,14 @@ class CalendarPaneToolbar extends Component {
 
         <ScreenshotButton onTakeScreenshot={this.props.onTakeScreenshot}/>
 
+        <ExportButton eventsInCalendar={this.props.eventsInCalendar}/>
+
         <Tooltip title="More">
           <Submenu
             onAddCustomEvent={this.props.onAddCustomEvent}
             onClearSchedule={this.props.onClearSchedule}
             onTakeScreenshot={this.props.onTakeScreenshot}
-            classEventsInCalendar={this.props.classEventsInCalendar}
+            eventsInCalendar={this.props.eventsInCalendar}
             showFinalSchedule={this.props.showFinalSchedule}
             displayFinal={this.props.displayFinal}
           />
@@ -69,7 +72,33 @@ CalendarPaneToolbar.propTypes = {
   onUndo: PropTypes.func,
   onAddCustomEvent: PropTypes.func,
   onTakeScreenshot: PropTypes.func,
-  currentScheduleIndex: PropTypes.number
+  currentScheduleIndex: PropTypes.number,
+  classesInCalendar: PropTypes.shape({
+    color: PropTypes.string,
+    title: PropTypes.string,
+    start: PropTypes.instanceOf(Date),
+    end: PropTypes.instanceOf(Date),
+    courseID: PropTypes.string,
+    courseTerm: PropTypes.string,
+    location: PropTypes.string,
+    type: PropTypes.string,
+    isCustomEvent: PropTypes.bool,
+    section: PropTypes.object,
+    name: PropTypes.string
+  }),
+  eventsInCalendar: PropTypes.shape({
+    color: PropTypes.string,
+    title: PropTypes.string,
+    start: PropTypes.instanceOf(Date),
+    end: PropTypes.instanceOf(Date),
+    courseID: PropTypes.string,
+    courseTerm: PropTypes.string,
+    location: PropTypes.string,
+    type: PropTypes.string,
+    isCustomEvent: PropTypes.bool,
+    section: PropTypes.object,
+    name: PropTypes.string
+  })
 };
 
 export default withStyles(styles)(CalendarPaneToolbar);
