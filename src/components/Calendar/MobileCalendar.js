@@ -39,8 +39,8 @@ const styles = {
   }
 }
 
-const CustomEvent = (event) => {
-  const actualEvent = event.event
+const CustomEvent = (props) => {
+  const actualEvent = props.event
   const startString = actualEvent.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   const endString = actualEvent.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
@@ -54,11 +54,10 @@ const CustomEvent = (event) => {
         <div>{actualEvent.location}</div>
       </div>
     )
-  else {
+  else
     return (
-      <div>{event.title}</div>
+      <div style={{fontSize: '0.6rem', padding: 1, color: 'white', fontWeight: 500}}>{actualEvent.title}</div>
     )
-  }
 }
 
 class MobileCalendar extends Component {
@@ -86,7 +85,7 @@ class MobileCalendar extends Component {
                   borderRadius: 4,
                   backgroundColor: event.color
                 }
-                return <div style={style}><CustomEvent event={event}/></div>
+                return <div onClick={(clickEvent) => this.props.onSelectEvent(event, clickEvent)}  style={style}><CustomEvent event={event}/></div>
               }
             })}
           </div>
@@ -102,7 +101,7 @@ class MobileCalendar extends Component {
                   borderRadius: 4,
                   backgroundColor: event.color
                 }
-                return <div style={style}><CustomEvent event={event}/></div>
+                return <div onClick={(clickEvent) => this.props.onSelectEvent(event, clickEvent)}  style={style}><CustomEvent event={event}/></div>
               }
             })}
           </div>
@@ -118,7 +117,7 @@ class MobileCalendar extends Component {
                   borderRadius: 4,
                   backgroundColor: event.color
                 }
-                return <div style={style}><CustomEvent event={event}/></div>
+                return <div onClick={(clickEvent) => this.props.onSelectEvent(event, clickEvent)}  style={style}><CustomEvent event={event}/></div>
               }
             })}
           </div>
@@ -134,7 +133,7 @@ class MobileCalendar extends Component {
                   borderRadius: 4,
                   backgroundColor: event.color
                 }
-                return <div style={style}><CustomEvent event={event}/></div>
+                return <div onClick={(clickEvent) => this.props.onSelectEvent(event, clickEvent)} style={style}><CustomEvent event={event}/></div>
               }
             })}
           </div>
@@ -153,7 +152,7 @@ class MobileCalendar extends Component {
                   marginBottom: 2
                 }
 
-                return <div style={style}><CustomEvent event={event}/></div>
+                return <div onClick={(clickEvent) => this.props.onSelectEvent(event, clickEvent)}  style={style}><CustomEvent event={event}/></div>
               }
             })}
           </div>
