@@ -2,7 +2,7 @@
 
 <hr>
 
-##### We aim to build the ultimate course planning aid for UCI anteaters.
+#### We aim to build the ultimate course planning aid for UCI anteaters.
 
 We believe that good software is equal parts good code and good people. We are run like a club so we do not stagnate and we will instead always be gathering user feedback and pushing out new features.
 
@@ -12,7 +12,7 @@ We believe that good software is equal parts good code and good people. We are r
 
 <hr>
 
-##### To develop locally:
+#### To develop locally:
 
 1. Install npm and node js
 
