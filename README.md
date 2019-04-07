@@ -1,4 +1,4 @@
-![Poor Peter's AntAlmanac](src/components/App/logo_wide.png)
+![Poor Peter's AntAlmanac](https://www.ics.uci.edu/~rang1/AntAlmanac/img/logo_wide.png)
 
 <hr>
 
