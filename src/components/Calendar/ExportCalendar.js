@@ -9,7 +9,7 @@ const translateDaysForIcs = {"M": "MO", "Tu": "TU", "W": "WE", "Th": "TH", "F": 
 const translateNumForIcs = {0: "SU", 1: "MO", 2: "TU", 3: "WE", 4: "TH", 5: "FR", 6: "SA"};
 
 // hardcoded in relevant first mondays, note: doesn't account for week 0 in fall quarters
-const quartersFirstMondays = {"2019 Spring": "April 1, 2019", "2019 Fall": "October 30, 2019"}; // used to get first monday depending on quarter
+const quartersFirstMondays = {"2019 Spring": "April 1, 2019", "2019 Fall": "September 30, 2019"}; // used to get first monday depending on quarter
 
 function ExportButton(props) {
   const {eventsInCalendar} = props;
