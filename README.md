@@ -1,18 +1,23 @@
-# Poor Peter's AntAlmanac
+![Poor Peter's AntAlmanac](https://www.ics.uci.edu/~rang1/AntAlmanac/img/logo_wide.png)
 
-A tool that provides UCI anteaters with historical course information in a visual and intuitive way to help with scheduling and course planning. With a long-term focus on course availability by quarter and registration history, The AntAlmanac enables student to make better academic course planning decisions. Through history enrollment graphs as well as past course offerings, UCI anteaters can pick courses without the anxiety! We are built with React.js because in the 21st centry things should look nice.
+<hr>
 
-Currently deployed at: https://antalmanac.com/
+#### We aim to build the ultimate course planning aid for UCI anteaters.
 
-Find out more about our project at: https://www.ics.uci.edu/~rang1/AntAlmanac/index.html
+We believe that good software is equal parts good code and good people. We are run like a club so we do not stagnate and we will instead always be gathering user feedback and pushing out new features.
 
+[https://AntAlmanac.com](https://antalmanac.com "The AntAlmanac")
 
-### To start development:
+[Find out more about our project](https://www.ics.uci.edu/~rang1/AntAlmanac/index.html "Info Page")
 
-#### 1. Install npm and node js
+<hr>
 
-#### 2. run `npm install` in the project root
+#### To develop locally:
 
-#### 3. run `npm start` in the project root, open up a browser and go to `localhost:3000`
+1. Install npm and node js
 
-#### As you change the code, the browser page will automatically refresh to reflect changes
+2. run `npm install` in the project root to install all necessary dependencies
+
+3. run `npm start` in the project root, open up a browser and go to `localhost:3000`
+
+As you change the code, the browser page will automatically refresh to reflect changes
