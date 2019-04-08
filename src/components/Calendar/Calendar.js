@@ -166,7 +166,7 @@ class Calendar extends Component {
               : <MobileCalendar
                 classEventsInCalendar={classEventsInCalendar}
                 EventBox={CustomEvent({classes})}
-                onSelectEvents={this.handleEventClick}
+                onSelectEvent={this.handleEventClick}
               />}
           </div>
         </div>
