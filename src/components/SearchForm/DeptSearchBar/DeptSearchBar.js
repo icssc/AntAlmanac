@@ -18,8 +18,6 @@ class DeptSearchBar extends React.Component {
     if (isMobile) {
       return 3;
     }
-    console.log('dsd',document.documentElement.scrollHeight
-    );
     // return document.documentElement.scrollHeight
     // - 96 - 24;
     return 6;
@@ -34,12 +32,21 @@ class DeptSearchBar extends React.Component {
       this.setState({ filteredItems });
     }
   }
+  defautlRen =()=>{
+
+    return { label: this.props.dept, value: 0 };
+  }
+
+  defautlRen =()=>{
+    return { label: this.props.dept, value: 0 };
+  }
 
   render() {
     return (
       <Downshift
         items={this.state.filteredItems}
         onStateChange={this.handleStateChange}
+        defaultSelectedItem={this.defautlRen()}
         onChange={this.props.setDept}
         getInputProps={() => ({
           // Downshift requires this syntax to pass down these props to the text field

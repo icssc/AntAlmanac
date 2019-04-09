@@ -1,8 +1,7 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { IconButton, Typography } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import SectionTable from "./SectionTable";
-import "./sectiontable.css";
 import course_info from "./course_info.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 
@@ -48,6 +47,15 @@ class CourseDetailPane extends Component {
             term={this.props.term}
             courseDetails={this.props.courseDetails}
           />
+          {this.props.courseDetails.prerequisiteLink ? (
+              <Typography variant="title" style={{ flexGrow: "2", marginTop: 12 }}>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <a target="blank" style={{ textDecoration: "none", color: "#72a9ed" }} href={this.props.courseDetails.prerequisiteLink} rel="noopener noreferrer">
+                  Prerequisites
+                </a>
+              </Typography>
+            ) : <Fragment />
+          }
         </div>
 
         <div

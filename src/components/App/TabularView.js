@@ -7,7 +7,69 @@ import locations from '../CoursePane/locations.json'
 import RstrPopover from '../CoursePane/RstrPopover'
 import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
-import FinalSwitch from './FinalSwitch'
+import {withStyles} from '@material-ui/core/styles';
+
+const styles = {
+  colorPicker: {
+    '& > div': {
+      height: '1.5rem',
+      width: '1.5rem',
+      borderRadius: '50%',
+      margin: 'auto',
+    }
+  },
+  table: {
+    borderCollapse: "collapse",
+    boxSizing: "border-box",
+    width: "100%",
+    marginTop: '0.285rem',
+
+    "& thead": {
+      position: "sticky",
+
+      "& th": {
+        border: "1px solid rgb(222, 226, 230)",
+        fontSize: "0.85rem",
+        fontWeight: "500",
+        color: "rgba(0, 0, 0, 0.54)",
+        textAlign: "left",
+        verticalAlign: "bottom"
+      }
+    }
+  },
+  tr: {
+    fontSize: "0.85rem",
+    '&:nth-child(odd)': {
+      backgroundColor: '#f5f5f5'
+    },
+
+    "&:hover": {
+      color: "blueviolet"
+    },
+
+    "& td": {
+      border: "1px solid rgb(222, 226, 230)",
+      textAlign: "left",
+      verticalAlign: "top",
+    },
+
+    "& $colorPicker": {
+      verticalAlign: 'middle'
+    }
+  },
+  open: {
+    color: '#00c853'
+  },
+  waitl: {
+    color: '#1c44b2'
+  },
+  full: {
+    color: '#e53935'
+  },
+  multiline: {
+    whiteSpace: 'pre'
+  }
+};
 
 class TabularView extends Component {
   constructor(props) {
@@ -18,8 +80,7 @@ class TabularView extends Component {
     };
   }
   redirectRMP = (e, name) => {
-    if (!e) e = window.event
-    e.cancelBubble = true
+    if (!e) e = window.event;
     if (e.stopPropagation) e.stopPropagation()
 
     var lastName = name.substring(0, name.indexOf(','))
@@ -70,92 +131,50 @@ class TabularView extends Component {
       return section
   }
 
- showFinal =schedule=>
- {
-   this.setState({showFinal:!this.state.showFinal},()=>{
-     if(this.state.showFinal)
-     this.props.displayFinal(schedule);
-   })
- }
-
   render () {
-
-    const events = this.props.classEventsInCalendar
-
+    const {classes} = this.props;
+    const events = this.props.eventsInCalendar;
+    console.log("dddd",events);
     let result = [];
-    let finalSchedule =[];
     for (let item of events)
       if (!item.isCustomEvent && result.find(function (element) {return element.courseCode === item.courseCode}) === undefined)
         result.push(item);
 
-    const classes = [];
+    const courses = [];
     let totalUnits = 0;
 
     for (let course of result) {
-      let foundIndex = classes.findIndex(function (element) {
+      let foundIndex = courses.findIndex(function (element) {
         return (course.name.join() === element.name.join() && element.courseTerm === course.courseTerm)
       })
 
-      let final = course.section.finalExam;
-
-      if(final.length>5)
-      {
-        let [,,, date, start, startMin, end, endMin, ampm] = final.match(/([A-za-z]+) *(\d{1,2}) *([A-za-z]+) *(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
-        start = parseInt(start, 10);
-        startMin = parseInt(startMin, 10);
-        end = parseInt(end, 10);
-        endMin = parseInt(endMin, 10);
-        date = [date.includes('M'), date.includes('Tu'), date.includes('W'), date.includes('Th'), date.includes('F')];
-        if (ampm === 'p' && end !== 12) {
-          start += 12;
-          end += 12;
-          if (start > end) start -= 12;
-        }
-
-        date.forEach((shouldBeInCal, index) => {
-          if(shouldBeInCal)
-          finalSchedule.push({
-            title:course.title,
-            courseType: "Fin",
-            courseCode:course.courseCode,
-            location:course.location,
-            color:course.color,
-            isCustomEvent:false,
-            start: new Date(2018, 0, index + 1, start, startMin),
-            end: new Date(2018, 0, index + 1, end, endMin),
-          })
-        });
-      }
-
       if (foundIndex === -1) {
-        classes.push({
+        courses.push({
             name: course.name,
             lecAndDis: [course],
+            prerequisiteLink:course.prerequisiteLink,
             final:course.section.finalExam,
             //  courseID:event.courseID,
             courseTerm: course.courseTerm
           }
         )
       } else {
-        classes[foundIndex].lecAndDis.push(course)
+        courses[foundIndex].lecAndDis.push(course)
       }
 
       if (!isNaN(Number(course.section.units)))
         totalUnits += Number(course.section.units);
     }
 
-   console.log(classes,"plese");
     return (
       <Fragment>
         <div className={classes.container}>
           <Typography variant="title">
             Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)
           </Typography>
-          <Typography>
-            <FinalSwitch  displayFinal={this.props.displayFinal} schedule={finalSchedule} showFinalSchedule = {this.props.showFinalSchedule}/>
-          </Typography>
         </div>
-        {classes.map(event => {
+        {courses.map(event => {
+          console.log(event)
           return (<div>
             <div
               style={{
@@ -167,15 +186,31 @@ class TabularView extends Component {
                 name={event.name[0] + ' ' + event.name[1] + ' | ' + event.name[2]}
                 courseDetails={event}
               />
+
               <Typography variant="title" style={{ flexGrow: "2"}}>
                 &nbsp;
               </Typography>
+
               <AlmanacGraphWrapped
                 term={event.courseTerm}
                 courseDetails={event}
               />
+              
+              <Typography variant="title" style={{ flexGrow: "2"}}>
+                &nbsp;
+              </Typography>
+
+              {event.prerequisiteLink ? (
+                <Typography variant='h9' style={{flexGrow: "2", marginTop: 9}}>
+                  <a target="blank" style={{textDecoration: "none", color: "#72a9ed"}}
+                     href={event.prerequisiteLink} rel="noopener noreferrer">
+                    Prerequisites
+                  </a>
+                </Typography>
+              ) : <Fragment/>
+              }
             </div>
-            <table>
+            <table className={classes.table}>
               <thead>
               <tr>
                 <th>Color</th>
@@ -192,24 +227,25 @@ class TabularView extends Component {
               <tbody>{
                 event.lecAndDis.map(
                   item => {
-                    const secEach = item.section
+                    const secEach = item.section;
+
                     return (
-                      <tr>
-                        <ColorPicker displayFinal={this.props.displayFinal} schedule={finalSchedule} colorChange={this.props.colorChange} event={item}/>
+                      <tr className={classes.tr}>
+                        <td className={classes.colorPicker}><ColorPicker onColorChange={this.props.onColorChange} event={item}/></td>
                         <td>{secEach.classCode}</td>
-                        <td className="multiline">
+                        <td className={classes.multiline}>
                           {`${secEach.classType}
 Sec ${secEach.sectionCode}
 ${secEach.units} units`}
                         </td>
-                        <td className="multiline">
+                        <td className={classes.multiline}>
                           {/* {this.linkRMP(secEach.instructors)} */}
                           {secEach.instructors.join('\n')}
                         </td>
-                        <td className="multiline">
+                        <td className={classes.multiline}>
                           {secEach.meetings.map(meeting => meeting[0]).join('\n')}
                         </td>
-                        <td className="multiline">
+                        <td className={classes.multiline}>
                           {secEach.meetings.map(meeting => {
                             return (meeting[1] !== 'ON LINE' && meeting[1] !== 'TBA') ? (
                               <div>
@@ -223,7 +259,7 @@ ${secEach.units} units`}
                             )
                           })}
                         </td>
-                        <td className={['multiline', secEach.status].join(' ')}>
+                        <td className={classes.multiline + " " + classes[secEach.status.toLowerCase()]}>
                           {`${secEach.numCurrentlyEnrolled[0]} / ${secEach.maxCapacity}
 WL: ${secEach.numOnWaitlist}
 NOR: ${secEach.numNewOnlyReserved}`}
@@ -233,8 +269,7 @@ NOR: ${secEach.numNewOnlyReserved}`}
                             restrictions={secEach.restrictions}
                           />
                         </td>
-                        <td
-                          className={secEach.status}>{this.statusforFindingSpot(secEach.status, secEach.classCode, item.courseTerm, item.name)}</td>
+                        <td className={classes[secEach.status.toLowerCase()]}>{this.statusforFindingSpot(secEach.status, secEach.classCode, item.courseTerm, item.name)}</td>
                       </tr>
                     )
                   }
@@ -250,4 +285,4 @@ NOR: ${secEach.numNewOnlyReserved}`}
   }
 }
 
-export default TabularView
+export default withStyles(styles)(TabularView);

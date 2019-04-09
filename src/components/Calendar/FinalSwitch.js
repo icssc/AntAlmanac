@@ -1,28 +1,14 @@
 import React from 'react';
-import Switch from '@material-ui/core/Switch';
+import {Switch, Typography} from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
-const styles = theme => ({
-  typography: {
-      margin: theme.spacing.unit * 2,
-    },
-container: {
-  display: 'flex',
-  flexWrap: 'wrap',
-},
-formControl: {
-  margin: theme.spacing.unit,
-},
-});
-
-class Switches extends React.Component {
+class FinalSwitch extends React.Component {
 
   constructor(props) {
     super(props);
 
     this.state = {
-      checkedA: true,
-      checkedB: true,
+      showFinal: true,
     };
   }
   handleChange = name => event => {
@@ -32,23 +18,22 @@ class Switches extends React.Component {
 
   render() {
     return (
-      <div >
+      <Typography >
         <FormControlLabel
           control={
             <Switch
               checked={this.props.showFinalSchedule}
-              onChange={this.handleChange('checkedA')}
-              value="checkedA"
+              onChange={this.handleChange('showFinal')}
+              value="showFinal"
               color="primary"
-
+              style={{margin: 0}}
             />
           }
-          label="Final Schedule"
+          label="FINALS"
         />
-
-      </div>
+      </Typography>
     );
   }
 }
 
-export default Switches;
+export default FinalSwitch;
