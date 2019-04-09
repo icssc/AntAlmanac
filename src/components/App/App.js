@@ -348,6 +348,27 @@ class App extends Component {
     }
   }
 
+  handleCopySchedule = () => {
+    let moveFrom = this.state.currentScheduleIndex
+    let moveTo = moveFrom + 1
+    var oldClasses = this.state.courseEvents
+    var classesToAdd = new Set()
+    for (let i = 0; i<oldClasses.length; i++) {
+      let oldClass = oldClasses[i]
+      console.log(JSON.stringify(oldClass).split(",").join("\n"))
+      classesToAdd.add(oldClass["section"])
+      console.log(classesToAdd)
+    }
+    oldClasses = this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === moveFrom))
+    for (let i = 0; i<oldClasses.length; i++) {
+      let oldClass = oldClasses[i]
+      this.handleAddClass(oldClass["section"], oldClass["name"], moveTo, oldClass["courseTerm"])
+      console.log(this.state.courseEvents.length)
+      console.log("adding "+oldClass["name"]+" from "+moveFrom+" to "+moveTo)
+      console.log("added "+(i+1)+" classes to "+moveTo)
+    }
+  }
+
   handleDismissSearchResults = () => {
     this.setState({showSearch: true, formData: null})
   }
@@ -418,6 +439,11 @@ class App extends Component {
             </div>
 
             <LoadSaveScheduleFunctionality onLoad={this.handleLoad} onSave={this.handleSave}/>
+
+            <IconButton variant="contained" onClick={this.handleCopySchedule} style={{backgroundColor: "#f8f17c", boxShadow: "none"}}>
+              Move to schedule 2
+            </IconButton>
+
             <Tooltip title="Give Us Feedback!">
               <a
                 style={{color: 'white', marginLeft: 16}}
