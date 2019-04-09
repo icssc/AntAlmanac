@@ -29,12 +29,14 @@ const styles = {
     flexDirection: 'column',
     alignContent: 'center',
     padding: 2,
+    
 
     '& > div': {
       flexGrow: 1,
       display: 'flex',
       alignItems: 'center',
       position: 'relative',
+      height:`calc((100vh - 96px - 12px -48px)/5)`
     }
   }
 }
