@@ -8,8 +8,9 @@ import {
   Button
 } from "@material-ui/core";
 import Share from "@material-ui/icons/Share";
-import html2canvas from "html2canvas";
 import { FacebookShareButton, FacebookIcon } from "react-share";
+const html2canvas = React.lazy(() => import('html2canvas'));
+
 const styles = theme => ({
   typography: {
     margin: theme.spacing.unit * 2

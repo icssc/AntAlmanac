@@ -1,8 +1,8 @@
 import React, {Fragment} from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
-import html2canvas from 'html2canvas';
 import Tooltip from '@material-ui/core/Tooltip';
+const html2canvas = React.lazy(() => import('html2canvas'));
 
 function ScreenshotButton(props) {
   const {onTakeScreenshot} = props;
