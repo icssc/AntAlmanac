@@ -15,7 +15,7 @@ import {
     MenuItem,
     Typography
 } from "@material-ui/core";
-import GraphRenderPane from "./GraphRenderPane";
+const GraphRenderPane = React.lazy(() => import('./GraphRenderPane'));
 
 const styles = theme => ({
     paper: {
