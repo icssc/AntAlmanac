@@ -34,14 +34,7 @@ class Submenu extends React.Component {
       if (!item.isCustomEvent && result.find(function (element) {return element.courseCode === item.courseCode}) === undefined)
         result.push(item);
 
-    const courses = [];
-    let totalUnits = 0;
-
     for (let course of result) {
-      let foundIndex = courses.findIndex(function (element) {
-        return (course.name.join() === element.name.join() && element.courseTerm === course.courseTerm)
-      })
-
       if (course.section !== undefined){
         let final = course.section.finalExam;
 
