@@ -254,6 +254,8 @@ class App extends Component {
           ])
         })
       else {
+        if(scheduleIndex === 5) //add to current calendar
+          scheduleIndex = this.state.currentScheduleIndex
         this.setState({
           unavailableColors: this.state.unavailableColors.concat({
             color: randomColor,
