@@ -8,6 +8,7 @@ import Notification from '../Notification';
 import RstrPopover from "./RstrPopover";
 import locations from "./locations.json";
 import querystring from "querystring";
+import MouseOverPopover from "./MouseOverPopover";
 
 const styles = {
   table: {
@@ -185,13 +186,15 @@ Units: ${section.units}`}
               );
             })}
           </td>
-          <td className={classes.multiline + " " + classes[section.status.toLowerCase()]}>
+          <td>
+          <MouseOverPopover className={classes.multiline + " " + classes[section.status.toLowerCase()]}>
             <strong>{`${section.numCurrentlyEnrolled[0]} / ${
               section.maxCapacity
               }`}</strong>
             {`
 WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
+          </MouseOverPopover>
           </td>
           <td>
             <RstrPopover

@@ -8,6 +8,7 @@ import RstrPopover from '../CoursePane/RstrPopover'
 import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
 import {withStyles} from '@material-ui/core/styles';
+import MouseOverPopover from "../CoursePane/MouseOverPopover";
 
 const styles = {
   colorPicker: {
@@ -195,7 +196,7 @@ class TabularView extends Component {
                 term={event.courseTerm}
                 courseDetails={event}
               />
-              
+
               <Typography variant="title" style={{ flexGrow: "2"}}>
                 &nbsp;
               </Typography>
@@ -259,10 +260,13 @@ ${secEach.units} units`}
                             )
                           })}
                         </td>
-                        <td className={classes.multiline + " " + classes[secEach.status.toLowerCase()]}>
+                        <td>
+                  			<MouseOverPopover className={classes.multiline + " " + classes[secEach.status.toLowerCase()]}>
                           {`${secEach.numCurrentlyEnrolled[0]} / ${secEach.maxCapacity}
 WL: ${secEach.numOnWaitlist}
 NOR: ${secEach.numNewOnlyReserved}`}
+			</MouseOverPopover>
+
                         </td>
                         <td>
                           <RstrPopover
