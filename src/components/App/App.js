@@ -349,34 +349,50 @@ class App extends Component {
   }
 
   handleCopySchedule = () => {
+    // determine which schedules to move from and move to
     let moveFrom = this.state.currentScheduleIndex
     let moveTo = moveFrom + 1
+
+    // iterate through all current classes, and get those from the current schedule
+    var oldClasses = this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === moveFrom))
+
+    // for each of those classes, add them to the schedule
+    for (let i = 0; i<oldClasses.length; i++) {
+      let oldClass = oldClasses[i]
+      this.handleAddClass(oldClass.section, oldClass.name, moveTo, oldClass.courseTerm)
+      console.log(this.state.courseEvents.length)
+      console.log("adding "+oldClass["name"]+" from "+moveFrom+" to "+moveTo)
+      console.log("added "+(i+1)+" classes to "+moveTo)
+    }
+    console.log("copy done from "+moveFrom+" to "+moveTo)
+  }
+
+  handleCopySchedulev2 = () => {
+    // determine which schedules to move from and move to
+    let moveFrom = this.state.currentScheduleIndex
+    let moveTo = moveFrom + 1
+
+    // iterate through all current classes, and make a set of those to be added
     var oldClasses = this.state.courseEvents
     var classesToAdd = new Set()
     for (let i = 0; i<oldClasses.length; i++) {
       let oldClass = oldClasses[i]
       classesToAdd.add([oldClass.section, oldClass.name, oldClass.courseTerm])
     }
+
+    // iterate through and add the set of classes that are supposed to be added
     let classList = Array.from(classesToAdd)
     console.log(classList)
-    for (var i=0; i<classList.length; i++) {
+    for (let i = 0; i<classList.length; i++) {
       let newClass = classList[i]
       console.log(newClass)
-      console.log(newClass[0].classCode)
+      console.log(newClass[0])
       console.log(newClass[1])
       console.log(newClass[2])
-      this.handleAddClass(newClass[0].classCode, newClass[1], moveTo, newClass[2])
-      //console.log("adding " + newClass["name"] + " from " + moveFrom + " to " + moveTo)
+      this.handleAddClass(newClass[0], newClass[1], moveTo, newClass[2])
+      console.log("adding " + newClass["name"] + " from " + moveFrom + " to " + moveTo)
     }
     console.log("copy done from "+moveFrom+" to "+moveTo)
-    /*oldClasses = this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === moveFrom))
-    for (let i = 0; i<oldClasses.length; i++) {
-      let oldClass = oldClasses[i]
-      this.handleAddClass(oldClass["section"], oldClass["name"], moveTo, oldClass["courseTerm"])
-      console.log(this.state.courseEvents.length)
-      console.log("adding "+oldClass["name"]+" from "+moveFrom+" to "+moveTo)
-      console.log("added "+(i+1)+" classes to "+moveTo)
-    }*/
   }
 
   handleDismissSearchResults = () => {
