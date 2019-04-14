@@ -41,6 +41,12 @@ class CalendarPaneToolbar extends Component {
 
         <div className={classes.spacer}></div>
 
+        <Tooltip title="Copy Schedule Over">
+          <IconButton onClick={this.props.onCopySchedule}>
+            <Undo fontSize='small'/>
+          </IconButton>
+        </Tooltip>
+
         <Tooltip title="Undo Last Delete">
           <IconButton onClick={() => this.props.onUndo(null)}>
             <Undo fontSize='small'/>
@@ -72,6 +78,7 @@ CalendarPaneToolbar.propTypes = {
   onUndo: PropTypes.func,
   onAddCustomEvent: PropTypes.func,
   onTakeScreenshot: PropTypes.func,
+  onCopySchedule: PropTypes.func,
   currentScheduleIndex: PropTypes.number,
   classesInCalendar: PropTypes.shape({
     color: PropTypes.string,

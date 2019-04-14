@@ -355,18 +355,28 @@ class App extends Component {
     var classesToAdd = new Set()
     for (let i = 0; i<oldClasses.length; i++) {
       let oldClass = oldClasses[i]
-      console.log(JSON.stringify(oldClass).split(",").join("\n"))
-      classesToAdd.add(oldClass["section"])
-      console.log(classesToAdd)
+      classesToAdd.add([oldClass.section, oldClass.name, oldClass.courseTerm])
     }
-    oldClasses = this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === moveFrom))
+    let classList = Array.from(classesToAdd)
+    console.log(classList)
+    for (var i=0; i<classList.length; i++) {
+      let newClass = classList[i]
+      console.log(newClass)
+      console.log(newClass[0].classCode)
+      console.log(newClass[1])
+      console.log(newClass[2])
+      this.handleAddClass(newClass[0].classCode, newClass[1], moveTo, newClass[2])
+      //console.log("adding " + newClass["name"] + " from " + moveFrom + " to " + moveTo)
+    }
+    console.log("copy done from "+moveFrom+" to "+moveTo)
+    /*oldClasses = this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === moveFrom))
     for (let i = 0; i<oldClasses.length; i++) {
       let oldClass = oldClasses[i]
       this.handleAddClass(oldClass["section"], oldClass["name"], moveTo, oldClass["courseTerm"])
       console.log(this.state.courseEvents.length)
       console.log("adding "+oldClass["name"]+" from "+moveFrom+" to "+moveTo)
       console.log("added "+(i+1)+" classes to "+moveTo)
-    }
+    }*/
   }
 
   handleDismissSearchResults = () => {
@@ -440,10 +450,6 @@ class App extends Component {
 
             <LoadSaveScheduleFunctionality onLoad={this.handleLoad} onSave={this.handleSave}/>
 
-            <IconButton variant="contained" onClick={this.handleCopySchedule} style={{backgroundColor: "#f8f17c", boxShadow: "none"}}>
-              Move to schedule 2
-            </IconButton>
-
             <Tooltip title="Give Us Feedback!">
               <a
                 style={{color: 'white', marginLeft: 16}}
@@ -489,6 +495,7 @@ class App extends Component {
                 isDesktop={this.state.isDesktop}
                 currentScheduleIndex={this.state.currentScheduleIndex}
                 onUndo={this.handleUndo}
+                onCopySchedule = {this.handleCopySchedule}
                 onColorChange={this.handleColorChange}
                 onClassDelete={this.handleClassDelete}
                 onScheduleChange={this.handleScheduleChange}

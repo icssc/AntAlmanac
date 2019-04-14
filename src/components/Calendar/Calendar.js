@@ -109,6 +109,7 @@ class Calendar extends Component {
           onUndo={this.props.onUndo}
           onAddCustomEvent={this.props.onAddCustomEvent}
           onTakeScreenshot={this.handleTakeScreenshot}
+          onCopySchedule={this.props.onCopySchedule}
           currentScheduleIndex={this.props.currentScheduleIndex}
           eventsInCalendar={this.props.eventsInCalendar}
           showFinalSchedule={this.props.showFinalSchedule}
@@ -195,6 +196,7 @@ Calendar.propTypes = {
   onClassDelete: PropTypes.func,
   onAddCustomEvent: PropTypes.func,
   onColorChange: PropTypes.func,
+  onCopySchedule: PropTypes.func,
   eventsInCalendar: PropTypes.shape({
     color: PropTypes.string,
     title: PropTypes.string,
