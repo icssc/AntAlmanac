@@ -104,7 +104,7 @@ function ExportButton(props) {
 
                   // adding finals
                   // note: this would be easier if could get final information in a better way (like Date object), had to splice a string to get all data
-                  if(event.section.hasOwnProperty("finalExam") && event.section.finalExam !== "") {
+                  if(event.section.hasOwnProperty("finalExam") && event.section.finalExam !== "" && event.section.finalExam !== "TBA") {
                     let final_info = event.section.finalExam.split(" ");
                     let end_hour = final_info[3].split("-")[1]; // get time that final ends to calculate when final begins
 
