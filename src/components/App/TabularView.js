@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import ColorPicker from './colorPicker'
-import {Typography} from "@material-ui/core";
+import {Typography, Button} from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
 import rmpData from '../CoursePane/RMP.json'
 import locations from '../CoursePane/locations.json'
@@ -172,6 +172,9 @@ class TabularView extends Component {
           <Typography variant="title">
             Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)
           </Typography>
+          <Button onClick={() => this.props.onCopySchedule(1)}>
+            Copy Schedule
+          </Button>
         </div>
         {courses.map(event => {
           console.log(event)
