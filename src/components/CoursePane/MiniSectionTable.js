@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from "react";
-import {Menu, MenuItem, Typography} from "@material-ui/core";
+import {Menu, MenuItem, IconButton, Typography} from "@material-ui/core";
 import {withStyles} from "@material-ui/core/styles";
 import rmpData from "./RMP.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
@@ -9,6 +9,10 @@ import RstrPopover from "./RstrPopover";
 import locations from "./locations.json";
 import querystring from "querystring";
 import MouseOverPopover from "./MouseOverPopover";
+import {
+  Add,
+  ArrowDropDown
+} from '@material-ui/icons'
 
 const styles = {
   table: {
@@ -34,10 +38,6 @@ const styles = {
     fontSize: "0.85rem",
     '&:nth-child(odd)': {
       backgroundColor: '#f5f5f5'
-    },
-
-    "&:hover": {
-      color: "blueviolet"
     },
 
     "& td": {
@@ -78,8 +78,12 @@ class ScheduleAddSelector extends Component {
     this.state = {anchor: null};
   }
 
-  handleClick = event => {
+  handleAddMore = event => {
     this.setState({anchor: event.currentTarget});
+  };
+
+  handleAddCurrent = (event) => {
+    this.handleClose(5); //add to current
   };
 
   handleClose = scheduleNumber => {
@@ -89,7 +93,6 @@ class ScheduleAddSelector extends Component {
         this.props.section,
         this.props.courseDetails,
         scheduleNumber,
-
         this.props.termName
       );
     }
@@ -165,12 +168,36 @@ class ScheduleAddSelector extends Component {
     const section = this.props.section;
     return (
       <Fragment>
-        <tr
-          className={classes.tr}
-          {...(!this.disableTBA(section)
-            ? {onClick: this.handleClick, style: {cursor: "pointer"}}
-            : {})}
-        >
+        <tr className={classes.tr}>
+          <td style={{verticalAlign: "middle", textAlign: "center"}}>
+            <IconButton
+              {...(!this.disableTBA(section)
+                ? {onClick: this.handleAddCurrent , style: {cursor: "pointer"}}
+                : {disabled: true})}
+              style = {{ padding: 0 }}
+            >
+              <Add fontSize="large" />
+            </ IconButton>
+            <IconButton
+              {...(!this.disableTBA(section)
+                ? {onClick: this.handleAddMore, style: {cursor: "pointer"}}
+                : {disabled: true})}
+              style = {{ padding: 0 }}
+            >
+              <ArrowDropDown/>
+            </ IconButton>
+              <Menu
+                anchorEl={this.state.anchor}
+                open={Boolean(this.state.anchor)}
+                onClose={() => this.handleClose(-1)}
+              >
+                <MenuItem onClick={() => this.handleClose(0)}>Add to schedule 1</MenuItem>
+                <MenuItem onClick={() => this.handleClose(1)}>Add to schedule 2</MenuItem>
+                <MenuItem onClick={() => this.handleClose(2)}>Add to schedule 3</MenuItem>
+                <MenuItem onClick={() => this.handleClose(3)}>Add to schedule 4</MenuItem>
+                <MenuItem onClick={() => this.handleClose(4)}>Add to all</MenuItem>
+              </Menu>
+          </td>
           <td>{section.classCode}</td>
           <td className={classes.multiline + " " + classes[section.classType]}>
               {`${section.classType}
@@ -215,25 +242,6 @@ NOR: ${section.numNewOnlyReserved}`}
           </td>
           <td className={classes[section.status.toLowerCase()]}>{this.statusforFindingSpot(section.status, section.classCode)}</td>
         </tr>
-        <Menu
-          anchorEl={this.state.anchor}
-          open={Boolean(this.state.anchor)}
-          onClose={() => this.handleClose(-1)}
-        >
-          <MenuItem onClick={() => this.handleClose(0)}>
-            Add to schedule 1
-          </MenuItem>
-          <MenuItem onClick={() => this.handleClose(1)}>
-            Add to schedule 2
-          </MenuItem>
-          <MenuItem onClick={() => this.handleClose(2)}>
-            Add to schedule 3
-          </MenuItem>
-          <MenuItem onClick={() => this.handleClose(3)}>
-            Add to schedule 4
-          </MenuItem>
-          <MenuItem onClick={() => this.handleClose(4)}>Add to all</MenuItem>
-        </Menu>
       </Fragment>
     );
   }
@@ -324,6 +332,7 @@ class MiniSectionTable extends Component {
         <table className={classes.table}>
           <thead>
           <tr>
+            <th>Add</th>
             <th>Code</th>
             <th>Type</th>
             <th>Instructors</th>
