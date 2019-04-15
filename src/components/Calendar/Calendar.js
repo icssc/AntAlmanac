@@ -118,7 +118,7 @@ class Calendar extends Component {
           <div id="screenshot"
                style={(!this.state.screenshotting ?
                  {height: `calc(100vh - 96px - 12px - ${this.props.isDesktop ? '0px' : '48px'})`} :
-                 {height: '100%',display:'inline-block'})
+                 {height: '100%',display:`${this.props.isDesktop ? 'null' : 'inline-block'}`})
                }>
             <Popper
               anchorEl={this.state.anchorEvent}
