@@ -68,7 +68,7 @@ function ExportButton(props) {
   return (
     <Fragment>
       <Tooltip title="Download .ics">
-        <IconButton>
+        <IconButton
           onClick={() => {
             console.log(eventsInCalendar);
 
