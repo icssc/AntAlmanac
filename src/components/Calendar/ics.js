@@ -1,12 +1,12 @@
 /* global saveAs, Blob, BlobBuilder, console */
 /* exported ics */
 
-import { saveAs } from 'file-saver';
+import 'file-saver';
 
 export let ics = function(uidDomain, prodId) {
   'use strict';
 
-  if (navigator.userAgent.indexOf('MSIE') > -1 && navigator.userAgent.indexOf('MSIE 10') == -1) {
+  if (navigator.userAgent.indexOf('MSIE') > -1 && navigator.userAgent.indexOf('MSIE 10') === -1) {
     console.log('Unsupported Browser');
     return;
   }
@@ -14,15 +14,15 @@ export let ics = function(uidDomain, prodId) {
   if (typeof uidDomain === 'undefined') { uidDomain = 'default'; }
   if (typeof prodId === 'undefined') { prodId = 'Calendar'; }
 
-  var SEPARATOR = (navigator.appVersion.indexOf('Win') !== -1) ? '\r\n' : '\n';
-  var calendarEvents = [];
-  var calendarStart = [
+  let SEPARATOR = (navigator.appVersion.indexOf('Win') !== -1) ? '\r\n' : '\n';
+  let calendarEvents = [];
+  let calendarStart = [
     'BEGIN:VCALENDAR',
     'PRODID:' + prodId,
     'VERSION:2.0'
   ].join(SEPARATOR);
-  var calendarEnd = SEPARATOR + 'END:VCALENDAR';
-  var BYDAY_VALUES = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+  let calendarEnd = SEPARATOR + 'END:VCALENDAR';
+  let BYDAY_VALUES = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
 
   return {
     /**
@@ -48,6 +48,7 @@ export let ics = function(uidDomain, prodId) {
      * @param  {string} location    Location of event
      * @param  {string} begin       Beginning date of event
      * @param  {string} stop        Ending date of event
+     * @param rrule
      */
     'addEvent': function(subject, description, location, begin, stop, rrule) {
       // I'm not in the mood to make these optional... So they are all required
@@ -96,10 +97,10 @@ export let ics = function(uidDomain, prodId) {
 
             // Filter any possible repeats
             rrule.byday = rrule.byday.filter(function(elem, pos) {
-              return rrule.byday.indexOf(elem) == pos;
+              return rrule.byday.indexOf(elem) === pos;
             });
 
-            for (var d in rrule.byday) {
+            for (let d in rrule.byday) {
               if (BYDAY_VALUES.indexOf(rrule.byday[d]) < 0) {
                 throw "Recurrence rrule 'byday' values must include only the following: 'SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'";
               }
@@ -108,47 +109,46 @@ export let ics = function(uidDomain, prodId) {
         }
       }
 
-      //TODO add time and time zone? use moment to format?
-      var start_date = new Date(begin);
-      var end_date = new Date(stop);
-      var now_date = new Date();
+      let start_date = new Date(begin);
+      let end_date = new Date(stop);
+      let now_date = new Date();
 
-      var start_year = ("0000" + (start_date.getFullYear().toString())).slice(-4);
-      var start_month = ("00" + ((start_date.getMonth() + 1).toString())).slice(-2);
-      var start_day = ("00" + ((start_date.getDate()).toString())).slice(-2);
-      var start_hours = ("00" + (start_date.getHours().toString())).slice(-2);
-      var start_minutes = ("00" + (start_date.getMinutes().toString())).slice(-2);
-      var start_seconds = ("00" + (start_date.getSeconds().toString())).slice(-2);
+      let start_year = ("0000" + (start_date.getFullYear().toString())).slice(-4);
+      let start_month = ("00" + ((start_date.getMonth() + 1).toString())).slice(-2);
+      let start_day = ("00" + ((start_date.getDate()).toString())).slice(-2);
+      let start_hours = ("00" + (start_date.getHours().toString())).slice(-2);
+      let start_minutes = ("00" + (start_date.getMinutes().toString())).slice(-2);
+      let start_seconds = ("00" + (start_date.getSeconds().toString())).slice(-2);
 
-      var end_year = ("0000" + (end_date.getFullYear().toString())).slice(-4);
-      var end_month = ("00" + ((end_date.getMonth() + 1).toString())).slice(-2);
-      var end_day = ("00" + ((end_date.getDate()).toString())).slice(-2);
-      var end_hours = ("00" + (end_date.getHours().toString())).slice(-2);
-      var end_minutes = ("00" + (end_date.getMinutes().toString())).slice(-2);
-      var end_seconds = ("00" + (end_date.getSeconds().toString())).slice(-2);
+      let end_year = ("0000" + (end_date.getFullYear().toString())).slice(-4);
+      let end_month = ("00" + ((end_date.getMonth() + 1).toString())).slice(-2);
+      let end_day = ("00" + ((end_date.getDate()).toString())).slice(-2);
+      let end_hours = ("00" + (end_date.getHours().toString())).slice(-2);
+      let end_minutes = ("00" + (end_date.getMinutes().toString())).slice(-2);
+      let end_seconds = ("00" + (end_date.getSeconds().toString())).slice(-2);
 
-      var now_year = ("0000" + (now_date.getFullYear().toString())).slice(-4);
-      var now_month = ("00" + ((now_date.getMonth() + 1).toString())).slice(-2);
-      var now_day = ("00" + ((now_date.getDate()).toString())).slice(-2);
-      var now_hours = ("00" + (now_date.getHours().toString())).slice(-2);
-      var now_minutes = ("00" + (now_date.getMinutes().toString())).slice(-2);
-      var now_seconds = ("00" + (now_date.getSeconds().toString())).slice(-2);
+      let now_year = ("0000" + (now_date.getFullYear().toString())).slice(-4);
+      let now_month = ("00" + ((now_date.getMonth() + 1).toString())).slice(-2);
+      let now_day = ("00" + ((now_date.getDate()).toString())).slice(-2);
+      let now_hours = ("00" + (now_date.getHours().toString())).slice(-2);
+      let now_minutes = ("00" + (now_date.getMinutes().toString())).slice(-2);
+      let now_seconds = ("00" + (now_date.getSeconds().toString())).slice(-2);
 
       // Since some calendars don't add 0 second events, we need to remove time if there is none...
-      var start_time = '';
-      var end_time = '';
-      if (start_hours + start_minutes + start_seconds + end_hours + end_minutes + end_seconds != 0) {
+      let start_time = '';
+      let end_time = '';
+      if (start_hours + start_minutes + start_seconds + end_hours + end_minutes + end_seconds !== 0) {
         start_time = 'T' + start_hours + start_minutes + start_seconds;
         end_time = 'T' + end_hours + end_minutes + end_seconds;
       }
-      var now_time = 'T' + now_hours + now_minutes + now_seconds;
+      let now_time = 'T' + now_hours + now_minutes + now_seconds;
 
-      var start = start_year + start_month + start_day + start_time;
-      var end = end_year + end_month + end_day + end_time;
-      var now = now_year + now_month + now_day + now_time;
+      let start = start_year + start_month + start_day + start_time;
+      let end = end_year + end_month + end_day + end_time;
+      let now = now_year + now_month + now_day + now_time;
 
-      // recurrence rrule vars
-      var rruleString;
+      // recurrence rrule lets
+      let rruleString;
       if (rrule) {
         if (rrule.rrule) {
           rruleString = rrule.rrule;
@@ -156,7 +156,7 @@ export let ics = function(uidDomain, prodId) {
           rruleString = 'RRULE:FREQ=' + rrule.freq;
 
           if (rrule.until) {
-            var uDate = new Date(Date.parse(rrule.until)).toISOString();
+            let uDate = new Date(Date.parse(rrule.until)).toISOString();
             rruleString += ';UNTIL=' + uDate.substring(0, uDate.length - 13).replace(/[-]/g, '') + '000000Z';
           }
 
@@ -174,9 +174,7 @@ export let ics = function(uidDomain, prodId) {
         }
       }
 
-      var stamp = new Date().toISOString();
-
-      var calendarEvent = [
+      let calendarEvent = [
         'BEGIN:VEVENT',
         'UID:' + calendarEvents.length + "@" + uidDomain,
         'CLASS:PUBLIC',
@@ -212,13 +210,13 @@ export let ics = function(uidDomain, prodId) {
 
       ext = (typeof ext !== 'undefined') ? ext : '.ics';
       filename = (typeof filename !== 'undefined') ? filename : 'calendar';
-      var calendar = calendarStart + SEPARATOR + calendarEvents.join(SEPARATOR) + calendarEnd;
+      let calendar = calendarStart + SEPARATOR + calendarEvents.join(SEPARATOR) + calendarEnd;
 
-      var blob;
+      let blob;
       if (navigator.userAgent.indexOf('MSIE 10') === -1) { // chrome or firefox
         blob = new Blob([calendar]);
       } else { // ie
-        var bb = new BlobBuilder();
+        let bb = new BlobBuilder();
         bb.append(calendar);
         blob = bb.getBlob('text/x-vCalendar;charset=' + document.characterSet);
       }
@@ -234,9 +232,7 @@ export let ics = function(uidDomain, prodId) {
         return false;
       }
 
-      var calendar = calendarStart + SEPARATOR + calendarEvents.join(SEPARATOR) + calendarEnd;
-
-      return calendar;
+      return calendarStart + SEPARATOR + calendarEvents.join(SEPARATOR) + calendarEnd; // return calendar
     }
   };
 };
