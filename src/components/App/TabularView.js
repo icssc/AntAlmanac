@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import ColorPicker from './colorPicker'
-import {Typography} from "@material-ui/core";
+import {Typography, Button} from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
 import rmpData from '../CoursePane/RMP.json'
 import locations from '../CoursePane/locations.json'
@@ -9,6 +9,8 @@ import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
 import FinalSwitch from './FinalSwitch'
 import {withStyles} from '@material-ui/core/styles';
+import CustomEventsDialog from "../CustomEvents/Popup"
+import { Create } from "@material-ui/icons";
 
 const styles = {
   colorPicker: {
@@ -167,14 +169,15 @@ class TabularView extends Component {
             <thead>
               <tr>
                 <th>Color</th>
+                <th>Edit</th>
                 <th>Title</th>
                 <th>Time</th>
-              </tr>
-            </thead>
+              </tr>            </thead>
             <tbody>
               {customEvents.map(event => {return (
                 <tr className={classes.tr}>
                   <td className={classes.colorPicker} width="50" height="40"><ColorPicker onColorChange={this.props.onColorChange} event={event}/></td>
+                  <td width="40"><Button onClick={() => console.log("Temp")}><Create /></Button></td>
                   <td>{event.title}</td>
                   <td>{getTimeString(event)}</td>
                 </tr>
@@ -269,7 +272,6 @@ class TabularView extends Component {
 
     return (
       <Fragment>
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></link>
         <div className={classes.container}>
           <Typography variant="title">
             Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)

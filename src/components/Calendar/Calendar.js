@@ -80,6 +80,13 @@ class Calendar extends Component {
         moreInfoOpen: state.anchorEvent === currentTarget ? !state.moreInfoOpen : true,
         courseInMoreInfo: courseInMoreInfo
       }));
+    else if (courseInMoreInfo.isCustomEvent)
+    {
+      console.log('-----------------');
+      console.log(courseInMoreInfo);
+      this.props.onClassDelete(courseInMoreInfo);
+    }
+
   };
 
   handleClosePopover = () => {
