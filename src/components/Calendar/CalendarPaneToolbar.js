@@ -6,6 +6,7 @@ import ScreenshotButton from "./ScreenshotButton";
 import PropTypes from "prop-types";
 import Submenu from "./Submenu"
 import ExportButton from "./ExportCalendar";
+import DownloadMenu from "./DownloadMenu";
 
 const styles = {
   toolbar: {
@@ -47,9 +48,16 @@ class CalendarPaneToolbar extends Component {
           </IconButton>
         </Tooltip>
 
-        <ScreenshotButton onTakeScreenshot={this.props.onTakeScreenshot}/>
+        {/*<ScreenshotButton onTakeScreenshot={this.props.onTakeScreenshot}/>*/}
 
-        <ExportButton eventsInCalendar={this.props.eventsInCalendar}/>
+        {/*<ExportButton eventsInCalendar={this.props.eventsInCalendar}/>*/}
+
+        <Tooltip title="Download Menu">
+          <DownloadMenu
+            onTakeScreenshot={this.props.onTakeScreenshot}
+            eventsInCalendar={this.props.eventsInCalendar}
+          />
+        </Tooltip>
 
         <Tooltip title="More">
           <Submenu

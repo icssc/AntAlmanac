@@ -1,7 +1,6 @@
 import React, {Fragment} from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import GetApp from '@material-ui/icons/GetApp';
-import Tooltip from '@material-ui/core/Tooltip';
+import Button from '@material-ui/core/Button';
+import Today from '@material-ui/icons/Today';
 import {ics} from './ics';
 
 const daysOfWeek = ["M", "Tu", "W", "Th", "F"];
@@ -35,10 +34,10 @@ function ExportButton(props) {
   // given a custom event ID,
   // get days that custom event occurs in a week so can add to calendar as one event
   // return days in array with the proper format ["MO", "WE", "FR"]
-  function getCustomEventDays(customEventID){
+  function getCustomEventDays(customEventID) {
     let days = [];
-    for(let i = 0; i < eventsInCalendar.length; i++){
-      if(eventsInCalendar[i].isCustomEvent && eventsInCalendar[i].customEventID === customEventID){
+    for (let i = 0; i < eventsInCalendar.length; i++) {
+      if (eventsInCalendar[i].isCustomEvent && eventsInCalendar[i].customEventID === customEventID) {
         days.push(translateNumForIcs[eventsInCalendar[i].start.getDay()]);
       }
     }
@@ -67,82 +66,81 @@ function ExportButton(props) {
 
   return (
     <Fragment>
-      <Tooltip title="Download .ics">
-        <IconButton
-          onClick={() => {
-            console.log(eventsInCalendar);
+      <Button
+        style={{"width": "100%", "padding-right": "31px"}}
+        onClick={() => {
+          console.log(eventsInCalendar);
 
-            var added = []; // keep track of events already added in ics file to avoid duplicate events
-            var cal = ics(); // initialize ics file
+          var added = []; // keep track of events already added in ics file to avoid duplicate events
+          var cal = ics(); // initialize ics file
 
-            // adding courses
-            for (let i = 0; i < eventsInCalendar.length; i++) { // loop over all events in calendar
-              let event = eventsInCalendar[i];
+          // adding courses
+          for (let i = 0; i < eventsInCalendar.length; i++) { // loop over all events in calendar
+            let event = eventsInCalendar[i];
 
-              if (!event.isCustomEvent) { // for courses
-                firstMonday = new Date(quartersFirstMondays[event.courseTerm]); // set first Monday based off quarter
+            if (!event.isCustomEvent) { // for courses
+              firstMonday = new Date(quartersFirstMondays[event.courseTerm]); // set first Monday based off quarter
 
-                if (added.indexOf(event.courseCode) === -1) {
-                  let title = event.courseType + " " + event.title;
-                  let location = event.location;
-                  let description = event.name.join(" ") + " Course Code: " + eventsInCalendar[i].courseCode;
-
-                  let times = getStartStopTimes(event);
-                  let start_time = times[0];
-                  let end_time = times[1];
-
-                  let days = getCourseEventDays(event.section.meetings[0][0]); // pass in days class occurs in a string ex: "TuTh", "MWF"
-                  let rrule = {
-                    'freq': 'WEEKLY',
-                    'count': 10 * days.length, // 10 weeks in the quarter * number days it occurs in a week
-                    'byday': days // days it occurs in an array ex: ["TU", "TH"]
-                  };
-
-                  cal.addEvent(title, description, location, start_time, end_time, rrule); // add event to ics file
-
-                  added.push(event.courseCode); // we added this course
-
-                  // adding finals
-                  // note: this would be easier if could get final information in a better way (like Date object), had to splice a string to get all data
-                  if(event.section.hasOwnProperty("finalExam") && event.section.finalExam !== "" && event.section.finalExam !== "TBA") {
-                    let final_info = event.section.finalExam.split(" ");
-                    let end_hour = final_info[3].split("-")[1]; // get time that final ends to calculate when final begins
-
-                    let final_date = final_info[0] + " " + final_info[1] + " " + firstMonday.getFullYear(); // get date of the day of the final
-                    let final_end = new Date(final_date + " " + end_hour.slice(0,-2) + " " + end_hour.slice(-2)); // strange formatting to make Date object work
-                    let final_start = new Date(final_end);
-                    final_start.setHours(final_start.getHours() - 2); // finals start two hours before they end
-
-                    cal.addEvent("Final: " + event.title, "", "", final_start, final_end);
-                  }
-                }
-              }
-              // adding custom events
-              else if(added.indexOf(event.customEventID) === -1){
-                let title = event.title;
+              if (added.indexOf(event.courseCode) === -1) {
+                let title = event.courseType + " " + event.title;
+                let location = event.location;
+                let description = event.name.join(" ") + " Course Code: " + eventsInCalendar[i].courseCode;
 
                 let times = getStartStopTimes(event);
                 let start_time = times[0];
                 let end_time = times[1];
 
-                let days = getCustomEventDays(event.customEventID); // pass in customEventID
+                let days = getCourseEventDays(event.section.meetings[0][0]); // pass in days class occurs in a string ex: "TuTh", "MWF"
                 let rrule = {
                   'freq': 'WEEKLY',
-                  'count': 10 * days.length, // 10 weeks in the quarter * number of days it occurs in a week
-                  'byday': days // days it occurs in an array ex: ["MO", "WE", "FR"]
+                  'count': 10 * days.length, // 10 weeks in the quarter * number days it occurs in a week
+                  'byday': days // days it occurs in an array ex: ["TU", "TH"]
                 };
 
-                cal.addEvent(title, '', '', start_time, end_time, rrule); // add event to ics file, description and location are blank
+                cal.addEvent(title, description, location, start_time, end_time, rrule); // add event to ics file
 
-                added.push(event.customEventID); // we added this custom event
+                added.push(event.courseCode); // we added this course
+
+                // adding finals
+                // note: this would be easier if could get final information in a better way (like Date object), had to splice a string to get all data
+                if (event.section.hasOwnProperty("finalExam") && event.section.finalExam !== "" && event.section.finalExam !== "TBA") {
+                  let final_info = event.section.finalExam.split(" ");
+                  let end_hour = final_info[3].split("-")[1]; // get time that final ends to calculate when final begins
+
+                  let final_date = final_info[0] + " " + final_info[1] + " " + firstMonday.getFullYear(); // get date of the day of the final
+                  let final_end = new Date(final_date + " " + end_hour.slice(0, -2) + " " + end_hour.slice(-2)); // strange formatting to make Date object work
+                  let final_start = new Date(final_end);
+                  final_start.setHours(final_start.getHours() - 2); // finals start two hours before they end
+
+                  cal.addEvent("Final: " + event.title, "", "", final_start, final_end);
+                }
               }
             }
+            // adding custom events
+            else if (added.indexOf(event.customEventID) === -1) {
+              let title = event.title;
 
-            cal.download(); // download ics file
-          }}>
-          <GetApp fontSize='small'/>
-        </IconButton>
-      </Tooltip>
+              let times = getStartStopTimes(event);
+              let start_time = times[0];
+              let end_time = times[1];
+
+              let days = getCustomEventDays(event.customEventID); // pass in customEventID
+              let rrule = {
+                'freq': 'WEEKLY',
+                'count': 10 * days.length, // 10 weeks in the quarter * number of days it occurs in a week
+                'byday': days // days it occurs in an array ex: ["MO", "WE", "FR"]
+              };
+
+              cal.addEvent(title, '', '', start_time, end_time, rrule); // add event to ics file, description and location are blank
+
+              added.push(event.customEventID); // we added this custom event
+            }
+          }
+
+          cal.download(); // download ics file
+        }}>
+        <Today style={{"margin-right": "5px"}}/> .ics file
+      </Button>
     </Fragment>
   );
 }
