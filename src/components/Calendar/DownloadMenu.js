@@ -9,7 +9,6 @@ import {GetApp} from '@material-ui/icons';
 import ScreenshotButton from "./ScreenshotButton";
 import ExportButton from "./ExportCalendar";
 import Tooltip from '@material-ui/core/Tooltip';
-import Button from "@material-ui/core/IconButton/IconButton";
 
 class DownloadMenu extends React.Component {
   state = {

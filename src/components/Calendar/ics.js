@@ -4,8 +4,6 @@
 import 'file-saver';
 
 export let ics = function(uidDomain, prodId) {
-  'use strict';
-
   if (navigator.userAgent.indexOf('MSIE') > -1 && navigator.userAgent.indexOf('MSIE 10') === -1) {
     console.log('Unsupported Browser');
     return;
@@ -65,34 +63,34 @@ export let ics = function(uidDomain, prodId) {
       if (rrule) {
         if (!rrule.rrule) {
           if (rrule.freq !== 'YEARLY' && rrule.freq !== 'MONTHLY' && rrule.freq !== 'WEEKLY' && rrule.freq !== 'DAILY') {
-            throw "Recurrence rrule frequency must be provided and be one of the following: 'YEARLY', 'MONTHLY', 'WEEKLY', or 'DAILY'";
+            throw new Error("Recurrence rrule frequency must be provided and be one of the following: 'YEARLY', 'MONTHLY', 'WEEKLY', or 'DAILY'");
           }
 
           if (rrule.until) {
             if (isNaN(Date.parse(rrule.until))) {
-              throw "Recurrence rrule 'until' must be a valid date string";
+              throw new Error("Recurrence rrule 'until' must be a valid date string");
             }
           }
 
           if (rrule.interval) {
-            if (isNaN(parseInt(rrule.interval))) {
-              throw "Recurrence rrule 'interval' must be an integer";
+            if (isNaN(parseInt(rrule.interval, 10))) {
+              throw new Error("Recurrence rrule 'interval' must be an integer");
             }
           }
 
           if (rrule.count) {
-            if (isNaN(parseInt(rrule.count))) {
-              throw "Recurrence rrule 'count' must be an integer";
+            if (isNaN(parseInt(rrule.count, 10))) {
+              throw new Error("Recurrence rrule 'count' must be an integer");
             }
           }
 
           if (typeof rrule.byday !== 'undefined') {
             if ((Object.prototype.toString.call(rrule.byday) !== '[object Array]')) {
-              throw "Recurrence rrule 'byday' must be an array";
+              throw new Error("Recurrence rrule 'byday' must be an array");
             }
 
             if (rrule.byday.length > 7) {
-              throw "Recurrence rrule 'byday' array must not be longer than the 7 days in a week";
+              throw new Error("Recurrence rrule 'byday' array must not be longer than the 7 days in a week");
             }
 
             // Filter any possible repeats
@@ -102,7 +100,7 @@ export let ics = function(uidDomain, prodId) {
 
             for (let d in rrule.byday) {
               if (BYDAY_VALUES.indexOf(rrule.byday[d]) < 0) {
-                throw "Recurrence rrule 'byday' values must include only the following: 'SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'";
+                throw new Error("Recurrence rrule 'byday' values must include only the following: 'SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'");
               }
             }
           }
