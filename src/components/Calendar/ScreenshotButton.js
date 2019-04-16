@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react';
 import Button from '@material-ui/core/Button';
-import PhotoCamera from '@material-ui/icons/PhotoCamera';
+import Image from '@material-ui/icons/Image';
 import html2canvas from 'html2canvas';
 
 function ScreenshotButton(props) {
@@ -31,7 +31,7 @@ function ScreenshotButton(props) {
             });
           });
         }}>
-        <PhotoCamera style={{"margin-right": "5px"}}/> screenshot
+        <Image style={{"margin-right": "5px"}}/>.png
       </Button>
     </Fragment>
   );

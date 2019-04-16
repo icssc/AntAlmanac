@@ -67,7 +67,7 @@ function ExportButton(props) {
   return (
     <Fragment>
       <Button
-        style={{"width": "100%", "padding-right": "31px"}}
+        style={{"width": "100%", "padding-right": "11px"}}
         onClick={() => {
           console.log(eventsInCalendar);
 
@@ -139,7 +139,7 @@ function ExportButton(props) {
 
           cal.download(); // download ics file
         }}>
-        <Today style={{"margin-right": "5px"}}/> .ics file
+        <Today style={{"margin-right": "5px"}}/>.ics
       </Button>
     </Fragment>
   );

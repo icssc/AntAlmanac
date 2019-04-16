@@ -9,7 +9,6 @@
     "gapi-client": "0.0.3",
     "googleapis": "^27.0.0",
     "html2canvas": "^1.0.0-alpha.12",
-    "ics": "^2.13.2",
     "moment": "^2.24.0",
     "mui-downshift": "^1.4.1",
     "npm": "^6.9.0",
