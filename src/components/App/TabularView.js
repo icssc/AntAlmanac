@@ -1,4 +1,6 @@
 import React, { Component, Fragment } from 'react'
+import DropdownButton from 'react-bootstrap/DropdownButton'
+import Dropdown from 'react-bootstrap/Dropdown'
 import ColorPicker from './colorPicker'
 import {Typography, Button} from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
@@ -8,6 +10,7 @@ import RstrPopover from '../CoursePane/RstrPopover'
 import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
 import {withStyles} from '@material-ui/core/styles';
+import ButtonToolbar from "reactstrap/es/ButtonToolbar";
 
 const styles = {
   colorPicker: {
@@ -131,6 +134,12 @@ class TabularView extends Component {
       return section
   }
 
+  getCopyDropdownList = () => {
+    let scheduleIndexes = [0, 1, 2, 3]
+    const constructDropdown = (index) => (<Dropdown.Item disabled={this.state.scheduleIndex==index} key={index+1} onClick={() => this.props.onCopySchedule(index)}> Copy to Schedule {index+1} </Dropdown.Item>)
+    return scheduleIndexes.map(constructDropdown)
+  }
+
   render () {
     const {classes} = this.props;
     const events = this.props.eventsInCalendar;
@@ -166,15 +175,18 @@ class TabularView extends Component {
         totalUnits += Number(course.section.units);
     }
 
+
     return (
       <Fragment>
         <div className={classes.container}>
           <Typography variant="title">
             Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)
           </Typography>
-          <Button onClick={() => this.props.onCopySchedule(1)}>
-            Copy Schedule
-          </Button>
+
+          <DropdownButton id="copyScheduleDropdown" title="Copy Schedule">
+            {this.getCopyDropdownList()}
+          </DropdownButton>
+
         </div>
         {courses.map(event => {
           console.log(event)
