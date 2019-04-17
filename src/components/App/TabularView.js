@@ -1,8 +1,9 @@
 import React, { Component, Fragment } from 'react'
-import DropdownButton from 'react-bootstrap/DropdownButton'
-import Dropdown from 'react-bootstrap/Dropdown'
+import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown } from 'reactstrap';
+//import DropdownButton from 'react-bootstrap/DropdownButton'
+//import Dropdown from 'react-bootstrap/Dropdown'
 import ColorPicker from './colorPicker'
-import {Typography, Button} from "@material-ui/core";
+import {Typography} from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
 import rmpData from '../CoursePane/RMP.json'
 import locations from '../CoursePane/locations.json'
@@ -79,7 +80,7 @@ class TabularView extends Component {
     super(props);
 
     this.state = {
-     showF:false
+     showF: false
     };
   }
   redirectRMP = (e, name) => {
@@ -134,12 +135,6 @@ class TabularView extends Component {
       return section
   }
 
-  getCopyDropdownList = () => {
-    let scheduleIndexes = [0, 1, 2, 3]
-    const constructDropdown = (index) => (<Dropdown.Item disabled={this.state.scheduleIndex==index} key={index+1} onClick={() => this.props.onCopySchedule(index)}> Copy to Schedule {index+1} </Dropdown.Item>)
-    return scheduleIndexes.map(constructDropdown)
-  }
-
   render () {
     const {classes} = this.props;
     const events = this.props.eventsInCalendar;
@@ -182,12 +177,22 @@ class TabularView extends Component {
           <Typography variant="title">
             Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)
           </Typography>
-
-          <DropdownButton id="copyScheduleDropdown" title="Copy Schedule">
-            {this.getCopyDropdownList()}
-          </DropdownButton>
-
         </div>
+
+          <UncontrolledDropdown>
+              <DropdownToggle caret>
+                  Copy Schedule
+              </DropdownToggle>
+              <DropdownMenu>
+                  {[0, 1, 2, 3].map( (index) => {
+                      return <DropdownItem as="button" disabled={this.props.scheduleIndex==index} key={index+1} onClick={
+                          () => this.props.onCopySchedule(index)}>
+                          Copy to Schedule {index+1}
+                      </DropdownItem>
+                  })}
+              </DropdownMenu>
+          </UncontrolledDropdown>
+
         {courses.map(event => {
           console.log(event)
           return (<div>
