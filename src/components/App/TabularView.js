@@ -1,9 +1,6 @@
 import React, { Component, Fragment } from 'react'
-import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown } from 'reactstrap';
-//import DropdownButton from 'react-bootstrap/DropdownButton'
-//import Dropdown from 'react-bootstrap/Dropdown'
 import ColorPicker from './colorPicker'
-import {Typography} from "@material-ui/core";
+import {Button, Menu, MenuItem, Typography} from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
 import rmpData from '../CoursePane/RMP.json'
 import locations from '../CoursePane/locations.json'
@@ -11,7 +8,6 @@ import RstrPopover from '../CoursePane/RstrPopover'
 import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
 import {withStyles} from '@material-ui/core/styles';
-import ButtonToolbar from "reactstrap/es/ButtonToolbar";
 
 const styles = {
   colorPicker: {
@@ -80,7 +76,8 @@ class TabularView extends Component {
     super(props);
 
     this.state = {
-     showF: false
+      showF: false,
+      anchorEl: null
     };
   }
   redirectRMP = (e, name) => {
@@ -135,10 +132,17 @@ class TabularView extends Component {
       return section
   }
 
+  handleDropdownOpen = event => {
+    this.setState(Object.assign(this.state, {anchorEl: event.currentTarget}))
+  }
+
+  handleDropdownClose = () => {
+    this.setState(Object.assign(this.state, {anchorEl: null}))
+  }
+
   render () {
     const {classes} = this.props;
     const events = this.props.eventsInCalendar;
-    console.log("dddd",events);
     let result = [];
     for (let item of events)
       if (!item.isCustomEvent && result.find(function (element) {return element.courseCode === item.courseCode}) === undefined)
@@ -179,22 +183,34 @@ class TabularView extends Component {
           </Typography>
         </div>
 
-          <UncontrolledDropdown>
-              <DropdownToggle caret>
-                  Copy Schedule
-              </DropdownToggle>
-              <DropdownMenu>
-                  {[0, 1, 2, 3].map( (index) => {
-                      return <DropdownItem as="button" disabled={this.props.scheduleIndex==index} key={index+1} onClick={
-                          () => this.props.onCopySchedule(index)}>
-                          Copy to Schedule {index+1}
-                      </DropdownItem>
-                  })}
-              </DropdownMenu>
-          </UncontrolledDropdown>
+        <div>
+          <Button
+              aria-owns={this.state.anchor ? 'simple-menu' : undefined}
+              aria-haspopup="true"
+              onClick={this.handleDropdownOpen}
+          >
+            Copy Schedule
+          </Button>
+
+          <Menu
+              id="copyScheduleDropdown"
+              anchorEl={this.state.anchorEl}
+              open={Boolean(this.state.anchorEl)}
+              onClose={this.handleDropdownClose}
+          >
+            {[0, 1, 2, 3].map( (index) => {
+              return <MenuItem disabled={this.props.scheduleIndex==index} onClick={ () => {
+                  this.props.onCopySchedule(index)
+                  this.handleDropdownClose()}}>
+                Copy to Schedule {index+1}
+              </MenuItem>
+            })}
+          </Menu>
+        </div>
+
+
 
         {courses.map(event => {
-          console.log(event)
           return (<div>
             <div
               style={{

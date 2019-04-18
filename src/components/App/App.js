@@ -355,11 +355,11 @@ class App extends Component {
 
     // for each of those classes, add them to the schedule
     var newCourses = []
-    for (var oldClass of oldClasses) {
+    oldClasses.forEach(oldClass => {
       let newClass = Object.assign({}, oldClass)
       newClass.scheduleIndex = moveTo
       newCourses = newCourses.concat(newClass)
-    }
+    })
     this.setState({courseEvents: this.state.courseEvents.concat(newCourses)})
   }
 
