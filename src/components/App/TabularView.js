@@ -177,34 +177,48 @@ class TabularView extends Component {
 
     return (
       <Fragment>
-        <div className={classes.container}>
-          <Typography variant="title">
+        <div
+          className={classes.container}
+          style={{display:'inline-flex',
+            width:"100%",
+            position: "relative",}}>
+
+          <Typography
+              variant="title"
+              style={{
+                position: "absolute",
+                width: "50%",
+                top: "50%",
+                transform: "translateY(-50%)"}}>
             Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)
           </Typography>
-        </div>
 
-        <div>
           <Button
-              aria-owns={this.state.anchor ? 'simple-menu' : undefined}
-              aria-haspopup="true"
-              onClick={this.handleDropdownOpen}
-          >
+            aria-owns={this.state.anchor ? 'simple-menu' : undefined}
+            aria-haspopup="true"
+            onClick={this.handleDropdownOpen}
+            style={{
+              position: "absolute",
+              top: "50%",
+              right: "0",
+              transform: "translateY(-50%)"}}>
             Copy Schedule
           </Button>
 
           <Menu
-              id="copyScheduleDropdown"
-              anchorEl={this.state.anchorEl}
-              open={Boolean(this.state.anchorEl)}
-              onClose={this.handleDropdownClose}
-          >
+            id="copyScheduleDropdown"
+            anchorEl={this.state.anchorEl}
+            open={Boolean(this.state.anchorEl)}
+            onClose={this.handleDropdownClose}>
+
             {[0, 1, 2, 3].map( (index) => {
               return <MenuItem disabled={this.props.scheduleIndex==index} onClick={ () => {
-                  this.props.onCopySchedule(index)
-                  this.handleDropdownClose()}}>
+                this.props.onCopySchedule(index)
+                this.handleDropdownClose()}}>
                 Copy to Schedule {index+1}
               </MenuItem>
             })}
+
             <MenuItem onClick={ () => {
               this.props.onCopySchedule(-1)
               this.handleDropdownClose()}}>
@@ -212,8 +226,6 @@ class TabularView extends Component {
             </MenuItem>
           </Menu>
         </div>
-
-
 
         {courses.map(event => {
           return (<div>
