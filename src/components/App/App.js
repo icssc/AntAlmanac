@@ -349,18 +349,36 @@ class App extends Component {
   }
 
   handleCopySchedule = (moveTo) => {
-    // get the schedule of classes that are to be moved
-    let moveFrom = this.state.currentScheduleIndex
-    var oldClasses = this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === moveFrom))
+    let allSchedules = [0, 1, 2, 3]
+    let schedulesToMoveTo = []
+    //if move to all schedules
+    if (moveTo === -1) {
+      allSchedules.forEach((schedule) => {
+        if (schedule !== this.state.currentScheduleIndex) {
+          schedulesToMoveTo.push(schedule)
+        }})}
+    else {
+      schedulesToMoveTo.push(moveTo)
+    }
 
-    // for each of those classes, add them to the schedule
-    var newCourses = []
+    // for each schedule index to add to
+    let newCourses = [];
+    schedulesToMoveTo.forEach((schedule) => {
+      newCourses = newCourses.concat(this.getClassesAfterCopyingTo(schedule))
+    this.setState({courseEvents: this.state.courseEvents.concat(newCourses)})
+    })
+  }
+
+  getClassesAfterCopyingTo = (moveTo) => {
+    let moveFrom = this.state.currentScheduleIndex
+    const oldClasses = this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === moveFrom));
+    let newCourses = [];
     oldClasses.forEach(oldClass => {
       let newClass = Object.assign({}, oldClass)
       newClass.scheduleIndex = moveTo
-      newCourses = newCourses.concat(newClass)
+      newCourses.push(newClass)
     })
-    this.setState({courseEvents: this.state.courseEvents.concat(newCourses)})
+    return newCourses
   }
 
   handleDismissSearchResults = () => {

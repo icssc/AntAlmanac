@@ -133,11 +133,11 @@ class TabularView extends Component {
   }
 
   handleDropdownOpen = event => {
-    this.setState(Object.assign(this.state, {anchorEl: event.currentTarget}))
+    this.setState({anchorEl: event.currentTarget})
   }
 
   handleDropdownClose = () => {
-    this.setState(Object.assign(this.state, {anchorEl: null}))
+    this.setState({anchorEl: null})
   }
 
   render () {
@@ -205,6 +205,11 @@ class TabularView extends Component {
                 Copy to Schedule {index+1}
               </MenuItem>
             })}
+            <MenuItem onClick={ () => {
+              this.props.onCopySchedule(-1)
+              this.handleDropdownClose()}}>
+              Copy to All Schedules
+            </MenuItem>
           </Menu>
         </div>
 
