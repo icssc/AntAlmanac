@@ -125,7 +125,7 @@ class App extends Component {
             courseTerm: event.courseTerm,
             scheduleIndex: event.scheduleIndex,
             isCustomEvent: false,
-            
+
           })
         }
       }
@@ -254,6 +254,8 @@ class App extends Component {
           ])
         })
       else {
+        if(scheduleIndex === 5) //add to current calendar
+          scheduleIndex = this.state.currentScheduleIndex
         this.setState({
           unavailableColors: this.state.unavailableColors.concat({
             color: randomColor,
@@ -457,6 +459,7 @@ class App extends Component {
                 style={{color: 'white', marginLeft: 16}}
                 href={'https://goo.gl/forms/eIHy4kp56pZKP9fK2'}
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 <Assignment style={{}} color="white"/>
               </a>
@@ -467,6 +470,7 @@ class App extends Component {
                 style={{color: 'white', marginLeft: 16}}
                 href={'https://www.facebook.com/AntAlmanac/'}
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 <Forum style={{marginTop: 5}} color="white"/>
               </a>
@@ -477,6 +481,7 @@ class App extends Component {
                 style={{color: 'white', marginLeft: 16}}
                 href={'https://www.ics.uci.edu/~rang1/AntAlmanac/index.html'}
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 <Info color="white"/>
               </a>

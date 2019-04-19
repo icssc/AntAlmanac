@@ -2,10 +2,9 @@ import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import {IconButton, Tooltip, Typography} from "@material-ui/core";
 import {ChevronLeft, ChevronRight, Undo} from "@material-ui/icons";
-import ScreenshotButton from "./ScreenshotButton";
 import PropTypes from "prop-types";
 import Submenu from "./Submenu"
-import ExportButton from "./ExportCalendar";
+import DownloadMenu from "./DownloadMenu";
 
 const styles = {
   toolbar: {
@@ -41,15 +40,20 @@ class CalendarPaneToolbar extends Component {
 
         <div className={classes.spacer}></div>
 
+
         <Tooltip title="Undo Last Delete">
           <IconButton onClick={() => this.props.onUndo(null)}>
             <Undo fontSize='small'/>
           </IconButton>
         </Tooltip>
+        {/**/}
 
-        <ScreenshotButton onTakeScreenshot={this.props.onTakeScreenshot}/>
-
-        <ExportButton eventsInCalendar={this.props.eventsInCalendar}/>
+        <Tooltip title="Download Menu">
+          <DownloadMenu
+            onTakeScreenshot={this.props.onTakeScreenshot}
+            eventsInCalendar={this.props.eventsInCalendar}
+          />
+        </Tooltip>
 
         <Tooltip title="More">
           <Submenu

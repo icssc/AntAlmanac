@@ -6,7 +6,6 @@ import Notification from '../Notification'
 import RstrPopover from "./RstrPopover"
 import locations from "./locations.json"
 import {withStyles} from "@material-ui/core/styles";
-import PropTypes from "prop-types";
 
 const styles = {
   table: {

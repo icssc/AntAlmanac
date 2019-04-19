@@ -148,7 +148,7 @@ class DialogSelect extends Component {
 
     return (
       <div>
-        <Button onClick={() => this.setState({ open: true })} style={{width: "100%"}}>
+        <Button disableRipple={true} className={"menu-button"} onClick={() => this.setState({ open: true })} style={{width: "100%"}}>
           <Add /> Add Custom
         </Button>
         <Dialog

@@ -26,7 +26,7 @@ class Submenu extends React.Component {
 
   render() {
 
-    const events = this.props.eventsInCalendar
+    const events = this.props.eventsInCalendar;
 
     let result = [];
     let finalSchedule =[];
@@ -34,14 +34,7 @@ class Submenu extends React.Component {
       if (!item.isCustomEvent && result.find(function (element) {return element.courseCode === item.courseCode}) === undefined)
         result.push(item);
 
-    const courses = [];
-    let totalUnits = 0;
-
     for (let course of result) {
-      let foundIndex = courses.findIndex(function (element) {
-        return (course.name.join() === element.name.join() && element.courseTerm === course.courseTerm)
-      })
-
       if (course.section !== undefined){
         let final = course.section.finalExam;
 
@@ -109,7 +102,7 @@ class Submenu extends React.Component {
               <FinalSwitch  displayFinal={this.props.displayFinal} schedule={finalSchedule} showFinalSchedule = {this.props.showFinalSchedule}/>
             </MenuItem>
             <MenuItem disableGutters>
-                <Button onClick={this.props.onClearSchedule} style={{width: "100%"}}>
+                <Button disableRipple={true}  onClick={this.props.onClearSchedule} style={{width: "100%"}} className={"menu-button"}>
                     <Delete/> Clear All
                 </Button>
             </MenuItem>

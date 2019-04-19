@@ -168,7 +168,8 @@ class CoursePane extends Component {
             width: "100%",
             display: "flex",
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
+            backgroundColor: "white"
           }}
         >
           <video autoPlay loop>
