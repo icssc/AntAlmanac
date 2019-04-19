@@ -85,9 +85,8 @@ class CoursePane extends Component {
       building: building
     };
     const url =
-      "https://2r7p77ujv6.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?" +
+      "https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?" +
       querystring.stringify(params);
-
     fetch(url)
       .then(resp => {
         return resp.json();
@@ -151,6 +150,7 @@ class CoursePane extends Component {
           :
           <Fragment/>}
           <CourseRenderPane
+          formData={this.props.formData}
             onAddClass={this.props.onAddClass}
             onToggleDismissButton={this.handleToggleDismissButton}
             courseData={courseData}
@@ -168,7 +168,8 @@ class CoursePane extends Component {
             width: "100%",
             display: "flex",
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
+            backgroundColor: "white"
           }}
         >
           <video autoPlay loop>

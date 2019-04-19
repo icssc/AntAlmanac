@@ -9,7 +9,7 @@ import {
 import {MoreVert, Delete} from '@material-ui/icons';
 import CustomEventsDialog from '../CustomEvents/Popup';
 import Sharing from "./Sharing";
-
+import FinalSwitch from './FinalSwitch';
 
 class Submenu extends React.Component {
   state = {
@@ -25,6 +25,50 @@ class Submenu extends React.Component {
   };
 
   render() {
+
+    const events = this.props.eventsInCalendar;
+
+    let result = [];
+    let finalSchedule =[];
+    for (let item of events)
+      if (!item.isCustomEvent && result.find(function (element) {return element.courseCode === item.courseCode}) === undefined)
+        result.push(item);
+
+    for (let course of result) {
+      if (course.section !== undefined){
+        let final = course.section.finalExam;
+
+        if(final.length>5)
+        {
+          let [,,, date, start, startMin, end, endMin, ampm] = final.match(/([A-za-z]+) *(\d{1,2}) *([A-za-z]+) *(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
+          start = parseInt(start, 10);
+          startMin = parseInt(startMin, 10);
+          end = parseInt(end, 10);
+          endMin = parseInt(endMin, 10);
+          date = [date.includes('M'), date.includes('Tu'), date.includes('W'), date.includes('Th'), date.includes('F')];
+          if (ampm === 'p' && end !== 12) {
+            start += 12;
+            end += 12;
+            if (start > end) start -= 12;
+          }
+
+          date.forEach((shouldBeInCal, index) => {
+            if(shouldBeInCal)
+            finalSchedule.push({
+              title:course.title,
+              courseType: "Fin",
+              courseCode:course.courseCode,
+              location:course.location,
+              color:course.color,
+              isCustomEvent:false,
+              start: new Date(2018, 0, index + 1, start, startMin),
+              end: new Date(2018, 0, index + 1, end, endMin),
+            })
+          });
+        }
+      }
+    }
+
     const { anchorEl } = this.state;
 
     return (
@@ -49,17 +93,28 @@ class Submenu extends React.Component {
           }}
         >
           <MenuList>
-            <MenuItem>
+            <MenuItem disableGutters>
               <CustomEventsDialog
                   onAddCustomEvent={this.props.onAddCustomEvent}
+                  handleSubmenuClose={this.handleClose}
               />
             </MenuItem>
             <MenuItem>
-                <Button onClick={this.props.onClearSchedule} style={{width: "100%"}}>
+              <FinalSwitch  displayFinal={this.props.displayFinal} schedule={finalSchedule} showFinalSchedule = {this.props.showFinalSchedule}/>
+            </MenuItem>
+            <MenuItem disableGutters>
+                <Button
+                  disableRipple={true}
+                  onClick={() => {
+                    this.props.onClearSchedule()
+                    this.handleClose()
+                  }}
+                  style={{width: "100%"}}
+                  className={"menu-button"}>
                     <Delete/> Clear All
                 </Button>
             </MenuItem>
-            <MenuItem>
+            <MenuItem disableGutters>
               <Sharing onTakeScreenshot={this.props.onTakeScreenshot} />
             </MenuItem>
           </MenuList>

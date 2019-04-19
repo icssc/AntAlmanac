@@ -1,9 +1,10 @@
 import React from 'react';
 import {Paper} from "@material-ui/core";
-import {withStyles} from "@material-ui/core/es/styles";
+import {withStyles} from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import ColorPicker from '../App/colorPicker.js';
 import {Delete} from '@material-ui/icons';
+import locations from "../CoursePane/locations.json";
 
 const styles = {
   container: {
@@ -48,9 +49,18 @@ const styles = {
   }
 };
 
+const genMapLink = location => {
+  try {
+    const location_id = locations[location.split(" ")[0]];
+    return "https://map.uci.edu/?id=463#!m/" + location_id;
+  } catch (err) {
+    return "https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034";
+  }
+};
+
 const CourseCalendarEvent = (props) => {
   const {classes, courseInMoreInfo} = props;
-  const {section, name, final} = courseInMoreInfo;
+  const {section, name, final, location} = courseInMoreInfo;
 
   return (
     <div>
@@ -64,6 +74,15 @@ const CourseCalendarEvent = (props) => {
           <tr>
             <td className={classes.alignToTop}>Instructors</td>
             <td className={classes.multiline + " " + classes.rightCells}>{section.instructors.join("\n")}</td>
+          </tr>
+          <tr>
+            <td className={classes.alignToTop}>Location</td>
+            <td className={classes.multiline + " " + classes.rightCells}>
+              {(location !== "TBA") ? (
+                  <a href={genMapLink(location)} target="_blank">{location}</a>
+                ) : (location)
+              }
+            </td>
           </tr>
           <tr>
             <td>Final</td>

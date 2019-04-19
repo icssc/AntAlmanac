@@ -1,16 +1,15 @@
 import React, { Component, Fragment } from 'react'
 import ColorPicker from './colorPicker'
-import {Typography, Button} from "@material-ui/core";
+import {Button, Menu, MenuItem, Typography} from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
 import rmpData from '../CoursePane/RMP.json'
 import locations from '../CoursePane/locations.json'
 import RstrPopover from '../CoursePane/RstrPopover'
 import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
-import FinalSwitch from './FinalSwitch'
 import {withStyles} from '@material-ui/core/styles';
-import CustomEventsDialog from "../CustomEvents/Popup"
 import { Create } from "@material-ui/icons";
+import MouseOverPopover from "../CoursePane/MouseOverPopover";
 
 const styles = {
   colorPicker: {
@@ -71,7 +70,19 @@ const styles = {
   },
   multiline: {
     whiteSpace: 'pre'
-  }
+  },
+  Act: {color: '#c87137'},
+  Col: {color: '#ff40b5'},
+  Dis: {color: '#8d63f0'},
+  Fld: {color: '#1ac805'},
+  Lab: {color: '#1abbe9'},
+  Lec: {color: '#d40000'},
+  Qiz: {color: '#8e5c41'},
+  Res: {color: '#ff2466'},
+  Sem: {color: '#2155ff'},
+  Stu: {color: '#179523'},
+  Tap: {color: '#8d2df0'},
+  Tut: {color: '#ffc705'}
 };
 
 class TabularView extends Component {
@@ -79,7 +90,8 @@ class TabularView extends Component {
     super(props);
 
     this.state = {
-     showF:false
+      showF: false,
+      anchorEl: null
     };
   }
   redirectRMP = (e, name) => {
@@ -134,68 +146,18 @@ class TabularView extends Component {
       return section
   }
 
- showFinal =schedule=>
- {
-   this.setState({showFinal:!this.state.showFinal},()=>{
-     if(this.state.showFinal)
-     this.props.displayFinal(schedule);
-   })
- }
+  handleDropdownOpen = event => {
+    this.setState({anchorEl: event.currentTarget})
+  }
 
- showCustomEvents = (customEvents, classes) => {
-   if (customEvents.length === 0) {
-     return
-   } else {
-       const getTimeString = event => {
-         let startHours = event.start.getHours(), startMinutes = event.start.getMinutes();
-         let endHours = event.end.getHours(), endMinutes = event.end.getMinutes();
-         if (startMinutes < 10) {startMinutes = `0${startMinutes}`};
-         if (endMinutes < 10) {endMinutes = `0${endMinutes}`};
-         let startTime = `${(startHours % 12).toString()}:${startMinutes}`;
-         let endTime = `${(endHours % 12).toString()}:${endMinutes}`;
-         if (endHours > 12) {endTime += "p"};
-         return `${event.days.join().replace(",","")} ${startTime}-${endTime}`
-       }
-
-       return (
-        <div>
-          <div style={{
-            display: 'flex',
-            marginTop: 10
-          }}>
-            <Typography variant="h6">Custom Events</Typography>
-          </div>
-          <table className={classes.table}>
-            <thead>
-              <tr>
-                <th>Color</th>
-                <th>Edit</th>
-                <th>Title</th>
-                <th>Time</th>
-              </tr>            </thead>
-            <tbody>
-              {customEvents.map(event => {return (
-                <tr className={classes.tr}>
-                  <td className={classes.colorPicker} width="50" height="40"><ColorPicker onColorChange={this.props.onColorChange} event={event}/></td>
-                  <td width="40"><Button onClick={() => console.log("Temp")}><Create /></Button></td>
-                  <td>{event.title}</td>
-                  <td>{getTimeString(event)}</td>
-                </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
-      )
-    }
- }
+  handleDropdownClose = () => {
+    this.setState({anchorEl: null})
+  }
 
   render () {
-
-    const events = this.props.classEventsInCalendar
-
+    const {classes} = this.props;
+    const events = this.props.eventsInCalendar;
     let result = [];
-    let finalSchedule = [];
     let customEvents = [];
     for (let item of events)
       if (!item.isCustomEvent && result.find(function (element) {return element.courseCode === item.courseCode}) === undefined)
@@ -220,41 +182,11 @@ class TabularView extends Component {
         return (course.name.join() === element.name.join() && element.courseTerm === course.courseTerm)
       })
 
-      let final = course.section.finalExam;
-
-      if(final.length>5)
-      {
-        let [,,, date, start, startMin, end, endMin, ampm] = final.match(/([A-za-z]+) *(\d{1,2}) *([A-za-z]+) *(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
-        start = parseInt(start, 10);
-        startMin = parseInt(startMin, 10);
-        end = parseInt(end, 10);
-        endMin = parseInt(endMin, 10);
-        date = [date.includes('M'), date.includes('Tu'), date.includes('W'), date.includes('Th'), date.includes('F')];
-        if (ampm === 'p' && end !== 12) {
-          start += 12;
-          end += 12;
-          if (start > end) start -= 12;
-        }
-
-        date.forEach((shouldBeInCal, index) => {
-          if(shouldBeInCal)
-          finalSchedule.push({
-            title:course.title,
-            courseType: "Fin",
-            courseCode:course.courseCode,
-            location:course.location,
-            color:course.color,
-            isCustomEvent:false,
-            start: new Date(2018, 0, index + 1, start, startMin),
-            end: new Date(2018, 0, index + 1, end, endMin),
-          })
-        });
-      }
-
       if (foundIndex === -1) {
         courses.push({
             name: course.name,
             lecAndDis: [course],
+            prerequisiteLink:course.prerequisiteLink,
             final:course.section.finalExam,
             //  courseID:event.courseID,
             courseTerm: course.courseTerm
@@ -268,18 +200,60 @@ class TabularView extends Component {
         totalUnits += Number(course.section.units);
     }
 
-    const {classes} = this.props;
 
     return (
       <Fragment>
-        <div className={classes.container}>
-          <Typography variant="title">
+        <div
+          className={classes.container}
+          style={{display:'inline-flex',
+            width:"100%",
+            position: "relative",
+            marginBottom: 10}}>
+
+          <Typography
+              variant="title"
+              style={{
+                position: "absolute",
+                width: "50%",
+                top: "50%",
+                transform: "translateY(-50%)"}}>
             Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)
           </Typography>
-          <Typography>
-            <FinalSwitch  displayFinal={this.props.displayFinal} schedule={finalSchedule} showFinalSchedule = {this.props.showFinalSchedule}/>
-          </Typography>
+
+          <Button
+            aria-owns={this.state.anchor ? 'simple-menu' : undefined}
+            aria-haspopup="true"
+            onClick={this.handleDropdownOpen}
+            style={{
+              position: "absolute",
+              top: "50%",
+              right: "0",
+              transform: "translateY(-50%)"}}>
+            Copy Schedule
+          </Button>
+
+          <Menu
+            id="copyScheduleDropdown"
+            anchorEl={this.state.anchorEl}
+            open={Boolean(this.state.anchorEl)}
+            onClose={this.handleDropdownClose}>
+
+            {[0, 1, 2, 3].map( (index) => {
+              return <MenuItem disabled={this.props.scheduleIndex===index} onClick={ () => {
+                this.props.onCopySchedule(index)
+                this.handleDropdownClose()}}>
+                Copy to Schedule {index+1}
+              </MenuItem>
+            })}
+
+            <MenuItem onClick={ () => {
+              this.props.onCopySchedule(4)
+              this.handleDropdownClose()}}>
+              Copy to All Schedules
+            </MenuItem>
+          </Menu>
         </div>
+
         {courses.map(event => {
           return (<div>
             <div
@@ -292,13 +266,29 @@ class TabularView extends Component {
                 name={event.name[0] + ' ' + event.name[1] + ' | ' + event.name[2]}
                 courseDetails={event}
               />
+
               <Typography variant="title" style={{ flexGrow: "2"}}>
                 &nbsp;
               </Typography>
+
               <AlmanacGraphWrapped
                 term={event.courseTerm}
                 courseDetails={event}
               />
+
+              <Typography variant="title" style={{ flexGrow: "2"}}>
+                &nbsp;
+              </Typography>
+
+              {event.prerequisiteLink ? (
+                <Typography variant='h9' style={{flexGrow: "2", marginTop: 9}}>
+                  <a target="blank" style={{textDecoration: "none", color: "#72a9ed"}}
+                     href={event.prerequisiteLink} rel="noopener noreferrer">
+                    Prerequisites
+                  </a>
+                </Typography>
+              ) : <Fragment/>
+              }
             </div>
             <table className={classes.table}>
               <thead>
@@ -323,7 +313,7 @@ class TabularView extends Component {
                       <tr className={classes.tr}>
                         <td className={classes.colorPicker}><ColorPicker onColorChange={this.props.onColorChange} event={item}/></td>
                         <td>{secEach.classCode}</td>
-                        <td className={classes.multiline}>
+                        <td className={classes.multiline + " " + classes[secEach.classType]}>
                           {`${secEach.classType}
 Sec ${secEach.sectionCode}
 ${secEach.units} units`}
@@ -349,18 +339,20 @@ ${secEach.units} units`}
                             )
                           })}
                         </td>
-                        <td className={classes.multiline + " " + secEach.status.toLowerCase()}>
+                        <td>
+                  			<MouseOverPopover className={classes.multiline + " " + classes[secEach.status.toLowerCase()]}>
                           {`${secEach.numCurrentlyEnrolled[0]} / ${secEach.maxCapacity}
 WL: ${secEach.numOnWaitlist}
 NOR: ${secEach.numNewOnlyReserved}`}
+			</MouseOverPopover>
+
                         </td>
                         <td>
                           <RstrPopover
                             restrictions={secEach.restrictions}
                           />
                         </td>
-                        <td
-                          className={secEach.status.toLowerCase()}>{this.statusforFindingSpot(secEach.status, secEach.classCode, item.courseTerm, item.name)}</td>
+                        <td className={classes[secEach.status.toLowerCase()]}>{this.statusforFindingSpot(secEach.status, secEach.classCode, item.courseTerm, item.name)}</td>
                       </tr>
                     )
                   }
@@ -370,7 +362,52 @@ NOR: ${secEach.numNewOnlyReserved}`}
           </div>)
         })}
 
-      {this.showCustomEvents(customEvents, classes)}
+      {if (customEvents.length === 0) {
+        return
+      } else {
+          const getTimeString = event => {
+            let startHours = event.start.getHours(), startMinutes = event.start.getMinutes();
+            let endHours = event.end.getHours(), endMinutes = event.end.getMinutes();
+            if (startMinutes < 10) {startMinutes = `0${startMinutes}`};
+            if (endMinutes < 10) {endMinutes = `0${endMinutes}`};
+            let startTime = `${(startHours % 12).toString()}:${startMinutes}`;
+            let endTime = `${(endHours % 12).toString()}:${endMinutes}`;
+            if (endHours > 12) {endTime += "p"};
+            return `${event.days.join().replace(",","")} ${startTime}-${endTime}`
+          }
+
+          return (
+           <div>
+             <div style={{
+               display: 'flex',
+               marginTop: 10
+             }}>
+               <Typography variant="h6">Custom Events</Typography>
+             </div>
+             <table className={classes.table}>
+               <thead>
+                 <tr>
+                   <th>Color</th>
+                   <th>Edit</th>
+                   <th>Title</th>
+                   <th>Time</th>
+                 </tr>            </thead>
+               <tbody>
+                 {customEvents.map(event => {return (
+                   <tr className={classes.tr}>
+                     <td className={classes.colorPicker} width="50" height="40"><ColorPicker onColorChange={this.props.onColorChange} event={event}/></td>
+                     <td width="40"><Button onClick={() => console.log("Temp")}><Create /></Button></td>
+                     <td>{event.title}</td>
+                     <td>{getTimeString(event)}</td>
+                   </tr>
+                   )
+                 })}
+               </tbody>
+             </table>
+           </div>
+         )
+       }
+     }
 
       </Fragment>
     )

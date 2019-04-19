@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^3.9.2",
+    "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^2.0.0",
+    "file-saver": "^2.0.1",
     "gapi-client": "0.0.3",
     "googleapis": "^27.0.0",
     "html2canvas": "^1.0.0-alpha.12",
@@ -12,24 +13,31 @@
     "mui-downshift": "^1.4.1",
     "npm": "^6.9.0",
     "prop-types": "^15.7.2",
-    "react": "^16.8.4",
+    "react": "^16.8.6",
     "react-big-calendar": "^0.19.2",
     "react-color": "^2.17.0",
     "react-device-detect": "1.6.1",
-    "react-dom": "^16.8.4",
+    "react-dom": "^16.8.6",
     "react-messenger-customer-chat": "^0.7.2",
     "react-number-format": "^4.0.7",
-    "react-scripts": "1.1.4",
+    "react-scripts": "^2.1.8",
     "react-share": "^2.4.0",
+    "react-snapshot": "^1.3.0",
     "react-text-mask": "^5.4.3",
-    "react-to-print": "^2.0.0-beta-4",
+    "react-to-print": "^2.1.0",
     "readline": "^1.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && react-snapshot",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

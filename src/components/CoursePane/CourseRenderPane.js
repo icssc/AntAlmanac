@@ -96,6 +96,7 @@ class CourseRenderPane extends Component {
               " | " +
               SOCObject.name[2]
             }
+            formData={this.props.formData}
             courseDetails={SOCObject}
             onAddClass={this.props.onAddClass}
             termName={this.props.termName}

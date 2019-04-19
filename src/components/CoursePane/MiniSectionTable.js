@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from "react";
-import {Menu, MenuItem, Typography} from "@material-ui/core";
+import {Menu, MenuItem, IconButton, Typography} from "@material-ui/core";
 import {withStyles} from "@material-ui/core/styles";
 import rmpData from "./RMP.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
@@ -7,6 +7,12 @@ import POPOVER from "./PopOver";
 import Notification from '../Notification';
 import RstrPopover from "./RstrPopover";
 import locations from "./locations.json";
+import querystring from "querystring";
+import MouseOverPopover from "./MouseOverPopover";
+import {
+  Add,
+  ArrowDropDown
+} from '@material-ui/icons'
 
 const styles = {
   table: {
@@ -34,10 +40,6 @@ const styles = {
       backgroundColor: '#f5f5f5'
     },
 
-    "&:hover": {
-      color: "blueviolet"
-    },
-
     "& td": {
       border: "1px solid rgb(222, 226, 230)",
       textAlign: "left",
@@ -55,7 +57,19 @@ const styles = {
   },
   multiline: {
     whiteSpace: 'pre'
-  }
+  },
+  Act: {color: '#c87137'},
+  Col: {color: '#ff40b5'},
+  Dis: {color: '#8d63f0'},
+  Fld: {color: '#1ac805'},
+  Lab: {color: '#1abbe9'},
+  Lec: {color: '#d40000'},
+  Qiz: {color: '#8e5c41'},
+  Res: {color: '#ff2466'},
+  Sem: {color: '#2155ff'},
+  Stu: {color: '#179523'},
+  Tap: {color: '#8d2df0'},
+  Tut: {color: '#ffc705'}
 };
 
 class ScheduleAddSelector extends Component {
@@ -64,8 +78,12 @@ class ScheduleAddSelector extends Component {
     this.state = {anchor: null};
   }
 
-  handleClick = event => {
+  handleAddMore = event => {
     this.setState({anchor: event.currentTarget});
+  };
+
+  handleAddCurrent = (event) => {
+    this.handleClose(5); //add to current
   };
 
   handleClose = scheduleNumber => {
@@ -73,9 +91,8 @@ class ScheduleAddSelector extends Component {
     if (scheduleNumber !== -1) {
       this.props.onAddClass(
         this.props.section,
-        this.props.courseDetails.name,
+        this.props.courseDetails,
         scheduleNumber,
-
         this.props.termName
       );
     }
@@ -151,15 +168,39 @@ class ScheduleAddSelector extends Component {
     const section = this.props.section;
     return (
       <Fragment>
-        <tr
-          className={classes.tr}
-          {...(!this.disableTBA(section)
-            ? {onClick: this.handleClick, style: {cursor: "pointer"}}
-            : {})}
-        >
+        <tr className={classes.tr}>
+          <td style={{verticalAlign: "middle", textAlign: "center"}}>
+            <IconButton
+              {...(!this.disableTBA(section)
+                ? {onClick: this.handleAddCurrent , style: {cursor: "pointer"}}
+                : {disabled: true})}
+              style = {{ padding: 0 }}
+            >
+              <Add fontSize="large" />
+            </ IconButton>
+            <IconButton
+              {...(!this.disableTBA(section)
+                ? {onClick: this.handleAddMore, style: {cursor: "pointer"}}
+                : {disabled: true})}
+              style = {{ padding: 0 }}
+            >
+              <ArrowDropDown/>
+            </ IconButton>
+              <Menu
+                anchorEl={this.state.anchor}
+                open={Boolean(this.state.anchor)}
+                onClose={() => this.handleClose(-1)}
+              >
+                <MenuItem onClick={() => this.handleClose(0)}>Add to schedule 1</MenuItem>
+                <MenuItem onClick={() => this.handleClose(1)}>Add to schedule 2</MenuItem>
+                <MenuItem onClick={() => this.handleClose(2)}>Add to schedule 3</MenuItem>
+                <MenuItem onClick={() => this.handleClose(3)}>Add to schedule 4</MenuItem>
+                <MenuItem onClick={() => this.handleClose(4)}>Add to all</MenuItem>
+              </Menu>
+          </td>
           <td>{section.classCode}</td>
-          <td className={classes.multiline}>
-            {`${section.classType}
+          <td className={classes.multiline + " " + classes[section.classType]}>
+              {`${section.classType}
 Sec: ${section.sectionCode}
 Units: ${section.units}`}
           </td>
@@ -184,13 +225,15 @@ Units: ${section.units}`}
               );
             })}
           </td>
-          <td className={classes.multiline + " " + classes[section.status.toLowerCase()]}>
+          <td>
+          <MouseOverPopover className={classes.multiline + " " + classes[section.status.toLowerCase()]}>
             <strong>{`${section.numCurrentlyEnrolled[0]} / ${
               section.maxCapacity
               }`}</strong>
             {`
 WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
+          </MouseOverPopover>
           </td>
           <td>
             <RstrPopover
@@ -199,37 +242,57 @@ NOR: ${section.numNewOnlyReserved}`}
           </td>
           <td className={classes[section.status.toLowerCase()]}>{this.statusforFindingSpot(section.status, section.classCode)}</td>
         </tr>
-        <Menu
-          anchorEl={this.state.anchor}
-          open={Boolean(this.state.anchor)}
-          onClose={() => this.handleClose(-1)}
-        >
-          <MenuItem onClick={() => this.handleClose(0)}>
-            Add to schedule 1
-          </MenuItem>
-          <MenuItem onClick={() => this.handleClose(1)}>
-            Add to schedule 2
-          </MenuItem>
-          <MenuItem onClick={() => this.handleClose(2)}>
-            Add to schedule 3
-          </MenuItem>
-          <MenuItem onClick={() => this.handleClose(3)}>
-            Add to schedule 4
-          </MenuItem>
-          <MenuItem onClick={() => this.handleClose(4)}>Add to all</MenuItem>
-        </Menu>
       </Fragment>
     );
   }
 }
 
 class MiniSectionTable extends Component {
-  shouldComponentUpdate(nextProps, nextState, nextContext) {
-    return this.props.courseDetails !== nextProps.courseDetails;
+  constructor(props)
+  {
+    super(props);
+    this.state={  sectionInfo : this.props.courseDetails.sections};
+  }
+
+  // shouldComponentUpdate(nextProps, nextState, nextContext) {
+  //   return this.props.courseDetails !== nextProps.courseDetails;
+  // }
+  componentDidMount = async () => {
+    //let {building,courseCode,courseNum,coursesFull,dept,endTime,ge,instructor,label,startTime,term,units}=this.props.formData;
+    let {dept,ge}=this.props.formData;
+    if(ge!=="ANY" &&dept===null) //please put all the form's props condition in to prevent search bugs
+    {
+      const params = {
+        department: this.props.courseDetails.name[0],
+        term: this.props.termName,
+        courseTitle: this.props.courseDetails.name[2],
+        courseNum: this.props.courseDetails.name[1]
+      };
+
+      const url =
+        "https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/websoc?" +
+        querystring.stringify(params);
+     await  fetch(url.toString())
+        .then(resp => resp.json())
+        .then(json => {
+          const sections = json.reduce((accumulator, school) => {
+            school.departments.forEach(dept => {
+              dept.courses.forEach(course => {
+                course.sections.forEach(section => {
+                 accumulator.push(section);
+                });
+              });
+            });
+
+            return accumulator;
+          }, []);
+
+          this.setState({ sectionInfo: sections });
+        });
+    }
   }
 
   render() {
-    const sectionInfo = this.props.courseDetails.sections;
     const {classes} = this.props;
 
     return (
@@ -244,10 +307,18 @@ class MiniSectionTable extends Component {
             courseDetails={this.props.courseDetails}
           />
 
+          <Typography variant="title" style={{ flexGrow: "2"}}>
+            &nbsp;
+          </Typography>
+
           <AlmanacGraphWrapped
             term={this.props.term}
             courseDetails={this.props.courseDetails}
           />
+
+          <Typography variant="title" style={{ flexGrow: "2"}}>
+            &nbsp;
+          </Typography>
 
           {this.props.courseDetails.prerequisiteLink ? (
             <Typography variant='h9' style={{flexGrow: "2", marginTop: 9}}>
@@ -262,6 +333,7 @@ class MiniSectionTable extends Component {
         <table className={classes.table}>
           <thead>
           <tr>
+            <th>Add</th>
             <th>Code</th>
             <th>Type</th>
             <th>Instructors</th>
@@ -273,7 +345,7 @@ class MiniSectionTable extends Component {
           </tr>
           </thead>
           <tbody>
-          {sectionInfo.map(section => {
+          {this.state.sectionInfo.map(section => {
             return (
               <ScheduleAddSelector
                 classes={classes}

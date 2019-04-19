@@ -38,3 +38,12 @@
         min-height: 22px;
     }
 }
+
+*:focus {
+    outline: none;
+}
+
+.menu-button:hover, .menu-button:focus {
+    background-color: unset !important;
+}
+
