@@ -146,6 +146,17 @@ class TabularView extends Component {
       return section
   }
 
+  getTimeString = event => {
+    let startHours = event.start.getHours(), startMinutes = event.start.getMinutes();
+    let endHours = event.end.getHours(), endMinutes = event.end.getMinutes();
+    if (startMinutes < 10) {startMinutes = `0${startMinutes}`};
+    if (endMinutes < 10) {endMinutes = `0${endMinutes}`};
+    let startTime = `${(startHours % 12).toString()}:${startMinutes}`;
+    let endTime = `${(endHours % 12).toString()}:${endMinutes}`;
+    if (endHours > 12) {endTime += "p"};
+    return `${event.days.join().replace(",","")} ${startTime}-${endTime}`
+  }
+
   handleDropdownOpen = event => {
     this.setState({anchorEl: event.currentTarget})
   }
@@ -362,52 +373,35 @@ NOR: ${secEach.numNewOnlyReserved}`}
           </div>)
         })}
 
-      {if (customEvents.length === 0) {
-        return
-      } else {
-          const getTimeString = event => {
-            let startHours = event.start.getHours(), startMinutes = event.start.getMinutes();
-            let endHours = event.end.getHours(), endMinutes = event.end.getMinutes();
-            if (startMinutes < 10) {startMinutes = `0${startMinutes}`};
-            if (endMinutes < 10) {endMinutes = `0${endMinutes}`};
-            let startTime = `${(startHours % 12).toString()}:${startMinutes}`;
-            let endTime = `${(endHours % 12).toString()}:${endMinutes}`;
-            if (endHours > 12) {endTime += "p"};
-            return `${event.days.join().replace(",","")} ${startTime}-${endTime}`
-          }
-
-          return (
-           <div>
-             <div style={{
-               display: 'flex',
-               marginTop: 10
-             }}>
-               <Typography variant="h6">Custom Events</Typography>
-             </div>
-             <table className={classes.table}>
-               <thead>
-                 <tr>
-                   <th>Color</th>
-                   <th>Edit</th>
-                   <th>Title</th>
-                   <th>Time</th>
-                 </tr>            </thead>
-               <tbody>
-                 {customEvents.map(event => {return (
-                   <tr className={classes.tr}>
-                     <td className={classes.colorPicker} width="50" height="40"><ColorPicker onColorChange={this.props.onColorChange} event={event}/></td>
-                     <td width="40"><Button onClick={() => console.log("Temp")}><Create /></Button></td>
-                     <td>{event.title}</td>
-                     <td>{getTimeString(event)}</td>
-                   </tr>
-                   )
-                 })}
-               </tbody>
-             </table>
-           </div>
-         )
-       }
-     }
+       <div>
+         <div style={{
+           display: 'flex',
+           marginTop: 10
+         }}>
+           <Typography variant="h6">Custom Events</Typography>
+         </div>
+         <table className={classes.table}>
+           <thead>
+             <tr>
+               <th>Color</th>
+               <th>Edit</th>
+               <th>Title</th>
+               <th>Time</th>
+             </tr>
+          </thead>
+          <tbody>
+             {customEvents.map(event => {return (
+               <tr className={classes.tr}>
+                 <td className={classes.colorPicker} width="50" height="40"><ColorPicker onColorChange={this.props.onColorChange} event={event}/></td>
+                 <td width="40"><Button onClick={() => console.log("Temp")}><Create /></Button></td>
+                 <td>{event.title}</td>
+                 <td>{this.getTimeString(event)}</td>
+               </tr>
+               )
+             })}
+          </tbody>
+         </table>
+       </div>
 
       </Fragment>
     )
