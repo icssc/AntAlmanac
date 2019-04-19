@@ -76,6 +76,7 @@ class DialogSelect extends Component {
       },
       anchorEl: null
     });
+    this.props.handleSubmenuClose();
   };
 
   handleEventNameChange = event => {
