@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import DaySelector from "./DaySelector";
 import {
   Button,
@@ -24,19 +24,6 @@ const styles = () => ({
     minWidth: 120
   }
 });
-
-function EventName(props) {
-  return (
-    <FormControl>
-      <InputLabel htmlFor="EventNameInput">Event Name</InputLabel>
-      <Input
-        required={true}
-        onChange={props.userEventName}
-        id="EventNameInput"
-      />
-    </FormControl>
-  );
-}
 
 function dayToNum(day) {
   switch (day) {
@@ -147,7 +134,7 @@ class DialogSelect extends Component {
     const { anchorEl } = this.state;
 
     return (
-      <div>
+      <Fragment>
         <Button disableRipple={true} className={"menu-button"} onClick={() => this.setState({ open: true })} style={{width: "100%"}}>
           <Add /> Add Custom
         </Button>
@@ -156,10 +143,15 @@ class DialogSelect extends Component {
           onClose={this.handleClickAway}
         >
           <DialogContent>
-            <EventName
-              value={this.state.eventName}
-              userEventName={this.handleEventNameChange}
-            />
+            <FormControl>
+              <InputLabel htmlFor="EventNameInput">Event Name</InputLabel>
+              <Input
+                required={true}
+                value={this.state.eventName}
+                onChange={this.handleEventNameChange}
+                id="EventNameInput"
+              />
+            </FormControl>
             <form noValidate>
               <TextField
                 onChange={this.handleStartTimeChange}
@@ -215,9 +207,6 @@ class DialogSelect extends Component {
               open={Boolean(anchorEl)}
               onClose={() => this.setState({ anchorEl: null })}
             >
-              <MenuItem value={4} onClick={() => this.handleClose(4)}>
-                All Schedules
-              </MenuItem>
               <MenuItem value={0} onClick={() => this.handleClose(0)}>
                 Schedule 1
               </MenuItem>
@@ -230,10 +219,13 @@ class DialogSelect extends Component {
               <MenuItem value={3} onClick={() => this.handleClose(3)}>
                 Schedule 4
               </MenuItem>
+              <MenuItem value={4} onClick={() => this.handleClose(4)}>
+                All Schedules
+              </MenuItem>
             </Menu>
           </DialogActions>
         </Dialog>
-      </div>
+      </Fragment>
     );
   }
 }

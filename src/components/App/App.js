@@ -354,7 +354,7 @@ class App extends Component {
     let allSchedules = [0, 1, 2, 3]
     let schedulesToMoveTo = []
     //if move to all schedules
-    if (moveTo === -1) {
+    if (moveTo === 4) {
       allSchedules.forEach((schedule) => {
         if (schedule !== this.state.currentScheduleIndex) {
           schedulesToMoveTo.push(schedule)

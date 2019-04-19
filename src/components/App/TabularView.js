@@ -194,7 +194,8 @@ class TabularView extends Component {
           className={classes.container}
           style={{display:'inline-flex',
             width:"100%",
-            position: "relative",}}>
+            position: "relative",
+            marginBottom: 10}}>
 
           <Typography
               variant="title"
@@ -225,7 +226,7 @@ class TabularView extends Component {
             onClose={this.handleDropdownClose}>
 
             {[0, 1, 2, 3].map( (index) => {
-              return <MenuItem disabled={this.props.scheduleIndex==index} onClick={ () => {
+              return <MenuItem disabled={this.props.scheduleIndex===index} onClick={ () => {
                 this.props.onCopySchedule(index)
                 this.handleDropdownClose()}}>
                 Copy to Schedule {index+1}
@@ -233,7 +234,7 @@ class TabularView extends Component {
             })}
 
             <MenuItem onClick={ () => {
-              this.props.onCopySchedule(-1)
+              this.props.onCopySchedule(4)
               this.handleDropdownClose()}}>
               Copy to All Schedules
             </MenuItem>
