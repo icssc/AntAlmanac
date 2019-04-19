@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import ColorPicker from './colorPicker'
-import {Typography} from "@material-ui/core";
+import {Button, Menu, MenuItem, Typography} from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
 import rmpData from '../CoursePane/RMP.json'
 import locations from '../CoursePane/locations.json'
@@ -89,7 +89,8 @@ class TabularView extends Component {
     super(props);
 
     this.state = {
-     showF:false
+      showF: false,
+      anchorEl: null
     };
   }
   redirectRMP = (e, name) => {
@@ -144,10 +145,17 @@ class TabularView extends Component {
       return section
   }
 
+  handleDropdownOpen = event => {
+    this.setState({anchorEl: event.currentTarget})
+  }
+
+  handleDropdownClose = () => {
+    this.setState({anchorEl: null})
+  }
+
   render () {
     const {classes} = this.props;
     const events = this.props.eventsInCalendar;
-    console.log("dddd",events);
     let result = [];
     for (let item of events)
       if (!item.isCustomEvent && result.find(function (element) {return element.courseCode === item.courseCode}) === undefined)
@@ -179,15 +187,60 @@ class TabularView extends Component {
         totalUnits += Number(course.section.units);
     }
 
+
     return (
       <Fragment>
-        <div className={classes.container}>
-          <Typography variant="title">
+        <div
+          className={classes.container}
+          style={{display:'inline-flex',
+            width:"100%",
+            position: "relative",}}>
+
+          <Typography
+              variant="title"
+              style={{
+                position: "absolute",
+                width: "50%",
+                top: "50%",
+                transform: "translateY(-50%)"}}>
             Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)
           </Typography>
+
+          <Button
+            aria-owns={this.state.anchor ? 'simple-menu' : undefined}
+            aria-haspopup="true"
+            onClick={this.handleDropdownOpen}
+            style={{
+              position: "absolute",
+              top: "50%",
+              right: "0",
+              transform: "translateY(-50%)"}}>
+            Copy Schedule
+          </Button>
+
+          <Menu
+            id="copyScheduleDropdown"
+            anchorEl={this.state.anchorEl}
+            open={Boolean(this.state.anchorEl)}
+            onClose={this.handleDropdownClose}>
+
+            {[0, 1, 2, 3].map( (index) => {
+              return <MenuItem disabled={this.props.scheduleIndex==index} onClick={ () => {
+                this.props.onCopySchedule(index)
+                this.handleDropdownClose()}}>
+                Copy to Schedule {index+1}
+              </MenuItem>
+            })}
+
+            <MenuItem onClick={ () => {
+              this.props.onCopySchedule(-1)
+              this.handleDropdownClose()}}>
+              Copy to All Schedules
+            </MenuItem>
+          </Menu>
         </div>
+
         {courses.map(event => {
-          console.log(event)
           return (<div>
             <div
               style={{

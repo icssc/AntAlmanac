@@ -350,6 +350,39 @@ class App extends Component {
     }
   }
 
+  handleCopySchedule = (moveTo) => {
+    let allSchedules = [0, 1, 2, 3]
+    let schedulesToMoveTo = []
+    //if move to all schedules
+    if (moveTo === -1) {
+      allSchedules.forEach((schedule) => {
+        if (schedule !== this.state.currentScheduleIndex) {
+          schedulesToMoveTo.push(schedule)
+        }})}
+    else {
+      schedulesToMoveTo.push(moveTo)
+    }
+
+    // for each schedule index to add to
+    let newCourses = [];
+    schedulesToMoveTo.forEach((schedule) => {
+      newCourses = newCourses.concat(this.getClassesAfterCopyingTo(schedule))
+    this.setState({courseEvents: this.state.courseEvents.concat(newCourses)})
+    })
+  }
+
+  getClassesAfterCopyingTo = (moveTo) => {
+    let moveFrom = this.state.currentScheduleIndex
+    const oldClasses = this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === moveFrom));
+    let newCourses = [];
+    oldClasses.forEach(oldClass => {
+      let newClass = Object.assign({}, oldClass)
+      newClass.scheduleIndex = moveTo
+      newCourses.push(newClass)
+    })
+    return newCourses
+  }
+
   handleDismissSearchResults = () => {
     this.setState({showSearch: true, formData: null})
   }
@@ -420,6 +453,7 @@ class App extends Component {
             </div>
 
             <LoadSaveScheduleFunctionality onLoad={this.handleLoad} onSave={this.handleSave}/>
+
             <Tooltip title="Give Us Feedback!">
               <a
                 style={{color: 'white', marginLeft: 16}}
@@ -468,6 +502,7 @@ class App extends Component {
                 isDesktop={this.state.isDesktop}
                 currentScheduleIndex={this.state.currentScheduleIndex}
                 onUndo={this.handleUndo}
+                onCopySchedule = {this.handleCopySchedule}
                 onColorChange={this.handleColorChange}
                 onClassDelete={this.handleClassDelete}
                 onScheduleChange={this.handleScheduleChange}
@@ -505,7 +540,9 @@ class App extends Component {
                   <TabularView
                     eventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}
                     onColorChange={this.handleColorChange}
-                    scheduleIndex={this.state.currentScheduleIndex}/>
+                    scheduleIndex={this.state.currentScheduleIndex}
+                    onCopySchedule={this.handleCopySchedule}
+                  />
                   :
                   (
                     this.state.showSearch ?
