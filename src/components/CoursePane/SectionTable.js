@@ -131,9 +131,6 @@ class SectionTable extends Component {
       //window.open("https://www.ratemyprofessors.com" + nameP);
     else
       window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
-      //window.open(
-      //  `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
-      //);
   };
 
   linkRMP = name => {
