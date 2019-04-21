@@ -99,11 +99,13 @@ class TabularView extends Component {
     var lastName = name.substring(0, name.indexOf(','))
     var nameP = rmpData[0][name]
     if (nameP !== undefined)
-      window.open('https://www.ratemyprofessors.com' + nameP)
+      window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
+      //window.open('https://www.ratemyprofessors.com' + nameP);
     else
-      window.open(
-        `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
-      )
+      window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
+      //window.open(
+      //  `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
+      //)
   }
 
   linkRMP = name => {
