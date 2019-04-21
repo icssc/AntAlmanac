@@ -546,6 +546,8 @@ class App extends Component {
                     onColorChange={this.handleColorChange}
                     scheduleIndex={this.state.currentScheduleIndex}
                     onCopySchedule={this.handleCopySchedule}
+                    onAddCustomEvent={this.props.onAddCustomEvent}
+                    onClassDelete={this.handleClassDelete}
                   />
                   :
                   (

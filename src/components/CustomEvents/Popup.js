@@ -10,10 +10,11 @@ import {
   Menu,
   FormControl,
   Input,
-  InputLabel
+  InputLabel,
+  Typography
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import { Add } from "@material-ui/icons";
+import { Add, Create } from "@material-ui/icons";
 
 const styles = () => ({
   container: {
@@ -45,9 +46,9 @@ class DialogSelect extends Component {
     super(props);
     this.state = {
       open: false,
-      start: "10:30",
-      end: "15:30",
-      eventName: "Untitled",
+      start: this.props.editMode ? this.props.event.start.toTimeString().slice(0,5) : "10:30",
+      end: this.props.editMode ? this.props.event.end.toTimeString().slice(0,5) : "15:30",
+      eventName: this.props.editMode ? this.props.event.title : null,
       days: {
         monday: false,
         tuesday: false,
@@ -64,9 +65,9 @@ class DialogSelect extends Component {
     if (calendarIndex !== -1) this.handleAddToCalendar(calendarIndex);
     this.setState({
       open: false,
-      start: "10:30",
-      end: "15:30",
-      eventName: "Untitled",
+      start: this.props.editMode ? this.props.event.start.toTimeString().slice(0,5) : "10:30",
+      end: this.props.editMode ? this.props.event.end.toTimeString().slice(0,5) : "15:30",
+      eventName: this.props.editMode ? this.props.event.title : null,
       days: {
         monday: false,
         tuesday: false,
@@ -95,29 +96,7 @@ class DialogSelect extends Component {
   };
 
   handleAddToCalendar = scheduleIndex => {
-    const startHour = parseInt(this.state.start.slice(0, 2), 10);
-    const startMin = parseInt(this.state.start.slice(3, 5), 10);
-    const endHour = parseInt(this.state.end.slice(0, 2), 10);
-    const endMin = parseInt(this.state.end.slice(3, 5), 10);
-
-    const events = [];
-    const id = Math.floor(Math.random() * 1000000);
-
-    Object.keys(this.state.days).forEach(day => {
-      if (this.state.days[day]) {
-        events.push({
-          color: "#551a8b",
-          title: this.state.eventName,
-          scheduleIndex: scheduleIndex,
-          start: new Date(2018, 0, dayToNum(day), startHour, startMin),
-          end: new Date(2018, 0, dayToNum(day), endHour, endMin),
-          isCustomEvent: true,
-          customEventID: id
-        });
-      }
-    });
-
-    if (events.length > 0) this.props.onAddCustomEvent(events)
+    this.props.editMode ? this.editEvent(scheduleIndex) : this.addEvent(scheduleIndex);
   };
 
   handleAddEventButtonClicked = (event) => {
@@ -130,13 +109,48 @@ class DialogSelect extends Component {
     });
   };
 
+  addEvent = scheduleIndex => {
+    const startHour = parseInt(this.state.start.slice(0, 2), 10);
+    const startMin = parseInt(this.state.start.slice(3, 5), 10);
+    const endHour = parseInt(this.state.end.slice(0, 2), 10);
+    const endMin = parseInt(this.state.end.slice(3, 5), 10);
+
+    const events = [];
+    const id = Math.floor(Math.random() * 1000000);
+
+    Object.keys(this.state.days).forEach(day => {
+      if (this.state.days[day]) {
+        events.push({
+          color: "#551a8b",
+          title: this.state.eventName ? this.state.eventName : "Untitled",
+          scheduleIndex: scheduleIndex,
+          start: new Date(2018, 0, dayToNum(day), startHour, startMin),
+          end: new Date(2018, 0, dayToNum(day), endHour, endMin),
+          isCustomEvent: true,
+          customEventID: id
+        });
+      }
+    });
+
+    if (events.length > 0) this.props.onAddCustomEvent(events)
+  };
+
+  editEvent = scheduleIndex => {
+    this.addEvent(scheduleIndex);
+    this.props.onClassDelete(this.props.event);
+  };
+
   render() {
     const { anchorEl } = this.state;
 
     return (
       <Fragment>
         <Button disableRipple={true} className={"menu-button"} onClick={() => this.setState({ open: true })} style={{width: "100%"}}>
-          <Add /> Add Custom
+          {this.props.editMode ? (
+              <Create />
+            ) : (
+              <div><Add/>Add Custom</div>
+          )}
         </Button>
         <Dialog
           open={this.state.open}
@@ -158,7 +172,7 @@ class DialogSelect extends Component {
                 id="time"
                 label="Start Time"
                 type="time"
-                defaultValue="10:30"
+                defaultValue={this.state.start}
                 InputLabelProps={{
                   shrink: true
                 }}
@@ -173,7 +187,7 @@ class DialogSelect extends Component {
                 id="time"
                 label="End Time"
                 type="time"
-                defaultValue="15:30"
+                defaultValue={this.state.end}
                 InputLabelProps={{
                   shrink: true
                 }}
@@ -184,7 +198,7 @@ class DialogSelect extends Component {
                 style={{marginRight: 5, marginTop:5}}
               />
             </form>
-            <DaySelector onSelectDay={this.handleDayChange} />
+            <DaySelector onSelectDay={this.handleDayChange} event={this.props.event}/>
 
           </DialogContent>
 
@@ -200,7 +214,7 @@ class DialogSelect extends Component {
               style={{boxShadow:"none"}}
             >
               {" "}
-              Add Event
+              {this.props.editMode ? "Save Changes" : "Add Event"}
             </Button>
             <Menu
               anchorEl={anchorEl}

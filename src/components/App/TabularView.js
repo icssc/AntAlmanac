@@ -10,6 +10,7 @@ import Notification from '../Notification'
 import {withStyles} from '@material-ui/core/styles';
 import { Create } from "@material-ui/icons";
 import MouseOverPopover from "../CoursePane/MouseOverPopover";
+import CustomEventsDialog from '../CustomEvents/Popup';
 
 const styles = {
   colorPicker: {
@@ -182,7 +183,7 @@ class TabularView extends Component {
         if ( ce === undefined) {
           item.days = [day];
           customEvents.push(item);
-        } else {ce.days.push(day)}; //
+        } else {ce.days.push(day)};
       }
 
     const courses = [];
@@ -373,35 +374,42 @@ NOR: ${secEach.numNewOnlyReserved}`}
           </div>)
         })}
 
-       <div>
-         <div style={{
-           display: 'flex',
-           marginTop: 10
-         }}>
-           <Typography variant="h6">Custom Events</Typography>
-         </div>
-         <table className={classes.table}>
-           <thead>
-             <tr>
-               <th>Color</th>
-               <th>Edit</th>
-               <th>Title</th>
-               <th>Time</th>
-             </tr>
-          </thead>
-          <tbody>
-             {customEvents.map(event => {return (
+       {(customEvents.length === 0) ? null :
+         <div>
+           <div style={{display: 'flex', marginTop: 40}}>
+             <Typography variant="h6">Custom Events</Typography>
+           </div>
+           <table className={classes.table}>
+             <thead>
+               <tr>
+                 <th>Color</th>
+                 <th>Edit</th>
+                 <th>Title</th>
+                 <th>Time</th>
+               </tr>
+            </thead>
+            <tbody>{customEvents.map(event => {return (
                <tr className={classes.tr}>
-                 <td className={classes.colorPicker} width="50" height="40"><ColorPicker onColorChange={this.props.onColorChange} event={event}/></td>
-                 <td width="40"><Button onClick={() => console.log("Temp")}><Create /></Button></td>
+                 <td className={classes.colorPicker} width="50" height="40">
+                  <ColorPicker onColorChange={this.props.onColorChange} event={event}/>
+                 </td>
+                 <td width="40">
+                  <Button>
+                    <CustomEventsDialog
+                      editMode={true}
+                      event={event}
+                      onClassDelete={this.props.onClassDelete}
+                      onAddCustomEvent={this.props.onAddCustomEvent}
+                      />
+                  </Button>
+                 </td>
                  <td>{event.title}</td>
                  <td>{this.getTimeString(event)}</td>
                </tr>
-               )
-             })}
-          </tbody>
-         </table>
-       </div>
+             )})}
+            </tbody>
+           </table>
+       </div>}
 
       </Fragment>
     )
