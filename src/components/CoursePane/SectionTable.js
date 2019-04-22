@@ -124,38 +124,6 @@ class SectionTable extends Component {
     return this.props.courseDetails !== nextProps.courseDetails;
   }
 
-  // redirectRMP = async name => {
-  //   const lastName = name.substring(0, name.indexOf(","));
-  //   const nameP = rmpData[0][name];
-  //   if (nameP !== undefined)
-  //     window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
-  //     //window.open("https://www.ratemyprofessors.com" + nameP);
-  //   else
-  //     window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
-  // };
-
-  // linkRMP = name => {
-  //   const rmpStyle = {
-  //     textDecoration: "underline",
-  //     color: "#0645AD",
-  //     cursor: "pointer"
-  //   };
-  //   return name.map(item => {
-  //     if (item !== "STAFF") {
-  //       return (
-  //         <div
-  //           style={rmpStyle}
-  //           onClick={() => {
-  //             this.redirectRMP(item);
-  //           }}
-  //         >
-  //           {item}
-  //         </div>
-  //       );
-  //     } else return item;
-  //   });
-  // };
-
   disableTBA = section => {
     //console.log(section.meetings[0] != "TBA", section.meetings[0]);
     let test = false;

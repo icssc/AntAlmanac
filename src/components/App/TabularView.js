@@ -93,40 +93,6 @@ class TabularView extends Component {
      showF:false
     };
   }
-  // redirectRMP = (e, name) => {
-  //   if (!e) e = window.event;
-  //   if (e.stopPropagation) e.stopPropagation()
-
-  //   var lastName = name.substring(0, name.indexOf(','))
-  //   var nameP = rmpData[0][name]
-  //   if (nameP !== undefined)
-  //     window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
-  //     //window.open('https://www.ratemyprofessors.com' + nameP);
-  //   else
-  //     window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
-  // }
-
-  // linkRMP = name => {
-  //   const rmpStyle = {
-  //     textDecoration: 'underline',
-  //     color: '#0645AD',
-  //     cursor: 'pointer'
-  //   }
-  //   return name.map(item => {
-  //     if (item !== 'STAFF') {
-  //       return (
-  //         <div
-  //           style={rmpStyle}
-  //           onClick={e => {
-  //             this.redirectRMP(e, item)
-  //           }}
-  //         >
-  //           {item}
-  //         </div>
-  //       )
-  //     } else return item
-  //   })
-  // }
 
   getMapLink = location => {
     try {
