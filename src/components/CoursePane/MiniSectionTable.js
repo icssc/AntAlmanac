@@ -13,6 +13,7 @@ import {
   Add,
   ArrowDropDown
 } from '@material-ui/icons'
+import LinkToEEE from "./LinkToEEE";
 
 const styles = {
   table: {
@@ -97,42 +98,42 @@ class ScheduleAddSelector extends Component {
       );
     }
   };
+  
+  // redirectRMP = (e, name) => {
+  //   if (!e) e = window.event;
+  //   e.cancelBubble = true;
+  //   if (e.stopPropagation) e.stopPropagation();
 
-  redirectRMP = (e, name) => {
-    if (!e) e = window.event;
-    e.cancelBubble = true;
-    if (e.stopPropagation) e.stopPropagation();
+  //   var lastName = name.substring(0, name.indexOf(","));
+  //   var nameP = rmpData[0][name];
+  //   if (nameP !== undefined)
+  //     window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
+  //     //window.open("https://www.ratemyprofessors.com" + nameP);
+  //   else
+  //     window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
+  // };
 
-    var lastName = name.substring(0, name.indexOf(","));
-    var nameP = rmpData[0][name];
-    if (nameP !== undefined)
-      window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
-      //window.open("https://www.ratemyprofessors.com" + nameP);
-    else
-      window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
-  };
-
-  linkRMP = name => {
-    const rmpStyle = {
-      textDecoration: "underline",
-      color: "#0645AD",
-      cursor: "pointer"
-    };
-    return name.map(item => {
-      if (item !== "STAFF") {
-        return (
-          <div
-            style={rmpStyle}
-            onClick={e => {
-              this.redirectRMP(e, item);
-            }}
-          >
-            {item}
-          </div>
-        );
-      } else return item;
-    });
-  };
+  // linkRMP = name => {
+  //   const rmpStyle = {
+  //     textDecoration: "underline",
+  //     color: "#0645AD",
+  //     cursor: "pointer"
+  //   };
+  //   return name.map(item => {
+  //     if (item !== "STAFF") {
+  //       return (
+  //         <div
+  //           style={rmpStyle}
+  //           onClick={e => {
+  //             this.redirectRMP(e, item);
+  //           }}
+  //         >
+  //           {item}
+  //         </div>
+  //       );
+  //     } else return item;
+  //   });
+  // };
 
   disableTBA = section => {
     var test = false;
@@ -204,7 +205,10 @@ Sec: ${section.sectionCode}
 Units: ${section.units}`}
           </td>
           <td className={classes.multiline}>
-            { this.linkRMP(section.instructors) }
+          <LinkToEEE className={classes.multiline}>
+            {/*this.linkRMP(section.instructors)*/ }
+            {section.instructors}
+          </LinkToEEE>
               {/* section.instructors.join("\n")*/}
           </td>
           <td className={classes.multiline}>
