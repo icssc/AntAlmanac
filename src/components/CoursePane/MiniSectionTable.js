@@ -1,7 +1,6 @@
 import React, {Component, Fragment} from "react";
 import {Menu, MenuItem, IconButton, Typography} from "@material-ui/core";
 import {withStyles} from "@material-ui/core/styles";
-import rmpData from "./RMP.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import POPOVER from "./PopOver";
 import Notification from '../Notification';
@@ -13,7 +12,7 @@ import {
   Add,
   ArrowDropDown
 } from '@material-ui/icons'
-import LinkToEEE from "./LinkToEEE";
+import Instructors from "./Instructors";
 
 const styles = {
   table: {
@@ -169,10 +168,10 @@ Sec: ${section.sectionCode}
 Units: ${section.units}`}
           </td>
           <td className={classes.multiline}>
-          <LinkToEEE className={classes.multiline}>
+          <Instructors className={classes.multiline}>
             {/*this.linkRMP(section.instructors)*/ }
             {section.instructors}
-          </LinkToEEE>
+          </Instructors>
               {/* section.instructors.join("\n")*/}
           </td>
           <td className={classes.multiline}>
@@ -182,7 +181,7 @@ Units: ${section.units}`}
             {section.meetings.map(meeting => {
               return (meeting[1] !== "ON LINE" && meeting[1] !== "TBA") ? (
                 <div>
-                  <a href={this.genMapLink(meeting[1])} target="_blank">
+                  <a href={this.genMapLink(meeting[1])} target="_blank" rel="noopener noreferrer">
                     {meeting[1]}
                   </a>
                   <br/>

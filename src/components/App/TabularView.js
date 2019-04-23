@@ -2,14 +2,13 @@ import React, { Component, Fragment } from 'react'
 import ColorPicker from './colorPicker'
 import {Button, Menu, MenuItem, Typography} from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
-import rmpData from '../CoursePane/RMP.json'
 import locations from '../CoursePane/locations.json'
 import RstrPopover from '../CoursePane/RstrPopover'
 import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
 import {withStyles} from '@material-ui/core/styles';
 import MouseOverPopover from "../CoursePane/MouseOverPopover";
-import LinkToEEE from "../CoursePane/LinkToEEE";
+import Instructors from "../CoursePane/Instructors";
 
 const styles = {
   colorPicker: {
@@ -272,9 +271,9 @@ Sec ${secEach.sectionCode}
 ${secEach.units} units`}
                         </td>
                         <td className={classes.multiline}>
-                        <LinkToEEE className={classes.multiline}>
+                        <Instructors className={classes.multiline}>
                             {secEach.instructors}
-                        </LinkToEEE>
+                        </Instructors>
                           {/* {this.linkRMP(secEach.instructors)} */}
                           {/*secEach.instructors.join('\n')*/}
                         </td>
@@ -285,7 +284,7 @@ ${secEach.units} units`}
                           {secEach.meetings.map(meeting => {
                             return (meeting[1] !== 'ON LINE' && meeting[1] !== 'TBA') ? (
                               <div>
-                                <a href={this.getMapLink(meeting[1])} target="_blank">
+                                <a href={this.getMapLink(meeting[1])} target="_blank" rel="noopener noreferrer">
                                   {meeting[1]}
                                 </a>
                                 <br/>

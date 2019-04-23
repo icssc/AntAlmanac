@@ -1,12 +1,11 @@
 import React, {Component, Fragment} from "react";
 import AddCircle from "@material-ui/icons/AddCircle";
 import {IconButton, Menu, MenuItem} from "@material-ui/core";
-import rmpData from "./RMP.json";
 import Notification from '../Notification'
 import RstrPopover from "./RstrPopover"
 import locations from "./locations.json"
 import {withStyles} from "@material-ui/core/styles";
-import LinkToEEE from "./LinkToEEE";
+import Instructors from "./Instructors";
 
 const styles = {
   table: {
@@ -192,7 +191,10 @@ Sec ${section.sectionCode}
 ${section.units} units`}
               </td>
               <td className={classes.multiline}>
-                {section.instructors.join("\n")}
+                <Instructors className={classes.multiline}>
+                  {/*this.linkRMP(section.instructors)*/ }
+                  {section.instructors}
+                </Instructors>
               </td>
               <td className={classes.multiline}>
                 {section.meetings.map(meeting => meeting[0]).join("\n")}
@@ -201,7 +203,7 @@ ${section.units} units`}
                 {section.meetings.map(meeting => {
                   return (meeting[1] !== "ON LINE") ? (
                     <div>
-                      <a href={this.genMapLink(meeting[1])} target="_blank">
+                      <a href={this.genMapLink(meeting[1])} target="_blank" rel="noopener noreferrer">
                         {meeting[1]}
                       </a>
                       <br/>

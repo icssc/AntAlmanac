@@ -13,7 +13,7 @@ const styles = theme => ({
   },
 });
 
-class LinkToEEE extends React.Component {
+class Instructors extends React.Component {
   state = {
     anchorEl: null,
     mouseInPopover: false
@@ -25,14 +25,14 @@ class LinkToEEE extends React.Component {
     setTimeout(() => {
       if (this.state.mouseInPopover)
         this.setState({ anchorEl: oldTarget });
-    }, 500);
+    }, 1000);
   };
 
   handlePopoverClose = () => {
     this.setState({ anchorEl: null, mouseInPopover: false });
   };
 
-  redirectRMP = (e, name) => {
+  redirect = (e, name) => {
     if (!e) e = window.event;
     e.cancelBubble = true;
     if (e.stopPropagation) e.stopPropagation();
@@ -58,7 +58,7 @@ class LinkToEEE extends React.Component {
           <div
             style={rmpStyle}
             onClick={e => {
-              this.redirectRMP(e, item);
+              this.redirect(e, item);
             }}
           >
             {item}
@@ -104,7 +104,7 @@ class LinkToEEE extends React.Component {
           disableRestoreFocus
         >
           <Typography>
-                Link to EEE Evaluation
+            To EaterEval (Change in Settings ^)
           </Typography>
         </Popover>
       </Fragment>
@@ -112,8 +112,8 @@ class LinkToEEE extends React.Component {
   }
 }
 
-LinkToEEE.propTypes = {
+Instructors.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(LinkToEEE);
+export default withStyles(styles)(Instructors);
