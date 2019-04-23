@@ -6,6 +6,7 @@ import Notification from '../Notification'
 import RstrPopover from "./RstrPopover"
 import locations from "./locations.json"
 import {withStyles} from "@material-ui/core/styles";
+import LinkToEEE from "./LinkToEEE";
 
 const styles = {
   table: {
@@ -122,39 +123,6 @@ class SectionTable extends Component {
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     return this.props.courseDetails !== nextProps.courseDetails;
   }
-
-  redirectRMP = async name => {
-    const lastName = name.substring(0, name.indexOf(","));
-    const nameP = rmpData[0][name];
-    if (nameP !== undefined)
-      window.open("https://www.ratemyprofessors.com" + nameP);
-    else
-      window.open(
-        `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
-      );
-  };
-
-  linkRMP = name => {
-    const rmpStyle = {
-      textDecoration: "underline",
-      color: "#0645AD",
-      cursor: "pointer"
-    };
-    return name.map(item => {
-      if (item !== "STAFF") {
-        return (
-          <div
-            style={rmpStyle}
-            onClick={() => {
-              this.redirectRMP(item);
-            }}
-          >
-            {item}
-          </div>
-        );
-      } else return item;
-    });
-  };
 
   disableTBA = section => {
     //console.log(section.meetings[0] != "TBA", section.meetings[0]);
