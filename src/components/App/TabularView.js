@@ -9,6 +9,7 @@ import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
 import {withStyles} from '@material-ui/core/styles';
 import MouseOverPopover from "../CoursePane/MouseOverPopover";
+import LinkToEEE from "../CoursePane/LinkToEEE";
 
 const styles = {
   colorPicker: {
@@ -92,41 +93,6 @@ class TabularView extends Component {
       showF: false,
       anchorEl: null
     };
-  }
-  redirectRMP = (e, name) => {
-    if (!e) e = window.event;
-    if (e.stopPropagation) e.stopPropagation()
-
-    var lastName = name.substring(0, name.indexOf(','))
-    var nameP = rmpData[0][name]
-    if (nameP !== undefined)
-      window.open('https://www.ratemyprofessors.com' + nameP)
-    else
-      window.open(
-        `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
-      )
-  }
-
-  linkRMP = name => {
-    const rmpStyle = {
-      textDecoration: 'underline',
-      color: '#0645AD',
-      cursor: 'pointer'
-    }
-    return name.map(item => {
-      if (item !== 'STAFF') {
-        return (
-          <div
-            style={rmpStyle}
-            onClick={e => {
-              this.redirectRMP(e, item)
-            }}
-          >
-            {item}
-          </div>
-        )
-      } else return item
-    })
   }
 
   getMapLink = location => {
@@ -306,8 +272,11 @@ Sec ${secEach.sectionCode}
 ${secEach.units} units`}
                         </td>
                         <td className={classes.multiline}>
+                        <LinkToEEE className={classes.multiline}>
+                            {secEach.instructors}
+                        </LinkToEEE>
                           {/* {this.linkRMP(secEach.instructors)} */}
-                          {secEach.instructors.join('\n')}
+                          {/*secEach.instructors.join('\n')*/}
                         </td>
                         <td className={classes.multiline}>
                           {secEach.meetings.map(meeting => meeting[0]).join('\n')}
