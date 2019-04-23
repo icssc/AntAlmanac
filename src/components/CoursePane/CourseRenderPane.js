@@ -56,6 +56,7 @@ class CourseRenderPane extends Component {
   };
 
   getGrid(SOCObject) {
+    console.log("gerg",SOCObject);
     if ("departments" in SOCObject) {
       return (
         <SchoolDeptCard
@@ -96,7 +97,6 @@ class CourseRenderPane extends Component {
               " | " +
               SOCObject.name[2]
             }
-            formData={this.props.formData}
             courseDetails={SOCObject}
             onAddClass={this.props.onAddClass}
             termName={this.props.termName}
@@ -146,7 +146,7 @@ class CourseRenderPane extends Component {
               alignItems: "center"
             }}
           >
-            <img src={NoNothing} alt="" />
+            <img src={NoNothing} alt="your face" />
           </div>
         ) : (
           <Grid container spacing={16}>

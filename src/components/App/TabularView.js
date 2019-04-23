@@ -1,97 +1,57 @@
 import React, { Component, Fragment } from 'react'
 import ColorPicker from './colorPicker'
-import {Button, Menu, MenuItem, Typography} from "@material-ui/core";
+import {Typography} from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
+import rmpData from '../CoursePane/RMP.json'
 import locations from '../CoursePane/locations.json'
 import RstrPopover from '../CoursePane/RstrPopover'
 import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
-import {withStyles} from '@material-ui/core/styles';
-import MouseOverPopover from "../CoursePane/MouseOverPopover";
-import Instructors from "../CoursePane/Instructors";
-
-const styles = {
-  colorPicker: {
-    '& > div': {
-      height: '1.5rem',
-      width: '1.5rem',
-      borderRadius: '50%',
-      margin: 'auto',
-    }
-  },
-  table: {
-    borderCollapse: "collapse",
-    boxSizing: "border-box",
-    width: "100%",
-    marginTop: '0.285rem',
-
-    "& thead": {
-      position: "sticky",
-
-      "& th": {
-        border: "1px solid rgb(222, 226, 230)",
-        fontSize: "0.85rem",
-        fontWeight: "500",
-        color: "rgba(0, 0, 0, 0.54)",
-        textAlign: "left",
-        verticalAlign: "bottom"
-      }
-    }
-  },
-  tr: {
-    fontSize: "0.85rem",
-    '&:nth-child(odd)': {
-      backgroundColor: '#f5f5f5'
-    },
-
-    "&:hover": {
-      color: "blueviolet"
-    },
-
-    "& td": {
-      border: "1px solid rgb(222, 226, 230)",
-      textAlign: "left",
-      verticalAlign: "top",
-    },
-
-    "& $colorPicker": {
-      verticalAlign: 'middle'
-    }
-  },
-  open: {
-    color: '#00c853'
-  },
-  waitl: {
-    color: '#1c44b2'
-  },
-  full: {
-    color: '#e53935'
-  },
-  multiline: {
-    whiteSpace: 'pre'
-  },
-  Act: {color: '#c87137'},
-  Col: {color: '#ff40b5'},
-  Dis: {color: '#8d63f0'},
-  Fld: {color: '#1ac805'},
-  Lab: {color: '#1abbe9'},
-  Lec: {color: '#d40000'},
-  Qiz: {color: '#8e5c41'},
-  Res: {color: '#ff2466'},
-  Sem: {color: '#2155ff'},
-  Stu: {color: '#179523'},
-  Tap: {color: '#8d2df0'},
-  Tut: {color: '#ffc705'}
-};
+import FinalSwitch from './FinalSwitch'
 
 class TabularView extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      showF: false,
-      anchorEl: null
+     showF:false
     };
+  }
+  redirectRMP = (e, name) => {
+    if (!e) e = window.event
+    e.cancelBubble = true
+    if (e.stopPropagation) e.stopPropagation()
+
+    var lastName = name.substring(0, name.indexOf(','))
+    var nameP = rmpData[0][name]
+    if (nameP !== undefined)
+      window.open('https://www.ratemyprofessors.com' + nameP)
+    else
+      window.open(
+        `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
+      )
+  }
+
+  linkRMP = name => {
+    const rmpStyle = {
+      textDecoration: 'underline',
+      color: '#0645AD',
+      cursor: 'pointer'
+    }
+    return name.map(item => {
+      if (item !== 'STAFF') {
+        return (
+          <div
+            style={rmpStyle}
+            onClick={e => {
+              this.redirectRMP(e, item)
+            }}
+          >
+            {item}
+          </div>
+        )
+      } else return item
+    })
   }
 
   getMapLink = location => {
@@ -110,103 +70,92 @@ class TabularView extends Component {
       return section
   }
 
-  handleDropdownOpen = event => {
-    this.setState({anchorEl: event.currentTarget})
-  }
-
-  handleDropdownClose = () => {
-    this.setState({anchorEl: null})
-  }
+ showFinal =schedule=>
+ {
+   this.setState({showFinal:!this.state.showFinal},()=>{
+     if(this.state.showFinal)
+     this.props.displayFinal(schedule);
+   })
+ }
 
   render () {
-    const {classes} = this.props;
-    const events = this.props.eventsInCalendar;
+
+    const events = this.props.classEventsInCalendar
+
     let result = [];
+    let finalSchedule =[];
     for (let item of events)
       if (!item.isCustomEvent && result.find(function (element) {return element.courseCode === item.courseCode}) === undefined)
         result.push(item);
 
-    const courses = [];
+    const classes = [];
     let totalUnits = 0;
 
     for (let course of result) {
-      let foundIndex = courses.findIndex(function (element) {
+      let foundIndex = classes.findIndex(function (element) {
         return (course.name.join() === element.name.join() && element.courseTerm === course.courseTerm)
       })
 
+      let final = course.section.finalExam;
+
+      if(final.length>5)
+      {
+        let [,,, date, start, startMin, end, endMin, ampm] = final.match(/([A-za-z]+) *(\d{1,2}) *([A-za-z]+) *(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
+        start = parseInt(start, 10);
+        startMin = parseInt(startMin, 10);
+        end = parseInt(end, 10);
+        endMin = parseInt(endMin, 10);
+        date = [date.includes('M'), date.includes('Tu'), date.includes('W'), date.includes('Th'), date.includes('F')];
+        if (ampm === 'p' && end !== 12) {
+          start += 12;
+          end += 12;
+          if (start > end) start -= 12;
+        }
+
+        date.forEach((shouldBeInCal, index) => {
+          if(shouldBeInCal)
+          finalSchedule.push({
+            title:course.title,
+            courseType: "Fin",
+            courseCode:course.courseCode,
+            location:course.location,
+            color:course.color,
+            isCustomEvent:false,
+            start: new Date(2018, 0, index + 1, start, startMin),
+            end: new Date(2018, 0, index + 1, end, endMin),
+          })
+        });
+      }
+
       if (foundIndex === -1) {
-        courses.push({
+        classes.push({
             name: course.name,
             lecAndDis: [course],
-            prerequisiteLink:course.prerequisiteLink,
             final:course.section.finalExam,
             //  courseID:event.courseID,
             courseTerm: course.courseTerm
           }
         )
       } else {
-        courses[foundIndex].lecAndDis.push(course)
+        classes[foundIndex].lecAndDis.push(course)
       }
 
       if (!isNaN(Number(course.section.units)))
         totalUnits += Number(course.section.units);
     }
 
-
+   console.log(classes,"plese");
     return (
       <Fragment>
-        <div
-          className={classes.container}
-          style={{display:'inline-flex',
-            width:"100%",
-            position: "relative",
-            marginBottom: 10}}>
-
-          <Typography
-              variant="title"
-              style={{
-                position: "absolute",
-                width: "50%",
-                top: "50%",
-                transform: "translateY(-50%)"}}>
+        <div className={classes.container}>
+          <Typography variant="title">
             Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)
           </Typography>
-
-          <Button
-            aria-owns={this.state.anchor ? 'simple-menu' : undefined}
-            aria-haspopup="true"
-            onClick={this.handleDropdownOpen}
-            style={{
-              position: "absolute",
-              top: "50%",
-              right: "0",
-              transform: "translateY(-50%)"}}>
-            Copy Schedule
-          </Button>
-
-          <Menu
-            id="copyScheduleDropdown"
-            anchorEl={this.state.anchorEl}
-            open={Boolean(this.state.anchorEl)}
-            onClose={this.handleDropdownClose}>
-
-            {[0, 1, 2, 3].map( (index) => {
-              return <MenuItem disabled={this.props.scheduleIndex===index} onClick={ () => {
-                this.props.onCopySchedule(index)
-                this.handleDropdownClose()}}>
-                Copy to Schedule {index+1}
-              </MenuItem>
-            })}
-
-            <MenuItem onClick={ () => {
-              this.props.onCopySchedule(4)
-              this.handleDropdownClose()}}>
-              Copy to All Schedules
-            </MenuItem>
-          </Menu>
+          <Typography>
+            <FinalSwitch  displayFinal={this.props.displayFinal} schedule={finalSchedule} showFinalSchedule = {this.props.showFinalSchedule}/>
+          </Typography>
         </div>
-
-        {courses.map(event => {
+        {classes.map(event => {
           return (<div>
             <div
               style={{
@@ -218,31 +167,15 @@ class TabularView extends Component {
                 name={event.name[0] + ' ' + event.name[1] + ' | ' + event.name[2]}
                 courseDetails={event}
               />
-
               <Typography variant="title" style={{ flexGrow: "2"}}>
                 &nbsp;
               </Typography>
-
               <AlmanacGraphWrapped
                 term={event.courseTerm}
                 courseDetails={event}
               />
-
-              <Typography variant="title" style={{ flexGrow: "2"}}>
-                &nbsp;
-              </Typography>
-
-              {event.prerequisiteLink ? (
-                <Typography variant='h9' style={{flexGrow: "2", marginTop: 9}}>
-                  <a target="blank" style={{textDecoration: "none", color: "#72a9ed"}}
-                     href={event.prerequisiteLink} rel="noopener noreferrer">
-                    Prerequisites
-                  </a>
-                </Typography>
-              ) : <Fragment/>
-              }
             </div>
-            <table className={classes.table}>
+            <table>
               <thead>
               <tr>
                 <th>Color</th>
@@ -259,32 +192,28 @@ class TabularView extends Component {
               <tbody>{
                 event.lecAndDis.map(
                   item => {
-                    const secEach = item.section;
-
+                    const secEach = item.section
                     return (
-                      <tr className={classes.tr}>
-                        <td className={classes.colorPicker}><ColorPicker onColorChange={this.props.onColorChange} event={item}/></td>
+                      <tr>
+                        <ColorPicker displayFinal={this.props.displayFinal} schedule={finalSchedule} colorChange={this.props.colorChange} event={item}/>
                         <td>{secEach.classCode}</td>
-                        <td className={classes.multiline + " " + classes[secEach.classType]}>
+                        <td className="multiline">
                           {`${secEach.classType}
 Sec ${secEach.sectionCode}
 ${secEach.units} units`}
                         </td>
-                        <td className={classes.multiline}>
-                        <Instructors className={classes.multiline}>
-                            {secEach.instructors}
-                        </Instructors>
+                        <td className="multiline">
                           {/* {this.linkRMP(secEach.instructors)} */}
-                          {/*secEach.instructors.join('\n')*/}
+                          {secEach.instructors.join('\n')}
                         </td>
-                        <td className={classes.multiline}>
+                        <td className="multiline">
                           {secEach.meetings.map(meeting => meeting[0]).join('\n')}
                         </td>
-                        <td className={classes.multiline}>
+                        <td className="multiline">
                           {secEach.meetings.map(meeting => {
                             return (meeting[1] !== 'ON LINE' && meeting[1] !== 'TBA') ? (
                               <div>
-                                <a href={this.getMapLink(meeting[1])} target="_blank" rel="noopener noreferrer">
+                                <a href={this.getMapLink(meeting[1])} target="_blank">
                                   {meeting[1]}
                                 </a>
                                 <br/>
@@ -294,20 +223,18 @@ ${secEach.units} units`}
                             )
                           })}
                         </td>
-                        <td>
-                  			<MouseOverPopover className={classes.multiline + " " + classes[secEach.status.toLowerCase()]}>
+                        <td className={['multiline', secEach.status].join(' ')}>
                           {`${secEach.numCurrentlyEnrolled[0]} / ${secEach.maxCapacity}
 WL: ${secEach.numOnWaitlist}
 NOR: ${secEach.numNewOnlyReserved}`}
-			</MouseOverPopover>
-
                         </td>
                         <td>
                           <RstrPopover
                             restrictions={secEach.restrictions}
                           />
                         </td>
-                        <td className={classes[secEach.status.toLowerCase()]}>{this.statusforFindingSpot(secEach.status, secEach.classCode, item.courseTerm, item.name)}</td>
+                        <td
+                          className={secEach.status}>{this.statusforFindingSpot(secEach.status, secEach.classCode, item.courseTerm, item.name)}</td>
                       </tr>
                     )
                   }
@@ -323,4 +250,4 @@ NOR: ${secEach.numNewOnlyReserved}`}
   }
 }
 
-export default withStyles(styles)(TabularView);
+export default TabularView

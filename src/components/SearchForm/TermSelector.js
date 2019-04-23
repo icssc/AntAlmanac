@@ -29,7 +29,7 @@ class TermSelector extends Component {
       <FormControl fullWidth>
         <InputLabel htmlFor="term-select">Term</InputLabel>
         <Select
-          value={this.props.term}
+          value={this.state.term}
           onChange={this.handleChange}
           inputProps={{ name: "term", id: "term-select" }}
         >

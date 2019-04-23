@@ -60,7 +60,7 @@ class AdvancedSearchTextFields extends Component {
       endTime: "",
       startTime: "",
       coursesFull: 'ANY',
-      building: this.props.params.building
+      building: ""
     }
   }
 
@@ -106,7 +106,7 @@ class AdvancedSearchTextFields extends Component {
           id="course-num"
           label="Course Number(s)"
           type="search"
-          value={this.props.params.courseNum}
+          value={this.state.courseNum}
           onChange={this.handleChange('courseNum')}
           className={classes.courseNum}
           helperText="ex. 6B, 17, 30-40"
@@ -115,7 +115,7 @@ class AdvancedSearchTextFields extends Component {
         <TextField
           id="course-code"
           label="Course Code or Range"
-          value={this.props.params.courseCode}
+          value={this.state.courseCode}
           onChange={this.handleChange('courseCode')}
           type="search"
           helperText="ex. 14200, 29000-29100"
@@ -126,7 +126,7 @@ class AdvancedSearchTextFields extends Component {
           id="instructor"
           label="Instructor"
           type="search"
-          value={this.props.params.instructor}
+          value={this.state.instructor}
           onChange={this.handleChange('instructor')}
           className={classes.instructor}
           helperText="Last name only"
@@ -135,7 +135,7 @@ class AdvancedSearchTextFields extends Component {
         <TextField
           id="units"
           label="Units"
-          value={this.props.params.units}
+          value={this.state.units}
           onChange={this.handleChange('units')}
           type="number"
           helperText="ex. 3, 4, 1.7"
@@ -145,7 +145,7 @@ class AdvancedSearchTextFields extends Component {
         <FormControl className={classes.coursesFull}>
           <InputLabel>Class Full Option</InputLabel>
           <Select
-            value={this.props.params.coursesFull}
+            value={this.state.coursesFull}
             onChange={this.handleChange('coursesFull')}
           >
             <MenuItem value={"ANY"}>Include all classes</MenuItem>
@@ -162,7 +162,6 @@ class AdvancedSearchTextFields extends Component {
               onChange={this.handleChange('online')}
               value="online"
               color="primary"
-              checked={(this.state.building === "ON")}
             />
           }
           label="Online Classes Only"
@@ -174,7 +173,6 @@ class AdvancedSearchTextFields extends Component {
             label='Starts After'
             type="time"
             InputLabelProps={{
-              //fix saved search params
               shrink: true,
             }}
             inputProps={{
@@ -189,7 +187,6 @@ class AdvancedSearchTextFields extends Component {
             label='Ends Before'
             type="time"
             InputLabelProps={{
-              //fix saved search param
               shrink: true,
             }}
             inputProps={{

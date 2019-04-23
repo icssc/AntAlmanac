@@ -7,7 +7,7 @@ import Popover from "@material-ui/core/Popover";
 import toRenderProps from "recompose/toRenderProps";
 import withState from "recompose/withState";
 import course_info from "./course_info.json";
-import { MoreVert } from "@material-ui/icons";
+import { ExpandMore } from "@material-ui/icons";
 
 const WithState = toRenderProps(withState("anchorEl", "updateAnchorEl", null));
 
@@ -21,7 +21,7 @@ function RenderPropsPopover(props) {
   const { classes, name, courseDetails } = props;
 
   function deptInfo() {
-    let a = undefined;
+    var a = undefined;
     try {
       a = course_info[courseDetails.name[0]][courseDetails.name[1]];
     } catch (err) {}
@@ -36,15 +36,18 @@ function RenderPropsPopover(props) {
         return (
           <React.Fragment>
             <Button
+              aria-owns={open ? "render-props-popover" : undefined}
+              aria-haspopup="true"
               variant="contained"
               style={{backgroundColor:"#72a9ed", boxShadow:"none"}}
               onClick={event => {
                 updateAnchorEl(event.currentTarget);
               }}
             >
-              {name}&nbsp;&nbsp;<MoreVert fontSize="small"/>
+              {name}&nbsp;&nbsp;<ExpandMore />
             </Button>
             <Popover
+              id="render-props-popover"
               open={open}
               anchorEl={anchorEl}
               onClose={() => {
@@ -61,7 +64,7 @@ function RenderPropsPopover(props) {
             >
               <Typography className={classes.typography}>
                 <div
-                  style={{ margin: 10, maxWidth: 500}}
+                  style={{ margin: 10 }}
                   className="course_info"
                   dangerouslySetInnerHTML={{
                     __html: deptInfo()

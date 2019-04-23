@@ -46,51 +46,19 @@ const styles = {
 class SearchForm extends Component {
   constructor(props) {
     super(props);
-    if (this.props.prevFormData){
-      const {
-        dept,
-        label,
-        term,
-        ge,
-        courseNum,
-        courseCode,
-        instructor,
-        units,
-        endTime,
-        startTime,
-        coursesFull,
-        building
-      } = this.props.prevFormData;
-      this.state = {
-          dept: dept,
-          label: label,
-          ge: ge,
-          term: term,
-          courseNum: courseNum,
-          courseCode: courseCode,
-          instructor: instructor,
-          units: units,
-          endTime: endTime,
-          startTime: startTime,
-          coursesFull: coursesFull,
-          building: building
-        };
-    }else{
-      this.state = {
-        dept: null,
-        label: null,
-        ge: "ANY",
-        term: "2019 Spring",
-        courseNum: "",
-        courseCode: "",
-        instructor: "",
-        units: "",
-        endTime: "",
-        startTime: "",
-        coursesFull: 'ANY',
-        building: ""
-      };
-    }
+    this.state = {
+      dept: null,
+      ge: "ANY",
+      term: "2019 Spring",
+      courseNum: "",
+      courseCode: "",
+      instructor: "",
+      units: "",
+      endTime: "",
+      startTime: "",
+      coursesFull: 'ANY',
+      building: ""
+    };
   }
 
   componentDidMount = () => {
@@ -119,10 +87,7 @@ class SearchForm extends Component {
   };
 
   setDept = dept => {
-    if(dept==null)
-      this.setState({dept: null});
-    else
-      this.setState({dept: dept.value,label:dept.label});
+    this.setState({dept: dept === null ? null : dept.value});
   };
 
   handleAdvancedSearchChange = (advancedSearchState) => {
@@ -143,15 +108,15 @@ class SearchForm extends Component {
     return (
       <div className={classes.container}>
         <div className={classes.margin}>
-          <DeptSearchBar dept={this.state.label} setDept={this.setDept}/>
+          <DeptSearchBar setDept={this.setDept}/>
         </div>
 
         <div className={classes.margin}>
-          <GESelector ge={this.state.ge} setGE={this.setGE}/>
+          <GESelector setGE={this.setGE}/>
         </div>
 
         <div className={classes.margin}>
-          <TermSelector term={this.state.term} setTerm={this.setTerm}/>
+          <TermSelector setTerm={this.setTerm}/>
         </div>
 
         <ExpansionPanel style={{marginTop: 8, marginBottom: 5}}>
@@ -159,15 +124,16 @@ class SearchForm extends Component {
             <Typography className="title">Advanced Search</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <AdvancedSearchTextFields params={this.state} onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
+            <AdvancedSearchTextFields onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
           </ExpansionPanelDetails>
         </ExpansionPanel>
 
         <div className={classes.search}>
           <Button
+            color="primary"
             variant="contained"
             onClick={() => this.props.updateFormData(this.state)}
-            style = {{backgroundColor:"#72a9ed", boxShadow:"none"}}
+            style = {{boxShadow:"none"}}
           >
             Search
           </Button>
@@ -175,8 +141,8 @@ class SearchForm extends Component {
 
         <div className={classes.new}>
           <Typography>
-            <b>New on AntAlmanac:</b><br/>
-            Download .ics files of your calendars!<br/>
+            <b><u>New on AntAlmanac:</u></b><br/>
+            Text message notifications<br/>
             Links to interactive campus map<br/>
             See finals schedules
           </Typography>

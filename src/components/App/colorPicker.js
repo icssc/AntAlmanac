@@ -1,19 +1,31 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
-import {SketchPicker} from 'react-color'
+import { SketchPicker } from 'react-color'
+const styles = theme => ({
+  typography: {
+    margin: theme.spacing.unit * 2,
+  },
+  fab: {
+    margin: theme.spacing.unit,
+  },
+  extendedIcon: {
+    marginRight: theme.spacing.unit,
+  },
+});
 
-class ColorPicker extends React.Component {
+class CPicker extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
-      anchorEl: null,
-      color: this.props.event.color
-    };
+        anchorEl: null,
+        color: this.props.event.color
+      };
   }
-
   handleClick = event => {
-    if (!event) event = window.event;
+    if (!event)  event = window.event;
     event.cancelBubble = true;
     if (event.stopPropagation) event.stopPropagation();
 
@@ -23,28 +35,30 @@ class ColorPicker extends React.Component {
   };
 
   handleClose = event => {
-    if (!event) event = window.event;
+    if (!event)  event = window.event;
+    event.cancelBubble = true;
     if (event.stopPropagation) event.stopPropagation();
     this.setState({
       anchorEl: null
     });
-  };
-
-  handleColorChange = (color) => {
-    this.setState({color: color.hex}, () => {
-      this.props.onColorChange(this.props.event, this.state.color);
+;  };
+  handleChange = (color) => {
+    this.setState({ color: color.hex },()=>{ this.props.colorChange(this.props.event,this.state.color);
     })
   };
 
   render() {
-    const {anchorEl} = this.state;
+    const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
 
     return (
-      <div
-        style={{backgroundColor: this.props.event.color}}
-        onClick={e => {this.handleClick(e)}}>
+
+  <td bgcolor={this.props.event.color}  aria-owns={open ? 'simple-popper' : undefined}
+          aria-haspopup="true"
+          onClick={e => {this.handleClick(e)}}>
+
         <Popover
+          id="simple-popper"
           open={open}
           anchorEl={anchorEl}
           onClose={this.handleClose}
@@ -54,19 +68,19 @@ class ColorPicker extends React.Component {
           }}
           transformOrigin={{
             vertical: 'top',
-            horizontal: 'left',
+            horizontal: 'center',
           }}
         >
-          <SketchPicker color={this.state.color}
-                        onChange={this.handleColorChange}/> </Popover>
-      </div>
+        <SketchPicker color={this.state.color}
+
+         onChange={ this.handleChange }/>        </Popover>
+     </td>
     );
   }
 }
 
-ColorPicker.propTypes = {
-  event: PropTypes.object.isRequired,
-  onColorChange: PropTypes.func.isRequired
+CPicker.propTypes = {
+  classes: PropTypes.object.isRequired,
 };
 
-export default ColorPicker;
+export default withStyles(styles)(CPicker);

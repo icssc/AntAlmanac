@@ -1,32 +1,36 @@
-import React, {Component} from 'react'
-import {Fragment} from 'react'
-import CssBaseline from '@material-ui/core/CssBaseline'
+import React, {Component} from "react";
+import {Fragment} from "react";
+import CssBaseline from "@material-ui/core/CssBaseline";
 import {
   Grid,
   Toolbar,
   AppBar,
+  Paper,
   Tooltip,
-  Tabs,
-  Hidden,
-  Tab
-} from '@material-ui/core'
-import Logo_tight from './logo_tight.png'
-import Logo_wide from './logo_wide.png'
-import SearchForm from '../SearchForm/SearchForm'
-import CoursePane from '../CoursePane/CoursePane'
-import Calendar from '../Calendar/Calendar'
+  Typography,
+  IconButton
+} from "@material-ui/core";
+import Logo_tight from './logo_tight.png';
+import Logo_wide from './logo_wide.png';
+
+import SearchForm from "../SearchForm/SearchForm";
+import CoursePane from "../CoursePane/CoursePane";
+import Calendar from "../Calendar/Calendar";
 import {
   Info,
+  ListAlt,
+  Dns,
+  ImportContacts,
+  FormatListBulleted,
   Search,
-  CalendarToday,
   Assignment,
   Forum
-} from '@material-ui/icons'
-import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality'
+} from "@material-ui/icons";
+import LoadSaveScheduleFunctionality from "../cacheMes/LoadSaveFunctionality";
 
 import {
   saveUserData,
-} from './FetchHelper'
+} from "./FetchHelper";
 import {
   red,
   pink,
@@ -41,8 +45,8 @@ import {
   lime,
   amber,
   blueGrey
-} from '@material-ui/core/colors'
-import TabularView from './TabularView'
+} from '@material-ui/core/colors';
+import TabularView from './TabularView';
 
 const arrayOfColors = [red[500], pink[500],
   purple[500], indigo[500],
@@ -50,54 +54,57 @@ const arrayOfColors = [red[500], pink[500],
   green[500], cyan[500],
   teal[500], lightGreen[500],
   lime[500], amber[500],
-  blueGrey[500]]
+  blueGrey[500]];
 
 class App extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
-      prevFormData: null,
       formData: null,
       currentScheduleIndex: 0,
+      view: 0,
       showSearch: true,
       courseEvents: [],
       unavailableColors: [],
       backupArray: [],
       userID: null,
-      rightPaneView: 0,
-      finalSchedule: [],
-      showFinalSchedule: false,
-      activeTab: 0
-    }
+      showTabularView: false,
+      finalSchedule:[],
+      showFinalSchedule:false
+    };
 
-    this.resizeLogo = this.resizeLogo.bind(this)
+    this.resizeLogo = this.resizeLogo.bind(this);
   }
 
   componentDidMount = () => {
-    document.addEventListener('keydown', this.handleUndo, false)
+    document.addEventListener("keydown", this.handleUndo, false);
 
-    this.resizeLogo()
-    window.addEventListener('resize', this.resizeLogo)
-  }
+    this.resizeLogo();
+    window.addEventListener("resize", this.resizeLogo);
+  };
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', this.undoEvent, false)
-    window.removeEventListener('resize', this.resizeLogo)
+    document.removeEventListener("keydown", this.undoEvent, false);
+    window.removeEventListener("resize", this.resizeLogo);
   }
 
   resizeLogo() {
-    this.setState({isDesktop: window.innerWidth > 960})
+    this.setState({ isDesktop: window.innerWidth > 1000 });
   }
 
-  handleRightPaneViewChange = (event, rightPaneView) => {
-    this.setState({rightPaneView})
-    this.setState({showSearch: true})
-    //turn off finals viewing when in search?
-    //if(this.state.rightPaneView === 1) //will be switched to search view
-    //    this.setState({showFinalSchedule:false});
+  handleToggleShowTabularView = () => {
+      this.setState(previousState => ({showTabularView: !previousState.showTabularView}),()=>{
+        if(!this.state.showTabularView)
+        this.setState({showFinalSchedule:false})
+      }
+      );
+      this.handleDismissSearchResults();
+  };
 
-  }
+  setView = viewNum => {
+    if (this.state.showSearch === false) this.setState({view: viewNum});
+  };
 
   handleLoad = userData => {
     this.setState({
@@ -106,58 +113,57 @@ class App extends Component {
       unavailableColors: userData.unavailableColors,
       backupArray: [],
     })
-  }
+  };
 
   handleSave = async userID => {
-    const eventsToSave = []
-    const map = new Map()
+    const eventsToSave = [];
+    const map = new Map();
 
     this.state.courseEvents.forEach((event) => {
       if (event.isCustomEvent || (!event.isCustomEvent && (!map.has(event.courseCode) || (map.get(event.courseCode) !== event.scheduleIndex)))) {
         if (event.isCustomEvent) {
-          eventsToSave.push(event)
+          eventsToSave.push(event);
         } else {
-          map.set(event.courseCode, event.scheduleIndex)
+          map.set(event.courseCode, event.scheduleIndex);
 
           eventsToSave.push({
             color: event.color,
             courseCode: event.courseCode,
             courseTerm: event.courseTerm,
             scheduleIndex: event.scheduleIndex,
-            isCustomEvent: false,
-
-          })
+            isCustomEvent: false
+          });
         }
       }
-    })
+    });
 
     await saveUserData(userID, {
       courseEvents: eventsToSave,
       unavailableColors: this.state.unavailableColors,
-    })
+    });
 
-    this.setState({userID: userID})
-  }
+    this.setState({userID: userID});
+  };
 
   handleUndo = (event) => {
     if (this.state.backupArray.length > 0 && (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))) {
       if (this.state.backupArray.length > 0) {
-        const lastDeletedEvent = this.state.backupArray[this.state.backupArray.length - 1]
+        const lastDeletedEvent = this.state.backupArray[this.state.backupArray.length - 1];
 
         if (lastDeletedEvent.isCustomEvent) {
           this.setState(
             {
-              currentScheduleIndex: lastDeletedEvent.scheduleIndex === 4 ? 3 : lastDeletedEvent.scheduleIndex,
+              currentScheduleIndex: lastDeletedEvent.scheduleIndex,
               backupArray: this.state.backupArray.slice(this.state.backupArray.length - 1, this.state.backupArray.length)
             },
             () => {
-              this.handleAddCustomEvent(lastDeletedEvent)
+              this.handleAddCustomEvent(lastDeletedEvent);
             }
-          )
+          );
         } else {
           this.setState(
             {
-              currentScheduleIndex: lastDeletedEvent.scheduleIndex === 4 ? 3 : lastDeletedEvent.scheduleIndex,
+              currentScheduleIndex: lastDeletedEvent.scheduleIndex,
               backupArray: this.state.backupArray.slice(0, this.state.backupArray.length - 1)
             },
             () => {
@@ -166,18 +172,16 @@ class App extends Component {
                 lastDeletedEvent.name,
                 lastDeletedEvent.scheduleIndex,
                 lastDeletedEvent.courseTerm
-              )
+              );
             }
-          )
+          );
         }
       }
     }
-  }
+  };
 
   handleClassDelete = (deletedEvent) => {
-    //TODO: Pretty much need to rewrite this actually
-    const eventsAfterRemovingItem = []
-    const newBackupArray = []
+    const eventsAfterRemovingItem = [];
 
     this.state.courseEvents.forEach(eventInArray => {
       if (eventInArray.isCustomEvent && deletedEvent.isCustomEvent
@@ -185,63 +189,50 @@ class App extends Component {
         && deletedEvent.scheduleIndex === eventInArray.scheduleIndex) {
 
         if (deletedEvent.scheduleIndex === 4 && !eventsAfterRemovingItem.includes(eventInArray)) {
-          const scheduleIndicesToAddTo = [0, 1, 2, 3].filter(index => index !== this.state.currentScheduleIndex)
-          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[0]}))
-          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[1]}))
-          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[2]}))
-          newBackupArray.push({...deletedEvent, scheduleIndex: this.state.currentScheduleIndex})
-        } else {
-          newBackupArray.push(deletedEvent)
+          const scheduleIndicesToAddTo = [0, 1, 2, 3].filter(index => index !== this.state.currentScheduleIndex);
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[0]}));
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[1]}));
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[2]}));
         }
       } else if (!eventInArray.isCustomEvent && !eventInArray.isCustomEvent
         && deletedEvent.courseCode === eventInArray.courseCode
         && deletedEvent.scheduleIndex === eventInArray.scheduleIndex) {
 
         if (deletedEvent.scheduleIndex === 4 && !eventsAfterRemovingItem.includes(eventInArray)) {
-          const scheduleIndicesToAddTo = [0, 1, 2, 3].filter(index => index !== this.state.currentScheduleIndex)
-          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[0]}))
-          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[1]}))
-          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[2]}))
-          newBackupArray.push({...deletedEvent, scheduleIndex: this.state.currentScheduleIndex})
-        } else {
-          newBackupArray.push(deletedEvent)
+          const scheduleIndicesToAddTo = [0, 1, 2, 3].filter(index => index !== this.state.currentScheduleIndex);
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[0]}));
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[1]}));
+          eventsAfterRemovingItem.push(Object.assign({}, eventInArray, {scheduleIndex: scheduleIndicesToAddTo[2]}));
         }
         const addBackColor = this.state.unavailableColors.filter(colorAndScheduleIndex => {
           return !(colorAndScheduleIndex.color === deletedEvent.color &&
             colorAndScheduleIndex.scheduleIndex === this.state.currentScheduleIndex)
-        })
-        this.setState({unavailableColors: addBackColor})
+        });
+        this.setState({unavailableColors: addBackColor});
       } else {
-        eventsAfterRemovingItem.push(eventInArray)
+        eventsAfterRemovingItem.push(eventInArray);
       }
-    })
+    });
 
-    this.setState({
-      courseEvents: eventsAfterRemovingItem,
-      backupArray: this.state.backupArray.concat(newBackupArray)
-    })
-  }
+    this.setState({courseEvents: eventsAfterRemovingItem, backupArray: this.state.backupArray.concat(deletedEvent)});
+  };
 
-  handleTabChange = (event, value) => {
-    this.setState({activeTab: value});
-  }
-
-  handleAddClass = (section, courseDetails, scheduleIndex, courseTerm) => {
+  handleAddClass = (section, name, scheduleIndex, courseTerm) => {
     //TODO: Can we speed up this operation?
     const randomColor = arrayOfColors.find(color => {
-      let isAvailableColor = true
+      let isAvailableColor = true;
       this.state.unavailableColors.forEach(colorAndScheduleIndex => {
         if (colorAndScheduleIndex.color === color && (colorAndScheduleIndex.scheduleIndex === scheduleIndex || scheduleIndex === 4)) {
-          isAvailableColor = false
-          return
+          isAvailableColor = false;
+          return;
         }
-      })
-      return isAvailableColor
-    })
+      });
+      return isAvailableColor;
+    });
 
     const doesExist = this.state.courseEvents.find(course =>
       course.courseCode === section.classCode && (course.scheduleIndex === scheduleIndex || scheduleIndex === 4)
-    )
+    );
 
     if (doesExist === undefined) {
       if (scheduleIndex === 4)
@@ -252,71 +243,48 @@ class App extends Component {
             {color: randomColor, scheduleIndex: 2},
             {color: randomColor, scheduleIndex: 3},
           ])
-        })
-      else {
-        if(scheduleIndex === 5) //add to current calendar
-          scheduleIndex = this.state.currentScheduleIndex
+        });
+      else
+      {
         this.setState({
           unavailableColors: this.state.unavailableColors.concat({
             color: randomColor,
             scheduleIndex: scheduleIndex
           })
-        })
-      }
+        })};
 
-      let newCourses = []
+      let newCourses = [];
 
       section.meetings.forEach(meeting => {
-        const timeString = meeting[0].replace(/\s/g, '')
+        const timeString = meeting[0].replace(/\s/g, "");
 
         if (timeString !== 'TBA') {
 
-          let [, dates, start, startMin, end, endMin, ampm] = timeString.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/)
+          let [, dates, start, startMin, end, endMin, ampm] = timeString.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
 
-          start = parseInt(start, 10)
-          startMin = parseInt(startMin, 10)
-          end = parseInt(end, 10)
-          endMin = parseInt(endMin, 10)
-          dates = [dates.includes('M'), dates.includes('Tu'), dates.includes('W'), dates.includes('Th'), dates.includes('F')]
+          start = parseInt(start, 10);
+          startMin = parseInt(startMin, 10);
+          end = parseInt(end, 10);
+          endMin = parseInt(endMin, 10);
+          dates = [dates.includes('M'), dates.includes('Tu'), dates.includes('W'), dates.includes('Th'), dates.includes('F')];
 
           if (ampm === 'p' && end !== 12) {
-            start += 12
-            end += 12
-            if (start > end) start -= 12
+            start += 12;
+            end += 12;
+            if (start > end) start -= 12;
           }
 
-          if (scheduleIndex === 4) {
-            for (let i = 0; i < 4; ++i) {
-              dates.forEach((shouldBeInCal, index) => {
-                if (shouldBeInCal) {
-                  const newCourse = {
-                    name: courseDetails.name,
-                    color: randomColor,
-                    courseTerm: courseTerm,
-                    title: courseDetails.name[0] + ' ' + courseDetails.name[1],
-                    location: meeting[1],
-                    section: section,
-                    courseCode: section.classCode,
-                    courseType: section.classType,
-                    start: new Date(2018, 0, index + 1, start, startMin),
-                    end: new Date(2018, 0, index + 1, end, endMin),
-                    isCustomEvent: false,
-                    scheduleIndex: i,
-                    prerequisiteLink:courseDetails.prerequisiteLink
-                  }
-
-                  newCourses.push(newCourse)
-                }
-              })
-            }
-          } else {
+          if(scheduleIndex ===4)
+          {
+          for(let i =0;i<4;++i)
+          {
             dates.forEach((shouldBeInCal, index) => {
               if (shouldBeInCal) {
                 const newCourse = {
-                  name: courseDetails.name,
+                  name: name,
                   color: randomColor,
                   courseTerm: courseTerm,
-                  title: courseDetails.name[0] + ' ' + courseDetails.name[1],
+                  title: name[0] + ' ' + name[1],
                   location: meeting[1],
                   section: section,
                   courseCode: section.classCode,
@@ -324,263 +292,256 @@ class App extends Component {
                   start: new Date(2018, 0, index + 1, start, startMin),
                   end: new Date(2018, 0, index + 1, end, endMin),
                   isCustomEvent: false,
-                  scheduleIndex: scheduleIndex
-                }
+                  scheduleIndex: i
+                };
 
-                newCourses.push(newCourse)
+                newCourses.push(newCourse);
               }
-            })
+            });
           }
         }
-      })
+        else
+        {
+          dates.forEach((shouldBeInCal, index) => {
+            if (shouldBeInCal) {
+              const newCourse = {
+                name: name,
+                color: randomColor,
+                courseTerm: courseTerm,
+                title: name[0] + ' ' + name[1],
+                location: meeting[1],
+                section: section,
+                courseCode: section.classCode,
+                courseType: section.classType,
+                start: new Date(2018, 0, index + 1, start, startMin),
+                end: new Date(2018, 0, index + 1, end, endMin),
+                isCustomEvent: false,
+                scheduleIndex: scheduleIndex
+              };
 
-      this.setState({courseEvents: this.state.courseEvents.concat(newCourses)})
+              newCourses.push(newCourse);
+            }
+          });
+        }
+        }
+      });
+
+      this.setState({courseEvents: this.state.courseEvents.concat(newCourses)});
     }
-  }
+  };
 
   handleScheduleChange = direction => {
     if (direction === 0) {
       this.setState({
-        showFinalSchedule: false, currentScheduleIndex: (this.state.currentScheduleIndex - 1 + 4) % 4
-      })
+        showFinalSchedule:false,  currentScheduleIndex: (this.state.currentScheduleIndex - 1 + 4) % 4
+      });
     } else if (direction === 1) {
       this.setState({
-        showFinalSchedule: false, currentScheduleIndex: (this.state.currentScheduleIndex + 1) % 4
-      })
+        showFinalSchedule:false, currentScheduleIndex: (this.state.currentScheduleIndex + 1) % 4
+      });
     }
-  }
-
-  handleCopySchedule = (moveTo) => {
-    let allSchedules = [0, 1, 2, 3]
-    let schedulesToMoveTo = []
-    //if move to all schedules
-    if (moveTo === 4) {
-      allSchedules.forEach((schedule) => {
-        if (schedule !== this.state.currentScheduleIndex) {
-          schedulesToMoveTo.push(schedule)
-        }})}
-    else {
-      schedulesToMoveTo.push(moveTo)
-    }
-
-    // for each schedule index to add to
-    let newCourses = [];
-    schedulesToMoveTo.forEach((schedule) => {
-      newCourses = newCourses.concat(this.getClassesAfterCopyingTo(schedule))
-    this.setState({courseEvents: this.state.courseEvents.concat(newCourses)})
-    })
-  }
-
-  getClassesAfterCopyingTo = (moveTo) => {
-    let moveFrom = this.state.currentScheduleIndex
-    const oldClasses = this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === moveFrom));
-    let newCourses = [];
-    oldClasses.forEach(oldClass => {
-      let newClass = Object.assign({}, oldClass)
-      newClass.scheduleIndex = moveTo
-      newCourses.push(newClass)
-    })
-    return newCourses
-  }
+  };
 
   handleDismissSearchResults = () => {
-    this.setState({showSearch: true, formData: null})
-  }
+    this.setState({showSearch: true});
+  };
 
   updateFormData = formData => {
     this.setState({showSearch: false}, function () {
-      this.setState({formData: formData, prevFormData: formData})
-    })
-  }
+      this.setState({formData: formData});
+    });
+  };
 
   handleAddCustomEvent = (events) => {
-    this.setState({courseEvents: this.state.courseEvents.concat(events)})
-  }
+    this.setState({courseEvents: this.state.courseEvents.concat(events)});
+  };
 
   handleClearSchedule = () => {
     if (
       window.confirm(
-        'Are you sure you want to clear all your schedules?'
+        "Are you sure you want to clear all your schedules?"
       )
     ) {
       this.setState({
         backupArray: this.state.backupArray.concat(this.state.courseEvents),
         courseEvents: [],
         unavailableColors: [],
-      })
+      });
     }
-  }
+  };
 
-  handleColorChange = (course, color) => {
-    let courses = this.state.courseEvents
+  colorChange =(course,color)=>
+  {
+    let courses = this.state.courseEvents;
 
-    if (undefined === this.state.unavailableColors.find(function (element) {
-      return element.color === color && element.scheduleIndex === course.scheduleIndex
-    })) {
-      for (var item of courses) {
-        if (item.scheduleIndex === course.scheduleIndex && item.courseCode === course.courseCode && item.courseTerm === course.courseTerm)
-          item.color = color
-      }
-      this.setState({
-        courseEvents: courses, unavailableColors: this.state.unavailableColors.concat(
-          {color: color, scheduleIndex: course.scheduleIndex})
-      })
+  if(undefined===this.state.unavailableColors.find(function(element){return element.color === color&&element.scheduleIndex===course.scheduleIndex}))
+  {
+    for(var item of courses)
+    {
+      if(item.scheduleIndex===course.scheduleIndex&& item.courseCode===course.courseCode && item.courseTerm===course.courseTerm)
+      item.color=color;
     }
+    this.setState({courseEvents:courses, unavailableColors: this.state.unavailableColors.concat(
+      {color: color, scheduleIndex: course.scheduleIndex})});
   }
+}
 
-  displayFinal = (schedule) => {
-    this.setState({
-      showFinalSchedule: !this.state.showFinalSchedule
-    }, () => {
-      if (this.state.showFinalSchedule) {
-        this.setState({finalSchedule: schedule})
+displayFinal =(schedule)=>
+{
+
+
+  this.setState({
+    showFinalSchedule:!this.state.showFinalSchedule},()=>{
+      if(this.state.showFinalSchedule)
+      {
+        console.log("finalc",schedule);
+       this.setState({finalSchedule:schedule});
       }
     });
-  }
+
+}
+
 
   render() {
     return (
       <Fragment>
         <CssBaseline/>
-        <AppBar position='static' style={{marginBottom: '4px', boxShadow: 'none', backgroundColor: '#305db7'}}>
+        <AppBar position='static' style={{marginBottom: '7px', boxShadow:"none", backgroundColor:"#305db7"}}>
           <Toolbar variant="dense">
-            <div style={{flexGrow: 1}}>
+            <Typography style={{ flexGrow: 1 }}>
               {this.state.isDesktop ? (
-                <img src={Logo_wide} height={36} alt={'logo'} style={{marginTop: 5}}/>
-              ) : (
-                <img src={Logo_tight} height={36} alt={'logo'} style={{marginTop: 5}}/>
-              )}
-            </div>
+                <img src={Logo_wide} height={36} alt={"logo"} style={{marginTop: 5}}/>
+               ) : (
+                <img src={Logo_tight} height={36} alt={"logo"} style={{marginTop: 5}}/>
+               )}
+             </Typography>
 
             <LoadSaveScheduleFunctionality onLoad={this.handleLoad} onSave={this.handleSave}/>
 
+            <Tooltip title="Blue Book Giveaway!">
+              <a
+                style={{color: "white"}}
+                href={"https://goo.gl/forms/KI6MkNCZsyzIVkF42"}
+                target="_blank"
+              >
+                <ImportContacts style={{marginLeft: 15, marginRight: 30}} fontSize="48px" color="white"/>
+              </a>
+            </Tooltip>
             <Tooltip title="Give Us Feedback!">
               <a
-                style={{color: 'white', marginLeft: 16}}
-                href={'https://goo.gl/forms/eIHy4kp56pZKP9fK2'}
+                style={{color: "white"}}
+                href={"https://goo.gl/forms/eIHy4kp56pZKP9fK2"}
                 target="_blank"
-                rel="noopener noreferrer"
               >
-                <Assignment style={{}} color="white"/>
+                <Assignment style={{marginRight: 27, marginTop: 5}} fontSize="48px" color="white"/>
               </a>
             </Tooltip>
 
+
             <Tooltip title="Message Us on FB!">
               <a
-                style={{color: 'white', marginLeft: 16}}
-                href={'https://www.facebook.com/AntAlmanac/'}
+                style={{color: "white"}}
+                href={"https://www.facebook.com/AntAlmanac/"}
                 target="_blank"
-                rel="noopener noreferrer"
               >
-                <Forum style={{marginTop: 5}} color="white"/>
+                <Forum style={{marginRight: 27, marginTop: 5}} fontSize="48px" color="white"/>
               </a>
             </Tooltip>
 
             <Tooltip title="Info Page">
               <a
-                style={{color: 'white', marginLeft: 16}}
-                href={'https://www.ics.uci.edu/~rang1/AntAlmanac/index.html'}
+                style={{color: "white"}}
+                href={"https://www.ics.uci.edu/~rang1/AntAlmanac/index.html"}
                 target="_blank"
-                rel="noopener noreferrer"
               >
-                <Info color="white"/>
+                <Info fontSize="48px" color="white"/>
               </a>
             </Tooltip>
 
           </Toolbar>
         </AppBar>
         <Grid container>
-          <Grid item xs={12} s={6} md={6} lg={6} xl={6}>
-            <div style={{display: this.state.activeTab === 0 || this.state.isDesktop ? 'block' : 'none'}}>
+          <Grid item lg={6} xs={12}>
+            <div>
               <Calendar
-                classEventsInCalendar={this.state.showFinalSchedule ? this.state.finalSchedule :
+                classEventsInCalendar={this.state.showFinalSchedule?this.state.finalSchedule:
                   this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))
                 }
-                eventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}
-                showFinalSchedule={this.state.showFinalSchedule}
-                displayFinal={this.displayFinal}
-                isDesktop={this.state.isDesktop}
-                currentScheduleIndex={this.state.currentScheduleIndex}
+                storeFinal={this.storeFinal}
+                showFinalSchedul={this.state.showFinalSchedule}
                 onUndo={this.handleUndo}
-                onCopySchedule = {this.handleCopySchedule}
-                onColorChange={this.handleColorChange}
+                currentScheduleIndex={this.state.currentScheduleIndex}
                 onClassDelete={this.handleClassDelete}
                 onScheduleChange={this.handleScheduleChange}
                 onAddCustomEvent={this.handleAddCustomEvent}
+                setID={this.setID}
                 onClearSchedule={this.handleClearSchedule}
+                showFinalSchedul={this.showFinalSchedule}
               />
             </div>
           </Grid>
 
-          <Grid item xs={12} s={6} md={6} lg={6} xl={6}>
-            <div style={{display: this.state.activeTab === 1 || this.state.isDesktop ? 'block' : 'none'}}>
-              <div
-                style={{overflow: 'hidden', marginBottom: '4px', marginRight: '4px', backgroundColor: '#dfe2e5'}}>
-                <Tabs value={this.state.rightPaneView}
-                      onChange={this.handleRightPaneViewChange}
-                      indicatorColor="primary"
-                      textColor="primary"
-                      variant="fullWidth"
-                      centered>
-                  <Tab label="Search View"/>
-                  <Tab label="Tabular View"/>
-                </Tabs>
-              </div>
-              <div
-                style={{
-                  overflow: 'auto',
-                  padding: 10,
-                  height: `calc(100vh - 96px - 12px - ${this.state.isDesktop ? '0px' : '48px'})`,
-                  marginRight: 4,
-                  boxShadow: 'none'
-                }}
-                id='rightPane'
-              >
-                {this.state.rightPaneView ?
-                  <TabularView
-                    eventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}
-                    onColorChange={this.handleColorChange}
-                    scheduleIndex={this.state.currentScheduleIndex}
-                    onCopySchedule={this.handleCopySchedule}
-                  />
-                  :
-                  (
-                    this.state.showSearch ?
-                      <SearchForm
-                        prevFormData={this.state.prevFormData}
-                        updateFormData={this.updateFormData}/>
-                      :
-                      <CoursePane
-                        formData={this.state.formData}
-                        onAddClass={this.handleAddClass}
-                        onDismissSearchResults={this.handleDismissSearchResults}
-                        term={this.state.formData}/>
-                  )
-                }
-              </div>
-            </div>
-          </Grid>
+          <Grid item lg={6} xs={12}>
+            <Paper elevation={0} style={{overflow: "hidden", marginBottom: '8px'}}>
+              <Toolbar variant="dense" style={{ backgroundColor: "#dfe2e5", marginRight:8, borderRadius: '0px'}}>
+                {this.state.view ? (
+                  <Tooltip title="List View">
+                    <IconButton onClick={() => this.setView(0)}>
+                      <ListAlt />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title="Tile View">
+                    <IconButton onClick={() => this.setView(1)}>
+                      <Dns />
+                    </IconButton>
+                  </Tooltip>
+                )}
 
-          <Hidden mdUp>
-            <Grid item xs={12}>
-              <div>
-                <Tabs
-                  value={this.state.activeTab}
-                  onChange={this.handleTabChange}
-                  fullWidth
-                  indicatorColor="primary"
-                  textColor="primary"
-                >
-                  <Tab icon={<CalendarToday/>}/>
-                  <Tab icon={<Search/>}/>
-                </Tabs>
-              </div>
-            </Grid>
-          </Hidden>
+                {!this.state.showTabularView ?(
+                  <Tooltip title="Show Tabular View: More Info on Selected Courses">
+                    <IconButton onClick={this.handleToggleShowTabularView}>
+                        <FormatListBulleted/>
+                    </IconButton>
+                  </Tooltip>
+                ):(
+                  <Tooltip title="Show Search View">
+                    <IconButton onClick={this.handleToggleShowTabularView}>
+                        <Search/>
+                    </IconButton>
+                  </Tooltip>
+                )}
+
+              </Toolbar>
+            </Paper>
+            <Paper
+                    style={{
+                      overflow: "auto",
+                      padding: 10,
+                      height: 'calc(100vh - 96px - 24px)',
+                      marginRight: 8,
+                      boxShadow:"none"
+                    }}
+                    id='rightPane'
+                  >
+            {this.state.showTabularView ?
+              <TabularView showFinalSchedule ={this.state.showFinalSchedule} displayFinal={this.displayFinal} classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}  colorChange={this.colorChange} scheduleIndex={this.state.currentScheduleIndex}/>
+              :
+              (
+                  this.state.showSearch ? <SearchForm updateFormData={this.updateFormData}/> :
+                    <CoursePane
+                      view={this.state.view}
+                      formData={this.state.formData}
+                      onAddClass={this.handleAddClass}
+                      onDismissSearchResults={this.handleDismissSearchResults}
+                      term={this.state.formData}/>
+              )}
+              </Paper>
+          </Grid>
         </Grid>
       </Fragment>
-    )
+    );
   }
 }
 
-export default App
+export default App;

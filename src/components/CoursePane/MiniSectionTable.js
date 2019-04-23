@@ -1,104 +1,83 @@
-import React, {Component, Fragment} from "react";
-import {Menu, MenuItem, IconButton, Typography} from "@material-ui/core";
-import {withStyles} from "@material-ui/core/styles";
+import React, { Component, Fragment } from "react";
+import {  Menu, MenuItem, Typography } from "@material-ui/core";
+import rmpData from "./RMP.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import POPOVER from "./PopOver";
 import Notification from '../Notification';
 import RstrPopover from "./RstrPopover";
 import locations from "./locations.json";
-import querystring from "querystring";
-import MouseOverPopover from "./MouseOverPopover";
-import {
-  Add,
-  ArrowDropDown
-} from '@material-ui/icons'
-import Instructors from "./Instructors";
-
-const styles = {
-  table: {
-    borderCollapse: "collapse",
-    boxSizing: "border-box",
-    width: "100%",
-    marginTop: '0.285rem',
-
-    "& thead": {
-      position: "sticky",
-
-      "& th": {
-        border: "1px solid rgb(222, 226, 230)",
-        fontSize: "0.85rem",
-        fontWeight: "500",
-        color: "rgba(0, 0, 0, 0.54)",
-        textAlign: "left",
-        verticalAlign: "bottom"
-      }
-    }
-  },
-  tr: {
-    fontSize: "0.85rem",
-    '&:nth-child(odd)': {
-      backgroundColor: '#f5f5f5'
-    },
-
-    "& td": {
-      border: "1px solid rgb(222, 226, 230)",
-      textAlign: "left",
-      verticalAlign: "top"
-    }
-  },
-  open: {
-    color: '#00c853'
-  },
-  waitl: {
-    color: '#1c44b2'
-  },
-  full: {
-    color: '#e53935'
-  },
-  multiline: {
-    whiteSpace: 'pre'
-  },
-  Act: {color: '#c87137'},
-  Col: {color: '#ff40b5'},
-  Dis: {color: '#8d63f0'},
-  Fld: {color: '#1ac805'},
-  Lab: {color: '#1abbe9'},
-  Lec: {color: '#d40000'},
-  Qiz: {color: '#8e5c41'},
-  Res: {color: '#ff2466'},
-  Sem: {color: '#2155ff'},
-  Stu: {color: '#179523'},
-  Tap: {color: '#8d2df0'},
-  Tut: {color: '#ffc705'}
-};
 
 class ScheduleAddSelector extends Component {
   constructor(props) {
     super(props);
-    this.state = {anchor: null};
+    this.state = { anchor: null };
   }
 
-  handleAddMore = event => {
-    this.setState({anchor: event.currentTarget});
-  };
+  handleClick = event => {
+    this.setState({ anchor: event.currentTarget });
+    // this.props.onAddClass(
+    //   this.props.section,
+    //   this.props.courseDetails.name,
+    //   0,
 
-  handleAddCurrent = (event) => {
-    this.handleClose(5); //add to current
+    //   this.props.termName
+    // );
   };
 
   handleClose = scheduleNumber => {
-    this.setState({anchor: null});
-    if (scheduleNumber !== -1) {
+    this.setState({ anchor: null });
+    if (scheduleNumber !== -1)
+    {
       this.props.onAddClass(
         this.props.section,
-        this.props.courseDetails,
+        this.props.courseDetails.name,
         scheduleNumber,
+
         this.props.termName
       );
+
     }
   };
 
+  redirectRMP = (e, name) => {
+    if (!e)  e = window.event;
+    e.cancelBubble = true;
+    if (e.stopPropagation) e.stopPropagation();
+
+    var lastName = name.substring(0, name.indexOf(","));
+    var nameP = rmpData[0][name];
+    if (nameP !== undefined)
+      window.open("https://www.ratemyprofessors.com" + nameP);
+    else
+      window.open(
+        `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
+      );
+  };
+
+  linkRMP = name => {
+    const rmpStyle = {
+      textDecoration: "underline",
+      color: "#0645AD",
+      cursor: "pointer"
+    };
+    return name.map(item => {
+      if (item !== "STAFF") {
+        return (
+          <div
+            style={rmpStyle}
+            onClick={e => {
+              this.redirectRMP(e, item);
+            }}
+          >
+            {item}
+          </div>
+        );
+      } else return item;
+    });
+  };
+
   disableTBA = section => {
+    //console.log(section.meetings[0] != "TBA", section.meetings[0]);
     var test = false;
     for (var element of section.meetings[0]) {
       if (element === "TBA") {
@@ -111,159 +90,106 @@ class ScheduleAddSelector extends Component {
 
   genMapLink = location => {
     try {
-      const location_id = locations[location.split(" ")[0]];
-      return "https://map.uci.edu/?id=463#!m/" + location_id;
+      var location_id = locations[location.split(" ")[0]];
+      return "https://map.uci.edu/?id=463#!m/"+location_id;
     } catch (err) {
       return "https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034";
     }
   };
 
-  statusforFindingSpot = (section, classCode) => {
-    if (section === 'FULL')
-      return <Notification termName={this.props.termName} full={section} code={classCode}
-                           name={this.props.courseDetails.name}/>;
+  statusforFindingSpot = (section,classCode) => {
+    console.log("lkkl",this.props.courseDetails);
+    if(section === 'FULL')
+    return <Notification  termName={this.props.termName} full={section} code={classCode} name={this.props.courseDetails.name}/>
     else
-      return section;
-  };
+    return section;
+ };
 
   render() {
-    const {classes} = this.props;
-    const section = this.props.section;
+    var section = this.props.section;
     return (
       <Fragment>
-        <tr className={classes.tr}>
-          <td style={{verticalAlign: "middle", textAlign: "center"}}>
-            <IconButton
-              {...(!this.disableTBA(section)
-                ? {onClick: this.handleAddCurrent , style: {cursor: "pointer"}}
-                : {disabled: true})}
-              style = {{ padding: 0 }}
-            >
-              <Add fontSize="large" />
-            </ IconButton>
-            <IconButton
-              {...(!this.disableTBA(section)
-                ? {onClick: this.handleAddMore, style: {cursor: "pointer"}}
-                : {disabled: true})}
-              style = {{ padding: 0 }}
-            >
-              <ArrowDropDown/>
-            </ IconButton>
-              <Menu
-                anchorEl={this.state.anchor}
-                open={Boolean(this.state.anchor)}
-                onClose={() => this.handleClose(-1)}
-              >
-                <MenuItem onClick={() => this.handleClose(0)}>Add to schedule 1</MenuItem>
-                <MenuItem onClick={() => this.handleClose(1)}>Add to schedule 2</MenuItem>
-                <MenuItem onClick={() => this.handleClose(2)}>Add to schedule 3</MenuItem>
-                <MenuItem onClick={() => this.handleClose(3)}>Add to schedule 4</MenuItem>
-                <MenuItem onClick={() => this.handleClose(4)}>Add to all</MenuItem>
-              </Menu>
-          </td>
+        <tr
+          {...(!this.disableTBA(section)
+            ? { onClick: this.handleClick, style: { cursor: "pointer" } }
+            : {})}
+        >
+          {/* <td className="no_border">{this.disableTBA(section)}</td> */}
+
           <td>{section.classCode}</td>
-          <td className={classes.multiline + " " + classes[section.classType]}>
-              {`${section.classType}
+          <td className="multiline">
+            {`${section.classType}
 Sec: ${section.sectionCode}
 Units: ${section.units}`}
           </td>
-          <td className={classes.multiline}>
-          <Instructors className={classes.multiline}>
-            {/*this.linkRMP(section.instructors)*/ }
-            {section.instructors}
-          </Instructors>
-              {/* section.instructors.join("\n")*/}
+          <td className="multiline">
+          {/* {this.linkRMP(section.instructors)} */}
+          {section.instructors.join("\n")}
           </td>
-          <td className={classes.multiline}>
+          <td className="multiline">
             {section.meetings.map(meeting => meeting[0]).join("\n")}
           </td>
-          <td className={classes.multiline}>
+          <td className="multiline">
             {section.meetings.map(meeting => {
               return (meeting[1] !== "ON LINE" && meeting[1] !== "TBA") ? (
-                <Fragment>
-                  <a href={this.genMapLink(meeting[1])} target="_blank" rel="noopener noreferrer">
+                <div>
+                  <a href={this.genMapLink(meeting[1])} target="_blank">
                     {meeting[1]}
                   </a>
-                  <br/>
-                </Fragment>
+                  <br />
+                </div>
               ) : (
-                <Fragment>
-                  <a href="https://tinyurl.com/2fcpre6" target="_blank" rel="noopener noreferrer">
-                    {meeting[1]}
-                  </a><br/>
-                </Fragment>
+                meeting[1]
               );
             })}
           </td>
-          <td>
-          <MouseOverPopover className={classes.multiline + " " + classes[section.status.toLowerCase()]}>
+          <td className={["multiline", section.status].join(" ")}>
             <strong>{`${section.numCurrentlyEnrolled[0]} / ${
               section.maxCapacity
-              }`}</strong>
+            }`}</strong>
             {`
 WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
-          </MouseOverPopover>
           </td>
           <td>
             <RstrPopover
-              restrictions={section.restrictions}
+              restrictions = {section.restrictions}
             />
           </td>
-          <td className={classes[section.status.toLowerCase()]}>{this.statusforFindingSpot(section.status, section.classCode)}</td>
+          <td className={section.status}>{this.statusforFindingSpot(section.status,section.classCode)}</td>
         </tr>
+        <Menu
+          anchorEl={this.state.anchor}
+          open={Boolean(this.state.anchor)}
+          onClose={() => this.handleClose(-1)}
+        >
+          <MenuItem onClick={() => this.handleClose(0)}>
+            Add to schedule 1
+          </MenuItem>
+          <MenuItem onClick={() => this.handleClose(1)}>
+            Add to schedule 2
+          </MenuItem>
+          <MenuItem onClick={() => this.handleClose(2)}>
+            Add to schedule 3
+          </MenuItem>
+          <MenuItem onClick={() => this.handleClose(3)}>
+            Add to schedule 4
+          </MenuItem>
+          <MenuItem onClick={() => this.handleClose(4)}>Add to all</MenuItem>
+        </Menu>
       </Fragment>
     );
   }
 }
 
 class MiniSectionTable extends Component {
-  constructor(props)
-  {
-    super(props);
-    this.state={  sectionInfo : this.props.courseDetails.sections};
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
+    return this.props.courseDetails !== nextProps.courseDetails;
   }
 
-  // shouldComponentUpdate(nextProps, nextState, nextContext) {
-  //   return this.props.courseDetails !== nextProps.courseDetails;
-  // }
-  componentDidMount = async () => {
-    //let {building,courseCode,courseNum,coursesFull,dept,endTime,ge,instructor,label,startTime,term,units}=this.props.formData;
-    let {dept,ge}=this.props.formData;
-    if(ge!=="ANY" &&dept===null) //please put all the form's props condition in to prevent search bugs
-    {
-      const params = {
-        department: this.props.courseDetails.name[0],
-        term: this.props.termName,
-        courseTitle: this.props.courseDetails.name[2],
-        courseNum: this.props.courseDetails.name[1]
-      };
-
-      const url =
-        "https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/websoc?" +
-        querystring.stringify(params);
-     await  fetch(url.toString())
-        .then(resp => resp.json())
-        .then(json => {
-          const sections = json.reduce((accumulator, school) => {
-            school.departments.forEach(dept => {
-              dept.courses.forEach(course => {
-                course.sections.forEach(section => {
-                 accumulator.push(section);
-                });
-              });
-            });
-
-            return accumulator;
-          }, []);
-
-          this.setState({ sectionInfo: sections });
-        });
-    }
-  }
 
   render() {
-    const {classes} = this.props;
+    const sectionInfo = this.props.courseDetails.sections;
 
     return (
       <Fragment>
@@ -285,47 +211,33 @@ class MiniSectionTable extends Component {
             term={this.props.term}
             courseDetails={this.props.courseDetails}
           />
-
-          <Typography variant="title" style={{ flexGrow: "2"}}>
-            &nbsp;
-          </Typography>
-
-          {this.props.courseDetails.prerequisiteLink ? (
-            <Typography variant='h9' style={{flexGrow: "2", marginTop: 9}}>
-              <a target="blank" style={{textDecoration: "none", color: "#72a9ed"}}
-                 href={this.props.courseDetails.prerequisiteLink} rel="noopener noreferrer">
-                Prerequisites
-              </a>
-            </Typography>
-          ) : <Fragment/>
-          }
         </div>
-        <table className={classes.table}>
+        <table>
           <thead>
-          <tr>
-            <th>Add</th>
-            <th>Code</th>
-            <th>Type</th>
-            <th>Instructors</th>
-            <th>Times</th>
-            <th>Places</th>
-            <th>Enrollment</th>
-            <th>Rstr</th>
-            <th>Status</th>
-          </tr>
+            <tr>
+              {/* <th className="no_border">{}</th> */}
+
+              <th>Code</th>
+              <th>Type</th>
+              <th>Instructors</th>
+              <th>Times</th>
+              <th>Places</th>
+              <th>Enrollment</th>
+              <th>Rstr</th>
+              <th>Status</th>
+            </tr>
           </thead>
           <tbody>
-          {this.state.sectionInfo.map(section => {
-            return (
-              <ScheduleAddSelector
-                classes={classes}
-                onAddClass={this.props.onAddClass}
-                section={section}
-                courseDetails={this.props.courseDetails}
-                termName={this.props.termName}
-              />
-            );
-          })}
+            {sectionInfo.map(section => {
+              return (
+                <ScheduleAddSelector
+                  onAddClass={this.props.onAddClass}
+                  section={section}
+                  courseDetails={this.props.courseDetails}
+                  termName={this.props.termName}
+                />
+              );
+            })}
           </tbody>
         </table>
       </Fragment>
@@ -333,4 +245,4 @@ class MiniSectionTable extends Component {
   }
 }
 
-export default withStyles(styles)(MiniSectionTable);
+export default MiniSectionTable;

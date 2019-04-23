@@ -53,6 +53,8 @@ class AlmanacGraph extends Component {
         this.handleClose = this.handleClose.bind(this);
         this.fetchCourseData = this.fetchCourseData.bind(this);
         this.handleChange = this.handleChange.bind(this);
+
+        this.fetchCourseData();
     }
 
     fetchCourseData() {
@@ -64,7 +66,7 @@ class AlmanacGraph extends Component {
         };
 
         const url =
-            "https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/websoc?" +
+            "https://2r7p77ujv6.execute-api.us-west-1.amazonaws.com/latest/api/websoc?" +
             querystring.stringify(params);
 
         fetch(url.toString())
@@ -89,15 +91,13 @@ class AlmanacGraph extends Component {
     }
 
     handleChange(event) {
-      this.setState({[event.target.name]: event.target.value}, () =>
-          this.fetchCourseData()
-      );
+        this.setState({[event.target.name]: event.target.value}, () =>
+            this.fetchCourseData()
+        );
     }
 
     handleOpen() {
         this.setState({open: true});
-        this.fetchCourseData();
-
     }
 
     handleClose() {

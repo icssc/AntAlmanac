@@ -45,6 +45,8 @@ class RstrPopover extends React.Component {
     return (
       <div>
         <Typography
+          aria-owns={open ? 'rstr-popover' : undefined}
+          aria-haspopup="true"
           onMouseEnter={this.handlePopoverOpen}
           onMouseLeave={this.handlePopoverClose}
         >

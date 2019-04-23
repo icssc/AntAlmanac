@@ -100,9 +100,7 @@ class Sharing extends React.Component {
         <Button
           aria-owns={open ? "simple-popper" : undefined}
           aria-haspopup="true"
-          disableRipple={true}
           onClick={this.handleClick}
-          className={"menu-button"}
           style={{
             width:"100%"
           }}

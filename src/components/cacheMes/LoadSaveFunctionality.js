@@ -82,7 +82,7 @@ class LoadSaveScheduleFunctionality extends React.Component {
   componentDidMount = async () => {
     if (typeof Storage !== "undefined") {
       const savedUserID = window.localStorage.getItem("userID");
-      if (savedUserID != null) {
+      if (savedUserID != null) {    
           const userData = await loadUserData(savedUserID); // this shit gotta do promise joint
           if (userData !== -1)
           {
@@ -130,7 +130,7 @@ class LoadSaveScheduleFunctionality extends React.Component {
             }
           );
         } else {
-
+         
           this.setState({
             open: true,
             message: "No schedule found for username '" + userID + "'.",
@@ -152,7 +152,7 @@ class LoadSaveScheduleFunctionality extends React.Component {
           this.setState({
             variant: "success",
             open: true,
-            message: "Schedule saved under username '" + userID + "'! Remember that you still need to register for courses through WebReg."
+            message: "Schedule saved under username '" + userID + "'."
           });
           window.localStorage.setItem("userID", userID);
         } catch (err) {

@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import DaySelector from "./DaySelector";
 import {
   Button,
@@ -25,6 +25,43 @@ const styles = () => ({
   }
 });
 
+function EventName(props) {
+  return (
+    <FormControl>
+      <InputLabel htmlFor="EventNameInput">Event Name</InputLabel>
+      <Input
+        required={true}
+        onChange={props.userEventName}
+        id="EventNameInput"
+      />
+    </FormControl>
+  );
+}
+
+function TimePickers(props) {
+  const { classes } = props;
+
+  return (
+    <form noValidate>
+      <TextField
+        onChange={props.onTimeChange}
+        id="time"
+        label={props.label}
+        type="time"
+        defaultValue="07:30"
+        InputLabelProps={{
+          shrink: true
+        }}
+        className={classes.textField}
+        inputProps={{
+          step: 300
+        }}
+      />
+    </form>
+  );
+}
+TimePickers = withStyles(styles)(TimePickers);
+
 function dayToNum(day) {
   switch (day) {
     case "monday":
@@ -45,8 +82,8 @@ class DialogSelect extends Component {
     super(props);
     this.state = {
       open: false,
-      start: "10:30",
-      end: "15:30",
+      start: "07:00",
+      end: "08:00",
       eventName: "Untitled",
       days: {
         monday: false,
@@ -64,8 +101,8 @@ class DialogSelect extends Component {
     if (calendarIndex !== -1) this.handleAddToCalendar(calendarIndex);
     this.setState({
       open: false,
-      start: "10:30",
-      end: "15:30",
+      start: "07:00",
+      end: "08:00",
       eventName: "Untitled",
       days: {
         monday: false,
@@ -76,7 +113,6 @@ class DialogSelect extends Component {
       },
       anchorEl: null
     });
-    this.props.handleSubmenuClose();
   };
 
   handleEventNameChange = event => {
@@ -135,8 +171,8 @@ class DialogSelect extends Component {
     const { anchorEl } = this.state;
 
     return (
-      <Fragment>
-        <Button disableRipple={true} className={"menu-button"} onClick={() => this.setState({ open: true })} style={{width: "100%"}}>
+      <div>
+        <Button onClick={() => this.setState({ open: true })}>
           <Add /> Add Custom
         </Button>
         <Dialog
@@ -144,47 +180,18 @@ class DialogSelect extends Component {
           onClose={this.handleClickAway}
         >
           <DialogContent>
-            <FormControl>
-              <InputLabel htmlFor="EventNameInput">Event Name</InputLabel>
-              <Input
-                required={true}
-                value={this.state.eventName}
-                onChange={this.handleEventNameChange}
-                id="EventNameInput"
-              />
-            </FormControl>
-            <form noValidate>
-              <TextField
-                onChange={this.handleStartTimeChange}
-                id="time"
-                label="Start Time"
-                type="time"
-                defaultValue="10:30"
-                InputLabelProps={{
-                  shrink: true
-                }}
-                className="textField"
-                inputProps={{
-                  step: 300
-                }}
-                style={{marginRight: 5, marginTop:5}}
-              />
-              <TextField
-                onChange={this.handleEndTimeChange}
-                id="time"
-                label="End Time"
-                type="time"
-                defaultValue="15:30"
-                InputLabelProps={{
-                  shrink: true
-                }}
-                className="textField"
-                inputProps={{
-                  step: 300
-                }}
-                style={{marginRight: 5, marginTop:5}}
-              />
-            </form>
+            <EventName
+              value={this.state.eventName}
+              userEventName={this.handleEventNameChange}
+            />
+            <TimePickers
+              label="Start Time"
+              onTimeChange={this.handleStartTimeChange}
+            />
+            <TimePickers
+              label="End Time"
+              onTimeChange={this.handleEndTimeChange}
+            />
             <DaySelector onSelectDay={this.handleDayChange} />
 
           </DialogContent>
@@ -208,6 +215,9 @@ class DialogSelect extends Component {
               open={Boolean(anchorEl)}
               onClose={() => this.setState({ anchorEl: null })}
             >
+              <MenuItem value={4} onClick={() => this.handleClose(4)}>
+                All Schedules
+              </MenuItem>
               <MenuItem value={0} onClick={() => this.handleClose(0)}>
                 Schedule 1
               </MenuItem>
@@ -220,13 +230,10 @@ class DialogSelect extends Component {
               <MenuItem value={3} onClick={() => this.handleClose(3)}>
                 Schedule 4
               </MenuItem>
-              <MenuItem value={4} onClick={() => this.handleClose(4)}>
-                All Schedules
-              </MenuItem>
             </Menu>
           </DialogActions>
         </Dialog>
-      </Fragment>
+      </div>
     );
   }
 }
