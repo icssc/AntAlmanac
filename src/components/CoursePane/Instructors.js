@@ -104,7 +104,7 @@ class Instructors extends React.Component {
           disableRestoreFocus
         >
           <Typography>
-            To EaterEval (Change in Settings ^)
+            To EaterEval; See Settings
           </Typography>
         </Popover>
       </Fragment>

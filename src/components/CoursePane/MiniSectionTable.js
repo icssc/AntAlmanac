@@ -180,14 +180,18 @@ Units: ${section.units}`}
           <td className={classes.multiline}>
             {section.meetings.map(meeting => {
               return (meeting[1] !== "ON LINE" && meeting[1] !== "TBA") ? (
-                <div>
+                <Fragment>
                   <a href={this.genMapLink(meeting[1])} target="_blank" rel="noopener noreferrer">
                     {meeting[1]}
                   </a>
                   <br/>
-                </div>
+                </Fragment>
               ) : (
-                meeting[1]
+                <Fragment>
+                  <a href="https://tinyurl.com/2fcpre6" target="_blank" rel="noopener noreferrer">
+                    {meeting[1]}
+                  </a><br/>
+                </Fragment>
               );
             })}
           </td>
