@@ -117,7 +117,19 @@ class TabularView extends Component {
   handleDropdownClose = () => {
     this.setState({anchorEl: null})
   }
+   myFunction =(event,code) =>{
+    if (!event) event = window.event;
+    event.cancelBubble = true;
+    if (event.stopPropagation) event.stopPropagation();
 
+    let Juanito = document.createElement("input");
+    document.body.appendChild(Juanito);
+    Juanito.setAttribute('value',code);
+    Juanito.select();
+    document.execCommand("copy");
+    document.body.removeChild(Juanito);
+    alert("Copied the text: "+code);
+  }
   render () {
     const {classes} = this.props;
     const events = this.props.eventsInCalendar;
@@ -264,7 +276,7 @@ class TabularView extends Component {
                     return (
                       <tr className={classes.tr}>
                         <td className={classes.colorPicker}><ColorPicker onColorChange={this.props.onColorChange} event={item}/></td>
-                        <td>{secEach.classCode}</td>
+                        <td onClick={e=>this.myFunction(e, secEach.classCode )}>{secEach.classCode}</td>
                         <td className={classes.multiline + " " + classes[secEach.classType]}>
                           {`${secEach.classType}
 Sec ${secEach.sectionCode}
