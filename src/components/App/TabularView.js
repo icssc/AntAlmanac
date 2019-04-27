@@ -6,7 +6,7 @@ import {
   MenuItem,
   Typography,
   Snackbar,
-  SnackbarContent
+  Tooltip
 } from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
 import locations from '../CoursePane/locations.json'
@@ -91,7 +91,13 @@ const styles = {
   Sem: {color: '#2155ff'},
   Stu: {color: '#179523'},
   Tap: {color: '#8d2df0'},
-  Tut: {color: '#ffc705'}
+  Tut: {color: '#ffc705'},
+  lightTooltip: {
+    backgroundColor: 'rgba(255,255,255)',
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: 0,
+    fontSize: 11,
+  },
 };
 
 class TabularView extends Component {
@@ -229,6 +235,26 @@ class TabularView extends Component {
           </Menu>
         </div>
 
+        {courses.length === 0 ?
+          (
+          <div style={{marginTop: 20}}>
+            <Typography variant="h5">
+              There's nothing here yet ...
+            </Typography>
+            <Typography variant="h6">
+              ... because you haven't added anything to your calendar yet!
+              <br/>
+              <br/>
+              Go to search view to find classes to put into your calendars.
+              <br/>
+              Then come back here to see more details on selected class and change their colors!
+            </Typography>
+            </div>
+          )
+        :
+          (<Fragment />)
+        }
+
         {courses.map(event => {
           return (<div>
             <div
@@ -286,8 +312,12 @@ class TabularView extends Component {
 
                     return (
                       <tr className={classes.tr}>
-                        <td className={classes.colorPicker}><ColorPicker onColorChange={this.props.onColorChange} event={item}/></td>
-                        <td onClick={e=>this.clickToCopy(e, secEach.classCode )} className={classes.code}>{secEach.classCode}</td>
+                        <Tooltip title="Click to change color" placement="right" classes={{ tooltip: classes.lightTooltip }}>
+                          <td className={classes.colorPicker}><ColorPicker onColorChange={this.props.onColorChange} event={item}/></td>
+                        </Tooltip>
+                        <Tooltip title="Click to copy course code" placement="right" classes={{ tooltip: classes.lightTooltip }}>
+                          <td onClick={e=>this.clickToCopy(e, secEach.classCode )} className={classes.code}>{secEach.classCode}</td>
+                        </Tooltip>
                         <td className={classes.multiline + " " + classes[secEach.classType]}>
                           {`${secEach.classType}
 Sec ${secEach.sectionCode}
@@ -341,7 +371,7 @@ NOR: ${secEach.numNewOnlyReserved}`}
         })}
 
       <Snackbar
-          anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+          anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
           open={this.state.copied}
           autoHideDuration={1500}
           onClose={() => this.setState({ copied: false })}

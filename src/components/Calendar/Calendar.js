@@ -75,16 +75,12 @@ class Calendar extends Component {
     const {currentTarget} = event;
     event.stopPropagation();
 
-    if (courseInMoreInfo.courseType !== "Fin" && !courseInMoreInfo.isCustomEvent)
+    if (courseInMoreInfo.courseType !== "Fin")
       this.setState(state => ({
         anchorEvent: currentTarget,
         moreInfoOpen: state.anchorEvent === currentTarget ? !state.moreInfoOpen : true,
         courseInMoreInfo: courseInMoreInfo
       }));
-    else if (courseInMoreInfo.isCustomEvent){
-      //temporary click to delete custom events
-      this.props.onClassDelete(courseInMoreInfo);
-    }
   };
 
   handleClosePopover = () => {

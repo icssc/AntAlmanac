@@ -523,8 +523,8 @@ class App extends Component {
                       textColor="primary"
                       variant="fullWidth"
                       centered>
-                  <Tab label="Course Search"/>
-                  <Tab label="Added Courses"/>
+                  <Tab label="Class Search"/>
+                  <Tab label="Added Classes"/>
                 </Tabs>
               </div>
               <div
