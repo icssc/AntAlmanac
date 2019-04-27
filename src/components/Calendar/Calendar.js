@@ -139,6 +139,7 @@ class Calendar extends Component {
                   courseInMoreInfo={this.state.courseInMoreInfo}
                   onClassDelete={() => this.props.onClassDelete(this.state.courseInMoreInfo)}
                   onColorChange={this.props.onColorChange}
+                  onEditCustomEvent={this.props.onEditCustomEvent}
                 /> : null}
             </Popper>
             {this.props.isDesktop ? <BigCalendar

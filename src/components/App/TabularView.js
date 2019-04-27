@@ -131,7 +131,7 @@ class TabularView extends Component {
   stripCommas = string => {
     let result = "";
     for (let i = 0; i < string.length; i++)
-      if (string[i] != ",")
+      if (string[i] !== ",")
         result += string[i];
     return result;
   }
@@ -424,13 +424,11 @@ NOR: ${secEach.numNewOnlyReserved}`}
                   <ColorPicker onColorChange={this.props.onColorChange} event={event}/>
                  </td>
                  <td width="40">
-                  <Button>
-                    <CustomEventsDialog
-                      editMode={true}
-                      event={event}
-                      onEditCustomEvent={this.props.onEditCustomEvent}
-                      />
-                  </Button>
+                  <CustomEventsDialog
+                    editMode={true}
+                    event={event}
+                    onEditCustomEvent={this.props.onEditCustomEvent}
+                    />
                  </td>
                  <td>{event.title}</td>
                  <td>{this.getTimeString(event)}</td>

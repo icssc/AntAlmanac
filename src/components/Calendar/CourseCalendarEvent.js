@@ -1,10 +1,11 @@
 import React from 'react';
-import {Paper} from "@material-ui/core";
+import {Paper, Tooltip} from "@material-ui/core";
 import {withStyles} from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import ColorPicker from '../App/colorPicker.js';
 import {Delete} from '@material-ui/icons';
 import locations from "../CoursePane/locations.json";
+// import CustomEventsDialog from '../CustomEvents/Popup';
 
 const styles = {
   container: {
@@ -68,7 +69,9 @@ const CourseCalendarEvent = (props) => {
       <Paper className={classes.container}>
         <div className={classes.titleBar}>
           <span className={classes.title}>{name[2]}</span>
-          <Delete className={classes.icon} onClick={props.onClassDelete} />
+          <Tooltip title="Delete">
+            <Delete className={classes.icon} onClick={props.onClassDelete} />
+          </Tooltip>
         </div>
         <table className={classes.table}>
           <tbody>
@@ -91,7 +94,9 @@ const CourseCalendarEvent = (props) => {
           </tr>
           <tr>
             <td>Color</td>
-            <td className={classes.colorPicker}><ColorPicker event={courseInMoreInfo} onColorChange={props.onColorChange}/></td>
+            <td className={classes.colorPicker}>
+              <ColorPicker event={courseInMoreInfo} onColorChange={props.onColorChange}/>
+            </td>
           </tr>
           </tbody>
         </table>
@@ -99,9 +104,33 @@ const CourseCalendarEvent = (props) => {
     </div>);
   }else{
     console.log(courseInMoreInfo);
+    const {title} = courseInMoreInfo;
     return (
       <div>
-
+      <Paper className={classes.container}>
+        <div className={classes.titleBar}>
+          <span className={classes.title} style={{marginBottom: 5}}>{title}</span>
+        </div>
+        <table className={classes.table}>
+          <tbody>
+          <tr>
+            <td className={classes.colorPicker}>
+              <ColorPicker event={courseInMoreInfo} onColorChange={props.onColorChange}/>
+            </td>
+            <td className={classes.rightCells}>
+              To edit go to<br/>
+              Added Classes
+              {/*<CustomEventsDialog editMode={true} event={courseInMoreInfo} onEditCustomEvent={props.onEditCustomEvent}/>*/}
+            </td>
+            <td className={classes.rightCells + " " +classes.alignToTop}>
+              <Tooltip title="Delete">
+                <Delete className={classes.icon} onClick={props.onClassDelete} />
+              </Tooltip>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </Paper>
       </div>
     );
   }

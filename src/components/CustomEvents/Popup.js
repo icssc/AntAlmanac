@@ -147,7 +147,7 @@ class DialogSelect extends Component {
           {this.props.editMode ? (
               <Create />
             ) : (
-              <div><Add/>Add Custom</div>
+              <Fragment><Add/> Add Custom</Fragment>
           )}
         </Button>
         <Dialog

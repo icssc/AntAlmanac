@@ -522,6 +522,7 @@ class App extends Component {
                 onScheduleChange={this.handleScheduleChange}
                 onAddCustomEvent={this.handleAddCustomEvent}
                 onClearSchedule={this.handleClearSchedule}
+                onEditCustomEvent={this.handleEditCustomEvent}
               />
             </div>
           </Grid>
