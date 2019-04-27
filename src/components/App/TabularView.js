@@ -15,6 +15,7 @@ import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
 import {withStyles} from '@material-ui/core/styles';
 import MouseOverPopover from "../CoursePane/MouseOverPopover";
+import CustomEventsDialog from '../CustomEvents/Popup';
 import Instructors from "../CoursePane/Instructors";
 
 const styles = {
@@ -127,6 +128,25 @@ class TabularView extends Component {
       return section
   }
 
+  stripCommas = string => {
+    let result = "";
+    for (let i = 0; i < string.length; i++)
+      if (string[i] != ",")
+        result += string[i];
+    return result;
+  }
+
+  getTimeString = event => {
+    let startHours = event.start.getHours(), startMinutes = event.start.getMinutes();
+    let endHours = event.end.getHours(), endMinutes = event.end.getMinutes();
+    if (startMinutes < 10) {startMinutes = `0${startMinutes}`};
+    if (endMinutes < 10) {endMinutes = `0${endMinutes}`};
+    let startTime = `${(startHours % 12).toString()}:${startMinutes}`;
+    let endTime = `${(endHours % 12).toString()}:${endMinutes}`;
+    if (endHours > 12) {endTime += "p"};
+    return `${this.stripCommas(event.days.join())} ${startTime}-${endTime}`
+  }
+
   handleDropdownOpen = event => {
     this.setState({anchorEl: event.currentTarget})
   }
@@ -151,9 +171,23 @@ class TabularView extends Component {
     const {classes} = this.props;
     const events = this.props.eventsInCalendar;
     let result = [];
+    let customEvents = [];
     for (let item of events)
       if (!item.isCustomEvent && result.find(function (element) {return element.courseCode === item.courseCode}) === undefined)
         result.push(item);
+
+      else if (item.isCustomEvent) {
+        let day = item.start.toDateString().substring(0,1);
+        if (day === "T") {day = item.start.toDateString().substring(0,2)};
+
+        let ce = customEvents.find(event => event.customEventID === item.customEventID);
+        if ( ce === undefined) {
+          item.days = [day];
+          customEvents.push(item);
+        } else if (ce.days.find(d => d === day) === undefined) {
+          ce.days.push(day)
+        };
+      }
 
     const courses = [];
     let totalUnits = 0;
@@ -370,6 +404,41 @@ NOR: ${secEach.numNewOnlyReserved}`}
           </div>)
         })}
 
+       {(customEvents.length === 0) ? null :
+         <div>
+           <div style={{display: 'flex', marginTop: 40}}>
+             <Typography variant="h6">Custom Events</Typography>
+           </div>
+           <table className={classes.table}>
+             <thead>
+               <tr>
+                 <th>Color</th>
+                 <th>Edit</th>
+                 <th>Title</th>
+                 <th>Time</th>
+               </tr>
+            </thead>
+            <tbody>{customEvents.map(event => {return (
+               <tr className={classes.tr}>
+                 <td className={classes.colorPicker} width="50" height="40">
+                  <ColorPicker onColorChange={this.props.onColorChange} event={event}/>
+                 </td>
+                 <td width="40">
+                  <Button>
+                    <CustomEventsDialog
+                      editMode={true}
+                      event={event}
+                      onEditCustomEvent={this.props.onEditCustomEvent}
+                      />
+                  </Button>
+                 </td>
+                 <td>{event.title}</td>
+                 <td>{this.getTimeString(event)}</td>
+               </tr>
+             )})}
+            </tbody>
+           </table>
+       </div>}
       <Snackbar
           anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
           open={this.state.copied}

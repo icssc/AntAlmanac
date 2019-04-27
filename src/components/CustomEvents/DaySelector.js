@@ -7,11 +7,11 @@ class CheckboxLabels extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            monday: false,
-            tuesday: false,
-            wednesday: false,
-            thursday: false,
-            friday: false,
+            monday: this.props.event ? this.props.event.days.includes("M") : false,
+            tuesday: this.props.event ? this.props.event.days.includes("Tu") : false,
+            wednesday: this.props.event ? this.props.event.days.includes("W") : false,
+            thursday: this.props.event ? this.props.event.days.includes("Th") : false,
+            friday: this.props.event ? this.props.event.days.includes("F") : false,
         };
     }
 
