@@ -1,6 +1,13 @@
 import React, { Component, Fragment } from 'react'
 import ColorPicker from './colorPicker'
-import {Button, Menu, MenuItem, Typography} from "@material-ui/core";
+import {
+  Button,
+  Menu,
+  MenuItem,
+  Typography,
+  Snackbar,
+  SnackbarContent
+} from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
 import locations from '../CoursePane/locations.json'
 import RstrPopover from '../CoursePane/RstrPopover'
@@ -17,6 +24,7 @@ const styles = {
       width: '1.5rem',
       borderRadius: '50%',
       margin: 'auto',
+      cursor: 'pointer',
     }
   },
   table: {
@@ -44,10 +52,6 @@ const styles = {
       backgroundColor: '#f5f5f5'
     },
 
-    "&:hover": {
-      color: "blueviolet"
-    },
-
     "& td": {
       border: "1px solid rgb(222, 226, 230)",
       textAlign: "left",
@@ -56,6 +60,12 @@ const styles = {
 
     "& $colorPicker": {
       verticalAlign: 'middle'
+    }
+  },
+  code:{
+    cursor: 'pointer',
+    "&:hover": {
+      color: "blueviolet"
     }
   },
   open: {
@@ -89,7 +99,8 @@ class TabularView extends Component {
     super(props);
 
     this.state = {
-      showF: false,
+      copied: false,
+      clipboard: '',
       anchorEl: null
     };
   }
@@ -117,7 +128,7 @@ class TabularView extends Component {
   handleDropdownClose = () => {
     this.setState({anchorEl: null})
   }
-   myFunction =(event,code) =>{
+   clickToCopy =(event,code) =>{
     if (!event) event = window.event;
     event.cancelBubble = true;
     if (event.stopPropagation) event.stopPropagation();
@@ -128,7 +139,7 @@ class TabularView extends Component {
     Juanito.select();
     document.execCommand("copy");
     document.body.removeChild(Juanito);
-    alert("Copied the text: "+code);
+    this.setState({copied: true, clipboard: code})
   }
   render () {
     const {classes} = this.props;
@@ -245,7 +256,7 @@ class TabularView extends Component {
               </Typography>
 
               {event.prerequisiteLink ? (
-                <Typography variant='h9' style={{flexGrow: "2", marginTop: 9}}>
+                <Typography variant='h6' style={{flexGrow: "2", marginTop: 9}}>
                   <a target="blank" style={{textDecoration: "none", color: "#72a9ed"}}
                      href={event.prerequisiteLink} rel="noopener noreferrer">
                     Prerequisites
@@ -276,7 +287,7 @@ class TabularView extends Component {
                     return (
                       <tr className={classes.tr}>
                         <td className={classes.colorPicker}><ColorPicker onColorChange={this.props.onColorChange} event={item}/></td>
-                        <td onClick={e=>this.myFunction(e, secEach.classCode )}>{secEach.classCode}</td>
+                        <td onClick={e=>this.clickToCopy(e, secEach.classCode )} className={classes.code}>{secEach.classCode}</td>
                         <td className={classes.multiline + " " + classes[secEach.classType]}>
                           {`${secEach.classType}
 Sec ${secEach.sectionCode}
@@ -329,6 +340,18 @@ NOR: ${secEach.numNewOnlyReserved}`}
           </div>)
         })}
 
+      <Snackbar
+          anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+          open={this.state.copied}
+          autoHideDuration={1500}
+          onClose={() => this.setState({ copied: false })}
+          ContentProps={{'aria-describedby': 'message-id',}}
+          message={
+            <span id="message-id">
+              {this.state.clipboard} copied to clipboard.
+            </span>}
+          style={{color: 'green'}}
+        />
 
       </Fragment>
     )

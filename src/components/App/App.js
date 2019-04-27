@@ -223,7 +223,7 @@ class App extends Component {
   }
 
   handleTabChange = (event, value) => {
-    
+
     this.setState({activeTab: value});
   }
 
@@ -523,8 +523,8 @@ class App extends Component {
                       textColor="primary"
                       variant="fullWidth"
                       centered>
-                  <Tab label="Search View"/>
-                  <Tab label="Tabular View"/>
+                  <Tab label="Course Search"/>
+                  <Tab label="Added Courses"/>
                 </Tabs>
               </div>
               <div
@@ -568,7 +568,7 @@ class App extends Component {
                 <Tabs
                   value={this.state.activeTab}
                   onChange={this.handleTabChange}
-                  fullWidth
+                  variant="fullWidth"
                   indicatorColor="primary"
                   textColor="primary"
                 >

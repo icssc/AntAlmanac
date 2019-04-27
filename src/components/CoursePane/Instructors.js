@@ -10,7 +10,7 @@ const styles = theme => ({
   },
   paper: {
     padding: theme.spacing.unit,
-  },
+  }
 });
 
 class Instructors extends React.Component {
@@ -25,7 +25,7 @@ class Instructors extends React.Component {
     setTimeout(() => {
       if (this.state.mouseInPopover)
         this.setState({ anchorEl: oldTarget });
-    }, 1000);
+    }, 500);
   };
 
   handlePopoverClose = () => {
@@ -104,7 +104,7 @@ class Instructors extends React.Component {
           disableRestoreFocus
         >
           <Typography>
-            To EaterEval; See Settings
+            Links to EaterEval; See Settings
           </Typography>
         </Popover>
       </Fragment>
