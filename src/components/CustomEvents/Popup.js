@@ -10,8 +10,7 @@ import {
   Menu,
   FormControl,
   Input,
-  InputLabel,
-  Typography
+  InputLabel
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { Add, Create } from "@material-ui/icons";
@@ -50,14 +49,14 @@ class DialogSelect extends Component {
       end: this.props.editMode ? this.props.event.end.toTimeString().slice(0,5) : "15:30",
       eventName: this.props.editMode ? this.props.event.title : null,
       days: {
-        monday: false,
-        tuesday: false,
-        wednesday: false,
-        thursday: false,
-        friday: false
+        monday: this.props.event ? this.props.event.days.includes("M") : false,
+        tuesday: this.props.event ? this.props.event.days.includes("Tu") : false,
+        wednesday: this.props.event ? this.props.event.days.includes("W") : false,
+        thursday: this.props.event ? this.props.event.days.includes("Th") : false,
+        friday: this.props.event ? this.props.event.days.includes("F") : false,
       },
       anchorEl: null,
-      id: 0
+      id: this.props.editMode ? this.props.event.customEventID : 0
     };
   }
 
@@ -69,14 +68,17 @@ class DialogSelect extends Component {
       end: this.props.editMode ? this.props.event.end.toTimeString().slice(0,5) : "15:30",
       eventName: this.props.editMode ? this.props.event.title : null,
       days: {
-        monday: false,
-        tuesday: false,
-        wednesday: false,
-        thursday: false,
-        friday: false
+        monday: this.props.event ? this.props.event.days.includes("M") : false,
+        tuesday: this.props.event ? this.props.event.days.includes("Tu") : false,
+        wednesday: this.props.event ? this.props.event.days.includes("W") : false,
+        thursday: this.props.event ? this.props.event.days.includes("Th") : false,
+        friday: this.props.event ? this.props.event.days.includes("F") : false,
       },
-      anchorEl: null
+      anchorEl: null,
+      id: this.props.editMode ? this.props.event.customEventID : 0
     });
+    if (!this.props.editMode)
+      this.props.handleSubmenuClose();
   };
 
   handleEventNameChange = event => {
@@ -96,7 +98,7 @@ class DialogSelect extends Component {
   };
 
   handleAddToCalendar = scheduleIndex => {
-    this.props.editMode ? this.editEvent(scheduleIndex) : this.addEvent(scheduleIndex);
+    this.addEvent(scheduleIndex);
   };
 
   handleAddEventButtonClicked = (event) => {
@@ -121,23 +123,19 @@ class DialogSelect extends Component {
     Object.keys(this.state.days).forEach(day => {
       if (this.state.days[day]) {
         events.push({
-          color: "#551a8b",
+          color: this.props.editMode ? this.props.event.color : "#551a8b",
           title: this.state.eventName ? this.state.eventName : "Untitled",
           scheduleIndex: scheduleIndex,
           start: new Date(2018, 0, dayToNum(day), startHour, startMin),
           end: new Date(2018, 0, dayToNum(day), endHour, endMin),
           isCustomEvent: true,
-          customEventID: id
+          customEventID: this.props.editMode ? this.props.event.customEventID : id
         });
       }
     });
 
-    if (events.length > 0) this.props.onAddCustomEvent(events)
-  };
-
-  editEvent = scheduleIndex => {
-    this.addEvent(scheduleIndex);
-    this.props.onClassDelete(this.props.event);
+    if (events.length > 0)
+      this.props.editMode ? this.props.onEditCustomEvent(events, this.props.event) : this.props.onAddCustomEvent(events);
   };
 
   render() {

@@ -397,6 +397,15 @@ class App extends Component {
     this.setState({courseEvents: this.state.courseEvents.concat(events)})
   }
 
+  handleEditCustomEvent = (newEvents, oldEvent) => {
+    let newCourseEvents = this.state.courseEvents.filter(courseEvent => (
+      !courseEvent.isCustomEvent
+      || courseEvent.customEventID !== oldEvent.customEventID
+      || courseEvent.scheduleIndex !== oldEvent.scheduleIndex)
+    );
+    this.setState({courseEvents: newCourseEvents.concat(newEvents)})
+  }
+
   handleClearSchedule = () => {
     if (
       window.confirm(
@@ -546,8 +555,7 @@ class App extends Component {
                     onColorChange={this.handleColorChange}
                     scheduleIndex={this.state.currentScheduleIndex}
                     onCopySchedule={this.handleCopySchedule}
-                    onAddCustomEvent={this.props.onAddCustomEvent}
-                    onClassDelete={this.handleClassDelete}
+                    onEditCustomEvent={this.handleEditCustomEvent}
                   />
                   :
                   (

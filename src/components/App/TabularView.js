@@ -8,7 +8,6 @@ import RstrPopover from '../CoursePane/RstrPopover'
 import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
 import {withStyles} from '@material-ui/core/styles';
-import { Create } from "@material-ui/icons";
 import MouseOverPopover from "../CoursePane/MouseOverPopover";
 import CustomEventsDialog from '../CustomEvents/Popup';
 
@@ -147,6 +146,14 @@ class TabularView extends Component {
       return section
   }
 
+  stripCommas = string => {
+    let result = "";
+    for (let i = 0; i < string.length; i++)
+      if (string[i] != ",")
+        result += string[i];
+    return result;
+  }
+
   getTimeString = event => {
     let startHours = event.start.getHours(), startMinutes = event.start.getMinutes();
     let endHours = event.end.getHours(), endMinutes = event.end.getMinutes();
@@ -155,7 +162,7 @@ class TabularView extends Component {
     let startTime = `${(startHours % 12).toString()}:${startMinutes}`;
     let endTime = `${(endHours % 12).toString()}:${endMinutes}`;
     if (endHours > 12) {endTime += "p"};
-    return `${event.days.join().replace(",","")} ${startTime}-${endTime}`
+    return `${this.stripCommas(event.days.join())} ${startTime}-${endTime}`
   }
 
   handleDropdownOpen = event => {
@@ -183,7 +190,9 @@ class TabularView extends Component {
         if ( ce === undefined) {
           item.days = [day];
           customEvents.push(item);
-        } else {ce.days.push(day)};
+        } else if (ce.days.find(d => d === day) === undefined) {
+          ce.days.push(day)
+        };
       }
 
     const courses = [];
@@ -398,8 +407,7 @@ NOR: ${secEach.numNewOnlyReserved}`}
                     <CustomEventsDialog
                       editMode={true}
                       event={event}
-                      onClassDelete={this.props.onClassDelete}
-                      onAddCustomEvent={this.props.onAddCustomEvent}
+                      onEditCustomEvent={this.props.onEditCustomEvent}
                       />
                   </Button>
                  </td>
