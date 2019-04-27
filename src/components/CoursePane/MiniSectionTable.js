@@ -1,7 +1,6 @@
 import React, {Component, Fragment} from "react";
-import {Menu, MenuItem, IconButton, Typography} from "@material-ui/core";
+import {Menu, MenuItem, IconButton, Typography, Tooltip} from "@material-ui/core";
 import {withStyles} from "@material-ui/core/styles";
-import rmpData from "./RMP.json";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import POPOVER from "./PopOver";
 import Notification from '../Notification';
@@ -13,6 +12,7 @@ import {
   Add,
   ArrowDropDown
 } from '@material-ui/icons'
+import Instructors from "./Instructors";
 
 const styles = {
   table: {
@@ -69,7 +69,19 @@ const styles = {
   Sem: {color: '#2155ff'},
   Stu: {color: '#179523'},
   Tap: {color: '#8d2df0'},
-  Tut: {color: '#ffc705'}
+  Tut: {color: '#ffc705'},
+  lightTooltip: {
+    backgroundColor: 'rgba(255,255,255)',
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: 0,
+    fontSize: 11,
+  },
+  code:{
+    cursor: 'pointer',
+    "&:hover": {
+      color: "blueviolet"
+    }
+  },
 };
 
 class ScheduleAddSelector extends Component {
@@ -98,43 +110,6 @@ class ScheduleAddSelector extends Component {
     }
   };
 
-  redirectRMP = (e, name) => {
-    if (!e) e = window.event;
-    e.cancelBubble = true;
-    if (e.stopPropagation) e.stopPropagation();
-
-    var lastName = name.substring(0, name.indexOf(","));
-    var nameP = rmpData[0][name];
-    if (nameP !== undefined)
-      window.open("https://www.ratemyprofessors.com" + nameP);
-    else
-      window.open(
-        `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
-      );
-  };
-
-  linkRMP = name => {
-    const rmpStyle = {
-      textDecoration: "underline",
-      color: "#0645AD",
-      cursor: "pointer"
-    };
-    return name.map(item => {
-      if (item !== "STAFF") {
-        return (
-          <div
-            style={rmpStyle}
-            onClick={e => {
-              this.redirectRMP(e, item);
-            }}
-          >
-            {item}
-          </div>
-        );
-      } else return item;
-    });
-  };
-
   disableTBA = section => {
     var test = false;
     for (var element of section.meetings[0]) {
@@ -161,6 +136,20 @@ class ScheduleAddSelector extends Component {
                            name={this.props.courseDetails.name}/>;
     else
       return section;
+  };
+
+  clickToCopy =(event,code) =>{
+    if (!event) event = window.event;
+    event.cancelBubble = true;
+    if (event.stopPropagation) event.stopPropagation();
+
+    let Juanito = document.createElement("input");
+    document.body.appendChild(Juanito);
+    Juanito.setAttribute('value',code);
+    Juanito.select();
+    document.execCommand("copy");
+    document.body.removeChild(Juanito);
+    this.setState({copied: true, clipboard: code})
   };
 
   render() {
@@ -198,15 +187,20 @@ class ScheduleAddSelector extends Component {
                 <MenuItem onClick={() => this.handleClose(4)}>Add to all</MenuItem>
               </Menu>
           </td>
-          <td>{section.classCode}</td>
+          <Tooltip title="Click to copy course code" placement="right" classes={{ tooltip: classes.lightTooltip }}>
+            <td onClick={e=>this.clickToCopy(e, section.classCode )} className={classes.code}>{section.classCode}</td>
+          </Tooltip>
           <td className={classes.multiline + " " + classes[section.classType]}>
               {`${section.classType}
 Sec: ${section.sectionCode}
 Units: ${section.units}`}
           </td>
           <td className={classes.multiline}>
-            {/* {this.linkRMP(section.instructors)} */}
-            {section.instructors.join("\n")}
+          <Instructors className={classes.multiline}>
+            {/*this.linkRMP(section.instructors)*/ }
+            {section.instructors}
+          </Instructors>
+              {/* section.instructors.join("\n")*/}
           </td>
           <td className={classes.multiline}>
             {section.meetings.map(meeting => meeting[0]).join("\n")}
@@ -214,14 +208,18 @@ Units: ${section.units}`}
           <td className={classes.multiline}>
             {section.meetings.map(meeting => {
               return (meeting[1] !== "ON LINE" && meeting[1] !== "TBA") ? (
-                <div>
-                  <a href={this.genMapLink(meeting[1])} target="_blank">
+                <Fragment>
+                  <a href={this.genMapLink(meeting[1])} target="_blank" rel="noopener noreferrer">
                     {meeting[1]}
                   </a>
                   <br/>
-                </div>
+                </Fragment>
               ) : (
-                meeting[1]
+                <Fragment>
+                  <a href="https://tinyurl.com/2fcpre6" target="_blank" rel="noopener noreferrer">
+                    {meeting[1]}
+                  </a><br/>
+                </Fragment>
               );
             })}
           </td>
@@ -321,7 +319,7 @@ class MiniSectionTable extends Component {
           </Typography>
 
           {this.props.courseDetails.prerequisiteLink ? (
-            <Typography variant='h9' style={{flexGrow: "2", marginTop: 9}}>
+            <Typography variant='h6' style={{flexGrow: "2", marginTop: 9}}>
               <a target="blank" style={{textDecoration: "none", color: "#72a9ed"}}
                  href={this.props.courseDetails.prerequisiteLink} rel="noopener noreferrer">
                 Prerequisites

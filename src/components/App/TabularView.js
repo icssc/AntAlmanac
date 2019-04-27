@@ -1,8 +1,14 @@
 import React, { Component, Fragment } from 'react'
 import ColorPicker from './colorPicker'
-import {Button, Menu, MenuItem, Typography} from "@material-ui/core";
+import {
+  Button,
+  Menu,
+  MenuItem,
+  Typography,
+  Snackbar,
+  Tooltip
+} from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
-import rmpData from '../CoursePane/RMP.json'
 import locations from '../CoursePane/locations.json'
 import RstrPopover from '../CoursePane/RstrPopover'
 import POPOVER from '../CoursePane/PopOver'
@@ -10,6 +16,7 @@ import Notification from '../Notification'
 import {withStyles} from '@material-ui/core/styles';
 import MouseOverPopover from "../CoursePane/MouseOverPopover";
 import CustomEventsDialog from '../CustomEvents/Popup';
+import Instructors from "../CoursePane/Instructors";
 
 const styles = {
   colorPicker: {
@@ -18,6 +25,7 @@ const styles = {
       width: '1.5rem',
       borderRadius: '50%',
       margin: 'auto',
+      cursor: 'pointer',
     }
   },
   table: {
@@ -45,10 +53,6 @@ const styles = {
       backgroundColor: '#f5f5f5'
     },
 
-    "&:hover": {
-      color: "blueviolet"
-    },
-
     "& td": {
       border: "1px solid rgb(222, 226, 230)",
       textAlign: "left",
@@ -57,6 +61,12 @@ const styles = {
 
     "& $colorPicker": {
       verticalAlign: 'middle'
+    }
+  },
+  code:{
+    cursor: 'pointer',
+    "&:hover": {
+      color: "blueviolet"
     }
   },
   open: {
@@ -82,7 +92,13 @@ const styles = {
   Sem: {color: '#2155ff'},
   Stu: {color: '#179523'},
   Tap: {color: '#8d2df0'},
-  Tut: {color: '#ffc705'}
+  Tut: {color: '#ffc705'},
+  lightTooltip: {
+    backgroundColor: 'rgba(255,255,255)',
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: 0,
+    fontSize: 11,
+  },
 };
 
 class TabularView extends Component {
@@ -90,44 +106,10 @@ class TabularView extends Component {
     super(props);
 
     this.state = {
-      showF: false,
+      copied: false,
+      clipboard: '',
       anchorEl: null
     };
-  }
-  redirectRMP = (e, name) => {
-    if (!e) e = window.event;
-    if (e.stopPropagation) e.stopPropagation()
-
-    var lastName = name.substring(0, name.indexOf(','))
-    var nameP = rmpData[0][name]
-    if (nameP !== undefined)
-      window.open('https://www.ratemyprofessors.com' + nameP)
-    else
-      window.open(
-        `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
-      )
-  }
-
-  linkRMP = name => {
-    const rmpStyle = {
-      textDecoration: 'underline',
-      color: '#0645AD',
-      cursor: 'pointer'
-    }
-    return name.map(item => {
-      if (item !== 'STAFF') {
-        return (
-          <div
-            style={rmpStyle}
-            onClick={e => {
-              this.redirectRMP(e, item)
-            }}
-          >
-            {item}
-          </div>
-        )
-      } else return item
-    })
   }
 
   getMapLink = location => {
@@ -172,7 +154,19 @@ class TabularView extends Component {
   handleDropdownClose = () => {
     this.setState({anchorEl: null})
   }
+   clickToCopy =(event,code) =>{
+    if (!event) event = window.event;
+    event.cancelBubble = true;
+    if (event.stopPropagation) event.stopPropagation();
 
+    let Juanito = document.createElement("input");
+    document.body.appendChild(Juanito);
+    Juanito.setAttribute('value',code);
+    Juanito.select();
+    document.execCommand("copy");
+    document.body.removeChild(Juanito);
+    this.setState({copied: true, clipboard: code})
+  }
   render () {
     const {classes} = this.props;
     const events = this.props.eventsInCalendar;
@@ -275,6 +269,26 @@ class TabularView extends Component {
           </Menu>
         </div>
 
+        {courses.length === 0 ?
+          (
+          <div style={{marginTop: 20}}>
+            <Typography variant="h5">
+              There's nothing here yet ...
+            </Typography>
+            <Typography variant="h6">
+              ... because you haven't added anything to your calendar yet!
+              <br/>
+              <br/>
+              Go to search view to find classes to put into your calendars.
+              <br/>
+              Then come back here to see more details on selected class and change their colors!
+            </Typography>
+            </div>
+          )
+        :
+          (<Fragment />)
+        }
+
         {courses.map(event => {
           return (<div>
             <div
@@ -302,7 +316,7 @@ class TabularView extends Component {
               </Typography>
 
               {event.prerequisiteLink ? (
-                <Typography variant='h9' style={{flexGrow: "2", marginTop: 9}}>
+                <Typography variant='h6' style={{flexGrow: "2", marginTop: 9}}>
                   <a target="blank" style={{textDecoration: "none", color: "#72a9ed"}}
                      href={event.prerequisiteLink} rel="noopener noreferrer">
                     Prerequisites
@@ -332,16 +346,23 @@ class TabularView extends Component {
 
                     return (
                       <tr className={classes.tr}>
-                        <td className={classes.colorPicker}><ColorPicker onColorChange={this.props.onColorChange} event={item}/></td>
-                        <td>{secEach.classCode}</td>
+                        <Tooltip title="Click to change color" placement="right" classes={{ tooltip: classes.lightTooltip }}>
+                          <td className={classes.colorPicker}><ColorPicker onColorChange={this.props.onColorChange} event={item}/></td>
+                        </Tooltip>
+                        <Tooltip title="Click to copy course code" placement="right" classes={{ tooltip: classes.lightTooltip }}>
+                          <td onClick={e=>this.clickToCopy(e, secEach.classCode )} className={classes.code}>{secEach.classCode}</td>
+                        </Tooltip>
                         <td className={classes.multiline + " " + classes[secEach.classType]}>
                           {`${secEach.classType}
 Sec ${secEach.sectionCode}
 ${secEach.units} units`}
                         </td>
                         <td className={classes.multiline}>
+                        <Instructors className={classes.multiline}>
+                            {secEach.instructors}
+                        </Instructors>
                           {/* {this.linkRMP(secEach.instructors)} */}
-                          {secEach.instructors.join('\n')}
+                          {/*secEach.instructors.join('\n')*/}
                         </td>
                         <td className={classes.multiline}>
                           {secEach.meetings.map(meeting => meeting[0]).join('\n')}
@@ -350,7 +371,7 @@ ${secEach.units} units`}
                           {secEach.meetings.map(meeting => {
                             return (meeting[1] !== 'ON LINE' && meeting[1] !== 'TBA') ? (
                               <div>
-                                <a href={this.getMapLink(meeting[1])} target="_blank">
+                                <a href={this.getMapLink(meeting[1])} target="_blank" rel="noopener noreferrer">
                                   {meeting[1]}
                                 </a>
                                 <br/>
@@ -418,6 +439,18 @@ NOR: ${secEach.numNewOnlyReserved}`}
             </tbody>
            </table>
        </div>}
+      <Snackbar
+          anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
+          open={this.state.copied}
+          autoHideDuration={1500}
+          onClose={() => this.setState({ copied: false })}
+          ContentProps={{'aria-describedby': 'message-id',}}
+          message={
+            <span id="message-id">
+              {this.state.clipboard} copied to clipboard.
+            </span>}
+          style={{color: 'green'}}
+        />
 
       </Fragment>
     )

@@ -60,10 +60,11 @@ const genMapLink = location => {
 
 const CourseCalendarEvent = (props) => {
   const {classes, courseInMoreInfo} = props;
-  const {section, name, final, location} = courseInMoreInfo;
+  if (!courseInMoreInfo.isCustomEvent){
+    const {section, name, final, location} = courseInMoreInfo;
 
-  return (
-    <div>
+    return(
+      <div>
       <Paper className={classes.container}>
         <div className={classes.titleBar}>
           <span className={classes.title}>{name[2]}</span>
@@ -79,7 +80,7 @@ const CourseCalendarEvent = (props) => {
             <td className={classes.alignToTop}>Location</td>
             <td className={classes.multiline + " " + classes.rightCells}>
               {(location !== "TBA") ? (
-                  <a href={genMapLink(location)} target="_blank">{location}</a>
+                  <a href={genMapLink(location)} target="_blank" rel="noopener noreferrer">{location}</a>
                 ) : (location)
               }
             </td>
@@ -95,8 +96,15 @@ const CourseCalendarEvent = (props) => {
           </tbody>
         </table>
       </Paper>
-    </div>
-  );
+    </div>);
+  }else{
+    console.log(courseInMoreInfo);
+    return (
+      <div>
+
+      </div>
+    );
+  }
 };
 
 CourseCalendarEvent.propTypes = {
