@@ -124,7 +124,6 @@ class SectionTable extends Component {
   }
 
   disableTBA = section => {
-    //console.log(section.meetings[0] != "TBA", section.meetings[0]);
     let test = false;
     for (let element of section.meetings[0]) {
       if (element === "TBA") {

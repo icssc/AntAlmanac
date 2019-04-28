@@ -132,8 +132,6 @@ class CustomizedSnackbars extends React.Component {
   };
 
   render() {
-
-console.log(this.props.full,"filll");
     return (
       <Fragment>
         {this.props.termName === "2019 Spring"?( <SPopover
