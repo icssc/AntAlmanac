@@ -6,7 +6,7 @@ import {
   MenuItem,
   Typography,
   Snackbar,
-  SnackbarContent
+  Tooltip
 } from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
 import locations from '../CoursePane/locations.json'
@@ -15,6 +15,7 @@ import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
 import {withStyles} from '@material-ui/core/styles';
 import MouseOverPopover from "../CoursePane/MouseOverPopover";
+import CustomEventsDialog from '../CustomEvents/Popup';
 import Instructors from "../CoursePane/Instructors";
 
 const styles = {
@@ -91,7 +92,13 @@ const styles = {
   Sem: {color: '#2155ff'},
   Stu: {color: '#179523'},
   Tap: {color: '#8d2df0'},
-  Tut: {color: '#ffc705'}
+  Tut: {color: '#ffc705'},
+  lightTooltip: {
+    backgroundColor: 'rgba(255,255,255)',
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: 0,
+    fontSize: 11,
+  },
 };
 
 class TabularView extends Component {
@@ -121,6 +128,25 @@ class TabularView extends Component {
       return section
   }
 
+  stripCommas = string => {
+    let result = "";
+    for (let i = 0; i < string.length; i++)
+      if (string[i] !== ",")
+        result += string[i];
+    return result;
+  }
+
+  getTimeString = event => {
+    let startHours = event.start.getHours(), startMinutes = event.start.getMinutes();
+    let endHours = event.end.getHours(), endMinutes = event.end.getMinutes();
+    if (startMinutes < 10) {startMinutes = `0${startMinutes}`};
+    if (endMinutes < 10) {endMinutes = `0${endMinutes}`};
+    let startTime = `${(startHours % 12).toString()}:${startMinutes}`;
+    let endTime = `${(endHours % 12).toString()}:${endMinutes}`;
+    if (endHours > 12) {endTime += "p"};
+    return `${this.stripCommas(event.days.join())} ${startTime}-${endTime}`
+  }
+
   handleDropdownOpen = event => {
     this.setState({anchorEl: event.currentTarget})
   }
@@ -145,9 +171,23 @@ class TabularView extends Component {
     const {classes} = this.props;
     const events = this.props.eventsInCalendar;
     let result = [];
+    let customEvents = [];
     for (let item of events)
       if (!item.isCustomEvent && result.find(function (element) {return element.courseCode === item.courseCode}) === undefined)
         result.push(item);
+
+      else if (item.isCustomEvent) {
+        let day = item.start.toDateString().substring(0,1);
+        if (day === "T") {day = item.start.toDateString().substring(0,2)};
+
+        let ce = customEvents.find(event => event.customEventID === item.customEventID);
+        if ( ce === undefined) {
+          item.days = [day];
+          customEvents.push(item);
+        } else if (ce.days.find(d => d === day) === undefined) {
+          ce.days.push(day)
+        };
+      }
 
     const courses = [];
     let totalUnits = 0;
@@ -229,6 +269,26 @@ class TabularView extends Component {
           </Menu>
         </div>
 
+        {courses.length === 0 ?
+          (
+          <div style={{marginTop: 20}}>
+            <Typography variant="h5">
+              There's nothing here yet ...
+            </Typography>
+            <Typography variant="h6">
+              ... because you haven't added anything to your calendar yet!
+              <br/>
+              <br/>
+              Go to search view to find classes to put into your calendars.
+              <br/>
+              Then come back here to see more details on selected class and change their colors!
+            </Typography>
+            </div>
+          )
+        :
+          (<Fragment />)
+        }
+
         {courses.map(event => {
           return (<div>
             <div
@@ -286,8 +346,12 @@ class TabularView extends Component {
 
                     return (
                       <tr className={classes.tr}>
-                        <td className={classes.colorPicker}><ColorPicker onColorChange={this.props.onColorChange} event={item}/></td>
-                        <td onClick={e=>this.clickToCopy(e, secEach.classCode )} className={classes.code}>{secEach.classCode}</td>
+                        <Tooltip title="Click to change color" placement="right" classes={{ tooltip: classes.lightTooltip }}>
+                          <td className={classes.colorPicker}><ColorPicker onColorChange={this.props.onColorChange} event={item}/></td>
+                        </Tooltip>
+                        <Tooltip title="Click to copy course code" placement="right" classes={{ tooltip: classes.lightTooltip }}>
+                          <td onClick={e=>this.clickToCopy(e, secEach.classCode )} className={classes.code}>{secEach.classCode}</td>
+                        </Tooltip>
                         <td className={classes.multiline + " " + classes[secEach.classType]}>
                           {`${secEach.classType}
 Sec ${secEach.sectionCode}
@@ -340,8 +404,41 @@ NOR: ${secEach.numNewOnlyReserved}`}
           </div>)
         })}
 
+       {(customEvents.length === 0) ? null :
+         <div>
+           <div style={{display: 'flex', marginTop: 40}}>
+             <Typography variant="h6">Custom Events</Typography>
+           </div>
+           <table className={classes.table}>
+             <thead>
+               <tr>
+                 <th>Color</th>
+                 <th>Edit</th>
+                 <th>Title</th>
+                 <th>Time</th>
+               </tr>
+            </thead>
+            <tbody>{customEvents.map(event => {return (
+               <tr className={classes.tr}>
+                 <td className={classes.colorPicker} width="50" height="40">
+                  <ColorPicker onColorChange={this.props.onColorChange} event={event}/>
+                 </td>
+                 <td width="40">
+                  <CustomEventsDialog
+                    editMode={true}
+                    event={event}
+                    onEditCustomEvent={this.props.onEditCustomEvent}
+                    />
+                 </td>
+                 <td>{event.title}</td>
+                 <td>{this.getTimeString(event)}</td>
+               </tr>
+             )})}
+            </tbody>
+           </table>
+       </div>}
       <Snackbar
-          anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+          anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
           open={this.state.copied}
           autoHideDuration={1500}
           onClose={() => this.setState({ copied: false })}

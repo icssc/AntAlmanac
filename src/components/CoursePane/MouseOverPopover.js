@@ -24,7 +24,7 @@ class MouseOverPopover extends React.Component {
     setTimeout(() => {
       if (this.state.mouseInPopover)
         this.setState({ anchorEl: oldTarget });
-    }, 1000);
+    }, 700);
   };
 
   handlePopoverClose = () => {

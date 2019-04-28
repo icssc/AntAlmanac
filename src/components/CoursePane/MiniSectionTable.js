@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from "react";
-import {Menu, MenuItem, IconButton, Typography} from "@material-ui/core";
+import {Menu, MenuItem, IconButton, Typography, Tooltip} from "@material-ui/core";
 import {withStyles} from "@material-ui/core/styles";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import POPOVER from "./PopOver";
@@ -69,7 +69,19 @@ const styles = {
   Sem: {color: '#2155ff'},
   Stu: {color: '#179523'},
   Tap: {color: '#8d2df0'},
-  Tut: {color: '#ffc705'}
+  Tut: {color: '#ffc705'},
+  lightTooltip: {
+    backgroundColor: 'rgba(255,255,255)',
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: 0,
+    fontSize: 11,
+  },
+  code:{
+    cursor: 'pointer',
+    "&:hover": {
+      color: "blueviolet"
+    }
+  },
 };
 
 class ScheduleAddSelector extends Component {
@@ -126,6 +138,20 @@ class ScheduleAddSelector extends Component {
       return section;
   };
 
+  clickToCopy =(event,code) =>{
+    if (!event) event = window.event;
+    event.cancelBubble = true;
+    if (event.stopPropagation) event.stopPropagation();
+
+    let Juanito = document.createElement("input");
+    document.body.appendChild(Juanito);
+    Juanito.setAttribute('value',code);
+    Juanito.select();
+    document.execCommand("copy");
+    document.body.removeChild(Juanito);
+    this.setState({copied: true, clipboard: code})
+  };
+
   render() {
     const {classes} = this.props;
     const section = this.props.section;
@@ -161,7 +187,9 @@ class ScheduleAddSelector extends Component {
                 <MenuItem onClick={() => this.handleClose(4)}>Add to all</MenuItem>
               </Menu>
           </td>
-          <td>{section.classCode}</td>
+          <Tooltip title="Click to copy course code" placement="right" classes={{ tooltip: classes.lightTooltip }}>
+            <td onClick={e=>this.clickToCopy(e, section.classCode )} className={classes.code}>{section.classCode}</td>
+          </Tooltip>
           <td className={classes.multiline + " " + classes[section.classType]}>
               {`${section.classType}
 Sec: ${section.sectionCode}

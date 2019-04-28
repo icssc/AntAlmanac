@@ -398,6 +398,15 @@ class App extends Component {
     this.setState({courseEvents: this.state.courseEvents.concat(events)})
   }
 
+  handleEditCustomEvent = (newEvents, oldEvent) => {
+    let newCourseEvents = this.state.courseEvents.filter(courseEvent => (
+      !courseEvent.isCustomEvent
+      || courseEvent.customEventID !== oldEvent.customEventID
+      || courseEvent.scheduleIndex !== oldEvent.scheduleIndex)
+    );
+    this.setState({courseEvents: newCourseEvents.concat(newEvents)})
+  }
+
   handleClearSchedule = () => {
     if (
       window.confirm(
@@ -419,8 +428,12 @@ class App extends Component {
       return element.color === color && element.scheduleIndex === course.scheduleIndex
     })) {
       for (var item of courses) {
-        if (item.scheduleIndex === course.scheduleIndex && item.courseCode === course.courseCode && item.courseTerm === course.courseTerm)
-          item.color = color
+        if (course.isCustomEvent) {
+          if (item.scheduleIndex === course.scheduleIndex && item.customEventID === course.customEventID)
+            item.color = color;
+        }
+        else if (item.scheduleIndex === course.scheduleIndex && item.courseCode === course.courseCode && item.courseTerm === course.courseTerm)
+          item.color = color;
       }
       this.setState({
         courseEvents: courses, unavailableColors: this.state.unavailableColors.concat(
@@ -509,6 +522,7 @@ class App extends Component {
                 onScheduleChange={this.handleScheduleChange}
                 onAddCustomEvent={this.handleAddCustomEvent}
                 onClearSchedule={this.handleClearSchedule}
+                onEditCustomEvent={this.handleEditCustomEvent}
               />
             </div>
           </Grid>
@@ -523,8 +537,8 @@ class App extends Component {
                       textColor="primary"
                       variant="fullWidth"
                       centered>
-                  <Tab label="Course Search"/>
-                  <Tab label="Added Courses"/>
+                  <Tab label="Class Search"/>
+                  <Tab label="Added Classes"/>
                 </Tabs>
               </div>
               <div
@@ -543,6 +557,7 @@ class App extends Component {
                     onColorChange={this.handleColorChange}
                     scheduleIndex={this.state.currentScheduleIndex}
                     onCopySchedule={this.handleCopySchedule}
+                    onEditCustomEvent={this.handleEditCustomEvent}
                   />
                   :
                   (

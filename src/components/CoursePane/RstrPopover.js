@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import PropTypes from 'prop-types';
 import Popover from '@material-ui/core/Popover';
 import Typography from '@material-ui/core/Typography';
@@ -76,7 +76,7 @@ class RstrPopover extends React.Component {
           disableRestoreFocus
         >
           <Typography>{this.parseRstr(this.props.restrictions).map( r =>
-            <p>{r}</p>
+            <Fragment>{r}<br/></Fragment>
           )}</Typography>
         </Popover>
       </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Popover from '@material-ui/core/Popover';
+import {Popover, Tooltip} from '@material-ui/core';
 import {SketchPicker} from 'react-color'
 
 class ColorPicker extends React.Component {
@@ -41,25 +41,28 @@ class ColorPicker extends React.Component {
     const open = Boolean(anchorEl);
 
     return (
+      <Tooltip title="Modify Color">
       <div
         style={{backgroundColor: this.props.event.color}}
         onClick={e => {this.handleClick(e)}}>
-        <Popover
-          open={open}
-          anchorEl={anchorEl}
-          onClose={this.handleClose}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-          }}
-        >
-          <SketchPicker color={this.state.color}
-                        onChange={this.handleColorChange}/> </Popover>
+          <Popover
+            open={open}
+            anchorEl={anchorEl}
+            onClose={this.handleClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+          >
+            <SketchPicker color={this.state.color}
+                          onChange={this.handleColorChange}/>
+          </Popover>
       </div>
+      </Tooltip>
     );
   }
 }
