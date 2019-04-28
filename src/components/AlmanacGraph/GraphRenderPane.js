@@ -37,7 +37,6 @@ class GraphRenderPane extends Component {
           this.props.section.classCode
         );
       });
-<<<<<<< HEAD
     }
   }
 
@@ -51,22 +50,6 @@ class GraphRenderPane extends Component {
         );
     });
   };
-=======
-      */
-      this.fetchclassData()
-    }
-  }
-
-  // will display w18 graphs only
-  fetchclassData = async () =>{
-    const url = `https://almanac-graphs.herokuapp.com/${this.props.quarter+this.props.year}/${this.props.section.classCode}`
-    const res = await fetch(url)
-    if(res.status === 200){
-    const data = await res.json()
-    this.setState({data})
-    }
-  }
->>>>>>> 0fa4b5f83fd601644a060140d9016339078b29c1
 
   fetchGraph(quarter, year, code) {
     const url = `https://almanac-graphs.herokuapp.com/${quarter+year}/${code}`
