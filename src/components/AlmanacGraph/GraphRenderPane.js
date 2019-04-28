@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { Button } from "@material-ui/core";
 import PropTypes from "prop-types";
-import Rechart from './rechart'
-
 const styles = () => ({
   multiline: {
     whiteSpace: "pre"
@@ -52,13 +50,12 @@ class GraphRenderPane extends Component {
   };
 
   fetchGraph(quarter, year, code) {
-    const url = `https://almanac-graphs.herokuapp.com/${quarter+year}/${code}`
-    console.log(url)
-   
+    const url = `https://l5qp88skv9.execute-api.us-west-1.amazonaws.com/dev/${quarter}/${year}/${code}`;
+
     fetch(url, { signal: this.signal })
-      .then(resp => resp.json())
+      .then(resp => resp.text())
       .then(resp => {
-        this.setState({ graph: resp  });
+        this.setState({ graph: { __html: resp } });
       });
   }
 
@@ -103,7 +100,10 @@ Units: ${this.props.section.units}`}
               OPEN/CLOSE
             </Button>
             {this.state.open ? (
-               <Rechart rawData={this.state.graph} />
+              <div
+                style={{ width: "85%" }}
+                dangerouslySetInnerHTML={this.state.graph}
+              />
             ) : null}
           </div>
         }
