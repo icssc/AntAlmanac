@@ -10,7 +10,10 @@ export default class Graph extends Component {
     };
   
 	render () {
+<<<<<<< HEAD:src/components/AlmanacGraph/Rechart.js
    // console.log(this.props.rawData)
+=======
+>>>>>>> 0fa4b5f83fd601644a060140d9016339078b29c1:src/components/AlmanacGraph/rechart.js
   	return (
     	<LineChart width={950} height={500} data={this.props.rawData}
             margin={{top: 25, right: 30, left: 70, bottom: 5}}>

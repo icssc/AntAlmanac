@@ -103,7 +103,6 @@ const CourseCalendarEvent = (props) => {
       </Paper>
     </div>);
   }else{
-    console.log(courseInMoreInfo);
     const {title} = courseInMoreInfo;
     return (
       <div>

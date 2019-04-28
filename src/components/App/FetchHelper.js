@@ -93,7 +93,6 @@ async function getCoursesData(userData) {
             break;
           }
         }
-        console.log(foundData);
         if(foundData!==null)
         events.push(...calendarize(foundData.section, courseEvent.color, courseEvent.courseTerm, courseEvent.scheduleIndex, foundData.courseName,foundData.prerequisiteLink));
       }
