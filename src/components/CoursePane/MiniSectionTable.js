@@ -95,7 +95,7 @@ class ScheduleAddSelector extends Component {
   };
 
   handleAddCurrent = (event) => {
-    this.handleClose(5); //add to current
+    this.handleClose(this.props.currentScheduleIndex); //add to current
   };
 
   handleClose = scheduleNumber => {
@@ -111,8 +111,8 @@ class ScheduleAddSelector extends Component {
   };
 
   disableTBA = section => {
-    var test = false;
-    for (var element of section.meetings[0]) {
+    let test = false
+    for (const element of section.meetings[0]) {
       if (element === "TBA") {
         test = true;
         break;
@@ -143,12 +143,12 @@ class ScheduleAddSelector extends Component {
     event.cancelBubble = true;
     if (event.stopPropagation) event.stopPropagation();
 
-    let Juanito = document.createElement("input");
-    document.body.appendChild(Juanito);
-    Juanito.setAttribute('value',code);
-    Juanito.select();
+    let tempEventTarget = document.createElement("input");
+    document.body.appendChild(tempEventTarget);
+    tempEventTarget.setAttribute('value',code);
+    tempEventTarget.select();
     document.execCommand("copy");
-    document.body.removeChild(Juanito);
+    document.body.removeChild(tempEventTarget);
     this.setState({copied: true, clipboard: code})
   };
 
@@ -351,6 +351,7 @@ class MiniSectionTable extends Component {
                 section={section}
                 courseDetails={this.props.courseDetails}
                 termName={this.props.termName}
+                currentScheduleIndex={this.props.currentScheduleIndex}
               />
             );
           })}

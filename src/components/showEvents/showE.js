@@ -17,7 +17,7 @@ class ScheduleAddSelector extends Component {
   };
 
   handleClose = scheduleNumber => {
-    
+
     this.setState({ anchor: null });
     if (scheduleNumber !== -1)
       this.props.onAddClass(
@@ -25,7 +25,7 @@ class ScheduleAddSelector extends Component {
         this.props.name,
         scheduleNumber,
         this.props.termName,
-        
+
       );
   };
 
@@ -67,7 +67,6 @@ class ScheduleAddSelector extends Component {
   };
 
   disableTBA = section => {
-    //console.log(section.meetings[0] != "TBA", section.meetings[0]);
     var test = false;
     for (var element of section.meetings[0]) {
       if (element === "TBA") {
@@ -166,7 +165,6 @@ class scheduleTableDisplay extends Component {
   }
 
   redirectRMP = async name => {
-    //console.log(name);
     var lastName = name.substring(0, name.indexOf(","));
     var nameP = rmpData[0][name];
     if (nameP !== undefined)

@@ -10,7 +10,6 @@ export default class Graph extends Component {
     };
   
 	render () {
-    console.log(this.props.rawData)
   	return (
     	<LineChart width={950} height={500} data={this.props.rawData}
             margin={{top: 25, right: 30, left: 70, bottom: 5}}>

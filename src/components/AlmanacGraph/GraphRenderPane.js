@@ -28,7 +28,6 @@ class GraphRenderPane extends Component {
       
       });
       */
-     console.log(prevProps)
       this.fetchclassData()
     }
   }
@@ -37,7 +36,6 @@ class GraphRenderPane extends Component {
   fetchclassData = async () =>{
     const url = `https://almanac-graphs.herokuapp.com/${this.props.quarter+this.props.year}/${this.props.section.classCode}`
     const res = await fetch(url)
-    console.log(url)
     if(res.status === 200){
     const data = await res.json()
     this.setState({data})
@@ -55,8 +53,6 @@ class GraphRenderPane extends Component {
  */
 
   render() {
-    console.log(this.state)
-    console.log(this.props)
     return (
       <div>
         <table>

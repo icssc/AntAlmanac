@@ -89,6 +89,7 @@ class CourseRenderPane extends Component {
       ) : (
         <Grid item md={12} xs={12}>
           <MiniSectionTable
+            currentScheduleIndex={this.props.currentScheduleIndex}
             name={
               SOCObject.name[0] +
               " " +

@@ -69,8 +69,6 @@ function ExportButton(props) {
       <Button
         style={{"width": "100%", "padding-right": "11px"}}
         onClick={() => {
-          console.log(eventsInCalendar);
-
           var added = []; // keep track of events already added in ics file to avoid duplicate events
           var cal = ics(); // initialize ics file
 

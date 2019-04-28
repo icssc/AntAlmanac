@@ -61,9 +61,7 @@ class Sharing extends React.Component {
                 }
                 return res.json();
               })
-              .then(images => {
-                console.log("ok", images[0]);
-                this.setState({ image: images[0].secure_url, loading: false });
+              .then(images => {this.setState({ image: images[0].secure_url, loading: false });
               })
               .catch(err => {});
           });
