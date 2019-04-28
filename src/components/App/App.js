@@ -337,6 +337,7 @@ class App extends Component {
   }
 
   handleScheduleChange = direction => {
+    
     if (direction === 0) {
       this.setState({
         showFinalSchedule: false, currentScheduleIndex: (this.state.currentScheduleIndex - 1 + 4) % 4
@@ -448,6 +449,8 @@ class App extends Component {
       }
     })
   }
+
+  
 
   render () {
     return (

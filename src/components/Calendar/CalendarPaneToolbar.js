@@ -5,6 +5,8 @@ import {ChevronLeft, ChevronRight, Undo} from "@material-ui/icons";
 import PropTypes from "prop-types";
 import Submenu from "./Submenu"
 import DownloadMenu from "./DownloadMenu";
+import Input from '@material-ui/core/Input';
+import InputBase from '@material-ui/core/InputBase';
 
 const styles = {
   toolbar: {
@@ -22,17 +24,53 @@ const styles = {
   }
 };
 
+
+
 class CalendarPaneToolbar extends Component {
+
+  constructor (props) {
+    super(props)
+
+    this.state = {
+    schedule:-1,
+    name : 'Schedule 1'
+    }
+
+  }
+ onScheduleName = (e)=>{
+   window.localStorage.setItem("schedule"+this.props.currentScheduleIndex, e.target.value);
+   this.setState({name:e.target.value})
+}
   render() {
     const {classes} = this.props;
+
+  if(this.state.schedule!=this.props.currentScheduleIndex)
+  { 
+    let scheduleName = 'Schedule ' + (this.props.currentScheduleIndex + 1);
+    if (typeof Storage !== "undefined") {
+      const nameSchedule = window.localStorage.getItem("schedule"+this.props.currentScheduleIndex);
+      if (nameSchedule !== null) {
+        scheduleName = nameSchedule;
+      }
+    }
+    this.setState({schedule:this.props.currentScheduleIndex,name:scheduleName});
+
+  }
 
     return (
       <div className={classes.toolbar}>
         <IconButton onClick={() => this.props.onScheduleChange(0)}>
           <ChevronLeft fontSize='small'/>
         </IconButton>
-        <Typography variant="subheading" className={classes.inline}>
-          {'Schedule ' + (this.props.currentScheduleIndex + 1)}
+        <Typography  variant="subheading" className={classes.inline}>
+        {/* <Input
+        defaultValue={'Schedule ' + (this.props.currentScheduleIndex + 1)}
+        className={classes.input}
+        inputProps={{
+          'aria-label': 'Description',
+        }}
+      /> */}
+           <InputBase style = {{width: 70}} onChange={this.onScheduleName}  value={this.state.name} />
         </Typography>
         <IconButton onClick={() => this.props.onScheduleChange(1)}>
           <ChevronRight fontSize='small'/>
