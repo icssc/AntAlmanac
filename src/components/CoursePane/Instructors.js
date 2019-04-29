@@ -2,6 +2,7 @@ import React, {Fragment} from 'react';
 import PropTypes from 'prop-types';
 import {Popover, Typography} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import rmpData from "./RMP.json";
 
 const styles = theme => ({
   popover: {
@@ -9,10 +10,10 @@ const styles = theme => ({
   },
   paper: {
     padding: theme.spacing.unit,
-  },
+  }
 });
 
-class MouseOverPopover extends React.Component {
+class Instructors extends React.Component {
   state = {
     anchorEl: null,
     mouseInPopover: false
@@ -24,11 +25,47 @@ class MouseOverPopover extends React.Component {
     setTimeout(() => {
       if (this.state.mouseInPopover)
         this.setState({ anchorEl: oldTarget });
-    }, 700);
+    }, 500);
   };
 
   handlePopoverClose = () => {
     this.setState({ anchorEl: null, mouseInPopover: false });
+  };
+
+  redirect = (e, name) => {
+    if (!e) e = window.event;
+    e.cancelBubble = true;
+    if (e.stopPropagation) e.stopPropagation();
+
+    var lastName = name.substring(0, name.indexOf(","));
+    var nameP = rmpData[0][name];
+    if (nameP !== undefined)
+      window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
+      //window.open("https://www.ratemyprofessors.com" + nameP);
+    else
+      window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
+  };
+
+  linkRMP = name => {
+    const rmpStyle = {
+      textDecoration: "underline",
+      color: "#0645AD",
+      cursor: "pointer"
+    };
+    return name.map(item => {
+      if (item !== "STAFF") {
+        return (
+          <div
+            style={rmpStyle}
+            onClick={e => {
+              this.redirect(e, item);
+            }}
+          >
+            {item}
+          </div>
+        );
+      } else return item;
+    });
   };
 
   render() {
@@ -45,7 +82,7 @@ class MouseOverPopover extends React.Component {
           onMouseLeave={this.handlePopoverClose}
           className={this.props.className}
         >
-        {this.props.children}
+        {this.linkRMP(this.props.children)}
         </Typography>
         <Popover
           id="mouse-over-popover"
@@ -67,11 +104,7 @@ class MouseOverPopover extends React.Component {
           disableRestoreFocus
         >
           <Typography>
-                Enrolled/Capacity
-                <br></br>
-                Waitlist
-                <br></br>
-                New Only Reserved
+            Links to EaterEval; See Settings
           </Typography>
         </Popover>
       </Fragment>
@@ -79,8 +112,8 @@ class MouseOverPopover extends React.Component {
   }
 }
 
-MouseOverPopover.propTypes = {
+Instructors.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(MouseOverPopover);
+export default withStyles(styles)(Instructors);

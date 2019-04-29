@@ -26,7 +26,7 @@ class Submenu extends React.Component {
 
   render() {
 
-    const events = this.props.eventsInCalendar
+    const events = this.props.eventsInCalendar;
 
     let result = [];
     let finalSchedule =[];
@@ -96,13 +96,21 @@ class Submenu extends React.Component {
             <MenuItem disableGutters>
               <CustomEventsDialog
                   onAddCustomEvent={this.props.onAddCustomEvent}
+                  handleSubmenuClose={this.handleClose}
               />
             </MenuItem>
             <MenuItem>
               <FinalSwitch  displayFinal={this.props.displayFinal} schedule={finalSchedule} showFinalSchedule = {this.props.showFinalSchedule}/>
             </MenuItem>
             <MenuItem disableGutters>
-                <Button onClick={this.props.onClearSchedule} style={{width: "100%"}}>
+                <Button
+                  disableRipple={true}
+                  onClick={() => {
+                    this.props.onClearSchedule()
+                    this.handleClose()
+                  }}
+                  style={{width: "100%"}}
+                  className={"menu-button"}>
                     <Delete/> Clear All
                 </Button>
             </MenuItem>

@@ -1,14 +1,22 @@
 import React, { Component, Fragment } from 'react'
 import ColorPicker from './colorPicker'
-import {Typography} from "@material-ui/core";
+import {
+  Button,
+  Menu,
+  MenuItem,
+  Typography,
+  Snackbar,
+  Tooltip
+} from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
-import rmpData from '../CoursePane/RMP.json'
 import locations from '../CoursePane/locations.json'
 import RstrPopover from '../CoursePane/RstrPopover'
 import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
 import {withStyles} from '@material-ui/core/styles';
 import MouseOverPopover from "../CoursePane/MouseOverPopover";
+import CustomEventsDialog from '../CustomEvents/Popup';
+import Instructors from "../CoursePane/Instructors";
 
 const styles = {
   colorPicker: {
@@ -17,6 +25,7 @@ const styles = {
       width: '1.5rem',
       borderRadius: '50%',
       margin: 'auto',
+      cursor: 'pointer',
     }
   },
   table: {
@@ -44,10 +53,6 @@ const styles = {
       backgroundColor: '#f5f5f5'
     },
 
-    "&:hover": {
-      color: "blueviolet"
-    },
-
     "& td": {
       border: "1px solid rgb(222, 226, 230)",
       textAlign: "left",
@@ -56,6 +61,12 @@ const styles = {
 
     "& $colorPicker": {
       verticalAlign: 'middle'
+    }
+  },
+  code:{
+    cursor: 'pointer',
+    "&:hover": {
+      color: "blueviolet"
     }
   },
   open: {
@@ -81,7 +92,13 @@ const styles = {
   Sem: {color: '#2155ff'},
   Stu: {color: '#179523'},
   Tap: {color: '#8d2df0'},
-  Tut: {color: '#ffc705'}
+  Tut: {color: '#ffc705'},
+  lightTooltip: {
+    backgroundColor: 'rgba(255,255,255)',
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: 0,
+    fontSize: 11,
+  },
 };
 
 class TabularView extends Component {
@@ -89,43 +106,10 @@ class TabularView extends Component {
     super(props);
 
     this.state = {
-     showF:false
+      copied: false,
+      clipboard: '',
+      anchorEl: null
     };
-  }
-  redirectRMP = (e, name) => {
-    if (!e) e = window.event;
-    if (e.stopPropagation) e.stopPropagation()
-
-    var lastName = name.substring(0, name.indexOf(','))
-    var nameP = rmpData[0][name]
-    if (nameP !== undefined)
-      window.open('https://www.ratemyprofessors.com' + nameP)
-    else
-      window.open(
-        `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
-      )
-  }
-
-  linkRMP = name => {
-    const rmpStyle = {
-      textDecoration: 'underline',
-      color: '#0645AD',
-      cursor: 'pointer'
-    }
-    return name.map(item => {
-      if (item !== 'STAFF') {
-        return (
-          <div
-            style={rmpStyle}
-            onClick={e => {
-              this.redirectRMP(e, item)
-            }}
-          >
-            {item}
-          </div>
-        )
-      } else return item
-    })
   }
 
   getMapLink = location => {
@@ -144,14 +128,66 @@ class TabularView extends Component {
       return section
   }
 
+  stripCommas = string => {
+    let result = "";
+    for (let i = 0; i < string.length; i++)
+      if (string[i] !== ",")
+        result += string[i];
+    return result;
+  }
+
+  getTimeString = event => {
+    let startHours = event.start.getHours(), startMinutes = event.start.getMinutes();
+    let endHours = event.end.getHours(), endMinutes = event.end.getMinutes();
+    if (startMinutes < 10) {startMinutes = `0${startMinutes}`};
+    if (endMinutes < 10) {endMinutes = `0${endMinutes}`};
+    let startTime = `${(startHours % 12).toString()}:${startMinutes}`;
+    let endTime = `${(endHours % 12).toString()}:${endMinutes}`;
+    if (endHours > 12) {endTime += "p"};
+    return `${this.stripCommas(event.days.join())} ${startTime}-${endTime}`
+  }
+
+  handleDropdownOpen = event => {
+    this.setState({anchorEl: event.currentTarget})
+  }
+
+  handleDropdownClose = () => {
+    this.setState({anchorEl: null})
+  }
+   clickToCopy =(event,code) =>{
+    if (!event) event = window.event;
+    event.cancelBubble = true;
+    if (event.stopPropagation) event.stopPropagation();
+
+    let Juanito = document.createElement("input");
+    document.body.appendChild(Juanito);
+    Juanito.setAttribute('value',code);
+    Juanito.select();
+    document.execCommand("copy");
+    document.body.removeChild(Juanito);
+    this.setState({copied: true, clipboard: code})
+  }
   render () {
     const {classes} = this.props;
     const events = this.props.eventsInCalendar;
-    console.log("dddd",events);
     let result = [];
+    let customEvents = [];
     for (let item of events)
       if (!item.isCustomEvent && result.find(function (element) {return element.courseCode === item.courseCode}) === undefined)
         result.push(item);
+
+      else if (item.isCustomEvent) {
+        let day = item.start.toDateString().substring(0,1);
+        if (day === "T") {day = item.start.toDateString().substring(0,2)};
+
+        let ce = customEvents.find(event => event.customEventID === item.customEventID);
+        if ( ce === undefined) {
+          item.days = [day];
+          customEvents.push(item);
+        } else if (ce.days.find(d => d === day) === undefined) {
+          ce.days.push(day)
+        };
+      }
 
     const courses = [];
     let totalUnits = 0;
@@ -179,15 +215,81 @@ class TabularView extends Component {
         totalUnits += Number(course.section.units);
     }
 
+
     return (
       <Fragment>
-        <div className={classes.container}>
-          <Typography variant="title">
+        <div
+          className={classes.container}
+          style={{display:'inline-flex',
+            width:"100%",
+            position: "relative",
+            marginBottom: 10}}>
+
+          <Typography
+              variant="title"
+              style={{
+                position: "absolute",
+                width: "50%",
+                top: "50%",
+                transform: "translateY(-50%)"}}>
             Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)
           </Typography>
+
+          <Button
+            aria-owns={this.state.anchor ? 'simple-menu' : undefined}
+            aria-haspopup="true"
+            onClick={this.handleDropdownOpen}
+            style={{
+              position: "absolute",
+              top: "50%",
+              right: "0",
+              transform: "translateY(-50%)"}}>
+            Copy Schedule
+          </Button>
+
+          <Menu
+            id="copyScheduleDropdown"
+            anchorEl={this.state.anchorEl}
+            open={Boolean(this.state.anchorEl)}
+            onClose={this.handleDropdownClose}>
+
+            {[0, 1, 2, 3].map( (index) => {
+              return <MenuItem disabled={this.props.scheduleIndex===index} onClick={ () => {
+                this.props.onCopySchedule(index)
+                this.handleDropdownClose()}}>
+                Copy to Schedule {index+1}
+              </MenuItem>
+            })}
+
+            <MenuItem onClick={ () => {
+              this.props.onCopySchedule(4)
+              this.handleDropdownClose()}}>
+              Copy to All Schedules
+            </MenuItem>
+          </Menu>
         </div>
+
+        {courses.length === 0 ?
+          (
+          <div style={{marginTop: 20}}>
+            <Typography variant="h5">
+              There's nothing here yet ...
+            </Typography>
+            <Typography variant="h6">
+              ... because you haven't added anything to your calendar yet!
+              <br/>
+              <br/>
+              Go to search view to find classes to put into your calendars.
+              <br/>
+              Then come back here to see more details on selected class and change their colors!
+            </Typography>
+            </div>
+          )
+        :
+          (<Fragment />)
+        }
+
         {courses.map(event => {
-          console.log(event)
           return (<div>
             <div
               style={{
@@ -214,7 +316,7 @@ class TabularView extends Component {
               </Typography>
 
               {event.prerequisiteLink ? (
-                <Typography variant='h9' style={{flexGrow: "2", marginTop: 9}}>
+                <Typography variant='h6' style={{flexGrow: "2", marginTop: 9}}>
                   <a target="blank" style={{textDecoration: "none", color: "#72a9ed"}}
                      href={event.prerequisiteLink} rel="noopener noreferrer">
                     Prerequisites
@@ -244,16 +346,23 @@ class TabularView extends Component {
 
                     return (
                       <tr className={classes.tr}>
-                        <td className={classes.colorPicker}><ColorPicker onColorChange={this.props.onColorChange} event={item}/></td>
-                        <td>{secEach.classCode}</td>
+                        <Tooltip title="Click to change color" placement="right" classes={{ tooltip: classes.lightTooltip }}>
+                          <td className={classes.colorPicker}><ColorPicker onColorChange={this.props.onColorChange} event={item}/></td>
+                        </Tooltip>
+                        <Tooltip title="Click to copy course code" placement="right" classes={{ tooltip: classes.lightTooltip }}>
+                          <td onClick={e=>this.clickToCopy(e, secEach.classCode )} className={classes.code}>{secEach.classCode}</td>
+                        </Tooltip>
                         <td className={classes.multiline + " " + classes[secEach.classType]}>
                           {`${secEach.classType}
 Sec ${secEach.sectionCode}
 ${secEach.units} units`}
                         </td>
                         <td className={classes.multiline}>
+                        <Instructors className={classes.multiline}>
+                            {secEach.instructors}
+                        </Instructors>
                           {/* {this.linkRMP(secEach.instructors)} */}
-                          {secEach.instructors.join('\n')}
+                          {/*secEach.instructors.join('\n')*/}
                         </td>
                         <td className={classes.multiline}>
                           {secEach.meetings.map(meeting => meeting[0]).join('\n')}
@@ -262,7 +371,7 @@ ${secEach.units} units`}
                           {secEach.meetings.map(meeting => {
                             return (meeting[1] !== 'ON LINE' && meeting[1] !== 'TBA') ? (
                               <div>
-                                <a href={this.getMapLink(meeting[1])} target="_blank">
+                                <a href={this.getMapLink(meeting[1])} target="_blank" rel="noopener noreferrer">
                                   {meeting[1]}
                                 </a>
                                 <br/>
@@ -295,6 +404,51 @@ NOR: ${secEach.numNewOnlyReserved}`}
           </div>)
         })}
 
+       {(customEvents.length === 0) ? null :
+         <div>
+           <div style={{display: 'flex', marginTop: 40}}>
+             <Typography variant="h6">Custom Events</Typography>
+           </div>
+           <table className={classes.table}>
+             <thead>
+               <tr>
+                 <th>Color</th>
+                 <th>Edit</th>
+                 <th>Title</th>
+                 <th>Time</th>
+               </tr>
+            </thead>
+            <tbody>{customEvents.map(event => {return (
+               <tr className={classes.tr}>
+                 <td className={classes.colorPicker} width="50" height="40">
+                  <ColorPicker onColorChange={this.props.onColorChange} event={event}/>
+                 </td>
+                 <td width="40">
+                  <CustomEventsDialog
+                    editMode={true}
+                    event={event}
+                    onEditCustomEvent={this.props.onEditCustomEvent}
+                    />
+                 </td>
+                 <td>{event.title}</td>
+                 <td>{this.getTimeString(event)}</td>
+               </tr>
+             )})}
+            </tbody>
+           </table>
+       </div>}
+      <Snackbar
+          anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
+          open={this.state.copied}
+          autoHideDuration={1500}
+          onClose={() => this.setState({ copied: false })}
+          ContentProps={{'aria-describedby': 'message-id',}}
+          message={
+            <span id="message-id">
+              {this.state.clipboard} copied to clipboard.
+            </span>}
+          style={{color: 'green'}}
+        />
 
       </Fragment>
     )
