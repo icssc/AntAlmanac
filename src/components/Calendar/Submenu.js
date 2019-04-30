@@ -61,11 +61,9 @@ class Submenu extends React.Component {
               />
             </MenuItem>
             <MenuItem>
-                <ClearSchedButton />
-                
-                {/*<Button onClick={this.props.onClearSchedule} style={{width: "100%"}}>
-                    <Delete/> Hello World
-        </Button>*/}
+                <ClearSchedButton 
+                handleClearSchedule={this.props.handleClearSchedule}
+                />
             </MenuItem>
             <MenuItem>
               <Sharing onTakeScreenshot={this.props.onTakeScreenshot} />

@@ -47,8 +47,9 @@ class CalendarPaneToolbar extends Component {
                         <Submenu
                           onAddCustomEvent={this.props.onAddCustomEvent}
                           setID={this.props.setID}
-                          onClearSchedule={this.props.onClearSchedule}
+                          // onClearSchedule={this.props.onClearSchedule}
                           onTakeScreenshot={this.props.onTakeScreenshot}
+                          handleClearSchedule={this.props.handleClearSchedule}
                         />
                       </Tooltip>
                 </Toolbar>

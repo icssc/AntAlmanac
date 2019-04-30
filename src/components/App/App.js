@@ -180,6 +180,16 @@ class App extends Component {
     }
   };
 
+  handleClearSchedule = (toDelete) =>{
+    //toKeep is an array
+    const eventsThatAreDeleted = this.state.courseEvents.filter(courseEvent => !(toDelete.includes(courseEvent.scheduleIndex) ))
+    
+    console.log(toDelete, this.state.courseEvents)
+
+    this.setState({courseEvents: eventsThatAreDeleted})
+  }
+
+
   handleClassDelete = (deletedEvent) => {
     const eventsAfterRemovingItem = [];
 
@@ -356,20 +366,6 @@ class App extends Component {
     this.setState({courseEvents: this.state.courseEvents.concat(events)});
   };
 
-  handleClearSchedule = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to clear all your schedules?"
-      )
-    ) {
-      this.setState({
-        backupArray: this.state.backupArray.concat(this.state.courseEvents),
-        courseEvents: [],
-        unavailableColors: [],
-      });
-    }
-  };
-
   colorChange =(course,color)=>
   {
     let courses = this.state.courseEvents;
@@ -475,8 +471,9 @@ displayFinal =(schedule)=>
                 onScheduleChange={this.handleScheduleChange}
                 onAddCustomEvent={this.handleAddCustomEvent}
                 setID={this.setID}
-                onClearSchedule={this.handleClearSchedule}
+                // onClearSchedule={this.handleClearSchedule}
                 showFinalSchedul={this.showFinalSchedule}
+                handleClearSchedule={this.handleClearSchedule}
               />
             </div>
           </Grid>

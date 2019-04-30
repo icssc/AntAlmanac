@@ -102,11 +102,13 @@ class Calendar extends Component {
             <div className={classes.container}>
                 <CalendarPaneToolbar
                     onScheduleChange={this.props.onScheduleChange}
-                    onClearSchedule={this.props.onClearSchedule}
+                    // onClearSchedule={this.props.onClearSchedule}
                     onUndo={this.props.onUndo}
                     onAddCustomEvent={this.props.onAddCustomEvent}
                     onTakeScreenshot={this.handleTakeScreenshot}
                     currentScheduleIndex={this.props.currentScheduleIndex}
+                    handleClearSchedule={this.props.handleClearSchedule}
+                    // pass onClearSchedule
                 />
                 <Paper style = {{boxShadow:"none"}}>
                     <div id="screenshot"
