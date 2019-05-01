@@ -101,6 +101,7 @@ class CourseRenderPane extends Component {
             courseDetails={SOCObject}
             onAddClass={this.props.onAddClass}
             termName={this.props.termName}
+            destination={this.props.destination}
           />
         </Grid>
       );
@@ -134,6 +135,7 @@ class CourseRenderPane extends Component {
               onDismissDetails={this.handleDismissDetails}
               onAddClass={this.props.onAddClass}
               termName={this.props.termName}
+              destination={this.props.destination}
             />
           </Modal>
 

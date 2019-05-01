@@ -8,7 +8,8 @@ import {
   Tooltip,
   Tabs,
   Hidden,
-  Tab
+  Tab,
+  Button
 } from '@material-ui/core'
 import Logo_tight from './logo_tight.png'
 import Logo_wide from './logo_wide.png'
@@ -43,6 +44,7 @@ import {
   blueGrey
 } from '@material-ui/core/colors'
 import TabularView from './TabularView'
+import OptOutPopover from '../CoursePane/OptOutPopover' 
 
 const arrayOfColors = [red[500], pink[500],
   purple[500], indigo[500],
@@ -68,9 +70,11 @@ class App extends Component {
       rightPaneView: 0,
       finalSchedule: [],
       showFinalSchedule: false,
-      activeTab: 0
+      activeTab: 0,
+      destination: 'eatereval'
     }
-
+    this.handleSelectRMP = this.handleSelectRMP.bind(this);
+    this.handleSelectEE = this.handleSelectEE.bind(this);
     this.resizeLogo = this.resizeLogo.bind(this)
   }
 
@@ -450,7 +454,17 @@ class App extends Component {
     })
   }
 
-  
+  handleSelectRMP = () => {
+    this.setState({
+        destination: 'rmp'
+    });
+}
+
+  handleSelectEE = () => {
+    this.setState({
+        destination: 'eatereval'
+    });
+}
 
   render () {
     return (
@@ -468,6 +482,8 @@ class App extends Component {
 
             <LoadSaveScheduleFunctionality onLoad={this.handleLoad} onSave={this.handleSave}/>
 
+            <OptOutPopover handleSelectRMP={this.handleSelectRMP} handleSelectEE={this.handleSelectEE} destination = {this.state.destination} />
+            
             <Tooltip title="Give Us Feedback!">
               <a
                 style={{ color: 'white', marginLeft: 16 }}
@@ -558,6 +574,7 @@ class App extends Component {
                     scheduleIndex={this.state.currentScheduleIndex}
                     onCopySchedule={this.handleCopySchedule}
                     onEditCustomEvent={this.handleEditCustomEvent}
+                    destination = {this.state.destination}
                   />
                   :
                   (
@@ -571,7 +588,8 @@ class App extends Component {
                         onAddClass={this.handleAddClass}
                         onDismissSearchResults={this.handleDismissSearchResults}
                         currentScheduleIndex={this.state.currentScheduleIndex}
-                        term={this.state.formData}/>
+                        term={this.state.formData}
+                        destination = {this.state.destination}/>
                   )
                 }
               </div>

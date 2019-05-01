@@ -71,6 +71,7 @@ class CourseDetailPane extends Component {
           courseDetails={this.props.courseDetails}
           onAddClass={this.props.onAddClass}
           termName={this.props.termName}
+          destination={this.props.destination}
         />
       </div>
     );

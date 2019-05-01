@@ -153,6 +153,7 @@ class ScheduleAddSelector extends Component {
   };
 
   render() {
+    console.log(this.props)
     const {classes} = this.props;
     const section = this.props.section;
     return (
@@ -196,11 +197,9 @@ Sec: ${section.sectionCode}
 Units: ${section.units}`}
           </td>
           <td className={classes.multiline}>
-          <Instructors className={classes.multiline}>
-            {/*this.linkRMP(section.instructors)*/ }
+          <Instructors destination = {this.props.destination} className={classes.multiline}>
             {section.instructors}
           </Instructors>
-              {/* section.instructors.join("\n")*/}
           </td>
           <td className={classes.multiline}>
             {section.meetings.map(meeting => meeting[0]).join("\n")}
@@ -352,6 +351,7 @@ class MiniSectionTable extends Component {
                 courseDetails={this.props.courseDetails}
                 termName={this.props.termName}
                 currentScheduleIndex={this.props.currentScheduleIndex}
+                destination = {this.props.destination}
               />
             );
           })}

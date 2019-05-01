@@ -30,6 +30,7 @@ class CoursePane extends Component {
     return (
       this.state !== nextState ||
       nextProps.formData !== this.props.formData || nextProps.currentScheduleIndex !== this.props.currentScheduleIndex
+      || nextProps.destination !== this.props.destination
     )
   }
 
@@ -162,6 +163,7 @@ class CoursePane extends Component {
             currentScheduleIndex={this.props.currentScheduleIndex}
             deptName={this.state.deptName}
             termName={this.state.termName}
+            destination={this.props.destination}
           />
         </Fragment>
       )
