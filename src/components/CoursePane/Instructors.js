@@ -32,7 +32,7 @@ class Instructors extends React.Component {
     this.setState({ anchorEl: null, mouseInPopover: false });
   };
 
-  
+
 
   redirect = (e, name) => {
     if (!e) e = window.event;
@@ -109,9 +109,11 @@ class Instructors extends React.Component {
           onClose={this.handlePopoverClose}
           disableRestoreFocus
         >
-          <Typography>
-            Links to EaterEval; See Settings
-          </Typography>
+            {this.props.destination === 'eatereval' ?
+              (<Typography>Links to EaterEval; See Setting</Typography>)
+            :
+              (<Typography>Links to ratemyprofessor; See Settings</Typography>)
+            }
         </Popover>
       </Fragment>
     );

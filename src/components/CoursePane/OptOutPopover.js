@@ -22,6 +22,7 @@ function OptOutPopover(props) {
     <WithState>
       {({ anchorEl, updateAnchorEl }) => {
         const open = Boolean(anchorEl);
+
         return (
           <React.Fragment>
             <IconButton
@@ -48,16 +49,15 @@ function OptOutPopover(props) {
               transformOrigin={{
                 vertical: "top",
                 horizontal: "center"
-              }} f
+              }}
             >
             <FormControl style={{marginTop: 16, marginLeft: 16}} component="fieldset" >
-              <FormLabel component="legend">Instructor Evaluations</FormLabel>
+              <FormLabel component="legend" style={{marginTop: 16}}>Instructor Evaluations</FormLabel>
               <RadioGroup
                 aria-label="InstructorEvals"
                 name="gender2"
-                defaultValue="eatereval"
                 style={{margin: 8}}
-                value={props.destination} 
+                value={props.destination}
               >
                 <FormControlLabel
                   value="rmp"

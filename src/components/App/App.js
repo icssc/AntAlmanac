@@ -9,7 +9,6 @@ import {
   Tabs,
   Hidden,
   Tab,
-  Button
 } from '@material-ui/core'
 import Logo_tight from './logo_tight.png'
 import Logo_wide from './logo_wide.png'
@@ -44,7 +43,7 @@ import {
   blueGrey
 } from '@material-ui/core/colors'
 import TabularView from './TabularView'
-import OptOutPopover from '../CoursePane/OptOutPopover' 
+import OptOutPopover from '../CoursePane/OptOutPopover'
 
 const arrayOfColors = [red[500], pink[500],
   purple[500], indigo[500],
@@ -57,6 +56,14 @@ const arrayOfColors = [red[500], pink[500],
 class App extends Component {
   constructor (props) {
     super(props)
+
+    let InstructorEvals = 'eatereval';
+    if (typeof Storage !== "undefined") {
+      InstructorEvals = window.localStorage.getItem("InstructorEvals");
+      if (InstructorEvals === null){ //nothing stored
+        InstructorEvals = 'eatereval';
+      }
+    }
 
     this.state = {
       prevFormData: null,
@@ -71,7 +78,7 @@ class App extends Component {
       finalSchedule: [],
       showFinalSchedule: false,
       activeTab: 0,
-      destination: 'eatereval'
+      destination: InstructorEvals
     }
     this.handleSelectRMP = this.handleSelectRMP.bind(this);
     this.handleSelectEE = this.handleSelectEE.bind(this);
@@ -95,12 +102,7 @@ class App extends Component {
   }
 
   handleRightPaneViewChange = (event, rightPaneView) => {
-    this.setState({ rightPaneView })
-    this.setState({ showSearch: true })
-    //turn off finals viewing when in search?
-    //if(this.state.rightPaneView === 1) //will be switched to search view
-    //    this.setState({showFinalSchedule:false});
-
+    this.setState({ rightPaneView, showSearch: true })
   }
 
   handleLoad = userData => {
@@ -410,20 +412,6 @@ class App extends Component {
     this.setState({ courseEvents: newCourseEvents.concat(newEvents) })
   }
 
-  handleClearSchedule = () => {
-    if (
-      window.confirm(
-        'Are you sure you want to clear all your schedules?'
-      )
-    ) {
-      this.setState({
-        backupArray: this.state.backupArray.concat(this.state.courseEvents),
-        courseEvents: [],
-        unavailableColors: [],
-      })
-    }
-  }
-
   handleColorChange = (course, color) => {
     let courses = this.state.courseEvents
 
@@ -458,13 +446,16 @@ class App extends Component {
     this.setState({
         destination: 'rmp'
     });
+    window.localStorage.setItem("InstructorEvals", "rmp");
   }
 
   handleSelectEE = () => {
     this.setState({
         destination: 'eatereval'
     });
+    window.localStorage.setItem("InstructorEvals", "eatereval");
   }
+
   handleClearSchedule = (toDelete) =>{
     const eventsThatAreDeleted = this.state.courseEvents.filter(courseEvent => !(toDelete.includes(courseEvent.scheduleIndex) ))
     this.setState({courseEvents: eventsThatAreDeleted})
@@ -487,7 +478,7 @@ class App extends Component {
             <LoadSaveScheduleFunctionality onLoad={this.handleLoad} onSave={this.handleSave}/>
 
             <OptOutPopover handleSelectRMP={this.handleSelectRMP} handleSelectEE={this.handleSelectEE} destination = {this.state.destination} />
-            
+
             <Tooltip title="Give Us Feedback!">
               <a
                 style={{ color: 'white', marginLeft: 16 }}
