@@ -8,6 +8,7 @@ import {
   Checkbox,
   FormGroup,
   FormControlLabel,
+  Typography
 } from '@material-ui/core';
 import {
   Delete
@@ -79,7 +80,7 @@ export default class ClearSched extends React.Component {
     return (
       <Fragment>
         <Button onClick={this.handleClickOpen} disableRipple={true} style={{width: "100%"}} className={"menu-button"}>
-          <Delete /> Clear Classes
+          <Delete /> Clear
         </Button>
         <Dialog
           open={this.state.open}
@@ -89,6 +90,10 @@ export default class ClearSched extends React.Component {
           <DialogTitle id="form-dialog-title">Select a Schedule to Clear</DialogTitle>
           <DialogContent>
             <div>
+              <Typography variant="subheading">
+                You cannot undo this action,<br /> 
+                but you can load your schedule again.
+              </Typography>
               <FormGroup>
               <FormControlLabel
                 control={

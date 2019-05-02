@@ -280,7 +280,7 @@ class TabularView extends Component {
 
           <Button style={{color: 'red'}} onClick={
             ()=>{
-              if (window.confirm('Are you sure you want to clear this schedule?'))
+              if (window.confirm('Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'))
                 this.props.handleClearSchedule([this.props.scheduleIndex])
             }
           }>Clear Schedule</Button>

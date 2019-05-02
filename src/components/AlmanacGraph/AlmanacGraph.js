@@ -2,7 +2,7 @@ import React, {Component, Fragment} from "react";
 import {withStyles} from "@material-ui/core/styles";
 import {Tooltip} from "@material-ui/core";
 import querystring from "querystring";
-import {Help} from "@material-ui/icons";
+import {Help, Image} from "@material-ui/icons";
 import PropTypes from 'prop-types';
 
 import {
@@ -109,7 +109,7 @@ class AlmanacGraph extends Component {
             <Fragment>
                 <Typography className={this.props.classes.flex}/>
                 <Button variant="contained" onClick={this.handleOpen} style={{backgroundColor: "#f8f17c", boxShadow: "none"}}>
-                    Past Enrollment
+                    Past Enrollment&nbsp;&nbsp;<Image fontSize="small"/>
                 </Button>
 
                 <Modal open={this.state.open} onClose={this.handleClose}>
