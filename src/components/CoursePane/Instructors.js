@@ -32,18 +32,24 @@ class Instructors extends React.Component {
     this.setState({ anchorEl: null, mouseInPopover: false });
   };
 
+  
+
   redirect = (e, name) => {
     if (!e) e = window.event;
     e.cancelBubble = true;
     if (e.stopPropagation) e.stopPropagation();
-
     var lastName = name.substring(0, name.indexOf(","));
-    var nameP = rmpData[0][name];
-    if (nameP !== undefined)
+
+    // else: two options for EE
+    if (this.props.destination === 'eatereval'){
       window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
-      //window.open("https://www.ratemyprofessors.com" + nameP);
-    else
-      window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
+    } else {
+      var nameP = rmpData[0][name];
+      if (nameP !== undefined)
+        window.open("https://www.ratemyprofessors.com" + nameP);
+      else
+        window.open(`https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`);
+    }
   };
 
   linkRMP = name => {

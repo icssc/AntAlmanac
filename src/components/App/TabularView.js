@@ -397,11 +397,9 @@ Sec ${secEach.sectionCode}
 ${secEach.units} units`}
                         </td>
                         <td className={classes.multiline}>
-                        <Instructors className={classes.multiline}>
+                        <Instructors destination={this.props.destination} className={classes.multiline}>
                             {secEach.instructors}
                         </Instructors>
-                          {/* {this.linkRMP(secEach.instructors)} */}
-                          {/*secEach.instructors.join('\n')*/}
                         </td>
                         <td className={classes.multiline}>
                           {secEach.meetings.map(meeting => meeting[0]).join('\n')}
