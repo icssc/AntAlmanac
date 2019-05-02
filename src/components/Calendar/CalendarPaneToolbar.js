@@ -1,12 +1,10 @@
 import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core/styles';
-import {IconButton, Tooltip, Typography} from "@material-ui/core";
+import {IconButton, Tooltip, Typography, InputBase} from "@material-ui/core";
 import {ChevronLeft, ChevronRight, Undo} from "@material-ui/icons";
 import PropTypes from "prop-types";
 import Submenu from "./Submenu"
 import DownloadMenu from "./DownloadMenu";
-import Input from '@material-ui/core/Input';
-import InputBase from '@material-ui/core/InputBase';
 
 const styles = {
   toolbar: {
@@ -44,8 +42,8 @@ class CalendarPaneToolbar extends Component {
   render() {
     const {classes} = this.props;
 
-  if(this.state.schedule!=this.props.currentScheduleIndex)
-  { 
+  if(this.state.schedule!==this.props.currentScheduleIndex)
+  {
     let scheduleName = 'Schedule ' + (this.props.currentScheduleIndex + 1);
     if (typeof Storage !== "undefined") {
       const nameSchedule = window.localStorage.getItem("schedule"+this.props.currentScheduleIndex);

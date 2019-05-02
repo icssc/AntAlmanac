@@ -98,20 +98,6 @@ class DialogSelect extends Component {
   };
 
   handleAddToCalendar = scheduleIndex => {
-    this.addEvent(scheduleIndex);
-  };
-
-  handleAddEventButtonClicked = (event) => {
-    this.setState({ anchorEl: event.currentTarget });
-  };
-
-  handleClickAway = () => {
-    this.setState({
-      open: false,
-    });
-  };
-
-  addEvent = scheduleIndex => {
     const startHour = parseInt(this.state.start.slice(0, 2), 10);
     const startMin = parseInt(this.state.start.slice(3, 5), 10);
     const endHour = parseInt(this.state.end.slice(0, 2), 10);
@@ -152,7 +138,7 @@ class DialogSelect extends Component {
         </Button>
         <Dialog
           open={this.state.open}
-          onClose={this.handleClickAway}
+          onClose={() => this.setState({open: false})}
         >
           <DialogContent>
             <FormControl>
@@ -206,7 +192,7 @@ class DialogSelect extends Component {
             </Button>
 
             <Button
-              onClick={this.handleAddEventButtonClicked}
+              onClick={(event) => this.setState({ anchorEl: event.currentTarget })}
               variant="contained"
               color="primary"
               style={{boxShadow:"none"}}

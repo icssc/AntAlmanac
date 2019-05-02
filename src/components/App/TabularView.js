@@ -6,7 +6,9 @@ import {
   MenuItem,
   Typography,
   Snackbar,
-  Tooltip
+  Tooltip,
+  Collapse,
+  IconButton
 } from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
 import locations from '../CoursePane/locations.json'
@@ -17,6 +19,7 @@ import {withStyles} from '@material-ui/core/styles';
 import MouseOverPopover from "../CoursePane/MouseOverPopover";
 import CustomEventsDialog from '../CustomEvents/Popup';
 import Instructors from "../CoursePane/Instructors";
+import {Clear} from '@material-ui/icons'
 
 const styles = {
   colorPicker: {
@@ -105,10 +108,21 @@ class TabularView extends Component {
   constructor(props) {
     super(props);
 
+    let disclaimer = true;
+    if (typeof Storage !== "undefined") {
+      disclaimer = window.localStorage.getItem("disclaimer");
+      if (disclaimer === null){ //nothing stored
+        disclaimer = true;
+      } else { //not first time
+        disclaimer = false;
+      }
+    }
+
     this.state = {
       copied: false,
       clipboard: '',
-      anchorEl: null
+      anchorEl: null,
+      disclaim: disclaimer
     };
   }
 
@@ -167,6 +181,12 @@ class TabularView extends Component {
     document.body.removeChild(Juanito);
     this.setState({copied: true, clipboard: code})
   }
+
+  handleClearDisclaimer = () => {
+    this.setState({disclaim: false});
+    window.localStorage.setItem("disclaimer", "dismissed");
+  }
+
   render () {
     const {classes} = this.props;
     const events = this.props.eventsInCalendar;
@@ -231,7 +251,9 @@ class TabularView extends Component {
                 position: "absolute",
                 width: "50%",
                 top: "50%",
-                transform: "translateY(-50%)"}}>
+                transform: "translateY(-50%)",
+                flexGrow: 1
+              }}>
             Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)
           </Typography>
 
@@ -267,6 +289,27 @@ class TabularView extends Component {
               Copy to All Schedules
             </MenuItem>
           </Menu>
+        </div>
+
+        <div> {/*go to webreg disclaimer*/}
+          <Collapse in={this.state.disclaim} >
+            <table style={{margin: 20}}>
+              <tr>
+                <td>
+                  <IconButton onClick={this.handleClearDisclaimer}>
+                    <Clear />
+                  </IconButton>
+                </td>
+                <td>
+                  <Typography variant="h6">
+                    Adding courses on the AntAlmanac is NOT official enrollment!
+                    <br />
+                    Make sure to sign up on <a href="https://www.reg.uci.edu/registrar/soc/webreg.html" target="_blank" rel="noopener noreferrer">WebReg</a>
+                  </Typography>
+                </td>
+              </tr>
+            </table>
+          </Collapse>
         </div>
 
         {courses.length === 0 ?
