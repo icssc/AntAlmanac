@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from 'react-snapshot';
+import { hydrate, render } from "react-dom";
 import App from "./components/App/App";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import{unregister} from "./registerServiceWorker";
@@ -25,11 +25,15 @@ const theme = createMuiTheme({
   }
 });
 
-render(
-  <MuiThemeProvider theme={theme}>
-    <App style ={{height:"100%"}}/>
-  </MuiThemeProvider>,
-  document.getElementById("root")
-);
+const rootElement = document.getElementById("root");
+if (rootElement.hasChildNodes()) {
+  hydrate(<MuiThemeProvider theme={theme}>
+    <App style={{ height: "100%" }} />
+  </MuiThemeProvider>, rootElement);
+} else {
+  render(<MuiThemeProvider theme={theme}>
+    <App style={{ height: "100%" }} />
+  </MuiThemeProvider>, rootElement);
+}
 
 unregister();
