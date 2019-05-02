@@ -3,13 +3,13 @@ import {
   Menu,
   MenuItem,
   MenuList,
-  Button,
   IconButton
 } from '@material-ui/core';
-import {MoreVert, Delete} from '@material-ui/icons';
+import {MoreVert} from '@material-ui/icons';
 import CustomEventsDialog from '../CustomEvents/Popup';
 import Sharing from "./Sharing";
 import FinalSwitch from './FinalSwitch';
+import ClearSchedButton from './ClearSchedButton';
 
 class Submenu extends React.Component {
   state = {
@@ -103,16 +103,10 @@ class Submenu extends React.Component {
               <FinalSwitch  displayFinal={this.props.displayFinal} schedule={finalSchedule} showFinalSchedule = {this.props.showFinalSchedule}/>
             </MenuItem>
             <MenuItem disableGutters>
-                <Button
-                  disableRipple={true}
-                  onClick={() => {
-                    this.props.onClearSchedule()
-                    this.handleClose()
-                  }}
-                  style={{width: "100%"}}
-                  className={"menu-button"}>
-                    <Delete/> Clear All
-                </Button>
+            <ClearSchedButton
+              handleSubmenuClose={this.handleClose}
+              handleClearSchedule={this.props.handleClearSchedule}
+              currentScheduleIndex={this.props.currentScheduleIndex}/>
             </MenuItem>
             <MenuItem disableGutters>
               <Sharing onTakeScreenshot={this.props.onTakeScreenshot} />

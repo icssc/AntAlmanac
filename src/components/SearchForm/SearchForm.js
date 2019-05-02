@@ -5,14 +5,12 @@ import React, {Component} from "react";
 import {
   Button,
   Typography,
-  ExpansionPanel,
-  ExpansionPanelSummary,
-  ExpansionPanelDetails
+  Collapse
 } from "@material-ui/core";
 import {withStyles} from '@material-ui/core/styles';
 import AdvancedSearchTextFields from "./AdvancedSearch";
 import MIUCI from "./MIUCI.png";
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import {ExpandMore, ExpandLess} from '@material-ui/icons';
 
 const styles = {
   container: {
@@ -46,6 +44,18 @@ const styles = {
 class SearchForm extends Component {
   constructor(props) {
     super(props);
+
+    let advanced = false;
+    if (typeof Storage !== "undefined") {
+      advanced = window.localStorage.getItem("advanced");
+      console.log(advanced)
+      if (advanced === null){ //first time nothing stored
+        advanced = false;
+      } else { //not first
+        advanced = (advanced === "expanded");
+      }
+    }
+
     if (this.props.prevFormData){
       const {
         dept,
@@ -73,7 +83,8 @@ class SearchForm extends Component {
           endTime: endTime,
           startTime: startTime,
           coursesFull: coursesFull,
-          building: building
+          building: building,
+          expandAdvanced: advanced
         };
     }else{
       this.state = {
@@ -88,7 +99,8 @@ class SearchForm extends Component {
         endTime: "",
         startTime: "",
         coursesFull: 'ANY',
-        building: ""
+        building: "",
+        expandAdvanced: advanced
       };
     }
   }
@@ -137,6 +149,12 @@ class SearchForm extends Component {
     this.setState({term: term});
   };
 
+  handleExpand = () => {
+    const nextExpansionState = !this.state.expandAdvanced;
+    window.localStorage.setItem("advanced", nextExpansionState ? "expanded" : "notexpanded");
+    this.setState({expandAdvanced: nextExpansionState});
+  }
+
   render() {
     const {classes} = this.props;
 
@@ -154,14 +172,21 @@ class SearchForm extends Component {
           <TermSelector term={this.state.term} setTerm={this.setTerm}/>
         </div>
 
-        <ExpansionPanel style={{marginTop: 8, marginBottom: 5}}>
-          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} >
-            <Typography className="title">Advanced Search</Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <AdvancedSearchTextFields params={this.state} onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
+        <div onClick={this.handleExpand} style={{display: 'inline-flex', marginTop: 15, cursor: 'pointer'}}>
+            <div style={{flexGrow: 1}}>
+            <Typography noWrap variant='subheading'>
+                Advanced Search Options
+            </Typography>
+            </div>
+            {this.state.expandAdvanced ?
+              (<ExpandLess />)
+              :
+              (<ExpandMore />)
+            }
+        </div>
+        <Collapse in={this.state.expandAdvanced}>
+          <AdvancedSearchTextFields params={this.state} onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
+        </Collapse>
 
         <div className={classes.search}>
           <Button

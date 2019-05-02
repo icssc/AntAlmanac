@@ -1,10 +1,11 @@
 import { withStyles } from "@material-ui/core/styles";
 import {Paper, Typography, Grid, Modal } from "@material-ui/core";
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import CourseDetailPane from "./CourseDetailPane";
 import SchoolDeptCard from "./SchoolDeptCard";
 import MiniSectionTable from "./MiniSectionTable";
 import NoNothing from "./no_results.png";
+import AdAd from "./ad_ad.png";
 
 const styles = theme => ({
   course: {
@@ -18,6 +19,11 @@ const styles = theme => ({
     cursor: "pointer"
   },
   text: {
+    flexGrow: 1,
+    display: "inline",
+    width: "100%"
+  },
+  ad: {
     flexGrow: 1,
     display: "inline",
     width: "100%"
@@ -58,11 +64,12 @@ class CourseRenderPane extends Component {
   getGrid(SOCObject) {
     if ("departments" in SOCObject) {
       return (
-        <SchoolDeptCard
-          comment={SOCObject.comment}
-          type={"school"}
-          name={SOCObject.name}
-        />
+        // <SchoolDeptCard
+        //   comment={SOCObject.comment}
+        //   type={"school"}
+        //   name={SOCObject.name}
+        // />
+        <Fragment/>
       );
     } else if ("courses" in SOCObject) {
       return (
@@ -153,6 +160,9 @@ class CourseRenderPane extends Component {
           </div>
         ) : (
           <Grid container spacing={16}>
+            <Grid item md={12} xs={12}>
+                <a href="https://forms.gle/irQBrBkqHYYxcEU39" target="_blank" rel="noopener noreferrer" ><img src={AdAd} alt="" className={this.props.classes.ad}/></a>
+            </ Grid>
             {this.props.courseData.map(item => this.getGrid(item))}
           </Grid>
         )}

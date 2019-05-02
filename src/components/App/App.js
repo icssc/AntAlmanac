@@ -341,7 +341,7 @@ class App extends Component {
   }
 
   handleScheduleChange = direction => {
-    
+
     if (direction === 0) {
       this.setState({
         showFinalSchedule: false, currentScheduleIndex: (this.state.currentScheduleIndex - 1 + 4) % 4
@@ -458,13 +458,17 @@ class App extends Component {
     this.setState({
         destination: 'rmp'
     });
-}
+  }
 
   handleSelectEE = () => {
     this.setState({
         destination: 'eatereval'
     });
-}
+  }
+  handleClearSchedule = (toDelete) =>{
+    const eventsThatAreDeleted = this.state.courseEvents.filter(courseEvent => !(toDelete.includes(courseEvent.scheduleIndex) ))
+    this.setState({courseEvents: eventsThatAreDeleted})
+  }
 
   render () {
     return (
@@ -537,8 +541,8 @@ class App extends Component {
                 onClassDelete={this.handleClassDelete}
                 onScheduleChange={this.handleScheduleChange}
                 onAddCustomEvent={this.handleAddCustomEvent}
-                onClearSchedule={this.handleClearSchedule}
                 onEditCustomEvent={this.handleEditCustomEvent}
+                handleClearSchedule={this.handleClearSchedule}
               />
             </div>
           </Grid>
@@ -575,6 +579,7 @@ class App extends Component {
                     onCopySchedule={this.handleCopySchedule}
                     onEditCustomEvent={this.handleEditCustomEvent}
                     destination = {this.state.destination}
+                    handleClearSchedule={this.handleClearSchedule}
                   />
                   :
                   (

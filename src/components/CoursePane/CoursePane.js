@@ -123,7 +123,8 @@ class CoursePane extends Component {
                   onClick={this.props.onDismissSearchResults}
                   style={{
                     backgroundColor: 'rgba(236, 236, 236, 1)',
-                    marginRight: 5
+                    marginRight: 5,
+                    boxShadow: 2
                   }}
                 >
                   <ArrowBack/>
@@ -133,21 +134,21 @@ class CoursePane extends Component {
               {this.state.view ? (
                 <Tooltip title="List View">
                   <IconButton onClick={() => this.setState({ view: 0 })}
-                              style={{ backgroundColor: 'rgba(236, 236, 236, 1)', marginRight: 5 }}>
+                              style={{ backgroundColor: 'rgba(236, 236, 236, 1)', marginRight: 5, boxShadow: 2 }}>
                     <ListAlt/>
                   </IconButton>
                 </Tooltip>
               ) : (
                 <Tooltip title="Tile View">
                   <IconButton onClick={() => this.setState({ view: 1 })}
-                              style={{ backgroundColor: 'rgba(236, 236, 236, 1)', marginRight: 5 }}>
+                              style={{ backgroundColor: 'rgba(236, 236, 236, 1)', marginRight: 5, boxShadow: 2 }}>
                     <Dns/>
                   </IconButton>
                 </Tooltip>
               )}
 
               <Tooltip title="Refresh Search Results">
-                <IconButton onClick={this.fetchSearch} style={{ backgroundColor: 'rgba(236, 236, 236, 1)' }}>
+                <IconButton onClick={this.fetchSearch} style={{ backgroundColor: 'rgba(236, 236, 236, 1)', boxShadow: 2 }}>
                   <Refresh/>
                 </IconButton>
               </Tooltip>
