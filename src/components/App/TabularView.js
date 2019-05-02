@@ -242,30 +242,18 @@ class TabularView extends Component {
           className={classes.container}
           style={{display:'inline-flex',
             width:"100%",
-            position: "relative",
             marginBottom: 10}}>
 
           <Typography
               variant="title"
-              style={{
-                position: "absolute",
-                width: "50%",
-                top: "50%",
-                transform: "translateY(-50%)",
-                flexGrow: 1
-              }}>
+              style={{ flexGrow: 1 }}>
             Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)
           </Typography>
 
           <Button
             aria-owns={this.state.anchor ? 'simple-menu' : undefined}
             aria-haspopup="true"
-            onClick={this.handleDropdownOpen}
-            style={{
-              position: "absolute",
-              top: "50%",
-              right: "0",
-              transform: "translateY(-50%)"}}>
+            onClick={this.handleDropdownOpen}>
             Copy Schedule
           </Button>
 
@@ -289,6 +277,14 @@ class TabularView extends Component {
               Copy to All Schedules
             </MenuItem>
           </Menu>
+
+          <Button style={{color: 'red'}} onClick={
+            ()=>{
+              if (window.confirm('Are you sure you want to clear this schedule?'))
+                this.props.handleClearSchedule([this.props.scheduleIndex])
+            }
+          }>Clear Schedule</Button>
+
         </div>
 
         <div> {/*go to webreg disclaimer*/}

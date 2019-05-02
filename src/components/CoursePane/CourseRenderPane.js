@@ -1,6 +1,6 @@
 import { withStyles } from "@material-ui/core/styles";
 import {Paper, Typography, Grid, Modal } from "@material-ui/core";
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import CourseDetailPane from "./CourseDetailPane";
 import SchoolDeptCard from "./SchoolDeptCard";
 import MiniSectionTable from "./MiniSectionTable";
@@ -64,11 +64,12 @@ class CourseRenderPane extends Component {
   getGrid(SOCObject) {
     if ("departments" in SOCObject) {
       return (
-        <SchoolDeptCard
-          comment={SOCObject.comment}
-          type={"school"}
-          name={SOCObject.name}
-        />
+        // <SchoolDeptCard
+        //   comment={SOCObject.comment}
+        //   type={"school"}
+        //   name={SOCObject.name}
+        // />
+        <Fragment/>
       );
     } else if ("courses" in SOCObject) {
       return (

@@ -94,11 +94,12 @@ class CalendarPaneToolbar extends Component {
         <Tooltip title="More">
           <Submenu
             onAddCustomEvent={this.props.onAddCustomEvent}
-            onClearSchedule={this.props.onClearSchedule}
+            handleClearSchedule={this.props.handleClearSchedule}
             onTakeScreenshot={this.props.onTakeScreenshot}
             eventsInCalendar={this.props.eventsInCalendar}
             showFinalSchedule={this.props.showFinalSchedule}
             displayFinal={this.props.displayFinal}
+            currentScheduleIndex={this.props.currentScheduleIndex}
           />
         </Tooltip>
       </div>

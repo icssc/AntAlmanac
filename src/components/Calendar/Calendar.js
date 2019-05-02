@@ -105,7 +105,7 @@ class Calendar extends Component {
       <div className={classes.container} onClick={this.handleClosePopover}>
         <CalendarPaneToolbar
           onScheduleChange={this.props.onScheduleChange}
-          onClearSchedule={this.props.onClearSchedule}
+          handleClearSchedule={this.props.handleClearSchedule}
           onUndo={this.props.onUndo}
           onAddCustomEvent={this.props.onAddCustomEvent}
           onTakeScreenshot={this.handleTakeScreenshot}
