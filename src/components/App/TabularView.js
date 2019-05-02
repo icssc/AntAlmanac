@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import ColorPicker from './colorPicker'
-import {Typography} from "@material-ui/core";
+import {Typography, Button} from "@material-ui/core";
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph'
 import rmpData from '../CoursePane/RMP.json'
 import locations from '../CoursePane/locations.json'
@@ -8,8 +8,15 @@ import RstrPopover from '../CoursePane/RstrPopover'
 import POPOVER from '../CoursePane/PopOver'
 import Notification from '../Notification'
 import FinalSwitch from './FinalSwitch'
+import Delete from '@material-ui/icons/Delete'
 
 class TabularView extends Component {
+  handleClear = () => {
+    let Keep = [0];
+    console.log(Keep)
+    this.props.handleClearSchedule(Keep)
+  }
+
   constructor(props) {
     super(props);
 
@@ -151,8 +158,12 @@ class TabularView extends Component {
           <Typography variant="title">
             Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)
           </Typography>
+
           <Typography>
+ 
             <FinalSwitch  displayFinal={this.props.displayFinal} schedule={finalSchedule} showFinalSchedule = {this.props.showFinalSchedule}/>
+            <Button onClick={this.handleClear}> <Delete/>Clear All </Button>
+
           </Typography>
         </div>
         {classes.map(event => {

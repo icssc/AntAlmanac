@@ -471,7 +471,6 @@ displayFinal =(schedule)=>
                 onScheduleChange={this.handleScheduleChange}
                 onAddCustomEvent={this.handleAddCustomEvent}
                 setID={this.setID}
-                // onClearSchedule={this.handleClearSchedule}
                 showFinalSchedul={this.showFinalSchedule}
                 handleClearSchedule={this.handleClearSchedule}
               />
@@ -522,7 +521,10 @@ displayFinal =(schedule)=>
                     id='rightPane'
                   >
             {this.state.showTabularView ?
-              <TabularView showFinalSchedule ={this.state.showFinalSchedule} displayFinal={this.displayFinal} classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}  colorChange={this.colorChange} scheduleIndex={this.state.currentScheduleIndex}/>
+              <TabularView showFinalSchedule ={this.state.showFinalSchedule} displayFinal={this.displayFinal} 
+              classEventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}  
+              colorChange={this.colorChange} scheduleIndex={this.state.currentScheduleIndex}
+              handleClearSchedule={this.handleClearSchedule}/>
               :
               (
                   this.state.showSearch ? <SearchForm updateFormData={this.updateFormData}/> :

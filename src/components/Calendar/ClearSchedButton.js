@@ -63,7 +63,7 @@ export default class ClearSched extends React.Component {
     
     console.log(Keep)
     this.props.handleClearSchedule(Keep)
-    this.props.handleClose()
+    this.handleClose()
   }
 
   handleChange = name => event => {
