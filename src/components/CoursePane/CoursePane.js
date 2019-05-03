@@ -16,7 +16,8 @@ class CoursePane extends Component {
       deptName: null,
       showDismissButton: true,
       view: 0,
-      refresh: false
+      refresh: false,
+      shouldFetch: false
     }
   }
 
@@ -51,9 +52,16 @@ class CoursePane extends Component {
     }, [])
   }
 
+  // TODO: redesign the way that how we determine when to fetch
   componentDidUpdate (prevProps, prevState, snapshot) {
-    if (prevProps.formData !== this.props.formData)
-      this.fetchSearch()
+    if (prevProps.formData !== this.props.formData || this.state.shouldFetch)
+        this.setState({shouldFetch: false}, () => {
+          this.fetchSearch();
+      });
+  }
+
+  componentDidMount() {
+    this.setState({shouldFetch: (this.props.formData !== null)});
   }
 
   fetchSearch = () => {

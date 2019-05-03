@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component, Suspense} from 'react'
 import { Fragment } from 'react'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import {
@@ -13,7 +13,6 @@ import {
 import Logo_tight from './logo_tight.png'
 import Logo_wide from './logo_wide.png'
 import SearchForm from '../SearchForm/SearchForm'
-import CoursePane from '../CoursePane/CoursePane'
 import Calendar from '../Calendar/Calendar'
 import {
   Info,
@@ -24,6 +23,7 @@ import {
 } from '@material-ui/icons'
 import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality'
 import ReactGA from 'react-ga';
+import loadingGif from '../CoursePane/loading.mp4'
 import {
   saveUserData,
 } from './FetchHelper'
@@ -44,6 +44,7 @@ import {
 } from '@material-ui/core/colors'
 import TabularView from './TabularView'
 import OptOutPopover from '../CoursePane/OptOutPopover'
+const CoursePane = React.lazy(() => import('../CoursePane/CoursePane'));
 
 const arrayOfColors = [red[500], pink[500],
   purple[500], indigo[500],
@@ -592,6 +593,22 @@ class App extends Component {
                         prevFormData={this.state.prevFormData}
                         updateFormData={this.updateFormData}/>
                       :
+                      <Suspense fallback={
+                        <div
+                          style={{
+                            height: '100%',
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: 'white'
+                          }}
+                        >
+                          <video autoPlay loop>
+                            <source src={loadingGif} type="video/mp4"/>
+                          </video>
+                        </div>
+                      }>
                       <CoursePane
                         formData={this.state.formData}
                         onAddClass={this.handleAddClass}
@@ -599,6 +616,7 @@ class App extends Component {
                         currentScheduleIndex={this.state.currentScheduleIndex}
                         term={this.state.formData}
                         destination = {this.state.destination}/>
+                      </Suspense>
                   )
                 }
               </div>
