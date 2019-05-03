@@ -4,6 +4,7 @@ import querystring from 'querystring'
 import CourseRenderPane from './CourseRenderPane'
 import { IconButton, Tooltip } from '@material-ui/core'
 import { ArrowBack, Dns, ListAlt, Refresh } from '@material-ui/icons'
+import ReactGA from 'react-ga';
 
 class CoursePane extends Component {
   constructor (props) {
@@ -70,6 +71,12 @@ class CoursePane extends Component {
       building
     } = this.props.formData
 
+    ReactGA.event({
+      category: 'Search',
+      action: dept,
+      label:term
+    });
+  
     this.setState({ loading: 1 })
     //TODO: Name parity
     const params = {

@@ -4,7 +4,7 @@ import {Tooltip} from "@material-ui/core";
 import querystring from "querystring";
 import {Help} from "@material-ui/icons";
 import PropTypes from 'prop-types';
-
+import ReactGA from 'react-ga';
 import {
     Modal,
     Button,
@@ -89,15 +89,23 @@ class AlmanacGraph extends Component {
     }
 
     handleChange(event) {
-      this.setState({[event.target.name]: event.target.value}, () =>
+      this.setState({[event.target.name]: event.target.value}, () =>{
           this.fetchCourseData()
+          console.log(event.target.value)
+
+      }
       );
     }
 
     handleOpen() {
         this.setState({open: true});
         this.fetchCourseData();
-
+        console.log("dsdsad");
+        ReactGA.event({
+            category: 'Pass_enrollment',
+            action:  this.props.courseDetails.name[0] + " " +this.props.courseDetails.name[1] ,
+            label:this.state.term
+          });
     }
 
     handleClose() {

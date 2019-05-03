@@ -23,7 +23,7 @@ import {
   Forum
 } from '@material-ui/icons'
 import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality'
-
+import ReactGA from 'react-ga';
 import {
   saveUserData,
 } from './FetchHelper'
@@ -87,6 +87,9 @@ class App extends Component {
 
   componentDidMount = () => {
     document.addEventListener('keydown', this.handleUndo, false)
+
+    ReactGA.initialize('UA-133683751-1');
+    ReactGA.pageview('/homepage');
 
     this.resizeLogo()
     window.addEventListener('resize', this.resizeLogo)
@@ -443,6 +446,11 @@ class App extends Component {
   }
 
   handleSelectRMP = () => {
+    ReactGA.event({
+      category: 'ProffRating_OPTION',
+      action: "setting_rmp",
+      label: "bad students"
+    });
     this.setState({
         destination: 'rmp'
     });
@@ -450,6 +458,11 @@ class App extends Component {
   }
 
   handleSelectEE = () => {
+    ReactGA.event({
+      category: 'ProffRating_OPTION',
+      action: "setting_eaterval",
+      label: "good students"
+    });
     this.setState({
         destination: 'eatereval'
     });

@@ -153,7 +153,6 @@ class ScheduleAddSelector extends Component {
   };
 
   render() {
-    console.log(this.props)
     const {classes} = this.props;
     const section = this.props.section;
     return (

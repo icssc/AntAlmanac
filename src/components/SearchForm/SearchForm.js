@@ -48,7 +48,6 @@ class SearchForm extends Component {
     let advanced = false;
     if (typeof Storage !== "undefined") {
       advanced = window.localStorage.getItem("advanced");
-      console.log(advanced)
       if (advanced === null){ //first time nothing stored
         advanced = false;
       } else { //not first
