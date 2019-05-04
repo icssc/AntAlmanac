@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from "react";
-import {Menu, MenuItem, IconButton, Typography, Tooltip} from "@material-ui/core";
+import {Menu, MenuItem, IconButton, Typography, Tooltip, Snackbar} from "@material-ui/core";
 import {withStyles} from "@material-ui/core/styles";
 import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
 import POPOVER from "./PopOver";
@@ -87,7 +87,7 @@ const styles = {
 class ScheduleAddSelector extends Component {
   constructor(props) {
     super(props);
-    this.state = {anchor: null};
+    this.state = {copied: false, anchor: null, clipboard: ''};
   }
 
   handleAddMore = event => {
@@ -238,6 +238,17 @@ NOR: ${section.numNewOnlyReserved}`}
           </td>
           <td className={classes[section.status.toLowerCase()]}>{this.statusforFindingSpot(section.status, section.classCode)}</td>
         </tr>
+        <Snackbar
+            anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
+            open={this.state.copied}
+            autoHideDuration={1500}
+            onClose={() => this.setState({ copied: false })}
+            ContentProps={{'aria-describedby': 'message-id',}}
+            message={
+              <span id="message-id">
+                {this.state.clipboard} copied to clipboard.
+              </span>}
+          />
       </Fragment>
     );
   }
