@@ -45,7 +45,7 @@ class AlmanacGraph extends Component {
         super(props);
         this.state = {
             open: false,
-            term: "2018 Spring",
+            term: "2018 Fall",
             sections: [],
             length: 0,
         };
