@@ -75,7 +75,7 @@ class Calendar extends Component {
     const {currentTarget} = event;
     event.stopPropagation();
 
-    if (courseInMoreInfo.courseType !== "Fin" && !courseInMoreInfo.isCustomEvent)
+    if (courseInMoreInfo.courseType !== "Fin")
       this.setState(state => ({
         anchorEvent: currentTarget,
         moreInfoOpen: state.anchorEvent === currentTarget ? !state.moreInfoOpen : true,
@@ -105,7 +105,7 @@ class Calendar extends Component {
       <div className={classes.container} onClick={this.handleClosePopover}>
         <CalendarPaneToolbar
           onScheduleChange={this.props.onScheduleChange}
-          onClearSchedule={this.props.onClearSchedule}
+          handleClearSchedule={this.props.handleClearSchedule}
           onUndo={this.props.onUndo}
           onAddCustomEvent={this.props.onAddCustomEvent}
           onTakeScreenshot={this.handleTakeScreenshot}
@@ -118,7 +118,7 @@ class Calendar extends Component {
           <div id="screenshot"
                style={(!this.state.screenshotting ?
                  {height: `calc(100vh - 96px - 12px - ${this.props.isDesktop ? '0px' : '48px'})`} :
-                 {height: '100%'})
+                 {height: `${this.props.isDesktop ? '100%' : '100vh'}`,display:`${this.props.isDesktop ? 'null' : 'inline-block'}`})
                }>
             <Popper
               anchorEl={this.state.anchorEvent}
@@ -139,6 +139,7 @@ class Calendar extends Component {
                   courseInMoreInfo={this.state.courseInMoreInfo}
                   onClassDelete={() => this.props.onClassDelete(this.state.courseInMoreInfo)}
                   onColorChange={this.props.onColorChange}
+                  onEditCustomEvent={this.props.onEditCustomEvent}
                 /> : null}
             </Popper>
             {this.props.isDesktop ? <BigCalendar

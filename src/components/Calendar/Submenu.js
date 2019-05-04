@@ -3,13 +3,13 @@ import {
   Menu,
   MenuItem,
   MenuList,
-  Button,
   IconButton
 } from '@material-ui/core';
-import {MoreVert, Delete} from '@material-ui/icons';
+import {MoreVert} from '@material-ui/icons';
 import CustomEventsDialog from '../CustomEvents/Popup';
 import Sharing from "./Sharing";
 import FinalSwitch from './FinalSwitch';
+import ClearSchedButton from './ClearSchedButton';
 
 class Submenu extends React.Component {
   state = {
@@ -26,7 +26,7 @@ class Submenu extends React.Component {
 
   render() {
 
-    const events = this.props.eventsInCalendar
+    const events = this.props.eventsInCalendar;
 
     let result = [];
     let finalSchedule =[];
@@ -34,14 +34,7 @@ class Submenu extends React.Component {
       if (!item.isCustomEvent && result.find(function (element) {return element.courseCode === item.courseCode}) === undefined)
         result.push(item);
 
-    const courses = [];
-    let totalUnits = 0;
-
     for (let course of result) {
-      let foundIndex = courses.findIndex(function (element) {
-        return (course.name.join() === element.name.join() && element.courseTerm === course.courseTerm)
-      })
-
       if (course.section !== undefined){
         let final = course.section.finalExam;
 
@@ -103,15 +96,17 @@ class Submenu extends React.Component {
             <MenuItem disableGutters>
               <CustomEventsDialog
                   onAddCustomEvent={this.props.onAddCustomEvent}
+                  handleSubmenuClose={this.handleClose}
               />
             </MenuItem>
             <MenuItem>
               <FinalSwitch  displayFinal={this.props.displayFinal} schedule={finalSchedule} showFinalSchedule = {this.props.showFinalSchedule}/>
             </MenuItem>
             <MenuItem disableGutters>
-                <Button onClick={this.props.onClearSchedule} style={{width: "100%"}}>
-                    <Delete/> Clear All
-                </Button>
+            <ClearSchedButton
+              handleSubmenuClose={this.handleClose}
+              handleClearSchedule={this.props.handleClearSchedule}
+              currentScheduleIndex={this.props.currentScheduleIndex}/>
             </MenuItem>
             <MenuItem disableGutters>
               <Sharing onTakeScreenshot={this.props.onTakeScreenshot} />

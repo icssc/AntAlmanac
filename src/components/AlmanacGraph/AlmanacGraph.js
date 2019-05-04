@@ -1,10 +1,9 @@
 import React, {Component, Fragment} from "react";
 import {withStyles} from "@material-ui/core/styles";
-import {Tooltip} from "@material-ui/core";
 import querystring from "querystring";
-import {Help} from "@material-ui/icons";
+import {Help, Image} from "@material-ui/icons";
 import PropTypes from 'prop-types';
-
+import ReactGA from 'react-ga';
 import {
     Modal,
     Button,
@@ -13,7 +12,8 @@ import {
     InputLabel,
     Select,
     MenuItem,
-    Typography
+    Typography,
+    Tooltip,
 } from "@material-ui/core";
 import GraphRenderPane from "./GraphRenderPane";
 
@@ -24,8 +24,8 @@ const styles = theme => ({
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
-        width: "75%",
-        height: "85%",
+        width: "65%",
+        height: "90%",
         backgroundColor: theme.palette.background.paper,
         boxShadow: theme.shadows[5],
         padding: theme.spacing.unit * 4
@@ -45,9 +45,9 @@ class AlmanacGraph extends Component {
         super(props);
         this.state = {
             open: false,
-            term: "2018 Spring",
+            term: "2018 Fall",
             sections: [],
-            length: 0
+            length: 0,
         };
         this.handleOpen = this.handleOpen.bind(this);
         this.handleClose = this.handleClose.bind(this);
@@ -89,15 +89,23 @@ class AlmanacGraph extends Component {
     }
 
     handleChange(event) {
-      this.setState({[event.target.name]: event.target.value}, () =>
+      this.setState({[event.target.name]: event.target.value}, () =>{
           this.fetchCourseData()
+          console.log(event.target.value)
+
+      }
       );
     }
 
     handleOpen() {
         this.setState({open: true});
         this.fetchCourseData();
-
+        console.log("dsdsad");
+        ReactGA.event({
+            category: 'Pass_enrollment',
+            action:  this.props.courseDetails.name[0] + " " +this.props.courseDetails.name[1] ,
+            label:this.state.term
+          });
     }
 
     handleClose() {
@@ -109,7 +117,7 @@ class AlmanacGraph extends Component {
             <Fragment>
                 <Typography className={this.props.classes.flex}/>
                 <Button variant="contained" onClick={this.handleOpen} style={{backgroundColor: "#f8f17c", boxShadow: "none"}}>
-                    Past Enrollment
+                    Past Enrollment&nbsp;&nbsp;<Image fontSize="small"/>
                 </Button>
 
                 <Modal open={this.state.open} onClose={this.handleClose}>
@@ -132,6 +140,17 @@ class AlmanacGraph extends Component {
                             </Tooltip>
                         </Typography>
 
+                        <br />
+
+                        <Typography variant="subtitle1">
+                          <b>BETA:</b> AI Graph Descriptions
+                        </Typography>
+                        <Typography variant="body1">
+                          Because graphs are meh, we asked our AI to provide descriptions for them! Our AI is still young, so these descriptions may be wrong; please always use them with the graphs and report any that is inaccurate!
+                        </Typography>
+
+                        <br />
+
                         <FormControl fullWidth>
                             <InputLabel htmlFor="term-select">Term</InputLabel>
                             <Select
@@ -146,9 +165,12 @@ class AlmanacGraph extends Component {
                             </Select>
                         </FormControl>
 
+                        <br />
+                        <br />
+
                         {this.state.sections.length === 0 ? (
                             <div className={this.props.classes.courseNotOfferedContainer}>
-                                <Typography variant="h1">
+                                <Typography variant="h5">
                                     {"This course was not offered in " + this.state.term}
                                 </Typography>
                             </div>

@@ -7,8 +7,8 @@ import Popover from "@material-ui/core/Popover";
 import toRenderProps from "recompose/toRenderProps";
 import withState from "recompose/withState";
 import course_info from "./course_info.json";
-import { ExpandMore } from "@material-ui/icons";
-
+import { MoreVert } from "@material-ui/icons";
+import ReactGA from 'react-ga';
 const WithState = toRenderProps(withState("anchorEl", "updateAnchorEl", null));
 
 const styles = theme => ({
@@ -24,8 +24,9 @@ function RenderPropsPopover(props) {
     let a = undefined;
     try {
       a = course_info[courseDetails.name[0]][courseDetails.name[1]];
+      
     } catch (err) {}
-
+  
     return a;
   }
 
@@ -39,10 +40,15 @@ function RenderPropsPopover(props) {
               variant="contained"
               style={{backgroundColor:"#72a9ed", boxShadow:"none"}}
               onClick={event => {
+                ReactGA.event({
+                  category: 'Course_info',
+                  action: courseDetails.name[0]+" "+courseDetails.name[1],
+                
+                });
                 updateAnchorEl(event.currentTarget);
               }}
             >
-              {name}&nbsp;&nbsp;<ExpandMore />
+              {name}&nbsp;&nbsp;<MoreVert fontSize="small"/>
             </Button>
             <Popover
               open={open}

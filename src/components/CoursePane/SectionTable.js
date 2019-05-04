@@ -1,12 +1,11 @@
 import React, {Component, Fragment} from "react";
 import AddCircle from "@material-ui/icons/AddCircle";
 import {IconButton, Menu, MenuItem} from "@material-ui/core";
-import rmpData from "./RMP.json";
 import Notification from '../Notification'
 import RstrPopover from "./RstrPopover"
 import locations from "./locations.json"
 import {withStyles} from "@material-ui/core/styles";
-import PropTypes from "prop-types";
+import Instructors from "./Instructors";
 
 const styles = {
   table: {
@@ -124,41 +123,7 @@ class SectionTable extends Component {
     return this.props.courseDetails !== nextProps.courseDetails;
   }
 
-  redirectRMP = async name => {
-    const lastName = name.substring(0, name.indexOf(","));
-    const nameP = rmpData[0][name];
-    if (nameP !== undefined)
-      window.open("https://www.ratemyprofessors.com" + nameP);
-    else
-      window.open(
-        `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
-      );
-  };
-
-  linkRMP = name => {
-    const rmpStyle = {
-      textDecoration: "underline",
-      color: "#0645AD",
-      cursor: "pointer"
-    };
-    return name.map(item => {
-      if (item !== "STAFF") {
-        return (
-          <div
-            style={rmpStyle}
-            onClick={() => {
-              this.redirectRMP(item);
-            }}
-          >
-            {item}
-          </div>
-        );
-      } else return item;
-    });
-  };
-
   disableTBA = section => {
-    //console.log(section.meetings[0] != "TBA", section.meetings[0]);
     let test = false;
     for (let element of section.meetings[0]) {
       if (element === "TBA") {
@@ -225,7 +190,10 @@ Sec ${section.sectionCode}
 ${section.units} units`}
               </td>
               <td className={classes.multiline}>
-                {section.instructors.join("\n")}
+                <Instructors className={classes.multiline}>
+                  {/*this.linkRMP(section.instructors)*/ }
+                  {section.instructors}
+                </Instructors>
               </td>
               <td className={classes.multiline}>
                 {section.meetings.map(meeting => meeting[0]).join("\n")}
@@ -234,7 +202,7 @@ ${section.units} units`}
                 {section.meetings.map(meeting => {
                   return (meeting[1] !== "ON LINE") ? (
                     <div>
-                      <a href={this.genMapLink(meeting[1])} target="_blank">
+                      <a href={this.genMapLink(meeting[1])} target="_blank" rel="noopener noreferrer">
                         {meeting[1]}
                       </a>
                       <br/>

@@ -30,11 +30,13 @@ const styles = {
     alignContent: 'center',
     padding: 2,
 
+
     '& > div': {
       flexGrow: 1,
       display: 'flex',
       alignItems: 'center',
       position: 'relative',
+      height:`calc((100vh - 96px - 12px -48px)/5)`
     }
   }
 }
@@ -86,7 +88,7 @@ class MobileCalendar extends Component {
                   backgroundColor: event.color
                 }
                 return <div onClick={(clickEvent) => this.props.onSelectEvent(event, clickEvent)}  style={style}><CustomEvent event={event}/></div>
-              }
+              }return null
             })}
           </div>
 
@@ -102,7 +104,7 @@ class MobileCalendar extends Component {
                   backgroundColor: event.color
                 }
                 return <div onClick={(clickEvent) => this.props.onSelectEvent(event, clickEvent)}  style={style}><CustomEvent event={event}/></div>
-              }
+              }return null
             })}
           </div>
 
@@ -118,7 +120,7 @@ class MobileCalendar extends Component {
                   backgroundColor: event.color
                 }
                 return <div onClick={(clickEvent) => this.props.onSelectEvent(event, clickEvent)}  style={style}><CustomEvent event={event}/></div>
-              }
+              }return null
             })}
           </div>
 
@@ -134,7 +136,7 @@ class MobileCalendar extends Component {
                   backgroundColor: event.color
                 }
                 return <div onClick={(clickEvent) => this.props.onSelectEvent(event, clickEvent)} style={style}><CustomEvent event={event}/></div>
-              }
+              }return null
             })}
           </div>
 
@@ -153,7 +155,7 @@ class MobileCalendar extends Component {
                 }
 
                 return <div onClick={(clickEvent) => this.props.onSelectEvent(event, clickEvent)}  style={style}><CustomEvent event={event}/></div>
-              }
+              }return null
             })}
           </div>
         </div>

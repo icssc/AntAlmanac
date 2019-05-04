@@ -1,13 +1,14 @@
-import React, {Component, Fragment} from "react";
-import loadingGif from "./loading.mp4";
-import querystring from "querystring";
-import CourseRenderPane from "./CourseRenderPane";
-import {IconButton, Tooltip} from "@material-ui/core";
-import {ArrowBack, Dns, ListAlt, Refresh} from "@material-ui/icons";
+import React, { Component, Fragment } from 'react'
+import loadingGif from './loading.mp4'
+import querystring from 'querystring'
+import CourseRenderPane from './CourseRenderPane'
+import { IconButton, Tooltip } from '@material-ui/core'
+import { ArrowBack, Dns, ListAlt, Refresh } from '@material-ui/icons'
+import ReactGA from 'react-ga';
 
 class CoursePane extends Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
     this.state = {
       courseData: [],
       loading: 2,
@@ -15,43 +16,52 @@ class CoursePane extends Component {
       deptName: null,
       showDismissButton: true,
       view: 0,
-      refresh: false
-    };
+      refresh: false,
+      shouldFetch: false
+    }
   }
 
   handleToggleDismissButton = () => {
     if (this.state.showDismissButton)
-      this.setState({showDismissButton: false});
+      this.setState({ showDismissButton: false })
     else
-      this.setState({showDismissButton: true});
-  };
+      this.setState({ showDismissButton: true })
+  }
 
-  shouldComponentUpdate(nextProps, nextState, nextContext) {
+  shouldComponentUpdate (nextProps, nextState, nextContext) {
     return (
       this.state !== nextState ||
-      nextProps.formData !== this.props.formData
-    );
+      nextProps.formData !== this.props.formData || nextProps.currentScheduleIndex !== this.props.currentScheduleIndex
+      || nextProps.destination !== this.props.destination
+    )
   }
 
-  static flatten(data) {
+  static flatten (data) {
     return data.reduce((accumulator, school) => {
-      accumulator.push(school);
+      accumulator.push(school)
 
       school.departments.forEach(dept => {
-        accumulator.push(dept);
+        accumulator.push(dept)
 
         dept.courses.forEach(course => {
-          accumulator.push(course);
-        });
-      });
+          accumulator.push(course)
+        })
+      })
 
-      return accumulator;
-    }, []);
+      return accumulator
+    }, [])
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevProps.formData !== this.props.formData)
-      this.fetchSearch();
+  // TODO: redesign the way that how we determine when to fetch
+  componentDidUpdate (prevProps, prevState, snapshot) {
+    if (prevProps.formData !== this.props.formData || this.state.shouldFetch)
+        this.setState({shouldFetch: false}, () => {
+          this.fetchSearch();
+      });
+  }
+
+  componentDidMount() {
+    this.setState({shouldFetch: (this.props.formData !== null)});
   }
 
   fetchSearch = () => {
@@ -67,9 +77,15 @@ class CoursePane extends Component {
       startTime,
       coursesFull,
       building
-    } = this.props.formData;
+    } = this.props.formData
 
-    this.setState({loading: 1});
+    ReactGA.event({
+      category: 'Search',
+      action: dept,
+      label:term
+    });
+  
+    this.setState({ loading: 1 })
     //TODO: Name parity
     const params = {
       department: dept,
@@ -83,13 +99,13 @@ class CoursePane extends Component {
       startTime: startTime,
       fullCourses: coursesFull,
       building: building
-    };
+    }
     const url =
-      "https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?" +
-      querystring.stringify(params);
+      'https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?' +
+      querystring.stringify(params)
     fetch(url)
       .then(resp => {
-        return resp.json();
+        return resp.json()
       })
       .then(jsonObj =>
         this.setState({
@@ -98,11 +114,11 @@ class CoursePane extends Component {
           termName: term,
           deptName: dept
         })
-      );
-  };
+      )
+  }
 
-  render() {
-    const {loading, courseData} = this.state;
+  render () {
+    const { loading, courseData } = this.state
 
     if (loading === 2) {
       return (
@@ -110,8 +126,8 @@ class CoursePane extends Component {
           {this.state.showDismissButton ?
             <div
               style={{
-                position: "sticky",
-                width: "100%",
+                position: 'sticky',
+                width: '100%',
                 top: 0,
                 zIndex: 3,
                 marginBottom: 8
@@ -120,8 +136,11 @@ class CoursePane extends Component {
               <Tooltip title="Clear Search">
                 <IconButton
                   onClick={this.props.onDismissSearchResults}
-                  style={{backgroundColor:"rgba(236, 236, 236, 1)",
-                          marginRight: 5}}
+                  style={{
+                    backgroundColor: 'rgba(236, 236, 236, 1)',
+                    marginRight: 5,
+                    boxShadow: 2
+                  }}
                 >
                   <ArrowBack/>
                 </IconButton>
@@ -129,55 +148,60 @@ class CoursePane extends Component {
 
               {this.state.view ? (
                 <Tooltip title="List View">
-                  <IconButton onClick={() => this.setState({view: 0})} style={{backgroundColor:"rgba(236, 236, 236, 1)", marginRight: 5}}>
-                    <ListAlt />
+                  <IconButton onClick={() => this.setState({ view: 0 })}
+                              style={{ backgroundColor: 'rgba(236, 236, 236, 1)', marginRight: 5, boxShadow: 2 }}>
+                    <ListAlt/>
                   </IconButton>
                 </Tooltip>
               ) : (
                 <Tooltip title="Tile View">
-                  <IconButton onClick={() => this.setState({view: 1})} style={{backgroundColor:"rgba(236, 236, 236, 1)", marginRight: 5}}>
-                    <Dns />
+                  <IconButton onClick={() => this.setState({ view: 1 })}
+                              style={{ backgroundColor: 'rgba(236, 236, 236, 1)', marginRight: 5, boxShadow: 2 }}>
+                    <Dns/>
                   </IconButton>
                 </Tooltip>
               )}
 
               <Tooltip title="Refresh Search Results">
-                <IconButton onClick={this.fetchSearch} style={{backgroundColor:"rgba(236, 236, 236, 1)"}}>
-                  <Refresh />
+                <IconButton onClick={this.fetchSearch} style={{ backgroundColor: 'rgba(236, 236, 236, 1)', boxShadow: 2 }}>
+                  <Refresh/>
                 </IconButton>
               </Tooltip>
             </div>
-          :
-          <Fragment/>}
+            :
+            <Fragment/>}
           <CourseRenderPane
-          formData={this.props.formData}
+            formData={this.props.formData}
             onAddClass={this.props.onAddClass}
             onToggleDismissButton={this.handleToggleDismissButton}
             courseData={courseData}
             view={this.state.view}
+            currentScheduleIndex={this.props.currentScheduleIndex}
             deptName={this.state.deptName}
             termName={this.state.termName}
+            destination={this.props.destination}
           />
         </Fragment>
-      );
+      )
     } else if (loading === 1) {
       return (
         <div
           style={{
-            height: "100%",
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center"
+            height: '100%',
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'white'
           }}
         >
           <video autoPlay loop>
             <source src={loadingGif} type="video/mp4"/>
           </video>
         </div>
-      );
+      )
     }
   }
 }
 
-export default CoursePane;
+export default CoursePane

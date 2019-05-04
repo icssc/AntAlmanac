@@ -1,8 +1,6 @@
 import React, {Fragment} from 'react';
 import PropTypes from 'prop-types';
-import Popover from '@material-ui/core/Popover';
-import Typography from '@material-ui/core/Typography';
-import code_lookup from "./restrictions.json";
+import {Popover, Typography} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
@@ -14,28 +12,24 @@ const styles = theme => ({
   },
 });
 
-class RstrPopover extends React.Component {
+class MouseOverPopover extends React.Component {
   state = {
     anchorEl: null,
+    mouseInPopover: false
   };
 
   handlePopoverOpen = event => {
-    this.setState({ anchorEl: event.currentTarget });
+    const oldTarget = event.currentTarget;
+    this.setState({ mouseInPopover: true });
+    setTimeout(() => {
+      if (this.state.mouseInPopover)
+        this.setState({ anchorEl: oldTarget });
+    }, 700);
   };
 
   handlePopoverClose = () => {
-    this.setState({ anchorEl: null });
+    this.setState({ anchorEl: null, mouseInPopover: false });
   };
-
-  parseRstr = rstr => {
-    var explained = [];
-    for (var code of rstr.split(" ")){
-      if (code !== "and" && code !== "or"){
-        explained.push(code_lookup[code]);
-      }
-    }
-    return explained;
- };
 
   render() {
     const { classes } = this.props;
@@ -43,21 +37,18 @@ class RstrPopover extends React.Component {
     const open = Boolean(anchorEl);
 
     return (
-      <div>
+      <Fragment>
         <Typography
+          aria-owns={open ? 'mouse-over-popover' : undefined}
+          aria-haspopup="true"
           onMouseEnter={this.handlePopoverOpen}
           onMouseLeave={this.handlePopoverClose}
+          className={this.props.className}
         >
-          <a
-            href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-          {this.props.restrictions}
-          </a>
+        {this.props.children}
         </Typography>
         <Popover
-          id="rstr-popover"
+          id="mouse-over-popover"
           className={classes.popover}
           classes={{
             paper: classes.paper,
@@ -75,17 +66,21 @@ class RstrPopover extends React.Component {
           onClose={this.handlePopoverClose}
           disableRestoreFocus
         >
-          <Typography>{this.parseRstr(this.props.restrictions).map( r =>
-            <Fragment>{r}<br/></Fragment>
-          )}</Typography>
+          <Typography>
+                Enrolled/Capacity
+                <br></br>
+                Waitlist
+                <br></br>
+                New Only Reserved
+          </Typography>
         </Popover>
-      </div>
+      </Fragment>
     );
   }
 }
 
-RstrPopover.propTypes = {
+MouseOverPopover.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(RstrPopover);
+export default withStyles(styles)(MouseOverPopover);
