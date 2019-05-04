@@ -12,9 +12,9 @@ const quartersFirstMondays = {"2019 Spring": "April 1, 2019", "2019 Fall": "Sept
 
 function ExportButton(props) {
   const {eventsInCalendar} = props;
-  // by default, set firstMonday to first Monday 2019 Spring (can be changed later on to different default)
+  // by default, set firstMonday to first Monday 2019 Fall (can be changed later on to different default)
   // this is to account for in case a user tries to download a schedule with no courses in them (just custom events)
-  let firstMonday = new Date(quartersFirstMondays["2019 Spring"]);
+  let firstMonday = new Date(quartersFirstMondays["2019 Fall"]);
 
   // meetings is a string ex: "TuTh" or "MWF"
   // used for class/course events (NOT custom ones.. that is below)

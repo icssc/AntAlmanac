@@ -90,7 +90,7 @@ class SearchForm extends Component {
         dept: null,
         label: null,
         ge: "ANY",
-        term: "2019 Spring",
+        term: "2019 Fall",
         courseNum: "",
         courseCode: "",
         instructor: "",
