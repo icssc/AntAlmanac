@@ -187,7 +187,7 @@ class ScheduleAddSelector extends Component {
                 <MenuItem onClick={() => this.handleClose(4)}>Add to all</MenuItem>
               </Menu>
           </td>
-          <Tooltip title="Click to copy course code" placement="right" classes={{ tooltip: classes.lightTooltip }}>
+          <Tooltip title="Click to copy course code" placement="bottom" enterDelay={300} classes={{ tooltip: classes.lightTooltip }}>
             <td onClick={e=>this.clickToCopy(e, section.classCode )} className={classes.code}>{section.classCode}</td>
           </Tooltip>
           <td className={classes.multiline + " " + classes[section.classType]}>

@@ -44,16 +44,16 @@ class Instructors extends React.Component {
       window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
       ReactGA.event({
         category: 'ProffRating_OPTION',
-        action: "eatereval",
+        action: "redirect_eatereval",
         label: lastName
       });
     } else {
-     
+
       var nameP = rmpData[0][name];
       ReactGA.event({
         category: 'ProffRating_OPTION',
-        action: "rmp",
-        label: nameP      
+        action: "redirect_rmp",
+        label: lastName
       });
       if (nameP !== undefined)
         window.open("https://www.ratemyprofessors.com" + nameP);
