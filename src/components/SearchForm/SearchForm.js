@@ -1,6 +1,7 @@
 import DeptSearchBar from "./DeptSearchBar/DeptSearchBar";
 import GESelector from "./GESelector";
 import TermSelector from "./TermSelector";
+import CourseCodeSearchBar from "./CourseCodeSearchBar"
 import React, {Component} from "react";
 import {
   Button,
@@ -168,8 +169,9 @@ class SearchForm extends Component {
         </div>
 
         <div className={classes.margin}>
-          <TermSelector term={this.state.term} setTerm={this.setTerm}/>
-        </div>
+          <TermSelector setTerm={this.setTerm}/>
+          <CourseCodeSearchBar onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
+        </div>   
 
         <div onClick={this.handleExpand} style={{display: 'inline-flex', marginTop: 15, cursor: 'pointer'}}>
             <div style={{flexGrow: 1}}>
