@@ -49,7 +49,7 @@ class CourseCodeSearchBar extends Component
     //const {classes} = this.props;
 
     return (
-        
+
         <div>
           <TextField
             id="course-code"
@@ -58,6 +58,7 @@ class CourseCodeSearchBar extends Component
             onChange={this.handleChange('courseCode')}
             type="search"
             helperText="ex. 14200, 29000-29100"
+            fullWidth
           />
         </div>
     );

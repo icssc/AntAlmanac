@@ -26,7 +26,7 @@ class GESelector extends Component {
 
     render() {
         return (
-            <FormControl fullWidth>
+            <FormControl style={{flexGrow: 1, marginRight: 15, width: "50%"}}>
                 <InputLabel htmlFor='ge-select'>General Education</InputLabel>
                 <Select
                     value={this.props.ge}

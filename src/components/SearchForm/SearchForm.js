@@ -161,19 +161,19 @@ class SearchForm extends Component {
     return (
       <div className={classes.container}>
         <div className={classes.margin}>
+          <TermSelector term={this.state.term} setTerm={this.setTerm}/>
+        </div>
+
+        <div>
           <DeptSearchBar dept={this.state.label} setDept={this.setDept}/>
         </div>
 
-        <div className={classes.margin}>
-          <GESelector ge={this.state.ge} setGE={this.setGE}/>
+        <div className={classes.margin} style={{display: "inline-flex"}}>
+          <GESelector ge={this.state.ge} setGE={this.setGE} />
+          <CourseCodeSearchBar onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
         </div>
 
-        <div className={classes.margin}>
-          <TermSelector setTerm={this.setTerm}/>
-          <CourseCodeSearchBar onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
-        </div>   
-
-        <div onClick={this.handleExpand} style={{display: 'inline-flex', marginTop: 15, cursor: 'pointer'}}>
+        <div onClick={this.handleExpand} style={{display: 'inline-flex', marginTop: 5, cursor: 'pointer'}}>
             <div style={{flexGrow: 1}}>
             <Typography noWrap variant='subheading'>
                 Advanced Search Options
