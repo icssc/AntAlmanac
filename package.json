@@ -36,6 +36,9 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
+    "husky": "^2.2.0",
+    "lint-staged": "^8.1.6",
+    "prettier": "^1.17.0",
     "react-snap": "^1.23.0"
   },
   "browserslist": [
@@ -46,5 +49,30 @@
   ],
   "reactSnap": {
     "inlineCss": true
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,json,css,html}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "prettier": {
+    "printWidth": 80,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "quoteProps": "as-needed",
+    "jsxSingleQuote": false,
+    "trailingComma": "es5",
+    "bracketSpacing": true,
+    "jsxBracketSameLine": false,
+    "arrowParens": "avoid",
+    "endOfLine": "lf"
   }
 }
