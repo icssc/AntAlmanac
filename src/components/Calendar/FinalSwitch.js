@@ -1,9 +1,8 @@
 import React from 'react';
-import {Switch, Typography} from '@material-ui/core';
+import { Switch, Typography } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 class FinalSwitch extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -18,7 +17,7 @@ class FinalSwitch extends React.Component {
 
   render() {
     return (
-      <Typography >
+      <Typography>
         <FormControlLabel
           control={
             <Switch
@@ -26,7 +25,7 @@ class FinalSwitch extends React.Component {
               onChange={this.handleChange('showFinal')}
               value="showFinal"
               color="primary"
-              style={{margin: 0}}
+              style={{ margin: 0 }}
             />
           }
           label="FINALS"

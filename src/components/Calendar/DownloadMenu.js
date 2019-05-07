@@ -1,18 +1,13 @@
-import React, {Fragment} from 'react';
-import {
-  Menu,
-  MenuItem,
-  MenuList,
-  IconButton
-} from '@material-ui/core';
-import {GetApp} from '@material-ui/icons';
-import ScreenshotButton from "./ScreenshotButton";
-import ExportButton from "./ExportCalendar";
+import React, { Fragment } from 'react';
+import { Menu, MenuItem, MenuList, IconButton } from '@material-ui/core';
+import { GetApp } from '@material-ui/icons';
+import ScreenshotButton from './ScreenshotButton';
+import ExportButton from './ExportCalendar';
 import Tooltip from '@material-ui/core/Tooltip';
 
 class DownloadMenu extends React.Component {
   state = {
-    anchorEl: null
+    anchorEl: null,
   };
 
   handleClick = event => {
@@ -29,10 +24,8 @@ class DownloadMenu extends React.Component {
     return (
       <Fragment>
         <Tooltip title="Download">
-          <IconButton
-            onClick={this.handleClick}
-          >
-            <GetApp fontSize='small'/>
+          <IconButton onClick={this.handleClick}>
+            <GetApp fontSize="small" />
           </IconButton>
         </Tooltip>
         <Menu
@@ -41,26 +34,26 @@ class DownloadMenu extends React.Component {
           open={Boolean(anchorEl)}
           onClose={this.handleClose}
           anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left"
+            vertical: 'bottom',
+            horizontal: 'left',
           }}
           transformOrigin={{
-            vertical: "bottom",
-            horizontal: "right"
+            vertical: 'bottom',
+            horizontal: 'right',
           }}
         >
           <MenuList>
             <div>
               <MenuItem
                 component={ScreenshotButton}
-                onTakeScreenshot={this.props.onTakeScreenshot}>
-              </MenuItem>
+                onTakeScreenshot={this.props.onTakeScreenshot}
+              />
             </div>
             <div>
               <MenuItem
                 component={ExportButton}
-                eventsInCalendar={this.props.eventsInCalendar}>
-              </MenuItem>
+                eventsInCalendar={this.props.eventsInCalendar}
+              />
             </div>
           </MenuList>
         </Menu>

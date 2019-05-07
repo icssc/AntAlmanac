@@ -1,6 +1,6 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import {Popover, Typography} from '@material-ui/core';
+import { Popover, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
@@ -15,15 +15,14 @@ const styles = theme => ({
 class MouseOverPopover extends React.Component {
   state = {
     anchorEl: null,
-    mouseInPopover: false
+    mouseInPopover: false,
   };
 
   handlePopoverOpen = event => {
     const oldTarget = event.currentTarget;
     this.setState({ mouseInPopover: true });
     setTimeout(() => {
-      if (this.state.mouseInPopover)
-        this.setState({ anchorEl: oldTarget });
+      if (this.state.mouseInPopover) this.setState({ anchorEl: oldTarget });
     }, 700);
   };
 
@@ -45,7 +44,7 @@ class MouseOverPopover extends React.Component {
           onMouseLeave={this.handlePopoverClose}
           className={this.props.className}
         >
-        {this.props.children}
+          {this.props.children}
         </Typography>
         <Popover
           id="mouse-over-popover"
@@ -67,11 +66,11 @@ class MouseOverPopover extends React.Component {
           disableRestoreFocus
         >
           <Typography>
-                Enrolled/Capacity
-                <br></br>
-                Waitlist
-                <br></br>
-                New Only Reserved
+            Enrolled/Capacity
+            <br />
+            Waitlist
+            <br />
+            New Only Reserved
           </Typography>
         </Popover>
       </Fragment>

@@ -1,10 +1,10 @@
-import React, { Component, Fragment } from "react";
-import {IconButton, Menu, MenuItem, Tooltip} from "@material-ui/core";
-import rmpData from "../CoursePane/RMP.json";
-import AlmanacGraphWrapped from "../AlmanacGraph/AlmanacGraph";
-import POPOVER from "../CoursePane/PopOver";
-import {ArrowBack, List} from "@material-ui/icons";
-import Notification from '../Notification'
+import React, { Component, Fragment } from 'react';
+import { IconButton, Menu, MenuItem, Tooltip } from '@material-ui/core';
+import rmpData from '../CoursePane/RMP.json';
+import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph';
+import POPOVER from '../CoursePane/PopOver';
+import { ArrowBack, List } from '@material-ui/icons';
+import Notification from '../Notification';
 
 class ScheduleAddSelector extends Component {
   constructor(props) {
@@ -17,27 +17,25 @@ class ScheduleAddSelector extends Component {
   };
 
   handleClose = scheduleNumber => {
-
     this.setState({ anchor: null });
     if (scheduleNumber !== -1)
       this.props.onAddClass(
         this.props.section,
         this.props.name,
         scheduleNumber,
-        this.props.termName,
-
+        this.props.termName
       );
   };
 
   redirectRMP = (e, name) => {
-    if (!e)  e = window.event;
+    if (!e) e = window.event;
     e.cancelBubble = true;
     if (e.stopPropagation) e.stopPropagation();
 
-    var lastName = name.substring(0, name.indexOf(","));
+    var lastName = name.substring(0, name.indexOf(','));
     var nameP = rmpData[0][name];
     if (nameP !== undefined)
-      window.open("https://www.ratemyprofessors.com" + nameP);
+      window.open('https://www.ratemyprofessors.com' + nameP);
     else
       window.open(
         `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
@@ -46,12 +44,12 @@ class ScheduleAddSelector extends Component {
 
   linkRMP = name => {
     const rmpStyle = {
-      textDecoration: "underline",
-      color: "#0645AD",
-      cursor: "pointer"
+      textDecoration: 'underline',
+      color: '#0645AD',
+      cursor: 'pointer',
     };
     return name.map(item => {
-      if (item !== "STAFF") {
+      if (item !== 'STAFF') {
         return (
           <div
             style={rmpStyle}
@@ -69,7 +67,7 @@ class ScheduleAddSelector extends Component {
   disableTBA = section => {
     var test = false;
     for (var element of section.meetings[0]) {
-      if (element === "TBA") {
+      if (element === 'TBA') {
         test = true;
         break;
       }
@@ -77,13 +75,13 @@ class ScheduleAddSelector extends Component {
     return test;
   };
 
-  
-  statusforFindingSpot = (section,classCode) => {
-    if(section === 'FULL')
-    return <Notification  full={section} code={classCode} name={this.props.name}/>
-    else
-    return section;
- };
+  statusforFindingSpot = (section, classCode) => {
+    if (section === 'FULL')
+      return (
+        <Notification full={section} code={classCode} name={this.props.name} />
+      );
+    else return section;
+  };
 
   render() {
     var section = this.props.section;
@@ -91,7 +89,7 @@ class ScheduleAddSelector extends Component {
       <Fragment>
         <tr
           {...(!this.disableTBA(section)
-            ? { onClick: this.handleClick, style: { cursor: "pointer" } }
+            ? { onClick: this.handleClick, style: { cursor: 'pointer' } }
             : {})}
         >
           {/* <td className="no_border">{this.disableTBA(section)}</td> */}
@@ -102,37 +100,34 @@ class ScheduleAddSelector extends Component {
 Sec ${section.sectionCode}
 ${section.units} units`}
           </td>
+          <td className="multiline">{this.linkRMP(section.instructors)}</td>
           <td className="multiline">
-            {this.linkRMP(section.instructors)}
+            {section.meetings.map(meeting => meeting[0]).join('\n')}
           </td>
           <td className="multiline">
-            {section.meetings
-              .map(meeting => meeting[0])
-              .join("\n")}
+            {section.meetings.map(meeting => meeting[1]).join('\n')}
           </td>
-          <td className="multiline">
-            {section.meetings
-              .map(meeting => meeting[1])
-              .join("\n")}
-          </td>
-          <td
-            className={["multiline", section.status].join(" ")}
-          >
-            {`${section.numCurrentlyEnrolled[0]} / ${
-              section.maxCapacity
-            }
+          <td className={['multiline', section.status].join(' ')}>
+            {`${section.numCurrentlyEnrolled[0]} / ${section.maxCapacity}
 WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
           </td>
-          <td>   <a
+          <td>
+            {' '}
+            <a
               href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
               target="_blank"
               rel="noopener noreferrer"
             >
               {section.restrictions}
-            </a></td>
+            </a>
+          </td>
           <td className={section.status}>
-          {this.statusforFindingSpot(section.status,section.classCode, this.props.name)}
+            {this.statusforFindingSpot(
+              section.status,
+              section.classCode,
+              this.props.name
+            )}
           </td>
         </tr>
         <Menu
@@ -165,10 +160,10 @@ class scheduleTableDisplay extends Component {
   }
 
   redirectRMP = async name => {
-    var lastName = name.substring(0, name.indexOf(","));
+    var lastName = name.substring(0, name.indexOf(','));
     var nameP = rmpData[0][name];
     if (nameP !== undefined)
-      window.open("https://www.ratemyprofessors.com" + nameP);
+      window.open('https://www.ratemyprofessors.com' + nameP);
     else
       window.open(
         `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
@@ -177,12 +172,12 @@ class scheduleTableDisplay extends Component {
 
   linkRMP = name => {
     const rmpStyle = {
-      textDecoration: "underline",
-      color: "#0645AD",
-      cursor: "pointer"
+      textDecoration: 'underline',
+      color: '#0645AD',
+      cursor: 'pointer',
     };
     return name.map(item => {
-      if (item !== "STAFF") {
+      if (item !== 'STAFF') {
         return (
           <div
             style={rmpStyle}
@@ -199,12 +194,12 @@ class scheduleTableDisplay extends Component {
 
   render() {
     return (
-    <Tooltip title="See All Courses">
-      <IconButton>
-        <List/>
-      </IconButton>
-    </Tooltip>
-    )
+      <Tooltip title="See All Courses">
+        <IconButton>
+          <List />
+        </IconButton>
+      </Tooltip>
+    );
   }
 }
 export default scheduleTableDisplay;
