@@ -113,6 +113,7 @@ export default [
   {"label": "PM&R (PMR): Physical Medicine & Rehabilitation", "value": "PM&R"}, 
   {"label": "POL SCI: Political Science", "value": "POL SCI"}, 
   {"label": "PORTUG: Portuguese", "value": "PORTUG"},
+  {"label": "PSCI: Psychological Science (since F19)", "value": "PSCI"},
   {"value": "PSY BEH", "label": "PSY BEH: Psychology & Social Behavior"}, 
   {"value": "PSYCH", "label": "PSYCH: Psychology"}, 
   {"value": "PUB POL", "label": "PUB POL: Public Policy"}, 
