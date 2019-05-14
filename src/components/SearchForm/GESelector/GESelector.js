@@ -3,6 +3,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import ge from "./ge";
 
 class GESelector extends Component {
     constructor(props) {
@@ -33,17 +34,9 @@ class GESelector extends Component {
                     onChange={this.handleChange}
                     inputProps={{name:'ge', id:'ge-select', fullWidth:true}}
                 >
-                    <MenuItem value={'ANY'}>All: Don't filter for GE</MenuItem>
-                    <MenuItem value={'GE-1A'}>GE Ia (1a): Lower Division Writing</MenuItem>
-                    <MenuItem value={'GE-1B'}>GE Ib (1b): Upper Division Writing</MenuItem>
-                    <MenuItem value={'GE-2'}>GE II (2): Science and Technology</MenuItem>
-                    <MenuItem value={'GE-3'}>GE III (3): Social and Behavioral Sciences</MenuItem>
-                    <MenuItem value={'GE-4'}>GE IV (4): Arts and Humanities</MenuItem>
-                    <MenuItem value={'GE-5A'}>GE Va (5a): Quantitative Literacy</MenuItem>
-                    <MenuItem value={'GE-5B'}>GE Vb (5b): Formal Reasoning</MenuItem>
-                    <MenuItem value={'GE-6'}>GE VI (6): Language other than English</MenuItem>
-                    <MenuItem value={'GE-7'}>GE VII (7): Multicultural Studies</MenuItem>
-                    <MenuItem value={'GE-8'}>GE VIII (8): International/Global Issues</MenuItem>
+                    {ge.map(category => {
+                      return (<MenuItem value={category.value}>{category.label}</MenuItem>)
+                    })}
                 </Select>
             </FormControl>
         );

@@ -1,6 +1,6 @@
 import React from "react";
 import Downshift from "mui-downshift";
-import depts from "./depts";
+import depts from "./DeptSearchBar/depts";
 import { isMobile } from "react-device-detect";
 
 class DeptSearchBar extends React.Component {
@@ -42,7 +42,7 @@ class DeptSearchBar extends React.Component {
       <Downshift
         items={this.state.filteredItems}
         onStateChange={this.handleStateChange}
-        defaultSelectedItem={this.defautlRen()}
+        selectedItem={this.defautlRen()}
         onChange={this.props.setDept}
         getInputProps={() => ({
           // Downshift requires this syntax to pass down these props to the text field

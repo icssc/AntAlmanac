@@ -1,5 +1,5 @@
 import DeptSearchBar from "./DeptSearchBar/DeptSearchBar";
-import GESelector from "./GESelector";
+import GESelector from "./GESelector/GESelector";
 import TermSelector from "./TermSelector";
 import CourseCodeSearchBar from "./CourseCodeSearchBar"
 import React, {Component} from "react";
