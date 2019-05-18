@@ -43,6 +43,7 @@ import {
   blueGrey
 } from '@material-ui/core/colors'
 import TabularView from './TabularView'
+import Map from './Map'
 import OptOutPopover from '../CoursePane/OptOutPopover'
 const CoursePane = React.lazy(() => import('../CoursePane/CoursePane'));
 
@@ -564,6 +565,7 @@ class App extends Component {
                       centered>
                   <Tab label="Class Search"/>
                   <Tab label="Added Classes"/>
+                  <Tab label="Dora's Map"/>
                 </Tabs>
               </div>
               <div
@@ -576,7 +578,7 @@ class App extends Component {
                 }}
                 id='rightPane'
               >
-                {this.state.rightPaneView ?
+                {(this.state.rightPaneView === 1) ?
                   <TabularView
                     eventsInCalendar={this.state.courseEvents.filter(courseEvent => (courseEvent.scheduleIndex === this.state.currentScheduleIndex || courseEvent.scheduleIndex === 4))}
                     onColorChange={this.handleColorChange}
@@ -587,6 +589,7 @@ class App extends Component {
                     handleClearSchedule={this.handleClearSchedule}
                   />
                   :
+                  ((this.state.rightPaneView === 2) ? <Map /> :
                   (
                     this.state.showSearch ?
                       <SearchForm
@@ -618,6 +621,7 @@ class App extends Component {
                         destination = {this.state.destination}/>
                       </Suspense>
                   )
+                )
                 }
               </div>
             </div>
