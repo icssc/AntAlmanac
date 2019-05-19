@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import {withStyles} from '@material-ui/core/styles';
 import AdvancedSearchTextFields from "./AdvancedSearch";
-import MIUCI from "./MIUCI.png";
+// import MIUCI from "./MIUCI.png";
 import {ExpandMore, ExpandLess} from '@material-ui/icons';
 
 const styles = {
@@ -28,12 +28,12 @@ const styles = {
   margin: {
     borderTop: 'solid 8px transparent',
   },
-  miuci: {
-    width: "35%",
-    position: "absolute",
-    bottom: 0,
-    right: 0
-  },
+  // miuci: {
+  //   width: "35%",
+  //   position: "absolute",
+  //   bottom: 0,
+  //   right: 0
+  // },
   new: {
     width: "55%",
     position: "absolute",
@@ -208,12 +208,12 @@ class SearchForm extends Component {
           </Typography>
         </div>
 
-        <img
+        {/*<img
           src={MIUCI}
           variant="contained"
           alt="Made_in_UCI"
           className={classes.miuci}
-        />
+        />*/}
 
       </div>
     );

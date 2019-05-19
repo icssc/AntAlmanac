@@ -1,5 +1,6 @@
-import React, {Component} from "react";
-import {Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@material-ui/core";
+import React, {Component, Fragment} from "react";
+import {Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography} from "@material-ui/core";
+import {CloudDownload} from '@material-ui/icons'
 
 export default class LoadDialog extends Component {
   constructor(props) {
@@ -52,7 +53,8 @@ export default class LoadDialog extends Component {
     return (
       <div>
         <Button onClick={this.handleOpen} color="inherit">
-          Load
+          <CloudDownload/>
+          {(this.props.isDesktop) ? (<Typography color="inherit">&nbsp;&nbsp;LOAD</Typography>) : <Fragment/> }
         </Button>
         <Dialog
           open={this.state.open}

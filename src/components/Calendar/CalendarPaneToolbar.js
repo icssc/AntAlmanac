@@ -31,7 +31,8 @@ class CalendarPaneToolbar extends Component {
 
     this.state = {
     schedule:-1,
-    name : 'Schedule 1'
+    name: 'Schedule 1',
+    customizedName: false //temporary fix for the whole schedule name situation
     }
 
   }
@@ -42,25 +43,33 @@ class CalendarPaneToolbar extends Component {
   render() {
     const {classes} = this.props;
 
-  if(this.state.schedule!==this.props.currentScheduleIndex)
-  {
-    let scheduleName = 'Schedule ' + (this.props.currentScheduleIndex + 1);
-    if (typeof Storage !== "undefined") {
-      const nameSchedule = window.localStorage.getItem("schedule"+this.props.currentScheduleIndex);
-      if (nameSchedule !== null) {
-        scheduleName = nameSchedule;
+    if(this.state.schedule!==this.props.currentScheduleIndex)
+    {
+      let scheduleName = 'Schedule ' + (this.props.currentScheduleIndex + 1);
+      if (typeof Storage !== "undefined") {
+        const nameSchedule = window.localStorage.getItem("schedule"+this.props.currentScheduleIndex);
+        if (nameSchedule !== null) {
+          scheduleName = nameSchedule;
+          this.setState({customizedName: true});
+        }
       }
-    }
-    this.setState({schedule:this.props.currentScheduleIndex,name:scheduleName});
+      this.setState({schedule:this.props.currentScheduleIndex,name:scheduleName});
 
-  }
+    }
 
     return (
       <div className={classes.toolbar}>
         <IconButton onClick={() => this.props.onScheduleChange(0)}>
           <ChevronLeft fontSize='small'/>
         </IconButton>
-        <Typography  variant="subheading" className={classes.inline}>
+
+        {this.state.customizedName ?
+          <InputBase style = {{width: 80}} onChange={this.onScheduleName} value={this.state.name} />
+        :
+          <Typography  variant="subheading" className={classes.inline}>
+            {"Schedule " + (this.props.currentScheduleIndex + 1)}
+          </Typography>
+        }
         {/* <Input
         defaultValue={'Schedule ' + (this.props.currentScheduleIndex + 1)}
         className={classes.input}
@@ -68,8 +77,7 @@ class CalendarPaneToolbar extends Component {
           'aria-label': 'Description',
         }}
       /> */}
-           <InputBase style = {{width: 70}} onChange={this.onScheduleName}  value={this.state.name} />
-        </Typography>
+
         <IconButton onClick={() => this.props.onScheduleChange(1)}>
           <ChevronRight fontSize='small'/>
         </IconButton>

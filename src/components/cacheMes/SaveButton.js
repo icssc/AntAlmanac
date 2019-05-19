@@ -1,5 +1,6 @@
-import React, {Component} from "react";
-import {Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@material-ui/core";
+import React, {Component, Fragment} from "react";
+import {Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography} from "@material-ui/core";
+import {Save} from '@material-ui/icons'
 
 export default class FormDialog extends Component {
   constructor(props) {
@@ -59,7 +60,8 @@ export default class FormDialog extends Component {
     return (
       <div>
         <Button onClick={this.handleOpen} color="inherit">
-          Save
+          <Save/>
+          {(this.props.isDesktop) ? (<Typography color="inherit">&nbsp;&nbsp;Save</Typography>) : <Fragment/> }
         </Button>
         <Dialog
           open={this.state.open}
