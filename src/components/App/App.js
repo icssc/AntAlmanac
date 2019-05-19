@@ -294,9 +294,11 @@ class App extends Component {
             if (start > end) start -= 12
           }
 
+
           if (scheduleIndex === 4) {
             for (let i = 0; i < 4; ++i) {
               dates.forEach((shouldBeInCal, index) => {
+
                 if (shouldBeInCal) {
                   const newCourse = {
                     name: courseDetails.name,

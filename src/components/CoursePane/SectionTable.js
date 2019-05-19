@@ -77,15 +77,16 @@ class ScheduleAddSelector extends Component {
   };
 
   handleClose = scheduleNumber => {
-    this.setState({anchor: null});
+    this.setState({anchor: null},()=>{
     if (scheduleNumber !== -1)
       this.props.onAddClass(
         this.props.section,
-        this.props.courseDetails.name,
+        this.props.courseDetails,
         scheduleNumber,
 
         this.props.termName
-      );
+    );
+    });
   };
 
   render() {
