@@ -61,7 +61,7 @@ export default class ClearSched extends React.Component {
     this.handleClose();
   };
 
-  handleChange = name => event => {
+  handleChange = (name) => (event) => {
     if (name === 'all') {
       this.setState({
         all: event.target.checked,

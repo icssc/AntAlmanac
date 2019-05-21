@@ -7,7 +7,7 @@ import MiniSectionTable from './MiniSectionTable';
 import NoNothing from './no_results.png';
 import AdAd from './ad_ad.png';
 
-const styles = theme => ({
+const styles = (theme) => ({
   course: {
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit,
@@ -54,7 +54,7 @@ class CourseRenderPane extends Component {
     this.scrollPos = null;
   }
 
-  toRender = SOCObject => {
+  toRender = (SOCObject) => {
     this.props.onToggleDismissButton();
     this.scrollPos = document.getElementById('rightPane').scrollTop;
     document.getElementById('rightPane').scrollTop = 0;
@@ -128,7 +128,7 @@ class CourseRenderPane extends Component {
 
   render() {
     return (
-      <div className={this.props.classes.root} ref={ref => (this.ref = ref)}>
+      <div className={this.props.classes.root} ref={(ref) => (this.ref = ref)}>
         <Modal
           className={this.props.classes.modal}
           disablePortal
@@ -173,7 +173,7 @@ class CourseRenderPane extends Component {
                 <img src={AdAd} alt="" className={this.props.classes.ad} />
               </a>
             </Grid>
-            {this.props.courseData.map(item => this.getGrid(item))}
+            {this.props.courseData.map((item) => this.getGrid(item))}
           </Grid>
         )}
       </div>

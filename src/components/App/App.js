@@ -1,5 +1,5 @@
-import React, {Component, Suspense, Fragment} from 'react'
-import CssBaseline from '@material-ui/core/CssBaseline'
+import React, { Component, Suspense, Fragment } from 'react';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import {
   Grid,
   Toolbar,
@@ -9,20 +9,20 @@ import {
   Hidden,
   Tab,
   Typography,
-  Button
-} from '@material-ui/core'
-import Logo_tight from './logo_tight.png'
-import Logo_wide from './logo_wide.png'
-import SearchForm from '../SearchForm/SearchForm'
-import Calendar from '../Calendar/Calendar'
+  Button,
+} from '@material-ui/core';
+import Logo_tight from './logo_tight.png';
+import Logo_wide from './logo_wide.png';
+import SearchForm from '../SearchForm/SearchForm';
+import Calendar from '../Calendar/Calendar';
 import {
   Info,
   Search,
   CalendarToday,
   Assignment,
   FormatListBulleted,
-} from '@material-ui/icons'
-import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality'
+} from '@material-ui/icons';
+import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality';
 import ReactGA from 'react-ga';
 import loadingGif from '../CoursePane/loading.mp4';
 import { saveUserData } from './FetchHelper';
@@ -117,7 +117,7 @@ class App extends Component {
     this.setState({ rightPaneView, showSearch: true });
   };
 
-  handleLoad = userData => {
+  handleLoad = (userData) => {
     this.setState({
       currentScheduleIndex: 0,
       courseEvents: userData.courseEvents,
@@ -126,11 +126,11 @@ class App extends Component {
     });
   };
 
-  handleSave = async userID => {
+  handleSave = async (userID) => {
     const eventsToSave = [];
     const map = new Map();
 
-    this.state.courseEvents.forEach(event => {
+    this.state.courseEvents.forEach((event) => {
       if (
         event.isCustomEvent ||
         (!event.isCustomEvent &&
@@ -161,7 +161,7 @@ class App extends Component {
     this.setState({ userID: userID });
   };
 
-  handleUndo = event => {
+  handleUndo = (event) => {
     if (
       this.state.backupArray.length > 0 &&
       (event == null ||
@@ -214,12 +214,12 @@ class App extends Component {
     }
   };
 
-  handleClassDelete = deletedEvent => {
+  handleClassDelete = (deletedEvent) => {
     //TODO: Pretty much need to rewrite this actually
     const eventsAfterRemovingItem = [];
     const newBackupArray = [];
 
-    this.state.courseEvents.forEach(eventInArray => {
+    this.state.courseEvents.forEach((eventInArray) => {
       if (
         eventInArray.isCustomEvent &&
         deletedEvent.isCustomEvent &&
@@ -231,7 +231,7 @@ class App extends Component {
           !eventsAfterRemovingItem.includes(eventInArray)
         ) {
           const scheduleIndicesToAddTo = [0, 1, 2, 3].filter(
-            index => index !== this.state.currentScheduleIndex
+            (index) => index !== this.state.currentScheduleIndex
           );
           eventsAfterRemovingItem.push(
             Object.assign({}, eventInArray, {
@@ -266,7 +266,7 @@ class App extends Component {
           !eventsAfterRemovingItem.includes(eventInArray)
         ) {
           const scheduleIndicesToAddTo = [0, 1, 2, 3].filter(
-            index => index !== this.state.currentScheduleIndex
+            (index) => index !== this.state.currentScheduleIndex
           );
           eventsAfterRemovingItem.push(
             Object.assign({}, eventInArray, {
@@ -291,7 +291,7 @@ class App extends Component {
           newBackupArray.push(deletedEvent);
         }
         const addBackColor = this.state.unavailableColors.filter(
-          colorAndScheduleIndex => {
+          (colorAndScheduleIndex) => {
             return !(
               colorAndScheduleIndex.color === deletedEvent.color &&
               colorAndScheduleIndex.scheduleIndex ===
@@ -316,9 +316,9 @@ class App extends Component {
   };
 
   handleAddClass = (section, courseDetails, scheduleIndex, courseTerm) => {
-    const randomColor = arrayOfColors.find(color => {
+    const randomColor = arrayOfColors.find((color) => {
       let isAvailableColor = true;
-      this.state.unavailableColors.forEach(colorAndScheduleIndex => {
+      this.state.unavailableColors.forEach((colorAndScheduleIndex) => {
         if (
           colorAndScheduleIndex.color === color &&
           (colorAndScheduleIndex.scheduleIndex === scheduleIndex ||
@@ -332,7 +332,7 @@ class App extends Component {
     });
 
     const doesExist = this.state.courseEvents.find(
-      course =>
+      (course) =>
         course.courseCode === section.classCode &&
         (course.scheduleIndex === scheduleIndex || scheduleIndex === 4)
     );
@@ -358,7 +358,7 @@ class App extends Component {
 
       let newCourses = [];
 
-      section.meetings.forEach(meeting => {
+      section.meetings.forEach((meeting) => {
         const timeString = meeting[0].replace(/\s/g, '');
 
         if (timeString !== 'TBA') {
@@ -384,11 +384,9 @@ class App extends Component {
             if (start > end) start -= 12;
           }
 
-
           if (scheduleIndex === 4) {
             for (let i = 0; i < 4; ++i) {
               dates.forEach((shouldBeInCal, index) => {
-
                 if (shouldBeInCal) {
                   const newCourse = {
                     name: courseDetails.name,
@@ -441,7 +439,7 @@ class App extends Component {
     }
   };
 
-  handleScheduleChange = direction => {
+  handleScheduleChange = (direction) => {
     if (direction === 0) {
       this.setState({
         showFinalSchedule: false,
@@ -455,12 +453,12 @@ class App extends Component {
     }
   };
 
-  handleCopySchedule = moveTo => {
+  handleCopySchedule = (moveTo) => {
     let allSchedules = [0, 1, 2, 3];
     let schedulesToMoveTo = [];
     //if move to all schedules
     if (moveTo === 4) {
-      allSchedules.forEach(schedule => {
+      allSchedules.forEach((schedule) => {
         if (schedule !== this.state.currentScheduleIndex) {
           schedulesToMoveTo.push(schedule);
         }
@@ -471,7 +469,7 @@ class App extends Component {
 
     // for each schedule index to add to
     let newCourses = [];
-    schedulesToMoveTo.forEach(schedule => {
+    schedulesToMoveTo.forEach((schedule) => {
       newCourses = newCourses.concat(this.getClassesAfterCopyingTo(schedule));
       this.setState({
         courseEvents: this.state.courseEvents.concat(newCourses),
@@ -479,13 +477,13 @@ class App extends Component {
     });
   };
 
-  getClassesAfterCopyingTo = moveTo => {
+  getClassesAfterCopyingTo = (moveTo) => {
     let moveFrom = this.state.currentScheduleIndex;
     const oldClasses = this.state.courseEvents.filter(
-      courseEvent => courseEvent.scheduleIndex === moveFrom
+      (courseEvent) => courseEvent.scheduleIndex === moveFrom
     );
     let newCourses = [];
-    oldClasses.forEach(oldClass => {
+    oldClasses.forEach((oldClass) => {
       let newClass = Object.assign({}, oldClass);
       newClass.scheduleIndex = moveTo;
       newCourses.push(newClass);
@@ -497,19 +495,19 @@ class App extends Component {
     this.setState({ showSearch: true, formData: null });
   };
 
-  updateFormData = formData => {
+  updateFormData = (formData) => {
     this.setState({ showSearch: false }, function() {
       this.setState({ formData: formData, prevFormData: formData });
     });
   };
 
-  handleAddCustomEvent = events => {
+  handleAddCustomEvent = (events) => {
     this.setState({ courseEvents: this.state.courseEvents.concat(events) });
   };
 
   handleEditCustomEvent = (newEvents, oldEvent) => {
     let newCourseEvents = this.state.courseEvents.filter(
-      courseEvent =>
+      (courseEvent) =>
         !courseEvent.isCustomEvent ||
         courseEvent.customEventID !== oldEvent.customEventID ||
         courseEvent.scheduleIndex !== oldEvent.scheduleIndex
@@ -553,7 +551,7 @@ class App extends Component {
     }
   };
 
-  displayFinal = schedule => {
+  displayFinal = (schedule) => {
     this.setState(
       {
         showFinalSchedule: !this.state.showFinalSchedule,
@@ -590,9 +588,9 @@ class App extends Component {
     window.localStorage.setItem('InstructorEvals', 'eatereval');
   };
 
-  handleClearSchedule = toDelete => {
+  handleClearSchedule = (toDelete) => {
     const eventsThatAreDeleted = this.state.courseEvents.filter(
-      courseEvent => !toDelete.includes(courseEvent.scheduleIndex)
+      (courseEvent) => !toDelete.includes(courseEvent.scheduleIndex)
     );
     this.setState({ courseEvents: eventsThatAreDeleted });
   };
@@ -628,7 +626,11 @@ class App extends Component {
               )}
             </div>
 
-            <LoadSaveScheduleFunctionality onLoad={this.handleLoad} onSave={this.handleSave} isDesktop={this.state.isDesktop}/>
+            <LoadSaveScheduleFunctionality
+              onLoad={this.handleLoad}
+              onSave={this.handleSave}
+              isDesktop={this.state.isDesktop}
+            />
 
             <OptOutPopover
               handleSelectRMP={this.handleSelectRMP}
@@ -640,24 +642,38 @@ class App extends Component {
             {this.state.isDesktop ? (
               <Tooltip title="Give Us Feedback!">
                 <Button
-                  onClick={()=>{window.open('https://goo.gl/forms/eIHy4kp56pZKP9fK2', '_blank')}}
+                  onClick={() => {
+                    window.open(
+                      'https://goo.gl/forms/eIHy4kp56pZKP9fK2',
+                      '_blank'
+                    );
+                  }}
                   color="inherit"
                 >
-                  <Assignment/>&nbsp;&nbsp;Feedback
+                  <Assignment />
+                  &nbsp;&nbsp;Feedback
                 </Button>
               </Tooltip>
             ) : (
-              <Fragment/>
+              <Fragment />
             )}
-
 
             <Tooltip title="Info Page">
               <Button
-                onClick={()=>{window.open('https://www.ics.uci.edu/~rang1/AntAlmanac/index.html', '_blank')}}
+                onClick={() => {
+                  window.open(
+                    'https://www.ics.uci.edu/~rang1/AntAlmanac/index.html',
+                    '_blank'
+                  );
+                }}
                 color="inherit"
               >
-                <Info/>
-                {this.state.isDesktop ? (<Typography color="inherit">&nbsp;&nbsp;Info</Typography>) : <Fragment/>}
+                <Info />
+                {this.state.isDesktop ? (
+                  <Typography color="inherit">&nbsp;&nbsp;Info</Typography>
+                ) : (
+                  <Fragment />
+                )}
               </Button>
             </Tooltip>
           </Toolbar>
@@ -677,14 +693,14 @@ class App extends Component {
                   this.state.showFinalSchedule
                     ? this.state.finalSchedule
                     : this.state.courseEvents.filter(
-                        courseEvent =>
+                        (courseEvent) =>
                           courseEvent.scheduleIndex ===
                             this.state.currentScheduleIndex ||
                           courseEvent.scheduleIndex === 4
                       )
                 }
                 eventsInCalendar={this.state.courseEvents.filter(
-                  courseEvent =>
+                  (courseEvent) =>
                     courseEvent.scheduleIndex ===
                       this.state.currentScheduleIndex ||
                     courseEvent.scheduleIndex === 4
@@ -715,15 +731,37 @@ class App extends Component {
               }}
             >
               <div
-                style={{ overflow: 'hidden', marginBottom: '4px', marginRight: '4px', backgroundColor: '#dfe2e5' }}>
-                <Tabs value={this.state.rightPaneView}
-                      onChange={this.handleRightPaneViewChange}
-                      indicatorColor="primary"
-                      textColor="primary"
-                      variant="fullWidth"
-                      centered>
-                  <Tab label={<div style={{display: "inline-flex"}}><Search style={{height: 20}}/><Typography>&nbsp;&nbsp;Class Search</Typography></div>}/>
-                  <Tab label={<div style={{display: "inline-flex"}}><FormatListBulleted style={{height: 20}}/><Typography>&nbsp;&nbsp;Added Classes</Typography></div>}/>
+                style={{
+                  overflow: 'hidden',
+                  marginBottom: '4px',
+                  marginRight: '4px',
+                  backgroundColor: '#dfe2e5',
+                }}
+              >
+                <Tabs
+                  value={this.state.rightPaneView}
+                  onChange={this.handleRightPaneViewChange}
+                  indicatorColor="primary"
+                  textColor="primary"
+                  variant="fullWidth"
+                  centered
+                >
+                  <Tab
+                    label={
+                      <div style={{ display: 'inline-flex' }}>
+                        <Search style={{ height: 20 }} />
+                        <Typography>&nbsp;&nbsp;Class Search</Typography>
+                      </div>
+                    }
+                  />
+                  <Tab
+                    label={
+                      <div style={{ display: 'inline-flex' }}>
+                        <FormatListBulleted style={{ height: 20 }} />
+                        <Typography>&nbsp;&nbsp;Added Classes</Typography>
+                      </div>
+                    }
+                  />
                 </Tabs>
               </div>
               <div
@@ -741,7 +779,7 @@ class App extends Component {
                 {this.state.rightPaneView ? (
                   <TabularView
                     eventsInCalendar={this.state.courseEvents.filter(
-                      courseEvent =>
+                      (courseEvent) =>
                         courseEvent.scheduleIndex ===
                           this.state.currentScheduleIndex ||
                         courseEvent.scheduleIndex === 4

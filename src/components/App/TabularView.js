@@ -128,7 +128,7 @@ class TabularView extends Component {
     };
   }
 
-  getMapLink = location => {
+  getMapLink = (location) => {
     try {
       const locationID = locations[location.split(' ')[0]];
       return 'https://map.uci.edu/?id=463#!m/' + locationID;
@@ -150,14 +150,14 @@ class TabularView extends Component {
     else return section;
   };
 
-  stripCommas = string => {
+  stripCommas = (string) => {
     let result = '';
     for (let i = 0; i < string.length; i++)
       if (string[i] !== ',') result += string[i];
     return result;
   };
 
-  getTimeString = event => {
+  getTimeString = (event) => {
     let startHours = event.start.getHours(),
       startMinutes = event.start.getMinutes();
     let endHours = event.end.getHours(),
@@ -176,7 +176,7 @@ class TabularView extends Component {
     return `${this.stripCommas(event.days.join())} ${startTime}-${endTime}`;
   };
 
-  handleDropdownOpen = event => {
+  handleDropdownOpen = (event) => {
     this.setState({ anchorEl: event.currentTarget });
   };
 
@@ -222,12 +222,12 @@ class TabularView extends Component {
         }
 
         let ce = customEvents.find(
-          event => event.customEventID === item.customEventID
+          (event) => event.customEventID === item.customEventID
         );
         if (ce === undefined) {
           item.days = [day];
           customEvents.push(item);
-        } else if (ce.days.find(d => d === day) === undefined) {
+        } else if (ce.days.find((d) => d === day) === undefined) {
           ce.days.push(day);
         }
       }
@@ -284,7 +284,7 @@ class TabularView extends Component {
             open={Boolean(this.state.anchorEl)}
             onClose={this.handleDropdownClose}
           >
-            {[0, 1, 2, 3].map(index => {
+            {[0, 1, 2, 3].map((index) => {
               return (
                 <MenuItem
                   disabled={this.props.scheduleIndex === index}
@@ -370,7 +370,7 @@ class TabularView extends Component {
           <Fragment />
         )}
 
-        {courses.map(event => {
+        {courses.map((event) => {
           return (
             <div>
               <div
@@ -432,7 +432,7 @@ class TabularView extends Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {event.lecAndDis.map(item => {
+                  {event.lecAndDis.map((item) => {
                     const secEach = item.section;
 
                     return (
@@ -455,7 +455,7 @@ class TabularView extends Component {
                           classes={{ tooltip: classes.lightTooltip }}
                         >
                           <td
-                            onClick={e =>
+                            onClick={(e) =>
                               this.clickToCopy(e, secEach.classCode)
                             }
                             className={classes.code}
@@ -482,11 +482,11 @@ ${secEach.units} units`}
                         </td>
                         <td className={classes.multiline}>
                           {secEach.meetings
-                            .map(meeting => meeting[0])
+                            .map((meeting) => meeting[0])
                             .join('\n')}
                         </td>
                         <td className={classes.multiline}>
-                          {secEach.meetings.map(meeting => {
+                          {secEach.meetings.map((meeting) => {
                             return meeting[1] !== 'ON LINE' &&
                               meeting[1] !== 'TBA' ? (
                               <div>
@@ -554,7 +554,7 @@ NOR: ${secEach.numNewOnlyReserved}`}
                 </tr>
               </thead>
               <tbody>
-                {customEvents.map(event => {
+                {customEvents.map((event) => {
                   return (
                     <tr className={classes.tr}>
                       <td

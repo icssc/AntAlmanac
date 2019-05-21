@@ -1,6 +1,15 @@
-import React, {Component, Fragment} from "react";
-import {Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography} from "@material-ui/core";
-import {Save} from '@material-ui/icons'
+import React, { Component, Fragment } from 'react';
+import {
+  Button,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Typography,
+} from '@material-ui/core';
+import { Save } from '@material-ui/icons';
 
 export default class FormDialog extends Component {
   constructor(props) {
@@ -15,7 +24,7 @@ export default class FormDialog extends Component {
     this.setState({ open: true });
   };
 
-  handleClose = wasCancelled => {
+  handleClose = (wasCancelled) => {
     if (wasCancelled) this.setState({ open: false });
     else
       this.setState({ open: false }, () => {
@@ -38,7 +47,7 @@ export default class FormDialog extends Component {
     document.addEventListener('keydown', this.enterEvent, false);
   }
 
-  enterEvent = event => {
+  enterEvent = (event) => {
     const charCode = event.which ? event.which : event.keyCode;
 
     if (
@@ -54,7 +63,7 @@ export default class FormDialog extends Component {
     }
   };
 
-  setName = event => {
+  setName = (event) => {
     this.setState({ name: event.target.value });
   };
 
@@ -62,8 +71,12 @@ export default class FormDialog extends Component {
     return (
       <div>
         <Button onClick={this.handleOpen} color="inherit">
-          <Save/>
-          {(this.props.isDesktop) ? (<Typography color="inherit">&nbsp;&nbsp;Save</Typography>) : <Fragment/> }
+          <Save />
+          {this.props.isDesktop ? (
+            <Typography color="inherit">&nbsp;&nbsp;Save</Typography>
+          ) : (
+            <Fragment />
+          )}
         </Button>
         <Dialog open={this.state.open} onClose={() => this.handleClose(true)}>
           <DialogTitle id="form-dialog-title">Save</DialogTitle>

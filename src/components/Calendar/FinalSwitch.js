@@ -10,7 +10,7 @@ class FinalSwitch extends React.Component {
       showFinal: true,
     };
   }
-  handleChange = name => event => {
+  handleChange = (name) => (event) => {
     this.setState({ [name]: event.target.checked });
     this.props.displayFinal(this.props.schedule);
   };

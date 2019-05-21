@@ -2,7 +2,7 @@ import React from 'react';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { Switch, Typography } from '@material-ui/core';
 
-const styles = theme => ({
+const styles = (theme) => ({
   typography: {
     margin: theme.spacing.unit * 2,
   },

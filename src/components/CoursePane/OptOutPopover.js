@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import {
   Popover,
@@ -9,15 +9,15 @@ import {
   FormControl,
   Typography,
   FormLabel,
-} from '@material-ui/core'
+} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import toRenderProps from "recompose/toRenderProps";
-import withState from "recompose/withState";
-import { Settings } from "@material-ui/icons";
+import toRenderProps from 'recompose/toRenderProps';
+import withState from 'recompose/withState';
+import { Settings } from '@material-ui/icons';
 
 const WithState = toRenderProps(withState('anchorEl', 'updateAnchorEl', null));
 
-const styles = theme => ({
+const styles = (theme) => ({
   padding: theme.spacing.unit * '10px',
 });
 function OptOutPopover(props) {
@@ -25,19 +25,25 @@ function OptOutPopover(props) {
     <WithState>
       {({ anchorEl, updateAnchorEl }) => {
         const open = Boolean(anchorEl);
-        const sep = (props.isDesktop) ? 25 : 5;
+        const sep = props.isDesktop ? 25 : 5;
 
         return (
           <Fragment>
             <Button
-              aria-owns={open ? "render-props-popover" : undefined}
+              aria-owns={open ? 'render-props-popover' : undefined}
               aria-haspopup="true"
-              onClick={event => {updateAnchorEl(event.currentTarget);}}
+              onClick={(event) => {
+                updateAnchorEl(event.currentTarget);
+              }}
               color="inherit"
-              style={{marginLeft: sep, marginRight: sep}}
+              style={{ marginLeft: sep, marginRight: sep }}
             >
-              <Settings/>
-              {(props.isDesktop) ? (<Typography color="inherit">&nbsp;&nbsp;Settings</Typography>) : <Fragment/> }
+              <Settings />
+              {props.isDesktop ? (
+                <Typography color="inherit">&nbsp;&nbsp;Settings</Typography>
+              ) : (
+                <Fragment />
+              )}
             </Button>
             <Popover
               id="render-props-popover"

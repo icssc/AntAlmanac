@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Popover, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
-const styles = theme => ({
+const styles = (theme) => ({
   popover: {
     pointerEvents: 'none',
   },
@@ -18,7 +18,7 @@ class MouseOverPopover extends React.Component {
     mouseInPopover: false,
   };
 
-  handlePopoverOpen = event => {
+  handlePopoverOpen = (event) => {
     const oldTarget = event.currentTarget;
     this.setState({ mouseInPopover: true });
     setTimeout(() => {

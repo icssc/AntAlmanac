@@ -27,13 +27,12 @@ class CalendarPaneToolbar extends Component {
     super(props);
 
     this.state = {
-    schedule:-1,
-    name: 'Schedule 1',
-    customizedName: false //temporary fix for the whole schedule name situation
-    }
-
+      schedule: -1,
+      name: 'Schedule 1',
+      customizedName: false, //temporary fix for the whole schedule name situation
+    };
   }
-  onScheduleName = e => {
+  onScheduleName = (e) => {
     window.localStorage.setItem(
       'schedule' + this.props.currentScheduleIndex,
       e.target.value
@@ -41,20 +40,23 @@ class CalendarPaneToolbar extends Component {
     this.setState({ name: e.target.value });
   };
   render() {
-    const {classes} = this.props;
+    const { classes } = this.props;
 
-    if(this.state.schedule!==this.props.currentScheduleIndex)
-    {
+    if (this.state.schedule !== this.props.currentScheduleIndex) {
       let scheduleName = 'Schedule ' + (this.props.currentScheduleIndex + 1);
-      if (typeof Storage !== "undefined") {
-        const nameSchedule = window.localStorage.getItem("schedule"+this.props.currentScheduleIndex);
+      if (typeof Storage !== 'undefined') {
+        const nameSchedule = window.localStorage.getItem(
+          'schedule' + this.props.currentScheduleIndex
+        );
         if (nameSchedule !== null) {
           scheduleName = nameSchedule;
-          this.setState({customizedName: true});
+          this.setState({ customizedName: true });
         }
       }
-      this.setState({schedule:this.props.currentScheduleIndex,name:scheduleName});
-
+      this.setState({
+        schedule: this.props.currentScheduleIndex,
+        name: scheduleName,
+      });
     }
 
     return (
@@ -63,13 +65,17 @@ class CalendarPaneToolbar extends Component {
           <ChevronLeft fontSize="small" />
         </IconButton>
 
-        {this.state.customizedName ?
-          <InputBase style = {{width: 80}} onChange={this.onScheduleName} value={this.state.name} />
-        :
-          <Typography  variant="subheading" className={classes.inline}>
-            {"Schedule " + (this.props.currentScheduleIndex + 1)}
+        {this.state.customizedName ? (
+          <InputBase
+            style={{ width: 80 }}
+            onChange={this.onScheduleName}
+            value={this.state.name}
+          />
+        ) : (
+          <Typography variant="subheading" className={classes.inline}>
+            {'Schedule ' + (this.props.currentScheduleIndex + 1)}
           </Typography>
-        }
+        )}
         {/* <Input
         defaultValue={'Schedule ' + (this.props.currentScheduleIndex + 1)}
         className={classes.input}

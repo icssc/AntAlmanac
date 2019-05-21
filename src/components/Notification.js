@@ -22,7 +22,7 @@ const variantIcon = {
   info: InfoIcon,
 };
 
-const styles1 = theme => ({
+const styles1 = (theme) => ({
   success: {
     backgroundColor: green[600],
   },
@@ -88,7 +88,7 @@ MySnackbarContent.propTypes = {
 
 const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
 
-const styles2 = theme => ({
+const styles2 = (theme) => ({
   margin: {
     margin: theme.spacing.unit,
   },
@@ -120,7 +120,7 @@ class CustomizedSnackbars extends React.Component {
   //   }
   // };
 
-  handleClose = reason => {
+  handleClose = (reason) => {
     if (reason === 'clickaway') {
       return;
     }

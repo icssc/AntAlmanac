@@ -12,7 +12,7 @@ class ColorPicker extends React.Component {
     };
   }
 
-  handleClick = event => {
+  handleClick = (event) => {
     if (!event) event = window.event;
     event.cancelBubble = true;
     if (event.stopPropagation) event.stopPropagation();
@@ -22,7 +22,7 @@ class ColorPicker extends React.Component {
     });
   };
 
-  handleClose = event => {
+  handleClose = (event) => {
     if (!event) event = window.event;
     if (event.stopPropagation) event.stopPropagation();
     this.setState({
@@ -30,7 +30,7 @@ class ColorPicker extends React.Component {
     });
   };
 
-  handleColorChange = color => {
+  handleColorChange = (color) => {
     this.setState({ color: color.hex }, () => {
       this.props.onColorChange(this.props.event, this.state.color);
     });
@@ -43,7 +43,7 @@ class ColorPicker extends React.Component {
     return (
       <div
         style={{ backgroundColor: this.props.event.color }}
-        onClick={e => {
+        onClick={(e) => {
           this.handleClick(e);
         }}
       >

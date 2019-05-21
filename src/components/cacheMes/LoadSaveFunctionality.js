@@ -14,7 +14,7 @@ const iconVariants = {
   error: Error,
 };
 
-const snackbarStyles = theme => ({
+const snackbarStyles = (theme) => ({
   success: {
     backgroundColor: green[600],
   },
@@ -35,7 +35,7 @@ const snackbarStyles = theme => ({
   },
 });
 
-const SnackBarMessageDisplay = withStyles(snackbarStyles)(props => {
+const SnackBarMessageDisplay = withStyles(snackbarStyles)((props) => {
   const { classes, message, onClose, variant, ...other } = props;
   const Icon = iconVariants[variant];
 
@@ -108,7 +108,7 @@ class LoadSaveScheduleFunctionality extends React.Component {
     }
   };
 
-  handleLoad = async userID => {
+  handleLoad = async (userID) => {
     if (userID != null) {
       userID = userID.replace(/\s+/g, '');
 
@@ -151,7 +151,7 @@ class LoadSaveScheduleFunctionality extends React.Component {
     }
   };
 
-  handleSave = async userID => {
+  handleSave = async (userID) => {
     if (userID != null) {
       userID = userID.replace(/\s+/g, '');
 
@@ -179,15 +179,23 @@ class LoadSaveScheduleFunctionality extends React.Component {
     }
   };
 
-  handleClose = reason => {
+  handleClose = (reason) => {
     if (reason !== 'clickaway') this.setState({ open: false });
   };
 
   render() {
     return (
       <Fragment>
-        <LoadButton handleLoad={this.handleLoad} isDesktop={this.props.isDesktop}> </LoadButton>
-        <SaveButton handleSave={this.handleSave} isDesktop={this.props.isDesktop}/>
+        <LoadButton
+          handleLoad={this.handleLoad}
+          isDesktop={this.props.isDesktop}
+        >
+          {' '}
+        </LoadButton>
+        <SaveButton
+          handleSave={this.handleSave}
+          isDesktop={this.props.isDesktop}
+        />
         <Snackbar
           anchorOrigin={{
             vertical: 'top',

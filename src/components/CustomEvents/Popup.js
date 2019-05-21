@@ -71,7 +71,7 @@ class DialogSelect extends Component {
     };
   }
 
-  handleClose = calendarIndex => {
+  handleClose = (calendarIndex) => {
     if (calendarIndex !== -1) this.handleAddToCalendar(calendarIndex);
     this.setState({
       open: false,
@@ -101,23 +101,23 @@ class DialogSelect extends Component {
     if (!this.props.editMode) this.props.handleSubmenuClose();
   };
 
-  handleEventNameChange = event => {
+  handleEventNameChange = (event) => {
     this.setState({ eventName: event.target.value });
   };
 
-  handleEndTimeChange = event => {
+  handleEndTimeChange = (event) => {
     this.setState({ end: event.target.value });
   };
 
-  handleStartTimeChange = event => {
+  handleStartTimeChange = (event) => {
     this.setState({ start: event.target.value });
   };
 
-  handleDayChange = days => {
+  handleDayChange = (days) => {
     this.setState({ days: days });
   };
 
-  handleAddToCalendar = scheduleIndex => {
+  handleAddToCalendar = (scheduleIndex) => {
     const startHour = parseInt(this.state.start.slice(0, 2), 10);
     const startMin = parseInt(this.state.start.slice(3, 5), 10);
     const endHour = parseInt(this.state.end.slice(0, 2), 10);
@@ -126,7 +126,7 @@ class DialogSelect extends Component {
     const events = [];
     const id = Math.floor(Math.random() * 1000000);
 
-    Object.keys(this.state.days).forEach(day => {
+    Object.keys(this.state.days).forEach((day) => {
       if (this.state.days[day]) {
         events.push({
           color: this.props.editMode ? this.props.event.color : '#551a8b',
@@ -225,7 +225,7 @@ class DialogSelect extends Component {
             </Button>
 
             <Button
-              onClick={event =>
+              onClick={(event) =>
                 this.setState({ anchorEl: event.currentTarget })
               }
               variant="contained"

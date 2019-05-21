@@ -9,7 +9,7 @@ import SMS from './smsInput';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 
-const styles = theme => ({
+const styles = (theme) => ({
   typography: {
     margin: theme.spacing.unit * 2,
   },
@@ -26,7 +26,7 @@ class SPopover extends React.Component {
     cacheSMS: '(  )    -    ',
   };
 
-  handleClick = event => {
+  handleClick = (event) => {
     if (!event) event = window.event;
     event.cancelBubble = true;
     if (event.stopPropagation) event.stopPropagation();
@@ -44,7 +44,7 @@ class SPopover extends React.Component {
     });
   };
 
-  handleClose = event => {
+  handleClose = (event) => {
     if (!event) event = window.event;
     event.cancelBubble = true;
     if (event.stopPropagation) event.stopPropagation();
@@ -76,7 +76,7 @@ class SPopover extends React.Component {
     // fetch(url)
     // alert(email+" added to the notification list for "+ code +" !!!")
   };
-  inputChange = event => {
+  inputChange = (event) => {
     if (!event) event = window.event;
     event.cancelBubble = true;
     if (event.stopPropagation) event.stopPropagation();
@@ -105,7 +105,7 @@ class SPopover extends React.Component {
           open={open}
           anchorEl={anchorEl}
           onClose={this.handleClose}
-          onClick={event => {
+          onClick={(event) => {
             if (!event) event = window.event;
             event.cancelBubble = true;
             if (event.stopPropagation) event.stopPropagation();

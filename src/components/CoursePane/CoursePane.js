@@ -40,10 +40,10 @@ class CoursePane extends Component {
     return data.reduce((accumulator, school) => {
       accumulator.push(school);
 
-      school.departments.forEach(dept => {
+      school.departments.forEach((dept) => {
         accumulator.push(dept);
 
-        dept.courses.forEach(course => {
+        dept.courses.forEach((course) => {
           accumulator.push(course);
         });
       });
@@ -104,10 +104,10 @@ class CoursePane extends Component {
       'https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?' +
       querystring.stringify(params);
     fetch(url)
-      .then(resp => {
+      .then((resp) => {
         return resp.json();
       })
-      .then(jsonObj =>
+      .then((jsonObj) =>
         this.setState({
           courseData: CoursePane.flatten(jsonObj),
           loading: 2,

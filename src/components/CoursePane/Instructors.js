@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import rmpData from './RMP.json';
 import ReactGA from 'react-ga';
 
-const styles = theme => ({
+const styles = (theme) => ({
   popover: {
     pointerEvents: 'none',
   },
@@ -20,7 +20,7 @@ class Instructors extends React.Component {
     mouseInPopover: false,
   };
 
-  handlePopoverOpen = event => {
+  handlePopoverOpen = (event) => {
     const oldTarget = event.currentTarget;
     this.setState({ mouseInPopover: true });
     setTimeout(() => {
@@ -64,18 +64,18 @@ class Instructors extends React.Component {
     }
   };
 
-  linkRMP = name => {
+  linkRMP = (name) => {
     const rmpStyle = {
       textDecoration: 'underline',
       color: '#0645AD',
       cursor: 'pointer',
     };
-    return name.map(item => {
+    return name.map((item) => {
       if (item !== 'STAFF') {
         return (
           <div
             style={rmpStyle}
-            onClick={e => {
+            onClick={(e) => {
               this.redirect(e, item);
             }}
           >

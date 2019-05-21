@@ -50,7 +50,7 @@ const styles = {
   },
 };
 
-const genMapLink = location => {
+const genMapLink = (location) => {
   try {
     const location_id = locations[location.split(' ')[0]];
     return 'https://map.uci.edu/?id=463#!m/' + location_id;
@@ -59,7 +59,7 @@ const genMapLink = location => {
   }
 };
 
-const CourseCalendarEvent = props => {
+const CourseCalendarEvent = (props) => {
   const { classes, courseInMoreInfo } = props;
   if (!courseInMoreInfo.isCustomEvent) {
     const { section, name, final, location } = courseInMoreInfo;

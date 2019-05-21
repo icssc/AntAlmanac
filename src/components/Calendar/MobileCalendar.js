@@ -40,7 +40,7 @@ const styles = {
   },
 };
 
-const CustomEvent = props => {
+const CustomEvent = (props) => {
   const actualEvent = props.event;
   const startString = actualEvent.start.toLocaleTimeString([], {
     hour: '2-digit',
@@ -94,7 +94,7 @@ class MobileCalendar extends Component {
         </div>
         <div className={classes.dayboxes}>
           <div>
-            {this.props.classEventsInCalendar.map(event => {
+            {this.props.classEventsInCalendar.map((event) => {
               if (event.start.getDay() === 1) {
                 const style = {
                   width: `${(Math.floor((event.end - event.start) / 1000 / 60) /
@@ -109,7 +109,7 @@ class MobileCalendar extends Component {
                 };
                 return (
                   <div
-                    onClick={clickEvent =>
+                    onClick={(clickEvent) =>
                       this.props.onSelectEvent(event, clickEvent)
                     }
                     style={style}
@@ -123,7 +123,7 @@ class MobileCalendar extends Component {
           </div>
 
           <div>
-            {this.props.classEventsInCalendar.map(event => {
+            {this.props.classEventsInCalendar.map((event) => {
               if (event.start.getDay() === 2) {
                 const style = {
                   width: `${(Math.floor((event.end - event.start) / 1000 / 60) /
@@ -138,7 +138,7 @@ class MobileCalendar extends Component {
                 };
                 return (
                   <div
-                    onClick={clickEvent =>
+                    onClick={(clickEvent) =>
                       this.props.onSelectEvent(event, clickEvent)
                     }
                     style={style}
@@ -152,7 +152,7 @@ class MobileCalendar extends Component {
           </div>
 
           <div>
-            {this.props.classEventsInCalendar.map(event => {
+            {this.props.classEventsInCalendar.map((event) => {
               if (event.start.getDay() === 3) {
                 const style = {
                   width: `${(Math.floor((event.end - event.start) / 1000 / 60) /
@@ -167,7 +167,7 @@ class MobileCalendar extends Component {
                 };
                 return (
                   <div
-                    onClick={clickEvent =>
+                    onClick={(clickEvent) =>
                       this.props.onSelectEvent(event, clickEvent)
                     }
                     style={style}
@@ -181,7 +181,7 @@ class MobileCalendar extends Component {
           </div>
 
           <div>
-            {this.props.classEventsInCalendar.map(event => {
+            {this.props.classEventsInCalendar.map((event) => {
               if (event.start.getDay() === 4) {
                 const style = {
                   width: `${(Math.floor((event.end - event.start) / 1000 / 60) /
@@ -196,7 +196,7 @@ class MobileCalendar extends Component {
                 };
                 return (
                   <div
-                    onClick={clickEvent =>
+                    onClick={(clickEvent) =>
                       this.props.onSelectEvent(event, clickEvent)
                     }
                     style={style}
@@ -210,7 +210,7 @@ class MobileCalendar extends Component {
           </div>
 
           <div>
-            {this.props.classEventsInCalendar.map(event => {
+            {this.props.classEventsInCalendar.map((event) => {
               if (event.start.getDay() === 5) {
                 const style = {
                   width: `${(Math.floor((event.end - event.start) / 1000 / 60) /
@@ -228,7 +228,7 @@ class MobileCalendar extends Component {
 
                 return (
                   <div
-                    onClick={clickEvent =>
+                    onClick={(clickEvent) =>
                       this.props.onSelectEvent(event, clickEvent)
                     }
                     style={style}

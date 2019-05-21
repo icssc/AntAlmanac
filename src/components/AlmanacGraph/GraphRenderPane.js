@@ -92,8 +92,8 @@ class GraphRenderPane extends Component {
     const url = `https://bgu0fypajc.execute-api.us-west-1.amazonaws.com/prod/${quarter}/${year}/${code}`;
 
     fetch(url, { signal: this.signal })
-      .then(resp => resp.text())
-      .then(resp => {
+      .then((resp) => resp.text())
+      .then((resp) => {
         this.setState({ graph: { __html: resp } });
       });
   }
@@ -137,12 +137,12 @@ Units: ${this.props.section.units}`}
               </td>
               <td className={classes.multiline}>
                 {this.props.section.meetings
-                  .map(meeting => meeting[0])
+                  .map((meeting) => meeting[0])
                   .join('\n')}
               </td>
               <td className={classes.multiline}>
                 {this.props.section.meetings
-                  .map(meeting => meeting[1])
+                  .map((meeting) => meeting[1])
                   .join('\n')}
               </td>
               <td>{this.props.section.maxCapacity}</td>

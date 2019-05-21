@@ -67,7 +67,7 @@ class AdvancedSearchTextFields extends Component {
     };
   }
 
-  handleChange = name => event => {
+  handleChange = (name) => (event) => {
     if (name === 'endTime' || name === 'startTime') {
       if (event.target.value !== '') {
         if (parseInt(event.target.value.slice(0, 2), 10) > 12)

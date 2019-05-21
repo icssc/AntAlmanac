@@ -12,11 +12,11 @@ class ScheduleAddSelector extends Component {
     this.state = { anchor: null };
   }
 
-  handleClick = event => {
+  handleClick = (event) => {
     this.setState({ anchor: event.currentTarget });
   };
 
-  handleClose = scheduleNumber => {
+  handleClose = (scheduleNumber) => {
     this.setState({ anchor: null });
     if (scheduleNumber !== -1)
       this.props.onAddClass(
@@ -42,18 +42,18 @@ class ScheduleAddSelector extends Component {
       );
   };
 
-  linkRMP = name => {
+  linkRMP = (name) => {
     const rmpStyle = {
       textDecoration: 'underline',
       color: '#0645AD',
       cursor: 'pointer',
     };
-    return name.map(item => {
+    return name.map((item) => {
       if (item !== 'STAFF') {
         return (
           <div
             style={rmpStyle}
-            onClick={e => {
+            onClick={(e) => {
               this.redirectRMP(e, item);
             }}
           >
@@ -64,7 +64,7 @@ class ScheduleAddSelector extends Component {
     });
   };
 
-  disableTBA = section => {
+  disableTBA = (section) => {
     var test = false;
     for (var element of section.meetings[0]) {
       if (element === 'TBA') {
@@ -102,10 +102,10 @@ ${section.units} units`}
           </td>
           <td className="multiline">{this.linkRMP(section.instructors)}</td>
           <td className="multiline">
-            {section.meetings.map(meeting => meeting[0]).join('\n')}
+            {section.meetings.map((meeting) => meeting[0]).join('\n')}
           </td>
           <td className="multiline">
-            {section.meetings.map(meeting => meeting[1]).join('\n')}
+            {section.meetings.map((meeting) => meeting[1]).join('\n')}
           </td>
           <td className={['multiline', section.status].join(' ')}>
             {`${section.numCurrentlyEnrolled[0]} / ${section.maxCapacity}
@@ -159,7 +159,7 @@ class scheduleTableDisplay extends Component {
     super(props);
   }
 
-  redirectRMP = async name => {
+  redirectRMP = async (name) => {
     var lastName = name.substring(0, name.indexOf(','));
     var nameP = rmpData[0][name];
     if (nameP !== undefined)
@@ -170,13 +170,13 @@ class scheduleTableDisplay extends Component {
       );
   };
 
-  linkRMP = name => {
+  linkRMP = (name) => {
     const rmpStyle = {
       textDecoration: 'underline',
       color: '#0645AD',
       cursor: 'pointer',
     };
-    return name.map(item => {
+    return name.map((item) => {
       if (item !== 'STAFF') {
         return (
           <div

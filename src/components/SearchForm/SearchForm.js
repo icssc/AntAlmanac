@@ -1,17 +1,13 @@
-import DeptSearchBar from "./DeptSearchBar/DeptSearchBar";
-import GESelector from "./GESelector/GESelector";
-import TermSelector from "./TermSelector";
-import CourseCodeSearchBar from "./CourseCodeSearchBar"
-import React, {Component} from "react";
-import {
-  Button,
-  Typography,
-  Collapse
-} from "@material-ui/core";
-import {withStyles} from '@material-ui/core/styles';
-import AdvancedSearchTextFields from "./AdvancedSearch";
+import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
+import GESelector from './GESelector/GESelector';
+import TermSelector from './TermSelector';
+import CourseCodeSearchBar from './CourseCodeSearchBar';
+import React, { Component } from 'react';
+import { Button, Typography, Collapse } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import AdvancedSearchTextFields from './AdvancedSearch';
 // import MIUCI from "./MIUCI.png";
-import {ExpandMore, ExpandLess} from '@material-ui/icons';
+import { ExpandMore, ExpandLess } from '@material-ui/icons';
 
 const styles = {
   container: {
@@ -115,7 +111,7 @@ class SearchForm extends Component {
     document.addEventListener('keydown', this.enterEvent, false);
   };
 
-  enterEvent = event => {
+  enterEvent = (event) => {
     const charCode = event.which ? event.which : event.keyCode;
     if (
       (charCode === 13 || charCode === 10) &&
@@ -132,20 +128,20 @@ class SearchForm extends Component {
     return this.state !== nextState;
   };
 
-  setDept = dept => {
+  setDept = (dept) => {
     if (dept == null) this.setState({ dept: null });
     else this.setState({ dept: dept.value, label: dept.label });
   };
 
-  handleAdvancedSearchChange = advancedSearchState => {
+  handleAdvancedSearchChange = (advancedSearchState) => {
     this.setState(advancedSearchState);
   };
 
-  setGE = ge => {
+  setGE = (ge) => {
     this.setState({ ge: ge });
   };
 
-  setTerm = term => {
+  setTerm = (term) => {
     this.setState({ term: term });
   };
 
@@ -164,22 +160,27 @@ class SearchForm extends Component {
     return (
       <div className={classes.container}>
         <div className={classes.margin}>
-          <TermSelector term={this.state.term} setTerm={this.setTerm}/>
+          <TermSelector term={this.state.term} setTerm={this.setTerm} />
         </div>
 
         <div>
-          <DeptSearchBar dept={this.state.label} setDept={this.setDept}/>
+          <DeptSearchBar dept={this.state.label} setDept={this.setDept} />
         </div>
 
-        <div className={classes.margin} style={{display: "inline-flex"}}>
+        <div className={classes.margin} style={{ display: 'inline-flex' }}>
           <GESelector ge={this.state.ge} setGE={this.setGE} />
-          <CourseCodeSearchBar onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
+          <CourseCodeSearchBar
+            onAdvancedSearchChange={this.handleAdvancedSearchChange}
+          />
         </div>
 
-        <div onClick={this.handleExpand} style={{display: 'inline-flex', marginTop: 5, cursor: 'pointer'}}>
-            <div style={{flexGrow: 1}}>
-            <Typography noWrap variant='subheading'>
-                Advanced Search Options
+        <div
+          onClick={this.handleExpand}
+          style={{ display: 'inline-flex', marginTop: 5, cursor: 'pointer' }}
+        >
+          <div style={{ flexGrow: 1 }}>
+            <Typography noWrap variant="subheading">
+              Advanced Search Options
             </Typography>
           </div>
           {this.state.expandAdvanced ? <ExpandLess /> : <ExpandMore />}
@@ -219,7 +220,6 @@ class SearchForm extends Component {
           alt="Made_in_UCI"
           className={classes.miuci}
         />*/}
-
       </div>
     );
   }

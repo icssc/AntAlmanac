@@ -6,7 +6,7 @@ import { Typography, Popover, Button } from '@material-ui/core';
 import Share from '@material-ui/icons/Share';
 import html2canvas from 'html2canvas';
 import { FacebookShareButton, FacebookIcon } from 'react-share';
-const styles = theme => ({
+const styles = (theme) => ({
   typography: {
     margin: theme.spacing.unit * 2,
   },
@@ -19,7 +19,7 @@ class Sharing extends React.Component {
     loading: true,
   };
 
-  handleClick = event => {
+  handleClick = (event) => {
     this.setState(
       {
         loading: true,
@@ -27,7 +27,7 @@ class Sharing extends React.Component {
       },
       () => {
         this.props.onTakeScreenshot(() => {
-          html2canvas(document.getElementById('screenshot')).then(canvas => {
+          html2canvas(document.getElementById('screenshot')).then((canvas) => {
             let img = canvas.toDataURL('image/png');
 
             var arr = img.split(','),
@@ -51,16 +51,16 @@ class Sharing extends React.Component {
                 body: formData,
               }
             )
-              .then(res => {
+              .then((res) => {
                 if (!res.ok) {
                   throw res;
                 }
                 return res.json();
               })
-              .then(images => {
+              .then((images) => {
                 this.setState({ image: images[0].secure_url, loading: false });
               })
-              .catch(err => {});
+              .catch((err) => {});
           });
         });
       }

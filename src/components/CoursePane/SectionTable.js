@@ -72,20 +72,20 @@ class ScheduleAddSelector extends Component {
     this.state = { anchor: null };
   }
 
-  handleClick = event => {
+  handleClick = (event) => {
     this.setState({ anchor: event.currentTarget });
   };
 
-  handleClose = scheduleNumber => {
-    this.setState({anchor: null},()=>{
-    if (scheduleNumber !== -1)
-      this.props.onAddClass(
-        this.props.section,
-        this.props.courseDetails,
-        scheduleNumber,
+  handleClose = (scheduleNumber) => {
+    this.setState({ anchor: null }, () => {
+      if (scheduleNumber !== -1)
+        this.props.onAddClass(
+          this.props.section,
+          this.props.courseDetails,
+          scheduleNumber,
 
-        this.props.termName
-    );
+          this.props.termName
+        );
     });
   };
 
@@ -124,7 +124,7 @@ class SectionTable extends Component {
     return this.props.courseDetails !== nextProps.courseDetails;
   }
 
-  disableTBA = section => {
+  disableTBA = (section) => {
     let test = false;
     for (let element of section.meetings[0]) {
       if (element === 'TBA') {
@@ -156,7 +156,7 @@ class SectionTable extends Component {
     else return section;
   };
 
-  genMapLink = location => {
+  genMapLink = (location) => {
     try {
       const location_id = locations[location.split(' ')[0]];
       return 'https://map.uci.edu/?id=463#!m/' + location_id;
@@ -185,7 +185,7 @@ class SectionTable extends Component {
           </tr>
         </thead>
         <tbody>
-          {sectionInfo.map(section => {
+          {sectionInfo.map((section) => {
             return (
               <tr className={classes.tr}>
                 <td>{this.disableTBA(section)}</td>
@@ -202,10 +202,10 @@ ${section.units} units`}
                   </Instructors>
                 </td>
                 <td className={classes.multiline}>
-                  {section.meetings.map(meeting => meeting[0]).join('\n')}
+                  {section.meetings.map((meeting) => meeting[0]).join('\n')}
                 </td>
                 <td className={classes.multiline}>
-                  {section.meetings.map(meeting => {
+                  {section.meetings.map((meeting) => {
                     return meeting[1] !== 'ON LINE' ? (
                       <div>
                         <a

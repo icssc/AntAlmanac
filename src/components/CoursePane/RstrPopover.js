@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import code_lookup from './restrictions.json';
 import { withStyles } from '@material-ui/core/styles';
 
-const styles = theme => ({
+const styles = (theme) => ({
   popover: {
     pointerEvents: 'none',
   },
@@ -19,7 +19,7 @@ class RstrPopover extends React.Component {
     anchorEl: null,
   };
 
-  handlePopoverOpen = event => {
+  handlePopoverOpen = (event) => {
     this.setState({ anchorEl: event.currentTarget });
   };
 
@@ -27,7 +27,7 @@ class RstrPopover extends React.Component {
     this.setState({ anchorEl: null });
   };
 
-  parseRstr = rstr => {
+  parseRstr = (rstr) => {
     var explained = [];
     for (var code of rstr.split(' ')) {
       if (code !== 'and' && code !== 'or') {
@@ -76,7 +76,7 @@ class RstrPopover extends React.Component {
           disableRestoreFocus
         >
           <Typography>
-            {this.parseRstr(this.props.restrictions).map(r => (
+            {this.parseRstr(this.props.restrictions).map((r) => (
               <Fragment>
                 {r}
                 <br />

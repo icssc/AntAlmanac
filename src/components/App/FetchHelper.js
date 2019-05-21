@@ -8,7 +8,7 @@ function calendarize(
 ) {
   const events = [];
 
-  section.meetings.forEach(meeting => {
+  section.meetings.forEach((meeting) => {
     const timeString = meeting[0].replace(/\s/g, '');
 
     if (timeString !== 'TBA') {

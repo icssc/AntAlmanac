@@ -94,15 +94,15 @@ class ScheduleAddSelector extends Component {
     this.state = { copied: false, anchor: null, clipboard: '' };
   }
 
-  handleAddMore = event => {
+  handleAddMore = (event) => {
     this.setState({ anchor: event.currentTarget });
   };
 
-  handleAddCurrent = event => {
+  handleAddCurrent = (event) => {
     this.handleClose(this.props.currentScheduleIndex); //add to current
   };
 
-  handleClose = scheduleNumber => {
+  handleClose = (scheduleNumber) => {
     this.setState({ anchor: null });
     if (scheduleNumber !== -1) {
       this.props.onAddClass(
@@ -114,7 +114,7 @@ class ScheduleAddSelector extends Component {
     }
   };
 
-  disableTBA = section => {
+  disableTBA = (section) => {
     let test = false;
     for (const element of section.meetings[0]) {
       if (element === 'TBA') {
@@ -125,7 +125,7 @@ class ScheduleAddSelector extends Component {
     return test;
   };
 
-  genMapLink = location => {
+  genMapLink = (location) => {
     try {
       const location_id = locations[location.split(' ')[0]];
       return 'https://map.uci.edu/?id=463#!m/' + location_id;
@@ -216,7 +216,7 @@ class ScheduleAddSelector extends Component {
             classes={{ tooltip: classes.lightTooltip }}
           >
             <td
-              onClick={e => this.clickToCopy(e, section.classCode)}
+              onClick={(e) => this.clickToCopy(e, section.classCode)}
               className={classes.code}
             >
               {section.classCode}
@@ -236,10 +236,10 @@ Units: ${section.units}`}
             </Instructors>
           </td>
           <td className={classes.multiline}>
-            {section.meetings.map(meeting => meeting[0]).join('\n')}
+            {section.meetings.map((meeting) => meeting[0]).join('\n')}
           </td>
           <td className={classes.multiline}>
-            {section.meetings.map(meeting => {
+            {section.meetings.map((meeting) => {
               return meeting[1] !== 'ON LINE' && meeting[1] !== 'TBA' ? (
                 <Fragment>
                   <a
@@ -328,12 +328,12 @@ class MiniSectionTable extends Component {
         'https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/websoc?' +
         querystring.stringify(params);
       await fetch(url.toString())
-        .then(resp => resp.json())
-        .then(json => {
+        .then((resp) => resp.json())
+        .then((json) => {
           const sections = json.reduce((accumulator, school) => {
-            school.departments.forEach(dept => {
-              dept.courses.forEach(course => {
-                course.sections.forEach(section => {
+            school.departments.forEach((dept) => {
+              dept.courses.forEach((course) => {
+                course.sections.forEach((section) => {
                   accumulator.push(section);
                 });
               });
@@ -405,7 +405,7 @@ class MiniSectionTable extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.state.sectionInfo.map(section => {
+            {this.state.sectionInfo.map((section) => {
               return (
                 <ScheduleAddSelector
                   classes={classes}

@@ -42,7 +42,7 @@ const styles = {
   },
 };
 
-const CustomEvent = ({ classes }) => event => {
+const CustomEvent = ({ classes }) => (event) => {
   const actualEvent = event.event;
 
   if (!actualEvent.isCustomEvent)
@@ -78,7 +78,7 @@ class Calendar extends Component {
     };
   }
 
-  handleTakeScreenshot = async html2CanvasScreenshot => {
+  handleTakeScreenshot = async (html2CanvasScreenshot) => {
     this.setState({ screenshotting: true }, async () => {
       await html2CanvasScreenshot();
       this.setState({ screenshotting: false });
@@ -90,7 +90,7 @@ class Calendar extends Component {
     event.stopPropagation();
 
     if (courseInMoreInfo.courseType !== 'Fin')
-      this.setState(state => ({
+      this.setState((state) => ({
         anchorEvent: currentTarget,
         moreInfoOpen:
           state.anchorEvent === currentTarget ? !state.moreInfoOpen : true,
@@ -102,7 +102,7 @@ class Calendar extends Component {
     this.setState({ anchorEvent: null, moreInfoOpen: false });
   };
 
-  static eventStyleGetter = event => {
+  static eventStyleGetter = (event) => {
     return {
       style: {
         backgroundColor: event.color,

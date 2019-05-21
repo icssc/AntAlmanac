@@ -1,6 +1,15 @@
-import React, {Component, Fragment} from "react";
-import {Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography} from "@material-ui/core";
-import {CloudDownload} from '@material-ui/icons'
+import React, { Component, Fragment } from 'react';
+import {
+  Button,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Typography,
+} from '@material-ui/core';
+import { CloudDownload } from '@material-ui/icons';
 
 export default class LoadDialog extends Component {
   constructor(props) {
@@ -15,7 +24,7 @@ export default class LoadDialog extends Component {
     this.setState({ open: true });
   };
 
-  handleClose = wasCancelled => {
+  handleClose = (wasCancelled) => {
     if (wasCancelled) this.setState({ open: false });
     else
       this.setState({ open: false }, () => {
@@ -31,7 +40,7 @@ export default class LoadDialog extends Component {
     document.addEventListener('keydown', this.handleEnterButtonPressed, false);
   }
 
-  handleEnterButtonPressed = event => {
+  handleEnterButtonPressed = (event) => {
     const charCode = event.which ? event.which : event.keyCode;
 
     if (
@@ -47,7 +56,7 @@ export default class LoadDialog extends Component {
     }
   };
 
-  setUserID = event => {
+  setUserID = (event) => {
     this.setState({ name: event.target.value });
   };
 
@@ -55,8 +64,12 @@ export default class LoadDialog extends Component {
     return (
       <div>
         <Button onClick={this.handleOpen} color="inherit">
-          <CloudDownload/>
-          {(this.props.isDesktop) ? (<Typography color="inherit">&nbsp;&nbsp;LOAD</Typography>) : <Fragment/> }
+          <CloudDownload />
+          {this.props.isDesktop ? (
+            <Typography color="inherit">&nbsp;&nbsp;LOAD</Typography>
+          ) : (
+            <Fragment />
+          )}
         </Button>
         <Dialog open={this.state.open} onClose={() => this.handleClose(true)}>
           <DialogTitle id="form-dialog-title">Load</DialogTitle>

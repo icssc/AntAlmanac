@@ -11,7 +11,7 @@ import { MoreVert } from '@material-ui/icons';
 import ReactGA from 'react-ga';
 const WithState = toRenderProps(withState('anchorEl', 'updateAnchorEl', null));
 
-const styles = theme => ({
+const styles = (theme) => ({
   typography: {
     margin: theme.spacing.unit * 2,
   },
@@ -38,7 +38,7 @@ function RenderPropsPopover(props) {
             <Button
               variant="contained"
               style={{ backgroundColor: '#72a9ed', boxShadow: 'none' }}
-              onClick={event => {
+              onClick={(event) => {
                 ReactGA.event({
                   category: 'Course_info',
                   action: courseDetails.name[0] + ' ' + courseDetails.name[1],

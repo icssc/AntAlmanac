@@ -17,7 +17,7 @@ import {
 } from '@material-ui/core';
 import GraphRenderPane from './GraphRenderPane';
 
-const styles = theme => ({
+const styles = (theme) => ({
   paper: {
     position: 'absolute',
     overflow: 'auto',
@@ -68,12 +68,12 @@ class AlmanacGraph extends Component {
       querystring.stringify(params);
 
     fetch(url.toString())
-      .then(resp => resp.json())
-      .then(json => {
+      .then((resp) => resp.json())
+      .then((json) => {
         const sections = json.reduce((accumulator, school) => {
-          school.departments.forEach(dept => {
-            dept.courses.forEach(course => {
-              course.sections.forEach(section => {
+          school.departments.forEach((dept) => {
+            dept.courses.forEach((course) => {
+              course.sections.forEach((section) => {
                 if (section.units !== '0') accumulator.push(section);
               });
             });
@@ -185,7 +185,7 @@ class AlmanacGraph extends Component {
               </div>
             ) : (
               <div>
-                {this.state.sections.map(section => {
+                {this.state.sections.map((section) => {
                   return (
                     <GraphRenderPane
                       section={section}

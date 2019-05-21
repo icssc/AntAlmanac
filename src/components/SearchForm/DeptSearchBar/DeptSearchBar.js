@@ -26,7 +26,7 @@ class DeptSearchBar extends React.Component {
   handleStateChange(changes) {
     if (typeof changes.inputValue === 'string') {
       // Match depts by label (ignoring case) and filter out the non matching depts
-      const filteredItems = depts.filter(item =>
+      const filteredItems = depts.filter((item) =>
         item.label.toLowerCase().includes(changes.inputValue.toLowerCase())
       );
       this.setState({ filteredItems });

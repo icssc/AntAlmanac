@@ -14,7 +14,7 @@ function ScreenshotButton(props) {
           onTakeScreenshot(() => {
             html2canvas(document.getElementById('screenshot'), {
               scale: 2.5,
-            }).then(canvas => {
+            }).then((canvas) => {
               const img = canvas.toDataURL('image/png');
               const lnk = document.createElement('a');
               lnk.download = 'Schedule.png';

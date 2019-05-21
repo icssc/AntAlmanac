@@ -8,7 +8,7 @@ import {
 } from '@material-ui/core';
 import { Subject } from '@material-ui/icons';
 
-const styles = theme => ({
+const styles = (theme) => ({
   school: {
     display: 'flex',
     flexWrap: 'wrap',
