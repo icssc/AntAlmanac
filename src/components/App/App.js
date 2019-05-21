@@ -1,6 +1,5 @@
-import React, { Component, Suspense } from 'react';
-import { Fragment } from 'react';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import React, {Component, Suspense, Fragment} from 'react'
+import CssBaseline from '@material-ui/core/CssBaseline'
 import {
   Grid,
   Toolbar,
@@ -9,19 +8,21 @@ import {
   Tabs,
   Hidden,
   Tab,
-} from '@material-ui/core';
-import Logo_tight from './logo_tight.png';
-import Logo_wide from './logo_wide.png';
-import SearchForm from '../SearchForm/SearchForm';
-import Calendar from '../Calendar/Calendar';
+  Typography,
+  Button
+} from '@material-ui/core'
+import Logo_tight from './logo_tight.png'
+import Logo_wide from './logo_wide.png'
+import SearchForm from '../SearchForm/SearchForm'
+import Calendar from '../Calendar/Calendar'
 import {
   Info,
   Search,
   CalendarToday,
   Assignment,
-  Forum,
-} from '@material-ui/icons';
-import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality';
+  FormatListBulleted,
+} from '@material-ui/icons'
+import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality'
 import ReactGA from 'react-ga';
 import loadingGif from '../CoursePane/loading.mp4';
 import { saveUserData } from './FetchHelper';
@@ -383,9 +384,11 @@ class App extends Component {
             if (start > end) start -= 12;
           }
 
+
           if (scheduleIndex === 4) {
             for (let i = 0; i < 4; ++i) {
               dates.forEach((shouldBeInCal, index) => {
+
                 if (shouldBeInCal) {
                   const newCourse = {
                     name: courseDetails.name,
@@ -625,48 +628,37 @@ class App extends Component {
               )}
             </div>
 
-            <LoadSaveScheduleFunctionality
-              onLoad={this.handleLoad}
-              onSave={this.handleSave}
-            />
+            <LoadSaveScheduleFunctionality onLoad={this.handleLoad} onSave={this.handleSave} isDesktop={this.state.isDesktop}/>
 
             <OptOutPopover
               handleSelectRMP={this.handleSelectRMP}
               handleSelectEE={this.handleSelectEE}
               destination={this.state.destination}
+              isDesktop={this.state.isDesktop}
             />
 
-            <Tooltip title="Give Us Feedback!">
-              <a
-                style={{ color: 'white', marginLeft: 16 }}
-                href={'https://goo.gl/forms/eIHy4kp56pZKP9fK2'}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Assignment style={{}} color="white" />
-              </a>
-            </Tooltip>
+            {this.state.isDesktop ? (
+              <Tooltip title="Give Us Feedback!">
+                <Button
+                  onClick={()=>{window.open('https://goo.gl/forms/eIHy4kp56pZKP9fK2', '_blank')}}
+                  color="inherit"
+                >
+                  <Assignment/>&nbsp;&nbsp;Feedback
+                </Button>
+              </Tooltip>
+            ) : (
+              <Fragment/>
+            )}
 
-            <Tooltip title="Message Us on FB!">
-              <a
-                style={{ color: 'white', marginLeft: 16 }}
-                href={'https://www.facebook.com/AntAlmanac/'}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Forum style={{ marginTop: 5 }} color="white" />
-              </a>
-            </Tooltip>
 
             <Tooltip title="Info Page">
-              <a
-                style={{ color: 'white', marginLeft: 16 }}
-                href={'https://www.ics.uci.edu/~rang1/AntAlmanac/index.html'}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Button
+                onClick={()=>{window.open('https://www.ics.uci.edu/~rang1/AntAlmanac/index.html', '_blank')}}
+                color="inherit"
               >
-                <Info color="white" />
-              </a>
+                <Info/>
+                {this.state.isDesktop ? (<Typography color="inherit">&nbsp;&nbsp;Info</Typography>) : <Fragment/>}
+              </Button>
             </Tooltip>
           </Toolbar>
         </AppBar>
@@ -723,23 +715,15 @@ class App extends Component {
               }}
             >
               <div
-                style={{
-                  overflow: 'hidden',
-                  marginBottom: '4px',
-                  marginRight: '4px',
-                  backgroundColor: '#dfe2e5',
-                }}
-              >
-                <Tabs
-                  value={this.state.rightPaneView}
-                  onChange={this.handleRightPaneViewChange}
-                  indicatorColor="primary"
-                  textColor="primary"
-                  variant="fullWidth"
-                  centered
-                >
-                  <Tab label="Class Search" />
-                  <Tab label="Added Classes" />
+                style={{ overflow: 'hidden', marginBottom: '4px', marginRight: '4px', backgroundColor: '#dfe2e5' }}>
+                <Tabs value={this.state.rightPaneView}
+                      onChange={this.handleRightPaneViewChange}
+                      indicatorColor="primary"
+                      textColor="primary"
+                      variant="fullWidth"
+                      centered>
+                  <Tab label={<div style={{display: "inline-flex"}}><Search style={{height: 20}}/><Typography>&nbsp;&nbsp;Class Search</Typography></div>}/>
+                  <Tab label={<div style={{display: "inline-flex"}}><FormatListBulleted style={{height: 20}}/><Typography>&nbsp;&nbsp;Added Classes</Typography></div>}/>
                 </Tabs>
               </div>
               <div

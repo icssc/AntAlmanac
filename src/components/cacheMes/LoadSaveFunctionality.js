@@ -186,8 +186,8 @@ class LoadSaveScheduleFunctionality extends React.Component {
   render() {
     return (
       <Fragment>
-        <LoadButton handleLoad={this.handleLoad}> </LoadButton>
-        <SaveButton handleSave={this.handleSave} />
+        <LoadButton handleLoad={this.handleLoad} isDesktop={this.props.isDesktop}> </LoadButton>
+        <SaveButton handleSave={this.handleSave} isDesktop={this.props.isDesktop}/>
         <Snackbar
           anchorOrigin={{
             vertical: 'top',

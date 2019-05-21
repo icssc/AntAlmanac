@@ -1,16 +1,19 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import PropTypes from 'prop-types';
-import Popover from '@material-ui/core/Popover';
+import {
+  Popover,
+  Button,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  Typography,
+  FormLabel,
+} from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles';
-import toRenderProps from 'recompose/toRenderProps';
-import withState from 'recompose/withState';
-import { Settings } from '@material-ui/icons';
-import IconButton from '@material-ui/core/IconButton';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
+import toRenderProps from "recompose/toRenderProps";
+import withState from "recompose/withState";
+import { Settings } from "@material-ui/icons";
 
 const WithState = toRenderProps(withState('anchorEl', 'updateAnchorEl', null));
 
@@ -22,19 +25,20 @@ function OptOutPopover(props) {
     <WithState>
       {({ anchorEl, updateAnchorEl }) => {
         const open = Boolean(anchorEl);
+        const sep = (props.isDesktop) ? 25 : 5;
 
         return (
-          <React.Fragment>
-            <IconButton
-              aria-owns={open ? 'render-props-popover' : undefined}
+          <Fragment>
+            <Button
+              aria-owns={open ? "render-props-popover" : undefined}
               aria-haspopup="true"
-              variant="contained"
-              onClick={event => {
-                updateAnchorEl(event.currentTarget);
-              }}
+              onClick={event => {updateAnchorEl(event.currentTarget);}}
+              color="inherit"
+              style={{marginLeft: sep, marginRight: sep}}
             >
-              <Settings style={{ color: 'white' }} />
-            </IconButton>
+              <Settings/>
+              {(props.isDesktop) ? (<Typography color="inherit">&nbsp;&nbsp;Settings</Typography>) : <Fragment/> }
+            </Button>
             <Popover
               id="render-props-popover"
               open={open}
@@ -81,7 +85,7 @@ function OptOutPopover(props) {
                 </RadioGroup>
               </FormControl>
             </Popover>
-          </React.Fragment>
+          </Fragment>
         );
       }}
     </WithState>

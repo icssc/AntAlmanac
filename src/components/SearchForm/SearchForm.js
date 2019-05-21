@@ -1,12 +1,17 @@
-import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
-import GESelector from './GESelector';
-import TermSelector from './TermSelector';
-import React, { Component } from 'react';
-import { Button, Typography, Collapse } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import AdvancedSearchTextFields from './AdvancedSearch';
-import MIUCI from './MIUCI.png';
-import { ExpandMore, ExpandLess } from '@material-ui/icons';
+import DeptSearchBar from "./DeptSearchBar/DeptSearchBar";
+import GESelector from "./GESelector/GESelector";
+import TermSelector from "./TermSelector";
+import CourseCodeSearchBar from "./CourseCodeSearchBar"
+import React, {Component} from "react";
+import {
+  Button,
+  Typography,
+  Collapse
+} from "@material-ui/core";
+import {withStyles} from '@material-ui/core/styles';
+import AdvancedSearchTextFields from "./AdvancedSearch";
+// import MIUCI from "./MIUCI.png";
+import {ExpandMore, ExpandLess} from '@material-ui/icons';
 
 const styles = {
   container: {
@@ -23,12 +28,12 @@ const styles = {
   margin: {
     borderTop: 'solid 8px transparent',
   },
-  miuci: {
-    width: '35%',
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-  },
+  // miuci: {
+  //   width: "35%",
+  //   position: "absolute",
+  //   bottom: 0,
+  //   right: 0
+  // },
   new: {
     width: '55%',
     position: 'absolute',
@@ -159,24 +164,22 @@ class SearchForm extends Component {
     return (
       <div className={classes.container}>
         <div className={classes.margin}>
-          <DeptSearchBar dept={this.state.label} setDept={this.setDept} />
+          <TermSelector term={this.state.term} setTerm={this.setTerm}/>
         </div>
 
-        <div className={classes.margin}>
+        <div>
+          <DeptSearchBar dept={this.state.label} setDept={this.setDept}/>
+        </div>
+
+        <div className={classes.margin} style={{display: "inline-flex"}}>
           <GESelector ge={this.state.ge} setGE={this.setGE} />
+          <CourseCodeSearchBar onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
         </div>
 
-        <div className={classes.margin}>
-          <TermSelector term={this.state.term} setTerm={this.setTerm} />
-        </div>
-
-        <div
-          onClick={this.handleExpand}
-          style={{ display: 'inline-flex', marginTop: 15, cursor: 'pointer' }}
-        >
-          <div style={{ flexGrow: 1 }}>
-            <Typography noWrap variant="subheading">
-              Advanced Search Options
+        <div onClick={this.handleExpand} style={{display: 'inline-flex', marginTop: 5, cursor: 'pointer'}}>
+            <div style={{flexGrow: 1}}>
+            <Typography noWrap variant='subheading'>
+                Advanced Search Options
             </Typography>
           </div>
           {this.state.expandAdvanced ? <ExpandLess /> : <ExpandMore />}
@@ -210,12 +213,13 @@ class SearchForm extends Component {
           </Typography>
         </div>
 
-        <img
+        {/*<img
           src={MIUCI}
           variant="contained"
           alt="Made_in_UCI"
           className={classes.miuci}
-        />
+        />*/}
+
       </div>
     );
   }
