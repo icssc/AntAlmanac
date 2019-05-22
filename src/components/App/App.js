@@ -430,6 +430,23 @@ class App extends Component {
               }
             });
           }
+        } else {
+          const newCourse = {
+            name: courseDetails.name,
+            // color: randomColor,
+            courseTerm: courseTerm,
+            title: courseDetails.name[0] + ' ' + courseDetails.name[1],
+            location: meeting[1],
+            section: section,
+            courseCode: section.classCode,
+            courseType: section.classType,
+            // start: new Date(2018, 0, index + 1, start, startMin),
+            // end: new Date(2018, 0, index + 1, end, endMin),
+            isCustomEvent: false,
+            scheduleIndex: scheduleIndex,
+          };
+
+          newCourses.push(newCourse);
         }
       });
 

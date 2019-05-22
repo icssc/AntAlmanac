@@ -328,27 +328,30 @@ class TabularView extends Component {
           {/*go to webreg disclaimer*/}
           <Collapse in={this.state.disclaim}>
             <table style={{ margin: 20 }}>
-              <tr>
-                <td>
-                  <IconButton onClick={this.handleClearDisclaimer}>
-                    <Clear />
-                  </IconButton>
-                </td>
-                <td>
-                  <Typography variant="h6">
-                    Adding courses on the AntAlmanac is NOT official enrollment!
-                    <br />
-                    Make sure to sign up on{' '}
-                    <a
-                      href="https://www.reg.uci.edu/registrar/soc/webreg.html"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      WebReg
-                    </a>
-                  </Typography>
-                </td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td>
+                    <IconButton onClick={this.handleClearDisclaimer}>
+                      <Clear />
+                    </IconButton>
+                  </td>
+                  <td>
+                    <Typography variant="h6">
+                      Adding courses on the AntAlmanac is NOT official
+                      enrollment!
+                      <br />
+                      Make sure to sign up on{' '}
+                      <a
+                        href="https://www.reg.uci.edu/registrar/soc/webreg.html"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        WebReg
+                      </a>
+                    </Typography>
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </Collapse>
         </div>

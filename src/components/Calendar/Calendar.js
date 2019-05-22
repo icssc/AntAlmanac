@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import BigCalendar from 'react-big-calendar';
 import { withStyles } from '@material-ui/core/styles';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -170,7 +170,9 @@ class Calendar extends Component {
                   onColorChange={this.props.onColorChange}
                   onEditCustomEvent={this.props.onEditCustomEvent}
                 />
-              ) : null}
+              ) : (
+                <Fragment />
+              )}
             </Popper>
             {this.props.isDesktop ? (
               <BigCalendar
@@ -211,37 +213,41 @@ class Calendar extends Component {
 
 Calendar.propTypes = {
   currentScheduleIndex: PropTypes.number,
-  classEventsInCalendar: PropTypes.shape({
-    color: PropTypes.string,
-    title: PropTypes.string,
-    start: PropTypes.instanceOf(Date),
-    end: PropTypes.instanceOf(Date),
-    courseID: PropTypes.string,
-    courseTerm: PropTypes.string,
-    location: PropTypes.string,
-    type: PropTypes.string,
-    isCustomEvent: PropTypes.bool,
-    section: PropTypes.object,
-    name: PropTypes.string,
-  }),
+  classEventsInCalendar: PropTypes.arrayOf(
+    PropTypes.shape({
+      color: PropTypes.string,
+      title: PropTypes.string,
+      start: PropTypes.instanceOf(Date),
+      end: PropTypes.instanceOf(Date),
+      courseID: PropTypes.string,
+      courseTerm: PropTypes.string,
+      location: PropTypes.string,
+      type: PropTypes.string,
+      isCustomEvent: PropTypes.bool,
+      section: PropTypes.object,
+      name: PropTypes.arrayOf(PropTypes.string),
+    })
+  ),
   onScheduleChange: PropTypes.func,
   onClearSchedule: PropTypes.func,
   onClassDelete: PropTypes.func,
   onAddCustomEvent: PropTypes.func,
   onColorChange: PropTypes.func,
-  eventsInCalendar: PropTypes.shape({
-    color: PropTypes.string,
-    title: PropTypes.string,
-    start: PropTypes.instanceOf(Date),
-    end: PropTypes.instanceOf(Date),
-    courseID: PropTypes.string,
-    courseTerm: PropTypes.string,
-    location: PropTypes.string,
-    type: PropTypes.string,
-    isCustomEvent: PropTypes.bool,
-    section: PropTypes.object,
-    name: PropTypes.string,
-  }),
+  eventsInCalendar: PropTypes.arrayOf(
+    PropTypes.shape({
+      color: PropTypes.string,
+      title: PropTypes.string,
+      start: PropTypes.instanceOf(Date),
+      end: PropTypes.instanceOf(Date),
+      courseID: PropTypes.string,
+      courseTerm: PropTypes.string,
+      location: PropTypes.string,
+      type: PropTypes.string,
+      isCustomEvent: PropTypes.bool,
+      section: PropTypes.object,
+      name: PropTypes.arrayOf(PropTypes.string),
+    })
+  ),
 };
 
 export default withStyles(styles)(Calendar);

@@ -32,10 +32,15 @@ class GESelector extends Component {
         <Select
           value={this.props.ge}
           onChange={this.handleChange}
-          inputProps={{ name: 'ge', id: 'ge-select', fullWidth: true }}
+          inputProps={{ name: 'ge', id: 'ge-select' }}
+          fullWidth
         >
           {ge.map((category) => {
-            return <MenuItem value={category.value}>{category.label}</MenuItem>;
+            return (
+              <MenuItem key={category.value} value={category.value}>
+                {category.label}
+              </MenuItem>
+            );
           })}
         </Select>
       </FormControl>

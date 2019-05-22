@@ -91,7 +91,7 @@ const styles = {
 class ScheduleAddSelector extends Component {
   constructor(props) {
     super(props);
-    this.state = { copied: false, anchor: null, clipboard: '' };
+    this.state = { snacking: false, anchor: null, message: '' };
   }
 
   handleAddMore = (event) => {
@@ -103,7 +103,15 @@ class ScheduleAddSelector extends Component {
   };
 
   handleClose = (scheduleNumber) => {
-    this.setState({ anchor: null });
+    if (this.disableTBA()) {
+      this.setState({
+        anchor: null,
+        snacking: true,
+        message: 'Online/TBA section added! See Added Classes.',
+      });
+    } else {
+      this.setState({ anchor: null });
+    }
     if (scheduleNumber !== -1) {
       this.props.onAddClass(
         this.props.section,
@@ -114,9 +122,9 @@ class ScheduleAddSelector extends Component {
     }
   };
 
-  disableTBA = (section) => {
+  disableTBA = () => {
     let test = false;
-    for (const element of section.meetings[0]) {
+    for (const element of this.props.section.meetings[0]) {
       if (element === 'TBA') {
         test = true;
         break;
@@ -158,7 +166,7 @@ class ScheduleAddSelector extends Component {
     tempEventTarget.select();
     document.execCommand('copy');
     document.body.removeChild(tempEventTarget);
-    this.setState({ copied: true, clipboard: code });
+    this.setState({ snacking: true, message: code + ' copied to clipboard.' });
   };
 
   render() {
@@ -169,21 +177,14 @@ class ScheduleAddSelector extends Component {
         <tr className={classes.tr}>
           <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
             <IconButton
-              {...(!this.disableTBA(section)
-                ? {
-                    onClick: this.handleAddCurrent,
-                    style: { cursor: 'pointer' },
-                  }
-                : { disabled: true })}
-              style={{ padding: 0 }}
+              onClick={this.handleAddCurrent}
+              style={{ cursor: 'pointer', padding: 0 }}
             >
               <Add fontSize="large" />
             </IconButton>
             <IconButton
-              {...(!this.disableTBA(section)
-                ? { onClick: this.handleAddMore, style: { cursor: 'pointer' } }
-                : { disabled: true })}
-              style={{ padding: 0 }}
+              onClick={this.handleAddMore}
+              style={{ cursor: 'pointer', padding: 0 }}
             >
               <ArrowDropDown />
             </IconButton>
@@ -288,15 +289,11 @@ NOR: ${section.numNewOnlyReserved}`}
         </tr>
         <Snackbar
           anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-          open={this.state.copied}
-          autoHideDuration={1500}
-          onClose={() => this.setState({ copied: false })}
+          open={this.state.snacking}
+          autoHideDuration={3000}
+          onClose={() => this.setState({ snacking: false })}
           ContentProps={{ 'aria-describedby': 'message-id' }}
-          message={
-            <span id="message-id">
-              {this.state.clipboard} copied to clipboard.
-            </span>
-          }
+          message={<span id="message-id">{this.state.message}</span>}
         />
       </Fragment>
     );

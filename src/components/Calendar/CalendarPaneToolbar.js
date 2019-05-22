@@ -127,32 +127,36 @@ CalendarPaneToolbar.propTypes = {
   onAddCustomEvent: PropTypes.func,
   onTakeScreenshot: PropTypes.func,
   currentScheduleIndex: PropTypes.number,
-  classesInCalendar: PropTypes.shape({
-    color: PropTypes.string,
-    title: PropTypes.string,
-    start: PropTypes.instanceOf(Date),
-    end: PropTypes.instanceOf(Date),
-    courseID: PropTypes.string,
-    courseTerm: PropTypes.string,
-    location: PropTypes.string,
-    type: PropTypes.string,
-    isCustomEvent: PropTypes.bool,
-    section: PropTypes.object,
-    name: PropTypes.string,
-  }),
-  eventsInCalendar: PropTypes.shape({
-    color: PropTypes.string,
-    title: PropTypes.string,
-    start: PropTypes.instanceOf(Date),
-    end: PropTypes.instanceOf(Date),
-    courseID: PropTypes.string,
-    courseTerm: PropTypes.string,
-    location: PropTypes.string,
-    type: PropTypes.string,
-    isCustomEvent: PropTypes.bool,
-    section: PropTypes.object,
-    name: PropTypes.string,
-  }),
+  classesInCalendar: PropTypes.arrayOf(
+    PropTypes.shape({
+      color: PropTypes.string,
+      title: PropTypes.string,
+      start: PropTypes.instanceOf(Date),
+      end: PropTypes.instanceOf(Date),
+      courseID: PropTypes.string,
+      courseTerm: PropTypes.string,
+      location: PropTypes.string,
+      type: PropTypes.string,
+      isCustomEvent: PropTypes.bool,
+      section: PropTypes.object,
+      name: PropTypes.string,
+    })
+  ),
+  eventsInCalendar: PropTypes.arrayOf(
+    PropTypes.shape({
+      color: PropTypes.string,
+      title: PropTypes.string,
+      start: PropTypes.instanceOf(Date),
+      end: PropTypes.instanceOf(Date),
+      courseID: PropTypes.string,
+      courseTerm: PropTypes.string,
+      location: PropTypes.string,
+      type: PropTypes.string,
+      isCustomEvent: PropTypes.bool,
+      section: PropTypes.object,
+      name: PropTypes.arrayOf(PropTypes.string),
+    })
+  ),
 };
 
 export default withStyles(styles)(CalendarPaneToolbar);

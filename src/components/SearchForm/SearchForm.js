@@ -86,8 +86,8 @@ class SearchForm extends Component {
       };
     } else {
       this.state = {
-        dept: null,
-        label: null,
+        dept: '',
+        label: '',
         ge: 'ANY',
         term: '2019 Fall',
         courseNum: '',
