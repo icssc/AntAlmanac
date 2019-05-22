@@ -356,7 +356,7 @@ class App extends Component {
         });
       }
 
-      let newCourses = [];
+      let newCourses = []; //added sections; array for multiple times
 
       section.meetings.forEach((meeting) => {
         const timeString = meeting[0].replace(/\s/g, '');
@@ -431,6 +431,7 @@ class App extends Component {
             });
           }
         } else {
+          //tba or online section
           const newCourse = {
             name: courseDetails.name,
             // color: randomColor,
