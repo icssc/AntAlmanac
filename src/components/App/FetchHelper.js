@@ -56,6 +56,24 @@ function calendarize(
           events.push(newEvent);
         }
       });
+    } else {
+      //tba or online section
+      const newEvent = {
+        name: name,
+        // color: randomColor,
+        courseTerm: courseTerm,
+        title: name[0] + ' ' + name[1],
+        location: meeting[1],
+        section: section,
+        courseCode: section.classCode,
+        courseType: section.classType,
+        // start: new Date(2018, 0, index + 1, start, startMin),
+        // end: new Date(2018, 0, index + 1, end, endMin),
+        isCustomEvent: false,
+        scheduleIndex: scheduleIndex,
+      };
+
+      events.push(newEvent);
     }
   });
 

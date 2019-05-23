@@ -206,9 +206,9 @@ class SearchForm extends Component {
           <Typography>
             <b>New on AntAlmanac:</b>
             <br />
-            Download .ics files of your calendars!
+            Add online/TBA classes!
             <br />
-            Links to interactive campus map
+            Download .ics files of your calendars!
             <br />
             See finals schedules
           </Typography>
