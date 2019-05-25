@@ -36,7 +36,7 @@ class Instructors extends React.Component {
     if (!e) e = window.event;
     e.cancelBubble = true;
     if (e.stopPropagation) e.stopPropagation();
-    var lastName = name.substring(0, name.indexOf(','));
+    const lastName = name.substring(0, name.indexOf(','));
 
     // else: two options for EE
     if (this.props.destination === 'eatereval') {
@@ -49,7 +49,7 @@ class Instructors extends React.Component {
         label: lastName,
       });
     } else {
-      var nameP = rmpData[0][name];
+      const nameP = rmpData[0][name];
       ReactGA.event({
         category: 'ProffRating_OPTION',
         action: 'redirect_rmp',

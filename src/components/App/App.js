@@ -441,8 +441,8 @@ class App extends Component {
             section: section,
             courseCode: section.classCode,
             courseType: section.classType,
-            // start: new Date(2018, 0, index + 1, start, startMin),
-            // end: new Date(2018, 0, index + 1, end, endMin),
+            start: 'tba',
+            end: 'tba',
             isCustomEvent: false,
             scheduleIndex: scheduleIndex,
           };
@@ -545,7 +545,7 @@ class App extends Component {
         );
       })
     ) {
-      for (var item of courses) {
+      for (let item of courses) {
         if (course.isCustomEvent) {
           if (
             item.scheduleIndex === course.scheduleIndex &&

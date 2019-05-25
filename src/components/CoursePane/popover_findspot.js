@@ -30,8 +30,8 @@ class SPopover extends React.Component {
     if (!event) event = window.event;
     event.cancelBubble = true;
     if (event.stopPropagation) event.stopPropagation();
-    var email = '';
-    var sms = '(  )    -    ';
+    let email = '';
+    let sms = '(  )    -    ';
     if (typeof Storage !== 'undefined') {
       email = window.localStorage.getItem('email');
       sms = window.localStorage.getItem('sms');
@@ -61,7 +61,7 @@ class SPopover extends React.Component {
     let url =
       'https://3jbsyx3se1.execute-api.us-west-1.amazonaws.com/dev/email/';
 
-    var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!re.test(email)) {
     } else {
       url = url + code + '/' + name + '/' + email;

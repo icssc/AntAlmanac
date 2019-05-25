@@ -100,26 +100,6 @@ class CustomizedSnackbars extends React.Component {
     variant: 'success',
   };
 
-  //handleSave =  (check,email,code) => {
-  //   // var person = prompt("Please enter your unique username");
-  //   if(check ===-1)
-  //   {
-  //       this.setState({
-  //           variant: "error",
-  //           open: true,
-  //           message: "invalid email, " + email+" !"
-  //         });
-  //   }
-  //   else
-  //   {
-  //       this.setState({
-  //           variant: "success",
-  //           open: true,
-  //           message: email+" added to the notification list for "+ code +" !!!"
-  //         });
-  //   }
-  // };
-
   handleClose = (reason) => {
     if (reason === 'clickaway') {
       return;

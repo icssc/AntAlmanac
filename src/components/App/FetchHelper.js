@@ -67,8 +67,8 @@ function calendarize(
         section: section,
         courseCode: section.classCode,
         courseType: section.classType,
-        // start: new Date(2018, 0, index + 1, start, startMin),
-        // end: new Date(2018, 0, index + 1, end, endMin),
+        start: 'tba',
+        end: 'tba',
         isCustomEvent: false,
         scheduleIndex: scheduleIndex,
       };
@@ -95,7 +95,7 @@ async function getCoursesData(userData) {
       }
     }
 
-    var events = [];
+    let events = [];
 
     if (dataToSend.length > 0) {
       const response = await fetch(
@@ -159,7 +159,7 @@ async function getCoursesData(userData) {
         });
       }
     }
-    var canceledClass = false;
+    let canceledClass = false;
     if (dataToSend.length > events.length) canceledClass = true;
     return {
       canceledClass: canceledClass,

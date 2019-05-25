@@ -95,7 +95,7 @@ class MobileCalendar extends Component {
         <div className={classes.dayboxes}>
           <div>
             {this.props.classEventsInCalendar.map((event) => {
-              if (event.start.getDay() === 1) {
+              if (event.start !== 'tba' && event.start.getDay() === 1) {
                 const style = {
                   width: `${(Math.floor((event.end - event.start) / 1000 / 60) /
                     60) *
@@ -124,7 +124,7 @@ class MobileCalendar extends Component {
 
           <div>
             {this.props.classEventsInCalendar.map((event) => {
-              if (event.start.getDay() === 2) {
+              if (event.start !== 'tba' && event.start.getDay() === 2) {
                 const style = {
                   width: `${(Math.floor((event.end - event.start) / 1000 / 60) /
                     60) *
@@ -153,7 +153,7 @@ class MobileCalendar extends Component {
 
           <div>
             {this.props.classEventsInCalendar.map((event) => {
-              if (event.start.getDay() === 3) {
+              if (event.start !== 'tba' && event.start.getDay() === 3) {
                 const style = {
                   width: `${(Math.floor((event.end - event.start) / 1000 / 60) /
                     60) *
@@ -182,7 +182,7 @@ class MobileCalendar extends Component {
 
           <div>
             {this.props.classEventsInCalendar.map((event) => {
-              if (event.start.getDay() === 4) {
+              if (event.start !== 'tba' && event.start.getDay() === 4) {
                 const style = {
                   width: `${(Math.floor((event.end - event.start) / 1000 / 60) /
                     60) *
@@ -211,7 +211,7 @@ class MobileCalendar extends Component {
 
           <div>
             {this.props.classEventsInCalendar.map((event) => {
-              if (event.start.getDay() === 5) {
+              if (event.start !== 'tba' && event.start.getDay() === 5) {
                 const style = {
                   width: `${(Math.floor((event.end - event.start) / 1000 / 60) /
                     60) *

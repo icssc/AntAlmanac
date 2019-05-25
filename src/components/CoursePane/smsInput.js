@@ -106,8 +106,8 @@ class FormattedInputs extends React.Component {
   getMeSpotSMS = () => {
     const code = this.props.code;
     const name = this.props.name[1] + ' ' + this.props.name[2];
-    var regex = /\d+/g;
-    var matches = this.state.textmask.match(regex);
+    let regex = /\d+/g;
+    let matches = this.state.textmask.match(regex);
     matches = matches.join('');
 
     if (matches > 999999999) {

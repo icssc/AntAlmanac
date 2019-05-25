@@ -28,8 +28,8 @@ class RstrPopover extends React.Component {
   };
 
   parseRstr = (rstr) => {
-    var explained = [];
-    for (var code of rstr.split(' ')) {
+    const explained = [];
+    for (let code of rstr.split(' ')) {
       if (code !== 'and' && code !== 'or') {
         explained.push(code_lookup[code]);
       }
@@ -77,7 +77,7 @@ class RstrPopover extends React.Component {
         >
           <Typography>
             {this.parseRstr(this.props.restrictions).map((r) => (
-              <Fragment>
+              <Fragment key={r}>
                 {r}
                 <br />
               </Fragment>

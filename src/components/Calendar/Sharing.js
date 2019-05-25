@@ -30,7 +30,7 @@ class Sharing extends React.Component {
           html2canvas(document.getElementById('screenshot')).then((canvas) => {
             let img = canvas.toDataURL('image/png');
 
-            var arr = img.split(','),
+            let arr = img.split(','),
               mime = arr[0].match(/:(.*?);/)[1],
               bstr = atob(arr[1]),
               n = bstr.length,
@@ -38,9 +38,9 @@ class Sharing extends React.Component {
             while (n--) {
               u8arr[n] = bstr.charCodeAt(n);
             }
-            var file = new File([u8arr], 'ok', { type: mime });
+            let file = new File([u8arr], 'ok', { type: mime });
 
-            var formData = new FormData();
+            let formData = new FormData();
 
             formData.append(0, file);
 
@@ -74,7 +74,7 @@ class Sharing extends React.Component {
   };
 
   dataURLtoFile = (dataurl, filename) => {
-    var arr = dataurl.split(','),
+    let arr = dataurl.split(','),
       mime = arr[0].match(/:(.*?);/)[1],
       bstr = atob(arr[1]),
       n = bstr.length,

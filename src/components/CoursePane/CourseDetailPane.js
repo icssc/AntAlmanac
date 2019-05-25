@@ -7,7 +7,7 @@ import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph';
 
 class CourseDetailPane extends Component {
   deptInfo = () => {
-    var a = undefined;
+    let a = undefined;
     try {
       a =
         course_info[this.props.courseDetails.name[0]][

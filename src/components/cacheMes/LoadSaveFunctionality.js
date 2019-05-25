@@ -115,8 +115,8 @@ class LoadSaveScheduleFunctionality extends React.Component {
       if (userID.length > 0) {
         const userData = await loadUserData(userID);
         if (userData !== -1) {
-          var message = '';
-          var variant = '';
+          let message = '';
+          let variant = '';
 
           if (!userData.canceledClass) {
             message = "Schedule that was saved under '" + userID + "' loaded.";

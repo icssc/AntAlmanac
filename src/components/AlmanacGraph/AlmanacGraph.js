@@ -91,14 +91,12 @@ class AlmanacGraph extends Component {
   handleChange(event) {
     this.setState({ [event.target.name]: event.target.value }, () => {
       this.fetchCourseData();
-      console.log(event.target.value);
     });
   }
 
   handleOpen() {
     this.setState({ open: true });
     this.fetchCourseData();
-    console.log('dsdsad');
     ReactGA.event({
       category: 'Pass_enrollment',
       action:

@@ -131,8 +131,11 @@ CalendarPaneToolbar.propTypes = {
     PropTypes.shape({
       color: PropTypes.string,
       title: PropTypes.string,
-      start: PropTypes.instanceOf(Date),
-      end: PropTypes.instanceOf(Date),
+      start: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.instanceOf(Date),
+      ]),
+      end: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
       courseID: PropTypes.string,
       courseTerm: PropTypes.string,
       location: PropTypes.string,
@@ -146,8 +149,11 @@ CalendarPaneToolbar.propTypes = {
     PropTypes.shape({
       color: PropTypes.string,
       title: PropTypes.string,
-      start: PropTypes.instanceOf(Date),
-      end: PropTypes.instanceOf(Date),
+      start: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.instanceOf(Date),
+      ]),
+      end: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
       courseID: PropTypes.string,
       courseTerm: PropTypes.string,
       location: PropTypes.string,
