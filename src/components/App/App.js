@@ -669,7 +669,7 @@ class App extends Component {
                   color="inherit"
                 >
                   <Assignment />
-                  &nbsp;&nbsp;Feedback
+                  <Typography color="inherit">&nbsp;&nbsp;Feedback</Typography>
                 </Button>
               </Tooltip>
             ) : (
@@ -688,7 +688,7 @@ class App extends Component {
               >
                 <Info />
                 {this.state.isDesktop ? (
-                  <Typography color="inherit">&nbsp;&nbsp;Info</Typography>
+                  <Typography color="inherit">&nbsp;&nbsp;About</Typography>
                 ) : (
                   <Fragment />
                 )}
