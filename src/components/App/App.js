@@ -649,7 +649,7 @@ class App extends Component {
               onSave={this.handleSave}
               isDesktop={this.state.isDesktop}
             />
-
+            {/* Send current user data to Popover to update currently selected website options */}
             <OptOutPopover
               handleSelectRMP={this.handleSelectRMP}
               handleSelectEE={this.handleSelectEE}

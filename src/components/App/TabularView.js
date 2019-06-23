@@ -138,7 +138,8 @@ class TabularView extends Component {
   };
 
   statusforFindingSpot = (section, classCode, termName, name) => {
-    if (section === 'FULL')
+    if (section === 'FULL' || section === 'NewOnly')
+      // Enable user to register for Paul Revere notifications
       return (
         <Notification
           termName={termName}
