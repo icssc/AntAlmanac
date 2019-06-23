@@ -143,7 +143,8 @@ class ScheduleAddSelector extends Component {
   };
 
   statusforFindingSpot = (section, classCode) => {
-    if (section === 'FULL')
+    if (section === 'FULL' || section === 'NewOnly')
+      // Enable user to register for Paul Revere notifications
       return (
         <Notification
           termName={this.props.termName}

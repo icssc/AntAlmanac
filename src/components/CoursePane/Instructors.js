@@ -121,6 +121,8 @@ class Instructors extends React.Component {
           onClose={this.handlePopoverClose}
           disableRestoreFocus
         >
+          {' '}
+          {/* Display current selection of website to view staff evaluations on */}
           {this.props.destination === 'eatereval' ? (
             <Typography>Links to EaterEval; See Setting</Typography>
           ) : (
