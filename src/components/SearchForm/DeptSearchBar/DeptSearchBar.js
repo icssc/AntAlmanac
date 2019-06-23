@@ -1,7 +1,7 @@
-import React from "react";
-import Downshift from "mui-downshift";
-import depts from "./depts";
-import { isMobile } from "react-device-detect";
+import React from 'react';
+import Downshift from 'mui-downshift';
+import depts from './depts';
+import { isMobile } from 'react-device-detect';
 
 class DeptSearchBar extends React.Component {
   constructor(props) {
@@ -24,22 +24,18 @@ class DeptSearchBar extends React.Component {
   }
 
   handleStateChange(changes) {
-    if (typeof changes.inputValue === "string") {
+    if (typeof changes.inputValue === 'string') {
       // Match depts by label (ignoring case) and filter out the non matching depts
-      const filteredItems = depts.filter(item =>
+      const filteredItems = depts.filter((item) =>
         item.label.toLowerCase().includes(changes.inputValue.toLowerCase())
       );
       this.setState({ filteredItems });
     }
   }
-  defautlRen =()=>{
 
+  defautlRen = () => {
     return { label: this.props.dept, value: 0 };
-  }
-
-  defautlRen =()=>{
-    return { label: this.props.dept, value: 0 };
-  }
+  };
 
   render() {
     return (
@@ -50,12 +46,12 @@ class DeptSearchBar extends React.Component {
         onChange={this.props.setDept}
         getInputProps={() => ({
           // Downshift requires this syntax to pass down these props to the text field
-          label: "Department",
-          required: true
+          label: 'Department',
+          required: true,
         })}
         //getInputProps={() => <input />}
         menuItemCount={this.determineDropdownLength()}
-       // menuHeight={this.determineDropdownLength()}
+        // menuHeight={this.determineDropdownLength()}
         {...this.props} //Pass down other props to the Downshift layer
       />
     );

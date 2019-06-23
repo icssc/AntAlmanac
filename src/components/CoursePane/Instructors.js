@@ -1,30 +1,30 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import {Popover, Typography} from '@material-ui/core';
+import { Popover, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import rmpData from "./RMP.json";
+import rmpData from './RMP.json';
+import ReactGA from 'react-ga';
 
-const styles = theme => ({
+const styles = (theme) => ({
   popover: {
     pointerEvents: 'none',
   },
   paper: {
     padding: theme.spacing.unit,
-  }
+  },
 });
 
 class Instructors extends React.Component {
   state = {
     anchorEl: null,
-    mouseInPopover: false
+    mouseInPopover: false,
   };
 
-  handlePopoverOpen = event => {
+  handlePopoverOpen = (event) => {
     const oldTarget = event.currentTarget;
     this.setState({ mouseInPopover: true });
     setTimeout(() => {
-      if (this.state.mouseInPopover)
-        this.setState({ anchorEl: oldTarget });
+      if (this.state.mouseInPopover) this.setState({ anchorEl: oldTarget });
     }, 500);
   };
 
@@ -32,38 +32,50 @@ class Instructors extends React.Component {
     this.setState({ anchorEl: null, mouseInPopover: false });
   };
 
-  
-
   redirect = (e, name) => {
     if (!e) e = window.event;
     e.cancelBubble = true;
     if (e.stopPropagation) e.stopPropagation();
-    var lastName = name.substring(0, name.indexOf(","));
+    const lastName = name.substring(0, name.indexOf(','));
 
     // else: two options for EE
-    if (this.props.destination === 'eatereval'){
-      window.open("https://eaterevals.eee.uci.edu/browse/instructor#"+lastName);
+    if (this.props.destination === 'eatereval') {
+      window.open(
+        'https://eaterevals.eee.uci.edu/browse/instructor#' + lastName
+      );
+      ReactGA.event({
+        category: 'ProffRating_OPTION',
+        action: 'redirect_eatereval',
+        label: lastName,
+      });
     } else {
-      var nameP = rmpData[0][name];
+      const nameP = rmpData[0][name];
+      ReactGA.event({
+        category: 'ProffRating_OPTION',
+        action: 'redirect_rmp',
+        label: lastName,
+      });
       if (nameP !== undefined)
-        window.open("https://www.ratemyprofessors.com" + nameP);
+        window.open('https://www.ratemyprofessors.com' + nameP);
       else
-        window.open(`https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`);
+        window.open(
+          `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
+        );
     }
   };
 
-  linkRMP = name => {
+  linkRMP = (name) => {
     const rmpStyle = {
-      textDecoration: "underline",
-      color: "#0645AD",
-      cursor: "pointer"
+      textDecoration: 'underline',
+      color: '#0645AD',
+      cursor: 'pointer',
     };
-    return name.map(item => {
-      if (item !== "STAFF") {
+    return name.map((item) => {
+      if (item !== 'STAFF') {
         return (
           <div
             style={rmpStyle}
-            onClick={e => {
+            onClick={(e) => {
               this.redirect(e, item);
             }}
           >
@@ -88,7 +100,7 @@ class Instructors extends React.Component {
           onMouseLeave={this.handlePopoverClose}
           className={this.props.className}
         >
-        {this.linkRMP(this.props.children)}
+          {this.linkRMP(this.props.children)}
         </Typography>
         <Popover
           id="mouse-over-popover"
@@ -109,9 +121,11 @@ class Instructors extends React.Component {
           onClose={this.handlePopoverClose}
           disableRestoreFocus
         >
-          <Typography>
-            Links to EaterEval; See Settings
-          </Typography>
+          {this.props.destination === 'eatereval' ? (
+            <Typography>Links to EaterEval; See Setting</Typography>
+          ) : (
+            <Typography>Links to RateMyProfessor; See Settings</Typography>
+          )}
         </Popover>
       </Fragment>
     );
