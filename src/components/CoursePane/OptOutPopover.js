@@ -15,10 +15,8 @@ import toRenderProps from 'recompose/toRenderProps';
 import withState from 'recompose/withState';
 import { Settings } from '@material-ui/icons';
 
-{
-  /* Material UI Popover at top toolbar, allows users to select whether staff names link out to RateMyProfessors.com 
-or UCI's EaterEvals. */
-}
+//Material UI Popover at top toolbar, allows users to select whether
+//staff names link out to RateMyProfessors.com or UCI's EaterEvals.
 
 const WithState = toRenderProps(withState('anchorEl', 'updateAnchorEl', null));
 
