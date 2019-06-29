@@ -1,17 +1,32 @@
-function calendarize(section, color, courseTerm, scheduleIndex, name) {
+function calendarize(
+  section,
+  color,
+  courseTerm,
+  scheduleIndex,
+  name,
+  prerequisiteLink
+) {
   const events = [];
 
-  section.meetings.forEach(meeting => {
-    const timeString = meeting[0].replace(/\s/g, "");
+  section.meetings.forEach((meeting) => {
+    const timeString = meeting[0].replace(/\s/g, '');
 
     if (timeString !== 'TBA') {
-      let [, dates, start, startMin, end, endMin, ampm] = timeString.match(/([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
+      let [, dates, start, startMin, end, endMin, ampm] = timeString.match(
+        /([A-za-z]+)(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/
+      );
 
       start = parseInt(start, 10);
       startMin = parseInt(startMin, 10);
       end = parseInt(end, 10);
       endMin = parseInt(endMin, 10);
-      dates = [dates.includes('M'), dates.includes('Tu'), dates.includes('W'), dates.includes('Th'), dates.includes('F')];
+      dates = [
+        dates.includes('M'),
+        dates.includes('Tu'),
+        dates.includes('W'),
+        dates.includes('Th'),
+        dates.includes('F'),
+      ];
 
       if (ampm === 'p' && end !== 12) {
         start += 12;
@@ -34,12 +49,31 @@ function calendarize(section, color, courseTerm, scheduleIndex, name) {
             start: new Date(2018, 0, index + 1, start, startMin),
             end: new Date(2018, 0, index + 1, end, endMin),
             isCustomEvent: false,
-            scheduleIndex: scheduleIndex
+            scheduleIndex: scheduleIndex,
+            prerequisiteLink: prerequisiteLink,
           };
 
           events.push(newEvent);
         }
       });
+    } else {
+      //tba or online section
+      const newEvent = {
+        name: name,
+        // color: randomColor,
+        courseTerm: courseTerm,
+        title: name[0] + ' ' + name[1],
+        location: meeting[1],
+        section: section,
+        courseCode: section.classCode,
+        courseType: section.classType,
+        start: 'tba',
+        end: 'tba',
+        isCustomEvent: false,
+        scheduleIndex: scheduleIndex,
+      };
+
+      events.push(newEvent);
     }
   });
 
@@ -48,88 +82,107 @@ function calendarize(section, color, courseTerm, scheduleIndex, name) {
 
 async function getCoursesData(userData) {
   //TODO: Change this API to use POST, integrate into WebSoc-API, decrapify this functionality
-  if(userData!==undefined)
-  {
-  const courses = userData.courseEvents;
-  const dataToSend = [];
+  if (userData !== undefined) {
+    const courses = userData.courseEvents;
+    const dataToSend = [];
 
-  for (let i = 0; i < courses.length; ++i) {
-    if (!courses[i].isCustomEvent) {
-      dataToSend.push({
-        courseCodes : courses[i].courseCode,
-        term : courses[i].courseTerm
-      });
+    for (let i = 0; i < courses.length; ++i) {
+      if (!courses[i].isCustomEvent) {
+        dataToSend.push({
+          courseCodes: courses[i].courseCode,
+          term: courses[i].courseTerm,
+        });
+      }
     }
-  }
 
-  var events =[];
+    let events = [];
 
-  if (dataToSend.length > 0) {
-    const response = await fetch(
-      `https://2r7p77ujv6.execute-api.us-west-1.amazonaws.com/latest/api/codes`,
-      {
-        method: "POST",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        headers: {
-          "Content-Type": "application/json; charset=utf-8"
-        },
-        redirect: "follow",
-        referrer: "no-referrer",
-        body: JSON.stringify({dataToSend:dataToSend})
-      });
-
-    const json = await response.json();
-
-    for (const courseEvent of courses) {
-      let foundData = null;
-
-      if (!courseEvent.isCustomEvent) {
-        for (const courseData of json) {
-          if (courseData.section.classCode === courseEvent.courseCode) { // name parity shit, pls fix
-            foundData = courseData;
-            break;
-          }
+    if (dataToSend.length > 0) {
+      const response = await fetch(
+        `https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/codes`,
+        {
+          method: 'POST',
+          mode: 'cors',
+          cache: 'no-cache',
+          credentials: 'same-origin',
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+          },
+          redirect: 'follow',
+          referrer: 'no-referrer',
+          body: JSON.stringify({ dataToSend: dataToSend }),
         }
-        if(foundData!==null)
-        events.push(...calendarize(foundData.section, courseEvent.color, courseEvent.courseTerm, courseEvent.scheduleIndex, foundData.courseName));
-      }
-    }
+      );
 
-    for (const possibleCustomEvent of courses) {
-      if (possibleCustomEvent.isCustomEvent) {
-        events.push({...possibleCustomEvent, start: new Date(possibleCustomEvent.start), end: new Date(possibleCustomEvent.end)});
+      const json = await response.json();
+
+      for (const courseEvent of courses) {
+        let foundData = null;
+
+        if (!courseEvent.isCustomEvent) {
+          for (const courseData of json) {
+            if (courseData.section.classCode === courseEvent.courseCode) {
+              // name parity shit, pls fix
+              foundData = courseData;
+              break;
+            }
+          }
+          if (foundData !== null)
+            events.push(
+              ...calendarize(
+                foundData.section,
+                courseEvent.color,
+                courseEvent.courseTerm,
+                courseEvent.scheduleIndex,
+                foundData.courseName,
+                foundData.prerequisiteLink
+              )
+            );
+        }
+      }
+
+      for (const possibleCustomEvent of courses) {
+        if (possibleCustomEvent.isCustomEvent) {
+          events.push({
+            ...possibleCustomEvent,
+            start: new Date(possibleCustomEvent.start),
+            end: new Date(possibleCustomEvent.end),
+          });
+        }
+      }
+    } else {
+      for (const customEvent of courses) {
+        events.push({
+          ...customEvent,
+          start: new Date(customEvent.start),
+          end: new Date(customEvent.end),
+        });
       }
     }
-  } else {
-    for (const customEvent of courses) {
-      events.push({...customEvent, start: new Date(customEvent.start), end: new Date(customEvent.end)});
-    }
-  }
-var canceledClass =false;
- if(dataToSend.length>events.length)
-  canceledClass = true;
-  return {canceledClass :canceledClass,courseEvents: events, unavailableColors: userData.unavailableColors};
-}
-else
-return -1;
+    let canceledClass = false;
+    if (dataToSend.length > events.length) canceledClass = true;
+    return {
+      canceledClass: canceledClass,
+      courseEvents: events,
+      unavailableColors: userData.unavailableColors,
+    };
+  } else return -1;
 }
 
 export async function saveUserData(userID, objectToStore) {
   await fetch(
     `https://a0pg5v5sai.execute-api.us-west-1.amazonaws.com/latest/create`,
     {
-      method: "POST",
-      mode: "cors",
-      cache: "no-cache",
-      credentials: "same-origin",
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      credentials: 'same-origin',
       headers: {
-        "Content-Type": "application/json; charset=utf-8"
+        'Content-Type': 'application/json; charset=utf-8',
       },
-      redirect: "follow",
-      referrer: "no-referrer",
-      body: JSON.stringify({userID: userID, userData: objectToStore})
+      redirect: 'follow',
+      referrer: 'no-referrer',
+      body: JSON.stringify({ userID: userID, userData: objectToStore }),
     }
   );
 }
@@ -138,16 +191,16 @@ export async function loadUserData(userID) {
   const response = await fetch(
     `https://a0pg5v5sai.execute-api.us-west-1.amazonaws.com/latest/read`,
     {
-      method: "POST",
-      mode: "cors",
-      cache: "no-cache",
-      credentials: "same-origin",
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      credentials: 'same-origin',
       headers: {
-        "Content-Type": "application/json; charset=utf-8"
+        'Content-Type': 'application/json; charset=utf-8',
       },
-      redirect: "follow",
-      referrer: "no-referrer",
-      body: JSON.stringify({userID: userID})
+      redirect: 'follow',
+      referrer: 'no-referrer',
+      body: JSON.stringify({ userID: userID }),
     }
   );
 

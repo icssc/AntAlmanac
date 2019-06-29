@@ -1,10 +1,70 @@
-import React, { Component, Fragment } from "react";
-import AddCircle from "@material-ui/icons/AddCircle";
-import { IconButton, Menu, MenuItem } from "@material-ui/core";
-import rmpData from "./RMP.json";
-import Notification from '../Notification'
-import RstrPopover from "./RstrPopover"
-import locations from "./locations.json"
+import React, { Component, Fragment } from 'react';
+import AddCircle from '@material-ui/icons/AddCircle';
+import { IconButton, Menu, MenuItem } from '@material-ui/core';
+import Notification from '../Notification';
+import RstrPopover from './RstrPopover';
+import locations from './locations.json';
+import { withStyles } from '@material-ui/core/styles';
+import Instructors from './Instructors';
+
+const styles = {
+  table: {
+    borderCollapse: 'collapse',
+    boxSizing: 'border-box',
+    width: '100%',
+
+    '& thead': {
+      position: 'sticky',
+
+      '& th': {
+        border: '1px solid rgb(222, 226, 230)',
+        fontSize: '0.85rem',
+        fontWeight: '500',
+        color: 'rgba(0, 0, 0, 0.54)',
+        textAlign: 'left',
+        verticalAlign: 'bottom',
+
+        '&:first-child': {
+          border: 'none',
+        },
+      },
+    },
+  },
+  tr: {
+    fontSize: '0.85rem',
+    '&:nth-child(odd) > td:not(:first-child)': {
+      backgroundColor: '#f5f5f5',
+    },
+
+    '&:hover': {
+      color: 'blueviolet',
+    },
+
+    '& td': {
+      border: '1px solid rgb(222, 226, 230)',
+      textAlign: 'left',
+      verticalAlign: 'top',
+
+      '&:first-child': {
+        textAlign: 'center',
+        verticalAlign: 'middle',
+        border: 'none',
+      },
+    },
+  },
+  open: {
+    color: '#00c853',
+  },
+  waitl: {
+    color: '#1c44b2',
+  },
+  full: {
+    color: '#e53935',
+  },
+  multiline: {
+    whiteSpace: 'pre',
+  },
+};
 
 class ScheduleAddSelector extends Component {
   constructor(props) {
@@ -12,20 +72,21 @@ class ScheduleAddSelector extends Component {
     this.state = { anchor: null };
   }
 
-  handleClick = event => {
+  handleClick = (event) => {
     this.setState({ anchor: event.currentTarget });
   };
 
-  handleClose = scheduleNumber => {
-    this.setState({ anchor: null });
-    if (scheduleNumber !== -1)
-      this.props.onAddClass(
-        this.props.section,
-        this.props.courseDetails.name,
-        scheduleNumber,
+  handleClose = (scheduleNumber) => {
+    this.setState({ anchor: null }, () => {
+      if (scheduleNumber !== -1)
+        this.props.onAddClass(
+          this.props.section,
+          this.props.courseDetails,
+          scheduleNumber,
 
-        this.props.termName
-      );
+          this.props.termName
+        );
+    });
   };
 
   render() {
@@ -59,50 +120,14 @@ class ScheduleAddSelector extends Component {
 }
 
 class SectionTable extends Component {
-
-
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     return this.props.courseDetails !== nextProps.courseDetails;
   }
 
-  redirectRMP = async name => {
-    //(name);
-    var lastName = name.substring(0, name.indexOf(","));
-    var nameP = rmpData[0][name];
-    if (nameP !== undefined)
-      window.open("https://www.ratemyprofessors.com" + nameP);
-    else
-      window.open(
-        `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
-      );
-  };
-
-  linkRMP = name => {
-    const rmpStyle = {
-      textDecoration: "underline",
-      color: "#0645AD",
-      cursor: "pointer"
-    };
-    return name.map(item => {
-      if (item !== "STAFF") {
-        return (
-          <div
-            style={rmpStyle}
-            onClick={() => {
-              this.redirectRMP(item);
-            }}
-          >
-            {item}
-          </div>
-        );
-      } else return item;
-    });
-  };
-  disableTBA = section => {
-    //console.log(section.meetings[0] != "TBA", section.meetings[0]);
-    var test = false;
-    for (var element of section.meetings[0]) {
-      if (element === "TBA") {
+  disableTBA = (section) => {
+    let test = false;
+    for (let element of section.meetings[0]) {
+      if (element === 'TBA') {
         test = true;
         break;
       }
@@ -116,66 +141,79 @@ class SectionTable extends Component {
           termName={this.props.termName}
         />
       );
-    } else return;
+    }
   };
 
-  statusforFindingSpot = (section,classCode) => {
-    if(section === 'FULL')
-    return <Notification full={section} code={classCode} name={this.props.courseDetails.name}/>
-    else
-    return section;
- };
+  statusforFindingSpot = (section, classCode) => {
+    if (section === 'FULL' || section === 'NewOnly')
+      // Enable user to register for Paul Revere notifications
+      return (
+        <Notification
+          full={section}
+          code={classCode}
+          name={this.props.courseDetails.name}
+        />
+      );
+    else return section;
+  };
 
- genMapLink = location => {
-   try {
-     var location_id = locations[location.split(" ")[0]];
-     return "https://map.uci.edu/?id=463#!m/"+location_id;
-   } catch (err) {
-     return "https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034";
-   }
- };
+  genMapLink = (location) => {
+    try {
+      const location_id = locations[location.split(' ')[0]];
+      return 'https://map.uci.edu/?id=463#!m/' + location_id;
+    } catch (err) {
+      return 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034';
+    }
+  };
 
   render() {
     const sectionInfo = this.props.courseDetails.sections;
+    const { classes } = this.props;
 
     return (
-      <table>
+      <table className={classes.table}>
         <thead>
           <tr>
-            <th className="no_border">{}</th>
+            <th>{}</th>
             <th>Code</th>
             <th>Type</th>
             <th>Instructor</th>
             <th>Time</th>
             <th>Place</th>
-            <th>Enrollmt</th>
-            <th>Rstr</th>
+            <th>Enrollment</th>
+            <th>Rstr.</th>
             <th>Status</th>
           </tr>
         </thead>
         <tbody>
-          {sectionInfo.map(section => {
+          {sectionInfo.map((section) => {
             return (
-              <tr>
-                <td className="no_border">{this.disableTBA(section)}</td>
+              <tr className={classes.tr}>
+                <td>{this.disableTBA(section)}</td>
                 <td>{section.classCode}</td>
-                <td className="multiline">
+                <td className={classes.multiline}>
                   {`${section.classType}
 Sec ${section.sectionCode}
 ${section.units} units`}
                 </td>
-                <td className="multiline">
-                {section.instructors.join("\n")}
-                  {/* {this.linkRMP(section.instructors)} */}
+                <td className={classes.multiline}>
+                  <Instructors className={classes.multiline}>
+                    {/*this.linkRMP(section.instructors)*/}
+                    {section.instructors}
+                  </Instructors>
                 </td>
-                <td className="multiline">
-                  {section.meetings.map(meeting => meeting[0]).join("\n")}
+                <td className={classes.multiline}>
+                  {section.meetings.map((meeting) => meeting[0]).join('\n')}
                 </td>
-                <td className="multiline">
-                  {section.meetings.map(meeting => {
-                    return (meeting[1] !== "ON LINE") ? (
+                <td className={classes.multiline}>
+                  {section.meetings.map((meeting) => {
+                    return meeting[1] !== 'ON LINE' ? (
                       <div>
-                        <a href={this.genMapLink(meeting[1])} target="_blank">
+                        <a
+                          href={this.genMapLink(meeting[1])}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
                           {meeting[1]}
                         </a>
                         <br />
@@ -185,17 +223,17 @@ ${section.units} units`}
                     );
                   })}
                 </td>
-                <td className={["multiline", section.status].join(" ")}>
+                <td className={classes.multiline + ' ' + section.status}>
                   {`${section.numCurrentlyEnrolled[0]} / ${section.maxCapacity}
 WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
                 </td>
                 <td>
-                  <RstrPopover
-                    restrictions = {section.restrictions}
-                  />
+                  <RstrPopover restrictions={section.restrictions} />
                 </td>
-                <td className={section.status}>{this.statusforFindingSpot(section.status,section.classCode)}</td>
+                <td className={classes[section.status.toLowerCase()]}>
+                  {this.statusforFindingSpot(section.status, section.classCode)}
+                </td>
               </tr>
             );
           })}
@@ -205,5 +243,4 @@ NOR: ${section.numNewOnlyReserved}`}
   }
 }
 
-//TODO: Convert CSS Sheet to JSS
-export default SectionTable;
+export default withStyles(styles)(SectionTable);

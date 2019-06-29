@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   MenuItem,
   Select,
@@ -6,31 +6,34 @@ import {
   FormControl,
   InputLabel,
   Switch,
-  FormControlLabel
-} from "@material-ui/core";
-import {withStyles} from '@material-ui/core/styles';
+  FormControlLabel,
+} from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
   courseNum: {
     borderStyle: 'solid',
-    borderWidth: '8px 8px 8px 0px',
+    borderWidth: '0px 8px 8px 0px',
     borderColor: 'transparent',
   },
   courseCode: {
     border: 'solid 8px transparent',
     borderLeft: '0px',
+    borderTop: '0px',
   },
   instructor: {
     border: 'solid 8px transparent',
     borderLeft: '0px',
+    borderTop: '0px',
     minWidth: '120px',
-    flexBasis: '120px'
+    flexBasis: '120px',
   },
   units: {
     border: 'solid 8px transparent',
     borderLeft: '0px',
+    borderTop: '0px',
     minWidth: '80px',
-    flexBasis: '80px'
+    flexBasis: '80px',
   },
   coursesFull: {
     borderWidth: '8px 0px 8px 0px',
@@ -45,7 +48,7 @@ const styles = {
   smallTextFields: {
     display: 'flex',
     justifyContent: 'space-between',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
 };
 
@@ -53,52 +56,61 @@ class AdvancedSearchTextFields extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      courseNum: "",
-      courseCode: "",
-      instructor: "",
-      units: "",
-      endTime: "",
-      startTime: "",
+      courseNum: '',
+      courseCode: '',
+      instructor: '',
+      units: '',
+      endTime: '',
+      startTime: '',
       coursesFull: 'ANY',
-      building: this.props.params.building
-    }
+      building: this.props.params.building,
+    };
   }
 
-  handleChange = name => event => {
-    if (name === "endTime" || name === "startTime") {
-      if (event.target.value !== "") {
+  handleChange = (name) => (event) => {
+    if (name === 'endTime' || name === 'startTime') {
+      if (event.target.value !== '') {
         if (parseInt(event.target.value.slice(0, 2), 10) > 12)
-          this.setState({[name]: (parseInt(event.target.value.slice(0, 2), 10) - 12) + ":00pm"}, () => {
-            this.props.onAdvancedSearchChange(this.state)
-          });
+          this.setState(
+            {
+              [name]:
+                parseInt(event.target.value.slice(0, 2), 10) - 12 + ':00pm',
+            },
+            () => {
+              this.props.onAdvancedSearchChange(this.state);
+            }
+          );
         else
-          this.setState({[name]: parseInt(event.target.value.slice(0, 2), 10) + ":00am"}, () => {
-            this.props.onAdvancedSearchChange(this.state)
-          });
+          this.setState(
+            { [name]: parseInt(event.target.value.slice(0, 2), 10) + ':00am' },
+            () => {
+              this.props.onAdvancedSearchChange(this.state);
+            }
+          );
       } else {
-        this.setState({[name]: ""}, () => {
-          this.props.onAdvancedSearchChange(this.state)
+        this.setState({ [name]: '' }, () => {
+          this.props.onAdvancedSearchChange(this.state);
         });
       }
-    } else if (name === "online"){
-      if (event.target.checked){
-        this.setState({ building: "ON" }, () => {
-          this.props.onAdvancedSearchChange(this.state)
+    } else if (name === 'online') {
+      if (event.target.checked) {
+        this.setState({ building: 'ON' }, () => {
+          this.props.onAdvancedSearchChange(this.state);
         });
       } else {
-        this.setState({ building: "" }, () => {
-          this.props.onAdvancedSearchChange(this.state)
+        this.setState({ building: '' }, () => {
+          this.props.onAdvancedSearchChange(this.state);
         });
       }
     } else {
-      this.setState({[name]: event.target.value}, () => {
-        this.props.onAdvancedSearchChange(this.state)
+      this.setState({ [name]: event.target.value }, () => {
+        this.props.onAdvancedSearchChange(this.state);
       });
     }
   };
 
   render() {
-    const {classes} = this.props;
+    const { classes } = this.props;
 
     return (
       <div className={classes.smallTextFields}>
@@ -148,11 +160,17 @@ class AdvancedSearchTextFields extends Component {
             value={this.props.params.coursesFull}
             onChange={this.handleChange('coursesFull')}
           >
-            <MenuItem value={"ANY"}>Include all classes</MenuItem>
-            <MenuItem value={"SkipFullWaitlist"}>Include full courses if space on waitlist</MenuItem>
-            <MenuItem value={"SkipFull"}>Skip full courses</MenuItem>
-            <MenuItem value={"FullOnly"}>Show only full or waitlisted courses</MenuItem>
-            <MenuItem value={"Overenrolled"}>Show only over-enrolled courses</MenuItem>
+            <MenuItem value={'ANY'}>Include all classes</MenuItem>
+            <MenuItem value={'SkipFullWaitlist'}>
+              Include full courses if space on waitlist
+            </MenuItem>
+            <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
+            <MenuItem value={'FullOnly'}>
+              Show only full or waitlisted courses
+            </MenuItem>
+            <MenuItem value={'Overenrolled'}>
+              Show only over-enrolled courses
+            </MenuItem>
           </Select>
         </FormControl>
 
@@ -162,7 +180,7 @@ class AdvancedSearchTextFields extends Component {
               onChange={this.handleChange('online')}
               value="online"
               color="primary"
-              checked={(this.state.building === "ON")}
+              checked={this.state.building === 'ON'}
             />
           }
           label="Online Classes Only"
@@ -171,14 +189,14 @@ class AdvancedSearchTextFields extends Component {
         <form className={classes.timePicker}>
           <TextField
             onChange={this.handleChange('startTime')}
-            label='Starts After'
+            label="Starts After"
             type="time"
             InputLabelProps={{
               //fix saved search params
               shrink: true,
             }}
             inputProps={{
-              step: 3600
+              step: 3600,
             }}
           />
         </form>
@@ -186,14 +204,14 @@ class AdvancedSearchTextFields extends Component {
         <form className={classes.timePicker}>
           <TextField
             onChange={this.handleChange('endTime')}
-            label='Ends Before'
+            label="Ends Before"
             type="time"
             InputLabelProps={{
               //fix saved search param
               shrink: true,
             }}
             inputProps={{
-              step: 3600
+              step: 3600,
             }}
           />
         </form>
