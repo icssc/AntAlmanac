@@ -1,6 +1,7 @@
 import React from 'react';
 import Downshift from 'mui-downshift';
 import depts from './depts';
+import FormControl from '@material-ui/core/FormControl';
 import { isMobile } from 'react-device-detect';
 
 class DeptSearchBar extends React.Component {
@@ -39,6 +40,7 @@ class DeptSearchBar extends React.Component {
 
   render() {
     return (
+      <FormControl style={{ flexGrow: 1, marginRight: 15, width: '50%' }}>
       <Downshift
         items={this.state.filteredItems}
         onStateChange={this.handleStateChange}
@@ -54,6 +56,7 @@ class DeptSearchBar extends React.Component {
         // menuHeight={this.determineDropdownLength()}
         {...this.props} //Pass down other props to the Downshift layer
       />
+      </FormControl>
     );
   }
 }
