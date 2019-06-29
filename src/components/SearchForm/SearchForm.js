@@ -2,6 +2,7 @@ import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
 import GESelector from './GESelector/GESelector';
 import TermSelector from './TermSelector';
 import CourseCodeSearchBar from './CourseCodeSearchBar';
+import CourseNumberSearchBar from './CourseNumberSearchBar';
 import React, { Component } from 'react';
 import { Button, Typography, Collapse } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
@@ -163,8 +164,11 @@ class SearchForm extends Component {
           <TermSelector term={this.state.term} setTerm={this.setTerm} />
         </div>
 
-        <div>
+        <div className={classes.margin} style={{ display: 'inline-flex' }}>
           <DeptSearchBar dept={this.state.label} setDept={this.setDept} />
+          <CourseNumberSearchBar
+            onAdvancedSearchChange={this.handleAdvancedSearchChange}
+          />
         </div>
 
         <div className={classes.margin} style={{ display: 'inline-flex' }}>
