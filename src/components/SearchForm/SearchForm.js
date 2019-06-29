@@ -180,9 +180,14 @@ class SearchForm extends Component {
 
         <div
           onClick={this.handleExpand}
-          style={{ display: 'inline-flex', marginTop: 5, cursor: 'pointer' }}
+          style={{
+            display: 'inline-flex',
+            marginTop: 10,
+            marginBottom: 10,
+            cursor: 'pointer',
+          }}
         >
-          <div style={{ flexGrow: 1 }}>
+          <div style={{ marginRight: 5 }}>
             <Typography noWrap variant="subheading">
               Advanced Search Options
             </Typography>
@@ -206,7 +211,7 @@ class SearchForm extends Component {
           </Button>
         </div>
 
-        <div className={classes.new}>
+        {/*<div className={classes.new}>
           <Typography>
             <b>New on AntAlmanac:</b>
             <br />
@@ -218,7 +223,7 @@ class SearchForm extends Component {
           </Typography>
         </div>
 
-        {/*<img
+        <img
           src={MIUCI}
           variant="contained"
           alt="Made_in_UCI"
