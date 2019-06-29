@@ -1,49 +1,46 @@
 * {
-    font-family: Roboto, sans-serif;
+  font-family: Roboto, sans-serif;
 }
 
 .rbc-time-view .rbc-row {
-    min-height: 0;
+  min-height: 0;
 }
 
 .rbc-timeslot-group {
-    min-height: 25px;
+  min-height: 25px;
 }
 
 .rbc-event-label {
-    font-size: 0.8rem;
+  font-size: 0.8rem;
 }
 
 .rbc-label {
-    font-size: 0.9rem;
+  font-size: 0.9rem;
 }
 
-@media
-(min-resolution: 96dpi){
-    .rbc-timeslot-group {
-        min-height: 28px;
-    }
+@media (min-resolution: 96dpi) {
+  .rbc-timeslot-group {
+    min-height: 28px;
+  }
 }
 
-@media
-(min-resolution: 120dpi){
-    .rbc-timeslot-group {
-        min-height: 25px;
-    }
+@media (min-resolution: 120dpi) {
+  .rbc-timeslot-group {
+    min-height: 25px;
+  }
 }
 
-@media
-(min-resolution: 144dpi){
-    .rbc-timeslot-group {
-        min-height: 22px;
-    }
+@media (min-resolution: 144dpi) {
+  .rbc-timeslot-group {
+    min-height: 22px;
+  }
 }
 
 *:focus {
-    outline: none;
+  outline: none;
 }
 
-.menu-button:hover, .menu-button:focus {
-    background-color: unset !important;
+.menu-button:hover,
+.menu-button:focus {
+  background-color: unset !important;
 }
-

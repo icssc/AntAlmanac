@@ -18,7 +18,7 @@
     "react-color": "^2.17.3",
     "react-device-detect": "1.6.1",
     "react-dom": "^16.8.6",
-    "react-ga": "^2.5.7",
+    "react-ga": "^2.6.0",
     "react-messenger-customer-chat": "^0.7.2",
     "react-number-format": "^4.0.7",
     "react-scripts": "^2.1.8",
@@ -36,6 +36,9 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
+    "husky": "^2.2.0",
+    "lint-staged": "^8.1.6",
+    "prettier": "^1.17.0",
     "react-snap": "^1.23.0"
   },
   "browserslist": [
@@ -46,5 +49,30 @@
   ],
   "reactSnap": {
     "inlineCss": true
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,json,css,html}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "prettier": {
+    "printWidth": 80,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "quoteProps": "as-needed",
+    "jsxSingleQuote": false,
+    "trailingComma": "es5",
+    "bracketSpacing": true,
+    "jsxBracketSameLine": false,
+    "arrowParens": "always",
+    "endOfLine": "lf"
   }
 }

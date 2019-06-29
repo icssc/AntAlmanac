@@ -1,23 +1,20 @@
-import DeptSearchBar from "./DeptSearchBar/DeptSearchBar";
-import GESelector from "./GESelector";
-import TermSelector from "./TermSelector";
-import React, {Component} from "react";
-import {
-  Button,
-  Typography,
-  Collapse
-} from "@material-ui/core";
-import {withStyles} from '@material-ui/core/styles';
-import AdvancedSearchTextFields from "./AdvancedSearch";
-import MIUCI from "./MIUCI.png";
-import {ExpandMore, ExpandLess} from '@material-ui/icons';
+import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
+import GESelector from './GESelector/GESelector';
+import TermSelector from './TermSelector';
+import CourseCodeSearchBar from './CourseCodeSearchBar';
+import React, { Component } from 'react';
+import { Button, Typography, Collapse } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import AdvancedSearchTextFields from './AdvancedSearch';
+// import MIUCI from "./MIUCI.png";
+import { ExpandMore, ExpandLess } from '@material-ui/icons';
 
 const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
-    position: "relative"
+    position: 'relative',
   },
   search: {
     display: 'flex',
@@ -27,18 +24,18 @@ const styles = {
   margin: {
     borderTop: 'solid 8px transparent',
   },
-  miuci: {
-    width: "35%",
-    position: "absolute",
-    bottom: 0,
-    right: 0
-  },
+  // miuci: {
+  //   width: "35%",
+  //   position: "absolute",
+  //   bottom: 0,
+  //   right: 0
+  // },
   new: {
-    width: "55%",
-    position: "absolute",
+    width: '55%',
+    position: 'absolute',
     bottom: 0,
-    left: 0
-  }
+    left: 0,
+  },
 };
 
 class SearchForm extends Component {
@@ -46,16 +43,18 @@ class SearchForm extends Component {
     super(props);
 
     let advanced = false;
-    if (typeof Storage !== "undefined") {
-      advanced = window.localStorage.getItem("advanced");
-      if (advanced === null){ //first time nothing stored
+    if (typeof Storage !== 'undefined') {
+      advanced = window.localStorage.getItem('advanced');
+      if (advanced === null) {
+        //first time nothing stored
         advanced = false;
-      } else { //not first
-        advanced = (advanced === "expanded");
+      } else {
+        //not first
+        advanced = advanced === 'expanded';
       }
     }
 
-    if (this.props.prevFormData){
+    if (this.props.prevFormData) {
       const {
         dept,
         label,
@@ -68,55 +67,55 @@ class SearchForm extends Component {
         endTime,
         startTime,
         coursesFull,
-        building
+        building,
       } = this.props.prevFormData;
       this.state = {
-          dept: dept,
-          label: label,
-          ge: ge,
-          term: term,
-          courseNum: courseNum,
-          courseCode: courseCode,
-          instructor: instructor,
-          units: units,
-          endTime: endTime,
-          startTime: startTime,
-          coursesFull: coursesFull,
-          building: building,
-          expandAdvanced: advanced
-        };
-    }else{
+        dept: dept,
+        label: label,
+        ge: ge,
+        term: term,
+        courseNum: courseNum,
+        courseCode: courseCode,
+        instructor: instructor,
+        units: units,
+        endTime: endTime,
+        startTime: startTime,
+        coursesFull: coursesFull,
+        building: building,
+        expandAdvanced: advanced,
+      };
+    } else {
       this.state = {
-        dept: null,
-        label: null,
-        ge: "ANY",
-        term: "2019 Fall",
-        courseNum: "",
-        courseCode: "",
-        instructor: "",
-        units: "",
-        endTime: "",
-        startTime: "",
+        dept: '',
+        label: '',
+        ge: 'ANY',
+        term: '2019 Fall',
+        courseNum: '',
+        courseCode: '',
+        instructor: '',
+        units: '',
+        endTime: '',
+        startTime: '',
         coursesFull: 'ANY',
-        building: "",
-        expandAdvanced: advanced
+        building: '',
+        expandAdvanced: advanced,
       };
     }
   }
 
   componentDidMount = () => {
-    document.addEventListener("keydown", this.enterEvent, false);
+    document.addEventListener('keydown', this.enterEvent, false);
   };
 
   componentWillUnmount = () => {
-    document.addEventListener("keydown", this.enterEvent, false);
+    document.addEventListener('keydown', this.enterEvent, false);
   };
 
-  enterEvent = event => {
+  enterEvent = (event) => {
     const charCode = event.which ? event.which : event.keyCode;
     if (
       (charCode === 13 || charCode === 10) &&
-      document.activeElement.id === "downshift-0-input"
+      document.activeElement.id === 'downshift-0-input'
     ) {
       this.props.updateFormData(this.state);
       event.preventDefault();
@@ -129,69 +128,75 @@ class SearchForm extends Component {
     return this.state !== nextState;
   };
 
-  setDept = dept => {
-    if(dept==null)
-      this.setState({dept: null});
-    else
-      this.setState({dept: dept.value,label:dept.label});
+  setDept = (dept) => {
+    if (dept == null) this.setState({ dept: null });
+    else this.setState({ dept: dept.value, label: dept.label });
   };
 
   handleAdvancedSearchChange = (advancedSearchState) => {
     this.setState(advancedSearchState);
   };
 
-  setGE = ge => {
-    this.setState({ge: ge});
+  setGE = (ge) => {
+    this.setState({ ge: ge });
   };
 
-  setTerm = term => {
-    this.setState({term: term});
+  setTerm = (term) => {
+    this.setState({ term: term });
   };
 
   handleExpand = () => {
     const nextExpansionState = !this.state.expandAdvanced;
-    window.localStorage.setItem("advanced", nextExpansionState ? "expanded" : "notexpanded");
-    this.setState({expandAdvanced: nextExpansionState});
-  }
+    window.localStorage.setItem(
+      'advanced',
+      nextExpansionState ? 'expanded' : 'notexpanded'
+    );
+    this.setState({ expandAdvanced: nextExpansionState });
+  };
 
   render() {
-    const {classes} = this.props;
+    const { classes } = this.props;
 
     return (
       <div className={classes.container}>
         <div className={classes.margin}>
-          <DeptSearchBar dept={this.state.label} setDept={this.setDept}/>
+          <TermSelector term={this.state.term} setTerm={this.setTerm} />
         </div>
 
-        <div className={classes.margin}>
-          <GESelector ge={this.state.ge} setGE={this.setGE}/>
+        <div>
+          <DeptSearchBar dept={this.state.label} setDept={this.setDept} />
         </div>
 
-        <div className={classes.margin}>
-          <TermSelector term={this.state.term} setTerm={this.setTerm}/>
+        <div className={classes.margin} style={{ display: 'inline-flex' }}>
+          <GESelector ge={this.state.ge} setGE={this.setGE} />
+          <CourseCodeSearchBar
+            onAdvancedSearchChange={this.handleAdvancedSearchChange}
+          />
         </div>
 
-        <div onClick={this.handleExpand} style={{display: 'inline-flex', marginTop: 15, cursor: 'pointer'}}>
-            <div style={{flexGrow: 1}}>
-            <Typography noWrap variant='subheading'>
-                Advanced Search Options
+        <div
+          onClick={this.handleExpand}
+          style={{ display: 'inline-flex', marginTop: 5, cursor: 'pointer' }}
+        >
+          <div style={{ flexGrow: 1 }}>
+            <Typography noWrap variant="subheading">
+              Advanced Search Options
             </Typography>
-            </div>
-            {this.state.expandAdvanced ?
-              (<ExpandLess />)
-              :
-              (<ExpandMore />)
-            }
+          </div>
+          {this.state.expandAdvanced ? <ExpandLess /> : <ExpandMore />}
         </div>
         <Collapse in={this.state.expandAdvanced}>
-          <AdvancedSearchTextFields params={this.state} onAdvancedSearchChange={this.handleAdvancedSearchChange}/>
+          <AdvancedSearchTextFields
+            params={this.state}
+            onAdvancedSearchChange={this.handleAdvancedSearchChange}
+          />
         </Collapse>
 
         <div className={classes.search}>
           <Button
             variant="contained"
             onClick={() => this.props.updateFormData(this.state)}
-            style = {{backgroundColor:"#72a9ed", boxShadow:"none"}}
+            style={{ backgroundColor: '#72a9ed', boxShadow: 'none' }}
           >
             Search
           </Button>
@@ -199,20 +204,22 @@ class SearchForm extends Component {
 
         <div className={classes.new}>
           <Typography>
-            <b>New on AntAlmanac:</b><br/>
-            Download .ics files of your calendars!<br/>
-            Links to interactive campus map<br/>
+            <b>New on AntAlmanac:</b>
+            <br />
+            Add online/TBA classes!
+            <br />
+            Download .ics files of your calendars!
+            <br />
             See finals schedules
           </Typography>
         </div>
 
-        <img
+        {/*<img
           src={MIUCI}
           variant="contained"
           alt="Made_in_UCI"
           className={classes.miuci}
-        />
-
+        />*/}
       </div>
     );
   }
