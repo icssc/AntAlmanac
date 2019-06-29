@@ -114,25 +114,6 @@ class AdvancedSearchTextFields extends Component {
 
     return (
       <div className={classes.smallTextFields}>
-        <TextField
-          id="course-num"
-          label="Course Number(s)"
-          type="search"
-          value={this.props.params.courseNum}
-          onChange={this.handleChange('courseNum')}
-          className={classes.courseNum}
-          helperText="ex. 6B, 17, 30-40"
-        />
-
-        <TextField
-          id="course-code"
-          label="Course Code or Range"
-          value={this.props.params.courseCode}
-          onChange={this.handleChange('courseCode')}
-          type="search"
-          helperText="ex. 14200, 29000-29100"
-          className={classes.courseCode}
-        />
 
         <TextField
           id="instructor"
