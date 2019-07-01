@@ -9,6 +9,7 @@ import {
   FormControlLabel,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 
 const styles = {
   courseNum: {
@@ -199,6 +200,18 @@ class AdvancedSearchTextFields extends Component {
       </div>
     );
   }
+
+  
 }
+
+AdvancedSearchTextFields.propTypes = {
+    onAdvancedSearchChange: PropTypes.func,
+    value: PropTypes.arrayOf({
+      units: PropTypes.string,
+      instructor: PropTypes.string,
+      courseFull: PropTypes.string,
+    }),
+    building: PropTypes.string
+};
 
 export default withStyles(styles)(AdvancedSearchTextFields);

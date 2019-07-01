@@ -167,14 +167,19 @@ class SearchForm extends Component {
         <div className={classes.margin} style={{ display: 'inline-flex' }}>
           <DeptSearchBar dept={this.state.label} setDept={this.setDept} />
           <CourseNumberSearchBar
+            //Places CourseNumberSearchBar object next to DeptSearchBar object
             onAdvancedSearchChange={this.handleAdvancedSearchChange}
+              //Handles user input for specific course number searches (e.g. "3A")
           />
+          
         </div>
 
         <div className={classes.margin} style={{ display: 'inline-flex' }}>
           <GESelector ge={this.state.ge} setGE={this.setGE} />
           <CourseCodeSearchBar
+            //Places CourseCodeSearchBar object next to GESelector object
             onAdvancedSearchChange={this.handleAdvancedSearchChange}
+              //Handles user input for specific course code searches (e.g. "33367")
           />
         </div>
 
@@ -222,7 +227,6 @@ class SearchForm extends Component {
             See finals schedules
           </Typography>
         </div>
-
         <img
           src={MIUCI}
           variant="contained"
