@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { TextField } from '@material-ui/core';
+import PropTypes from 'prop-types';
 
 class CourseCodeSearchBar extends Component {
   constructor(props) {
@@ -9,51 +10,19 @@ class CourseCodeSearchBar extends Component {
     };
   }
 
+  /**
+   *  Handles user input under CourseCodeSearchBar object and sets the state to its given input.
+   */
   handleChange = (name) => (event) => {
-    if (name === 'endTime' || name === 'startTime') {
-      if (event.target.value !== '') {
-        if (parseInt(event.target.value.slice(0, 2), 10) > 12)
-          this.setState(
-            {
-              [name]:
-                parseInt(event.target.value.slice(0, 2), 10) - 12 + ':00pm',
-            },
-            () => {
-              this.props.onAdvancedSearchChange(this.state);
-            }
-          );
-        else
-          this.setState(
-            { [name]: parseInt(event.target.value.slice(0, 2), 10) + ':00am' },
-            () => {
-              this.props.onAdvancedSearchChange(this.state);
-            }
-          );
-      } else {
-        this.setState({ [name]: '' }, () => {
-          this.props.onAdvancedSearchChange(this.state);
-        });
-      }
-    } else if (name === 'online') {
-      if (event.target.checked) {
-        this.setState({ building: 'ON' }, () => {
-          this.props.onAdvancedSearchChange(this.state);
-        });
-      } else {
-        this.setState({ building: '' }, () => {
-          this.props.onAdvancedSearchChange(this.state);
-        });
-      }
-    } else {
-      this.setState({ [name]: event.target.value }, () => {
-        this.props.onAdvancedSearchChange(this.state);
-      });
-    }
+    this.setState({ [name]: event.target.value }, () => {
+      this.props.onAdvancedSearchChange(this.state);
+    });
+    //Removed unnecessary if-else statements (6-28-19)
   };
 
   render() {
     //const {classes} = this.props;
-
+    
     return (
       <div>
         <TextField
@@ -69,5 +38,9 @@ class CourseCodeSearchBar extends Component {
     );
   }
 }
+
+CourseCodeSearchBar.propTypes = {
+  onAdvancedSearchChange: PropTypes.func,
+};
 
 export default CourseCodeSearchBar;
