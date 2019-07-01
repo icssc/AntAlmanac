@@ -110,6 +110,10 @@ class AdvancedSearchTextFields extends Component {
     }
   };
 
+  /** 
+   * UPDATE (6-28-19): Transfered course code and course number search boxes to 
+   * separate classes.
+  */
   render() {
     const { classes } = this.props;
 
