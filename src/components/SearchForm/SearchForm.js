@@ -169,9 +169,9 @@ class SearchForm extends Component {
           <CourseNumberSearchBar
             //Places CourseNumberSearchBar object next to DeptSearchBar object
             onAdvancedSearchChange={this.handleAdvancedSearchChange}
-              //Handles user input for specific course number searches (e.g. "3A")
+            //Handles user input for specific course number searches (e.g. "3A")
+            params={this.state}
           />
-          
         </div>
 
         <div className={classes.margin} style={{ display: 'inline-flex' }}>
@@ -179,7 +179,8 @@ class SearchForm extends Component {
           <CourseCodeSearchBar
             //Places CourseCodeSearchBar object next to GESelector object
             onAdvancedSearchChange={this.handleAdvancedSearchChange}
-              //Handles user input for specific course code searches (e.g. "33367")
+            //Handles user input for specific course code searches (e.g. "33367")
+            params={this.state}
           />
         </div>
 

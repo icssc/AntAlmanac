@@ -22,13 +22,13 @@ class CourseCodeSearchBar extends Component {
 
   render() {
     //const {classes} = this.props;
-    
+
     return (
       <div>
         <TextField
           id="course-code"
           label="Course Code or Range"
-          value={this.state.courseCode}
+          value={this.props.params.courseCode}
           onChange={this.handleChange('courseCode')}
           type="search"
           helperText="ex. 14200, 29000-29100"
