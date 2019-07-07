@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, Suspense } from 'react';
 import {
   Menu,
   MenuItem,
@@ -8,7 +8,6 @@ import {
   Snackbar,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph';
 import POPOVER from './PopOver';
 import Notification from '../Notification';
 import RstrPopover from './RstrPopover';
@@ -17,6 +16,10 @@ import querystring from 'querystring';
 import MouseOverPopover from './MouseOverPopover';
 import { Add, ArrowDropDown } from '@material-ui/icons';
 import Instructors from './Instructors';
+
+const AlmanacGraphWrapped = React.lazy(() =>
+  import('../AlmanacGraph/AlmanacGraph')
+);
 
 const styles = {
   table: {
@@ -364,10 +367,12 @@ class MiniSectionTable extends Component {
             &nbsp;
           </Typography>
 
-          <AlmanacGraphWrapped
-            term={this.props.term}
-            courseDetails={this.props.courseDetails}
-          />
+          <Suspense fallback={<Typography variant="h5">Holup...</Typography>}>
+            <AlmanacGraphWrapped
+              term={this.props.term}
+              courseDetails={this.props.courseDetails}
+            />
+          </Suspense>
 
           <Typography variant="title" style={{ flexGrow: '2' }}>
             &nbsp;

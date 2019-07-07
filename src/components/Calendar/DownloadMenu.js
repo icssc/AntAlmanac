@@ -1,9 +1,16 @@
-import React, { Fragment } from 'react';
-import { Menu, MenuItem, MenuList, IconButton } from '@material-ui/core';
+import React, { Fragment, Suspense } from 'react';
+import {
+  Menu,
+  MenuItem,
+  MenuList,
+  IconButton,
+  Typography,
+  Tooltip,
+} from '@material-ui/core';
 import { GetApp } from '@material-ui/icons';
-import ScreenshotButton from './ScreenshotButton';
-import ExportButton from './ExportCalendar';
-import Tooltip from '@material-ui/core/Tooltip';
+
+const ScreenshotButton = React.lazy(() => import('./ScreenshotButton'));
+const ExportButton = React.lazy(() => import('./ExportCalendar'));
 
 class DownloadMenu extends React.Component {
   state = {
@@ -44,16 +51,34 @@ class DownloadMenu extends React.Component {
         >
           <MenuList>
             <div>
-              <MenuItem
-                component={ScreenshotButton}
-                onTakeScreenshot={this.props.onTakeScreenshot}
-              />
+              <Suspense
+                fallback={
+                  <Typography variant="h5" style={{ margin: 10 }}>
+                    Holup...
+                  </Typography>
+                }
+              >
+                <MenuItem
+                  component={ScreenshotButton}
+                  onTakeScreenshot={this.props.onTakeScreenshot}
+                  closeMenu={this.handleClose}
+                />
+              </Suspense>
             </div>
             <div>
-              <MenuItem
-                component={ExportButton}
-                eventsInCalendar={this.props.eventsInCalendar}
-              />
+              <Suspense
+                fallback={
+                  <Typography variant="h5" style={{ margin: 10 }}>
+                    Holup...
+                  </Typography>
+                }
+              >
+                <MenuItem
+                  component={ExportButton}
+                  eventsInCalendar={this.props.eventsInCalendar}
+                  closeMenu={this.handleClose}
+                />
+              </Suspense>
             </div>
           </MenuList>
         </Menu>
