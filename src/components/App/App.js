@@ -612,7 +612,6 @@ class App extends Component {
       category: 'ProffRating_OPTION',
       action: 'setting_rmp',
       label: 'bad students',
-      saved: false,  //marks as unsaved data
     });
     this.setState({
       destination: 'rmp',
@@ -625,7 +624,6 @@ class App extends Component {
       category: 'ProffRating_OPTION',
       action: 'setting_eaterval',
       label: 'good students',
-      saved: false,  //marks as unsaved data
     });
     this.setState({
       destination: 'eatereval',
