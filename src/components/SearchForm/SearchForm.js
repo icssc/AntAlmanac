@@ -2,6 +2,7 @@ import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
 import GESelector from './GESelector/GESelector';
 import TermSelector from './TermSelector';
 import CourseCodeSearchBar from './CourseCodeSearchBar';
+import CourseNumberSearchBar from './CourseNumberSearchBar';
 import React, { Component } from 'react';
 import { Button, Typography, Collapse } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
@@ -163,22 +164,36 @@ class SearchForm extends Component {
           <TermSelector term={this.state.term} setTerm={this.setTerm} />
         </div>
 
-        <div>
+        <div className={classes.margin} style={{ display: 'inline-flex' }}>
           <DeptSearchBar dept={this.state.label} setDept={this.setDept} />
+          <CourseNumberSearchBar
+            //Places CourseNumberSearchBar object next to DeptSearchBar object
+            onAdvancedSearchChange={this.handleAdvancedSearchChange}
+            //Handles user input for specific course number searches (e.g. "3A")
+            params={this.state}
+          />
         </div>
 
         <div className={classes.margin} style={{ display: 'inline-flex' }}>
           <GESelector ge={this.state.ge} setGE={this.setGE} />
           <CourseCodeSearchBar
+            //Places CourseCodeSearchBar object next to GESelector object
             onAdvancedSearchChange={this.handleAdvancedSearchChange}
+            //Handles user input for specific course code searches (e.g. "33367")
+            params={this.state}
           />
         </div>
 
         <div
           onClick={this.handleExpand}
-          style={{ display: 'inline-flex', marginTop: 5, cursor: 'pointer' }}
+          style={{
+            display: 'inline-flex',
+            marginTop: 10,
+            marginBottom: 10,
+            cursor: 'pointer',
+          }}
         >
-          <div style={{ flexGrow: 1 }}>
+          <div style={{ marginRight: 5 }}>
             <Typography noWrap variant="subheading">
               Advanced Search Options
             </Typography>
@@ -202,7 +217,7 @@ class SearchForm extends Component {
           </Button>
         </div>
 
-        <div className={classes.new}>
+        {/*<div className={classes.new}>
           <Typography>
             <b>New on AntAlmanac:</b>
             <br />
@@ -213,8 +228,7 @@ class SearchForm extends Component {
             See finals schedules
           </Typography>
         </div>
-
-        {/*<img
+        <img
           src={MIUCI}
           variant="contained"
           alt="Made_in_UCI"

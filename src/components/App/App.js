@@ -88,10 +88,12 @@ class App extends Component {
       showFinalSchedule: false,
       activeTab: 0,
       destination: InstructorEvals,
+      saved: true,
     };
     this.handleSelectRMP = this.handleSelectRMP.bind(this);
     this.handleSelectEE = this.handleSelectEE.bind(this);
     this.resizeLogo = this.resizeLogo.bind(this);
+    this.changeSave = this.changeSave.bind(this);
   }
 
   componentDidMount = () => {
@@ -102,6 +104,13 @@ class App extends Component {
 
     this.resizeLogo();
     window.addEventListener('resize', this.resizeLogo);
+    window.addEventListener('beforeunload', (event) => {
+      if(this.state.saved){
+        console.log('apples')
+      }
+      else{
+        event.returnValue = `Are you sure you want to leave?`;
+      }});
   };
 
   componentWillUnmount() {
@@ -113,11 +122,17 @@ class App extends Component {
     this.setState({ isDesktop: window.innerWidth > 960 });
   }
 
+  changeSave(changeTo){ //dictates saved or need to save
+    //add this.changeSave(false); to functions that change schedules
+    //and this.changeSave(true); after saving
+    this.setState({saved: changeTo});
+  }
+
   handleRightPaneViewChange = (event, rightPaneView) => {
     this.setState({ rightPaneView, showSearch: true });
   };
 
-  handleLoad = (userData) => {
+  handleLoad = (userData) => { //load schedules
     this.setState({
       currentScheduleIndex: 0,
       courseEvents: userData.courseEvents,
@@ -126,7 +141,8 @@ class App extends Component {
     });
   };
 
-  handleSave = async (userID) => {
+  handleSave = async (userID) => { //save the schedules
+    this.changeSave(true);     //marks as saved
     const eventsToSave = [];
     const map = new Map();
 
@@ -162,6 +178,7 @@ class App extends Component {
   };
 
   handleUndo = (event) => {
+    this.changeSave(false);     //marks as need saving
     if (
       this.state.backupArray.length > 0 &&
       (event == null ||
@@ -214,8 +231,9 @@ class App extends Component {
     }
   };
 
-  handleClassDelete = (deletedEvent) => {
+  handleClassDelete = (deletedEvent) => { //Delete classes
     //TODO: Pretty much need to rewrite this actually
+    this.changeSave(false);     //marks as need saving
     const eventsAfterRemovingItem = [];
     const newBackupArray = [];
 
@@ -316,6 +334,7 @@ class App extends Component {
   };
 
   handleAddClass = (section, courseDetails, scheduleIndex, courseTerm) => {
+    this.changeSave(false);     //marks as need saving
     const randomColor = arrayOfColors.find((color) => {
       let isAvailableColor = true;
       this.state.unavailableColors.forEach((colorAndScheduleIndex) => {
@@ -457,7 +476,7 @@ class App extends Component {
     }
   };
 
-  handleScheduleChange = (direction) => {
+  handleScheduleChange = (direction) => { //Go through the different schedules
     if (direction === 0) {
       this.setState({
         showFinalSchedule: false,
@@ -472,6 +491,7 @@ class App extends Component {
   };
 
   handleCopySchedule = (moveTo) => {
+    this.changeSave(false);   //marks as unsaved data
     let allSchedules = [0, 1, 2, 3];
     let schedulesToMoveTo = [];
     //if move to all schedules
@@ -496,6 +516,7 @@ class App extends Component {
   };
 
   getClassesAfterCopyingTo = (moveTo) => {
+    this.changeSave(false);   //marks as unsaved data
     let moveFrom = this.state.currentScheduleIndex;
     const oldClasses = this.state.courseEvents.filter(
       (courseEvent) => courseEvent.scheduleIndex === moveFrom
@@ -514,16 +535,19 @@ class App extends Component {
   };
 
   updateFormData = (formData) => {
+    this.changeSave(false);     //marks as need saving?? Not sure about this one so in here just in case
     this.setState({ showSearch: false }, function() {
       this.setState({ formData: formData, prevFormData: formData });
     });
   };
 
   handleAddCustomEvent = (events) => {
+    this.changeSave(false);     //marks as need saving
     this.setState({ courseEvents: this.state.courseEvents.concat(events) });
   };
 
   handleEditCustomEvent = (newEvents, oldEvent) => {
+    this.changeSave(false);   //marks as unsaved data
     let newCourseEvents = this.state.courseEvents.filter(
       (courseEvent) =>
         !courseEvent.isCustomEvent ||
@@ -533,7 +557,8 @@ class App extends Component {
     this.setState({ courseEvents: newCourseEvents.concat(newEvents) });
   };
 
-  handleColorChange = (course, color) => {
+  handleColorChange = (course, color) => { //changes color of a course
+    this.changeSave(false);   //marks as unsaved data
     let courses = this.state.courseEvents;
 
     if (
@@ -569,7 +594,7 @@ class App extends Component {
     }
   };
 
-  displayFinal = (schedule) => {
+  displayFinal = (schedule) => { //change to finals view
     this.setState(
       {
         showFinalSchedule: !this.state.showFinalSchedule,
@@ -606,7 +631,8 @@ class App extends Component {
     window.localStorage.setItem('InstructorEvals', 'eatereval');
   };
 
-  handleClearSchedule = (toDelete) => {
+  handleClearSchedule = (toDelete) => {  //Clears schedules
+    this.changeSave(false);   //marks as unsaved data
     const eventsThatAreDeleted = this.state.courseEvents.filter(
       (courseEvent) => !toDelete.includes(courseEvent.scheduleIndex)
     );
@@ -616,6 +642,7 @@ class App extends Component {
   render() {
     return (
       <Fragment>
+
         <CssBaseline />
         <AppBar
           position="static"

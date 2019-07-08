@@ -4,7 +4,7 @@ import Image from '@material-ui/icons/Image';
 import html2canvas from 'html2canvas';
 
 function ScreenshotButton(props) {
-  const { onTakeScreenshot } = props;
+  const { onTakeScreenshot, closeMenu } = props;
 
   return (
     <Fragment>
@@ -45,6 +45,7 @@ function ScreenshotButton(props) {
               }
             });
           });
+          closeMenu();
         }}
       >
         <Image style={{ 'margin-right': '5px' }} />

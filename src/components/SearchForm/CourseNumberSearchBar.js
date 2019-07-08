@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { TextField } from '@material-ui/core';
 import PropTypes from 'prop-types';
 
-class CourseCodeSearchBar extends Component {
+class CourseNumberSearchBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -11,7 +11,7 @@ class CourseCodeSearchBar extends Component {
   }
 
   /**
-   *  Handles user input under CourseCodeSearchBar object and sets the state to its given input.
+   *  Handles user input under CourseNumberSearchBar object and sets the state to its given input.
    */
   handleChange = (name) => (event) => {
     this.setState({ [name]: event.target.value }, () => {
@@ -26,21 +26,20 @@ class CourseCodeSearchBar extends Component {
     return (
       <div>
         <TextField
-          id="course-code"
-          label="Course Code or Range"
-          value={this.props.params.courseCode}
-          onChange={this.handleChange('courseCode')}
+          id="course-num"
+          label="Course Number(s)"
           type="search"
-          helperText="ex. 14200, 29000-29100"
-          fullWidth
+          value={this.props.params.courseNum}
+          onChange={this.handleChange('courseNum')}
+          helperText="ex. 6B, 17, 30-40"
         />
       </div>
     );
   }
 }
 
-CourseCodeSearchBar.propTypes = {
+CourseNumberSearchBar.propTypes = {
   onAdvancedSearchChange: PropTypes.func,
 };
 
-export default CourseCodeSearchBar;
+export default CourseNumberSearchBar;
