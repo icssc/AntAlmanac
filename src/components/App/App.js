@@ -107,9 +107,8 @@ class App extends Component {
     this.resizeLogo();
     window.addEventListener('resize', this.resizeLogo);
     window.addEventListener('beforeunload', (event) => {
-      if (this.state.saved) {
-        console.log('apples');
-      } else {
+      if (!this.state.saved) {
+        //not saved
         event.returnValue = `Are you sure you want to leave?`;
       }
     });
