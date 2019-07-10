@@ -40,12 +40,12 @@ import {
   amber,
   blueGrey,
 } from '@material-ui/core/colors';
+import SearchForm from '../SearchForm/SearchForm';
 
 const TabularView = React.lazy(() => import('./TabularView'));
 const OptOutPopover = React.lazy(() => import('../CoursePane/OptOutPopover'));
 const CoursePane = React.lazy(() => import('../CoursePane/CoursePane'));
 const Calendar = React.lazy(() => import('../Calendar/Calendar'));
-const SearchForm = React.lazy(() => import('../SearchForm/SearchForm'));
 
 const arrayOfColors = [
   red[500],
@@ -128,6 +128,7 @@ class App extends Component {
     //add this.changeSave(false); to functions that change schedules
     //and this.changeSave(true); after saving
     this.setState({ saved: changeTo });
+    console.log('what the fuck');
   }
 
   handleRightPaneViewChange = (event, rightPaneView) => {
@@ -183,13 +184,14 @@ class App extends Component {
   };
 
   handleUndo = (event) => {
-    this.changeSave(false); //marks as need saving
     if (
       this.state.backupArray.length > 0 &&
       (event == null ||
         (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))
     ) {
       if (this.state.backupArray.length > 0) {
+        this.changeSave(false); //marks as need saving
+
         const lastDeletedEvent = this.state.backupArray[
           this.state.backupArray.length - 1
         ];
@@ -523,7 +525,6 @@ class App extends Component {
   };
 
   getClassesAfterCopyingTo = (moveTo) => {
-    this.changeSave(false); //marks as unsaved data
     let moveFrom = this.state.currentScheduleIndex;
     const oldClasses = this.state.courseEvents.filter(
       (courseEvent) => courseEvent.scheduleIndex === moveFrom
@@ -542,7 +543,6 @@ class App extends Component {
   };
 
   updateFormData = (formData) => {
-    this.changeSave(false); //marks as need saving?? Not sure about this one so in here just in case
     this.setState({ showSearch: false }, function() {
       this.setState({ formData: formData, prevFormData: formData });
     });
@@ -878,25 +878,10 @@ class App extends Component {
                     />
                   </Suspense>
                 ) : this.state.showSearch ? (
-                  <Suspense
-                    fallback={
-                      <CircularProgress
-                        style={{
-                          height: '100%',
-                          width: '100%',
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          backgroundColor: 'white',
-                        }}
-                      />
-                    }
-                  >
-                    <SearchForm
-                      prevFormData={this.state.prevFormData}
-                      updateFormData={this.updateFormData}
-                    />
-                  </Suspense>
+                  <SearchForm
+                    prevFormData={this.state.prevFormData}
+                    updateFormData={this.updateFormData}
+                  />
                 ) : (
                   <Suspense
                     fallback={

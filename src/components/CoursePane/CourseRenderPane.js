@@ -1,16 +1,11 @@
 import { withStyles } from '@material-ui/core/styles';
-import {
-  Paper,
-  Typography,
-  Grid,
-  Modal,
-  CircularProgress,
-} from '@material-ui/core';
+import { Paper, Typography, Grid, Modal } from '@material-ui/core';
 import React, { Component, Fragment, Suspense } from 'react';
 import CourseDetailPane from './CourseDetailPane';
 import SchoolDeptCard from './SchoolDeptCard';
 import NoNothing from './no_results.png';
 import AdAd from './ad_ad.png';
+import loadingGif from '../CoursePane/loading.mp4';
 
 const MiniSectionTable = React.lazy(() => import('./MiniSectionTable'));
 
@@ -69,6 +64,7 @@ class CourseRenderPane extends Component {
   };
 
   getGrid(SOCObject) {
+    console.log(SOCObject);
     if ('departments' in SOCObject) {
       return (
         // <SchoolDeptCard
@@ -108,7 +104,7 @@ class CourseRenderPane extends Component {
         <Grid item md={12} xs={12}>
           <Suspense
             fallback={
-              <CircularProgress
+              <div
                 style={{
                   height: '100%',
                   width: '100%',
@@ -117,7 +113,11 @@ class CourseRenderPane extends Component {
                   alignItems: 'center',
                   backgroundColor: 'white',
                 }}
-              />
+              >
+                <video autoPlay loop>
+                  <source src={loadingGif} type="video/mp4" />
+                </video>
+              </div>
             }
           >
             <MiniSectionTable

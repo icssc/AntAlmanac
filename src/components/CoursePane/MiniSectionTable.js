@@ -241,8 +241,6 @@ Units: ${section.units}`}
               fallback={
                 <CircularProgress
                   style={{
-                    height: '100%',
-                    width: '100%',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -313,8 +311,8 @@ NOR: ${section.numNewOnlyReserved}`}
                   section.maxCapacity
                 }`}</strong>
                 {`
-  WL: ${section.numOnWaitlist}
-  NOR: ${section.numNewOnlyReserved}`}
+WL: ${section.numOnWaitlist}
+NOR: ${section.numNewOnlyReserved}`}
               </MouseOverPopover>
             </Suspense>
           </td>
@@ -400,8 +398,6 @@ class MiniSectionTable extends Component {
             fallback={
               <CircularProgress
                 style={{
-                  height: '100%',
-                  width: '100%',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
@@ -446,6 +442,16 @@ class MiniSectionTable extends Component {
             <Fragment />
           )}
         </div>
+        <table className={classes.table}>
+          <tr className={classes.tr}>
+            <Typography
+              dangerouslySetInnerHTML={{
+                __html: this.props.courseDetails.comment,
+              }}
+              style={{ marginLeft: 8, marginRight: 8 }}
+            />
+          </tr>
+        </table>
         <table className={classes.table}>
           <thead>
             <tr>
