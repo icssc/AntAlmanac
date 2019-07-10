@@ -1,11 +1,18 @@
 import { withStyles } from '@material-ui/core/styles';
-import { Paper, Typography, Grid, Modal } from '@material-ui/core';
-import React, { Component, Fragment } from 'react';
+import {
+  Paper,
+  Typography,
+  Grid,
+  Modal,
+  CircularProgress,
+} from '@material-ui/core';
+import React, { Component, Fragment, Suspense } from 'react';
 import CourseDetailPane from './CourseDetailPane';
 import SchoolDeptCard from './SchoolDeptCard';
-import MiniSectionTable from './MiniSectionTable';
 import NoNothing from './no_results.png';
 import AdAd from './ad_ad.png';
+
+const MiniSectionTable = React.lazy(() => import('./MiniSectionTable'));
 
 const styles = (theme) => ({
   course: {
@@ -99,21 +106,36 @@ class CourseRenderPane extends Component {
         </Grid>
       ) : (
         <Grid item md={12} xs={12}>
-          <MiniSectionTable
-            currentScheduleIndex={this.props.currentScheduleIndex}
-            name={
-              SOCObject.name[0] +
-              ' ' +
-              SOCObject.name[1] +
-              ' | ' +
-              SOCObject.name[2]
+          <Suspense
+            fallback={
+              <CircularProgress
+                style={{
+                  height: '100%',
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'white',
+                }}
+              />
             }
-            formData={this.props.formData}
-            courseDetails={SOCObject}
-            onAddClass={this.props.onAddClass}
-            termName={this.props.termName}
-            destination={this.props.destination}
-          />
+          >
+            <MiniSectionTable
+              currentScheduleIndex={this.props.currentScheduleIndex}
+              name={
+                SOCObject.name[0] +
+                ' ' +
+                SOCObject.name[1] +
+                ' | ' +
+                SOCObject.name[2]
+              }
+              formData={this.props.formData}
+              courseDetails={SOCObject}
+              onAddClass={this.props.onAddClass}
+              termName={this.props.termName}
+              destination={this.props.destination}
+            />
+          </Suspense>
         </Grid>
       );
     }
