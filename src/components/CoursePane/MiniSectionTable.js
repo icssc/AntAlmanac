@@ -446,7 +446,7 @@ class MiniSectionTable extends Component {
           <tr className={classes.tr}>
             <Typography
               dangerouslySetInnerHTML={{
-                __html: this.props.courseDetails.comment,
+                __html: this.props.courseDetails.comment, //course comments
               }}
               style={{ marginLeft: 8, marginRight: 8 }}
             />
