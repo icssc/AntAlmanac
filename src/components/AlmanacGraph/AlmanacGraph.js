@@ -1,9 +1,10 @@
-import React, { Component, Fragment, Suspense } from 'react';
+import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { Tooltip } from '@material-ui/core';
 import querystring from 'querystring';
-import { Help, Image } from '@material-ui/icons';
+import { Help } from '@material-ui/icons';
 import PropTypes from 'prop-types';
-import ReactGA from 'react-ga';
+
 import {
   Modal,
   Button,
@@ -13,11 +14,8 @@ import {
   Select,
   MenuItem,
   Typography,
-  Tooltip,
 } from '@material-ui/core';
-import loadingGif from '../CoursePane/loading.mp4';
-
-const GraphRenderPane = React.lazy(() => import('./GraphRenderPane'));
+import GraphRenderPane from './GraphRenderPane';
 
 const styles = (theme) => ({
   paper: {
@@ -26,8 +24,8 @@ const styles = (theme) => ({
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '65%',
-    height: '90%',
+    width: '75%',
+    height: '85%',
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[5],
     padding: theme.spacing.unit * 4,
@@ -47,66 +45,23 @@ class AlmanacGraph extends Component {
     super(props);
     this.state = {
       open: false,
-      term: '2018 Fall',
-      sections: [],
+      term: '2018 Spring',
+      sections: this.props.courseDetails.sections,
       length: 0,
     };
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
-    this.fetchCourseData = this.fetchCourseData.bind(this);
+    //this.fetchCourseData = this.fetchCourseData.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
-  fetchCourseData() {
-    const params = {
-      department: this.props.courseDetails.name[0],
-      term: this.state.term,
-      courseTitle: this.props.courseDetails.name[2],
-      courseNum: this.props.courseDetails.name[1],
-    };
-
-    const url =
-      'https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/websoc?' +
-      querystring.stringify(params);
-
-    fetch(url.toString())
-      .then((resp) => resp.json())
-      .then((json) => {
-        const sections = json.reduce((accumulator, school) => {
-          school.departments.forEach((dept) => {
-            dept.courses.forEach((course) => {
-              course.sections.forEach((section) => {
-                if (section.units !== '0') accumulator.push(section);
-              });
-            });
-          });
-
-          return accumulator;
-        }, []);
-
-        this.setState({ length: sections.length }, () => {
-          this.setState({ sections: sections });
-        });
-      });
-  }
-
   handleChange(event) {
-    this.setState({ [event.target.name]: event.target.value }, () => {
-      this.fetchCourseData();
-    });
+    this.setState({ [event.target.name]: event.target.value });
   }
 
   handleOpen() {
     this.setState({ open: true });
-    this.fetchCourseData();
-    ReactGA.event({
-      category: 'Pass_enrollment',
-      action:
-        this.props.courseDetails.name[0] +
-        ' ' +
-        this.props.courseDetails.name[1],
-      label: this.state.term,
-    });
+    //this.fetchCourseData();
   }
 
   handleClose() {
@@ -122,8 +77,7 @@ class AlmanacGraph extends Component {
           onClick={this.handleOpen}
           style={{ backgroundColor: '#f8f17c', boxShadow: 'none' }}
         >
-          Past Enrollment&nbsp;&nbsp;
-          <Image fontSize="small" />
+          Past Enrollment
         </Button>
 
         <Modal open={this.state.open} onClose={this.handleClose}>
@@ -146,20 +100,6 @@ class AlmanacGraph extends Component {
               </Tooltip>
             </Typography>
 
-            <br />
-
-            <Typography variant="subtitle1">
-              <b>BETA:</b> AI Graph Descriptions
-            </Typography>
-            <Typography variant="body1">
-              Because graphs are meh, we asked our AI to provide descriptions
-              for them! Our AI is still young, so these descriptions may be
-              wrong; please always use them with the graphs and report any that
-              is inaccurate!
-            </Typography>
-
-            <br />
-
             <FormControl fullWidth>
               <InputLabel htmlFor="term-select">Term</InputLabel>
               <Select
@@ -174,12 +114,9 @@ class AlmanacGraph extends Component {
               </Select>
             </FormControl>
 
-            <br />
-            <br />
-
             {this.state.sections.length === 0 ? (
               <div className={this.props.classes.courseNotOfferedContainer}>
-                <Typography variant="h5">
+                <Typography variant="h1">
                   {'This course was not offered in ' + this.state.term}
                 </Typography>
               </div>
@@ -187,31 +124,12 @@ class AlmanacGraph extends Component {
               <div>
                 {this.state.sections.map((section) => {
                   return (
-                    <Suspense
-                      fallback={
-                        <div
-                          style={{
-                            height: '100%',
-                            width: '100%',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            backgroundColor: 'white',
-                          }}
-                        >
-                          <video autoPlay loop>
-                            <source src={loadingGif} type="video/mp4" />
-                          </video>
-                        </div>
-                      }
-                    >
-                      <GraphRenderPane
-                        section={section}
-                        quarter={this.state.term[5].toLowerCase()}
-                        year={this.state.term.substring(2, 4)}
-                        length={this.state.length}
-                      />
-                    </Suspense>
+                    <GraphRenderPane
+                      section={section}
+                      quarter={this.state.term[5].toLowerCase()}
+                      year={this.state.term.substring(2, 4)}
+                      length={this.state.length}
+                    />
                   );
                 })}
               </div>
