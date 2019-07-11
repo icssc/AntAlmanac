@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import AddCircle from '@material-ui/icons/AddCircle';
-import { IconButton, Menu, MenuItem } from '@material-ui/core';
+import { IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
 import Notification from '../Notification';
 import RstrPopover from './RstrPopover';
 import locations from './locations.json';
@@ -124,26 +124,6 @@ class SectionTable extends Component {
     return this.props.courseDetails !== nextProps.courseDetails;
   }
 
-  disableTBA = (section) => {
-    let test = false;
-    for (let element of section.meetings[0]) {
-      if (element === 'TBA') {
-        test = true;
-        break;
-      }
-    }
-    if (!test) {
-      return (
-        <ScheduleAddSelector
-          onAddClass={this.props.onAddClass}
-          section={section}
-          courseDetails={this.props.courseDetails}
-          termName={this.props.termName}
-        />
-      );
-    }
-  };
-
   statusforFindingSpot = (section, classCode) => {
     if (section === 'FULL' || section === 'NewOnly')
       // Enable user to register for Paul Revere notifications
@@ -171,74 +151,98 @@ class SectionTable extends Component {
     const { classes } = this.props;
 
     return (
-      <table className={classes.table}>
-        <thead>
-          <tr>
-            <th>{}</th>
-            <th>Code</th>
-            <th>Type</th>
-            <th>Instructor</th>
-            <th>Time</th>
-            <th>Place</th>
-            <th>Enrollment</th>
-            <th>Rstr.</th>
-            <th>Status</th>
+      <Fragment>
+        <table className={classes.table}>
+          <tr className={classes.tr}>
+            <Typography
+              dangerouslySetInnerHTML={{
+                __html: this.props.courseDetails.comment,
+              }}
+              style={{ marginLeft: 8, marginRight: 8 }}
+            />
           </tr>
-        </thead>
-        <tbody>
-          {sectionInfo.map((section) => {
-            return (
-              <tr className={classes.tr}>
-                <td>{this.disableTBA(section)}</td>
-                <td>{section.classCode}</td>
-                <td className={classes.multiline}>
-                  {`${section.classType}
+        </table>
+        <table className={classes.table}>
+          <thead>
+            <tr>
+              <th>{}</th>
+              <th>Code</th>
+              <th>Type</th>
+              <th>Instructor</th>
+              <th>Time</th>
+              <th>Place</th>
+              <th>Enrollment</th>
+              <th>Rstr.</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sectionInfo.map((section) => {
+              return (
+                <tr className={classes.tr}>
+                  <td>
+                    <ScheduleAddSelector
+                      onAddClass={this.props.onAddClass}
+                      section={section}
+                      courseDetails={this.props.courseDetails}
+                      termName={this.props.termName}
+                    />
+                  </td>
+                  <td>{section.classCode}</td>
+                  <td className={classes.multiline}>
+                    {`${section.classType}
 Sec ${section.sectionCode}
 ${section.units} units`}
-                </td>
-                <td className={classes.multiline}>
-                  <Instructors className={classes.multiline}>
-                    {/*this.linkRMP(section.instructors)*/}
-                    {section.instructors}
-                  </Instructors>
-                </td>
-                <td className={classes.multiline}>
-                  {section.meetings.map((meeting) => meeting[0]).join('\n')}
-                </td>
-                <td className={classes.multiline}>
-                  {section.meetings.map((meeting) => {
-                    return meeting[1] !== 'ON LINE' ? (
-                      <div>
-                        <a
-                          href={this.genMapLink(meeting[1])}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {meeting[1]}
-                        </a>
-                        <br />
-                      </div>
-                    ) : (
-                      meeting[1]
-                    );
-                  })}
-                </td>
-                <td className={classes.multiline + ' ' + section.status}>
-                  {`${section.numCurrentlyEnrolled[0]} / ${section.maxCapacity}
+                  </td>
+                  <td className={classes.multiline}>
+                    <Instructors className={classes.multiline}>
+                      {/*this.linkRMP(section.instructors)*/}
+                      {section.instructors}
+                    </Instructors>
+                  </td>
+                  <td className={classes.multiline}>
+                    {section.meetings.map((meeting) => meeting[0]).join('\n')}
+                  </td>
+                  <td className={classes.multiline}>
+                    {section.meetings.map((meeting) => {
+                      return meeting[1] !== 'ON LINE' ? (
+                        <div>
+                          <a
+                            href={this.genMapLink(meeting[1])}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {meeting[1]}
+                          </a>
+                          <br />
+                        </div>
+                      ) : (
+                        meeting[1]
+                      );
+                    })}
+                  </td>
+                  <td className={classes.multiline + ' ' + section.status}>
+                    {`${section.numCurrentlyEnrolled[0]} / ${
+                      section.maxCapacity
+                    }
 WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
-                </td>
-                <td>
-                  <RstrPopover restrictions={section.restrictions} />
-                </td>
-                <td className={classes[section.status.toLowerCase()]}>
-                  {this.statusforFindingSpot(section.status, section.classCode)}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                  </td>
+                  <td>
+                    <RstrPopover restrictions={section.restrictions} />
+                  </td>
+                  <td className={classes[section.status.toLowerCase()]}>
+                    {this.statusforFindingSpot(
+                      section.status,
+                      section.classCode
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </Fragment>
     );
   }
 }

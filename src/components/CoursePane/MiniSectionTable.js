@@ -6,16 +6,18 @@ import {
   Typography,
   Tooltip,
   Snackbar,
+  CircularProgress,
 } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import POPOVER from './PopOver';
-import Notification from '../Notification';
-import RstrPopover from './RstrPopover';
-import locations from './locations.json';
-import querystring from 'querystring';
-import MouseOverPopover from './MouseOverPopover';
 import { Add, ArrowDropDown } from '@material-ui/icons';
-import Instructors from './Instructors';
+import { withStyles } from '@material-ui/core/styles';
+import querystring from 'querystring';
+import locations from './locations.json';
+
+const MouseOverPopover = React.lazy(() => import('./MouseOverPopover'));
+const Instructors = React.lazy(() => import('./Instructors'));
+const POPOVER = React.lazy(() => import('./PopOver'));
+const Notification = React.lazy(() => import('../Notification'));
+const RstrPopover = React.lazy(() => import('./RstrPopover'));
 
 const AlmanacGraphWrapped = React.lazy(() =>
   import('../AlmanacGraph/AlmanacGraph')
@@ -149,12 +151,14 @@ class ScheduleAddSelector extends Component {
     if (section === 'FULL' || section === 'NewOnly')
       // Enable user to register for Paul Revere notifications
       return (
-        <Notification
-          termName={this.props.termName}
-          full={section}
-          code={classCode}
-          name={this.props.courseDetails.name}
-        />
+        <Suspense fallback={<Typography>{section}</Typography>}>
+          <Notification
+            termName={this.props.termName}
+            full={section}
+            code={classCode}
+            name={this.props.courseDetails.name}
+          />
+        </Suspense>
       );
     else return section;
   };
@@ -233,12 +237,25 @@ Sec: ${section.sectionCode}
 Units: ${section.units}`}
           </td>
           <td className={classes.multiline}>
-            <Instructors
-              destination={this.props.destination}
-              className={classes.multiline}
+            <Suspense
+              fallback={
+                <CircularProgress
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: 'white',
+                  }}
+                />
+              }
             >
-              {section.instructors}
-            </Instructors>
+              <Instructors
+                destination={this.props.destination}
+                className={classes.multiline}
+              >
+                {section.instructors}
+              </Instructors>
+            </Suspense>
           </td>
           <td className={classes.multiline}>
             {section.meetings.map((meeting) => meeting[0]).join('\n')}
@@ -271,21 +288,40 @@ Units: ${section.units}`}
             })}
           </td>
           <td>
-            <MouseOverPopover
-              className={
-                classes.multiline + ' ' + classes[section.status.toLowerCase()]
-              }
-            >
-              <strong>{`${section.numCurrentlyEnrolled[0]} / ${
-                section.maxCapacity
-              }`}</strong>
-              {`
+            <Suspense
+              fallback={
+                <Typography>
+                  <strong>{`${section.numCurrentlyEnrolled[0]} / ${
+                    section.maxCapacity
+                  }`}</strong>
+                  {`
 WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
-            </MouseOverPopover>
+                </Typography>
+              }
+            >
+              <MouseOverPopover
+                className={
+                  classes.multiline +
+                  ' ' +
+                  classes[section.status.toLowerCase()]
+                }
+              >
+                <strong>{`${section.numCurrentlyEnrolled[0]} / ${
+                  section.maxCapacity
+                }`}</strong>
+                {`
+WL: ${section.numOnWaitlist}
+NOR: ${section.numNewOnlyReserved}`}
+              </MouseOverPopover>
+            </Suspense>
           </td>
           <td>
-            <RstrPopover restrictions={section.restrictions} />
+            <Suspense
+              fallback={<Typography>{section.restrictions}</Typography>}
+            >
+              <RstrPopover restrictions={section.restrictions} />
+            </Suspense>
           </td>
           <td className={classes[section.status.toLowerCase()]}>
             {this.statusforFindingSpot(section.status, section.classCode)}
@@ -358,10 +394,23 @@ class MiniSectionTable extends Component {
             display: 'inline-flex',
           }}
         >
-          <POPOVER
-            name={this.props.name}
-            courseDetails={this.props.courseDetails}
-          />
+          <Suspense
+            fallback={
+              <CircularProgress
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'white',
+                }}
+              />
+            }
+          >
+            <POPOVER
+              name={this.props.name}
+              courseDetails={this.props.courseDetails}
+            />
+          </Suspense>
 
           <Typography variant="title" style={{ flexGrow: '2' }}>
             &nbsp;
@@ -393,6 +442,16 @@ class MiniSectionTable extends Component {
             <Fragment />
           )}
         </div>
+        <table className={classes.table}>
+          <tr className={classes.tr}>
+            <Typography
+              dangerouslySetInnerHTML={{
+                __html: this.props.courseDetails.comment, //course comments
+              }}
+              style={{ marginLeft: 8, marginRight: 8 }}
+            />
+          </tr>
+        </table>
         <table className={classes.table}>
           <thead>
             <tr>

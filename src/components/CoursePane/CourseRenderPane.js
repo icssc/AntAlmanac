@@ -1,11 +1,13 @@
 import { withStyles } from '@material-ui/core/styles';
 import { Paper, Typography, Grid, Modal } from '@material-ui/core';
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, Suspense } from 'react';
 import CourseDetailPane from './CourseDetailPane';
 import SchoolDeptCard from './SchoolDeptCard';
-import MiniSectionTable from './MiniSectionTable';
 import NoNothing from './no_results.png';
 import AdAd from './ad_ad.png';
+import loadingGif from '../CoursePane/loading.mp4';
+
+const MiniSectionTable = React.lazy(() => import('./MiniSectionTable'));
 
 const styles = (theme) => ({
   course: {
@@ -62,6 +64,7 @@ class CourseRenderPane extends Component {
   };
 
   getGrid(SOCObject) {
+    console.log(SOCObject);
     if ('departments' in SOCObject) {
       return (
         // <SchoolDeptCard
@@ -99,21 +102,40 @@ class CourseRenderPane extends Component {
         </Grid>
       ) : (
         <Grid item md={12} xs={12}>
-          <MiniSectionTable
-            currentScheduleIndex={this.props.currentScheduleIndex}
-            name={
-              SOCObject.name[0] +
-              ' ' +
-              SOCObject.name[1] +
-              ' | ' +
-              SOCObject.name[2]
+          <Suspense
+            fallback={
+              <div
+                style={{
+                  height: '100%',
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'white',
+                }}
+              >
+                <video autoPlay loop>
+                  <source src={loadingGif} type="video/mp4" />
+                </video>
+              </div>
             }
-            formData={this.props.formData}
-            courseDetails={SOCObject}
-            onAddClass={this.props.onAddClass}
-            termName={this.props.termName}
-            destination={this.props.destination}
-          />
+          >
+            <MiniSectionTable
+              currentScheduleIndex={this.props.currentScheduleIndex}
+              name={
+                SOCObject.name[0] +
+                ' ' +
+                SOCObject.name[1] +
+                ' | ' +
+                SOCObject.name[2]
+              }
+              formData={this.props.formData}
+              courseDetails={SOCObject}
+              onAddClass={this.props.onAddClass}
+              termName={this.props.termName}
+              destination={this.props.destination}
+            />
+          </Suspense>
         </Grid>
       );
     }
