@@ -14,14 +14,14 @@ const styles = () => ({
 class GraphRenderPane extends Component {
   constructor(props) {
     super(props);
-    console.log(this.props);
+    //console.log(this.props);
     this.state = { open: false, graph: null, data: null };
     this.fetchCourseData = this.fetchCourseData.bind(this);
   }
 
   componentDidMount() {
     if (this.props.length < 4) {
-      this.setState({ open: true }, () => {
+      this.setState({ open: false }, () => {
         this.fetchCourseData(
           this.props.section.classCode,
           this.props.quarter.toUpperCase() + this.props.year
@@ -43,12 +43,12 @@ class GraphRenderPane extends Component {
 
   handleOpen = () => {
     this.setState({ open: !this.state.open }, () => {
-      if (this.state.open && this.state.data === null)
-        this.fetchGraph(
-          this.props.quarter,
-          this.props.year,
-          this.props.section.classCode
+      if (this.state.open && this.state.data === null) {
+        this.fetchCourseData(
+          this.props.section.classCode,
+          this.props.quarter.toUpperCase() + this.props.year
         );
+      }
     });
   };
 
@@ -66,6 +66,7 @@ class GraphRenderPane extends Component {
         this.setState({
           data: json,
         });
+        //console.log(this.state.data)
       });
   }
 

@@ -15,6 +15,7 @@ import { CustomToolTipNum } from './tooltip';
 export default class Graph extends Component {
   constructor(props) {
     super(props);
+    console.log(props);
     this.state = {
       enrolledColor: '#8884d8',
       reqColor: '#82ca9d',
@@ -24,51 +25,52 @@ export default class Graph extends Component {
       enrolled: true,
       max: true,
       req: false,
+      data: {},
     };
     this.handleOnClick = this.handleOnClick.bind(this);
+    this.formatData = this.formatData.bind(this);
   }
-  //this.handleOnClick = this.handleOnClick.bind(this)
 
-  // formatData(data){
-  //     this.divideData(data)
-  //     this.numAbove(data)
-  //   }
-  //
-  // numAbove(data){ //moves waitlist on top of max
-  //   for (var i = 0; i< data.length; i++){
-  //     if ('wait' in data[i]){
-  //       if('fullEnroll' in data[i]){
-  //           data[i]['wait'] = [data[i]['wait'], data[i]['fullEnroll']]
-  //       }
-  //       else{
-  //     data[i]['wait'] = [data[i]['wait'], data[i]['max']]
-  //   }
-  //     }
-  //     else{
-  //       data[i]['wait'] = [data[i]['max'], data[i]['max']]
-  //     }
-  //   }
-  // }
-  //
-  //   divideData(completeData){
-  //     var fullDays = JSON.parse(JSON.stringify(completeData))
-  //     for (var i = 0; i < fullDays.length; i++){
-  //       if (fullDays[i]['max'] <= fullDays[i]['enrolled']){
-  //         completeData[i]['fullEnroll'] = fullDays[i]['enrolled']
-  //         completeData[i]['wait'] += completeData[i]['fullEnroll'] - completeData[i]['max']
-  //         try{
-  //           delete completeData[i+1]['enrolled']
-  //         }
-  //         catch(err){
-  //           //console.log(err)
-  //         }
-  //       }
-  //       if ( i > 0  && fullDays[i]['max'] > fullDays[i]['enrolled'] && fullDays[i-1]['max'] <= fullDays[i-1]['enrolled']){
-  //         completeData[i-1]['enrolled'] = fullDays[i-1]['enrolled']
-  //         completeData[i]['enrolled'] = fullDays[i]['enrolled']
-  //       }
-  //     }
-  //   }
+  componentDidMount() {
+    try {
+      this.formatData(this.props.rawData);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  noSlash(ssv) {
+    //console.log('getting rid of slashes')
+    //console.log(typeof ssv)
+    return ssv.substring(1, ssv.length - 1).split('/');
+  }
+
+  formatData(dataJason) {
+    // console.log('datJason')
+    // console.log(typeof dataJason.Item.DateInfo)
+    var date1 = dataJason.Item.DateInfo; //no idea why this line is needed but if this line is taken out
+    //the first call of the function results in an undefined
+    var date = this.noSlash(date1);
+    var enroll = this.noSlash(dataJason.Item.EnrollmentInfo);
+    var max = this.noSlash(dataJason.Item.MaxInfo);
+    var req = this.noSlash(dataJason.Item.RequestedInfo);
+    var wait = this.noSlash(dataJason.Item.WaitlistInfo);
+
+    var formatedData = [];
+    for (var i = 0; i < date.length; i++) {
+      formatedData.push({
+        name: date[i],
+        waitlist: wait[i],
+        max: max[i],
+        enrolled: enroll[i],
+        requested: req[i],
+      });
+    }
+    this.setState({
+      data: formatedData,
+    });
+    console.log(this.state.data);
+  }
 
   handleOnClick(o) {
     if (o.id == 'waitlist') {
@@ -94,15 +96,11 @@ export default class Graph extends Component {
   }
 
   render() {
-    let rawData = this.props.rawData;
-    //this.formatData(rawData)
-    //console.log(rawData)
-    //var tooltip = <CustomToolTipNum/>
     return (
       <AreaChart
         width={950}
         height={500}
-        data={rawData}
+        data={this.state.data}
         margin={{ top: 25, right: 30, left: 70, bottom: 5 }}
       >
         <defs>
