@@ -14,13 +14,13 @@ const styles = () => ({
 class GraphRenderPane extends Component {
   constructor(props) {
     super(props);
-    //console.log(this.props);
-    this.state = { open: false, graph: null, data: null };
+    this.state = { open: false, graph: null, data: null }; // default values
     this.fetchCourseData = this.fetchCourseData.bind(this);
   }
 
   componentDidMount() {
     if (this.props.length < 4) {
+      //Need someone to look into this and why this exists
       this.setState({ open: false }, () => {
         this.fetchCourseData(
           this.props.section.classCode,
@@ -32,6 +32,7 @@ class GraphRenderPane extends Component {
 
   componentDidUpdate(prevProps, prevState, prevContext) {
     if (prevProps !== this.props && this.props.length < 4) {
+      //Need someone to look into this and why this exists
       this.setState({ open: true }, () => {
         this.fetchCourseData(
           this.props.section.classCode,
@@ -42,6 +43,8 @@ class GraphRenderPane extends Component {
   }
 
   handleOpen = () => {
+    // what happens when open/close button pressed
+    //TODO: seperate open and close
     this.setState({ open: !this.state.open }, () => {
       if (this.state.open && this.state.data === null) {
         this.fetchCourseData(
@@ -53,6 +56,7 @@ class GraphRenderPane extends Component {
   };
 
   fetchCourseData(courseID, session) {
+    //Get the course Data
     const params = {
       id: courseID,
       tableName: session,
@@ -66,7 +70,6 @@ class GraphRenderPane extends Component {
         this.setState({
           data: json,
         });
-        //console.log(this.state.data)
       });
   }
 

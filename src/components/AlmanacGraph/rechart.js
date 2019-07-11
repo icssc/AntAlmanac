@@ -40,17 +40,18 @@ export default class Graph extends Component {
   }
 
   noSlash(ssv) {
-    //console.log('getting rid of slashes')
-    //console.log(typeof ssv)
+    /*
+    Values come in as slash seperated values, returns as array
+    */
     return ssv.substring(1, ssv.length - 1).split('/');
   }
 
   formatData(dataJason) {
-    // console.log('datJason')
-    // console.log(typeof dataJason.Item.DateInfo)
-    var date1 = dataJason.Item.DateInfo; //no idea why this line is needed but if this line is taken out
+    var date1 = dataJason.Item.DateInfo;
+    //no idea why this line is needed but if this line is taken out
     //the first call of the function results in an undefined
     var date = this.noSlash(date1);
+    //convert the rest of the data
     var enroll = this.noSlash(dataJason.Item.EnrollmentInfo);
     var max = this.noSlash(dataJason.Item.MaxInfo);
     var req = this.noSlash(dataJason.Item.RequestedInfo);
@@ -58,6 +59,7 @@ export default class Graph extends Component {
 
     var formatedData = [];
     for (var i = 0; i < date.length; i++) {
+      //put data into format that rechart can read
       formatedData.push({
         name: date[i],
         waitlist: wait[i],
@@ -73,22 +75,23 @@ export default class Graph extends Component {
   }
 
   handleOnClick(o) {
-    if (o.id == 'waitlist') {
+    //handle people clicking on what to view
+    if (o.id === 'waitlist') {
       this.setState({
         wait: !this.state.wait,
       });
     }
-    if (o.id == 'enrolled') {
+    if (o.id === 'enrolled') {
       this.setState({
         enrolled: !this.state.enrolled,
       });
     }
-    if (o.id == 'maxenroll') {
+    if (o.id === 'maxenroll') {
       this.setState({
         max: !this.state.max,
       });
     }
-    if (o.id == 'requested') {
+    if (o.id === 'requested') {
       this.setState({
         req: !this.state.req,
       });
