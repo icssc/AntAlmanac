@@ -3,6 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import Graph from './rechart';
+import querystring from 'querystring';
 
 const styles = () => ({
   multiline: {
@@ -15,15 +16,15 @@ class GraphRenderPane extends Component {
     super(props);
     console.log(this.props);
     this.state = { open: false, graph: null, data: null };
+    this.fetchCourseData = this.fetchCourseData.bind(this);
   }
 
   componentDidMount() {
     if (this.props.length < 4) {
       this.setState({ open: true }, () => {
-        this.fetchGraph(
-          this.props.quarter,
-          this.props.year,
-          this.props.section.classCode
+        this.fetchCourseData(
+          this.props.section.classCode,
+          this.props.quarter.toUpperCase() + this.props.year
         );
       });
     }
@@ -32,10 +33,9 @@ class GraphRenderPane extends Component {
   componentDidUpdate(prevProps, prevState, prevContext) {
     if (prevProps !== this.props && this.props.length < 4) {
       this.setState({ open: true }, () => {
-        this.fetchGraph(
-          this.props.quarter,
-          this.props.year,
-          this.props.section.classCode
+        this.fetchCourseData(
+          this.props.section.classCode,
+          this.props.quarter.toUpperCase() + this.props.year
         );
       });
     }
@@ -51,57 +51,16 @@ class GraphRenderPane extends Component {
         );
     });
   };
-  /*
-translateSession(session){
-  return (session.substring(5,6) + session.substring(2,4));
-}
 
-fetchCourseData() {
+  fetchCourseData(courseID, session) {
     const params = {
-        id: this.props.courseDetails.sections[0].classCode,
-        tableName: this.translateSession(this.state.term)
-
+      id: courseID,
+      tableName: session,
     };
-    //console.log(this.props.courseDetails)
-    console.log(this.props)
-
-
     const url =
-        "https://cors-anywhere.herokuapp.com/https://8518jpadna.execute-api.us-west-1.amazonaws.com/prod/courseid?" +
-        querystring.stringify(params);
-    console.log(url);
-    console.log(params)
-
-    fetch(url)
-        .then(resp => resp.json())
-        .then(json => {
-          console.log(JSON.stringify(json))
-        })
-        // .then(json => {
-        //     const sections = json.reduce((accumulator, school) => {
-        //         school.departments.forEach(dept => {
-        //             dept.courses.forEach(course => {
-        //                 course.sections.forEach(section => {
-        //                     if (section.units !== "0") accumulator.push(section);
-        //                 });
-        //             });
-        //         });
-        //
-        //         return accumulator;
-        //     }, []);
-        //
-        //     this.setState({length: sections.length}, () => {
-        //         this.setState({sections: sections});
-        //     });
-        // });
-        console.log(this.state)
-}
-  */
-
-  fetchGraph(quarter, year, code) {
-    const url1 = `https://almanac-graphs.herokuapp.com/${quarter}${year}/${code}`;
-
-    fetch(url1.toString())
+      'https://cors-anywhere.herokuapp.com/https://8518jpadna.execute-api.us-west-1.amazonaws.com/prod/courseid?' +
+      querystring.stringify(params);
+    fetch(url.toString())
       .then((resp) => resp.json())
       .then((json) => {
         this.setState({
