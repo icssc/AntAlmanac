@@ -16,9 +16,19 @@ export default class Advert extends Component {
   }
 
   changeLucky() {
+    var x = (Math.random() * directory.length) >> 0;
+    while (!this.checkDept(x)) {
+      console.log(x);
+      x = (Math.random() * directory.length) >> 0;
+    }
     this.setState({
       lucky: (Math.random() * directory.length) >> 0,
     });
+  }
+
+  checkDept(thing) {
+    var wanted = directory[thing].dept;
+    return wanted.includes(this.props.dept) || wanted.includes('any');
   }
 
   render() {

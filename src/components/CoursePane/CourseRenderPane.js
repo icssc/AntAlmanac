@@ -47,6 +47,7 @@ const styles = (theme) => ({
 class CourseRenderPane extends Component {
   constructor(props) {
     super(props);
+    console.log(props);
     this.getGrid = this.getGrid.bind(this);
     this.handleDismissDetails = this.handleDismissDetails.bind(this);
     this.state = {
