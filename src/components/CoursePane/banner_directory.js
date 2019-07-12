@@ -1,6 +1,6 @@
 export default [
   {
-    url: 'https://m.facebook.com/ICSStudentCouncil/',
+    url: 'https://facebook.com/ICSStudentCouncil/',
     banner: 'https://www.ics.uci.edu/~rang1/AntAlmanac/img/banners/ICSSC.jpg',
     dept: 'INF, ICS, CS',
   },
