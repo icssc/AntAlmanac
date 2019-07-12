@@ -4,6 +4,7 @@ import directory from './banner_directory';
 export default class Advert extends Component {
   constructor(props) {
     super(props);
+    this.convert = {};
     this.state = {
       lucky: 0,
       department: 'apple',
@@ -49,17 +50,3 @@ export default class Advert extends Component {
     );
   }
 }
-
-/*
-<a
-  href={directory[lucky].url}
-  target="_blank"
-  rel="noopener noreferrer"
->
-  <img
-    src={directory[lucky].banner}
-    alt="banner"
-    className={this.props.classes.ad}
-  />
-</a>
-*/

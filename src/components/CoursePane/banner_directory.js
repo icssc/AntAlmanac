@@ -2,14 +2,15 @@ export default [
   {
     url: 'https://facebook.com/ICSStudentCouncil/',
     banner: 'https://www.ics.uci.edu/~rang1/AntAlmanac/img/banners/ICSSC.jpg',
-    dept: 'INF, I&C SCI, CS',
+    dept:
+      'COMPSCI . . . . Computer Science, I&C SCI . . . . . . Information and Computer Science, IN4MATX . . . . . Informatics',
   },
   {
     url: 'http://www.ucitriangle.com/',
     banner:
       'https://www.ics.uci.edu/~rang1/AntAlmanac/img/banners/Triangle.jpg',
     dept:
-      'BIO SCI, BME, CBE, CHEM, COGS, COMPSCI, CSE, EARTHSS, EECS, ENGR, ENGRCEE, ENGRMAE, I&C SCI, IN4MATX, MATH, PHRM SCI, PHY SCI, PHYSI&C SCI, PSCI, PSYCH, STATS, SWE',
+      'BIO SCI . . . . . .Biological Sciences, BME . . . . . . . . Biomedical Engineering, CBE . . . . . . . . Chemical and Biomolecular Engineering, CHEM . . . . . . .Chemistry, COGS . . . . . . . Cognitive Sciences, COMPSCI . . . . Computer Science, CSE . . . . . . . . Computer Science and Engineering, EARTHSS . . . . Earth System Science, EECS . . . . . . . Electrical Engineering & Computer Science, ENGR . . . . . . . Engineering, ENGRCEE . . . .Engineering, Civil and Environmental, ENGRMAE . . . .Engineering, Mechanical and Aerospace, I&C SCI . . . . . . Information and Computer Science, IN4MATX . . . . . Informatics, MATH . . . . . . . Mathematics, PHRMSCI . . . . Pharmaceutical Sciences, PHY SCI . . . . . Physical Science, PHYSICS . . . . .Physics, POL SCI . . . . . Political Science, PSYCH . . . . . . Psychology, STATS . . . . . . .Statistics, SWE . . . . . . . .Software Engineering',
   },
   {
     url: 'https://www.facebook.com/campkesemucirvine/',
@@ -31,14 +32,14 @@ export default [
   {
     url: 'https://www.facebook.com/EnglishMajorsAssociationUCI/',
     banner: 'https://www.ics.uci.edu/~rang1/AntAlmanac/img/banners/EMA.png',
-    dept: 'HUMAN',
+    dept: 'HUMAN . . . . . .Humanities',
   },
   {
     url: 'https://vermillionvocalists.wixsite.com/vermillionvocalists',
     banner:
       'https://www.ics.uci.edu/~rang1/AntAlmanac/img/banners/Vermillion.png',
     dept:
-      'ART, ARTS, ART HIS, ARTSHUM, DANCE, DRAMA, FLM&MDA, HUMAN, HUMARTS, MUSIC, MATH, BIOSCI, UNI STU, PSY BEH, ENGR',
+      'ART . . . . . . . . .Art, ART HIS . . . . . .Art History, ARTS . . . . . . . Arts, ARTSHUM . . . . Arts and Humanities, BIO SCI . . . . . .Biological Sciences, DANCE . . . . . . Dance, DRAMA . . . . . .Drama, ENGR . . . . . . . Engineering, FLM&MDA . . . .Film and Media Studies, HUMAN . . . . . .Humanities, HUMARTS . . . . Humanities and Arts, MATH . . . . . . . Mathematics, MUSIC . . . . . . .Music, PSCI . . . . . . . .Psychological Science, PSYCH . . . . . . Psychology, UNI STU . . . . . .University Studies',
   },
   {
     url: 'https://circleoffifthsuci.wixsite.com/circleoffifthsuci',
@@ -48,6 +49,7 @@ export default [
   {
     url: 'http://www.maissuci.com/',
     banner: 'https://www.ics.uci.edu/~rang1/AntAlmanac/img/banners/MAISS.png',
-    dept: 'I&C SCI, IN4MATX, ECON, FIN, MGMT',
+    dept:
+      'ECON . . . . . . . Economics, FIN . . . . . . . . . Finance (started 2017 Fall), I&C SCI . . . . . . Information and Computer Science, IN4MATX . . . . . Informatics, MGMT . . . . . . .Management',
   },
 ];
