@@ -416,7 +416,18 @@ class MiniSectionTable extends Component {
             &nbsp;
           </Typography>
 
-          <Suspense fallback={<Typography variant="h5">Holup...</Typography>}>
+          <Suspense
+            fallback={
+              <CircularProgress
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'white',
+                }}
+              />
+            }
+          >
             <AlmanacGraphWrapped
               term={this.props.term}
               courseDetails={this.props.courseDetails}

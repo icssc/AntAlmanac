@@ -4,7 +4,7 @@ import React, { Component, Fragment, Suspense } from 'react';
 import CourseDetailPane from './CourseDetailPane';
 import SchoolDeptCard from './SchoolDeptCard';
 import NoNothing from './no_results.png';
-import AdAd from './ad_ad.png';
+import directory from './banner_directory';
 import loadingGif from '../CoursePane/loading.mp4';
 
 const MiniSectionTable = React.lazy(() => import('./MiniSectionTable'));
@@ -64,7 +64,6 @@ class CourseRenderPane extends Component {
   };
 
   getGrid(SOCObject) {
-    console.log(SOCObject);
     if ('departments' in SOCObject) {
       return (
         // <SchoolDeptCard
@@ -149,6 +148,27 @@ class CourseRenderPane extends Component {
   }
 
   render() {
+    //generate ad
+    let lucky = (Math.random() * directory.length) >> 0;
+    if (typeof Storage !== 'undefined') {
+      let seen = window.localStorage.getItem('AdsSeen');
+      if (seen === null) {
+        //nothing stored
+        seen = '';
+      }
+
+      while (seen.includes(lucky.toString())) {
+        if (seen.length === directory.length) {
+          //seen them all
+          seen = ''; //reset the seen ads
+          break;
+        }
+        lucky = (Math.random() * directory.length) >> 0;
+      }
+      window.localStorage.setItem('AdsSeen', seen + lucky.toString());
+    }
+    console.log(lucky);
+
     return (
       <div className={this.props.classes.root} ref={(ref) => (this.ref = ref)}>
         <Modal
@@ -188,11 +208,15 @@ class CourseRenderPane extends Component {
           <Grid container spacing={16}>
             <Grid item md={12} xs={12}>
               <a
-                href="https://forms.gle/irQBrBkqHYYxcEU39"
+                href={directory[lucky].url}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <img src={AdAd} alt="" className={this.props.classes.ad} />
+                <img
+                  src={directory[lucky].banner}
+                  alt="banner"
+                  className={this.props.classes.ad}
+                />
               </a>
             </Grid>
             {this.props.courseData.map((item) => this.getGrid(item))}
