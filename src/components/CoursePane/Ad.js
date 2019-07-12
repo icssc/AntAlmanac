@@ -8,6 +8,8 @@ export default class Advert extends Component {
       lucky: 0,
       department: 'apple',
     };
+    console.log('Ad:');
+    console.log(this.props.dept);
     this.changeLucky = this.changeLucky.bind(this);
   }
 
@@ -22,7 +24,7 @@ export default class Advert extends Component {
       x = (Math.random() * directory.length) >> 0;
     }
     this.setState({
-      lucky: (Math.random() * directory.length) >> 0,
+      lucky: x,
     });
   }
 

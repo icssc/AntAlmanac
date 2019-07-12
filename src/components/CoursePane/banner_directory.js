@@ -2,14 +2,14 @@ export default [
   {
     url: 'https://facebook.com/ICSStudentCouncil/',
     banner: 'https://www.ics.uci.edu/~rang1/AntAlmanac/img/banners/ICSSC.jpg',
-    dept: 'INF, ICS, CS',
+    dept: 'INF, I&C SCI, CS',
   },
   {
     url: 'http://www.ucitriangle.com/',
     banner:
       'https://www.ics.uci.edu/~rang1/AntAlmanac/img/banners/Triangle.jpg',
     dept:
-      'BIO SCI, BME, CBE, CHEM, COGS, COMPSCI, CSE, EARTHSS, EECS, ENGR, ENGRCEE, ENGRMAE, I&C SCI, IN4MATX, MATH, PHRM SCI, PHY SCI, PHYSICS, PSCI, PSYCH, STATS, SWE',
+      'BIO SCI, BME, CBE, CHEM, COGS, COMPSCI, CSE, EARTHSS, EECS, ENGR, ENGRCEE, ENGRMAE, I&C SCI, IN4MATX, MATH, PHRM SCI, PHY SCI, PHYSI&C SCI, PSCI, PSYCH, STATS, SWE',
   },
   {
     url: 'https://www.facebook.com/campkesemucirvine/',
@@ -43,11 +43,11 @@ export default [
   {
     url: 'https://circleoffifthsuci.wixsite.com/circleoffifthsuci',
     banner: 'https://www.ics.uci.edu/~rang1/AntAlmanac/img/banners/Fifth.png',
-    dept: 'Music',
+    dept: 'MUSIC',
   },
   {
     url: 'http://www.maissuci.com/',
     banner: 'https://www.ics.uci.edu/~rang1/AntAlmanac/img/banners/MAISS.png',
-    dept: 'ICS, IN4MATX, ECON, FIN, MGMT',
+    dept: 'I&C SCI, IN4MATX, ECON, FIN, MGMT',
   },
 ];

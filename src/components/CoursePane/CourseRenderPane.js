@@ -209,7 +209,10 @@ class CourseRenderPane extends Component {
         ) : (
           <Grid container spacing={16}>
             <Grid item md={12} xs={12}>
-              <Advert className={this.props.classes.ad} />
+              <Advert
+                className={this.props.classes.ad}
+                dept={this.props.deptName}
+              />
             </Grid>
             {this.props.courseData.map((item) => this.getGrid(item))}
           </Grid>
