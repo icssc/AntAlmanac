@@ -1,0 +1,53 @@
+import React, { Component, Fragment, Suspense } from 'react';
+import directory from './banner_directory';
+
+export default class Advert extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      lucky: 0,
+      department: 'apple',
+    };
+    this.changeLucky = this.changeLucky.bind(this);
+  }
+
+  componentDidMount() {
+    this.changeLucky();
+  }
+
+  changeLucky() {
+    this.setState({
+      lucky: (Math.random() * directory.length) >> 0,
+    });
+  }
+
+  render() {
+    return (
+      <a
+        href={directory[this.state.lucky].url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img
+          src={directory[this.state.lucky].banner}
+          alt="banner"
+          className={this.props.className}
+        />
+      </a>
+    );
+  }
+}
+
+/*
+<a
+  href={directory[lucky].url}
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  <img
+    src={directory[lucky].banner}
+    alt="banner"
+    className={this.props.classes.ad}
+  />
+</a>
+*/

@@ -6,6 +6,7 @@ import SchoolDeptCard from './SchoolDeptCard';
 import NoNothing from './no_results.png';
 import directory from './banner_directory';
 import loadingGif from '../CoursePane/loading.mp4';
+import Advert from './Ad';
 
 const MiniSectionTable = React.lazy(() => import('./MiniSectionTable'));
 
@@ -207,17 +208,7 @@ class CourseRenderPane extends Component {
         ) : (
           <Grid container spacing={16}>
             <Grid item md={12} xs={12}>
-              <a
-                href={directory[lucky].url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img
-                  src={directory[lucky].banner}
-                  alt="banner"
-                  className={this.props.classes.ad}
-                />
-              </a>
+              <Advert className={this.props.classes.ad} />
             </Grid>
             {this.props.courseData.map((item) => this.getGrid(item))}
           </Grid>
