@@ -152,23 +152,7 @@ class CourseRenderPane extends Component {
   render() {
     //generate ad
     let lucky = (Math.random() * directory.length) >> 0;
-    if (typeof Storage !== 'undefined') {
-      let seen = window.localStorage.getItem('AdsSeen');
-      if (seen === null) {
-        //nothing stored
-        seen = '';
-      }
 
-      while (seen.includes(lucky.toString())) {
-        if (seen.length === directory.length) {
-          //seen them all
-          seen = ''; //reset the seen ads
-          break;
-        }
-        lucky = (Math.random() * directory.length) >> 0;
-      }
-      window.localStorage.setItem('AdsSeen', seen + lucky.toString());
-    }
     //console.log(lucky);
 
     return (
