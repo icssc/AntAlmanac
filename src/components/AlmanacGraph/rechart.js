@@ -39,6 +39,12 @@ export default class Graph extends Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.rawData !== prevProps.rawData) {
+      this.formatData(this.props.rawData);
+    }
+  }
+
   noSlash(ssv) {
     /*
     Values come in as slash seperated values, returns as array
