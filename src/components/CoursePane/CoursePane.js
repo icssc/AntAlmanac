@@ -110,9 +110,9 @@ class CoursePane extends Component {
         return resp.json();
       })
       .then((jsonObj) => {
-        console.log('CoursePane: ');
-        console.log(jsonObj);
-        console.log(dept);
+        //console.log('CoursePane: ');
+        //console.log(jsonObj);
+        //console.log(dept);
         this.setState({
           courseData: CoursePane.flatten(jsonObj),
           loading: 2,

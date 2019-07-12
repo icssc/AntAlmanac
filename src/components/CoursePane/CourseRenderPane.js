@@ -47,7 +47,7 @@ const styles = (theme) => ({
 class CourseRenderPane extends Component {
   constructor(props) {
     super(props);
-    console.log(props);
+    //console.log(props);
     this.getGrid = this.getGrid.bind(this);
     this.handleDismissDetails = this.handleDismissDetails.bind(this);
     this.state = {
@@ -169,7 +169,7 @@ class CourseRenderPane extends Component {
       }
       window.localStorage.setItem('AdsSeen', seen + lucky.toString());
     }
-    console.log(lucky);
+    //console.log(lucky);
 
     return (
       <div className={this.props.classes.root} ref={(ref) => (this.ref = ref)}>
