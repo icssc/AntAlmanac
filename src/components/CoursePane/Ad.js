@@ -46,7 +46,7 @@ export default class Advert extends Component {
     var count = 0;
     for (var i = 0; i < directory.length; i += 1) {
       count = (directory[i].dept.match(/,/g) || []).length;
-      this.assignedProb[i] = 28 - count;
+      this.assignedProb[i] = 30 - count;
       if (directory[i].dept.includes('any')) {
         this.assignedProb[i] = 4;
       }
