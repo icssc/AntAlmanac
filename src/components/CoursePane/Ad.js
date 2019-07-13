@@ -1,4 +1,4 @@
-import React, { Component, Fragment, Suspense } from 'react';
+import React, { Component } from 'react';
 import directory from './banner_directory';
 
 export default class Advert extends Component {
@@ -51,7 +51,7 @@ export default class Advert extends Component {
       }
     }
     this.activePool();
-    console.log(this.assignedProb);
+    //console.log(this.assignedProb);
   }
 
   //assigns each course the numbers assigned to it within the

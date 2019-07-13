@@ -4,7 +4,6 @@ import React, { Component, Fragment, Suspense } from 'react';
 import CourseDetailPane from './CourseDetailPane';
 import SchoolDeptCard from './SchoolDeptCard';
 import NoNothing from './no_results.png';
-import directory from './banner_directory';
 import loadingGif from '../CoursePane/loading.mp4';
 import Advert from './Ad';
 
@@ -150,11 +149,6 @@ class CourseRenderPane extends Component {
   }
 
   render() {
-    //generate ad
-    let lucky = (Math.random() * directory.length) >> 0;
-
-    //console.log(lucky);
-
     return (
       <div className={this.props.classes.root} ref={(ref) => (this.ref = ref)}>
         <Modal
