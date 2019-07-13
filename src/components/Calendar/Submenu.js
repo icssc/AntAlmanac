@@ -1,10 +1,17 @@
-import React, { Fragment } from 'react';
-import { Menu, MenuItem, MenuList, IconButton } from '@material-ui/core';
+import React, { Fragment, Suspense } from 'react';
+import {
+  Menu,
+  MenuItem,
+  MenuList,
+  IconButton,
+  Typography,
+} from '@material-ui/core';
 import { MoreVert } from '@material-ui/icons';
 import CustomEventsDialog from '../CustomEvents/Popup';
-import Sharing from './Sharing';
 import FinalSwitch from './FinalSwitch';
 import ClearSchedButton from './ClearSchedButton';
+
+const Sharing = React.lazy(() => import('./Sharing'));
 
 class Submenu extends React.Component {
   state = {
@@ -118,7 +125,15 @@ class Submenu extends React.Component {
               />
             </MenuItem>
             <MenuItem disableGutters>
-              <Sharing onTakeScreenshot={this.props.onTakeScreenshot} />
+              <Suspense
+                fallback={
+                  <Typography variant="h5" style={{ margin: 10 }}>
+                    Holup...
+                  </Typography>
+                }
+              >
+                <Sharing onTakeScreenshot={this.props.onTakeScreenshot} />
+              </Suspense>
             </MenuItem>
           </MenuList>
         </Menu>

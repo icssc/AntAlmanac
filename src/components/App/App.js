@@ -10,11 +10,8 @@ import {
   Tab,
   Typography,
   Button,
+  CircularProgress,
 } from '@material-ui/core';
-import Logo_tight from './logo_tight.png';
-import Logo_wide from './logo_wide.png';
-import SearchForm from '../SearchForm/SearchForm';
-import Calendar from '../Calendar/Calendar';
 import {
   Info,
   Search,
@@ -22,10 +19,12 @@ import {
   Assignment,
   FormatListBulleted,
 } from '@material-ui/icons';
-import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality';
 import ReactGA from 'react-ga';
-import loadingGif from '../CoursePane/loading.mp4';
+import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality';
 import { saveUserData } from './FetchHelper';
+import loadingGif from '../CoursePane/loading.mp4';
+import Logo_tight from './logo_tight.png';
+import Logo_wide from './logo_wide.png';
 import {
   red,
   pink,
@@ -41,9 +40,12 @@ import {
   amber,
   blueGrey,
 } from '@material-ui/core/colors';
-import TabularView from './TabularView';
-import OptOutPopover from '../CoursePane/OptOutPopover';
+import SearchForm from '../SearchForm/SearchForm';
+
+const TabularView = React.lazy(() => import('./TabularView'));
+const OptOutPopover = React.lazy(() => import('../CoursePane/OptOutPopover'));
 const CoursePane = React.lazy(() => import('../CoursePane/CoursePane'));
+const Calendar = React.lazy(() => import('../Calendar/Calendar'));
 
 const arrayOfColors = [
   red[500],
@@ -88,10 +90,12 @@ class App extends Component {
       showFinalSchedule: false,
       activeTab: 0,
       destination: InstructorEvals,
+      saved: true,
     };
     this.handleSelectRMP = this.handleSelectRMP.bind(this);
     this.handleSelectEE = this.handleSelectEE.bind(this);
     this.resizeLogo = this.resizeLogo.bind(this);
+    this.changeSave = this.changeSave.bind(this);
   }
 
   componentDidMount = () => {
@@ -102,6 +106,12 @@ class App extends Component {
 
     this.resizeLogo();
     window.addEventListener('resize', this.resizeLogo);
+    window.addEventListener('beforeunload', (event) => {
+      if (!this.state.saved) {
+        //not saved
+        event.returnValue = `Are you sure you want to leave?`;
+      }
+    });
   };
 
   componentWillUnmount() {
@@ -113,20 +123,32 @@ class App extends Component {
     this.setState({ isDesktop: window.innerWidth > 960 });
   }
 
+  changeSave(changeTo) {
+    //dictates saved or need to save
+    //add this.changeSave(false); to functions that change schedules
+    //and this.changeSave(true); after saving
+    this.setState({ saved: changeTo });
+    console.log('what the fuck');
+  }
+
   handleRightPaneViewChange = (event, rightPaneView) => {
     this.setState({ rightPaneView, showSearch: true });
   };
 
   handleLoad = (userData) => {
+    //load schedules
     this.setState({
       currentScheduleIndex: 0,
       courseEvents: userData.courseEvents,
       unavailableColors: userData.unavailableColors,
       backupArray: [],
+      saved: true,
     });
   };
 
   handleSave = async (userID) => {
+    //save the schedules
+    this.changeSave(true); //marks as saved
     const eventsToSave = [];
     const map = new Map();
 
@@ -168,6 +190,8 @@ class App extends Component {
         (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))
     ) {
       if (this.state.backupArray.length > 0) {
+        this.changeSave(false); //marks as need saving
+
         const lastDeletedEvent = this.state.backupArray[
           this.state.backupArray.length - 1
         ];
@@ -215,7 +239,9 @@ class App extends Component {
   };
 
   handleClassDelete = (deletedEvent) => {
+    //Delete classes
     //TODO: Pretty much need to rewrite this actually
+    this.changeSave(false); //marks as need saving
     const eventsAfterRemovingItem = [];
     const newBackupArray = [];
 
@@ -316,6 +342,7 @@ class App extends Component {
   };
 
   handleAddClass = (section, courseDetails, scheduleIndex, courseTerm) => {
+    this.changeSave(false); //marks as need saving
     const randomColor = arrayOfColors.find((color) => {
       let isAvailableColor = true;
       this.state.unavailableColors.forEach((colorAndScheduleIndex) => {
@@ -458,6 +485,7 @@ class App extends Component {
   };
 
   handleScheduleChange = (direction) => {
+    //Go through the different schedules
     if (direction === 0) {
       this.setState({
         showFinalSchedule: false,
@@ -472,6 +500,7 @@ class App extends Component {
   };
 
   handleCopySchedule = (moveTo) => {
+    this.changeSave(false); //marks as unsaved data
     let allSchedules = [0, 1, 2, 3];
     let schedulesToMoveTo = [];
     //if move to all schedules
@@ -520,10 +549,12 @@ class App extends Component {
   };
 
   handleAddCustomEvent = (events) => {
+    this.changeSave(false); //marks as need saving
     this.setState({ courseEvents: this.state.courseEvents.concat(events) });
   };
 
   handleEditCustomEvent = (newEvents, oldEvent) => {
+    this.changeSave(false); //marks as unsaved data
     let newCourseEvents = this.state.courseEvents.filter(
       (courseEvent) =>
         !courseEvent.isCustomEvent ||
@@ -534,6 +565,8 @@ class App extends Component {
   };
 
   handleColorChange = (course, color) => {
+    //changes color of a course
+    this.changeSave(false); //marks as unsaved data
     let courses = this.state.courseEvents;
 
     if (
@@ -570,6 +603,7 @@ class App extends Component {
   };
 
   displayFinal = (schedule) => {
+    //change to finals view
     this.setState(
       {
         showFinalSchedule: !this.state.showFinalSchedule,
@@ -607,6 +641,8 @@ class App extends Component {
   };
 
   handleClearSchedule = (toDelete) => {
+    //Clears schedules
+    this.changeSave(false); //marks as unsaved data
     const eventsThatAreDeleted = this.state.courseEvents.filter(
       (courseEvent) => !toDelete.includes(courseEvent.scheduleIndex)
     );
@@ -650,12 +686,14 @@ class App extends Component {
               isDesktop={this.state.isDesktop}
             />
             {/* Send current user data to Popover to update currently selected website options */}
-            <OptOutPopover
-              handleSelectRMP={this.handleSelectRMP}
-              handleSelectEE={this.handleSelectEE}
-              destination={this.state.destination}
-              isDesktop={this.state.isDesktop}
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <OptOutPopover
+                handleSelectRMP={this.handleSelectRMP}
+                handleSelectEE={this.handleSelectEE}
+                destination={this.state.destination}
+                isDesktop={this.state.isDesktop}
+              />
+            </Suspense>
 
             {this.state.isDesktop ? (
               <Tooltip title="Give Us Feedback!">
@@ -675,7 +713,8 @@ class App extends Component {
             ) : (
               <Fragment />
             )}
-
+            {/*empty div to prevent icon bug */}
+            <div />
             <Tooltip title="Info Page">
               <Button
                 onClick={() => {
@@ -706,36 +745,51 @@ class App extends Component {
                     : 'none',
               }}
             >
-              <Calendar
-                classEventsInCalendar={
-                  this.state.showFinalSchedule
-                    ? this.state.finalSchedule
-                    : this.state.courseEvents.filter(
-                        (courseEvent) =>
-                          courseEvent.scheduleIndex ===
-                            this.state.currentScheduleIndex ||
-                          courseEvent.scheduleIndex === 4
-                      )
+              <Suspense
+                fallback={
+                  <CircularProgress
+                    style={{
+                      height: '100%',
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      backgroundColor: 'white',
+                    }}
+                  />
                 }
-                eventsInCalendar={this.state.courseEvents.filter(
-                  (courseEvent) =>
-                    courseEvent.scheduleIndex ===
-                      this.state.currentScheduleIndex ||
-                    courseEvent.scheduleIndex === 4
-                )}
-                showFinalSchedule={this.state.showFinalSchedule}
-                displayFinal={this.displayFinal}
-                isDesktop={this.state.isDesktop}
-                currentScheduleIndex={this.state.currentScheduleIndex}
-                onUndo={this.handleUndo}
-                onCopySchedule={this.handleCopySchedule}
-                onColorChange={this.handleColorChange}
-                onClassDelete={this.handleClassDelete}
-                onScheduleChange={this.handleScheduleChange}
-                onAddCustomEvent={this.handleAddCustomEvent}
-                onEditCustomEvent={this.handleEditCustomEvent}
-                handleClearSchedule={this.handleClearSchedule}
-              />
+              >
+                <Calendar
+                  classEventsInCalendar={
+                    this.state.showFinalSchedule
+                      ? this.state.finalSchedule
+                      : this.state.courseEvents.filter(
+                          (courseEvent) =>
+                            courseEvent.scheduleIndex ===
+                              this.state.currentScheduleIndex ||
+                            courseEvent.scheduleIndex === 4
+                        )
+                  }
+                  eventsInCalendar={this.state.courseEvents.filter(
+                    (courseEvent) =>
+                      courseEvent.scheduleIndex ===
+                        this.state.currentScheduleIndex ||
+                      courseEvent.scheduleIndex === 4
+                  )}
+                  showFinalSchedule={this.state.showFinalSchedule}
+                  displayFinal={this.displayFinal}
+                  isDesktop={this.state.isDesktop}
+                  currentScheduleIndex={this.state.currentScheduleIndex}
+                  onUndo={this.handleUndo}
+                  onCopySchedule={this.handleCopySchedule}
+                  onColorChange={this.handleColorChange}
+                  onClassDelete={this.handleClassDelete}
+                  onScheduleChange={this.handleScheduleChange}
+                  onAddCustomEvent={this.handleAddCustomEvent}
+                  onEditCustomEvent={this.handleEditCustomEvent}
+                  handleClearSchedule={this.handleClearSchedule}
+                />
+              </Suspense>
             </div>
           </Grid>
 
@@ -795,20 +849,35 @@ class App extends Component {
                 id="rightPane"
               >
                 {this.state.rightPaneView ? (
-                  <TabularView
-                    eventsInCalendar={this.state.courseEvents.filter(
-                      (courseEvent) =>
-                        courseEvent.scheduleIndex ===
-                          this.state.currentScheduleIndex ||
-                        courseEvent.scheduleIndex === 4
-                    )}
-                    onColorChange={this.handleColorChange}
-                    scheduleIndex={this.state.currentScheduleIndex}
-                    onCopySchedule={this.handleCopySchedule}
-                    onEditCustomEvent={this.handleEditCustomEvent}
-                    destination={this.state.destination}
-                    handleClearSchedule={this.handleClearSchedule}
-                  />
+                  <Suspense
+                    fallback={
+                      <CircularProgress
+                        style={{
+                          height: '100%',
+                          width: '100%',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          backgroundColor: 'white',
+                        }}
+                      />
+                    }
+                  >
+                    <TabularView
+                      eventsInCalendar={this.state.courseEvents.filter(
+                        (courseEvent) =>
+                          courseEvent.scheduleIndex ===
+                            this.state.currentScheduleIndex ||
+                          courseEvent.scheduleIndex === 4
+                      )}
+                      onColorChange={this.handleColorChange}
+                      scheduleIndex={this.state.currentScheduleIndex}
+                      onCopySchedule={this.handleCopySchedule}
+                      onEditCustomEvent={this.handleEditCustomEvent}
+                      destination={this.state.destination}
+                      handleClearSchedule={this.handleClearSchedule}
+                    />
+                  </Suspense>
                 ) : this.state.showSearch ? (
                   <SearchForm
                     prevFormData={this.state.prevFormData}

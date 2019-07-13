@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, Suspense } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import querystring from 'querystring';
 import { Help, Image } from '@material-ui/icons';
@@ -15,7 +15,9 @@ import {
   Typography,
   Tooltip,
 } from '@material-ui/core';
-import GraphRenderPane from './GraphRenderPane';
+import loadingGif from '../CoursePane/loading.mp4';
+
+const GraphRenderPane = React.lazy(() => import('./GraphRenderPane'));
 
 const styles = (theme) => ({
   paper: {
@@ -185,12 +187,31 @@ class AlmanacGraph extends Component {
               <div>
                 {this.state.sections.map((section) => {
                   return (
-                    <GraphRenderPane
-                      section={section}
-                      quarter={this.state.term[5].toLowerCase()}
-                      year={this.state.term.substring(2, 4)}
-                      length={this.state.length}
-                    />
+                    <Suspense
+                      fallback={
+                        <div
+                          style={{
+                            height: '100%',
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: 'white',
+                          }}
+                        >
+                          <video autoPlay loop>
+                            <source src={loadingGif} type="video/mp4" />
+                          </video>
+                        </div>
+                      }
+                    >
+                      <GraphRenderPane
+                        section={section}
+                        quarter={this.state.term[5].toLowerCase()}
+                        year={this.state.term.substring(2, 4)}
+                        length={this.state.length}
+                      />
+                    </Suspense>
                   );
                 })}
               </div>

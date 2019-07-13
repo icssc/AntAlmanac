@@ -22,7 +22,7 @@ const quartersFirstMondays = {
 }; // used to get first monday depending on quarter
 
 function ExportButton(props) {
-  const { eventsInCalendar } = props;
+  const { eventsInCalendar, closeMenu } = props;
   // by default, set firstMonday to first Monday 2019 Fall (can be changed later on to different default)
   // this is to account for in case a user tries to download a schedule with no courses in them (just custom events)
   let firstMonday = new Date(quartersFirstMondays['2019 Fall']);
@@ -181,6 +181,7 @@ function ExportButton(props) {
           }
 
           cal.download(); // download ics file
+          closeMenu();
         }}
       >
         <Today style={{ 'margin-right': '5px' }} />
