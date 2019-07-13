@@ -25,6 +25,7 @@ export default class Advert extends Component {
     while (!this.checkDept(x)) {
       //console.log(x);
       x = this.converter((Math.random() * this.totalNumbers) >> 0);
+      console.log(x);
     }
     this.setState({
       lucky: x,
@@ -33,7 +34,7 @@ export default class Advert extends Component {
 
   converter(number) {
     for (var i in this.convert) {
-      if (number <= this.convert[i]) {
+      if (number <= this.convert[i][0]) {
         return i;
       }
     }
@@ -50,31 +51,36 @@ export default class Advert extends Component {
       count = (directory[i].dept.match(/,/g) || []).length;
       this.convert[i] = 28 - count;
       if (directory[i].dept.includes('any')) {
-        this.convert[i] = 1;
+        this.convert[i] = 4;
       }
     }
     for (var item in this.convert) {
       for (var number = 0; number < this.convert[item]; number += 1) {
         this.totalNumbers += 1;
       }
-      this.convert[item] = this.totalNumbers;
+      this.convert[item] = [this.totalNumbers, this.convert[item]];
     }
     console.log(this.convert);
   }
 
   render() {
     return (
-      <a
-        href={directory[this.state.lucky].url}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img
-          src={directory[this.state.lucky].banner}
-          alt="banner"
-          className={this.props.className}
-        />
-      </a>
+      <div>
+        <font size="1">
+          AntAlmanac is not affiliated with the following club/activity
+        </font>
+        <a
+          href={directory[this.state.lucky].url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src={directory[this.state.lucky].banner}
+            alt="banner"
+            className={this.props.className}
+          />
+        </a>
+      </div>
     );
   }
 }
