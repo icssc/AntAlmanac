@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Typography } from '@material-ui/core';
 import directory from './banner_directory';
 
 export default class Advert extends Component {
@@ -66,9 +67,9 @@ export default class Advert extends Component {
   render() {
     return (
       <div>
-        <font size="1">
+        <Typography fontSize="1">
           AntAlmanac is not affiliated with the following club/activity
-        </font>
+        </Typography>
         <a
           href={directory[this.state.lucky].url}
           target="_blank"
