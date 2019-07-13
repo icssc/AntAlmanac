@@ -4,14 +4,12 @@ import directory from './banner_directory';
 export default class Advert extends Component {
   constructor(props) {
     super(props);
-    this.convert = {};
-    this.totalNumbers = 0;
+    this.assignedProb = {};
+    this.totalNumbers = -1;
     this.state = {
       lucky: 0,
       department: 'apple',
     };
-    // console.log('Ad:');
-    // console.log(this.props.dept);
     this.changeLucky = this.changeLucky.bind(this);
     this.inputConversions();
   }
@@ -20,47 +18,49 @@ export default class Advert extends Component {
     this.changeLucky();
   }
 
+  //assaign the relavent ad
   changeLucky() {
-    var x = this.converter((Math.random() * this.totalNumbers) >> 0);
-    while (!this.checkDept(x)) {
-      //console.log(x);
-      x = this.converter((Math.random() * this.totalNumbers) >> 0);
-      console.log(x);
-    }
     this.setState({
-      lucky: x,
+      lucky: this.convert((Math.random() * this.totalNumbers) >> 0),
     });
   }
 
-  converter(number) {
-    for (var i in this.convert) {
-      if (number <= this.convert[i][0]) {
+  //gets a number and converts to the associated ad
+  convert(number) {
+    for (var i in this.assignedProb) {
+      if (number <= this.assignedProb[i]) {
         return i;
       }
     }
   }
 
+  //check if ad is for said department
   checkDept(thing) {
     var wanted = directory[thing].dept;
     return wanted.includes(this.props.dept) || wanted.includes('any');
   }
 
+  //gives each ad their own probabilty of showing up
   inputConversions() {
     var count = 0;
     for (var i = 0; i < directory.length; i += 1) {
       count = (directory[i].dept.match(/,/g) || []).length;
-      this.convert[i] = 28 - count;
+      this.assignedProb[i] = 28 - count;
       if (directory[i].dept.includes('any')) {
-        this.convert[i] = 4;
+        this.assignedProb[i] = 4;
       }
     }
-    for (var item in this.convert) {
-      for (var number = 0; number < this.convert[item]; number += 1) {
-        this.totalNumbers += 1;
-      }
-      this.convert[item] = [this.totalNumbers, this.convert[item]];
+    this.activePool();
+    console.log(this.assignedProb);
+  }
+
+  //assigns each course the numbers assigned to it within the
+  //ads that are active for said department
+  activePool() {
+    for (var item in this.assignedProb) {
+      this.totalNumbers += this.checkDept(item) ? this.assignedProb[item] : 0;
+      this.assignedProb[item] = this.totalNumbers;
     }
-    console.log(this.convert);
   }
 
   render() {
