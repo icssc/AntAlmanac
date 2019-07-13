@@ -137,7 +137,7 @@ class LoadSaveScheduleFunctionality extends React.Component {
             },
             async () => {
               this.props.onLoad(userData);
-              window.localStorage.setItem('userID', userID);
+              // window.localStorage.setItem('userID', userID);
             }
           );
         } else {
