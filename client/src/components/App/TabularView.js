@@ -17,7 +17,7 @@ import locations from '../SectionTable/static/locations.json';
 import Notification from '../Notification';
 import { withStyles } from '@material-ui/core/styles';
 
-import CustomEventsDialog from '../CustomEvents/Popup';
+import CustomEventsDialog from '../CustomEvents/CustomEventDialog';
 
 import { Clear } from '@material-ui/icons';
 

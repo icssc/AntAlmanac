@@ -1,17 +1,13 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import BigCalendar from 'react-big-calendar';
 import { withStyles } from '@material-ui/core/styles';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
 import { Popper } from '@material-ui/core';
-import PropTypes from 'prop-types';
 import './calendar.css';
 import CalendarPaneToolbar from './CalendarPaneToolbar';
 import CourseCalendarEvent from './CourseCalendarEvent';
-import MobileCalendar from './MobileCalendar';
-
 import AppStore from '../../stores/AppStore';
-import { addCourse } from '../../actions/AppStoreActions';
 
 BigCalendar.momentLocalizer(moment);
 
@@ -174,24 +170,79 @@ class Calendar extends Component {
         this.setState({ eventsInCalendar: eventsInCalendar });
     };
 
-    componentDidMount = () => {
-        AppStore.on('addedCoursesChange', this.calendarizeEvents);
+    calendarizeCustomEvents = () => {
+        const customEvents = AppStore.getCustomEvents();
+        const customEventsInCalendar = [];
 
-        AppStore.on('currentScheduleIndexChange', () => {
-            this.setState({
-                currentScheduleIndex: AppStore.currentScheduleIndex,
-            });
+        for (const customEvent of customEvents) {
+            for (let dayIndex = 0; dayIndex < 5; dayIndex++) {
+                if (customEvent.days[dayIndex] === true) {
+                    const startHour = parseInt(
+                        customEvent.start.slice(0, 2),
+                        10
+                    );
+                    const startMin = parseInt(
+                        customEvent.start.slice(3, 5),
+                        10
+                    );
+                    const endHour = parseInt(customEvent.end.slice(0, 2), 10);
+                    const endMin = parseInt(customEvent.end.slice(3, 5), 10);
+
+                    customEventsInCalendar.push({
+                        customEventID: customEvent.customEventID,
+                        color: customEvent.color,
+                        start: new Date(
+                            2018,
+                            0,
+                            dayIndex + 1,
+                            startHour,
+                            startMin
+                        ),
+                        isCustomEvent: true,
+                        end: new Date(2018, 0, dayIndex + 1, endHour, endMin),
+                        scheduleIndices: customEvent.scheduleIndices,
+                        title: customEvent.title,
+                    });
+                }
+            }
+        }
+        this.calendarizeEvents();
+        // console.log(customEventsInCalendar);
+        this.setState((prevState) => {
+            return {
+                eventsInCalendar: prevState.eventsInCalendar.concat(
+                    customEventsInCalendar
+                ),
+            };
         });
     };
 
-    componentWillUnmount() {
-        AppStore.removeListener('addedCoursesChange', this.calendarizeEvents);
-        AppStore.removeListener('currentScheduleIndexChange', () => {
-            this.setState({
-                currentScheduleIndex: AppStore.currentScheduleIndex,
-            });
+    updateCurrentScheduleIndex = () => {
+        this.setState({
+            currentScheduleIndex: AppStore.currentScheduleIndex,
         });
-    }
+    };
+
+    componentDidMount = () => {
+        AppStore.on('addedCoursesChange', this.calendarizeEvents);
+        AppStore.on('customEventsChange', this.calendarizeCustomEvents);
+        AppStore.on(
+            'currentScheduleIndexChange',
+            this.updateCurrentScheduleIndex
+        );
+    };
+
+    componentWillUnmount = () => {
+        AppStore.removeListener('addedCoursesChange', this.calendarizeEvents);
+        AppStore.removeListener(
+            'customEventsChange',
+            this.calendarizeCustomEvents
+        );
+        AppStore.removeListener(
+            'currentScheduleIndexChange',
+            this.updateCurrentScheduleIndex
+        );
+    };
 
     handleTakeScreenshot = async (html2CanvasScreenshot) => {
         this.setState({ screenshotting: true }, async () => {
@@ -271,13 +322,11 @@ class Calendar extends Component {
                         >
                             <CourseCalendarEvent
                                 courseInMoreInfo={this.state.courseInMoreInfo}
-                                onClassDelete={() =>
-                                    this.props.onClassDelete(
-                                        this.state.courseInMoreInfo
-                                    )
+                                // onColorChange={this.props.onColorChange}
+                                currentScheduleIndex={
+                                    this.state.currentScheduleIndex
                                 }
-                                onColorChange={this.props.onColorChange}
-                                onEditCustomEvent={this.props.onEditCustomEvent}
+                                // onEditCustomEvent={this.props.onEditCustomEvent}
                             />
                         </Popper>
                         <BigCalendar

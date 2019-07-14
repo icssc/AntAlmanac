@@ -117,10 +117,6 @@ class CourseRenderPane extends Component {
                                             ) : (
                                                 <Grid item md={12} xs={12}>
                                                     <SectionTable
-                                                        currentScheduleIndex={
-                                                            this.props
-                                                                .currentScheduleIndex
-                                                        }
                                                         formData={
                                                             this.props.formData
                                                         }

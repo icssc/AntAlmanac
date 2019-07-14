@@ -22,6 +22,10 @@ class AppStore extends EventEmitter {
         return this.customEvents;
     }
 
+    getDeletedCourses() {
+        return this.deletedCourses;
+    }
+
     handleActions(action) {
         switch (action.type) {
             case 'ADD_COURSE':
@@ -40,10 +44,30 @@ class AppStore extends EventEmitter {
                 this.emit('addedCoursesChange');
                 break;
             case 'DELETE_COURSE':
+                this.addedCourses = action.addedCoursesAfterDelete;
+                this.deletedCourses = action.deletedCourses;
+                console.log(this.addedCourses);
+                this.emit('addedCoursesChange');
                 break;
             case 'CHANGE_CURRENT_SCHEDULE':
                 this.currentScheduleIndex = action.newScheduleIndex;
                 this.emit('currentScheduleIndexChange');
+                break;
+            case 'UNDO_DELETE':
+                this.deletedCourses = action.deletedCourses;
+                break;
+            case 'CLEAR_SCHEDULE':
+                this.addedCourses = action.addedCoursesAfterClear;
+                this.customEvents = action.customEventsAfterClear;
+                this.emit('addedCoursesChange');
+                this.emit('customEventsChange');
+                break;
+            case 'ADD_CUSTOM_EVENT':
+                this.customEvents = this.customEvents.concat(
+                    action.customEvent
+                );
+                console.log(this.customEvents);
+                this.emit('customEventsChange');
                 break;
         }
     }

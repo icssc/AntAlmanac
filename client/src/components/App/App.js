@@ -62,15 +62,6 @@ class App extends Component {
         this.setState({ rightPaneView, showSearch: true });
     };
 
-    handleUndo = (event) => {
-        if (
-            this.state.backupArray.length > 0 &&
-            (event == null ||
-                (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))
-        ) {
-        }
-    };
-
     handleTabChange = (event, value) => {
         this.setState({ activeTab: value });
     };

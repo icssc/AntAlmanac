@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import locations from './static/locations';
 import restrictionsMapping from './static/restrictionsMapping';
 import RMPData from './static/RMP';
@@ -23,6 +23,7 @@ import OpenSpotAlertPopover from './OpenSpotAlertPopover';
 import PropTypes from 'prop-types';
 import ReactGA from 'react-ga';
 import { addCourse } from '../../actions/AppStoreActions';
+import AppStore from '../../stores/AppStore';
 
 const styles = (theme) => ({
     popover: {
@@ -110,14 +111,24 @@ const styles = (theme) => ({
 });
 
 const ScheduleAddCell = withStyles(styles)((props) => {
-    const {
-        classes,
-        section,
-        courseDetails,
-        currentScheduleIndex,
-        term,
-    } = props;
+    const { classes, section, courseDetails, term } = props;
     const popupState = usePopupState({ variant: 'popover' });
+    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(0);
+
+    useEffect(() => {
+        const updateCurrentScheduleIndex = () => {
+            setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
+        };
+
+        AppStore.on('currentScheduleIndexChange', updateCurrentScheduleIndex);
+
+        return () => {
+            AppStore.removeListener(
+                'currentScheduleIndexChange',
+                updateCurrentScheduleIndex
+            );
+        };
+    });
 
     const closeAndAddCourse = (scheduleIndex) => {
         popupState.close();
@@ -447,13 +458,7 @@ const StatusCell = withStyles(styles)((props) => {
 });
 //TODO: SectionNum name parity -> SectionNumber
 const SectionTableBody = withStyles(styles)((props) => {
-    const {
-        classes,
-        section,
-        courseDetails,
-        term,
-        currentScheduleIndex,
-    } = props;
+    const { classes, section, courseDetails, term } = props;
 
     return (
         <tr className={classes.tr}>
@@ -461,7 +466,6 @@ const SectionTableBody = withStyles(styles)((props) => {
                 section={section}
                 courseDetails={courseDetails}
                 term={term}
-                currentScheduleIndex={currentScheduleIndex}
             />
             <CourseCodeCell sectionCode={section.sectionCode} />
             <SectionDetailsCell
@@ -495,7 +499,6 @@ SectionTableBody.propTypes = {
     section: PropTypes.object.isRequired,
     courseDetails: PropTypes.object.isRequired,
     term: PropTypes.string.isRequired,
-    currentScheduleIndex: PropTypes.number.isRequired,
 };
 
 export default withStyles(styles)(SectionTableBody);

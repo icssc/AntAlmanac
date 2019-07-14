@@ -127,7 +127,6 @@ class CoursePane extends PureComponent {
                         onToggleDismissButton={this.handleToggleDismissButton}
                         courseData={courseData}
                         view={view}
-                        currentScheduleIndex={this.props.currentScheduleIndex}
                         term={this.props.formData.term}
                     />
                 </Fragment>

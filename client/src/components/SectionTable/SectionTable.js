@@ -138,7 +138,6 @@ class SectionTable extends PureComponent {
                                     section={section}
                                     courseDetails={this.state.courseDetails}
                                     term={term}
-                                    currentScheduleIndex={currentScheduleIndex}
                                 />
                             );
                         })}
@@ -152,7 +151,6 @@ class SectionTable extends PureComponent {
 SectionTable.propTypes = {
     classes: PropTypes.object.isRequired,
     courseDetails: PropTypes.object.isRequired,
-    currentScheduleIndex: PropTypes.number.isRequired,
     formData: PropTypes.object.isRequired,
 };
 

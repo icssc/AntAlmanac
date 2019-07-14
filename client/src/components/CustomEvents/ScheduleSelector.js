@@ -3,11 +3,11 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
-class DaySelector extends PureComponent {
+class ScheduleSelector extends PureComponent {
     state = {
-        days: this.props.customEvent
-            ? this.props.customEvent.days
-            : [false, false, false, false, false],
+        scheduleIndices: this.props.customEvent
+            ? this.props.customEvent.scheduleIndices
+            : [],
     };
 
     handleChange = (dayIndex) => (event) => {
@@ -15,11 +15,15 @@ class DaySelector extends PureComponent {
 
         this.setState(
             (prevState) => {
-                const newDays = [...prevState.days];
-                newDays[dayIndex] = checked;
-                return { days: newDays };
+                const newScheduleIndices = checked
+                    ? [...prevState.scheduleIndices, dayIndex]
+                    : prevState.scheduleIndices.filter((scheduleIndex) => {
+                          return scheduleIndex !== dayIndex;
+                      });
+
+                return { scheduleIndices: newScheduleIndices };
             },
-            () => this.props.onSelectDay(this.state.days)
+            () => this.props.onSelectScheduleIndices(this.state.scheduleIndices)
         );
     };
 
@@ -29,65 +33,53 @@ class DaySelector extends PureComponent {
                 <FormControlLabel
                     control={
                         <Checkbox
-                            checked={this.state.days[0]}
+                            checked={this.state.scheduleIndices.includes(0)}
                             onChange={this.handleChange(0)}
                             value="1"
                             color="primary"
                         />
                     }
-                    label="Monday"
+                    label="Schedule 1"
                 />
 
                 <FormControlLabel
                     control={
                         <Checkbox
-                            checked={this.state.days[1]}
+                            checked={this.state.scheduleIndices.includes(1)}
                             onChange={this.handleChange(1)}
                             value="2"
                             color="primary"
                         />
                     }
-                    label="Tuesday"
+                    label="Schedule 2"
                 />
 
                 <FormControlLabel
                     control={
                         <Checkbox
-                            checked={this.state.days[2]}
+                            checked={this.state.scheduleIndices.includes(2)}
                             onChange={this.handleChange(2)}
                             value="3"
                             color="primary"
                         />
                     }
-                    label="Wednesday"
+                    label="Schedule 3"
                 />
 
                 <FormControlLabel
                     control={
                         <Checkbox
-                            checked={this.state.days[3]}
+                            checked={this.state.scheduleIndices.includes(3)}
                             onChange={this.handleChange(3)}
                             value="4"
                             color="primary"
                         />
                     }
-                    label="Thursday"
-                />
-
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={this.state.days[4]}
-                            onChange={this.handleChange(4)}
-                            value="5"
-                            color="primary"
-                        />
-                    }
-                    label="Friday"
+                    label="Schedule 4"
                 />
             </FormGroup>
         );
     }
 }
 
-export default DaySelector;
+export default ScheduleSelector;

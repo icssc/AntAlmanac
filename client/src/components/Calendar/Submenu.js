@@ -1,9 +1,9 @@
 import React, { Fragment } from 'react';
 import { Menu, MenuItem, MenuList, IconButton } from '@material-ui/core';
 import { MoreVert } from '@material-ui/icons';
-import CustomEventsDialog from '../CustomEvents/Popup';
+import CustomEventsDialog from '../CustomEvents/CustomEventDialog';
 import FinalSwitch from './FinalSwitch';
-import ClearSchedButton from './ClearSchedButton';
+import ClearSchedButton from './ClearScheduleDialog';
 import {
     usePopupState,
     bindHover,
@@ -86,12 +86,12 @@ const Submenu = (props) => {
                 }}
             >
                 <MenuList>
-                    {/*<MenuItem disableGutters>*/}
-                    {/*    <CustomEventsDialog*/}
-                    {/*        onAddCustomEvent={props.onAddCustomEvent}*/}
-                    {/*        handleSubmenuClose={popupState.close()}*/}
-                    {/*    />*/}
-                    {/*</MenuItem>*/}
+                    <MenuItem disableGutters>
+                        <CustomEventsDialog
+                            editMode={false}
+                            handleSubmenuClose={() => popupState.close()}
+                        />
+                    </MenuItem>
                     {/*<MenuItem>*/}
                     {/*    <FinalSwitch*/}
                     {/*        displayFinal={this.props.displayFinal}*/}
@@ -99,13 +99,12 @@ const Submenu = (props) => {
                     {/*        showFinalSchedule={this.props.showFinalSchedule}*/}
                     {/*    />*/}
                     {/*</MenuItem>*/}
-                    {/*<MenuItem disableGutters>*/}
-                    {/*    <ClearSchedButton*/}
-                    {/*        handleSubmenuClose={() => popupState.close()}*/}
-                    {/*        handleClearSchedule={this.props.handleClearSchedule}*/}
-                    {/*        currentScheduleIndex={this.props.currentScheduleIndex}*/}
-                    {/*    />*/}
-                    {/*</MenuItem>*/}
+                    <MenuItem disableGutters>
+                        <ClearSchedButton
+                            handleSubmenuClose={() => popupState.close()}
+                            currentScheduleIndex={props.currentScheduleIndex}
+                        />
+                    </MenuItem>
                 </MenuList>
             </Menu>
         </Fragment>

@@ -33,7 +33,13 @@ const arrayOfColors = [
     blueGrey[500],
 ];
 
-export const addCourse = (section, courseDetails, term, scheduleIndex) => {
+export const addCourse = (
+    section,
+    courseDetails,
+    term,
+    scheduleIndex,
+    color
+) => {
     const addedCourses = AppStore.getAddedCourses();
 
     let existingCourse;
@@ -49,17 +55,21 @@ export const addCourse = (section, courseDetails, term, scheduleIndex) => {
         }
     }
 
-    const setOfUsedColors = new Set(addedCourses.map((course) => course.color));
+    if (color === undefined) {
+        const setOfUsedColors = new Set(
+            addedCourses.map((course) => course.color)
+        );
 
-    let randomColor = arrayOfColors.find((color) => {
-        if (!setOfUsedColors.has(color)) return color;
-    });
+        color = arrayOfColors.find((materialColor) => {
+            if (!setOfUsedColors.has(materialColor)) return materialColor;
+        });
 
-    if (randomColor === undefined) randomColor = '#5ec8e0';
+        if (color === undefined) color = '#5ec8e0';
+    }
 
     if (existingCourse === undefined) {
         const newCourse = {
-            color: randomColor,
+            color: color,
             term: term,
             deptCode: courseDetails.deptCode,
             courseNumber: courseDetails.courseNumber,
@@ -107,20 +117,102 @@ export const loadSchedule = async (userData) => {
 
 export const deleteCourse = (sectionCode, scheduleIndex) => {
     const addedCourses = AppStore.getAddedCourses();
-    const addCoursesAfterDelete = addedCourses.filter((course) => {
+    let deletedCourses = AppStore.getDeletedCourses();
+
+    const addedCoursesAfterDelete = addedCourses.filter((course) => {
         if (course.section.sectionCode === sectionCode) {
+            deletedCourses = deletedCourses.concat({
+                ...course,
+                scheduleIndex,
+            });
             if (course.scheduleIndices.length === 1) {
                 return false;
             } else {
                 course.scheduleIndices = course.scheduleIndices.filter(
                     (index) => index !== scheduleIndex
                 );
+
                 return true;
             }
         }
         return true;
     });
-    dispatcher.dispatch({ type: 'DELETE_COURSE', addCoursesAfterDelete });
+
+    dispatcher.dispatch({
+        type: 'DELETE_COURSE',
+        addedCoursesAfterDelete,
+        deletedCourses,
+    });
+};
+
+export const clearSchedules = (scheduleIndicesToClear) => {
+    const addedCourses = AppStore.getAddedCourses();
+    const customEvents = AppStore.getCustomEvents();
+
+    const addedCoursesAfterClear = addedCourses.filter((course) => {
+        if (course.scheduleIndices.length === 1) {
+            return false;
+        } else {
+            course.scheduleIndices = course.scheduleIndices.filter(
+                (index) => !scheduleIndicesToClear.includes(index)
+            );
+
+            return course.scheduleIndices.length !== 0;
+        }
+    });
+
+    const customEventsAfterClear = customEvents.filter((customEvent) => {
+        if (customEvent.scheduleIndices.length === 1) {
+            return false;
+        } else {
+            customEvent.scheduleIndices = customEvent.scheduleIndices.filter(
+                (index) => !scheduleIndicesToClear.includes(index)
+            );
+
+            return customEvent.scheduleIndices.length !== 0;
+        }
+    });
+
+    dispatcher.dispatch({
+        type: 'CLEAR_SCHEDULE',
+        addedCoursesAfterClear,
+        customEventsAfterClear,
+    });
+};
+
+export const addCustomEvent = (customEvent) => {
+    dispatcher.dispatch({ type: 'ADD_CUSTOM_EVENT', customEvent });
+};
+
+export const undoDelete = (event) => {
+    const deletedCourses = AppStore.getDeletedCourses();
+
+    if (
+        deletedCourses.length > 0 &&
+        (event == null ||
+            (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))
+    ) {
+        const lastDeleted = deletedCourses[deletedCourses.length - 1];
+
+        if (lastDeleted !== undefined) {
+            addCourse(
+                lastDeleted.section,
+                lastDeleted,
+                lastDeleted.term,
+                lastDeleted.scheduleIndex,
+                lastDeleted.color
+            );
+
+            dispatcher.dispatch({
+                type: 'UNDO_DELETE',
+                deletedCourses: deletedCourses.slice(
+                    0,
+                    deletedCourses.length - 1
+                ),
+            });
+        }
+    }
+    //TODO: Snackbar
 };
 
 export const handleAddCustomEvent = (event) => {

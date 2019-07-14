@@ -1,29 +1,27 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, PureComponent } from 'react';
+
 import {
     Button,
+    Checkbox,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    Checkbox,
-    FormGroup,
     FormControlLabel,
+    FormGroup,
     Typography,
 } from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
+import { clearSchedules } from '../../actions/AppStoreActions';
 
-export default class ClearSched extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            open: false,
-            all: false,
-            one: this.props.currentScheduleIndex === 0,
-            two: this.props.currentScheduleIndex === 1,
-            three: this.props.currentScheduleIndex === 2,
-            four: this.props.currentScheduleIndex === 3,
-        };
-    }
+export default class ClearScheduleDialog extends PureComponent {
+    state = {
+        open: false,
+        one: this.props.currentScheduleIndex === 0,
+        two: this.props.currentScheduleIndex === 1,
+        three: this.props.currentScheduleIndex === 2,
+        four: this.props.currentScheduleIndex === 3,
+    };
 
     handleClickOpen = () => {
         this.setState({ open: true });
@@ -32,7 +30,6 @@ export default class ClearSched extends React.Component {
     handleClose = () => {
         this.setState({
             open: false,
-            all: false,
             one: false,
             two: false,
             three: false,
@@ -57,61 +54,34 @@ export default class ClearSched extends React.Component {
             toDelete.push(3);
         }
 
-        this.props.handleClearSchedule(toDelete);
+        clearSchedules(toDelete);
         this.handleClose();
     };
 
     handleChange = (name) => (event) => {
-        if (name === 'all') {
-            this.setState({
-                all: event.target.checked,
-                one: event.target.checked,
-                two: event.target.checked,
-                three: event.target.checked,
-                four: event.target.checked,
-            });
-        } else {
-            this.setState({ [name]: event.target.checked });
-        }
+        this.setState({ [name]: event.target.checked });
     };
 
     render() {
         return (
             <Fragment>
-                <Button
-                    onClick={this.handleClickOpen}
-                    disableRipple={true}
-                    style={{ width: '100%' }}
-                    className={'menu-button'}
-                >
+                <Button onClick={this.handleClickOpen} disableRipple={true}>
                     <Delete /> Clear
                 </Button>
                 <Dialog
+                    maxWidth="xs"
                     open={this.state.open}
                     onClose={this.handleClose}
-                    aria-labelledby="form-dialog-title"
                 >
-                    <DialogTitle id="form-dialog-title">
-                        Select a Schedule to Clear
-                    </DialogTitle>
+                    <DialogTitle>Select a Schedule to Clear</DialogTitle>
                     <DialogContent>
                         <div>
-                            <Typography variant="subheading">
+                            <Typography variant="body1">
                                 You cannot undo this action,
                                 <br />
                                 but you can load your schedule again.
                             </Typography>
                             <FormGroup>
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={this.state.all}
-                                            onChange={this.handleChange('all')}
-                                        />
-                                    }
-                                    value="all"
-                                    label="Clear All"
-                                />
                                 <FormControlLabel
                                     control={
                                         <Checkbox
@@ -159,16 +129,8 @@ export default class ClearSched extends React.Component {
                         </div>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={this.handleClose} color="primary">
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={this.handleClear}
-                            style={{
-                                backgroundColor: '#72a9ed',
-                                boxShadow: 'none',
-                            }}
-                        >
+                        <Button onClick={this.handleClose}>Cancel</Button>
+                        <Button color="primary" onClick={this.handleClear}>
                             Clear
                         </Button>
                     </DialogActions>

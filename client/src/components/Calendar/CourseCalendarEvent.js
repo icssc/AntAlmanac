@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import ColorPicker from '../App/colorPicker.js';
 import { Delete } from '@material-ui/icons';
 import locations from '../SectionTable/static/locations.json';
+import { deleteCourse } from '../../actions/AppStoreActions';
 
 const styles = {
     container: {
@@ -59,11 +60,12 @@ const genMapLink = (location) => {
 };
 
 const CourseCalendarEvent = (props) => {
-    const { classes, courseInMoreInfo } = props;
+    const { classes, courseInMoreInfo, currentScheduleIndex } = props;
 
     if (!courseInMoreInfo.isCustomEvent) {
         const {
             instructors,
+            sectionCode,
             courseTitle,
             final: finalExam,
             bldg,
@@ -77,7 +79,12 @@ const CourseCalendarEvent = (props) => {
                         <Tooltip title="Delete">
                             <Delete
                                 className={classes.icon}
-                                onClick={props.onClassDelete}
+                                onClick={() =>
+                                    deleteCourse(
+                                        sectionCode,
+                                        currentScheduleIndex
+                                    )
+                                }
                             />
                         </Tooltip>
                     </div>
@@ -177,7 +184,7 @@ const CourseCalendarEvent = (props) => {
                                     <Tooltip title="Delete">
                                         <Delete
                                             className={classes.icon}
-                                            onClick={props.onClassDelete}
+                                            // onClick={props.onClassDelete}
                                         />
                                     </Tooltip>
                                 </td>
@@ -192,7 +199,6 @@ const CourseCalendarEvent = (props) => {
 
 CourseCalendarEvent.propTypes = {
     courseInMoreInfo: PropTypes.object.isRequired,
-    onClassDelete: PropTypes.func.isRequired,
     onColorChange: PropTypes.func.isRequired,
 };
 

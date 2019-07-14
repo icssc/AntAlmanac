@@ -45,7 +45,7 @@ function calendarize(
             dates.forEach((shouldBeInCal, index) => {
                 if (shouldBeInCal) {
                     const newEvent = {
-                        id: Math.floor(Math.random() * 1000000000),
+                        customEventID: Math.floor(Math.random() * 1000000000),
                         name: name,
                         color: color,
                         courseTerm: courseTerm,
