@@ -59,7 +59,7 @@ export default class Outreach extends Component {
   //ads that are active for said department
   activePool() {
     for (var item in this.assignedProb) {
-      this.totalNumbers += this.checkDept(item) ? this.assignedProb[item] : 0;
+      this.totalNumbers += this.checkDept(item) ? this.assignedProb[item] : 2;
       this.assignedProb[item] = this.totalNumbers;
     }
   }
