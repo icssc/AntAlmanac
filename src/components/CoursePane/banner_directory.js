@@ -32,7 +32,8 @@ export default [
   {
     url: 'https://www.facebook.com/EnglishMajorsAssociationUCI/',
     banner: 'https://www.ics.uci.edu/~rang1/AntAlmanac/img/banners/EMA.png',
-    dept: 'HUMAN . . . . . .Humanities',
+    dept: 'any',
+    // dept: 'HUMAN . . . . . .Humanities',
   },
   {
     url: 'https://vermillionvocalists.wixsite.com/vermillionvocalists',
