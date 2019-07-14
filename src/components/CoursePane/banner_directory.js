@@ -44,12 +44,12 @@ export default [
   {
     url: 'https://circleoffifthsuci.wixsite.com/circleoffifthsuci',
     banner: 'https://www.ics.uci.edu/~rang1/AntAlmanac/img/banners/Fifth.png',
-    dept: 'MUSIC',
+    dept: 'any',
   },
   {
     url: 'http://www.maissuci.com/',
     banner: 'https://www.ics.uci.edu/~rang1/AntAlmanac/img/banners/MAISS.png',
     dept:
-      'ECON . . . . . . . Economics, FIN . . . . . . . . . Finance (started 2017 Fall), I&C SCI . . . . . . Information and Computer Science, IN4MATX . . . . . Informatics, MGMT . . . . . . .Management',
+      'COMPSCI . . . . Computer Science, ECON . . . . . . . Economics, FIN . . . . . . . . . Finance (started 2017 Fall), I&C SCI . . . . . . Information and Computer Science, IN4MATX . . . . . Informatics, MGMT . . . . . . .Management',
   },
 ];

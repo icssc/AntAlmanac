@@ -67,7 +67,7 @@ export default class Outreach extends Component {
   render() {
     return (
       <div>
-        <Typography fontSize="1">
+        <Typography fontSize="1" align="right">
           AntAlmanac is not affiliated with the following club/activity
         </Typography>
         <a
