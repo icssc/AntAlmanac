@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Typography } from '@material-ui/core';
 import directory from './banner_directory';
 
-export default class Advert extends Component {
+export default class Outreach extends Component {
   constructor(props) {
     super(props);
     this.assignedProb = {};
