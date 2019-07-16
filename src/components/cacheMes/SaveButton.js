@@ -8,6 +8,8 @@ import {
   DialogContentText,
   DialogTitle,
   Typography,
+  Checkbox,
+  FormControlLabel
 } from '@material-ui/core';
 import { Save } from '@material-ui/icons';
 
@@ -17,6 +19,7 @@ export default class FormDialog extends Component {
     this.state = {
       open: false,
       name: null,
+      checked: true,
     };
   }
 
@@ -28,7 +31,7 @@ export default class FormDialog extends Component {
     if (wasCancelled) this.setState({ open: false });
     else
       this.setState({ open: false }, () => {
-        this.props.handleSave(this.state.name);
+        this.props.handleSave(this.state.name, this.state.checked);
       });
   };
 
@@ -56,7 +59,7 @@ export default class FormDialog extends Component {
     ) {
       event.preventDefault();
       this.setState({ open: false }, () => {
-        this.props.handleSave(this.state.name);
+        this.props.handleSave(this.state.name, this.state.checked);
       });
 
       return false;
@@ -66,6 +69,11 @@ export default class FormDialog extends Component {
   setName = (event) => {
     this.setState({ name: event.target.value });
   };
+
+  //Switches checkbox value
+  handleCheckboxChange = name => event => {
+    this.setState({[name]: event.target.checked});
+  }
 
   render() {
     return (
@@ -95,12 +103,23 @@ export default class FormDialog extends Component {
               defaultValue={this.state.name}
               onChange={this.setName}
             />
+            <FormControlLabel
+              control={<Checkbox
+                  checked={this.state.checked}
+                  onChange={this.handleCheckboxChange('checked')}
+                  value={this.state.checked}
+                  inputProps={{'aria-label': 'primary checkbox',}}
+              />}
+              label="Remember Me"
+            />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => this.handleClose(true)} color="primary">
+            <Button 
+              onClick={() => this.handleClose(true)} color="primary">
               Cancel
             </Button>
-            <Button onClick={() => this.handleClose(false)} color="primary">
+            <Button 
+              onClick={() => this.handleClose(false)} color="primary">
               Save
             </Button>
           </DialogActions>
