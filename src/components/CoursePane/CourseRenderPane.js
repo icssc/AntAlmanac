@@ -4,8 +4,8 @@ import React, { Component, Fragment, Suspense } from 'react';
 import CourseDetailPane from './CourseDetailPane';
 import SchoolDeptCard from './SchoolDeptCard';
 import NoNothing from './no_results.png';
-import directory from './banner_directory';
 import loadingGif from '../CoursePane/loading.mp4';
+import Outreach from './Outreach';
 
 const MiniSectionTable = React.lazy(() => import('./MiniSectionTable'));
 
@@ -46,6 +46,7 @@ const styles = (theme) => ({
 class CourseRenderPane extends Component {
   constructor(props) {
     super(props);
+    //console.log(props);
     this.getGrid = this.getGrid.bind(this);
     this.handleDismissDetails = this.handleDismissDetails.bind(this);
     this.state = {
@@ -148,27 +149,6 @@ class CourseRenderPane extends Component {
   }
 
   render() {
-    //generate ad
-    let lucky = (Math.random() * directory.length) >> 0;
-    if (typeof Storage !== 'undefined') {
-      let seen = window.localStorage.getItem('AdsSeen');
-      if (seen === null) {
-        //nothing stored
-        seen = '';
-      }
-
-      while (seen.includes(lucky.toString())) {
-        if (seen.length === directory.length) {
-          //seen them all
-          seen = ''; //reset the seen ads
-          break;
-        }
-        lucky = (Math.random() * directory.length) >> 0;
-      }
-      window.localStorage.setItem('AdsSeen', seen + lucky.toString());
-    }
-    console.log(lucky);
-
     return (
       <div className={this.props.classes.root} ref={(ref) => (this.ref = ref)}>
         <Modal
@@ -207,17 +187,10 @@ class CourseRenderPane extends Component {
         ) : (
           <Grid container spacing={16}>
             <Grid item md={12} xs={12}>
-              <a
-                href={directory[lucky].url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img
-                  src={directory[lucky].banner}
-                  alt="banner"
-                  className={this.props.classes.ad}
-                />
-              </a>
+              <Outreach
+                className={this.props.classes.ad}
+                dept={this.props.deptName}
+              />
             </Grid>
             {this.props.courseData.map((item) => this.getGrid(item))}
           </Grid>
