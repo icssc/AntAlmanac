@@ -23,7 +23,6 @@ export default class LoadDialog extends Component {
     };
   }
 
-
   handleOpen = () => {
     this.setState({ open: true });
   };
@@ -65,9 +64,9 @@ export default class LoadDialog extends Component {
   };
 
   //Switches checkbox value
-  handleCheckboxChange = name => event => {
-    this.setState({[name]: event.target.checked});
-  }
+  handleCheckboxChange = (name) => (event) => {
+    this.setState({ [name]: event.target.checked });
+  };
 
   render() {
     return (
@@ -97,13 +96,15 @@ export default class LoadDialog extends Component {
               onChange={this.setUserID}
             />
             <FormControlLabel
-              control={<Checkbox
+              control={
+                <Checkbox
                   checked={this.state.checked}
                   onChange={this.handleCheckboxChange('checked')}
                   value={this.state.checked}
-                  inputProps={{'aria-label': 'primary checkbox',}}
-              />}
-              label="Remember Me"
+                  inputProps={{ 'aria-label': 'primary checkbox' }}
+                />
+              }
+              label="Remember Me (Uncheck on shared computers)"
             />
           </DialogContent>
           <DialogActions>

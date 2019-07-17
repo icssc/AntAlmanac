@@ -9,7 +9,7 @@ import {
   DialogTitle,
   Typography,
   Checkbox,
-  FormControlLabel
+  FormControlLabel,
 } from '@material-ui/core';
 import { Save } from '@material-ui/icons';
 
@@ -71,9 +71,9 @@ export default class FormDialog extends Component {
   };
 
   //Switches checkbox value
-  handleCheckboxChange = name => event => {
-    this.setState({[name]: event.target.checked});
-  }
+  handleCheckboxChange = (name) => (event) => {
+    this.setState({ [name]: event.target.checked });
+  };
 
   render() {
     return (
@@ -104,22 +104,22 @@ export default class FormDialog extends Component {
               onChange={this.setName}
             />
             <FormControlLabel
-              control={<Checkbox
+              control={
+                <Checkbox
                   checked={this.state.checked}
                   onChange={this.handleCheckboxChange('checked')}
                   value={this.state.checked}
-                  inputProps={{'aria-label': 'primary checkbox',}}
-              />}
-              label="Remember Me"
+                  inputProps={{ 'aria-label': 'primary checkbox' }}
+                />
+              }
+              label="Remember Me (Uncheck on shared computers)"
             />
           </DialogContent>
           <DialogActions>
-            <Button 
-              onClick={() => this.handleClose(true)} color="primary">
+            <Button onClick={() => this.handleClose(true)} color="primary">
               Cancel
             </Button>
-            <Button 
-              onClick={() => this.handleClose(false)} color="primary">
+            <Button onClick={() => this.handleClose(false)} color="primary">
               Save
             </Button>
           </DialogActions>
