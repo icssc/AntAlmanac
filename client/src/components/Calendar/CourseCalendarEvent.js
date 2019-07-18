@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import ColorPicker from '../App/colorPicker.js';
 import { Delete } from '@material-ui/icons';
 import locations from '../SectionTable/static/locations.json';
-import { deleteCourse } from '../../actions/AppStoreActions';
+import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
 
 const styles = {
     container: {
@@ -147,7 +147,7 @@ const CourseCalendarEvent = (props) => {
             </div>
         );
     } else {
-        const { title } = courseInMoreInfo;
+        const { title, customEventID } = courseInMoreInfo;
         return (
             <div>
                 <Paper className={classes.container}>
@@ -184,7 +184,12 @@ const CourseCalendarEvent = (props) => {
                                     <Tooltip title="Delete">
                                         <Delete
                                             className={classes.icon}
-                                            // onClick={props.onClassDelete}
+                                            onClick={() =>
+                                                deleteCustomEvent(
+                                                    customEventID,
+                                                    currentScheduleIndex
+                                                )
+                                            }
                                         />
                                     </Tooltip>
                                 </td>

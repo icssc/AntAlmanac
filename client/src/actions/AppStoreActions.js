@@ -145,6 +145,32 @@ export const deleteCourse = (sectionCode, scheduleIndex) => {
     });
 };
 
+export const deleteCustomEvent = (customEventID, scheduleIndex) => {
+    const customEvents = AppStore.getCustomEvents();
+
+    const customEventsAfterDelete = customEvents.filter((customEvent) => {
+        if (customEvent.customEventID === customEventID) {
+            if (customEvent.scheduleIndices.length === 1) {
+                return false;
+            } else {
+                customEvent.scheduleIndices = customEvent.scheduleIndices.filter(
+                    (index) => index !== scheduleIndex
+                );
+
+                return true;
+            }
+        }
+        return true;
+    });
+
+    dispatcher.dispatch({
+        type: 'DELETE_CUSTOM_EVENT',
+        customEventsAfterDelete,
+    });
+};
+
+export const changeCourseColor = (sectionCode) => {};
+
 export const clearSchedules = (scheduleIndicesToClear) => {
     const addedCourses = AppStore.getAddedCourses();
     const customEvents = AppStore.getCustomEvents();
@@ -213,10 +239,6 @@ export const undoDelete = (event) => {
         }
     }
     //TODO: Snackbar
-};
-
-export const handleAddCustomEvent = (event) => {
-    dispatcher.dispatch({ type: 'ADD_CUSTOM_EVENT', event });
 };
 
 export const changeCurrentSchedule = (direction) => {

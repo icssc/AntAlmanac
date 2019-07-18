@@ -124,8 +124,6 @@ class App extends Component {
         // this.setState({ courseEvents: newCourseEvents.concat(newEvents) });
     };
 
-    handleColorChange = (course, color) => {};
-
     displayFinal = (schedule) => {
         this.setState(
             {
@@ -137,13 +135,6 @@ class App extends Component {
                 }
             }
         );
-    };
-
-    handleClearSchedule = (toDelete) => {
-        // const eventsThatAreDeleted = this.state.courseEvents.filter(
-        //   (courseEvent) => !toDelete.includes(courseEvent.scheduleIndex)
-        // );
-        // this.setState({ courseEvents: eventsThatAreDeleted });
     };
 
     render() {

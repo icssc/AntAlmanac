@@ -46,7 +46,6 @@ class AppStore extends EventEmitter {
             case 'DELETE_COURSE':
                 this.addedCourses = action.addedCoursesAfterDelete;
                 this.deletedCourses = action.deletedCourses;
-                console.log(this.addedCourses);
                 this.emit('addedCoursesChange');
                 break;
             case 'CHANGE_CURRENT_SCHEDULE':
@@ -66,7 +65,10 @@ class AppStore extends EventEmitter {
                 this.customEvents = this.customEvents.concat(
                     action.customEvent
                 );
-                console.log(this.customEvents);
+                this.emit('customEventsChange');
+                break;
+            case 'DELETE_CUSTOM_EVENT':
+                this.customEvents = action.customEventsAfterDelete;
                 this.emit('customEventsChange');
                 break;
         }

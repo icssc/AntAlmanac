@@ -73,9 +73,11 @@ class Calendar extends Component {
     state = {
         screenshotting: false,
         anchorEvent: null,
+        showFinalsSchedule: false,
         moreInfoOpen: false,
         courseInMoreInfo: null,
         eventsInCalendar: [],
+        finalsEventsInCalendar: [],
         currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
     };
 
@@ -90,17 +92,17 @@ class Calendar extends Component {
         };
     };
 
-    calendarizeEvents = () => {
+    calendarizeCourseEvents = () => {
         const addedCourses = AppStore.getAddedCourses();
-        const eventsInCalendar = [];
+        const courseEventsInCalendar = [];
 
-        for (let course of addedCourses) {
-            for (let meeting of course.section.meetings) {
+        for (const course of addedCourses) {
+            for (const meeting of course.section.meetings) {
                 const timeString = meeting.time.replace(/\s/g, '');
 
                 if (timeString !== 'TBA') {
                     let [
-                        _,
+                        ,
                         startHr,
                         startMin,
                         endHr,
@@ -138,7 +140,6 @@ class Calendar extends Component {
                                     course.deptCode + ' ' + course.courseNumber,
                                 courseTitle: course.courseTitle,
                                 bldg: meeting.bldg,
-                                finalExam: course.finalExam,
                                 instructors: course.section.instructors,
                                 sectionCode: course.section.sectionCode,
                                 sectionType: course.section.sectionType,
@@ -160,14 +161,88 @@ class Calendar extends Component {
                                 scheduleIndices: course.scheduleIndices,
                             };
 
-                            eventsInCalendar.push(newEvent);
+                            courseEventsInCalendar.push(newEvent);
                         }
                     });
                 }
             }
         }
 
-        this.setState({ eventsInCalendar: eventsInCalendar });
+        this.setState({
+            eventsInCalendar: courseEventsInCalendar,
+        });
+    };
+
+    calendarizeFinals = () => {
+        const addedCourses = AppStore.getAddedCourses();
+        let finalsEventsInCalendar = [];
+
+        for (const course of addedCourses) {
+            const finalExam = course.section.finalExam;
+            console.log(finalExam);
+
+            if (finalExam.length > 5) {
+                let [
+                    ,
+                    date,
+                    ,
+                    ,
+                    start,
+                    startMin,
+                    end,
+                    endMin,
+                    ampm,
+                ] = finalExam.match(
+                    /([A-za-z]+) ([A-Za-z]+) *(\d{1,2}) *(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(pm?)/
+                );
+                start = parseInt(start, 10);
+                startMin = parseInt(startMin, 10);
+                end = parseInt(end, 10);
+                endMin = parseInt(endMin, 10);
+                date = [
+                    date.includes('Mon'),
+                    date.includes('Tue'),
+                    date.includes('Wed'),
+                    date.includes('Thu'),
+                    date.includes('Fri'),
+                ];
+                if (ampm === 'pm' && end !== 12) {
+                    start += 12;
+                    end += 12;
+                    if (start > end) start -= 12;
+                }
+
+                date.forEach((shouldBeInCal, index) => {
+                    if (shouldBeInCal)
+                        finalsEventsInCalendar.push({
+                            title: course.title,
+                            sectionCode: course.section.sectionCode,
+                            sectionType: 'Fin',
+                            bldg: course.section.meetings[0].bldg,
+                            color: course.color,
+                            scheduleIndices: course.scheduleIndices,
+                            start: new Date(
+                                2018,
+                                0,
+                                index + 1,
+                                start,
+                                startMin
+                            ),
+                            end: new Date(2018, 0, index + 1, end, endMin),
+                        });
+                });
+            }
+        }
+
+        this.setState({
+            finalsEventsInCalendar: finalsEventsInCalendar,
+        });
+    };
+
+    toggleDisplayFinalsSchedule = () => {
+        this.setState((prevState) => {
+            return { showFinalsSchedule: !prevState.showFinalsSchedule };
+        });
     };
 
     calendarizeCustomEvents = () => {
@@ -206,8 +281,6 @@ class Calendar extends Component {
                 }
             }
         }
-        this.calendarizeEvents();
-        // console.log(customEventsInCalendar);
         this.setState((prevState) => {
             return {
                 eventsInCalendar: prevState.eventsInCalendar.concat(
@@ -223,9 +296,15 @@ class Calendar extends Component {
         });
     };
 
+    calendarizeEvents = () => {
+        this.calendarizeCourseEvents();
+        this.calendarizeCustomEvents();
+        this.calendarizeFinals();
+    };
+
     componentDidMount = () => {
         AppStore.on('addedCoursesChange', this.calendarizeEvents);
-        AppStore.on('customEventsChange', this.calendarizeCustomEvents);
+        AppStore.on('customEventsChange', this.calendarizeEvents);
         AppStore.on(
             'currentScheduleIndexChange',
             this.updateCurrentScheduleIndex
@@ -234,10 +313,7 @@ class Calendar extends Component {
 
     componentWillUnmount = () => {
         AppStore.removeListener('addedCoursesChange', this.calendarizeEvents);
-        AppStore.removeListener(
-            'customEventsChange',
-            this.calendarizeCustomEvents
-        );
+        AppStore.removeListener('customEventsChange', this.calendarizeEvents);
         AppStore.removeListener(
             'currentScheduleIndexChange',
             this.updateCurrentScheduleIndex
@@ -255,7 +331,7 @@ class Calendar extends Component {
         const { currentTarget } = event;
         event.stopPropagation();
 
-        if (courseInMoreInfo.courseType !== 'Fin')
+        if (courseInMoreInfo.sectionType !== 'Fin')
             this.setState((state) => ({
                 anchorEvent: Boolean(state.anchorEvent) ? null : currentTarget,
                 courseInMoreInfo: courseInMoreInfo,
@@ -266,6 +342,19 @@ class Calendar extends Component {
         this.setState({ anchorEvent: null });
     };
 
+    getEventsForCalendar = () => {
+        const eventSet = this.state.showFinalsSchedule
+            ? this.state.finalsEventsInCalendar
+            : this.state.eventsInCalendar;
+
+        return eventSet.filter(
+            (event) =>
+                event.scheduleIndices.includes(
+                    this.state.currentScheduleIndex
+                ) || event.scheduleIndices.length === 4
+        );
+    };
+
     render() {
         const { classes } = this.props;
         return (
@@ -274,13 +363,12 @@ class Calendar extends Component {
                 onClick={this.handleClosePopover}
             >
                 <CalendarPaneToolbar
-                    // onUndo={this.props.onUndo}
-                    // onAddCustomEvent={this.props.onAddCustomEvent}
                     onTakeScreenshot={this.handleTakeScreenshot}
                     currentScheduleIndex={this.state.currentScheduleIndex}
-                    // eventsInCalendar={this.props.eventsInCalendar}
-                    // showFinalSchedule={this.props.showFinalSchedule}
-                    // displayFinal={this.props.displayFinal}
+                    toggleDisplayFinalsSchedule={
+                        this.toggleDisplayFinalsSchedule
+                    }
+                    showFinalsSchedule={this.state.showFinalsSchedule}
                 />
                 <div>
                     <div
@@ -349,12 +437,7 @@ class Calendar extends Component {
                             defaultDate={new Date(2018, 0, 1)}
                             min={new Date(2018, 0, 1, 7)}
                             max={new Date(2018, 0, 1, 23)}
-                            events={this.state.eventsInCalendar.filter(
-                                (event) =>
-                                    event.scheduleIndices.includes(
-                                        this.state.currentScheduleIndex
-                                    ) || event.scheduleIndices.length === 4
-                            )}
+                            events={this.getEventsForCalendar()}
                             eventPropGetter={Calendar.eventStyleGetter}
                             showMultiDayTimes={false}
                             components={{ event: CustomEvent({ classes }) }}
