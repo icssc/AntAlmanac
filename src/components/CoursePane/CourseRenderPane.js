@@ -4,8 +4,8 @@ import React, { Component, Fragment, Suspense } from 'react';
 import CourseDetailPane from './CourseDetailPane';
 import SchoolDeptCard from './SchoolDeptCard';
 import NoNothing from './no_results.png';
-import AdAd from './ad_ad.png';
 import loadingGif from '../CoursePane/loading.mp4';
+import Outreach from './Outreach';
 
 const MiniSectionTable = React.lazy(() => import('./MiniSectionTable'));
 
@@ -46,6 +46,7 @@ const styles = (theme) => ({
 class CourseRenderPane extends Component {
   constructor(props) {
     super(props);
+    //console.log(props);
     this.getGrid = this.getGrid.bind(this);
     this.handleDismissDetails = this.handleDismissDetails.bind(this);
     this.state = {
@@ -64,7 +65,6 @@ class CourseRenderPane extends Component {
   };
 
   getGrid(SOCObject) {
-    console.log(SOCObject);
     if ('departments' in SOCObject) {
       return (
         // <SchoolDeptCard
@@ -180,6 +180,7 @@ class CourseRenderPane extends Component {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
+              backgroundColor: 'white',
             }}
           >
             <img src={NoNothing} alt="" />
@@ -187,13 +188,10 @@ class CourseRenderPane extends Component {
         ) : (
           <Grid container spacing={16}>
             <Grid item md={12} xs={12}>
-              <a
-                href="https://forms.gle/irQBrBkqHYYxcEU39"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img src={AdAd} alt="" className={this.props.classes.ad} />
-              </a>
+              <Outreach
+                className={this.props.classes.ad}
+                dept={this.props.deptName}
+              />
             </Grid>
             {this.props.courseData.map((item) => this.getGrid(item))}
           </Grid>

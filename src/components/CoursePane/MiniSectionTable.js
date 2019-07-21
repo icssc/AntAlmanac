@@ -12,6 +12,7 @@ import { Add, ArrowDropDown } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import querystring from 'querystring';
 import locations from './locations.json';
+import stensal from './stensal.png';
 
 const MouseOverPopover = React.lazy(() => import('./MouseOverPopover'));
 const Instructors = React.lazy(() => import('./Instructors'));
@@ -389,6 +390,18 @@ class MiniSectionTable extends Component {
 
     return (
       <Fragment>
+        {this.props.name.includes('I&C SCI 46') ? (
+          <a
+            href="https://stensal.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src={stensal} alt="banner" width="100%" />
+          </a>
+        ) : (
+          <Fragment />
+        )}
+
         <div
           style={{
             display: 'inline-flex',
@@ -416,7 +429,18 @@ class MiniSectionTable extends Component {
             &nbsp;
           </Typography>
 
-          <Suspense fallback={<Typography variant="h5">Holup...</Typography>}>
+          <Suspense
+            fallback={
+              <CircularProgress
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'white',
+                }}
+              />
+            }
+          >
             <AlmanacGraphWrapped
               term={this.props.term}
               courseDetails={this.props.courseDetails}

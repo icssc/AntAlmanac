@@ -84,14 +84,16 @@ class LoadSaveScheduleFunctionality extends React.Component {
       const savedUserID = window.localStorage.getItem('userID');
       if (savedUserID != null) {
         const userData = await loadUserData(savedUserID); // this shit gotta do promise joint
-        if (userData !== -1) {
-          if (!userData.canceledClass)
+        const allowSchedToUpload = (window.localStorage.getItem('allowScheduleUpload') === 'true');
+        if (userData !== -1 && allowSchedToUpload) {
+          if (!userData.canceledClass){
             this.setState({
               message:
                 'Schedule that was saved under ' + savedUserID + ' loaded.',
               open: true,
               variant: 'success',
             });
+          }
           else
             this.setState({
               message:
@@ -108,12 +110,14 @@ class LoadSaveScheduleFunctionality extends React.Component {
     }
   };
 
-  handleLoad = async (userID) => {
+  handleLoad = async (userID, allowScheduleUpload) => {
     if (userID != null) {
       userID = userID.replace(/\s+/g, '');
 
       if (userID.length > 0) {
         const userData = await loadUserData(userID);
+        window.localStorage.setItem('allowScheduleUpload', allowScheduleUpload);
+        console.log(allowScheduleUpload);
         if (userData !== -1) {
           let message = '';
           let variant = '';
@@ -151,7 +155,7 @@ class LoadSaveScheduleFunctionality extends React.Component {
     }
   };
 
-  handleSave = async (userID) => {
+  handleSave = async (userID, allowScheduleUpload) => {
     if (userID != null) {
       userID = userID.replace(/\s+/g, '');
 
@@ -168,6 +172,7 @@ class LoadSaveScheduleFunctionality extends React.Component {
               "'! Remember that you still need to register for courses through WebReg.",
           });
           window.localStorage.setItem('userID', userID);
+          window.localStorage.setItem('allowScheduleUpload', allowScheduleUpload)
         } catch (err) {
           this.setState({
             open: true,
@@ -182,6 +187,7 @@ class LoadSaveScheduleFunctionality extends React.Component {
   handleClose = (reason) => {
     if (reason !== 'clickaway') this.setState({ open: false });
   };
+  
 
   render() {
     return (

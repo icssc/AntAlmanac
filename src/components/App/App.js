@@ -713,7 +713,8 @@ class App extends Component {
             ) : (
               <Fragment />
             )}
-
+            {/*empty div to prevent icon bug */}
+            <div />
             <Tooltip title="Info Page">
               <Button
                 onClick={() => {

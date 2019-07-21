@@ -3,12 +3,13 @@ import GESelector from './GESelector/GESelector';
 import TermSelector from './TermSelector';
 import CourseCodeSearchBar from './CourseCodeSearchBar';
 import CourseNumberSearchBar from './CourseNumberSearchBar';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Button, Typography, Collapse } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AdvancedSearchTextFields from './AdvancedSearch';
 // import MIUCI from "./MIUCI.png";
 import { ExpandMore, ExpandLess } from '@material-ui/icons';
+import { isMobile } from 'react-device-detect';
 
 const styles = {
   container: {
@@ -24,6 +25,7 @@ const styles = {
   },
   margin: {
     borderTop: 'solid 8px transparent',
+    display: 'inline-flex',
   },
   // miuci: {
   //   width: "35%",
@@ -162,9 +164,24 @@ class SearchForm extends Component {
       <div className={classes.container}>
         <div className={classes.margin}>
           <TermSelector term={this.state.term} setTerm={this.setTerm} />
+          {isMobile ? (
+            <Button
+              variant="contained"
+              onClick={() => this.props.updateFormData(this.state)}
+              style={{
+                backgroundColor: '#72a9ed',
+                boxShadow: 'none',
+                marginLeft: 5,
+              }}
+            >
+              Search
+            </Button>
+          ) : (
+            <Fragment />
+          )}
         </div>
 
-        <div className={classes.margin} style={{ display: 'inline-flex' }}>
+        <div className={classes.margin}>
           <DeptSearchBar dept={this.state.label} setDept={this.setDept} />
           <CourseNumberSearchBar
             //Places CourseNumberSearchBar object next to DeptSearchBar object
@@ -174,7 +191,7 @@ class SearchForm extends Component {
           />
         </div>
 
-        <div className={classes.margin} style={{ display: 'inline-flex' }}>
+        <div className={classes.margin}>
           <GESelector ge={this.state.ge} setGE={this.setGE} />
           <CourseCodeSearchBar
             //Places CourseCodeSearchBar object next to GESelector object
@@ -208,13 +225,17 @@ class SearchForm extends Component {
         </Collapse>
 
         <div className={classes.search}>
-          <Button
-            variant="contained"
-            onClick={() => this.props.updateFormData(this.state)}
-            style={{ backgroundColor: '#72a9ed', boxShadow: 'none' }}
-          >
-            Search
-          </Button>
+          {isMobile ? (
+            <Fragment />
+          ) : (
+            <Button
+              variant="contained"
+              onClick={() => this.props.updateFormData(this.state)}
+              style={{ backgroundColor: '#72a9ed', boxShadow: 'none' }}
+            >
+              Search
+            </Button>
+          )}
         </div>
 
         {/*<div className={classes.new}>

@@ -289,13 +289,14 @@ class SPopover extends React.Component {
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
               <p>
-                Sign up for push notifs on the device on which you intend to
-                receive them.
+                Sign up for push notifs on the device with which you intend to
+                receive them. On Android phones, please add AntAlmanac to the
+                homescreen for this to work.
               </p>
 
               <p>
-                After you register, you should get a test notif. If you do not
-                then, your browser/device might not support push notifications.
+                After you register, you should get a test notif. If you do not,
+                then your browser/device might not support push notifications.
                 For example, iOS dvices do not support push notifications, but
                 Mac computers do.
               </p>
@@ -312,7 +313,7 @@ class SPopover extends React.Component {
               }}
               color="primary"
             >
-              Ok
+              Yes
             </Button>
           </DialogActions>
         </Dialog>

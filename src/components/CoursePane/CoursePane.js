@@ -1,11 +1,12 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, Suspense } from 'react';
 import loadingGif from './loading.mp4';
 import querystring from 'querystring';
-import CourseRenderPane from './CourseRenderPane';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { ArrowBack, Dns, ListAlt, Refresh } from '@material-ui/icons';
 import ReactGA from 'react-ga';
 import InvalidSearch from './invalid_search.png';
+
+const CourseRenderPane = React.lazy(() => import('./CourseRenderPane'));
 
 class CoursePane extends Component {
   constructor(props) {
@@ -109,6 +110,9 @@ class CoursePane extends Component {
         return resp.json();
       })
       .then((jsonObj) => {
+        //console.log('CoursePane: ');
+        //console.log(jsonObj);
+        //console.log(dept);
         this.setState({
           courseData: CoursePane.flatten(jsonObj),
           loading: 2,
@@ -196,17 +200,36 @@ class CoursePane extends Component {
           ) : (
             <Fragment />
           )}
-          <CourseRenderPane
-            formData={this.props.formData}
-            onAddClass={this.props.onAddClass}
-            onToggleDismissButton={this.handleToggleDismissButton}
-            courseData={courseData}
-            view={this.state.view}
-            currentScheduleIndex={this.props.currentScheduleIndex}
-            deptName={this.state.deptName}
-            termName={this.state.termName}
-            destination={this.props.destination}
-          />
+          <Suspense
+            fallback={
+              <div
+                style={{
+                  height: '100%',
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'white',
+                }}
+              >
+                <video autoPlay loop>
+                  <source src={loadingGif} type="video/mp4" />
+                </video>
+              </div>
+            }
+          >
+            <CourseRenderPane
+              formData={this.props.formData}
+              onAddClass={this.props.onAddClass}
+              onToggleDismissButton={this.handleToggleDismissButton}
+              courseData={courseData}
+              view={this.state.view}
+              currentScheduleIndex={this.props.currentScheduleIndex}
+              deptName={this.state.deptName}
+              termName={this.state.termName}
+              destination={this.props.destination}
+            />
+          </Suspense>
         </Fragment>
       );
     } else if (loading === 1) {
