@@ -180,6 +180,7 @@ class CourseRenderPane extends Component {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
+              backgroundColor: 'white',
             }}
           >
             <img src={NoNothing} alt="" />
