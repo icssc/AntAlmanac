@@ -251,3 +251,30 @@ export const changeCurrentSchedule = (direction) => {
 
     dispatcher.dispatch({ type: 'CHANGE_CURRENT_SCHEDULE', newScheduleIndex });
 };
+
+export const changeColor = (event, color) => {
+    const addedCourses = AppStore.getAddedCourses();
+    const customEvents = AppStore.getCustomEvents();
+
+    const addedCoursesAfterColorChange = addedCourses.map((addedCourse) => {
+        if (addedCourse.section.sectionCode === event.sectionCode) {
+            return { ...addedCourse, color: color };
+        } else {
+            return addedCourse;
+        }
+    });
+
+    const customEventsAfterColorChange = customEvents.map((customEvent) => {
+        if (customEvent.customEventID === event.customEventID) {
+            return { ...customEvent, color: color };
+        } else {
+            return customEvent;
+        }
+    });
+
+    dispatcher.dispatch({
+        type: 'COLOR_CHANGE',
+        addedCoursesAfterColorChange,
+        customEventsAfterColorChange,
+    });
+};

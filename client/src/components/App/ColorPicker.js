@@ -1,20 +1,16 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Popover } from '@material-ui/core';
 import { SketchPicker } from 'react-color';
+import { changeColor } from '../../actions/AppStoreActions';
 
-class ColorPicker extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            anchorEl: null,
-            color: this.props.event.color,
-        };
-    }
+class ColorPicker extends PureComponent {
+    state = {
+        anchorEl: null,
+        color: this.props.courseInMoreInfo.color,
+    };
 
     handleClick = (event) => {
-        if (!event) event = window.event;
-        event.cancelBubble = true;
         if (event.stopPropagation) event.stopPropagation();
 
         this.setState({
@@ -23,7 +19,6 @@ class ColorPicker extends React.Component {
     };
 
     handleClose = (event) => {
-        if (!event) event = window.event;
         if (event.stopPropagation) event.stopPropagation();
         this.setState({
             anchorEl: null,
@@ -32,24 +27,21 @@ class ColorPicker extends React.Component {
 
     handleColorChange = (color) => {
         this.setState({ color: color.hex }, () => {
-            this.props.onColorChange(this.props.event, this.state.color);
+            changeColor(this.props.courseInMoreInfo, this.state.color);
         });
     };
 
     render() {
-        const { anchorEl } = this.state;
-        const open = Boolean(anchorEl);
-
         return (
             <div
-                style={{ backgroundColor: this.props.event.color }}
+                style={{ backgroundColor: this.state.color }}
                 onClick={(e) => {
                     this.handleClick(e);
                 }}
             >
                 <Popover
-                    open={open}
-                    anchorEl={anchorEl}
+                    open={Boolean(this.state.anchorEl)}
+                    anchorEl={this.state.anchorEl}
                     onClose={this.handleClose}
                     anchorOrigin={{
                         vertical: 'bottom',
@@ -71,7 +63,6 @@ class ColorPicker extends React.Component {
 }
 
 ColorPicker.propTypes = {
-    event: PropTypes.object.isRequired,
     onColorChange: PropTypes.func.isRequired,
 };
 

@@ -179,7 +179,6 @@ class Calendar extends Component {
 
         for (const course of addedCourses) {
             const finalExam = course.section.finalExam;
-            console.log(finalExam);
 
             if (finalExam.length > 5) {
                 let [
@@ -215,7 +214,7 @@ class Calendar extends Component {
                 date.forEach((shouldBeInCal, index) => {
                     if (shouldBeInCal)
                         finalsEventsInCalendar.push({
-                            title: course.title,
+                            title: course.deptCode + ' ' + course.courseNumber,
                             sectionCode: course.section.sectionCode,
                             sectionType: 'Fin',
                             bldg: course.section.meetings[0].bldg,
@@ -410,7 +409,6 @@ class Calendar extends Component {
                         >
                             <CourseCalendarEvent
                                 courseInMoreInfo={this.state.courseInMoreInfo}
-                                // onColorChange={this.props.onColorChange}
                                 currentScheduleIndex={
                                     this.state.currentScheduleIndex
                                 }

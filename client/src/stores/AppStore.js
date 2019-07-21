@@ -71,6 +71,12 @@ class AppStore extends EventEmitter {
                 this.customEvents = action.customEventsAfterDelete;
                 this.emit('customEventsChange');
                 break;
+            case 'COLOR_CHANGE':
+                this.addedCourses = action.addedCoursesAfterColorChange;
+                this.customEvents = action.customEventsAfterColorChange;
+                this.emit('addedCoursesChange');
+                this.emit('customEventsChange');
+                break;
         }
     }
 }

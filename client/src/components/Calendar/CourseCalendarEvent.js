@@ -2,7 +2,7 @@ import React from 'react';
 import { Paper, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import ColorPicker from '../App/colorPicker.js';
+import ColorPicker from '../App/ColorPicker.js';
 import { Delete } from '@material-ui/icons';
 import locations from '../SectionTable/static/locations.json';
 import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
@@ -136,8 +136,7 @@ const CourseCalendarEvent = (props) => {
                                 <td>Color</td>
                                 <td className={classes.colorPicker}>
                                     <ColorPicker
-                                        event={courseInMoreInfo}
-                                        onColorChange={props.onColorChange}
+                                        courseInMoreInfo={courseInMoreInfo}
                                     />
                                 </td>
                             </tr>
@@ -164,8 +163,7 @@ const CourseCalendarEvent = (props) => {
                             <tr>
                                 <td className={classes.colorPicker}>
                                     <ColorPicker
-                                        event={courseInMoreInfo}
-                                        onColorChange={props.onColorChange}
+                                        courseInMoreInfo={courseInMoreInfo}
                                     />
                                 </td>
                                 <td className={classes.rightCells}>
@@ -204,7 +202,6 @@ const CourseCalendarEvent = (props) => {
 
 CourseCalendarEvent.propTypes = {
     courseInMoreInfo: PropTypes.object.isRequired,
-    onColorChange: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(CourseCalendarEvent);

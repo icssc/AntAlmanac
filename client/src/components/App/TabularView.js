@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import ColorPicker from './colorPicker';
+import ColorPicker from './ColorPicker';
 import {
     Button,
     Menu,
