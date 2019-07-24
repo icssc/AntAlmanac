@@ -129,7 +129,6 @@ class Calendar extends Component {
         },
       ]);
     }
-    console.log(slot);
   };
 
   static eventStyleGetter = (event) => {

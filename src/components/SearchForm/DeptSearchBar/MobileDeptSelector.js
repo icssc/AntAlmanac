@@ -26,7 +26,6 @@ class MobileDeptSelector extends Component {
   }
 
   render() {
-    console.log(this.props.dept);
     return (
       <FormControl style={{ flexGrow: 1, marginRight: 15, width: '50%' }}>
         <InputLabel htmlFor="dept-select">Department</InputLabel>

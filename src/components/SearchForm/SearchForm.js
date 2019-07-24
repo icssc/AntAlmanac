@@ -10,7 +10,6 @@ import { withStyles } from '@material-ui/core/styles';
 import AdvancedSearchTextFields from './AdvancedSearch';
 // import MIUCI from "./MIUCI.png";
 import { ExpandMore, ExpandLess } from '@material-ui/icons';
-import { isMobile } from 'react-device-detect';
 
 const styles = {
   container: {
@@ -169,7 +168,7 @@ class SearchForm extends Component {
       <div className={classes.container}>
         <div className={classes.margin}>
           <TermSelector term={this.state.term} setTerm={this.setTerm} />
-          {isMobile ? (
+          {this.props.isMobile ? (
             <Button
               variant="contained"
               onClick={() => this.props.updateFormData(this.state)}
@@ -187,7 +186,7 @@ class SearchForm extends Component {
         </div>
 
         <div className={classes.margin}>
-          {isMobile ? (
+          {this.props.isMobile ? (
             <MobileDeptSelector
               dept={this.state.dept}
               setDept={this.setDeptMobile}
@@ -237,7 +236,7 @@ class SearchForm extends Component {
         </Collapse>
 
         <div className={classes.search}>
-          {isMobile ? (
+          {this.props.isMobile ? (
             <Fragment />
           ) : (
             <Button

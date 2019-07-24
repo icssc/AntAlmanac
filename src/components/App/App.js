@@ -91,6 +91,7 @@ class App extends Component {
       activeTab: 0,
       destination: InstructorEvals,
       saved: true,
+      isDesktop: window.innerWidth > 960,
     };
     this.handleSelectRMP = this.handleSelectRMP.bind(this);
     this.handleSelectEE = this.handleSelectEE.bind(this);
@@ -881,6 +882,7 @@ class App extends Component {
                   <SearchForm
                     prevFormData={this.state.prevFormData}
                     updateFormData={this.updateFormData}
+                    isMobile={!this.state.isDesktop}
                   />
                 ) : (
                   <Suspense
