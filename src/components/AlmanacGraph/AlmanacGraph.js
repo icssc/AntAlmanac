@@ -1,44 +1,13 @@
-import React, { Component, Fragment, Suspense } from 'react';
+import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import querystring from 'querystring';
-import { Help, Image } from '@material-ui/icons';
+import { Image } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import ReactGA from 'react-ga';
-import {
-  Modal,
-  Button,
-  Paper,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Typography,
-  Tooltip,
-} from '@material-ui/core';
-import loadingGif from '../CoursePane/loading.mp4';
-
-const GraphRenderPane = React.lazy(() => import('./GraphRenderPane'));
+import { Modal, Button, Typography } from '@material-ui/core';
+import GraphModalContent from './GraphModalContent';
 
 const styles = (theme) => ({
-  paper: {
-    position: 'absolute',
-    overflow: 'auto',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '65%',
-    height: '90%',
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing.unit * 4,
-  },
-  courseNotOfferedContainer: {
-    height: '100%',
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   flex: { flexGrow: 1 },
 });
 
@@ -127,96 +96,14 @@ class AlmanacGraph extends Component {
         </Button>
 
         <Modal open={this.state.open} onClose={this.handleClose}>
-          <Paper className={this.props.classes.paper}>
-            <Typography variant="title" className={this.props.classes.flex}>
-              {'Historical Enrollments for ' +
-                this.props.courseDetails.name[0] +
-                ' ' +
-                this.props.courseDetails.name[1] +
-                '   '}
-              <Tooltip title="Need Help with Graphs?">
-                <a
-                  href="https://www.ics.uci.edu/~rang1/AntAlmanac/index.html#support"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: 'red' }}
-                >
-                  <Help fontSize="48px" />
-                </a>
-              </Tooltip>
-            </Typography>
-
-            <br />
-
-            <Typography variant="subtitle1">
-              <b>BETA:</b> AI Graph Descriptions
-            </Typography>
-            <Typography variant="body1">
-              Because graphs are meh, we asked our AI to provide descriptions
-              for them! Our AI is still young, so these descriptions may be
-              wrong; please always use them with the graphs and report any that
-              is inaccurate!
-            </Typography>
-
-            <br />
-
-            <FormControl fullWidth>
-              <InputLabel htmlFor="term-select">Term</InputLabel>
-              <Select
-                value={this.state.term}
-                onChange={this.handleChange}
-                inputProps={{ name: 'term', id: 'term-select' }}
-              >
-                <MenuItem value={'2019 Winter'}>2019 Winter Quarter</MenuItem>
-                <MenuItem value={'2018 Fall'}>2018 Fall Quarter</MenuItem>
-                <MenuItem value={'2018 Spring'}>2018 Spring Quarter</MenuItem>
-                <MenuItem value={'2018 Winter'}>2018 Winter Quarter</MenuItem>
-              </Select>
-            </FormControl>
-
-            <br />
-            <br />
-
-            {this.state.sections.length === 0 ? (
-              <div className={this.props.classes.courseNotOfferedContainer}>
-                <Typography variant="h5">
-                  {'This course was not offered in ' + this.state.term}
-                </Typography>
-              </div>
-            ) : (
-              <div>
-                {this.state.sections.map((section) => {
-                  return (
-                    <Suspense
-                      fallback={
-                        <div
-                          style={{
-                            height: '100%',
-                            width: '100%',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            backgroundColor: 'white',
-                          }}
-                        >
-                          <video autoPlay loop>
-                            <source src={loadingGif} type="video/mp4" />
-                          </video>
-                        </div>
-                      }
-                    >
-                      <GraphRenderPane
-                        section={section}
-                        quarter={this.state.term[5].toLowerCase()}
-                        year={this.state.term.substring(2, 4)}
-                        length={this.state.length}
-                      />
-                    </Suspense>
-                  );
-                })}
-              </div>
-            )}
-          </Paper>
+          <GraphModalContent
+            fetchCourseData={this.fetchCourseData}
+            term={this.state.term}
+            sections={this.state.sections}
+            length={this.state.length}
+            courseDetails={this.props.courseDetails}
+            handleChange={this.handleChange}
+          />
         </Modal>
       </Fragment>
     );
