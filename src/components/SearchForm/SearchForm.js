@@ -163,12 +163,13 @@ class SearchForm extends Component {
 
   render() {
     const { classes } = this.props;
+    const isMobile = window.innerWidth < 960;
 
     return (
       <div className={classes.container}>
         <div className={classes.margin}>
           <TermSelector term={this.state.term} setTerm={this.setTerm} />
-          {this.props.isMobile ? (
+          {isMobile ? (
             <Button
               variant="contained"
               onClick={() => this.props.updateFormData(this.state)}
@@ -186,12 +187,13 @@ class SearchForm extends Component {
         </div>
 
         <div className={classes.margin}>
-          {this.props.isMobile ? (
+          {isMobile ?
+            (
             <MobileDeptSelector
               dept={this.state.dept}
               setDept={this.setDeptMobile}
             />
-          ) : (
+            ) : (
             <DeptSearchBar dept={this.state.label} setDept={this.setDept} />
           )}
           <CourseNumberSearchBar
@@ -236,7 +238,7 @@ class SearchForm extends Component {
         </Collapse>
 
         <div className={classes.search}>
-          {this.props.isMobile ? (
+          {isMobile ? (
             <Fragment />
           ) : (
             <Button
