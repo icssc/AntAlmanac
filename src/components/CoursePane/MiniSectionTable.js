@@ -395,6 +395,7 @@ class MiniSectionTable extends Component {
             href="https://stensal.com"
             target="_blank"
             rel="noopener noreferrer"
+            style={{ marginBottom: 8 }}
           >
             <img src={stensal} alt="banner" width="100%" />
           </a>

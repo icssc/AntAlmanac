@@ -128,7 +128,6 @@ class App extends Component {
     //add this.changeSave(false); to functions that change schedules
     //and this.changeSave(true); after saving
     this.setState({ saved: changeTo });
-    console.log('what the fuck');
   }
 
   handleRightPaneViewChange = (event, rightPaneView) => {
@@ -549,8 +548,8 @@ class App extends Component {
   };
 
   handleAddCustomEvent = (events) => {
-    this.changeSave(false); //marks as need saving
     this.setState({ courseEvents: this.state.courseEvents.concat(events) });
+    this.changeSave(false); //marks as need saving
   };
 
   handleEditCustomEvent = (newEvents, oldEvent) => {

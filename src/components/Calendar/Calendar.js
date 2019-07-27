@@ -102,6 +102,35 @@ class Calendar extends Component {
     this.setState({ anchorEvent: null, moreInfoOpen: false });
   };
 
+  handleDragCustomEvent = (slot) => {
+    if (slot.action === 'select') {
+      //if a selection was dragged out
+      this.props.onAddCustomEvent([
+        {
+          color: '#696969',
+          title: 'Waiting for a Name',
+          scheduleIndex: this.props.currentScheduleIndex,
+          start: slot.start,
+          end: slot.end,
+          isCustomEvent: true,
+          customEventID: Math.floor(Math.random() * 1000000),
+        },
+      ]);
+    } else if (slot.action === 'doubleClick') {
+      this.props.onAddCustomEvent([
+        {
+          color: '#696969',
+          title: 'Waiting for a Name',
+          scheduleIndex: this.props.currentScheduleIndex,
+          start: slot.start,
+          end: new Date(slot.start.getTime() + 60 * 60000),
+          isCustomEvent: true,
+          customEventID: Math.floor(Math.random() * 1000000),
+        },
+      ]);
+    }
+  };
+
   static eventStyleGetter = (event) => {
     return {
       style: {
@@ -196,6 +225,8 @@ class Calendar extends Component {
                 showMultiDayTimes={false}
                 components={{ event: CustomEvent({ classes }) }}
                 onSelectEvent={this.handleEventClick}
+                selectable={true}
+                onSelectSlot={this.handleDragCustomEvent}
               />
             ) : (
               <MobileCalendar

@@ -84,17 +84,17 @@ class LoadSaveScheduleFunctionality extends React.Component {
       const savedUserID = window.localStorage.getItem('userID');
       if (savedUserID != null) {
         const userData = await loadUserData(savedUserID); // this shit gotta do promise joint
-        const allowSchedToUpload = (window.localStorage.getItem('allowScheduleUpload') === 'true');
+        const allowSchedToUpload =
+          window.localStorage.getItem('allowScheduleUpload') === 'true';
         if (userData !== -1 && allowSchedToUpload) {
-          if (!userData.canceledClass){
+          if (!userData.canceledClass) {
             this.setState({
               message:
                 'Schedule that was saved under ' + savedUserID + ' loaded.',
               open: true,
               variant: 'success',
             });
-          }
-          else
+          } else
             this.setState({
               message:
                 'Schedule that was saved under ' +
@@ -117,7 +117,7 @@ class LoadSaveScheduleFunctionality extends React.Component {
       if (userID.length > 0) {
         const userData = await loadUserData(userID);
         window.localStorage.setItem('allowScheduleUpload', allowScheduleUpload);
-        console.log(allowScheduleUpload);
+        // console.log(allowScheduleUpload);
         if (userData !== -1) {
           let message = '';
           let variant = '';
@@ -172,7 +172,10 @@ class LoadSaveScheduleFunctionality extends React.Component {
               "'! Remember that you still need to register for courses through WebReg.",
           });
           window.localStorage.setItem('userID', userID);
-          window.localStorage.setItem('allowScheduleUpload', allowScheduleUpload)
+          window.localStorage.setItem(
+            'allowScheduleUpload',
+            allowScheduleUpload
+          );
         } catch (err) {
           this.setState({
             open: true,
@@ -187,7 +190,6 @@ class LoadSaveScheduleFunctionality extends React.Component {
   handleClose = (reason) => {
     if (reason !== 'clickaway') this.setState({ open: false });
   };
-  
 
   render() {
     return (

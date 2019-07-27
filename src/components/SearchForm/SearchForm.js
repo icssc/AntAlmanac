@@ -1,4 +1,5 @@
 import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
+import MobileDeptSelector from './DeptSearchBar/MobileDeptSelector';
 import GESelector from './GESelector/GESelector';
 import TermSelector from './TermSelector';
 import CourseCodeSearchBar from './CourseCodeSearchBar';
@@ -9,7 +10,6 @@ import { withStyles } from '@material-ui/core/styles';
 import AdvancedSearchTextFields from './AdvancedSearch';
 // import MIUCI from "./MIUCI.png";
 import { ExpandMore, ExpandLess } from '@material-ui/icons';
-import { isMobile } from 'react-device-detect';
 
 const styles = {
   container: {
@@ -136,6 +136,10 @@ class SearchForm extends Component {
     else this.setState({ dept: dept.value, label: dept.label });
   };
 
+  setDeptMobile = (dept) => {
+    this.setState({ dept: dept });
+  };
+
   handleAdvancedSearchChange = (advancedSearchState) => {
     this.setState(advancedSearchState);
   };
@@ -159,6 +163,7 @@ class SearchForm extends Component {
 
   render() {
     const { classes } = this.props;
+    const isMobile = window.innerWidth < 960;
 
     return (
       <div className={classes.container}>
@@ -182,7 +187,15 @@ class SearchForm extends Component {
         </div>
 
         <div className={classes.margin}>
-          <DeptSearchBar dept={this.state.label} setDept={this.setDept} />
+          {isMobile ?
+            (
+            <MobileDeptSelector
+              dept={this.state.dept}
+              setDept={this.setDeptMobile}
+            />
+            ) : (
+            <DeptSearchBar dept={this.state.label} setDept={this.setDept} />
+          )}
           <CourseNumberSearchBar
             //Places CourseNumberSearchBar object next to DeptSearchBar object
             onAdvancedSearchChange={this.handleAdvancedSearchChange}
