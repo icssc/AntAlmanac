@@ -873,6 +873,7 @@ class App extends Component {
                       scheduleIndex={this.state.currentScheduleIndex}
                       onCopySchedule={this.handleCopySchedule}
                       onEditCustomEvent={this.handleEditCustomEvent}
+                      onClassDelete={this.handleClassDelete}
                       destination={this.state.destination}
                       handleClearSchedule={this.handleClearSchedule}
                     />
