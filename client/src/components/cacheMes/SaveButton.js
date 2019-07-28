@@ -10,15 +10,13 @@ import {
     Typography,
 } from '@material-ui/core';
 import { Save } from '@material-ui/icons';
+import { saveSchedule } from '../../actions/AppStoreActions';
 
 export default class FormDialog extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            open: false,
-            name: null,
-        };
-    }
+    state = {
+        open: false,
+        userID: null,
+    };
 
     handleOpen = () => {
         this.setState({ open: true });
@@ -28,15 +26,15 @@ export default class FormDialog extends Component {
         if (wasCancelled) this.setState({ open: false });
         else
             this.setState({ open: false }, () => {
-                this.props.handleSave(this.state.name);
+                saveSchedule(this.state.userID);
             });
     };
 
     componentDidMount() {
         if (typeof Storage !== 'undefined') {
-            const user = window.localStorage.getItem('userID');
-            if (user !== null) {
-                this.setState({ name: user });
+            const userID = window.localStorage.getItem('userID');
+            if (userID !== null) {
+                this.setState({ userID: userID });
             }
         }
 
@@ -50,21 +48,16 @@ export default class FormDialog extends Component {
     enterEvent = (event) => {
         const charCode = event.which ? event.which : event.keyCode;
 
-        if (
-            (charCode === 13 || charCode === 10) &&
-            document.activeElement.id === 'nameSave'
-        ) {
+        if (charCode === 13 || charCode === 10) {
             event.preventDefault();
-            this.setState({ open: false }, () => {
-                this.props.handleSave(this.state.name);
-            });
+            this.handleClose(false);
 
             return false;
         }
     };
 
-    setName = (event) => {
-        this.setState({ name: event.target.value });
+    setUserID = (event) => {
+        this.setState({ userID: event.target.value });
     };
 
     render() {
@@ -87,18 +80,17 @@ export default class FormDialog extends Component {
                     <DialogTitle id="form-dialog-title">Save</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Enter your username here to save your schedules.
+                            Enter your useruserID here to save your schedules.
                         </DialogContentText>
                         <TextField
                             autoFocus
                             margin="dense"
-                            id="nameSave"
                             label="User ID"
                             type="text"
                             fullWidth
                             placeholder="Enter here"
-                            defaultValue={this.state.name}
-                            onChange={this.setName}
+                            defaultValue={this.state.userID}
+                            onChange={this.setUserID}
                         />
                     </DialogContent>
                     <DialogActions>

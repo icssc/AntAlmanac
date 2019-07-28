@@ -42,6 +42,7 @@ const styles = {
 };
 
 class SectionTable extends PureComponent {
+    //TODO: for efficiency, search multiple classes at once
     state = { courseDetails: this.props.courseDetails };
 
     componentDidMount = async () => {

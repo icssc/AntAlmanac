@@ -15,7 +15,7 @@ import {
     red,
     teal,
 } from '@material-ui/core/colors';
-import { saveUserData } from '../components/App/FetchHelper';
+import { getCoursesData } from '../components/App/FetchHelper';
 
 const arrayOfColors = [
     red[500],
@@ -94,25 +94,94 @@ export const addCourse = (
 };
 
 export const saveSchedule = async (userID) => {
-    const addedCourses = AppStore.getAddedCourses();
-    const customEvents = AppStore.getCustomEvents();
+    if (userID != null) {
+        userID = userID.replace(/\s+/g, '');
 
-    const userScheduleData = { addedCourses: [], customEvents: customEvents };
+        if (userID.length > 0) {
+            // try {
+            window.localStorage.setItem('userID', userID);
 
-    userScheduleData.addedCourses = addedCourses.map((course) => {
-        return {
-            color: course.color,
-            term: course.term,
-            sectionCode: course.section.sectionCode,
-            scheduleIndices: course.scheduleIndices,
-        };
-    });
-    //TODO: Snackbar
-    await saveUserData(userID, userScheduleData);
+            const addedCourses = AppStore.getAddedCourses();
+            const customEvents = AppStore.getCustomEvents();
+
+            const userData = { addedCourses: [], customEvents: customEvents };
+
+            userData.addedCourses = addedCourses.map((course) => {
+                return {
+                    color: course.color,
+                    term: course.term,
+                    sectionCode: course.section.sectionCode,
+                    scheduleIndices: course.scheduleIndices,
+                };
+            });
+
+            await fetch(`/api/saveUserData`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userID, userData }),
+            });
+
+            // TODO: Snackbar
+            dispatcher.dispatch({ type: 'SAVE_SCHEDULE', userID });
+
+            // this.setState({
+            //     variant: 'success',
+            //     open: true,
+            //     message:
+            //         "Schedule saved under username '" +
+            //         userID +
+            //         "'! Remember to register for courses through WebReg.",
+            // });
+            // } catch (err) {
+            // this.setState({
+            //     open: true,
+            //     message:
+            //         "Couldn't save schedule under '" + userID + "'.",
+            //     variant: 'warning',
+            // });
+            // }
+        }
+    }
 };
 
-export const loadSchedule = async (userData) => {
-    dispatcher.dispatch({ type: 'LOAD_SCHEDULE', userData });
+export const loadSchedule = async (userID) => {
+    if (userID != null) {
+        userID = userID.replace(/\s+/g, '');
+
+        if (userID.length > 0) {
+            const data = await fetch(`/api/loadUserData/?userID=${userID}`);
+            const json = await data.json();
+            window.localStorage.setItem('userID', userID);
+            dispatcher.dispatch({
+                type: 'LOAD_SCHEDULE',
+                userData: await getCoursesData(json.userData),
+            });
+
+            //TODO: Snackbar
+            // if (userData !== -1) {
+            //     this.setState(
+            //         {
+            //             open: true,
+            //             message:  `Schedule for "${userID}" loaded`,
+            //             variant: 'success',
+            //         },
+            //         async () => {
+            //
+            //         }
+            //     );
+            // } else {
+            //     this.setState({
+            //         open: true,
+            //         message:
+            //             `We couldn't find a schedule found under
+            //                 "${userID}"`,
+            //         variant: 'warning',
+            //     });
+            // }
+        }
+    }
 };
 
 export const deleteCourse = (sectionCode, scheduleIndex) => {
@@ -168,8 +237,6 @@ export const deleteCustomEvent = (customEventID, scheduleIndex) => {
         customEventsAfterDelete,
     });
 };
-
-export const changeCourseColor = (sectionCode) => {};
 
 export const clearSchedules = (scheduleIndicesToClear) => {
     const addedCourses = AppStore.getAddedCourses();

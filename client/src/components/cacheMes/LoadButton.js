@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import {
     Button,
     TextField,
@@ -10,11 +10,12 @@ import {
     Typography,
 } from '@material-ui/core';
 import { CloudDownload } from '@material-ui/icons';
+import { loadSchedule } from '../../actions/AppStoreActions';
 
-export default class LoadDialog extends Component {
+export default class LoadDialog extends PureComponent {
     state = {
         open: false,
-        name: null,
+        userID: null,
     };
 
     handleOpen = () => {
@@ -25,7 +26,8 @@ export default class LoadDialog extends Component {
         if (wasCancelled) this.setState({ open: false });
         else
             this.setState({ open: false }, () => {
-                this.props.handleLoad(this.state.name);
+                //TODO: Error handling
+                loadSchedule(this.state.userID);
             });
     };
 
@@ -48,21 +50,15 @@ export default class LoadDialog extends Component {
     handleEnterButtonPressed = (event) => {
         const charCode = event.which ? event.which : event.keyCode;
 
-        if (
-            (charCode === 13 || charCode === 10) &&
-            document.activeElement.id === 'name'
-        ) {
+        if (charCode === 13 || charCode === 10) {
             event.preventDefault();
-            this.setState({ open: false }, () => {
-                this.props.handleLoad(this.state.name);
-            });
-
+            this.handleClose(false);
             return false;
         }
     };
 
     setUserID = (event) => {
-        this.setState({ name: event.target.value });
+        this.setState({ userID: event.target.value });
     };
 
     render() {
@@ -71,9 +67,7 @@ export default class LoadDialog extends Component {
                 <Button onClick={this.handleOpen} color="inherit">
                     <CloudDownload />
                     {this.props.isDesktop ? (
-                        <Typography color="inherit">
-                            &nbsp;&nbsp;LOAD
-                        </Typography>
+                        <Typography color="inherit">LOAD</Typography>
                     ) : (
                         <Fragment />
                     )}

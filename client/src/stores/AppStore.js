@@ -77,6 +77,12 @@ class AppStore extends EventEmitter {
                 this.emit('addedCoursesChange');
                 this.emit('customEventsChange');
                 break;
+            case 'LOAD_SCHEDULE':
+                this.addedCourses = action.userData.addedCourses;
+                this.customEvents = action.userData.customEvents;
+                this.emit('addedCoursesChange');
+                this.emit('customEventsChange');
+                break;
         }
     }
 }
