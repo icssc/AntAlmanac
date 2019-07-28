@@ -589,7 +589,10 @@ class App extends Component {
                     handleClearSchedule={this.handleClearSchedule}
                   />
                   :
-                  ((this.state.rightPaneView === 2) ? <Map /> :
+                  ((this.state.rightPaneView === 2) ?
+                    <Map
+                      eventsInCalendar={this.state.courseEvents}
+                    /> :
                   (
                     this.state.showSearch ?
                       <SearchForm

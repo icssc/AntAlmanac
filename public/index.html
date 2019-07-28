@@ -1,20 +1,19 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
-  <head>
+<head>
     <style>
-      @media
-      (min-resolution: 120dpi){
-        html {
-          font-size: 14px;
+        @media (min-resolution: 120dpi) {
+            html {
+                font-size: 14px;
+            }
         }
-      }
-      @media
-      (min-resolution: 144dpi){
-        html {
-          font-size: 12px;
+
+        @media (min-resolution: 144dpi) {
+            html {
+                font-size: 12px;
+            }
         }
-      }
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
@@ -26,6 +25,15 @@
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
     <link rel="stylesheet" href="%PUBLIC_URL%/google_font_roboto_300_400_500_700.css">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+          integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+          crossorigin="" />
+    <style type="text/css">
+        .leaflet-container {
+            height: 800px;
+        }
+    </style>
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -37,10 +45,10 @@
     -->
     <title>AntAlmanac</title>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    
 
 
-  </head>
+
+</head>
   <body>
     <noscript>
       You need to enable JavaScript to run this app.
