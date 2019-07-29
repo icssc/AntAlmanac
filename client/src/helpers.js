@@ -1,13 +1,16 @@
 export async function getCoursesData(userData) {
     const dataToSend = {};
     const addedCourses = [];
-    const sectionCodeToInfoMapping = userData.addedCourses.reduce(
-        (accumulator, addedCourse) => {
-            accumulator[addedCourse.sectionCode] = { ...addedCourse };
-            return accumulator;
-        },
-        {}
-    );
+    let sectionCodeToInfoMapping;
+    if (userData.addedCourses.length !== 0) {
+        sectionCodeToInfoMapping = userData.addedCourses.reduce(
+            (accumulator, addedCourse) => {
+                accumulator[addedCourse.sectionCode] = { ...addedCourse };
+                return accumulator;
+            },
+            {}
+        );
+    }
 
     for (let i = 0; i < userData.addedCourses.length; ++i) {
         const addedCourse = userData.addedCourses[i];

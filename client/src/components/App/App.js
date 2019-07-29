@@ -23,7 +23,7 @@ import {
 import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality';
 import ReactGA from 'react-ga';
 import loadingGif from '../CoursePane/static/loading.mp4';
-import { saveUserData } from './FetchHelper';
+import { saveUserData } from '../../helpers';
 import TabularView from './TabularView';
 
 const CoursePane = React.lazy(() => import('../CoursePane/CoursePane'));

@@ -15,7 +15,7 @@ import {
     red,
     teal,
 } from '@material-ui/core/colors';
-import { getCoursesData } from '../components/App/FetchHelper';
+import { getCoursesData } from '../helpers';
 
 const arrayOfColors = [
     red[500],
@@ -94,6 +94,7 @@ export const addCourse = (
 };
 
 export const saveSchedule = async (userID) => {
+    console.log('save');
     if (userID != null) {
         userID = userID.replace(/\s+/g, '');
 
@@ -147,6 +148,8 @@ export const saveSchedule = async (userID) => {
 };
 
 export const loadSchedule = async (userID) => {
+    console.log('load');
+
     if (userID != null) {
         userID = userID.replace(/\s+/g, '');
 
@@ -160,6 +163,7 @@ export const loadSchedule = async (userID) => {
             });
 
             //TODO: Snackbar
+
             // if (userData !== -1) {
             //     this.setState(
             //         {
