@@ -41,6 +41,7 @@ import {
   blueGrey,
 } from '@material-ui/core/colors';
 import SearchForm from '../SearchForm/SearchForm';
+import Map from './Map';
 
 const TabularView = React.lazy(() => import('./TabularView'));
 const OptOutPopover = React.lazy(() => import('../CoursePane/OptOutPopover'));
@@ -833,6 +834,7 @@ class App extends Component {
                       </div>
                     }
                   />
+                  <Tab label="Dora Mode"/>
                 </Tabs>
               </div>
               <div
@@ -847,7 +849,7 @@ class App extends Component {
                 }}
                 id="rightPane"
               >
-                {this.state.rightPaneView ? (
+                {(this.state.rightPaneView === 1) ? (
                   <Suspense
                     fallback={
                       <CircularProgress
@@ -878,40 +880,47 @@ class App extends Component {
                       handleClearSchedule={this.handleClearSchedule}
                     />
                   </Suspense>
-                ) : this.state.showSearch ? (
-                  <SearchForm
-                    prevFormData={this.state.prevFormData}
-                    updateFormData={this.updateFormData}
-                  />
-                ) : (
-                  <Suspense
-                    fallback={
-                      <div
-                        style={{
-                          height: '100%',
-                          width: '100%',
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          backgroundColor: 'white',
-                        }}
-                      >
-                        <video autoPlay loop>
-                          <source src={loadingGif} type="video/mp4" />
-                        </video>
-                      </div>
-                    }
-                  >
-                    <CoursePane
-                      formData={this.state.formData}
-                      onAddClass={this.handleAddClass}
-                      onDismissSearchResults={this.handleDismissSearchResults}
+                ) : ((this.state.rightPaneView === 2) ?
+                    <Map
+                      eventsInCalendar={this.state.courseEvents}
                       currentScheduleIndex={this.state.currentScheduleIndex}
-                      term={this.state.formData}
-                      destination={this.state.destination}
-                    />
-                  </Suspense>
-                )}
+                    /> :
+                  (
+                    this.state.showSearch ? (
+                      <SearchForm
+                        prevFormData={this.state.prevFormData}
+                        updateFormData={this.updateFormData}
+                      />
+                    ) : (
+                      <Suspense
+                        fallback={
+                          <div
+                            style={{
+                              height: '100%',
+                              width: '100%',
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              backgroundColor: 'white',
+                            }}
+                          >
+                            <video autoPlay loop>
+                              <source src={loadingGif} type="video/mp4" />
+                            </video>
+                          </div>
+                        }
+                      >
+                        <CoursePane
+                          formData={this.state.formData}
+                          onAddClass={this.handleAddClass}
+                          onDismissSearchResults={this.handleDismissSearchResults}
+                          currentScheduleIndex={this.state.currentScheduleIndex}
+                          term={this.state.formData}
+                          destination={this.state.destination}
+                        />
+                      </Suspense>
+                    )
+                ))}
               </div>
             </div>
           </Grid>
