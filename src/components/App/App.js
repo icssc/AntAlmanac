@@ -18,6 +18,7 @@ import {
   CalendarToday,
   Assignment,
   FormatListBulleted,
+  Map,
 } from '@material-ui/icons';
 import ReactGA from 'react-ga';
 import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality';
@@ -41,7 +42,7 @@ import {
   blueGrey,
 } from '@material-ui/core/colors';
 import SearchForm from '../SearchForm/SearchForm';
-import Map from './Map';
+import UCIMap from './Map';
 
 const TabularView = React.lazy(() => import('./TabularView'));
 const OptOutPopover = React.lazy(() => import('../CoursePane/OptOutPopover'));
@@ -821,7 +822,7 @@ class App extends Component {
                   <Tab
                     label={
                       <div style={{ display: 'inline-flex' }}>
-                        <Search style={{ height: 20 }} />
+                        <Search style={{ height: 18 }} />
                         <Typography>&nbsp;&nbsp;Class Search</Typography>
                       </div>
                     }
@@ -829,12 +830,19 @@ class App extends Component {
                   <Tab
                     label={
                       <div style={{ display: 'inline-flex' }}>
-                        <FormatListBulleted style={{ height: 20 }} />
+                        <FormatListBulleted style={{ height: 18 }} />
                         <Typography>&nbsp;&nbsp;Added Classes</Typography>
                       </div>
                     }
                   />
-                  <Tab label="Dora Mode"/>
+                  <Tab
+                    label={
+                      <div style={{ display: 'inline-flex' }}>
+                        <Map style={{ height: 18 }} />
+                        <Typography>&nbsp;&nbsp;Dora Mode</Typography>
+                      </div>
+                    }
+                  />
                 </Tabs>
               </div>
               <div
@@ -849,7 +857,7 @@ class App extends Component {
                 }}
                 id="rightPane"
               >
-                {(this.state.rightPaneView === 1) ? (
+                {this.state.rightPaneView === 1 ? (
                   <Suspense
                     fallback={
                       <CircularProgress
@@ -880,47 +888,45 @@ class App extends Component {
                       handleClearSchedule={this.handleClearSchedule}
                     />
                   </Suspense>
-                ) : ((this.state.rightPaneView === 2) ?
-                    <Map
-                      eventsInCalendar={this.state.courseEvents}
-                      currentScheduleIndex={this.state.currentScheduleIndex}
-                    /> :
-                  (
-                    this.state.showSearch ? (
-                      <SearchForm
-                        prevFormData={this.state.prevFormData}
-                        updateFormData={this.updateFormData}
-                      />
-                    ) : (
-                      <Suspense
-                        fallback={
-                          <div
-                            style={{
-                              height: '100%',
-                              width: '100%',
-                              display: 'flex',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              backgroundColor: 'white',
-                            }}
-                          >
-                            <video autoPlay loop>
-                              <source src={loadingGif} type="video/mp4" />
-                            </video>
-                          </div>
-                        }
+                ) : this.state.rightPaneView === 2 ? (
+                  <UCIMap
+                    eventsInCalendar={this.state.courseEvents}
+                    currentScheduleIndex={this.state.currentScheduleIndex}
+                  />
+                ) : this.state.showSearch ? (
+                  <SearchForm
+                    prevFormData={this.state.prevFormData}
+                    updateFormData={this.updateFormData}
+                  />
+                ) : (
+                  <Suspense
+                    fallback={
+                      <div
+                        style={{
+                          height: '100%',
+                          width: '100%',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          backgroundColor: 'white',
+                        }}
                       >
-                        <CoursePane
-                          formData={this.state.formData}
-                          onAddClass={this.handleAddClass}
-                          onDismissSearchResults={this.handleDismissSearchResults}
-                          currentScheduleIndex={this.state.currentScheduleIndex}
-                          term={this.state.formData}
-                          destination={this.state.destination}
-                        />
-                      </Suspense>
-                    )
-                ))}
+                        <video autoPlay loop>
+                          <source src={loadingGif} type="video/mp4" />
+                        </video>
+                      </div>
+                    }
+                  >
+                    <CoursePane
+                      formData={this.state.formData}
+                      onAddClass={this.handleAddClass}
+                      onDismissSearchResults={this.handleDismissSearchResults}
+                      currentScheduleIndex={this.state.currentScheduleIndex}
+                      term={this.state.formData}
+                      destination={this.state.destination}
+                    />
+                  </Suspense>
+                )}
               </div>
             </div>
           </Grid>
