@@ -1,68 +1,46 @@
-import React, {Component} from "react";
-import {
-  TextField,
-} from "@material-ui/core";
+import React, { Component } from 'react';
+import { TextField } from '@material-ui/core';
+import PropTypes from 'prop-types';
 
-class CourseCodeSearchBar extends Component
-{
+class CourseCodeSearchBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      courseCode: "",
-    }
+      courseCode: '',
+    };
   }
 
-  handleChange = name => event => {
-    if (name === "endTime" || name === "startTime") {
-      if (event.target.value !== "") {
-        if (parseInt(event.target.value.slice(0, 2), 10) > 12)
-          this.setState({[name]: (parseInt(event.target.value.slice(0, 2), 10) - 12) + ":00pm"}, () => {
-            this.props.onAdvancedSearchChange(this.state)
-          });
-        else
-          this.setState({[name]: parseInt(event.target.value.slice(0, 2), 10) + ":00am"}, () => {
-            this.props.onAdvancedSearchChange(this.state)
-          });
-      } else {
-        this.setState({[name]: ""}, () => {
-          this.props.onAdvancedSearchChange(this.state)
-        });
-      }
-    } else if (name === "online"){
-      if (event.target.checked){
-        this.setState({ building: "ON" }, () => {
-          this.props.onAdvancedSearchChange(this.state)
-        });
-      } else {
-        this.setState({ building: "" }, () => {
-          this.props.onAdvancedSearchChange(this.state)
-        });
-      }
-    } else {
-      this.setState({[name]: event.target.value}, () => {
-        this.props.onAdvancedSearchChange(this.state)
-      });
-    }
+  /**
+   *  Handles user input under CourseCodeSearchBar object and sets the state to its given input.
+   */
+  handleChange = (name) => (event) => {
+    this.setState({ [name]: event.target.value }, () => {
+      this.props.onAdvancedSearchChange(this.state);
+    });
+    //Removed unnecessary if-else statements (6-28-19)
   };
 
   render() {
     //const {classes} = this.props;
 
     return (
-
-        <div>
-          <TextField
-            id="course-code"
-            label="Course Code or Range"
-            value={this.state.courseCode}
-            onChange={this.handleChange('courseCode')}
-            type="search"
-            helperText="ex. 14200, 29000-29100"
-            fullWidth
-          />
-        </div>
+      <div>
+        <TextField
+          id="course-code"
+          label="Course Code or Range"
+          value={this.props.params.courseCode}
+          onChange={this.handleChange('courseCode')}
+          type="search"
+          helperText="ex. 14200, 29000-29100"
+          fullWidth
+        />
+      </div>
     );
   }
 }
+
+CourseCodeSearchBar.propTypes = {
+  onAdvancedSearchChange: PropTypes.func,
+};
 
 export default CourseCodeSearchBar;
