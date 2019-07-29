@@ -1,0 +1,462 @@
+{
+  "AITR": {
+    "coord": [ 33.649790, -117.843907 ],
+    "name": "Arts Instruction & Technology Resource Center"
+  },
+
+  "ALH": {
+    "coord": [ 33.648413, -117.841231 ],
+    "name": "Aldrich Hall"
+  },
+
+  "ALP": {
+    "coord": [ 33.647158, -117.844530 ],
+    "name": "Anteater Learning Pavilion"
+  },
+
+  "APL": {
+    "coord": [ 33.664803, -117.853836 ],
+    "name": "Air Pollution Labs"
+  },
+
+  "ARAN": {
+    "coord": [ 33.646534, -117.846953 ],
+    "name": "Arts Annex"
+  },
+
+  "ARBO": {
+    "coord": [ 33.663857, -117.852864 ],
+    "name": "Arboretum (North Campus)"
+  },
+
+  "ARC": {
+    "coord": [ 33.643427, -117.828010 ],
+    "name": "Anteater Recreation Center"
+  },
+
+  "ART": {
+    "coord": [ 33.650143, -117.844868 ],
+    "name": "Art Studio"
+  },
+
+  "BH": {
+    "coord": [ 33.646401, -117.849583 ],
+    "name": "Berk Hall"
+  },
+
+  "BIMO": {
+    "coord": [ 33.643759, -117.846376 ],
+    "name": "Bison Modular"
+  },
+
+  "BLI": {
+    "coord": [ 33.644221, -117.849939 ],
+    "name": "Beckman Laser Institute"
+  },
+
+  "BRL": {
+    "coord": [ 33.646442, -117.846159 ],
+    "name": "Bonney Research Laboratory"
+  },
+
+  "BS3": {
+    "coord": [ 33.645309, -117.846191 ],
+    "name": "Biological Sciences III"
+  },
+
+  "CD": {
+    "coord": [ 33.663114, -117.856823 ],
+    "name": "Child Development Center (North Campus)"
+  },
+
+  "CH": {
+    "coord": [ 33.647921, -117.848152 ],
+    "name": "Crawford Hall"
+  },
+
+  "CNLM": {
+    "coord": [ 33.646565, -117.846415 ],
+    "name": "Center for the Neurobiology of Learning and Memory"
+  },
+
+  "CRCC": {
+    "coord": [ 33.647827, -117.841842 ],
+    "name": "Cross-Cultural Center"
+  },
+
+  "CRH": {
+    "coord": [ 33.643882, -117.844606 ],
+    "name": "Croul Hall"
+  },
+
+  "CTT": {
+    "coord": [ 33.649425, -117.845266 ],
+    "name": "(Claire) Trevor Theatre"
+  },
+
+  "CV": {
+    "coord": [ 33.644308, -117.847872 ],
+    "name": "Campus Village"
+  },
+
+  "DBH": {
+    "coord": [ 33.643228, -117.841901 ],
+    "name": "(Donald) Bren Hall"
+  },
+
+  "DRA": {
+    "coord": [ 33.649702, -117.844959 ],
+    "name": "Drama Building"
+  },
+
+  "ECT": {
+    "coord": [ 33.644033, -117.840140 ],
+    "name": "Engineering & Computing Trailer"
+  },
+
+  "EDUC": {
+    "coord": [ 33.647252, -117.835902 ],
+    "name": "Education Building"
+  },
+
+  "EG": {
+    "coord": [ 33.643037, -117.840182 ],
+    "name": "Engineering Gateway"
+  },
+
+  "EH": {
+    "coord": [ 33.643756, -117.841114 ],
+    "name": "Engineering Hall"
+  },
+
+  "ELF": {
+    "coord": [ 33.643766, -117.839643 ],
+    "name": "Engineering Laboratory Facility"
+  },
+
+  "ELH": {
+    "coord": [ 33.644453, -117.840683 ],
+    "name": "Engineering Lecture Hall"
+  },
+
+  "ET": {
+    "coord": [ 33.644696, -117.841179 ],
+    "name": "Engineering Tower"
+  },
+
+  "FARMSCHOOL": {
+    "coord": [ 33.642753, -117.828960 ],
+    "name": "Farm School/Red Barn"
+  },
+
+  "FRF": {
+    "coord": [ 33.664316, -117.854252 ],
+    "name": "Faculty Research Facility (North Campus)"
+  },
+
+  "FRH": {
+    "coord": [ 33.644336, -117.843448 ],
+    "name": "(Frederick) Reines Hall"
+  },
+
+  "GNRF": {
+    "coord": [ 33.644013, -117.851291 ],
+    "name": "Gillespie Neuroscience Research Facility"
+  },
+
+  "HG": {
+    "coord": [ 33.648144, -117.844406 ],
+    "name": "Humanities Gateway"
+  },
+
+  "HH": {
+    "coord": [ 33.647325, -117.843977 ],
+    "name": "Humanities Hall"
+  },
+
+  "HIB": {
+    "coord": [ 33.648370, -117.843867 ],
+    "name": "Humanities Instructional Building"
+  },
+
+  "HICF": {
+    "coord": [ 33.646900, -117.846789 ],
+    "name": "Humanities Interim Classroom Facility"
+  },
+
+  "HRH": {
+    "coord": [ 33.643491, -117.852052 ],
+    "name": "Hewitt Research Hall"
+  },
+
+  "HSLH": {
+    "coord": [ 33.645562, -117.844687 ],
+    "name": "(Howard) Schneiderman Lecture Hall"
+  },
+
+  "IAB": {
+    "coord": [ 33.648175, -117.845456 ],
+    "name": "Intercollegiate Athletics Building"
+  },
+
+  "ICF": {
+    "coord": [ 33.644429, -117.839980 ],
+    "name": "Interim Classroom Facility"
+  },
+
+  "ICS": {
+    "coord": [ 33.644260, -117.841794 ],
+    "name": "Information & Computer Science"
+  },
+
+  "ICS2": {
+    "coord": [ 33.643997, -117.841579 ],
+    "name": "Information & Computer Science II"
+  },
+
+  "IH": {
+    "coord": [ 33.645026, -117.852254 ],
+    "name": "Irvine Hall"
+  },
+
+  "KH": {
+    "coord": [ 33.647633, -117.843483 ],
+    "name": "Krieger Hall"
+  },
+
+  "LAW": {
+    "coord": [ 33.646761, -117.835954 ],
+    "name": "Law Building"
+  },
+
+  "LLIB": {
+    "coord": [ 33.647142, -117.841140 ],
+    "name": "Langson Library"
+  },
+
+  "MAB": {
+    "coord": [ 33.650176, -117.846344 ],
+    "name": "Mesa Arts Building"
+  },
+
+  "MDE": {
+    "coord": [ 33.643907, -117.840713 ],
+    "name": "McDonnell Douglas Engineering Auditorium"
+  },
+
+  "MH": {
+    "coord": [ 33.645133, -117.844612 ],
+    "name": "McGaugh Hall"
+  },
+
+  "MM": {
+    "coord": [ 33.649315, -117.844448 ],
+    "name": "Music & Media Building"
+  },
+
+  "MPAA": {
+    "coord": [ 33.647099, -117.836947 ],
+    "name": "Multipurpose Academic and Administrative Building"
+  },
+
+  "MS1": {
+    "coord": [ 33.646559, -117.850104 ],
+    "name": "Medical Surge I"
+  },
+
+  "MS2": {
+    "coord": [ 33.646972, -117.850280 ],
+    "name": "Medical Surge II"
+  },
+
+  "MS-A": {
+    "coord": [ 33.645108, -117.849811 ],
+    "name": "Medical Sciences A"
+  },
+
+  "MS-B": {
+    "coord": [ 33.645555, -117.849835 ],
+    "name": "Medical Sciences B"
+  },
+
+  "MS-C": {
+    "coord": [ 33.645564, -117.850492 ],
+    "name": "Medical Sciences C"
+  },
+
+  "MS-D": {
+    "coord": [ 33.645570, -117.851024 ],
+    "name": "Medical Sciences D"
+  },
+
+  "MS-E": {
+    "coord": [ 33.645436, -117.851529 ],
+    "name": "Medical Sciences E"
+  },
+
+  "MSTB": {
+    "coord": [ 33.642068, -117.844436 ],
+    "name": "Multipurpose Science & Technology Building"
+  },
+
+  "NS1": {
+    "coord": [ 33.644334, -117.845867 ],
+    "name": "Natural Sciences I"
+  },
+
+  "NS2": {
+    "coord": [ 33.644088, -117.8451862 ],
+    "name": "Natural Sciences II"
+  },
+
+  "PCB": {
+    "coord": [ 33.644474, -117.842770 ],
+    "name": "Parkview Classroom Building"
+  },
+
+  "PH": {
+    "coord": [ 33.644799, -117.851066 ],
+    "name": "Plumwood House"
+  },
+
+  "PSCB": {
+    "coord": [ 33.643462, -117.843504 ],
+    "name": "Physical Sciences Classroom Building"
+  },
+
+  "PSLH": {
+    "coord": [ 33.643426, -117.843960 ],
+    "name": "Physical Sciences Lecture Hall"
+  },
+
+  "PSTU": {
+    "coord": [ 33.650543, -117.845317 ],
+    "name": "Performance Studios"
+  },
+
+  "QRL": {
+    "coord": [ 33.646590, -117.845739 ],
+    "name": "Qureshey Research Laboratory"
+  },
+
+  "REC": {
+    "coord": [ 33.643904, -117.840508 ],
+    "name": "Rockwell Engineering Center"
+  },
+
+  "RH": {
+    "coord": [ 33.644528, -117.844246 ],
+    "name": "Rowland Hall"
+  },
+
+  "SB": {
+    "coord": [ 33.646965, -117.838106 ],
+    "name": "Merage School of Business"
+  },
+
+  "SC CCA": {
+    "coord": [ 33.649314, -117.842320 ],
+    "name": "Student Center Crystal Cove Auditorium"
+  },
+
+  "SCS": {
+    "coord": [ 33.650437, -117.844456 ],
+    "name": "Sculpture and Ceramic Studios"
+  },
+
+  "SE": {
+    "coord": [ 33.646166, -117.838865 ],
+    "name": "Social Ecology I"
+  },
+
+  "SE2": {
+    "coord": [ 33.646588, -117.838929 ],
+    "name": "Social Ecology II"
+  },
+
+  "SH": {
+    "coord": [ 33.646257, -117.844863 ],
+    "name": "Steinhaus Hall"
+  },
+
+  "SLIB": {
+    "coord": [ 33.645724, -117.846574 ],
+    "name": "Science Library"
+  },
+
+  "SPH": {
+    "coord": [ 33.644122, -117.852028 ],
+    "name": "Sprague Hall"
+  },
+
+  "SS1": {
+    "coord": [ 33.648008, -117.842345 ],
+    "name": "Student Services I"
+  },
+
+  "SS2": {
+    "coord": [ 33.648008, -117.842345 ],
+    "name": "Student Services II"
+  },
+
+  "SSH": {
+    "coord": [ 33.646235, -117.840061 ],
+    "name": "Social Science Hall"
+  },
+
+  "SSL": {
+    "coord": [ 33.645922, -117.840002 ],
+    "name": "Social Science Laboratory"
+  },
+
+  "SSLH": {
+    "coord": [ 33.647275, -117.839764 ],
+    "name": "Social Science Lecture Hall"
+  },
+
+  "SSPA": {
+    "coord": [ 33.647018, -117.839572 ],
+    "name": "Social Science Plaza A"
+  },
+
+  "SSPB": {
+    "coord": [ 33.646982, -117.839060 ],
+    "name": "Social Science Plaza B"
+  },
+
+  "SST": {
+    "coord": [ 33.646474, -117.840246 ],
+    "name": "Social Science Tower"
+  },
+
+  "SSTR": {
+    "coord": [ 33.647039, -117.840290 ],
+    "name": "Social Science Trailer"
+  },
+
+  "STU4": {
+    "coord": [ 33.650146, -117.845687 ],
+    "name": "Studio Four"
+  },
+
+  "UCI BARN": {
+    "coord": [ 33.642753, -117.828960 ],
+    "name": "Farm School/Red Barn"
+  },
+
+  "UCI MC": {
+    "coord": [ 33.787689, -117.889435 ],
+    "name": "UCI Medical Center"
+  },
+
+  "UNEXA": {
+    "coord": [ 33.646552, -117.837325 ],
+    "name": "University Extension A"
+  },
+
+  "WSH": {
+    "coord": [ 33.649549, -117.844445 ],
+    "name": "(Winifred) Smith Hall"
+
+  }
+}
