@@ -592,6 +592,7 @@ class App extends Component {
                   ((this.state.rightPaneView === 2) ?
                     <Map
                       eventsInCalendar={this.state.courseEvents}
+                      currentScheduleIndex={this.state.currentScheduleIndex}
                     /> :
                   (
                     this.state.showSearch ?

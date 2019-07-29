@@ -16,14 +16,20 @@ export default class UCIMap extends Component<{}, State> {
     lng: -117.842717,
     zoom: 17,
   }
-  
+
 
   createMarkers = () => {
-    var markers = []
- 
-    this.props.eventsInCalendar.forEach(function (event) {
+    let markers = []
+
+    this.props.eventsInCalendar.forEach((event) => {
+      if (event.scheduleIndex !== this.props.currentScheduleIndex) return;
+
+      let coords = '';
+      try {coords = buildingInfo[event.location.split(" ")[0]].coord;}
+      catch (e) {return;}
+
       markers.push(
-        <Marker position={buildingInfo[event.location.split(" ")[0]].coord}
+        <Marker position={coords}
           icon={
             L.divIcon({
               className: "my-custom-pin",
@@ -57,7 +63,7 @@ export default class UCIMap extends Component<{}, State> {
   render() {
     const position = [this.state.lat, this.state.lng];
 
-    
+
     return (
       <Map center={position} zoom={this.state.zoom} maxZoom={19}>
         <TileLayer
@@ -67,7 +73,7 @@ export default class UCIMap extends Component<{}, State> {
         />
 
         {this.createMarkers()}
-            
+
       </Map>
     )
   }
