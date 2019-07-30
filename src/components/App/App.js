@@ -42,7 +42,7 @@ import {
   blueGrey,
 } from '@material-ui/core/colors';
 import SearchForm from '../SearchForm/SearchForm';
-import UCIMap from './Map';
+import UCIMap from '../Map/Map';
 
 const TabularView = React.lazy(() => import('./TabularView'));
 const OptOutPopover = React.lazy(() => import('../CoursePane/OptOutPopover'));
