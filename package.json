@@ -22,7 +22,6 @@
     "react-dom": "^16.8.6",
     "react-ga": "^2.6.0",
     "react-leaflet": "^2.3.0",
-    "react-leaflet-locate-control": "^0.1.6",
     "react-messenger-customer-chat": "^0.7.2",
     "react-number-format": "^4.0.7",
     "react-scripts": "^2.1.8",

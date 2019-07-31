@@ -349,9 +349,14 @@
     "name": "Rowland Hall"
   },
 
-  "SB": {
-    "coord": [33.646965, -117.838106],
-    "name": "Merage School of Business"
+  "SB1": {
+    "coord": [33.647133, -117.838242],
+    "name": "Merage School of Business 1"
+  },
+
+  "SB2": {
+    "coord": [33.646736, -117.838097],
+    "name": "Merage School of Business 2"
   },
 
   "SC CCA": {
