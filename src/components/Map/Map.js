@@ -116,27 +116,27 @@ export default class UCIMap extends Component<{}, State> {
             >
               <Tab
                 label="All"
-                style={{ minWidth: 39, backgroundColor: '#FFFFFF' }}
+                style={{ minWidth: 32, backgroundColor: '#FFFFFF' }}
               />
               <Tab
                 label="Mon"
-                style={{ minWidth: 39, backgroundColor: '#FFFFFF' }}
+                style={{ minWidth: 32, backgroundColor: '#FFFFFF' }}
               />
               <Tab
                 label="Tue"
-                style={{ minWidth: 39, backgroundColor: '#FFFFFF' }}
+                style={{ minWidth: 32, backgroundColor: '#FFFFFF' }}
               />
               <Tab
                 label="Wed"
-                style={{ minWidth: 39, backgroundColor: '#FFFFFF' }}
+                style={{ minWidth: 32, backgroundColor: '#FFFFFF' }}
               />
               <Tab
                 label="Thu"
-                style={{ minWidth: 39, backgroundColor: '#FFFFFF' }}
+                style={{ minWidth: 32, backgroundColor: '#FFFFFF' }}
               />
               <Tab
                 label="Fri"
-                style={{ minWidth: 39, backgroundColor: '#FFFFFF' }}
+                style={{ minWidth: 32, backgroundColor: '#FFFFFF' }}
               />
             </Tabs>
           </div>
