@@ -2,7 +2,10 @@ import React, { Component, Fragment } from 'react';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import buildingInfo from './buildingInfo.json';
+import yellowpages from './yellowpages';
+import locations from '../CoursePane/locations.json';
 import Locator from './Locator';
+import Select from 'react-select';
 import { Tab, Tabs } from '@material-ui/core/';
 
 type State = {
@@ -36,34 +39,72 @@ export default class UCIMap extends Component<{}, State> {
   };
 
   createMarkers = () => {
-    let markers = [];
+    let trace = [];
 
     this.props.eventsInCalendar.forEach((event) => {
       if (event.scheduleIndex !== this.props.currentScheduleIndex) return;
 
       if (!event.start.toString().includes(DAYS[this.state.day])) return;
 
-      let coords = '';
+      let coords = [];
       try {
-        coords = buildingInfo[event.location.split(' ')[0]].coord;
+        const loc = yellowpages.find((entry) => {
+          return entry.id === locations[event.location.split(' ')[0]];
+        });
+        coords = [loc.lat, loc.lng];
       } catch (e) {
         return;
       }
+
       let pin_color = '';
       if (event.color === undefined) {
         pin_color = '#0000FF';
       } else {
         pin_color = event.color;
       }
+      const blding = buildingInfo[event.location.split(' ')[0]].name;
+      console.log(
+        trace.filter((item) => {
+          return item.bilding === blding;
+        }).length
+      );
+      if (
+        trace.filter((item) => {
+          return item.bilding === blding;
+        }).length < 1
+      ) {
+        trace.push({
+          coords: coords,
+          color: pin_color,
+          blding: blding,
+          sections: [
+            [
+              event.title + ' ' + event.courseType,
+              event.location.split(' ')[1],
+            ],
+          ],
+        });
+      } else {
+        console.log('please');
+        trace.sections.push([
+          event.title + ' ' + event.courseType,
+          event.location.split(' ')[1],
+        ]);
+      }
+    });
+    console.log(trace);
+
+    let markers = [];
+    trace.forEach((item) => {
       markers.push(
         <Marker
-          position={coords}
+          position={item.coords}
           icon={L.divIcon({
             className: 'my-custom-pin',
             iconAnchor: [0, 14],
             labelAnchor: [-3.5, 0],
             popupAnchor: [0, -21],
-            html: `<span style="background-color: ${pin_color};
+            html: `<span style="background-color: ${item.color};
                       width: 1.75rem;
                       height: 1.75rem;
                       display: block;
@@ -76,11 +117,17 @@ export default class UCIMap extends Component<{}, State> {
           })}
         >
           <Popup>
-            Class: {event.title}
-            <br />
-            Room: {event.location.split(' ')[1]}
-            <br />
-            Building: {buildingInfo[event.location.split(' ')[0]].name}
+            Building: {item.blding}
+            {item.sections.map((section) => {
+              return (
+                <Fragment>
+                  <hr />
+                  Class: {section[0]}
+                  <br />
+                  Room: {section[1]}
+                </Fragment>
+              );
+            })}
           </Popup>
         </Marker>
       );
@@ -102,8 +149,8 @@ export default class UCIMap extends Component<{}, State> {
             style={{
               position: 'sticky',
               zIndex: 1000,
-              width: '72%',
-              marginTop: 10,
+              marginLeft: 20,
+              marginTop: 11,
             }}
           >
             <Tabs
@@ -112,6 +159,7 @@ export default class UCIMap extends Component<{}, State> {
               indicatorColor="primary"
               textColor="primary"
               variant="standard"
+              scrollButtons="auto"
               centered
             >
               <Tab
@@ -150,6 +198,8 @@ export default class UCIMap extends Component<{}, State> {
           />
 
           {this.createMarkers()}
+
+          {/*this.searchLocate()*/}
         </Map>
       </Fragment>
     );

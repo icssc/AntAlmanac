@@ -821,26 +821,38 @@ class App extends Component {
                 >
                   <Tab
                     label={
-                      <div style={{ display: 'inline-flex' }}>
-                        <Search style={{ height: 18 }} />
-                        <Typography>&nbsp;&nbsp;Class Search</Typography>
-                      </div>
+                      this.state.isDesktop ? (
+                        <div style={{ display: 'inline-flex' }}>
+                          <Search style={{ height: 18 }} />
+                          <Typography>&nbsp;&nbsp;Class Search</Typography>
+                        </div>
+                      ) : (
+                        <Typography>Search</Typography>
+                      )
                     }
                   />
                   <Tab
                     label={
-                      <div style={{ display: 'inline-flex' }}>
-                        <FormatListBulleted style={{ height: 18 }} />
-                        <Typography>&nbsp;&nbsp;Added Classes</Typography>
-                      </div>
+                      this.state.isDesktop ? (
+                        <div style={{ display: 'inline-flex' }}>
+                          <FormatListBulleted style={{ height: 18 }} />
+                          <Typography>&nbsp;&nbsp;Added Classes</Typography>
+                        </div>
+                      ) : (
+                        <Typography>Bag</Typography>
+                      )
                     }
                   />
                   <Tab
                     label={
-                      <div style={{ display: 'inline-flex' }}>
-                        <Map style={{ height: 18 }} />
-                        <Typography>&nbsp;&nbsp;Dora Mode</Typography>
-                      </div>
+                      this.state.isDesktop ? (
+                        <div style={{ display: 'inline-flex' }}>
+                          <Map style={{ height: 18 }} />
+                          <Typography>&nbsp;&nbsp;Dora Mode</Typography>
+                        </div>
+                      ) : (
+                        <Typography>Dora</Typography>
+                      )
                     }
                   />
                 </Tabs>
