@@ -47,8 +47,9 @@ export default class UCIMap extends Component<{}, State> {
       if (!event.start.toString().includes(DAYS[this.state.day])) return;
 
       let coords = [];
+      let loc = null;
       try {
-        const loc = yellowpages.find((entry) => {
+        loc = yellowpages.find((entry) => {
           return entry.id === locations[event.location.split(' ')[0]];
         });
         coords = [loc.lat, loc.lng];
@@ -62,7 +63,7 @@ export default class UCIMap extends Component<{}, State> {
       } else {
         pin_color = event.color;
       }
-      const blding = buildingInfo[event.location.split(' ')[0]].name;
+      const blding = loc.name;
       console.log(
         trace.filter((item) => {
           return item.bilding === blding;
