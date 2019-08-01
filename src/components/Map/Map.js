@@ -63,7 +63,7 @@ export default class UCIMap extends Component<{}, State> {
       } else {
         pin_color = event.color;
       }
-      const blding = loc.name;
+      const blding = loc.label;
       console.log(
         trace.filter((item) => {
           return item.bilding === blding;
