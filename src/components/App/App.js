@@ -18,7 +18,7 @@ import {
   CalendarToday,
   Assignment,
   FormatListBulleted,
-  Map,
+  MyLocation,
 } from '@material-ui/icons';
 import ReactGA from 'react-ga';
 import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality';
@@ -42,7 +42,7 @@ import {
   blueGrey,
 } from '@material-ui/core/colors';
 import SearchForm from '../SearchForm/SearchForm';
-import UCIMap from '../Map/Map';
+import UCIMap from '../Map/UCIMap';
 
 const TabularView = React.lazy(() => import('./TabularView'));
 const OptOutPopover = React.lazy(() => import('../CoursePane/OptOutPopover'));
@@ -847,7 +847,7 @@ class App extends Component {
                     label={
                       this.state.isDesktop ? (
                         <div style={{ display: 'inline-flex' }}>
-                          <Map style={{ height: 18 }} />
+                          <MyLocation style={{ height: 18 }} />
                           <Typography>&nbsp;&nbsp;Dora Mode</Typography>
                         </div>
                       ) : (

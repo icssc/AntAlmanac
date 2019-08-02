@@ -123,7 +123,9 @@ class LoadSaveScheduleFunctionality extends React.Component {
           let variant = '';
 
           if (!userData.canceledClass) {
-            message = "Schedule that was saved under '" + userID + "' loaded.";
+            message = "Loaded schedule under '" + userID + "'. ";
+            message +=
+              '**Our servers went down for aws maintenance yesterday (08/01), which caused schedules to not save properly; you may have lost work you made yesterday. We are extremely sorry about that! This has been fixed!';
             variant = 'success';
           } else {
             message =
@@ -169,7 +171,7 @@ class LoadSaveScheduleFunctionality extends React.Component {
             message:
               "Schedule saved under username '" +
               userID +
-              "'! Remember that you still need to register for courses through WebReg.",
+              "'! Remember you still need to register through WebReg.",
           });
           window.localStorage.setItem('userID', userID);
           window.localStorage.setItem(
@@ -179,7 +181,10 @@ class LoadSaveScheduleFunctionality extends React.Component {
         } catch (err) {
           this.setState({
             open: true,
-            message: "No schedule found for username '" + userID + "'.",
+            message:
+              "Failed to save '" +
+              userID +
+              "'! Please contact a sales representative. Just kidding. PLEASE LET US KNOW ASAP",
             variant: 'warning',
           });
         }

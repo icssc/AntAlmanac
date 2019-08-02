@@ -25,6 +25,7 @@ export default class UCIMap extends Component<{}, State> {
     markers: [],
     day: 0,
     selected: null,
+    selected_img: '',
     filteredItems: yellowpages,
   };
 
@@ -72,6 +73,7 @@ export default class UCIMap extends Component<{}, State> {
         coords: coords,
         color: pin_color,
         blding: blding,
+        img: loc.img,
         sections: [
           event.title + ' ' + event.courseType,
           event.location.split(' ')[1],
@@ -114,7 +116,17 @@ export default class UCIMap extends Component<{}, State> {
           })}
         >
           <Popup>
-            Building: {item.blding}
+            {item.blding}
+            <br />
+            <img
+              src={
+                'https://www.myatlascms.com/map/lib/image-cache/i.php?mapId=463&image=' +
+                item.img +
+                '&w=900&h=508&r=1'
+              }
+              alt="Building Snapshot"
+              style={{ width: '100%' }}
+            />
             {atThisBuilding.map((section) => {
               return (
                 <Fragment>
@@ -138,6 +150,7 @@ export default class UCIMap extends Component<{}, State> {
         lat: selected.lat,
         lng: selected.lng,
         selected: selected.label,
+        selected_img: selected.img,
         zoom: 18,
       });
     } else {
@@ -260,7 +273,19 @@ export default class UCIMap extends Component<{}, State> {
                             border: 1px solid #FFFFFF" />`,
               })}
             >
-              <Popup>Building: {this.state.selected}</Popup>
+              <Popup>
+                {this.state.selected}
+                <br />
+                <img
+                  src={
+                    'https://www.myatlascms.com/map/lib/image-cache/i.php?mapId=463&image=' +
+                    this.state.selected_img +
+                    '&w=900&h=508&r=1'
+                  }
+                  alt="Building Snapshot"
+                  style={{ width: '100%' }}
+                />
+              </Popup>
             </Marker>
           ) : (
             <Fragment />
