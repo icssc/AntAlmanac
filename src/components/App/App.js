@@ -18,6 +18,7 @@ import {
   CalendarToday,
   Assignment,
   FormatListBulleted,
+  Map,
 } from '@material-ui/icons';
 import ReactGA from 'react-ga';
 import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality';
@@ -41,6 +42,7 @@ import {
   blueGrey,
 } from '@material-ui/core/colors';
 import SearchForm from '../SearchForm/SearchForm';
+import UCIMap from '../Map/Map';
 
 const TabularView = React.lazy(() => import('./TabularView'));
 const OptOutPopover = React.lazy(() => import('../CoursePane/OptOutPopover'));
@@ -819,18 +821,38 @@ class App extends Component {
                 >
                   <Tab
                     label={
-                      <div style={{ display: 'inline-flex' }}>
-                        <Search style={{ height: 20 }} />
-                        <Typography>&nbsp;&nbsp;Class Search</Typography>
-                      </div>
+                      this.state.isDesktop ? (
+                        <div style={{ display: 'inline-flex' }}>
+                          <Search style={{ height: 18 }} />
+                          <Typography>&nbsp;&nbsp;Class Search</Typography>
+                        </div>
+                      ) : (
+                        <Typography>Search</Typography>
+                      )
                     }
                   />
                   <Tab
                     label={
-                      <div style={{ display: 'inline-flex' }}>
-                        <FormatListBulleted style={{ height: 20 }} />
-                        <Typography>&nbsp;&nbsp;Added Classes</Typography>
-                      </div>
+                      this.state.isDesktop ? (
+                        <div style={{ display: 'inline-flex' }}>
+                          <FormatListBulleted style={{ height: 18 }} />
+                          <Typography>&nbsp;&nbsp;Added Classes</Typography>
+                        </div>
+                      ) : (
+                        <Typography>Bag</Typography>
+                      )
+                    }
+                  />
+                  <Tab
+                    label={
+                      this.state.isDesktop ? (
+                        <div style={{ display: 'inline-flex' }}>
+                          <Map style={{ height: 18 }} />
+                          <Typography>&nbsp;&nbsp;Dora Mode</Typography>
+                        </div>
+                      ) : (
+                        <Typography>Dora</Typography>
+                      )
                     }
                   />
                 </Tabs>
@@ -847,7 +869,7 @@ class App extends Component {
                 }}
                 id="rightPane"
               >
-                {this.state.rightPaneView ? (
+                {this.state.rightPaneView === 1 ? (
                   <Suspense
                     fallback={
                       <CircularProgress
@@ -873,10 +895,16 @@ class App extends Component {
                       scheduleIndex={this.state.currentScheduleIndex}
                       onCopySchedule={this.handleCopySchedule}
                       onEditCustomEvent={this.handleEditCustomEvent}
+                      onClassDelete={this.handleClassDelete}
                       destination={this.state.destination}
                       handleClearSchedule={this.handleClearSchedule}
                     />
                   </Suspense>
+                ) : this.state.rightPaneView === 2 ? (
+                  <UCIMap
+                    eventsInCalendar={this.state.courseEvents}
+                    currentScheduleIndex={this.state.currentScheduleIndex}
+                  />
                 ) : this.state.showSearch ? (
                   <SearchForm
                     prevFormData={this.state.prevFormData}

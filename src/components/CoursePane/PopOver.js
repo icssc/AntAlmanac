@@ -24,7 +24,9 @@ function RenderPropsPopover(props) {
     let a = undefined;
     try {
       a = course_info[courseDetails.name[0]][courseDetails.name[1]];
-    } catch (err) {}
+    } catch (err) {
+      return "We couldn't find this course in the General Catalogue for 2018-19!";
+    }
 
     return a;
   }
