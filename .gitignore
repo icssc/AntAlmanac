@@ -19,3 +19,6 @@ yarn-error.log*
 
 #config
 /config.json
+
+# npm client-install
+/client/node_modules

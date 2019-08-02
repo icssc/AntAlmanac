@@ -1,5 +1,7 @@
 ![Poor Peter's AntAlmanac](https://www.ics.uci.edu/~rang1/AntAlmanac/img/logo_wide.png)
 
+THIS IS THE REFACTORING BRANCH, WE ARE UPDATING THE WAY WE ARE GETTING AND SENDING DATA
+
 <hr>
 
 ### The ultimate course planning aid for UCI anteaters.
@@ -25,11 +27,15 @@ A big shout-out to the team, and a special thanks to contributors from the commu
 <hr>
 
 ### To develop locally:
+1. Go to root folder
 
-1. Install npm and node js
+2. run `npm run client-install` to install node modeules in clinet folder
 
-2. run `npm install` in the project root to install all necessary dependencies
+3. run `npm install` to install node modules in server
 
-3. run `npm start` in the project root, open up a browser and go to `localhost:3000`
+4. run `npm dev` to start both both client and server
+
+5. does not automatically restart on change
+
 
 As you change the code, the browser page will automatically refresh to reflect changes

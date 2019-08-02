@@ -1,0 +1,23 @@
+
+Big Things:
+
+	Doesnt work: added classes -- use section table
+		charts
+
+	Need to:
+		Adjust the way data is gotten and passed down
+		(currently data gathered when form different, should be when search pressed)
+
+		-> button clicked
+		-> get data
+		-> pass down data
+
+		make graphs work with new data modle
+
+
+Small things:
+	efficiency
+	
+
+Everything in left pane works
+Right pane does not work

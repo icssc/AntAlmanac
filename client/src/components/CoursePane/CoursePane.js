@@ -15,6 +15,7 @@ class CoursePane extends PureComponent {
         await this.fetchSearch();
     };
 
+
     fetchSearch = async () => {
         this.setState({ loading: true }, async () => {
             const {
