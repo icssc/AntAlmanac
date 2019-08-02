@@ -171,7 +171,7 @@ async function getCoursesData(userData) {
 
 export async function saveUserData(userID, objectToStore) {
   await fetch(
-    `https://a0pg5v5sai.execute-api.us-west-1.amazonaws.com/latest/create`,
+    `https://hkdx1omfzh.execute-api.us-west-1.amazonaws.com/latest/create`,
     {
       method: 'POST',
       mode: 'cors',
@@ -189,7 +189,7 @@ export async function saveUserData(userID, objectToStore) {
 
 export async function loadUserData(userID) {
   const response = await fetch(
-    `https://a0pg5v5sai.execute-api.us-west-1.amazonaws.com/latest/read`,
+    `https://hkdx1omfzh.execute-api.us-west-1.amazonaws.com/latest/read`,
     {
       method: 'POST',
       mode: 'cors',
