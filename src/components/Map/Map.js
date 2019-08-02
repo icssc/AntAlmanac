@@ -217,9 +217,14 @@ export default class UCIMap extends Component<{}, State> {
               items={this.state.filteredItems}
               onStateChange={this.filerLocations}
               {...this.props}
-              inputRef={(node) => {
-                this.input = node;
-              }}
+              // inputRef={(node) => {
+              //   this.input = node;
+              // }}
+              getInputProps={() => ({
+                // Downshift requires this syntax to pass down these props to the text field
+                label: '  Search for...',
+                required: true,
+              })}
               onChange={this.handleSearch}
               menuItemCount={window.innerWidth > 960 ? 6 : 3}
             />

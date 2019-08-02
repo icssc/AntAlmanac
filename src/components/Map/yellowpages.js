@@ -2475,7 +2475,7 @@ export default [
   { id: 255880, label: 'Student Center', lat: 33.648888, lng: -117.8424 },
   {
     id: 255884,
-    label: 'Anteater Learning Pavilion',
+    label: 'Anteater Learning Pavilion (ALP)',
     lat: 33.647158,
     lng: -117.84453,
   },
@@ -3305,7 +3305,7 @@ export default [
   },
   {
     id: 344349,
-    label: 'Anteater Learning Pavilion',
+    label: 'Anteater Learning Pavilion (ALP)',
     lat: 33.647179,
     lng: -117.844421,
   },
