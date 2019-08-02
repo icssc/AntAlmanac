@@ -1,18 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
-import buildingInfo from './buildingInfo.json';
 import yellowpages from './yellowpages';
 import locations from '../CoursePane/locations.json';
 import Locator from './Locator';
-import Select from 'react-select';
+import MuiDownshift from 'mui-downshift';
 import { Tab, Tabs } from '@material-ui/core/';
-
-type State = {
-  lat: number,
-  lng: number,
-  zoom: number,
-};
 
 const locateOptions = {
   position: 'topleft',
@@ -20,7 +13,6 @@ const locateOptions = {
     title: 'Look for your lost soul',
   },
   flyTo: true,
-  // onActivate: () => {} // callback before engine starts retrieving locations
 };
 
 const DAYS = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
@@ -32,20 +24,29 @@ export default class UCIMap extends Component<{}, State> {
     zoom: 16,
     markers: [],
     day: 0,
+    selected: null,
+    filteredItems: yellowpages,
   };
 
-  handleChangeDay = (event, newValue) => {
-    this.setState({ day: newValue });
+  filerLocations = (changes) => {
+    if (typeof changes.inputValue === 'string') {
+      const filteredItems = yellowpages.filter((item) =>
+        item.label.toLowerCase().includes(changes.inputValue.toLowerCase())
+      );
+      this.setState({ filteredItems: filteredItems });
+    }
   };
 
   createMarkers = () => {
     let trace = [];
 
     this.props.eventsInCalendar.forEach((event) => {
+      //filter out those in a different sched
       if (event.scheduleIndex !== this.props.currentScheduleIndex) return;
-
+      //filter out those not on a certain day (mon, tue, etc)
       if (!event.start.toString().includes(DAYS[this.state.day])) return;
 
+      //try catch for finding the location of classes
       let coords = [];
       let loc = null;
       try {
@@ -57,6 +58,7 @@ export default class UCIMap extends Component<{}, State> {
         return;
       }
 
+      //hotfix for when some events have undefined colors
       let pin_color = '';
       if (event.color === undefined) {
         pin_color = '#0000FF';
@@ -64,39 +66,33 @@ export default class UCIMap extends Component<{}, State> {
         pin_color = event.color;
       }
       const blding = loc.label;
-      console.log(
-        trace.filter((item) => {
-          return item.bilding === blding;
-        }).length
-      );
-      if (
-        trace.filter((item) => {
-          return item.bilding === blding;
-        }).length < 1
-      ) {
-        trace.push({
-          coords: coords,
-          color: pin_color,
-          blding: blding,
-          sections: [
-            [
-              event.title + ' ' + event.courseType,
-              event.location.split(' ')[1],
-            ],
-          ],
-        });
-      } else {
-        console.log('please');
-        trace.sections.push([
+
+      //collect all the events for the map
+      trace.push({
+        coords: coords,
+        color: pin_color,
+        blding: blding,
+        sections: [
           event.title + ' ' + event.courseType,
           event.location.split(' ')[1],
-        ]);
-      }
+        ],
+      });
     });
-    console.log(trace);
+    // console.log(trace);
 
-    let markers = [];
+    let markers = []; //to put into a list of markers
     trace.forEach((item) => {
+      let atThisBuilding = trace.filter((section) => {
+        return section.blding === item.blding;
+      });
+      atThisBuilding = atThisBuilding.filter((thing, index) => {
+        return (
+          index ===
+          atThisBuilding.findIndex((obj) => {
+            return JSON.stringify(obj) === JSON.stringify(thing);
+          })
+        );
+      });
       markers.push(
         <Marker
           position={item.coords}
@@ -119,13 +115,13 @@ export default class UCIMap extends Component<{}, State> {
         >
           <Popup>
             Building: {item.blding}
-            {item.sections.map((section) => {
+            {atThisBuilding.map((section) => {
               return (
                 <Fragment>
                   <hr />
-                  Class: {section[0]}
+                  Class: {section.sections[0]}
                   <br />
-                  Room: {section[1]}
+                  Room: {section.sections[1]}
                 </Fragment>
               );
             })}
@@ -133,8 +129,20 @@ export default class UCIMap extends Component<{}, State> {
         </Marker>
       );
     });
-
     return markers;
+  };
+
+  handleSearch = (selected) => {
+    if (selected) {
+      this.setState({
+        lat: selected.lat,
+        lng: selected.lng,
+        selected: selected.label,
+        zoom: 18,
+      });
+    } else {
+      this.setState({ selected: null });
+    }
   };
 
   render() {
@@ -143,20 +151,25 @@ export default class UCIMap extends Component<{}, State> {
         <Map
           center={[this.state.lat, this.state.lng]}
           zoom={this.state.zoom}
-          maxZoom={19}
+          maxZoom={20}
           style={{ height: '100%' }}
         >
           <div
             style={{
-              position: 'sticky',
+              // position: 'sticky',
               zIndex: 1000,
               marginLeft: 20,
               marginTop: 11,
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
             }}
           >
             <Tabs
               value={this.state.day}
-              onChange={this.handleChangeDay}
+              onChange={(event, newValue) => {
+                this.setState({ day: newValue });
+              }}
               indicatorColor="primary"
               textColor="primary"
               variant="standard"
@@ -190,6 +203,28 @@ export default class UCIMap extends Component<{}, State> {
             </Tabs>
           </div>
 
+          <div
+            style={{
+              width: '58%',
+              position: 'relative',
+              marginLeft: window.innerWidth > 960 ? 160 : 45,
+              marginTop: 5,
+              backgroundColor: '#FFFFFF',
+              zIndex: 1000,
+            }}
+          >
+            <MuiDownshift
+              items={this.state.filteredItems}
+              onStateChange={this.filerLocations}
+              {...this.props}
+              inputRef={(node) => {
+                this.input = node;
+              }}
+              onChange={this.handleSearch}
+              menuItemCount={window.innerWidth > 960 ? 6 : 3}
+            />
+          </div>
+
           <Locator options={locateOptions} />
 
           <TileLayer
@@ -200,7 +235,31 @@ export default class UCIMap extends Component<{}, State> {
 
           {this.createMarkers()}
 
-          {/*this.searchLocate()*/}
+          {this.state.selected ? (
+            <Marker
+              position={[this.state.lat, this.state.lng]}
+              icon={L.divIcon({
+                className: 'my-custom-pin',
+                iconAnchor: [0, 14],
+                labelAnchor: [-3.5, 0],
+                popupAnchor: [0, -21],
+                html: `<span style="background-color: #FF0000;
+                            width: 1.75rem;
+                            height: 1.75rem;
+                            display: block;
+                            left: -1rem;
+                            top: -1rem;
+                            position: relative;
+                            border-radius: 1.9rem 1.9rem 0;
+                            transform: rotate(45deg);
+                            border: 1px solid #FFFFFF" />`,
+              })}
+            >
+              <Popup>Building: {this.state.selected}</Popup>
+            </Marker>
+          ) : (
+            <Fragment />
+          )}
         </Map>
       </Fragment>
     );
