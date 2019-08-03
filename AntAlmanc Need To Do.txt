@@ -5,19 +5,17 @@ Big Things:
 		charts
 
 	Need to:
-		Adjust the way data is gotten and passed down
-		(currently data gathered when form different, should be when search pressed)
+		Fix getting the data and processing data to show in CourseDetailPane
+		 -> Data can be recieved
+		 -> Does not get new data Format
+		 -> currently crashes with search
 
-		-> button clicked
-		-> get data
-		-> pass down data
-
-		make graphs work with new data modle
+		make graphs work with new data model
 
 
 Small things:
 	efficiency
-	Fix CoursePane (loading === false) ????????
+
 
 Everything in left pane works
 Right pane does not work
