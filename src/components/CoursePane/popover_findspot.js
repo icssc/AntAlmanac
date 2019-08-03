@@ -1,13 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Popover from '@material-ui/core/Popover';
-import Input from '@material-ui/core/Input';
+import {
+  Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
+  Popover,
+  InputLabel,
+  Input,
+  FormControl,
+} from '@material-ui/core';
 import SMS from './smsInput';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
+import { askForPermissionToReceiveNotifications } from '../../push-notification';
 
 const styles = (theme) => ({
   typography: {
@@ -22,8 +30,12 @@ class SPopover extends React.Component {
   state = {
     anchorEl: null,
     userEmail: '',
-    addMessageOn: false,
+    addEmailMessageOn: false,
+    addPushMessageOn: false,
+    isRegistered: false,
     cacheSMS: '(  )    -    ',
+    cachePushToken: '',
+    open: false,
   };
 
   handleClick = (event) => {
@@ -32,15 +44,18 @@ class SPopover extends React.Component {
     if (event.stopPropagation) event.stopPropagation();
     let email = '';
     let sms = '(  )    -    ';
+    let token = '';
     if (typeof Storage !== 'undefined') {
       email = window.localStorage.getItem('email');
       sms = window.localStorage.getItem('sms');
+      token = window.localStorage.getItem('token');
     }
 
     this.setState({
       anchorEl: event.currentTarget,
       userEmail: email,
       cacheSMS: sms,
+      cachePushToken: token,
     });
   };
 
@@ -53,7 +68,8 @@ class SPopover extends React.Component {
     });
   };
 
-  getMeSpot = () => {
+  /* Signs email up to receive notifications */
+  getMeSpotEmail = () => {
     const code = this.props.code;
     const email = this.state.userEmail;
     const name = this.props.name[1] + ' ' + this.props.name[2];
@@ -67,7 +83,7 @@ class SPopover extends React.Component {
       url = url + code + '/' + name + '/' + email;
       window.localStorage.setItem('email', email);
       fetch(url);
-      this.setState({ addMessageOn: true });
+      this.setState({ addEmailMessageOn: true });
     }
     // url = url + code +"/"+ name + "/" + email;
     // window.localStorage.setItem("email", email);
@@ -76,6 +92,32 @@ class SPopover extends React.Component {
     // fetch(url)
     // alert(email+" added to the notification list for "+ code +" !!!")
   };
+
+  /* Signs up the specific device to receive notifications using token */
+  getMeSpotPush = () => {
+    const code = this.props.code;
+    const token = this.state.cachePushToken;
+    const name = this.props.name[1] + ' ' + this.props.name[2];
+
+    let url =
+      'https://3jbsyx3se1.execute-api.us-west-1.amazonaws.com/dev/pushnotif/';
+
+    url = url + code + '/' + name + '/' + token;
+    fetch(url);
+    this.setState({ addPushMessageOn: true });
+  };
+
+  /* Caches token and closes popover */
+  getPushToken = async () => {
+    const token = await askForPermissionToReceiveNotifications(); //get push token
+    window.localStorage.setItem('token', token); //cache token
+    this.setState({ cachePushToken: token }); //save token in state
+    fetch(
+      'https://3jbsyx3se1.execute-api.us-west-1.amazonaws.com/dev/testpush/' +
+        token
+    ); //test push notif
+  };
+
   inputChange = (event) => {
     if (!event) event = window.event;
     event.cancelBubble = true;
@@ -122,14 +164,26 @@ class SPopover extends React.Component {
           <Typography className={classes.typography}>
             Get notified when a spot opens!
           </Typography>
-          {this.state.addMessageOn ? (
+
+          {/* Added Messages */}
+          {this.state.addEmailMessageOn ? (
             <Typography className={classes.typography}>
               <p>
                 <font color="green">Added email to watchlist!!!</font>
               </p>
             </Typography>
           ) : null}
+
+          {this.state.addPushMessageOn ? (
+            <Typography className={classes.typography}>
+              <p>
+                <font color="green">Added device to watchlist!!!</font>
+              </p>
+            </Typography>
+          ) : null}
+
           <div className={classes.container}>
+            {/* Email Notifications */}
             <FormControl className={classes.formControl}>
               <InputLabel htmlFor="formatted-email-input">
                 Enter email:
@@ -145,22 +199,124 @@ class SPopover extends React.Component {
                 }}
               />
             </FormControl>
-
             <Button
               variant="text"
               color="primary"
               className={classes.button}
-              onClick={this.getMeSpot}
+              onClick={this.getMeSpotEmail}
             >
               Add
             </Button>
+
+            {/* SMS Notifications */}
             <SMS
               code={this.props.code}
               cacheSMS={this.state.cacheSMS}
               name={this.props.name}
             />
+
+            {/* Push Notifications */}
+            <FormControl
+              className={classes.container}
+              style={{ width: '100%' }}
+            >
+              <Typography color="inherit" style={{ marginLeft: 10 }}>
+                Push Notification
+              </Typography>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  width: '100%',
+                }}
+              >
+                <Button
+                  onClick={() => this.setState({ open: true })}
+                  color="inherit"
+                  style={{ flexGrow: 1 }}
+                >
+                  Help
+                </Button>
+                {this.state.cachePushToken === null ? (
+                  <Button
+                    variant="text"
+                    color="primary"
+                    className={classes.button}
+                    onClick={this.getPushToken}
+                  >
+                    Register Device
+                  </Button>
+                ) : (
+                  <div>
+                    <Button
+                      variant="text"
+                      className={classes.button}
+                      onClick={() => {
+                        fetch(
+                          'https://3jbsyx3se1.execute-api.us-west-1.amazonaws.com/dev/testpush/' +
+                            this.state.cachePushToken
+                        );
+                      }}
+                    >
+                      Test
+                    </Button>
+                    <Button
+                      variant="text"
+                      color="primary"
+                      className={classes.button}
+                      onClick={this.getMeSpotPush}
+                    >
+                      Add
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </FormControl>
           </div>
         </Popover>
+
+        {/*Instructions for using push notification*/}
+        <Dialog
+          open={this.state.open}
+          onClose={() => {
+            this.setState({ open: false });
+          }}
+          aria-labelledby="alert-dialog"
+          aria-describedby="alert-dialog-desc"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {'Paul Revere Push Notifications'}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              <p>
+                Sign up for push notifs on the device with which you intend to
+                receive them. On Android phones, please add AntAlmanac to the
+                homescreen for this to work.
+              </p>
+
+              <p>
+                After you register, you should get a test notif. If you do not,
+                then your browser/device might not support push notifications.
+                For example, iOS dvices do not support push notifications, but
+                Mac computers do.
+              </p>
+
+              <p>
+                After receiving your test push, add yourself to the watchlist.
+              </p>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => {
+                this.setState({ open: false });
+              }}
+              color="primary"
+            >
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
       </React.Fragment>
     );
   }

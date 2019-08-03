@@ -19,7 +19,7 @@ import { withStyles } from '@material-ui/core/styles';
 import MouseOverPopover from '../CoursePane/MouseOverPopover';
 import CustomEventsDialog from '../CustomEvents/Popup';
 import Instructors from '../CoursePane/Instructors';
-import { Clear } from '@material-ui/icons';
+import { Clear, Delete } from '@material-ui/icons';
 
 const styles = {
   colorPicker: {
@@ -138,7 +138,8 @@ class TabularView extends Component {
   };
 
   statusforFindingSpot = (section, classCode, termName, name) => {
-    if (section === 'FULL')
+    if (section === 'FULL' || section === 'NewOnly')
+      // Enable user to register for Paul Revere notifications
       return (
         <Notification
           termName={termName}
@@ -552,6 +553,7 @@ NOR: ${secEach.numNewOnlyReserved}`}
                 <tr>
                   <th>Color</th>
                   <th>Edit</th>
+                  <th>Delete</th>
                   <th>Title</th>
                   <th>Time</th>
                 </tr>
@@ -576,6 +578,15 @@ NOR: ${secEach.numNewOnlyReserved}`}
                           event={event}
                           onEditCustomEvent={this.props.onEditCustomEvent}
                         />
+                      </td>
+                      <td width="40">
+                        <IconButton
+                          onClick={() => {
+                            this.props.onClassDelete(event);
+                          }}
+                        >
+                          <Delete />
+                        </IconButton>
                       </td>
                       <td>{event.title}</td>
                       <td>{this.getTimeString(event)}</td>

@@ -84,15 +84,17 @@ class LoadSaveScheduleFunctionality extends React.Component {
       const savedUserID = window.localStorage.getItem('userID');
       if (savedUserID != null) {
         const userData = await loadUserData(savedUserID); // this shit gotta do promise joint
-        if (userData !== -1) {
-          if (!userData.canceledClass)
+        const allowSchedToUpload =
+          window.localStorage.getItem('allowScheduleUpload') === 'true';
+        if (userData !== -1 && allowSchedToUpload) {
+          if (!userData.canceledClass) {
             this.setState({
               message:
                 'Schedule that was saved under ' + savedUserID + ' loaded.',
               open: true,
               variant: 'success',
             });
-          else
+          } else
             this.setState({
               message:
                 'Schedule that was saved under ' +
@@ -108,18 +110,22 @@ class LoadSaveScheduleFunctionality extends React.Component {
     }
   };
 
-  handleLoad = async (userID) => {
+  handleLoad = async (userID, allowScheduleUpload) => {
     if (userID != null) {
       userID = userID.replace(/\s+/g, '');
 
       if (userID.length > 0) {
         const userData = await loadUserData(userID);
+        window.localStorage.setItem('allowScheduleUpload', allowScheduleUpload);
+        // console.log(allowScheduleUpload);
         if (userData !== -1) {
           let message = '';
           let variant = '';
 
           if (!userData.canceledClass) {
-            message = "Schedule that was saved under '" + userID + "' loaded.";
+            message = "Loaded schedule under '" + userID + "'. ";
+            message +=
+              '**Our servers went down for aws maintenance yesterday (08/01), which caused schedules to not save properly; you may have lost work you made yesterday. We are extremely sorry about that! This has been fixed!';
             variant = 'success';
           } else {
             message =
@@ -151,7 +157,7 @@ class LoadSaveScheduleFunctionality extends React.Component {
     }
   };
 
-  handleSave = async (userID) => {
+  handleSave = async (userID, allowScheduleUpload) => {
     if (userID != null) {
       userID = userID.replace(/\s+/g, '');
 
@@ -165,13 +171,20 @@ class LoadSaveScheduleFunctionality extends React.Component {
             message:
               "Schedule saved under username '" +
               userID +
-              "'! Remember that you still need to register for courses through WebReg.",
+              "'! Remember you still need to register through WebReg.",
           });
           window.localStorage.setItem('userID', userID);
+          window.localStorage.setItem(
+            'allowScheduleUpload',
+            allowScheduleUpload
+          );
         } catch (err) {
           this.setState({
             open: true,
-            message: "No schedule found for username '" + userID + "'.",
+            message:
+              "Failed to save '" +
+              userID +
+              "'! Please contact a sales representative. Just kidding. PLEASE LET US KNOW ASAP",
             variant: 'warning',
           });
         }

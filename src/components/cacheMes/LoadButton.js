@@ -8,6 +8,8 @@ import {
   DialogContentText,
   DialogTitle,
   Typography,
+  Checkbox,
+  FormControlLabel,
 } from '@material-ui/core';
 import { CloudDownload } from '@material-ui/icons';
 
@@ -17,6 +19,7 @@ export default class LoadDialog extends Component {
     this.state = {
       open: false,
       name: null,
+      checked: true,
     };
   }
 
@@ -28,7 +31,7 @@ export default class LoadDialog extends Component {
     if (wasCancelled) this.setState({ open: false });
     else
       this.setState({ open: false }, () => {
-        this.props.handleLoad(this.state.name);
+        this.props.handleLoad(this.state.name, this.state.checked);
       });
   };
 
@@ -49,7 +52,7 @@ export default class LoadDialog extends Component {
     ) {
       event.preventDefault();
       this.setState({ open: false }, () => {
-        this.props.handleLoad(this.state.name);
+        this.props.handleLoad(this.state.name, this.state.checked);
       });
 
       return false;
@@ -58,6 +61,11 @@ export default class LoadDialog extends Component {
 
   setUserID = (event) => {
     this.setState({ name: event.target.value });
+  };
+
+  //Switches checkbox value
+  handleCheckboxChange = (name) => (event) => {
+    this.setState({ [name]: event.target.checked });
   };
 
   render() {
@@ -87,8 +95,18 @@ export default class LoadDialog extends Component {
               placeholder="Enter here:"
               onChange={this.setUserID}
             />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={this.state.checked}
+                  onChange={this.handleCheckboxChange('checked')}
+                  value={this.state.checked}
+                  inputProps={{ 'aria-label': 'primary checkbox' }}
+                />
+              }
+              label="Remember Me (Uncheck on shared computers)"
+            />
           </DialogContent>
-
           <DialogActions>
             <Button onClick={() => this.handleClose(true)} color="primary">
               Cancel

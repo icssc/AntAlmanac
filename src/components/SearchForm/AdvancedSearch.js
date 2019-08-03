@@ -9,6 +9,7 @@ import {
   FormControlLabel,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 
 const styles = {
   courseNum: {
@@ -109,30 +110,15 @@ class AdvancedSearchTextFields extends Component {
     }
   };
 
+  /** 
+   * UPDATE (6-28-19): Transfered course code and course number search boxes to 
+   * separate classes.
+  */
   render() {
     const { classes } = this.props;
 
     return (
       <div className={classes.smallTextFields}>
-        <TextField
-          id="course-num"
-          label="Course Number(s)"
-          type="search"
-          value={this.props.params.courseNum}
-          onChange={this.handleChange('courseNum')}
-          className={classes.courseNum}
-          helperText="ex. 6B, 17, 30-40"
-        />
-
-        <TextField
-          id="course-code"
-          label="Course Code or Range"
-          value={this.props.params.courseCode}
-          onChange={this.handleChange('courseCode')}
-          type="search"
-          helperText="ex. 14200, 29000-29100"
-          className={classes.courseCode}
-        />
 
         <TextField
           id="instructor"
@@ -218,6 +204,18 @@ class AdvancedSearchTextFields extends Component {
       </div>
     );
   }
+
+  
 }
+
+AdvancedSearchTextFields.propTypes = {
+    onAdvancedSearchChange: PropTypes.func,
+    value: PropTypes.arrayOf({
+      units: PropTypes.string,
+      instructor: PropTypes.string,
+      courseFull: PropTypes.string,
+    }),
+    building: PropTypes.string
+};
 
 export default withStyles(styles)(AdvancedSearchTextFields);

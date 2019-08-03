@@ -138,7 +138,10 @@ const CourseCalendarEvent = (props) => {
                   To edit go to
                   <br />
                   Added Classes
-                  {/*<CustomEventsDialog editMode={true} event={courseInMoreInfo} onEditCustomEvent={props.onEditCustomEvent}/>*/}
+                  {/* currently disabled because courseInMoreInfo does not have the event info
+                    in the format that the custom events dialog wants (the way tabular has it)
+                    <CustomEventsDialog editMode={true} event={courseInMoreInfo} onEditCustomEvent={props.onEditCustomEvent}/>
+                  */}
                 </td>
                 <td className={classes.rightCells + ' ' + classes.alignToTop}>
                   <Tooltip title="Delete">

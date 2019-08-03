@@ -1,10 +1,12 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, Suspense } from 'react';
 import loadingGif from './loading.mp4';
 import querystring from 'querystring';
-import CourseRenderPane from './CourseRenderPane';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { ArrowBack, Dns, ListAlt, Refresh } from '@material-ui/icons';
 import ReactGA from 'react-ga';
+import InvalidSearch from './invalid_search.png';
+
+const CourseRenderPane = React.lazy(() => import('./CourseRenderPane'));
 
 class CoursePane extends Component {
   constructor(props) {
@@ -107,20 +109,29 @@ class CoursePane extends Component {
       .then((resp) => {
         return resp.json();
       })
-      .then((jsonObj) =>
+      .then((jsonObj) => {
+        //console.log('CoursePane: ');
+        //console.log(jsonObj);
+        //console.log(dept);
         this.setState({
           courseData: CoursePane.flatten(jsonObj),
           loading: 2,
           termName: term,
           deptName: dept,
-        })
-      );
+        });
+      })
+      .catch(() => {
+        this.setState({
+          loading: 3,
+        });
+      });
   };
 
   render() {
     const { loading, courseData } = this.state;
 
     if (loading === 2) {
+      //loaded successfully
       return (
         <Fragment>
           {this.state.showDismissButton ? (
@@ -189,20 +200,40 @@ class CoursePane extends Component {
           ) : (
             <Fragment />
           )}
-          <CourseRenderPane
-            formData={this.props.formData}
-            onAddClass={this.props.onAddClass}
-            onToggleDismissButton={this.handleToggleDismissButton}
-            courseData={courseData}
-            view={this.state.view}
-            currentScheduleIndex={this.props.currentScheduleIndex}
-            deptName={this.state.deptName}
-            termName={this.state.termName}
-            destination={this.props.destination}
-          />
+          <Suspense
+            fallback={
+              <div
+                style={{
+                  height: '100%',
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'white',
+                }}
+              >
+                <video autoPlay loop>
+                  <source src={loadingGif} type="video/mp4" />
+                </video>
+              </div>
+            }
+          >
+            <CourseRenderPane
+              formData={this.props.formData}
+              onAddClass={this.props.onAddClass}
+              onToggleDismissButton={this.handleToggleDismissButton}
+              courseData={courseData}
+              view={this.state.view}
+              currentScheduleIndex={this.props.currentScheduleIndex}
+              deptName={this.state.deptName}
+              termName={this.state.termName}
+              destination={this.props.destination}
+            />
+          </Suspense>
         </Fragment>
       );
     } else if (loading === 1) {
+      //still loading
       return (
         <div
           style={{
@@ -218,6 +249,45 @@ class CoursePane extends Component {
             <source src={loadingGif} type="video/mp4" />
           </video>
         </div>
+      );
+    } else if (loading === 3) {
+      //invalid search params
+      return (
+        <Fragment>
+          <div
+            style={{
+              position: 'sticky',
+              width: '100%',
+              top: 0,
+              zIndex: 3,
+              marginBottom: 8,
+            }}
+          >
+            <Tooltip title="Clear Search">
+              <IconButton
+                onClick={this.props.onDismissSearchResults}
+                style={{
+                  backgroundColor: 'rgba(236, 236, 236, 1)',
+                  marginRight: 5,
+                  boxShadow: 2,
+                }}
+              >
+                <ArrowBack />
+              </IconButton>
+            </Tooltip>
+          </div>
+          <div
+            style={{
+              height: '100%',
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <img src={InvalidSearch} alt="" />
+          </div>
+        </Fragment>
       );
     }
   }

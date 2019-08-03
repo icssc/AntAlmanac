@@ -1,8 +1,10 @@
 import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
+import MobileDeptSelector from './DeptSearchBar/MobileDeptSelector';
 import GESelector from './GESelector/GESelector';
 import TermSelector from './TermSelector';
 import CourseCodeSearchBar from './CourseCodeSearchBar';
-import React, { Component } from 'react';
+import CourseNumberSearchBar from './CourseNumberSearchBar';
+import React, { Component, Fragment } from 'react';
 import { Button, Typography, Collapse } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AdvancedSearchTextFields from './AdvancedSearch';
@@ -23,6 +25,7 @@ const styles = {
   },
   margin: {
     borderTop: 'solid 8px transparent',
+    display: 'inline-flex',
   },
   // miuci: {
   //   width: "35%",
@@ -133,6 +136,10 @@ class SearchForm extends Component {
     else this.setState({ dept: dept.value, label: dept.label });
   };
 
+  setDeptMobile = (dept) => {
+    this.setState({ dept: dept });
+  };
+
   handleAdvancedSearchChange = (advancedSearchState) => {
     this.setState(advancedSearchState);
   };
@@ -156,29 +163,67 @@ class SearchForm extends Component {
 
   render() {
     const { classes } = this.props;
+    const isMobile = window.innerWidth < 960;
 
     return (
       <div className={classes.container}>
         <div className={classes.margin}>
           <TermSelector term={this.state.term} setTerm={this.setTerm} />
+          {isMobile ? (
+            <Button
+              variant="contained"
+              onClick={() => this.props.updateFormData(this.state)}
+              style={{
+                backgroundColor: '#72a9ed',
+                boxShadow: 'none',
+                marginLeft: 5,
+              }}
+            >
+              Search
+            </Button>
+          ) : (
+            <Fragment />
+          )}
         </div>
 
-        <div>
-          <DeptSearchBar dept={this.state.label} setDept={this.setDept} />
+        <div className={classes.margin}>
+          {isMobile ?
+            (
+            <MobileDeptSelector
+              dept={this.state.dept}
+              setDept={this.setDeptMobile}
+            />
+            ) : (
+            <DeptSearchBar dept={this.state.label} setDept={this.setDept} />
+          )}
+          <CourseNumberSearchBar
+            //Places CourseNumberSearchBar object next to DeptSearchBar object
+            onAdvancedSearchChange={this.handleAdvancedSearchChange}
+            //Handles user input for specific course number searches (e.g. "3A")
+            params={this.state}
+          />
         </div>
 
-        <div className={classes.margin} style={{ display: 'inline-flex' }}>
+        <div className={classes.margin}>
           <GESelector ge={this.state.ge} setGE={this.setGE} />
           <CourseCodeSearchBar
+            //Places CourseCodeSearchBar object next to GESelector object
             onAdvancedSearchChange={this.handleAdvancedSearchChange}
+            //Handles user input for specific course code searches (e.g. "33367")
+            params={this.state}
           />
         </div>
 
         <div
           onClick={this.handleExpand}
-          style={{ display: 'inline-flex', marginTop: 5, cursor: 'pointer' }}
+          style={{
+            display: 'inline-flex',
+            marginTop: 10,
+            marginBottom: 10,
+            cursor: 'pointer',
+          }}
         >
-          <div style={{ flexGrow: 1 }}>
+          <div style={{ marginRight: 5 }}>
             <Typography noWrap variant="subheading">
               Advanced Search Options
             </Typography>
@@ -193,16 +238,20 @@ class SearchForm extends Component {
         </Collapse>
 
         <div className={classes.search}>
-          <Button
-            variant="contained"
-            onClick={() => this.props.updateFormData(this.state)}
-            style={{ backgroundColor: '#72a9ed', boxShadow: 'none' }}
-          >
-            Search
-          </Button>
+          {isMobile ? (
+            <Fragment />
+          ) : (
+            <Button
+              variant="contained"
+              onClick={() => this.props.updateFormData(this.state)}
+              style={{ backgroundColor: '#72a9ed', boxShadow: 'none' }}
+            >
+              Search
+            </Button>
+          )}
         </div>
 
-        <div className={classes.new}>
+        {/*<div className={classes.new}>
           <Typography>
             <b>New on AntAlmanac:</b>
             <br />
@@ -213,8 +262,7 @@ class SearchForm extends Component {
             See finals schedules
           </Typography>
         </div>
-
-        {/*<img
+        <img
           src={MIUCI}
           variant="contained"
           alt="Made_in_UCI"

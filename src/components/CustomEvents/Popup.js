@@ -129,7 +129,7 @@ class DialogSelect extends Component {
     Object.keys(this.state.days).forEach((day) => {
       if (this.state.days[day]) {
         events.push({
-          color: this.props.editMode ? this.props.event.color : '#551a8b',
+          color: this.props.editMode ? this.props.event.color : '#696969',
           title: this.state.eventName ? this.state.eventName : 'Untitled',
           scheduleIndex: scheduleIndex,
           start: new Date(2018, 0, dayToNum(day), startHour, startMin),

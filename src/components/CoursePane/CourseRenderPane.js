@@ -1,11 +1,13 @@
 import { withStyles } from '@material-ui/core/styles';
 import { Paper, Typography, Grid, Modal } from '@material-ui/core';
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, Suspense } from 'react';
 import CourseDetailPane from './CourseDetailPane';
 import SchoolDeptCard from './SchoolDeptCard';
-import MiniSectionTable from './MiniSectionTable';
 import NoNothing from './no_results.png';
-import AdAd from './ad_ad.png';
+import loadingGif from '../CoursePane/loading.mp4';
+import Outreach from './Outreach';
+
+const MiniSectionTable = React.lazy(() => import('./MiniSectionTable'));
 
 const styles = (theme) => ({
   course: {
@@ -44,6 +46,7 @@ const styles = (theme) => ({
 class CourseRenderPane extends Component {
   constructor(props) {
     super(props);
+    //console.log(props);
     this.getGrid = this.getGrid.bind(this);
     this.handleDismissDetails = this.handleDismissDetails.bind(this);
     this.state = {
@@ -99,21 +102,40 @@ class CourseRenderPane extends Component {
         </Grid>
       ) : (
         <Grid item md={12} xs={12}>
-          <MiniSectionTable
-            currentScheduleIndex={this.props.currentScheduleIndex}
-            name={
-              SOCObject.name[0] +
-              ' ' +
-              SOCObject.name[1] +
-              ' | ' +
-              SOCObject.name[2]
+          <Suspense
+            fallback={
+              <div
+                style={{
+                  height: '100%',
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'white',
+                }}
+              >
+                <video autoPlay loop>
+                  <source src={loadingGif} type="video/mp4" />
+                </video>
+              </div>
             }
-            formData={this.props.formData}
-            courseDetails={SOCObject}
-            onAddClass={this.props.onAddClass}
-            termName={this.props.termName}
-            destination={this.props.destination}
-          />
+          >
+            <MiniSectionTable
+              currentScheduleIndex={this.props.currentScheduleIndex}
+              name={
+                SOCObject.name[0] +
+                ' ' +
+                SOCObject.name[1] +
+                ' | ' +
+                SOCObject.name[2]
+              }
+              formData={this.props.formData}
+              courseDetails={SOCObject}
+              onAddClass={this.props.onAddClass}
+              termName={this.props.termName}
+              destination={this.props.destination}
+            />
+          </Suspense>
         </Grid>
       );
     }
@@ -158,6 +180,7 @@ class CourseRenderPane extends Component {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
+              backgroundColor: 'white',
             }}
           >
             <img src={NoNothing} alt="" />
@@ -165,13 +188,10 @@ class CourseRenderPane extends Component {
         ) : (
           <Grid container spacing={16}>
             <Grid item md={12} xs={12}>
-              <a
-                href="https://forms.gle/irQBrBkqHYYxcEU39"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img src={AdAd} alt="" className={this.props.classes.ad} />
-              </a>
+              <Outreach
+                className={this.props.classes.ad}
+                dept={this.props.deptName}
+              />
             </Grid>
             {this.props.courseData.map((item) => this.getGrid(item))}
           </Grid>
