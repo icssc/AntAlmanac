@@ -22,3 +22,7 @@ yarn-error.log*
 
 # npm client-install
 /client/node_modules
+
+
+#personal Nodes
+notes.txt

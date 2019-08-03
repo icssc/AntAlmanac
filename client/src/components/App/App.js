@@ -22,7 +22,7 @@ import {
 } from '@material-ui/icons';
 import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality';
 import ReactGA from 'react-ga';
-import loadingGif from '../CoursePane/static/loading.mp4';
+import loadingGif from '../SearchForm/Gifs/loading.mp4';
 import { saveUserData } from '../../helpers';
 import TabularView from './TabularView';
 
@@ -33,8 +33,8 @@ class App extends Component {
         super(props);
 
         this.state = {
-            prevFormData: null,
-            formData: null,
+
+            data: null,
             currentScheduleIndex: 0,
             showSearch: true,
             customEvents: [],
@@ -58,14 +58,17 @@ class App extends Component {
         document.removeEventListener('keydown', this.handleUndo, false);
     }
 
+    //what the right panel shows
     handleRightPaneViewChange = (event, rightPaneView) => {
         this.setState({ rightPaneView, showSearch: true });
     };
 
+    //change the tab
     handleTabChange = (event, value) => {
         this.setState({ activeTab: value });
     };
 
+    //copy schedule
     handleCopySchedule = (moveTo) => {
         // let allSchedules = [0, 1, 2, 3];
         // let schedulesToMoveTo = [];
@@ -90,6 +93,7 @@ class App extends Component {
         // });
     };
 
+
     getClassesAfterCopyingTo = (moveTo) => {
         // let moveFrom = this.state.currentScheduleIndex;
         // const oldClasses = this.state.courseEvents.filter(
@@ -104,14 +108,19 @@ class App extends Component {
         // return newCourses;
     };
 
+
     handleDismissSearchResults = () => {
-        this.setState({ showSearch: true, formData: null });
+        this.setState({ showSearch: true, data: null });
     };
 
-    updateFormData = (formData) => {
-        this.setState({ formData: formData, prevFormData: formData }, () =>
-            this.setState({ showSearch: false })
-        );
+    //Where Form is updated
+    updateData = async (data) => {
+        console.log(data)
+        console.log('update Data has been called')
+        this.setState({ Data: await data,
+          showSearch: false })
+
+        console.log('update Data has gotten the data')
     };
 
     handleEditCustomEvent = (newEvents, oldEvent) => {
@@ -291,8 +300,7 @@ class App extends Component {
                                     <Fragment />
                                 ) : this.state.showSearch ? (
                                     <SearchForm
-                                        prevFormData={this.state.prevFormData}
-                                        updateFormData={this.updateFormData}
+                                        updateData={this.updateData}
                                     />
                                 ) : (
                                     <Suspense
@@ -317,7 +325,7 @@ class App extends Component {
                                         }
                                     >
                                         <CoursePane
-                                            formData={this.state.formData}
+                                            Data={this.state.Data}
                                             onAddClass={this.handleAddClass}
                                             onDismissSearchResults={
                                                 this.handleDismissSearchResults

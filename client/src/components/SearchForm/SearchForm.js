@@ -8,6 +8,10 @@ import { withStyles } from '@material-ui/core/styles';
 import AdvancedSearchTextFields from './AdvancedSearch';
 // import MIUCI from "./MIUCI.png";
 import { ExpandMore, ExpandLess } from '@material-ui/icons';
+import ReactGA from 'react-ga';
+import loadingGif from './Gifs/loading.mp4';
+import querystring from 'querystring';
+
 
 const styles = {
     container: {
@@ -54,53 +58,22 @@ class SearchForm extends Component {
             }
         }
 
-        if (this.props.prevFormData) {
-            const {
-                dept,
-                label,
-                term,
-                ge,
-                courseNum,
-                courseCode,
-                instructor,
-                units,
-                endTime,
-                startTime,
-                coursesFull,
-                building,
-            } = this.props.prevFormData;
-            this.state = {
-                dept: dept,
-                label: label,
-                ge: ge,
-                term: term,
-                courseNum: courseNum,
-                courseCode: courseCode,
-                instructor: instructor,
-                units: units,
-                endTime: endTime,
-                startTime: startTime,
-                coursesFull: coursesFull,
-                building: building,
-                expandAdvanced: advanced,
-            };
-        } else {
-            this.state = {
-                dept: '',
-                label: '',
-                ge: 'ANY',
-                term: '2019 Fall',
-                courseNum: '',
-                courseCode: '',
-                instructor: '',
-                units: '',
-                endTime: '',
-                startTime: '',
-                coursesFull: 'ANY',
-                building: '',
-                expandAdvanced: advanced,
-            };
-        }
+        this.state = {
+            dept: '',
+            label: '',
+            ge: 'ANY',
+            term: '2019 Fall',
+            courseNum: '',
+            courseCode: '',
+            instructor: '',
+            units: '',
+            endTime: '',
+            startTime: '',
+            coursesFull: 'ANY',
+            building: '',
+            expandAdvanced: advanced,
+            searched: false,
+        };
     }
 
     componentDidMount = () => {
@@ -111,6 +84,7 @@ class SearchForm extends Component {
         document.addEventListener('keydown', this.enterEvent, false);
     };
 
+    //if enter is perssed
     enterEvent = (event) => {
         const charCode = event.which ? event.which : event.keyCode;
         if (
@@ -128,23 +102,108 @@ class SearchForm extends Component {
         return this.state !== nextState;
     };
 
+
+    flatten(data) {
+      console.log(data)
+    return data.reduce((accumulator, school) => {
+      accumulator.push(school);
+
+      school.departments.forEach((dept) => {
+        accumulator.push(dept);
+
+        dept.courses.forEach((course) => {
+          accumulator.push(course);
+        });
+      });
+
+      return accumulator;
+    }, []);
+  }
+
+    //grab Data
+    fetchData = async () => {
+        this.setState({ searched: true }, async () => {
+            const {
+                dept,
+                term,
+                ge,
+                courseNum,
+                courseCode,
+                instructor,
+                units,
+                endTime,
+                startTime,
+                coursesFull,
+                building,
+            } = this.state;
+
+            ReactGA.event({
+                category: 'Search',
+                action: dept,
+                label: term,
+            });
+
+            const params = {
+                department: dept,
+                term: term,
+                ge: ge,
+                courseNumber: courseNum,
+                sectionCodes: courseCode,
+                instructorName: instructor,
+                units: units,
+                endTime: endTime,
+                startTime: startTime,
+                fullCourses: coursesFull,
+                building: building,
+            };
+
+            const url =
+      'https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?' +
+      querystring.stringify(params);
+            var response;
+            await fetch(url)
+              .then((resp) =>{
+                return resp.json();
+              })
+              .then((json) =>{
+                response = {
+                  courseData: this.flatten(json),
+                  termName: term,
+                  deptName: dept,
+                }
+                //pass back up
+              })
+            console.log('Response (check for await to work)')
+            console.log(response)
+
+            this.props.updateData(response)
+            console.log(response)
+
+        });
+    };
+
+    //change department
     setDept = (dept) => {
         if (dept == null) this.setState({ dept: null });
         else this.setState({ dept: dept.value, label: dept.label });
     };
 
+    //change to and from advanced search
     handleAdvancedSearchChange = (advancedSearchState) => {
         this.setState(advancedSearchState);
     };
 
+    //set ge type
     setGE = (ge) => {
         this.setState({ ge: ge });
     };
 
+    //changing terms
     setTerm = (term) => {
         this.setState({ term: term });
     };
 
+    //expanding the advanced tab
     handleExpand = () => {
         const nextExpansionState = !this.state.expandAdvanced;
         window.localStorage.setItem(
@@ -157,7 +216,26 @@ class SearchForm extends Component {
     render() {
         const { classes } = this.props;
 
-        return (
+        if (this.state.searched){
+          return (
+            <div
+                style={{
+                    height: '100%',
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: 'white',
+                }}
+            >
+                <video autoPlay loop>
+                    <source src={loadingGif} type="video/mp4" />
+                </video>
+            </div>
+          );
+          }
+          else{
+            return(
             <div className={classes.container}>
                 <div className={classes.margin}>
                     <TermSelector
@@ -212,7 +290,7 @@ class SearchForm extends Component {
                 <div className={classes.search}>
                     <Button
                         variant="contained"
-                        onClick={() => this.props.updateFormData(this.state)}
+                        onClick={() => this.fetchData(this.state)}
                         style={{
                             backgroundColor: '#72a9ed',
                             boxShadow: 'none',
@@ -241,7 +319,8 @@ class SearchForm extends Component {
           className={classes.miuci}
         />*/}
             </div>
-        );
+          );
+          }
     }
 }
 

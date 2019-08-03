@@ -7,6 +7,7 @@ import SectionTable from '../SectionTable/SectionTable.js';
 import NoNothing from './static/no_results.png';
 import AdAd from './static/ad_ad.png';
 
+//styling
 const styles = (theme) => ({
     course: {
         ...theme.mixins.gutters(),
@@ -41,8 +42,12 @@ const styles = (theme) => ({
     },
 });
 
+
+
 class CourseRenderPane extends Component {
     constructor(props) {
+        console.log('Course Pane Render')
+        console.log(props)
         super(props);
         this.handleDismissDetails = this.handleDismissDetails.bind(this);
         this.state = {
@@ -136,6 +141,8 @@ class CourseRenderPane extends Component {
         );
     };
 
+    
+
     handleDismissDetails() {
         this.props.onToggleDismissButton();
         this.setState({ courseDetailsOpen: false, course: null }, () => {
@@ -168,7 +175,7 @@ class CourseRenderPane extends Component {
                     />
                 </Modal>
 
-                {this.props.courseData.schools.length === 0 ? (
+                {this.props.courseData.length === 0 ? (
                     <div
                         style={{
                             height: '100%',

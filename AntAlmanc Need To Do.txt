@@ -17,7 +17,7 @@ Big Things:
 
 Small things:
 	efficiency
-	
+	Fix CoursePane (loading === false) ????????
 
 Everything in left pane works
 Right pane does not work
