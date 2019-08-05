@@ -8,17 +8,14 @@ import ReactGA from 'react-ga';
 class CoursePane extends PureComponent {
     constructor(props){
       super(props)
-      console.log(props)
       this.state = {
           courseData: this.props.Data,
       };
-      console.log('this.props')
-      console.log(this.props.Data)
     }
 
 
     render() {
-        const { courseData } = this.state.courseData;
+        const courseData = this.state.courseData;
         const { view, Data } = this.props;
 
       //   var obj = {

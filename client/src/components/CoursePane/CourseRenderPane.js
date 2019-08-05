@@ -46,8 +46,6 @@ const styles = (theme) => ({
 
 class CourseRenderPane extends Component {
     constructor(props) {
-        console.log('Course Pane Render')
-        console.log(props)
         super(props);
         this.handleDismissDetails = this.handleDismissDetails.bind(this);
         this.state = {
@@ -141,7 +139,7 @@ class CourseRenderPane extends Component {
         );
     };
 
-    
+
 
     handleDismissDetails() {
         this.props.onToggleDismissButton();

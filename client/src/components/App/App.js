@@ -115,12 +115,8 @@ class App extends Component {
 
     //Where Form is updated
     updateData = async (data) => {
-        console.log(data)
-        console.log('update Data has been called')
         this.setState({ Data: await data,
           showSearch: false })
-
-        console.log('update Data has gotten the data')
     };
 
     handleEditCustomEvent = (newEvents, oldEvent) => {

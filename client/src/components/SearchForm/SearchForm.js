@@ -102,24 +102,6 @@ class SearchForm extends Component {
         return this.state !== nextState;
     };
 
-
-    flatten(data) {
-      console.log(data)
-    return data.reduce((accumulator, school) => {
-      accumulator.push(school);
-
-      school.departments.forEach((dept) => {
-        accumulator.push(dept);
-
-        dept.courses.forEach((course) => {
-          accumulator.push(course);
-        });
-      });
-
-      return accumulator;
-    }, []);
-  }
-
     //grab Data
     fetchData = async () => {
         this.setState({ searched: true }, async () => {
@@ -157,27 +139,18 @@ class SearchForm extends Component {
                 building: building,
             };
 
-            const url =
-      'https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?' +
-      querystring.stringify(params);
-            var response;
-            await fetch(url)
-              .then((resp) =>{
-                return resp.json();
-              })
-              .then((json) =>{
-                response = {
-                  courseData: this.flatten(json),
-                  termName: term,
-                  deptName: dept,
-                }
-                //pass back up
-              })
-            console.log('Response (check for await to work)')
-            console.log(response)
+            const response1 = await fetch('/api/websocapi', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(params),
+            });
 
-            this.props.updateData(response)
-            console.log(response)
+            const jsonResp = await response1.json();
+            console.log(jsonResp)
+
+
+            this.props.updateData(jsonResp)
+
 
         });
     };
