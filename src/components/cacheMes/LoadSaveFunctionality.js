@@ -124,8 +124,6 @@ class LoadSaveScheduleFunctionality extends React.Component {
 
           if (!userData.canceledClass) {
             message = "Loaded schedule under '" + userID + "'. ";
-            message +=
-              '**Our servers went down for aws maintenance yesterday (08/01), which caused schedules to not save properly; you may have lost work you made yesterday. We are extremely sorry about that! This has been fixed!';
             variant = 'success';
           } else {
             message =
