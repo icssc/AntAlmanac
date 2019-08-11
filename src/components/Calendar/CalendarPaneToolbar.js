@@ -13,6 +13,7 @@ const styles = {
     overflow: 'auto',
     marginBottom: '4px',
     alignItems: 'center',
+    height: '48px',
   },
   inline: {
     display: 'inline',
