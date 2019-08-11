@@ -161,6 +161,7 @@ export const loadSchedule = async (userID) => {
                 type: 'LOAD_SCHEDULE',
                 userData: await getCoursesData(json.userData),
             });
+            console.log(await getCoursesData(json.userData))
 
             //TODO: Snackbar
 

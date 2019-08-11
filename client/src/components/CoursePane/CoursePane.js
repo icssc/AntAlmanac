@@ -18,14 +18,6 @@ class CoursePane extends PureComponent {
         const courseData = this.state.courseData;
         const { view, Data } = this.props;
 
-      //   var obj = {
-      //   formData: Data,
-      //   onToggleDismissButton: this.handleToggleDismissButton,
-      //   courseData: courseData,
-      //   view: view,
-      //   term: this.props.Data.termName,
-      // }
-      // console.log(obj)
             return (
                 <Fragment>
                     <div

@@ -25,6 +25,8 @@ import ReactGA from 'react-ga';
 import loadingGif from '../SearchForm/Gifs/loading.mp4';
 import { saveUserData } from '../../helpers';
 import TabularView from './TabularView';
+import AddedCoursePane from '../AddedCourses/AddedCoursePane';
+
 
 const CoursePane = React.lazy(() => import('../CoursePane/CoursePane'));
 
@@ -52,6 +54,7 @@ class App extends Component {
 
         ReactGA.initialize('UA-133683751-1');
         ReactGA.pageview('/homepage');
+
     };
 
     componentWillUnmount() {
@@ -60,7 +63,10 @@ class App extends Component {
 
     //what the right panel shows
     handleRightPaneViewChange = (event, rightPaneView) => {
-        this.setState({ rightPaneView, showSearch: true });
+        this.setState({ rightPaneView,
+           showSearch: true,
+         });
+        console.log(this.state)
     };
 
     //change the tab
@@ -92,6 +98,7 @@ class App extends Component {
         //   });
         // });
     };
+
 
 
     getClassesAfterCopyingTo = (moveTo) => {
@@ -158,8 +165,6 @@ class App extends Component {
                         <div style={{ flexGrow: 1 }}>{/*    LOGO*/}</div>
 
                         <LoadSaveScheduleFunctionality
-                            onLoad={this.handleLoad}
-                            onSave={this.handleSave}
                             isDesktop={this.state.isDesktop}
                         />
 
@@ -293,7 +298,7 @@ class App extends Component {
                                 id="rightPane"
                             >
                                 {this.state.rightPaneView ? (
-                                    <Fragment />
+                                    <AddedCoursePane />
                                 ) : this.state.showSearch ? (
                                     <SearchForm
                                         updateData={this.updateData}
