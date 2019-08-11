@@ -808,6 +808,8 @@ class App extends Component {
                   overflow: 'hidden',
                   marginBottom: '4px',
                   marginRight: '4px',
+                  marginLeft: '4px',
+                  height: '45px',
                   backgroundColor: '#dfe2e5',
                 }}
               >
@@ -822,7 +824,12 @@ class App extends Component {
                   <Tab
                     label={
                       this.state.isDesktop ? (
-                        <div style={{ display: 'inline-flex' }}>
+                        <div
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                          }}
+                        >
                           <Search style={{ height: 18 }} />
                           <Typography>&nbsp;&nbsp;Class Search</Typography>
                         </div>
@@ -834,7 +841,12 @@ class App extends Component {
                   <Tab
                     label={
                       this.state.isDesktop ? (
-                        <div style={{ display: 'inline-flex' }}>
+                        <div
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                          }}
+                        >
                           <FormatListBulleted style={{ height: 18 }} />
                           <Typography>&nbsp;&nbsp;Added Classes</Typography>
                         </div>
@@ -846,7 +858,12 @@ class App extends Component {
                   <Tab
                     label={
                       this.state.isDesktop ? (
-                        <div style={{ display: 'inline-flex' }}>
+                        <div
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                          }}
+                        >
                           <MyLocation style={{ height: 18 }} />
                           <Typography>&nbsp;&nbsp;Dora Mode</Typography>
                         </div>
