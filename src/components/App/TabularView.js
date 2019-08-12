@@ -425,6 +425,7 @@ class TabularView extends Component {
                 <thead>
                   <tr>
                     <th>Color</th>
+                    <th>Delete</th>
                     <th>Code</th>
                     <th>Type</th>
                     <th>Instructor</th>
@@ -453,6 +454,15 @@ class TabularView extends Component {
                             />
                           </td>
                         </Tooltip>
+                        <td width="40">
+                          <IconButton
+                            onClick={() => {
+                              this.props.onClassDelete(item);
+                            }}
+                          >
+                            <Delete />
+                          </IconButton>
+                        </td>
                         <Tooltip
                           title="Click to copy course code"
                           placement="right"
