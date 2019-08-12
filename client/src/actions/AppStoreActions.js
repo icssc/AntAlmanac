@@ -93,13 +93,19 @@ export const addCourse = (
     }
 };
 
+export const openSnackbar = (variant, message) => {
+    dispatcher.dispatch({
+        type: 'OPEN_SNACKBAR',
+        variant: variant,
+        message: message,
+    });
+};
+
 export const saveSchedule = async (userID) => {
-    console.log('save');
     if (userID != null) {
         userID = userID.replace(/\s+/g, '');
 
         if (userID.length > 0) {
-            // try {
             window.localStorage.setItem('userID', userID);
 
             const addedCourses = AppStore.getAddedCourses();
@@ -116,74 +122,54 @@ export const saveSchedule = async (userID) => {
                 };
             });
 
-            await fetch(`/api/saveUserData`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ userID, userData }),
-            });
+            try {
+                await fetch(`/api/saveUserData`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userID, userData }),
+                });
 
-            // TODO: Snackbar
-            dispatcher.dispatch({ type: 'SAVE_SCHEDULE', userID });
-
-            // this.setState({
-            //     variant: 'success',
-            //     open: true,
-            //     message:
-            //         "Schedule saved under username '" +
-            //         userID +
-            //         "'! Remember to register for courses through WebReg.",
-            // });
-            // } catch (err) {
-            // this.setState({
-            //     open: true,
-            //     message:
-            //         "Couldn't save schedule under '" + userID + "'.",
-            //     variant: 'warning',
-            // });
-            // }
+                dispatcher.dispatch({ type: 'SAVE_SCHEDULE', userID });
+                openSnackbar(
+                    'success',
+                    `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
+                );
+            } catch (e) {
+                console.log('save went wrong');
+                openSnackbar(
+                    'error',
+                    `Schedule could not be saved under username "${userID}`
+                );
+            }
         }
     }
 };
 
 export const loadSchedule = async (userID) => {
-    console.log('load');
-
     if (userID != null) {
         userID = userID.replace(/\s+/g, '');
 
         if (userID.length > 0) {
-            const data = await fetch(`/api/loadUserData/?userID=${userID}`);
-            const json = await data.json();
-            window.localStorage.setItem('userID', userID);
-            dispatcher.dispatch({
-                type: 'LOAD_SCHEDULE',
-                userData: await getCoursesData(json.userData),
-            });
-
-            //TODO: Snackbar
-
-            // if (userData !== -1) {
-            //     this.setState(
-            //         {
-            //             open: true,
-            //             message:  `Schedule for "${userID}" loaded`,
-            //             variant: 'success',
-            //         },
-            //         async () => {
-            //
-            //         }
-            //     );
-            // } else {
-            //     this.setState({
-            //         open: true,
-            //         message:
-            //             `We couldn't find a schedule found under
-            //                 "${userID}"`,
-            //         variant: 'warning',
-            //     });
-            // }
+            try {
+                const data = await fetch(`/api/loadUserData/?userID=${userID}`);
+                const json = await data.json();
+                window.localStorage.setItem('userID', userID);
+                dispatcher.dispatch({
+                    type: 'LOAD_SCHEDULE',
+                    userData: await getCoursesData(json.userData),
+                });
+                openSnackbar(
+                    'success',
+                    `Schedule for username "${userID}" loaded.`
+                );
+            } catch (e) {
+                openSnackbar(
+                    'error',
+                    `Couldn't find schedules for username "${userID}.`
+                );
+            }
         }
     }
 };
@@ -307,9 +293,15 @@ export const undoDelete = (event) => {
                     deletedCourses.length - 1
                 ),
             });
+
+            openSnackbar(
+                'success',
+                `Undo delete ${lastDeleted.deptCode} ${
+                    lastDeleted.courseNumber
+                } in schedule ${lastDeleted.scheduleIndex + 1}.`
+            );
         }
     }
-    //TODO: Snackbar
 };
 
 export const changeCurrentSchedule = (direction) => {

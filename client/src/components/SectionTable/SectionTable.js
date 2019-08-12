@@ -47,7 +47,7 @@ class SectionTable extends PureComponent {
 
     componentDidMount = async () => {
         //let {building,courseCode,courseNum,coursesFull,dept,endTime,ge,instructor,label,startTime,term,units}=this.props.formData;
-        let { dept, ge } = this.props.formData;
+        let { dept, ge } = this.props;
 
         if (ge !== 'ANY' && dept === '') {
             //please put all the form's props condition in to prevent search bugs
@@ -77,7 +77,7 @@ class SectionTable extends PureComponent {
     };
 
     render() {
-        const { classes, term, currentScheduleIndex } = this.props;
+        const { classes, term } = this.props;
 
         return (
             <Fragment>
@@ -152,7 +152,9 @@ class SectionTable extends PureComponent {
 SectionTable.propTypes = {
     classes: PropTypes.object.isRequired,
     courseDetails: PropTypes.object.isRequired,
-    formData: PropTypes.object.isRequired,
+    dept: PropTypes.string.isRequired,
+    ge: PropTypes.string.isRequired,
+    term: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(SectionTable);

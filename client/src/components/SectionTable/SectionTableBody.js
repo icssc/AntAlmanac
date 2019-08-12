@@ -22,7 +22,7 @@ import { Add, ArrowDropDown } from '@material-ui/icons';
 import OpenSpotAlertPopover from './OpenSpotAlertPopover';
 import PropTypes from 'prop-types';
 import ReactGA from 'react-ga';
-import { addCourse } from '../../actions/AppStoreActions';
+import { addCourse, openSnackbar } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
 
 const styles = (theme) => ({
@@ -134,7 +134,7 @@ const ScheduleAddCell = withStyles(styles)((props) => {
         popupState.close();
         for (const meeting of section.meetings) {
             if (meeting.time === 'TBA') {
-                // TODO: Open flux snackbar w/ message "Online/TBA section added!
+                openSnackbar('success', 'Online/TBA class added');
                 // See Added Classes."
                 break;
             }
@@ -190,7 +190,7 @@ const CourseCodeCell = withStyles(styles)((props) => {
         tempEventTarget.select();
         document.execCommand('copy');
         document.body.removeChild(tempEventTarget);
-        //TODO: Snackbar to say "sectionCode copied to clipboard"
+        openSnackbar('success', 'Section code copied to clipboard');
     };
 
     const { classes, sectionCode } = props;

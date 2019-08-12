@@ -42,8 +42,6 @@ const styles = (theme) => ({
     },
 });
 
-
-
 class CourseRenderPane extends Component {
     constructor(props) {
         super(props);
@@ -120,9 +118,8 @@ class CourseRenderPane extends Component {
                                             ) : (
                                                 <Grid item md={12} xs={12}>
                                                     <SectionTable
-                                                        formData={
-                                                            this.props.formData
-                                                        }
+                                                        ge={this.props.ge}
+                                                        dept={this.props.dept}
                                                         courseDetails={course}
                                                         term={this.props.term}
                                                     />
@@ -138,8 +135,6 @@ class CourseRenderPane extends Component {
             </Fragment>
         );
     };
-
-
 
     handleDismissDetails() {
         this.props.onToggleDismissButton();
