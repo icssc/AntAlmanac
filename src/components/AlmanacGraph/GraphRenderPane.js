@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, Snackbar } from '@material-ui/core';
+import { Button, Snackbar, Typography } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import ReactGA from 'react-ga';
 import grades from './f18.json';
@@ -163,8 +163,9 @@ Units: ${this.props.section.units}`}
           <Fragment>
             {this.state.open ? (
               <Fragment>
+                <Typography variant="h5">From Fall 2018</Typography>
                 <BarChart
-                  width={1000}
+                  width={window.innerWidth * 0.65 * 0.88}
                   height={500}
                   data={grades[this.props.section.classCode]}
                   margin={{
