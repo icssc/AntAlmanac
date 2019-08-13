@@ -52,8 +52,7 @@ class CourseRenderPane extends Component {
         };
         this.ref = null;
         this.scrollPos = null;
-        console.log('Render Pane')
-        console.log(this.props)
+        
     }
 
     toRender = (SOCObject) => {

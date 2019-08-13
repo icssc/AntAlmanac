@@ -30,11 +30,10 @@ export default class AddedCoursePane extends Component{
 
   //pass courses down
   loadCourses = async () =>{
-    console.log('got in here')
-    console.log(await AppStore.getAddedCourses())
+
     var oneSectionCourses = await AppStore.getAddedCourses();
     oneSectionCourses = this.formatSections(oneSectionCourses);
-    console.log(oneSectionCourses)
+  
     this.setState({
       courses: this.formatSections(oneSectionCourses),
       loaded: true,

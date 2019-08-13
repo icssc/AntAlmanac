@@ -46,7 +46,7 @@ class SectionTable extends PureComponent {
     state = { courseDetails: this.props.courseDetails };
     constructor(props){
       super(props)
-      console.log(this.props)
+      
     }
 
 
