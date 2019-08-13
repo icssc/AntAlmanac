@@ -11,12 +11,16 @@ class CoursePane extends PureComponent {
       this.state = {
           courseData: this.props.Data,
       };
+      console.log('coursepane')
+      console.log(this.state.courseData)
+      console.log(this.props)
     }
 
 
     render() {
         const courseData = this.state.courseData;
         const { view, Data } = this.props;
+        console.log(this.props)
 
             return (
                 <Fragment>

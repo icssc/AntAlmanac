@@ -44,40 +44,29 @@ const styles = {
 class SectionTable extends PureComponent {
     //TODO: for efficiency, search multiple classes at once
     state = { courseDetails: this.props.courseDetails };
+    constructor(props){
+      super(props)
+      console.log(this.props)
+    }
+
 
     componentDidMount = async () => {
-        //let {building,courseCode,courseNum,coursesFull,dept,endTime,ge,instructor,label,startTime,term,units}=this.props.formData;
-        let { dept, ge } = this.props.formData;
+        console.log('Section Table');
+        console.log(this.props);
+        console.log('state');
+        console.log(this.state)
 
-        if (ge !== 'ANY' && dept === '') {
-            //please put all the form's props condition in to prevent search bugs
-            const { term } = this.props;
-
-            const params = {
-                department: this.state.courseDetails.deptCode,
-                term: term,
-                courseNumber: this.state.courseDetails.courseNumber,
-                courseTitle: this.state.courseDetails.courseTitle,
-            };
-
-            const response = await fetch('/api/websocapi', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(params),
-            });
-
-            const jsonResp = await response.json();
-
-            const courseDetails = jsonResp.schools[0].departments[0].courses[0];
-
-            this.setState({
-                courseDetails,
-            });
-        }
     };
+
+    //// TODO: remove this by making addedCoursepane better
+    mapcourses = () => {
+
+    }
 
     render() {
         const { classes, term, currentScheduleIndex } = this.props;
+        console.log('check sections')
+        console.log(this.state.courseDetails.section)
 
         return (
             <Fragment>
@@ -133,7 +122,8 @@ class SectionTable extends PureComponent {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.courseDetails.sections.map((section) => {
+                        {this.state.courseDetails.sections ?
+                          (this.state.courseDetails.sections.map((section) => {
                             return (
                                 <SectionTableBody
                                     section={section}
@@ -141,7 +131,13 @@ class SectionTable extends PureComponent {
                                     term={term}
                                 />
                             );
-                        })}
+                        })):
+                        <SectionTableBody
+                            courseDetails={this.state.courseDetails}
+                            term={term}
+                            section = {this.state.courseDetails}
+                        />
+                      }
                     </tbody>
                 </table>
             </Fragment>
@@ -152,7 +148,6 @@ class SectionTable extends PureComponent {
 SectionTable.propTypes = {
     classes: PropTypes.object.isRequired,
     courseDetails: PropTypes.object.isRequired,
-    formData: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(SectionTable);

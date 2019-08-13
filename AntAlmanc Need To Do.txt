@@ -2,7 +2,6 @@
 Big Things:
 
 	Unhandled Rejection (SyntaxError): Unexpected end of JSON input
-	Save does not work
 
 	Doesnt work: added classes -- use section table
 		charts
@@ -22,3 +21,11 @@ Small things:
 
 Everything in left pane works
 Right pane does not work
+
+
+AddedCoursesPane Remarks:
+	- Does not currently seperate by school
+	- Got data from appstore, so if we can add the school to the appstore,
+			would be able to add school
+	- Reformats by adding a 'sections', if possible rename "section" to "sections"
+			when storing added courses
