@@ -12,7 +12,6 @@ import ReactGA from 'react-ga';
 import loadingGif from './Gifs/loading.mp4';
 import querystring from 'querystring';
 
-
 const styles = {
     container: {
         display: 'flex',
@@ -146,12 +145,8 @@ class SearchForm extends Component {
             });
 
             const jsonResp = await response1.json();
-            console.log(jsonResp)
 
-
-            this.props.updateData(jsonResp)
-
-
+            this.props.updateData(jsonResp, term, dept, ge);
         });
     };
 
@@ -189,111 +184,107 @@ class SearchForm extends Component {
     render() {
         const { classes } = this.props;
 
-        if (this.state.searched){
-          return (
-            <div
-                style={{
-                    height: '100%',
-                    width: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    backgroundColor: 'white',
-                }}
-            >
-                <video autoPlay loop>
-                    <source src={loadingGif} type="video/mp4" />
-                </video>
-            </div>
-          );
-          }
-          else{
-            return(
-            <div className={classes.container}>
-                <div className={classes.margin}>
-                    <TermSelector
-                        term={this.state.term}
-                        setTerm={this.setTerm}
-                    />
-                </div>
-
-                <div>
-                    <DeptSearchBar
-                        dept={this.state.label}
-                        setDept={this.setDept}
-                    />
-                </div>
-
+        if (this.state.searched) {
+            return (
                 <div
-                    className={classes.margin}
-                    style={{ display: 'inline-flex' }}
-                >
-                    <GESelector ge={this.state.ge} setGE={this.setGE} />
-                    <CourseCodeSearchBar
-                        onAdvancedSearchChange={this.handleAdvancedSearchChange}
-                    />
-                </div>
-
-                <div
-                    onClick={this.handleExpand}
                     style={{
-                        display: 'inline-flex',
-                        marginTop: 5,
-                        cursor: 'pointer',
+                        height: '100%',
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: 'white',
                     }}
                 >
-                    <div style={{ flexGrow: 1 }}>
-                        <Typography noWrap variant="subheading">
-                            Advanced Search Options
-                        </Typography>
-                    </div>
-                    {this.state.expandAdvanced ? (
-                        <ExpandLess />
-                    ) : (
-                        <ExpandMore />
-                    )}
+                    <video autoPlay loop>
+                        <source src={loadingGif} type="video/mp4" />
+                    </video>
                 </div>
-                <Collapse in={this.state.expandAdvanced}>
-                    <AdvancedSearchTextFields
-                        params={this.state}
-                        onAdvancedSearchChange={this.handleAdvancedSearchChange}
-                    />
-                </Collapse>
+            );
+        } else {
+            return (
+                <div className={classes.container}>
+                    <div className={classes.margin}>
+                        <TermSelector
+                            term={this.state.term}
+                            setTerm={this.setTerm}
+                        />
+                    </div>
 
-                <div className={classes.search}>
-                    <Button
-                        variant="contained"
-                        onClick={() => this.fetchData(this.state)}
+                    <div>
+                        <DeptSearchBar
+                            dept={this.state.label}
+                            setDept={this.setDept}
+                        />
+                    </div>
+
+                    <div
+                        className={classes.margin}
+                        style={{ display: 'inline-flex' }}
+                    >
+                        <GESelector ge={this.state.ge} setGE={this.setGE} />
+                        <CourseCodeSearchBar
+                            onAdvancedSearchChange={
+                                this.handleAdvancedSearchChange
+                            }
+                        />
+                    </div>
+
+                    <div
+                        onClick={this.handleExpand}
                         style={{
-                            backgroundColor: '#72a9ed',
-                            boxShadow: 'none',
+                            display: 'inline-flex',
+                            marginTop: 5,
+                            cursor: 'pointer',
                         }}
                     >
-                        Search
-                    </Button>
-                </div>
+                        <div style={{ flexGrow: 1 }}>
+                            <Typography noWrap variant="subheading">
+                                Advanced Search Options
+                            </Typography>
+                        </div>
+                        {this.state.expandAdvanced ? (
+                            <ExpandLess />
+                        ) : (
+                            <ExpandMore />
+                        )}
+                    </div>
+                    <Collapse in={this.state.expandAdvanced}>
+                        <AdvancedSearchTextFields
+                            params={this.state}
+                            onAdvancedSearchChange={
+                                this.handleAdvancedSearchChange
+                            }
+                        />
+                    </Collapse>
 
-                <div className={classes.new}>
-                    <Typography>
-                        <b>New on AntAlmanac:</b>
-                        <br />
-                        Add online/TBA classes!
-                        <br />
-                        Download .ics files of your calendars!
-                        <br />
-                        See finals schedules
-                    </Typography>
-                </div>
+                    <div className={classes.search}>
+                        <Button
+                            variant="contained"
+                            onClick={() => this.fetchData(this.state)}
+                            style={{
+                                backgroundColor: '#72a9ed',
+                                boxShadow: 'none',
+                            }}
+                        >
+                            Search
+                        </Button>
+                    </div>
 
-                {/*<img
-          src={MIUCI}
-          variant="contained"
-          alt="Made_in_UCI"
-          className={classes.miuci}
-        />*/}
-            </div>
-          );
-          }
+                    <div className={classes.new}>
+                        <Typography>
+                            <b>New on AntAlmanac:</b>
+                            <br />
+                            Add online/TBA classes!
+                            <br />
+                            Download .ics files of your calendars!
+                            <br />
+                            See finals schedules
+                        </Typography>
+                    </div>
+                </div>
+            );
+        }
     }
 }
 

@@ -23,10 +23,13 @@ import {
 import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality';
 import ReactGA from 'react-ga';
 import loadingGif from '../SearchForm/Gifs/loading.mp4';
-import { saveUserData } from '../../helpers';
 import TabularView from './TabularView';
+<<<<<<< HEAD
 import AddedCoursePane from '../AddedCourses/AddedCoursePane';
 
+=======
+import NotificationSnackbar from './NotificationSnackbar';
+>>>>>>> 780e505172adeb5d23bbff4f657da8e25b759b64
 
 const CoursePane = React.lazy(() => import('../CoursePane/CoursePane'));
 
@@ -35,7 +38,6 @@ class App extends Component {
         super(props);
 
         this.state = {
-
             data: null,
             currentScheduleIndex: 0,
             showSearch: true,
@@ -99,8 +101,11 @@ class App extends Component {
         // });
     };
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 780e505172adeb5d23bbff4f657da8e25b759b64
     getClassesAfterCopyingTo = (moveTo) => {
         // let moveFrom = this.state.currentScheduleIndex;
         // const oldClasses = this.state.courseEvents.filter(
@@ -115,15 +120,20 @@ class App extends Component {
         // return newCourses;
     };
 
-
     handleDismissSearchResults = () => {
         this.setState({ showSearch: true, data: null });
     };
 
     //Where Form is updated
-    updateData = async (data) => {
-        this.setState({ Data: await data,
-          showSearch: false })
+    updateData = async (data, term, dept, ge) => {
+        data = await data;
+        this.setState({
+            Data: data,
+            showSearch: false,
+            term: term,
+            dept: dept,
+            ge: ge,
+        });
     };
 
     handleEditCustomEvent = (newEvents, oldEvent) => {
@@ -300,9 +310,7 @@ class App extends Component {
                                 {this.state.rightPaneView ? (
                                     <AddedCoursePane />
                                 ) : this.state.showSearch ? (
-                                    <SearchForm
-                                        updateData={this.updateData}
-                                    />
+                                    <SearchForm updateData={this.updateData} />
                                 ) : (
                                     <Suspense
                                         fallback={
@@ -327,6 +335,9 @@ class App extends Component {
                                     >
                                         <CoursePane
                                             Data={this.state.Data}
+                                            term={this.state.term}
+                                            dept={this.state.dept}
+                                            ge={this.state.ge}
                                             onAddClass={this.handleAddClass}
                                             onDismissSearchResults={
                                                 this.handleDismissSearchResults
@@ -355,6 +366,7 @@ class App extends Component {
                         </Grid>
                     </Hidden>
                 </Grid>
+                <NotificationSnackbar />
             </Fragment>
         );
     }

@@ -8,6 +8,8 @@ class AppStore extends EventEmitter {
         this.customEvents = [];
         this.addedCourses = [];
         this.deletedCourses = [];
+        this.snackbarMessage = '';
+        this.snackbarVariant = 'info';
     }
 
     getCurrentScheduleIndex() {
@@ -24,6 +26,14 @@ class AppStore extends EventEmitter {
 
     getDeletedCourses() {
         return this.deletedCourses;
+    }
+
+    getSnackbarMessage() {
+        return this.snackbarMessage;
+    }
+
+    getSnackbarVariant() {
+        return this.snackbarVariant;
     }
 
     handleActions(action) {
@@ -82,6 +92,11 @@ class AppStore extends EventEmitter {
                 this.customEvents = action.userData.customEvents;
                 this.emit('addedCoursesChange');
                 this.emit('customEventsChange');
+                break;
+            case 'OPEN_SNACKBAR':
+                this.snackbarVariant = action.variant;
+                this.snackbarMessage = action.message;
+                this.emit('openSnackbar');
                 break;
         }
     }

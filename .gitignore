@@ -1,6 +1,4 @@
 /node_modules
-/client/package-lock.json
-/package-lock.json
 
 # production
 /build
@@ -18,7 +16,7 @@ yarn-debug.log*
 yarn-error.log*
 
 #config
-/config.json
+config.json
 
 # npm client-install
 /client/node_modules

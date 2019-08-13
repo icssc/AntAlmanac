@@ -27,10 +27,11 @@ app.post('/api/saveUserData', (req, res) => {
         }
     };
     dynamoDb.put(params, (err, data) => {
-        if (err) console.log(err);
-        else console.log(data);
+        if (err)
+            res.status(500).send();
+        else
+            res.status(200).send();
     });
-    //res send 201? code ?
 });
 
 app.get('/api/loadUserData', (req, res) => {

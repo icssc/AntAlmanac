@@ -39,20 +39,20 @@ const theme = createMuiTheme({
 });
 
 const rootElement = document.getElementById('root');
-if (rootElement.hasChildNodes()) {
-    hydrate(
-        <MuiThemeProvider theme={theme}>
-            <App style={{ height: '100%' }} />
-        </MuiThemeProvider>,
-        rootElement
-    );
-} else {
-    render(
-        <MuiThemeProvider theme={theme}>
-            <App style={{ height: '100%' }} />
-        </MuiThemeProvider>,
-        rootElement
-    );
-}
+// if (rootElement.hasChildNodes()) {
+//     hydrate(
+//         <MuiThemeProvider theme={theme}>
+//             <App style={{ height: '100%' }} />
+//         </MuiThemeProvider>,
+//         rootElement
+//     );
+// } else {
+render(
+    <MuiThemeProvider theme={theme}>
+        <App style={{ height: '100%' }} />
+    </MuiThemeProvider>,
+    rootElement
+);
+// }
 
 unregister();
