@@ -20,7 +20,8 @@ config.json
 
 # npm client-install
 /client/node_modules
-
+/client/package-lock.json
+package-lock.json
 
 #personal Nodes
 notes.txt

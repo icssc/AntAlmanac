@@ -51,13 +51,6 @@ class SectionTable extends PureComponent {
 
 
     componentDidMount = async () => {
-<<<<<<< HEAD
-        console.log('Section Table');
-        console.log(this.props);
-        console.log('state');
-        console.log(this.state)
-
-=======
         //let {building,courseCode,courseNum,coursesFull,dept,endTime,ge,instructor,label,startTime,term,units}=this.props.formData;
         let { dept, ge } = this.props;
 
@@ -86,7 +79,6 @@ class SectionTable extends PureComponent {
                 courseDetails,
             });
         }
->>>>>>> 780e505172adeb5d23bbff4f657da8e25b759b64
     };
 
     //// TODO: remove this by making addedCoursepane better
@@ -95,13 +87,7 @@ class SectionTable extends PureComponent {
     }
 
     render() {
-<<<<<<< HEAD
-        const { classes, term, currentScheduleIndex } = this.props;
-        console.log('check sections')
-        console.log(this.state.courseDetails.section)
-=======
         const { classes, term } = this.props;
->>>>>>> 780e505172adeb5d23bbff4f657da8e25b759b64
 
         return (
             <Fragment>
@@ -183,12 +169,9 @@ class SectionTable extends PureComponent {
 SectionTable.propTypes = {
     classes: PropTypes.object.isRequired,
     courseDetails: PropTypes.object.isRequired,
-<<<<<<< HEAD
-=======
     dept: PropTypes.string.isRequired,
     ge: PropTypes.string.isRequired,
     term: PropTypes.string.isRequired,
->>>>>>> 780e505172adeb5d23bbff4f657da8e25b759b64
 };
 
 export default withStyles(styles)(SectionTable);

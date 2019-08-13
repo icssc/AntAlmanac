@@ -152,39 +152,6 @@ export const loadSchedule = async (userID) => {
         userID = userID.replace(/\s+/g, '');
 
         if (userID.length > 0) {
-<<<<<<< HEAD
-            const data = await fetch(`/api/loadUserData/?userID=${userID}`);
-            const json = await data.json();
-            window.localStorage.setItem('userID', userID);
-            dispatcher.dispatch({
-                type: 'LOAD_SCHEDULE',
-                userData: await getCoursesData(json.userData),
-            });
-            console.log(await getCoursesData(json.userData))
-
-            //TODO: Snackbar
-
-            // if (userData !== -1) {
-            //     this.setState(
-            //         {
-            //             open: true,
-            //             message:  `Schedule for "${userID}" loaded`,
-            //             variant: 'success',
-            //         },
-            //         async () => {
-            //
-            //         }
-            //     );
-            // } else {
-            //     this.setState({
-            //         open: true,
-            //         message:
-            //             `We couldn't find a schedule found under
-            //                 "${userID}"`,
-            //         variant: 'warning',
-            //     });
-            // }
-=======
             try {
                 const data = await fetch(`/api/loadUserData/?userID=${userID}`);
                 const json = await data.json();
@@ -203,7 +170,6 @@ export const loadSchedule = async (userID) => {
                     `Couldn't find schedules for username "${userID}.`
                 );
             }
->>>>>>> 780e505172adeb5d23bbff4f657da8e25b759b64
         }
     }
 };

@@ -24,12 +24,9 @@ import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality';
 import ReactGA from 'react-ga';
 import loadingGif from '../SearchForm/Gifs/loading.mp4';
 import TabularView from './TabularView';
-<<<<<<< HEAD
 import AddedCoursePane from '../AddedCourses/AddedCoursePane';
 
-=======
 import NotificationSnackbar from './NotificationSnackbar';
->>>>>>> 780e505172adeb5d23bbff4f657da8e25b759b64
 
 const CoursePane = React.lazy(() => import('../CoursePane/CoursePane'));
 
@@ -101,11 +98,6 @@ class App extends Component {
         // });
     };
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 780e505172adeb5d23bbff4f657da8e25b759b64
     getClassesAfterCopyingTo = (moveTo) => {
         // let moveFrom = this.state.currentScheduleIndex;
         // const oldClasses = this.state.courseEvents.filter(
