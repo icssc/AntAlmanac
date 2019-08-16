@@ -24,24 +24,40 @@ export default class AddedCoursePane extends Component{
   }
 
   formatSections = (unformatted) =>{
-    unformatted[0].sections = [unformatted[0].section]
-    return unformatted
+    var formatted = [unformatted.shift()];
+    console.log(formatted)
+    formatted[0].sections = [formatted[0].section];
+
+    unformatted.forEach(function(section){
+        console.log(section)
+        var course = formatted.find(courses => courses.courseNumber === section.courseNumber);
+        if (course){
+          course['sections'].push(section.section)
+        }
+        else{
+          section.sections = [section.section]
+          formatted.push(section)
+        }
+
+    });
+    return formatted
   }
 
   //pass courses down
   loadCourses = async () =>{
-
+    
     var oneSectionCourses = await AppStore.getAddedCourses();
     oneSectionCourses = this.formatSections(oneSectionCourses);
-  
+
     this.setState({
-      courses: this.formatSections(oneSectionCourses),
+      courses: oneSectionCourses,
       loaded: true,
     })
 
   }
 
   getGrid = (SOCObject) => {
+      console.log(SOCObject)
       return (
           <Fragment>
               {SOCObject.map((classes) => {

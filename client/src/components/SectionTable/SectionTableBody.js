@@ -262,7 +262,7 @@ const InstructorsCell = withStyles(styles)((props) => {
     };
 
     const getLinks = (professorNames) => {
-
+        
         return professorNames.map((profName) => {
             if (profName !== 'STAFF') {
                 return (
