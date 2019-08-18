@@ -74,7 +74,11 @@ class AddedCoursePane extends Component {
                     totalUnits += Number(addedCourse.section.units);
             }
         }
-
+        //formattedCourses.sections.sort(function(a,b) {return a.sectionCode - b.sectionCode})
+        console.log(formattedCourses)
+        formattedCourses.forEach(function (course) {
+          course.sections.sort(function(a,b) {return a.sectionCode - b.sectionCode})
+        })
         this.setState({ courses: formattedCourses, totalUnits });
     };
 
