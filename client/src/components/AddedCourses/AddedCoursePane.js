@@ -33,6 +33,7 @@ export default class AddedCoursePane extends Component{
         var course = formatted.find(courses => courses.courseNumber === section.courseNumber);
         if (course){
           course['sections'].push(section.section)
+          course.sections.sort(function(a,b) {return a.sectionCode - b.sectionCode})
         }
         else{
           section.sections = [section.section]
@@ -45,7 +46,7 @@ export default class AddedCoursePane extends Component{
 
   //pass courses down
   loadCourses = async () =>{
-    
+
     var oneSectionCourses = await AppStore.getAddedCourses();
     oneSectionCourses = this.formatSections(oneSectionCourses);
 
