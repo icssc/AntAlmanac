@@ -179,7 +179,7 @@ class Calendar extends Component {
 
         for (const course of addedCourses) {
             const finalExam = course.section.finalExam;
-
+            console.log(finalExam);
             if (finalExam.length > 5) {
                 let [
                     ,
@@ -192,7 +192,7 @@ class Calendar extends Component {
                     endMin,
                     ampm,
                 ] = finalExam.match(
-                    /([A-za-z]+) ([A-Za-z]+) *(\d{1,2}) *(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(pm?)/
+                    /([A-za-z]+) ([A-Za-z]+) *(\d{1,2}) *(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(am|pm)/
                 );
                 start = parseInt(start, 10);
                 startMin = parseInt(startMin, 10);

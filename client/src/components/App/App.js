@@ -53,7 +53,6 @@ class App extends Component {
 
         ReactGA.initialize('UA-133683751-1');
         ReactGA.pageview('/homepage');
-
     };
 
     componentWillUnmount() {
@@ -62,10 +61,8 @@ class App extends Component {
 
     //what the right panel shows
     handleRightPaneViewChange = (event, rightPaneView) => {
-        this.setState({ rightPaneView,
-           showSearch: true,
-         });
-        console.log(this.state)
+        this.setState({ rightPaneView, showSearch: true });
+        console.log(this.state);
     };
 
     //change the tab
@@ -264,7 +261,7 @@ class App extends Component {
                                                     style={{ height: 20 }}
                                                 />
                                                 <Typography>
-                                                    &nbsp;&nbsp;Class Search
+                                                    Class Search
                                                 </Typography>
                                             </div>
                                         }
@@ -280,7 +277,7 @@ class App extends Component {
                                                     style={{ height: 20 }}
                                                 />
                                                 <Typography>
-                                                    &nbsp;&nbsp;Added Classes
+                                                    Added Classes
                                                 </Typography>
                                             </div>
                                         }
