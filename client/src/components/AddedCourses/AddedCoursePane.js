@@ -1,151 +1,141 @@
 import AppStore from '../../stores/AppStore';
-import React, { Component, Suspense, Fragment } from 'react';
-import loadingGif from '../SearchForm/Gifs/loading.mp4';
-import { withStyles } from '@material-ui/core/styles';
-import { Paper, Typography, Grid, Modal } from '@material-ui/core';
-import CourseDetailPane from '../CoursePane/CourseDetailPane';
-import SchoolDeptCard from '../CoursePane/SchoolDeptCard';
+import React, { Component, Fragment } from 'react';
+import { Grid, Typography } from '@material-ui/core';
 import SectionTable from '../SectionTable/SectionTable.js';
-import NoNothing from '../CoursePane/static/no_results.png';
-import AdAd from '../CoursePane/static/ad_ad.png';
+import { withStyles } from '@material-ui/core/styles';
 
-export default class AddedCoursePane extends Component{
+const styles = {
+    container: {
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    titleRow: {
+        display: 'inline-flex',
+        justifyContent: 'space-between',
+    },
+};
 
-  constructor(props){
-    super(props)
-    this.state = {
-      loaded: false,
-      courses: [],
+class AddedCoursePane extends Component {
+    state = {
+        courses: [],
+        customEvents: [],
+        totalUnits: 0,
+    };
+
+    componentDidMount = () => {
+        this.loadCourses();
+        AppStore.on('addedCoursesChange', this.loadCourses);
+        // AppStore.on('customEventsChange', this.calendarizeEvents);
+        AppStore.on('currentScheduleIndexChange', this.loadCourses);
+    };
+
+    componentWillUnmount() {
+        AppStore.removeListener('addedCoursesChange', this.loadCourses);
+        // AppStore.removeListener('customEventsChange', this.calendarizeEvents);
+        AppStore.removeListener('currentScheduleIndexChange', this.loadCourses);
     }
-  }
 
-  componentDidMount = () => {
-    this.loadCourses();
-  }
+    loadCourses = () => {
+        const addedCourses = AppStore.getAddedCourses();
+        let totalUnits = 0;
+        const formattedCourses = [];
 
-  formatSections = (unformatted) =>{
-    var formatted = [unformatted.shift()];
-    console.log(formatted)
-    formatted[0].sections = [formatted[0].section];
+        for (const addedCourse of addedCourses) {
+            if (
+                addedCourse.scheduleIndices.includes(
+                    AppStore.getCurrentScheduleIndex()
+                )
+            ) {
+                let formattedCourse = formattedCourses.find(
+                    (needleCourse) =>
+                        needleCourse.courseNumber ===
+                            addedCourse.courseNumber &&
+                        needleCourse.deptCode === addedCourse.deptCode
+                );
 
-    unformatted.forEach(function(section){
-        console.log(section)
-        var course = formatted.find(courses => courses.courseNumber === section.courseNumber);
-        if (course){
-          course['sections'].push(section.section)
+                if (formattedCourse) {
+                    formattedCourse.sections.push(addedCourse.section);
+                } else {
+                    formattedCourse = {
+                        deptCode: addedCourse.deptCode,
+                        courseComment: addedCourse.courseComment,
+                        prerequisiteLink: addedCourse.prerequisiteLink,
+                        courseNumber: addedCourse.courseNumber,
+                        courseTitle: addedCourse.courseTitle,
+                        sections: [addedCourse.section],
+                    };
+                    formattedCourses.push(formattedCourse);
+                }
+
+                if (!isNaN(Number(addedCourse.section.units)))
+                    totalUnits += Number(addedCourse.section.units);
+            }
         }
-        else{
-          section.sections = [section.section]
-          formatted.push(section)
-        }
 
-    });
-    return formatted
-  }
+        this.setState({ courses: formattedCourses, totalUnits });
+    };
 
-  //pass courses down
-  loadCourses = async () =>{
-    
-    var oneSectionCourses = await AppStore.getAddedCourses();
-    oneSectionCourses = this.formatSections(oneSectionCourses);
-
-    this.setState({
-      courses: oneSectionCourses,
-      loaded: true,
-    })
-
-  }
-
-  getGrid = (SOCObject) => {
-      console.log(SOCObject)
-      return (
-          <Fragment>
-              {SOCObject.map((classes) => {
-                  console.log('passing to section table')
-                  console.log(classes)
-                  return (
-                      <Fragment>
-                            <Grid item md={12} xs={12}>
-                                <SectionTable
-                                    courseDetails={classes}
-                                    term={classes.term}
-                                />
-                            </Grid>
-
-                      </Fragment>
-                              );
-                          })}
-          </Fragment>
-      );
-  };
-
-  render(){
-    //want to add open and oncluse for modal
-    //classname for div
-    if (this.state.loaded){
-      console.log(this.state.courses)
-      return(
-        <div
-            ref={(ref) => (this.ref = ref)}
-        >
-            {// <Modal
-            //     className={this.state.courses.modal}
-            //     disablePortal
-            //     hideBackdrop
-            //     container={this.ref}
-            //     disableAutoFocus
-            //     disableBackdropClick
-            //     disableEnforceFocus
-            //     disableEscapeKeyDown
-            // >
-            //     <CourseDetailPane
-            //         courseDetails={this.state.course}
-            //         onDismissDetails={this.handleDismissDetails}
-            //
-            //     />
-            // </Modal>
-          }
-
-            {this.state.courses.length === 0 ? (
-                <div
-                    style={{
-                        height: '100%',
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}
-                >
-                    <img src={NoNothing} alt="" />
+    getGrid = () => {
+        return (
+            <Fragment>
+                <div className={this.props.classes.titleRow}>
+                    <Typography variant="h6">
+                        {`Schedule ${AppStore.getCurrentScheduleIndex() + 1} (${
+                            this.state.totalUnits
+                        } Units)`}
+                    </Typography>
                 </div>
-            ) : (
-                <Grid container spacing={16}>
+                {this.state.courses.map((course) => {
+                    return (
+                        <Grid item md={12} xs={12}>
+                            <SectionTable
+                                courseDetails={course}
+                                term={course.term}
+                            />
+                        </Grid>
+                    );
+                })}
+                <Typography variant="h6">Custom Events</Typography>
+                {this.state.customEvents.map((customEvent) => {
+                    return (
+                        <Grid item md={12} xs={12}>
+                            {/*<SectionTable*/}
+                            {/*    courseDetails={course}*/}
+                            {/*    term={course.term}*/}
+                            {/*/>*/}
+                        </Grid>
+                    );
+                })}
+            </Fragment>
+        );
+    };
 
-                    {this.getGrid(this.state.courses)}
-                </Grid>
-            )}
-        </div>
-      )
+    render() {
+        const { classes } = this.props;
+        return (
+            <div>
+                {this.state.courses.length === 0 ? (
+                    <div className={classes.container}>
+                        <p>
+                            There's nothing here yet ... because you haven't
+                            added anything to your calendar yet!
+                            <br />
+                            Go to class search to find classes to put into your
+                            schedules,then come back here to see details on all
+                            your listed classes!
+                        </p>
+                    </div>
+                ) : (
+                    <Grid container spacing={16}>
+                        {this.getGrid()}
+                    </Grid>
+                )}
+            </div>
+        );
     }
-    else{
-      return(
-      <div
-          style={{
-              height: '100%',
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: 'white',
-          }}
-      >
-          <video autoPlay loop>
-              <source src={loadingGif} type="video/mp4" />
-          </video>
-      </div>
-    )
-    }
-
-  }
-
 }
+
+export default withStyles(styles)(AddedCoursePane);
