@@ -50,11 +50,13 @@ export default class UCIMap extends Component<{}, State> {
       //try catch for finding the location of classes
       let coords = [];
       let loc = null;
+      let acronym = null;
       try {
         loc = yellowpages.find((entry) => {
           return entry.id === locations[event.location.split(' ')[0]];
         });
         coords = [loc.lat, loc.lng];
+        acronym = event.location.split(' ')[0];
       } catch (e) {
         return;
       }
@@ -73,6 +75,8 @@ export default class UCIMap extends Component<{}, State> {
         coords: coords,
         color: pin_color,
         blding: blding,
+        acronym: acronym,
+        url: loc.url,
         img: loc.img,
         sections: [
           event.title + ' ' + event.courseType,
@@ -84,6 +88,11 @@ export default class UCIMap extends Component<{}, State> {
 
     let markers = []; //to put into a list of markers
     trace.forEach((item) => {
+      let roomURLConnector = '';
+      if (item.acronym.search(/[0-9]/) > -1) {
+        roomURLConnector = '-';
+      }
+
       let atThisBuilding = trace.filter((section) => {
         return section.blding === item.blding;
       });
@@ -95,6 +104,7 @@ export default class UCIMap extends Component<{}, State> {
           })
         );
       });
+
       markers.push(
         <Marker
           position={item.coords}
@@ -116,24 +126,50 @@ export default class UCIMap extends Component<{}, State> {
           })}
         >
           <Popup>
-            {item.blding}
+            {item.url ? (
+              <a href={item.url} target="_blank">
+                {' '}
+                {item.blding}{' '}
+              </a>
+            ) : (
+              item.blding
+            )}
             <br />
-            <img
-              src={
-                'https://www.myatlascms.com/map/lib/image-cache/i.php?mapId=463&image=' +
-                item.img +
-                '&w=900&h=508&r=1'
-              }
-              alt="Building Snapshot"
-              style={{ width: '100%' }}
-            />
+            {item.img ? (
+              <img
+                src={
+                  'https://www.myatlascms.com/map/lib/image-cache/i.php?mapId=463&image=' +
+                  item.img +
+                  '&w=900&h=508&r=1'
+                }
+                alt="Building Snapshot"
+                style={{ width: '100%' }}
+              />
+            ) : null}
+
             {atThisBuilding.map((section) => {
               return (
                 <Fragment>
                   <hr />
                   Class: {section.sections[0]}
                   <br />
-                  Room: {section.sections[1]}
+                  Room:{' '}
+                  {item.url ? (
+                    <a
+                      href={
+                        'http://www.classrooms.uci.edu/GAC/' +
+                        item.acronym +
+                        roomURLConnector +
+                        section.sections[1] +
+                        '.html'
+                      }
+                      target="_blank"
+                    >
+                      {section.sections[1]}
+                    </a>
+                  ) : (
+                    section.sections[1]
+                  )}
                 </Fragment>
               );
             })}
@@ -150,9 +186,15 @@ export default class UCIMap extends Component<{}, State> {
         lat: selected.lat,
         lng: selected.lng,
         selected: selected.label,
-        selected_img: selected.img,
         zoom: 18,
       });
+
+      // If there is an image, add it
+      if (selected.img) {
+        this.setState({ selected_img: selected.img });
+      } else {
+        this.setState({ selected_img: null });
+      }
     } else {
       this.setState({ selected: null });
     }
@@ -164,14 +206,14 @@ export default class UCIMap extends Component<{}, State> {
         <Map
           center={[this.state.lat, this.state.lng]}
           zoom={this.state.zoom}
-          maxZoom={20}
+          maxZoom={19}
           style={{ height: '100%' }}
         >
           <div
             style={{
               // position: 'sticky',
               zIndex: 1000,
-              marginLeft: 20,
+              marginLeft: 45,
               marginTop: 11,
               display: 'flex',
               flexDirection: 'column',
@@ -218,9 +260,9 @@ export default class UCIMap extends Component<{}, State> {
 
           <div
             style={{
-              width: '58%',
+              width: '56.6%',
               position: 'relative',
-              marginLeft: window.innerWidth > 960 ? 160 : 45,
+              marginLeft: window.innerWidth > 960 ? 183.9 : 67.22,
               marginTop: 5,
               backgroundColor: '#FFFFFF',
               zIndex: 1000,
@@ -277,15 +319,17 @@ export default class UCIMap extends Component<{}, State> {
               <Popup>
                 {this.state.selected}
                 <br />
-                <img
-                  src={
-                    'https://www.myatlascms.com/map/lib/image-cache/i.php?mapId=463&image=' +
-                    this.state.selected_img +
-                    '&w=900&h=508&r=1'
-                  }
-                  alt="Building Snapshot"
-                  style={{ width: '100%' }}
-                />
+                {this.state.selected_img ? (
+                  <img
+                    src={
+                      'https://www.myatlascms.com/map/lib/image-cache/i.php?mapId=463&image=' +
+                      this.state.selected_img +
+                      '&w=900&h=508&r=1'
+                    }
+                    alt="Building Snapshot"
+                    style={{ width: '100%' }}
+                  />
+                ) : null}
               </Popup>
             </Marker>
           ) : (
