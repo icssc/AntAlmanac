@@ -26,6 +26,7 @@ export default class UCIMap extends Component<{}, State> {
     day: 0,
     selected: null,
     selected_img: '',
+    selected_url: '',
     filteredItems: yellowpages,
   };
 
@@ -189,11 +190,13 @@ export default class UCIMap extends Component<{}, State> {
         zoom: 18,
       });
 
-      // If there is an image, add it
+      // If there is an image, add the image and url
       if (selected.img) {
         this.setState({ selected_img: selected.img });
+        this.setState({ selected_url: selected.url });
       } else {
-        this.setState({ selected_img: null });
+        this.setState({ selected_img: '' });
+        this.setState({ selected_url: '' });
       }
     } else {
       this.setState({ selected: null });
@@ -317,7 +320,14 @@ export default class UCIMap extends Component<{}, State> {
               })}
             >
               <Popup>
-                {this.state.selected}
+                {this.state.selected_url ? (
+                  <a href={this.state.selected_url} target="_blank">
+                    {' '}
+                    {this.state.selected}{' '}
+                  </a>
+                ) : (
+                  this.state.selected
+                )}
                 <br />
                 {this.state.selected_img ? (
                   <img
