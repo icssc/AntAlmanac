@@ -5,7 +5,8 @@ import yellowpages from './yellowpages';
 import locations from '../CoursePane/locations.json';
 import Locator from './Locator';
 import MuiDownshift from 'mui-downshift';
-import { Tab, Tabs } from '@material-ui/core/';
+import { Tab, Tabs, Fab } from '@material-ui/core/';
+import WalkIcon from '@material-ui/icons/DirectionsWalk';
 
 const locateOptions = {
   position: 'topleft',
@@ -16,6 +17,8 @@ const locateOptions = {
 };
 
 const DAYS = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const GMAPURL =
+  'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';
 
 export default class UCIMap extends Component<{}, State> {
   state = {
@@ -50,13 +53,16 @@ export default class UCIMap extends Component<{}, State> {
 
       //try catch for finding the location of classes
       let coords = [];
+      let lat = null;
+      let lng = null;
       let loc = null;
       let acronym = null;
       try {
         loc = yellowpages.find((entry) => {
           return entry.id === locations[event.location.split(' ')[0]];
         });
-        coords = [loc.lat, loc.lng];
+        lat = loc.lat;
+        lng = loc.lng;
         acronym = event.location.split(' ')[0];
       } catch (e) {
         return;
@@ -73,7 +79,8 @@ export default class UCIMap extends Component<{}, State> {
 
       //collect all the events for the map
       trace.push({
-        coords: coords,
+        lat: lat,
+        lng: lng,
         color: pin_color,
         blding: blding,
         acronym: acronym,
@@ -108,7 +115,7 @@ export default class UCIMap extends Component<{}, State> {
 
       markers.push(
         <Marker
-          position={item.coords}
+          position={[item.lat, item.lng]}
           icon={L.divIcon({
             className: 'my-custom-pin',
             iconAnchor: [0, 14],
@@ -174,6 +181,19 @@ export default class UCIMap extends Component<{}, State> {
                 </Fragment>
               );
             })}
+
+            <br />
+            <br />
+            <Fab
+              variant="extended"
+              aria-label="delete"
+              size="small"
+              href={GMAPURL + item.lat + ',' + item.lng}
+              target="_blank"
+              format="centered"
+            >
+              <WalkIcon /> Walk Here
+            </Fab>
           </Popup>
         </Marker>
       );
@@ -217,6 +237,7 @@ export default class UCIMap extends Component<{}, State> {
               // position: 'sticky',
               zIndex: 1000,
               marginLeft: 45,
+              marginRight: 45,
               marginTop: 11,
               display: 'flex',
               flexDirection: 'column',
@@ -236,36 +257,37 @@ export default class UCIMap extends Component<{}, State> {
             >
               <Tab
                 label="All"
-                style={{ minWidth: 32, backgroundColor: '#FFFFFF' }}
+                style={{ minWidth: '10%', backgroundColor: '#FFFFFF' }}
               />
               <Tab
                 label="Mon"
-                style={{ minWidth: 32, backgroundColor: '#FFFFFF' }}
+                style={{ minWidth: '10%', backgroundColor: '#FFFFFF' }}
               />
               <Tab
                 label="Tue"
-                style={{ minWidth: 32, backgroundColor: '#FFFFFF' }}
+                style={{ minWidth: '10%', backgroundColor: '#FFFFFF' }}
               />
               <Tab
                 label="Wed"
-                style={{ minWidth: 32, backgroundColor: '#FFFFFF' }}
+                style={{ minWidth: '10%', backgroundColor: '#FFFFFF' }}
               />
               <Tab
                 label="Thu"
-                style={{ minWidth: 32, backgroundColor: '#FFFFFF' }}
+                style={{ minWidth: '10%', backgroundColor: '#FFFFFF' }}
               />
               <Tab
                 label="Fri"
-                style={{ minWidth: 32, backgroundColor: '#FFFFFF' }}
+                style={{ minWidth: '10%', backgroundColor: '#FFFFFF' }}
               />
             </Tabs>
           </div>
 
           <div
             style={{
-              width: '56.6%',
+              minWidth: '60%',
               position: 'relative',
-              marginLeft: window.innerWidth > 960 ? 183.9 : 67.22,
+              marginLeft: '15%',
+              marginRight: '15%',
               marginTop: 5,
               backgroundColor: '#FFFFFF',
               zIndex: 1000,
@@ -285,7 +307,6 @@ export default class UCIMap extends Component<{}, State> {
               })}
               onChange={this.handleSearch}
               menuItemCount={window.innerWidth > 960 ? 6 : 3}
-              style={{ marginLeft: 5 }}
             />
           </div>
 
@@ -340,6 +361,19 @@ export default class UCIMap extends Component<{}, State> {
                     style={{ width: '100%' }}
                   />
                 ) : null}
+
+                <br />
+                <br />
+                <Fab
+                  variant="extended"
+                  aria-label="walk-nav"
+                  size="small"
+                  href={GMAPURL + this.state.lat + ',' + this.state.lng}
+                  target="_blank"
+                  format="centered"
+                >
+                  <WalkIcon /> Walk Here
+                </Fab>
               </Popup>
             </Marker>
           ) : (
