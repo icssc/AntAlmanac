@@ -42,57 +42,49 @@ export default class UCIMap extends Component<{}, State> {
   createMarkers = () => {
     let trace = [];
 
-    this.props.eventsInCalendar
-      .sort((event_a, event_b) =>
-        event_a.start === 'tba'
-          ? -1
-          : event_b.start === 'tba'
-          ? 1
-          : event_a.start - event_b.start
-      )
-      .forEach((event) => {
-        //filter out those in a different sched
-        if (event.scheduleIndex !== this.props.currentScheduleIndex) return;
-        //filter out those not on a certain day (mon, tue, etc)
-        if (!event.start.toString().includes(DAYS[this.state.day])) return;
+    this.props.eventsInCalendar.forEach((event) => {
+      //filter out those in a different sched
+      if (event.scheduleIndex !== this.props.currentScheduleIndex) return;
+      //filter out those not on a certain day (mon, tue, etc)
+      if (!event.start.toString().includes(DAYS[this.state.day])) return;
 
-        //try catch for finding the location of classes
-        let coords = [];
-        let loc = null;
-        let acronym = null;
-        try {
-          loc = yellowpages.find((entry) => {
-            return entry.id === locations[event.location.split(' ')[0]];
-          });
-          coords = [loc.lat, loc.lng];
-          acronym = event.location.split(' ')[0];
-        } catch (e) {
-          return;
-        }
-
-        //hotfix for when some events have undefined colors
-        let pin_color = '';
-        if (event.color === undefined) {
-          pin_color = '#0000FF';
-        } else {
-          pin_color = event.color;
-        }
-        const blding = loc.label;
-
-        //collect all the events for the map
-        trace.push({
-          coords: coords,
-          color: pin_color,
-          blding: blding,
-          acronym: acronym,
-          url: loc.url,
-          img: loc.img,
-          sections: [
-            event.title + ' ' + event.courseType,
-            event.location.split(' ')[1],
-          ],
+      //try catch for finding the location of classes
+      let coords = [];
+      let loc = null;
+      let acronym = null;
+      try {
+        loc = yellowpages.find((entry) => {
+          return entry.id === locations[event.location.split(' ')[0]];
         });
+        coords = [loc.lat, loc.lng];
+        acronym = event.location.split(' ')[0];
+      } catch (e) {
+        return;
+      }
+
+      //hotfix for when some events have undefined colors
+      let pin_color = '';
+      if (event.color === undefined) {
+        pin_color = '#0000FF';
+      } else {
+        pin_color = event.color;
+      }
+      const blding = loc.label;
+
+      //collect all the events for the map
+      trace.push({
+        coords: coords,
+        color: pin_color,
+        blding: blding,
+        acronym: acronym,
+        url: loc.url,
+        img: loc.img,
+        sections: [
+          event.title + ' ' + event.courseType,
+          event.location.split(' ')[1],
+        ],
       });
+    });
     // console.log(trace);
 
     let markers = []; //to put into a list of markers
