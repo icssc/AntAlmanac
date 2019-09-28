@@ -179,7 +179,6 @@ class Calendar extends Component {
 
         for (const course of addedCourses) {
             const finalExam = course.section.finalExam;
-            console.log(finalExam);
             if (finalExam.length > 5) {
                 let [
                     ,

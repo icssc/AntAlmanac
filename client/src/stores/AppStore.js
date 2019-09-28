@@ -98,6 +98,9 @@ class AppStore extends EventEmitter {
                 this.snackbarMessage = action.message;
                 this.emit('openSnackbar');
                 break;
+            case 'EDIT_CUSTOM_EVENTS':
+                this.customEvents = action.customEventsAfterEdit;
+                this.emit('customEventsChange');
         }
     }
 }

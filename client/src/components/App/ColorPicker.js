@@ -11,7 +11,7 @@ class ColorPicker extends PureComponent {
     };
 
     handleClick = (event) => {
-        if (event.stopPropagation) event.stopPropagation();
+        event.stopPropagation();
 
         this.setState({
             anchorEl: event.currentTarget,
@@ -62,8 +62,6 @@ class ColorPicker extends PureComponent {
     }
 }
 
-ColorPicker.propTypes = {
-    onColorChange: PropTypes.func.isRequired,
-};
+ColorPicker.propTypes = {};
 
 export default ColorPicker;

@@ -228,6 +228,20 @@ export const deleteCustomEvent = (customEventID, scheduleIndex) => {
     });
 };
 
+export const editCustomEvent = (newCustomEvent) => {
+    const customEventsAfterEdit = AppStore.getCustomEvents().map(
+        (customEvent) => {
+            if (newCustomEvent.customEventID !== customEvent.customEventID)
+                return customEvent;
+            else return newCustomEvent;
+        }
+    );
+
+    console.log(customEventsAfterEdit);
+
+    dispatcher.dispatch({ type: 'EDIT_CUSTOM_EVENTS', customEventsAfterEdit });
+};
+
 export const clearSchedules = (scheduleIndicesToClear) => {
     const addedCourses = AppStore.getAddedCourses();
     const customEvents = AppStore.getCustomEvents();

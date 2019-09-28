@@ -3,6 +3,7 @@ import React, { Component, Fragment } from 'react';
 import { Grid, Typography } from '@material-ui/core';
 import SectionTable from '../SectionTable/SectionTable.js';
 import { withStyles } from '@material-ui/core/styles';
+import CustomEventDetailView from './CustomEventTable';
 
 const styles = {
     container: {
@@ -27,15 +28,21 @@ class AddedCoursePane extends Component {
 
     componentDidMount = () => {
         this.loadCourses();
+        this.loadCustomEvents();
         AppStore.on('addedCoursesChange', this.loadCourses);
-        // AppStore.on('customEventsChange', this.calendarizeEvents);
+        AppStore.on('customEventsChange', this.loadCustomEvents);
         AppStore.on('currentScheduleIndexChange', this.loadCourses);
+        AppStore.on('currentScheduleIndexChange', this.loadCustomEvents);
     };
 
     componentWillUnmount() {
         AppStore.removeListener('addedCoursesChange', this.loadCourses);
-        // AppStore.removeListener('customEventsChange', this.calendarizeEvents);
+        AppStore.removeListener('customEventsChange', this.loadCustomEvents);
         AppStore.removeListener('currentScheduleIndexChange', this.loadCourses);
+        AppStore.removeListener(
+            'currentScheduleIndexChange',
+            this.loadCustomEvents
+        );
     }
 
     loadCourses = () => {
@@ -75,11 +82,17 @@ class AddedCoursePane extends Component {
             }
         }
         //formattedCourses.sections.sort(function(a,b) {return a.sectionCode - b.sectionCode})
-        console.log(formattedCourses)
-        formattedCourses.forEach(function (course) {
-          course.sections.sort(function(a,b) {return a.sectionCode - b.sectionCode})
-        })
+        console.log(formattedCourses);
+        formattedCourses.forEach(function(course) {
+            course.sections.sort(function(a, b) {
+                return a.sectionCode - b.sectionCode;
+            });
+        });
         this.setState({ courses: formattedCourses, totalUnits });
+    };
+
+    loadCustomEvents = () => {
+        this.setState({ customEvents: AppStore.getCustomEvents() });
     };
 
     getGrid = () => {
@@ -106,10 +119,10 @@ class AddedCoursePane extends Component {
                 {this.state.customEvents.map((customEvent) => {
                     return (
                         <Grid item md={12} xs={12}>
-                            {/*<SectionTable*/}
-                            {/*    courseDetails={course}*/}
-                            {/*    term={course.term}*/}
-                            {/*/>*/}
+                            <CustomEventDetailView
+                                customEvent={customEvent}
+                                currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
+                            />
                         </Grid>
                     );
                 })}
