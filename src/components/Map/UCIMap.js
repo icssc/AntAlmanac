@@ -135,7 +135,7 @@ export default class UCIMap extends Component<{}, State> {
         >
           <Popup>
             {item.url ? (
-              <a href={item.url} target="_blank">
+              <a href={item.url} target="_blank" rel="noopener noreferrer">
                 {' '}
                 {item.blding}{' '}
               </a>
@@ -172,6 +172,7 @@ export default class UCIMap extends Component<{}, State> {
                         '.html'
                       }
                       target="_blank"
+                      rel="noopener noreferrer"
                     >
                       {section.sections[1]}
                     </a>
@@ -313,7 +314,7 @@ export default class UCIMap extends Component<{}, State> {
           <Locator options={locateOptions} />
 
           <TileLayer
-            attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>'
+            attribution='&amp;copy <a href="http://osm.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463" target="_blank" rel="noopener noreferrer">UCI Map</a>'
             //url = "https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw"
             url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
           />
@@ -342,7 +343,7 @@ export default class UCIMap extends Component<{}, State> {
             >
               <Popup>
                 {this.state.selected_url ? (
-                  <a href={this.state.selected_url} target="_blank">
+                  <a href={this.state.selected_url} target="_blank" rel="noopener noreferrer">
                     {' '}
                     {this.state.selected}{' '}
                   </a>
