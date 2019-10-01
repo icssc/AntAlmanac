@@ -52,7 +52,6 @@ export default class UCIMap extends Component<{}, State> {
       if (!event.start.toString().includes(DAYS[this.state.day])) return;
 
       //try catch for finding the location of classes
-      let coords = [];
       let lat = null;
       let lng = null;
       let loc = null;
@@ -130,12 +129,12 @@ export default class UCIMap extends Component<{}, State> {
                         position: absolute;
                         border-radius: 1.9rem 1.9rem 0;
                         transform: rotate(45deg);
-                        border: 1px solid #FFFFFF" > 
+                        border: 1px solid #FFFFFF" >
                       </span>
-                      <div style="position: absolute;    
+                      <div style="position: absolute;
                         width: 1.75rem;
                         height: 1.75rem;
-                        top: 0.25rem; 
+                        top: 0.25rem;
                         text-align: center" >
                         ${this.state.day ? index + 1 : ''}
                       </div>
@@ -352,7 +351,11 @@ export default class UCIMap extends Component<{}, State> {
             >
               <Popup>
                 {this.state.selected_url ? (
-                  <a href={this.state.selected_url} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={this.state.selected_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     {' '}
                     {this.state.selected}{' '}
                   </a>

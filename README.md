@@ -14,9 +14,13 @@ We believe that good software is equal parts good code and good people. We are r
 
 ### Credits:
 
-A big shout-out to the team, and a special thanks to contributors from the community!
+A special thanks to outside contributors from the community:
 
 [andrewwself](https://github.com/andrewwself "andrewwself")
+
+[emmohac](https://github.com/emmohac "emmohac")
+
+[falsidge](https://github.com/falsidge "falsidge")
 
 [gitletH](https://github.com/gitletH "gitletH")
 
