@@ -95,7 +95,7 @@ export default class UCIMap extends Component<{}, State> {
     // console.log(trace);
 
     let markers = []; //to put into a list of markers
-    trace.forEach((item) => {
+    trace.forEach((item, index) => {
       let roomURLConnector = '';
       if (item.acronym.search(/[0-9]/) > -1) {
         roomURLConnector = '-';
@@ -121,16 +121,25 @@ export default class UCIMap extends Component<{}, State> {
             iconAnchor: [0, 14],
             labelAnchor: [-3.5, 0],
             popupAnchor: [0, -21],
-            html: `<span style="background-color: ${item.color};
-                      width: 1.75rem;
-                      height: 1.75rem;
-                      display: block;
-                      left: -1rem;
-                      top: -1rem;
-                      position: relative;
-                      border-radius: 1.9rem 1.9rem 0;
-                      transform: rotate(45deg);
-                      border: 1px solid #FFFFFF" />`,
+            html: `<div style="position:relative;
+                    left: -1rem;
+                    top: -1rem;">
+                      <span style="background-color: ${item.color};
+                        width: 1.75rem;
+                        height: 1.75rem;
+                        position: absolute;
+                        border-radius: 1.9rem 1.9rem 0;
+                        transform: rotate(45deg);
+                        border: 1px solid #FFFFFF" > 
+                      </span>
+                      <div style="position: absolute;    
+                        width: 1.75rem;
+                        height: 1.75rem;
+                        top: 0.25rem; 
+                        text-align: center" >
+                        ${this.state.day ? index + 1 : ''}
+                      </div>
+                    <div>`,
           })}
         >
           <Popup>

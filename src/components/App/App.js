@@ -919,7 +919,14 @@ class App extends Component {
                   </Suspense>
                 ) : this.state.rightPaneView === 2 ? (
                   <UCIMap
-                    eventsInCalendar={this.state.courseEvents}
+                    eventsInCalendar={this.state.courseEvents.sort(
+                      (event_a, event_b) =>
+                        event_a.start === 'tba'
+                          ? -1
+                          : event_b.start === 'tba'
+                          ? 1
+                          : event_a.start - event_b.start
+                    )}
                     currentScheduleIndex={this.state.currentScheduleIndex}
                   />
                 ) : this.state.showSearch ? (
