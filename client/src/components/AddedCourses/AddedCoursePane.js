@@ -3,7 +3,7 @@ import React, { Component, Fragment } from 'react';
 import { Grid, Typography } from '@material-ui/core';
 import SectionTable from '../SectionTable/SectionTable.js';
 import { withStyles } from '@material-ui/core/styles';
-import CustomEventDetailView from './CustomEventTable';
+import CustomEventDetailView from './CustomEventDetailView';
 
 const styles = {
     container: {
@@ -82,7 +82,6 @@ class AddedCoursePane extends Component {
             }
         }
         //formattedCourses.sections.sort(function(a,b) {return a.sectionCode - b.sectionCode})
-        console.log(formattedCourses);
         formattedCourses.forEach(function(course) {
             course.sections.sort(function(a, b) {
                 return a.sectionCode - b.sectionCode;
@@ -117,14 +116,20 @@ class AddedCoursePane extends Component {
                 })}
                 <Typography variant="h6">Custom Events</Typography>
                 {this.state.customEvents.map((customEvent) => {
-                    return (
-                        <Grid item md={12} xs={12}>
-                            <CustomEventDetailView
-                                customEvent={customEvent}
-                                currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
-                            />
-                        </Grid>
-                    );
+                    if (
+                        customEvent.scheduleIndices.includes(
+                            AppStore.getCurrentScheduleIndex()
+                        )
+                    ) {
+                        return (
+                            <Grid item md={12} xs={12}>
+                                <CustomEventDetailView
+                                    customEvent={customEvent}
+                                    currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
+                                />
+                            </Grid>
+                        );
+                    }
                 })}
             </Fragment>
         );
@@ -134,14 +139,15 @@ class AddedCoursePane extends Component {
         const { classes } = this.props;
         return (
             <div>
-                {this.state.courses.length === 0 ? (
+                {this.state.courses.length === 0 &&
+                this.state.customEvents.length === 0 ? (
                     <div className={classes.container}>
                         <p>
                             There's nothing here yet ... because you haven't
                             added anything to your calendar yet!
                             <br />
                             Go to class search to find classes to put into your
-                            schedules,then come back here to see details on all
+                            schedules, then come back here to see details on all
                             your listed classes!
                         </p>
                     </div>

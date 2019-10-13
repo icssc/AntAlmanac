@@ -236,9 +236,6 @@ export const editCustomEvent = (newCustomEvent) => {
             else return newCustomEvent;
         }
     );
-
-    console.log(customEventsAfterEdit);
-
     dispatcher.dispatch({ type: 'EDIT_CUSTOM_EVENTS', customEventsAfterEdit });
 };
 

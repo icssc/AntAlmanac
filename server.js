@@ -26,7 +26,7 @@ app.post('/api/saveUserData', (req, res) => {
             userData: req.body.userData // save user schedules
         }
     };
-    dynamoDb.put(params, (err, data) => {
+    dynamoDb.put(params, (err) => {
         if (err)
             res.status(500).send();
         else
@@ -74,8 +74,12 @@ app.get('/api/loadUserData', (req, res) => {
         }
     };
     dynamoDb.get(params, (err, data) => {
-        if (err) console.error(err);
-        else res.status(200).send(data.Item);
+        if (err) {
+            console.error(err);
+            res.status(500).send();
+        } else {
+            res.status(200).send(data.Item);
+        }
     });
 });
 
