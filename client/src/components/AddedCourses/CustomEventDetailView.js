@@ -83,7 +83,11 @@ const CustomEventDetailView = (props) => {
             />
             <CardActions disableSpacing={true}>
                 <div className={classes.colorPicker}>
-                    <ColorPicker courseInMoreInfo={customEvent} />
+                    <ColorPicker
+                        color={customEvent.color}
+                        isCustomEvent={true}
+                        customEventID={customEvent.customEventID}
+                    />
                 </div>
                 <IconButton
                     onClick={() =>

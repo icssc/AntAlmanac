@@ -140,6 +140,7 @@ class SectionTable extends PureComponent {
                                     section={section}
                                     courseDetails={this.props.courseDetails}
                                     term={term}
+                                    colorAndDelete={this.props.colorAndDelete}
                                 />
                             );
                         })}
@@ -156,6 +157,7 @@ SectionTable.propTypes = {
     dept: PropTypes.string.isRequired,
     ge: PropTypes.string.isRequired,
     term: PropTypes.string.isRequired,
+    colorAndDelete: PropTypes.bool.isRequired,
 };
 
 export default withStyles(styles)(SectionTable);

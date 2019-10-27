@@ -2,12 +2,15 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Popover } from '@material-ui/core';
 import { SketchPicker } from 'react-color';
-import { changeColor } from '../../actions/AppStoreActions';
+import {
+    changeCourseColor,
+    changeCustomEventColor,
+} from '../../actions/AppStoreActions';
 
 class ColorPicker extends PureComponent {
     state = {
         anchorEl: null,
-        color: this.props.courseInMoreInfo.color,
+        color: this.props.color,
     };
 
     handleClick = (event) => {
@@ -27,7 +30,12 @@ class ColorPicker extends PureComponent {
 
     handleColorChange = (color) => {
         this.setState({ color: color.hex }, () => {
-            changeColor(this.props.courseInMoreInfo, this.state.color);
+            if (this.props.isCustomEvent)
+                changeCustomEventColor(
+                    this.props.customEventID,
+                    this.state.color
+                );
+            else changeCourseColor(this.props.sectionCode, this.state.color);
         });
     };
 
@@ -62,6 +70,11 @@ class ColorPicker extends PureComponent {
     }
 }
 
-ColorPicker.propTypes = {};
+ColorPicker.propTypes = {
+    color: PropTypes.string.isRequired,
+    sectionCode: PropTypes.string,
+    isCustomEvent: PropTypes.bool.isRequired,
+    customEventID: PropTypes.number,
+};
 
 export default ColorPicker;

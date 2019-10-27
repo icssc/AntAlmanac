@@ -14,7 +14,8 @@ const styles = {
         alignItems: 'center',
     },
     titleRow: {
-        display: 'inline-flex',
+        display: 'flex',
+        width: '100%',
         justifyContent: 'space-between',
     },
 };
@@ -64,7 +65,10 @@ class AddedCoursePane extends Component {
                 );
 
                 if (formattedCourse) {
-                    formattedCourse.sections.push(addedCourse.section);
+                    formattedCourse.sections.push({
+                        ...addedCourse.section,
+                        color: addedCourse.color,
+                    });
                 } else {
                     formattedCourse = {
                         deptCode: addedCourse.deptCode,
@@ -72,7 +76,12 @@ class AddedCoursePane extends Component {
                         prerequisiteLink: addedCourse.prerequisiteLink,
                         courseNumber: addedCourse.courseNumber,
                         courseTitle: addedCourse.courseTitle,
-                        sections: [addedCourse.section],
+                        sections: [
+                            {
+                                ...addedCourse.section,
+                                color: addedCourse.color,
+                            },
+                        ],
                     };
                     formattedCourses.push(formattedCourse);
                 }
@@ -110,6 +119,7 @@ class AddedCoursePane extends Component {
                             <SectionTable
                                 courseDetails={course}
                                 term={course.term}
+                                colorAndDelete={true}
                             />
                         </Grid>
                     );
@@ -139,23 +149,9 @@ class AddedCoursePane extends Component {
         const { classes } = this.props;
         return (
             <div>
-                {this.state.courses.length === 0 &&
-                this.state.customEvents.length === 0 ? (
-                    <div className={classes.container}>
-                        <p>
-                            There's nothing here yet ... because you haven't
-                            added anything to your calendar yet!
-                            <br />
-                            Go to class search to find classes to put into your
-                            schedules, then come back here to see details on all
-                            your listed classes!
-                        </p>
-                    </div>
-                ) : (
-                    <Grid container spacing={16}>
-                        {this.getGrid()}
-                    </Grid>
-                )}
+                <Grid container spacing={16}>
+                    {this.getGrid()}
+                </Grid>
             </div>
         );
     }

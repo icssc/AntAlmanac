@@ -326,29 +326,37 @@ export const changeCurrentSchedule = (direction) => {
     dispatcher.dispatch({ type: 'CHANGE_CURRENT_SCHEDULE', newScheduleIndex });
 };
 
-export const changeColor = (event, color) => {
-    const addedCourses = AppStore.getAddedCourses();
+export const changeCustomEventColor = (customEventID, newColor) => {
     const customEvents = AppStore.getCustomEvents();
 
-    const addedCoursesAfterColorChange = addedCourses.map((addedCourse) => {
-        if (addedCourse.section.sectionCode === event.sectionCode) {
-            return { ...addedCourse, color: color };
-        } else {
-            return addedCourse;
-        }
-    });
-
     const customEventsAfterColorChange = customEvents.map((customEvent) => {
-        if (customEvent.customEventID === event.customEventID) {
-            return { ...customEvent, color: color };
+        if (customEvent.customEventID === customEventID) {
+            return { ...customEvent, color: newColor };
         } else {
             return customEvent;
         }
     });
 
     dispatcher.dispatch({
-        type: 'COLOR_CHANGE',
-        addedCoursesAfterColorChange,
+        type: 'CUSTOM_EVENT_COLOR_CHANGE',
         customEventsAfterColorChange,
+    });
+};
+
+export const changeCourseColor = (sectionCode, newColor) => {
+    console.log('asdasd');
+    const addedCourses = AppStore.getAddedCourses();
+
+    const addedCoursesAfterColorChange = addedCourses.map((addedCourse) => {
+        if (addedCourse.section.sectionCode === sectionCode) {
+            return { ...addedCourse, color: newColor };
+        } else {
+            return addedCourse;
+        }
+    });
+
+    dispatcher.dispatch({
+        type: 'COURSE_COLOR_CHANGE',
+        addedCoursesAfterColorChange,
     });
 };
