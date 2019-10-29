@@ -72,6 +72,8 @@ class AppStore extends EventEmitter {
                 this.emit('customEventsChange');
                 break;
             case 'ADD_CUSTOM_EVENT':
+                console.log('Adding Event')
+                console.log(action.customEvent)
                 this.customEvents = this.customEvents.concat(
                     action.customEvent
                 );

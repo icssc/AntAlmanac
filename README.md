@@ -33,7 +33,7 @@ A big shout-out to the team, and a special thanks to contributors from the commu
 
 3. run `npm install` to install node modules in server
 
-4. run `npm dev` to start both both client and server
+4. run `npm run dev` to start both both client and server
 
 5. does not automatically restart on change
 

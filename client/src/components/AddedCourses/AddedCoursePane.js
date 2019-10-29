@@ -3,6 +3,7 @@ import React, { Component, Fragment } from 'react';
 import { Grid, Typography } from '@material-ui/core';
 import SectionTable from '../SectionTable/SectionTable.js';
 import { withStyles } from '@material-ui/core/styles';
+import { CustomEventTable } from './CustomEventTable.js';
 
 const styles = {
     container: {
@@ -103,16 +104,7 @@ class AddedCoursePane extends Component {
                     );
                 })}
                 <Typography variant="h6">Custom Events</Typography>
-                {this.state.customEvents.map((customEvent) => {
-                    return (
-                        <Grid item md={12} xs={12}>
-                            {/*<SectionTable*/}
-                            {/*    courseDetails={course}*/}
-                            {/*    term={course.term}*/}
-                            {/*/>*/}
-                        </Grid>
-                    );
-                })}
+                  <CustomEventTable customEvents = {this.state.customEvents}/>
             </Fragment>
         );
     };

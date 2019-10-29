@@ -93,10 +93,10 @@ class SectionTable extends PureComponent {
                         courseNumber={this.props.courseDetails.courseNumber}
                     />
 
-                    {/*<AlmanacGraphWrapped*/}
-                    {/*  term={term}*/}
-                    {/*  courseDetails={courseDetails}*/}
-                    {/*/>*/}
+                    <AlmanacGraphWrapped
+                      term={term}
+                      courseDetails={this.props.courseDetails}
+                    />
 
                     {this.props.courseDetails.prerequisiteLink ? (
                         <Typography

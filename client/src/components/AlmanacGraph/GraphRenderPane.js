@@ -3,6 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { Button, Snackbar } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import ReactGA from 'react-ga';
+import Graph from './Graph';
 
 const styles = () => ({
     multiline: {
@@ -50,6 +51,7 @@ class GraphRenderPane extends Component {
             reported: false,
             disableReport: false,
         };
+        console.log(this.props)
     }
 
     componentDidMount() {
@@ -98,6 +100,8 @@ class GraphRenderPane extends Component {
             });
     }
 
+
+
     render() {
         const { classes } = this.props;
         return (
@@ -128,7 +132,7 @@ class GraphRenderPane extends Component {
                                 </Button>
                             </td>
                             <td className={classes.multiline}>
-                                {`${this.props.section.classType}
+                                {`${this.props.section.sectionType}
 Section: ${this.props.section.sectionCode}
 Units: ${this.props.section.units}`}
                             </td>
@@ -137,12 +141,12 @@ Units: ${this.props.section.units}`}
                             </td>
                             <td className={classes.multiline}>
                                 {this.props.section.meetings
-                                    .map((meeting) => meeting[0])
+                                    .map((meeting) => meeting.days + ' ' + meeting.time)
                                     .join('\n')}
                             </td>
                             <td className={classes.multiline}>
                                 {this.props.section.meetings
-                                    .map((meeting) => meeting[1])
+                                    .map((meeting) => meeting.bldg)
                                     .join('\n')}
                             </td>
                             <td>{this.props.section.maxCapacity}</td>
@@ -162,7 +166,7 @@ Units: ${this.props.section.units}`}
                                                 ' ' +
                                                 this.props.year +
                                                 ' ' +
-                                                this.props.section.classCode,
+                                                this.props.section.sectionCode,
                                             label: 'Wrong Graph',
                                         });
                                         this.setState({
@@ -176,13 +180,10 @@ Units: ${this.props.section.units}`}
                                     Please click here to automatically report an
                                     inaccurate graph description below
                                 </Button>
-                                <div
-                                    style={{
-                                        width: '100%',
-                                        textAlign: 'center',
-                                    }}
-                                    dangerouslySetInnerHTML={this.state.graph}
-                                />
+                                <Graph
+                                  courseID = {this.props.section.sectionCode}
+                                  session = {this.props.quarter.toUpperCase() + this.props.year}
+                                   />
                             </Fragment>
                         ) : (
                             <Fragment />

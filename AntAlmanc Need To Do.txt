@@ -1,10 +1,5 @@
 
-Big Things:
-
-	Unhandled Rejection (SyntaxError): Unexpected end of JSON input
-
-	Doesnt work: added classes -- use section table
-		charts
+		charts - Need Data
 
 	Need to:
 		Fix getting the data and processing data to show in CourseDetailPane
@@ -16,16 +11,7 @@ Big Things:
 
 
 Small things:
-	efficiency
+	added classes pane, needs another section table, where added is changed to colours and to add a delete option
 
 
-Everything in left pane works
 Right pane does not work
-
-
-AddedCoursesPane Remarks:
-	- Does not currently seperate by school
-	- Got data from appstore, so if we can add the school to the appstore,
-			would be able to add school
-	- Reformats by adding a 'sections', if possible rename "section" to "sections"
-			when storing added courses
