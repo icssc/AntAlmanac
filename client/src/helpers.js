@@ -1,6 +1,7 @@
 export async function getCoursesData(userData) {
     const dataToSend = {};
     const addedCourses = [];
+
     let sectionCodeToInfoMapping;
     if (userData.addedCourses.length !== 0) {
         sectionCodeToInfoMapping = userData.addedCourses.reduce(
@@ -65,15 +66,8 @@ export async function getCoursesData(userData) {
         }
     }
 
-    let customEvents = userData.customEvents;
-
-    for (let customEvent of customEvents) {
-        customEvent.start = new Date(customEvent.start);
-        customEvent.end = new Date(customEvent.end);
-    }
-
     return {
         addedCourses: addedCourses,
-        customEvents: customEvents,
+        customEvents: userData.customEvents,
     };
 }

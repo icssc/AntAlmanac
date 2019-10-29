@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 import ReactGA from 'react-ga';
 import { addCourse, openSnackbar } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
+import ColorAndDelete from '../AddedCourses/ColorAndDelete';
 
 const styles = (theme) => ({
     popover: {
@@ -262,7 +263,6 @@ const InstructorsCell = withStyles(styles)((props) => {
     };
 
     const getLinks = (professorNames) => {
-        
         return professorNames.map((profName) => {
             if (profName !== 'STAFF') {
                 return (
@@ -459,15 +459,22 @@ const StatusCell = withStyles(styles)((props) => {
 });
 //TODO: SectionNum name parity -> SectionNumber
 const SectionTableBody = withStyles(styles)((props) => {
-    const { classes, section, courseDetails, term } = props;
+    const { classes, section, courseDetails, term, colorAndDelete } = props;
 
     return (
         <tr className={classes.tr}>
-            <ScheduleAddCell
-                section={section}
-                courseDetails={courseDetails}
-                term={term}
-            />
+            {!colorAndDelete ? (
+                <ScheduleAddCell
+                    section={section}
+                    courseDetails={courseDetails}
+                    term={term}
+                />
+            ) : (
+                <ColorAndDelete
+                    color={section.color}
+                    sectionCode={section.sectionCode}
+                />
+            )}
             <CourseCodeCell sectionCode={section.sectionCode} />
             <SectionDetailsCell
                 sectionType={section.sectionType}
@@ -500,6 +507,7 @@ SectionTableBody.propTypes = {
     section: PropTypes.object.isRequired,
     courseDetails: PropTypes.object.isRequired,
     term: PropTypes.string.isRequired,
+    colorAndDelete: PropTypes.bool.isRequired,
 };
 
 export default withStyles(styles)(SectionTableBody);

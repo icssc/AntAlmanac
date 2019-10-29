@@ -6,14 +6,15 @@ import {
     DialogActions,
     DialogContent,
     FormControl,
+    IconButton,
     Input,
     InputLabel,
     TextField,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { Add, Create } from '@material-ui/icons';
+import { Add, Edit } from '@material-ui/icons';
 import PropTypes from 'prop-types';
-import { addCustomEvent } from '../../actions/AppStoreActions';
+import { addCustomEvent, editCustomEvent } from '../../actions/AppStoreActions';
 import ScheduleSelector from './ScheduleSelector';
 
 const styles = () => ({
@@ -32,8 +33,12 @@ class CustomEventDialog extends PureComponent {
         start: this.props.customEvent ? this.props.customEvent.start : '10:30',
         end: this.props.customEvent ? this.props.customEvent.end : '15:30',
         eventName: this.props.customEvent ? this.props.customEvent.title : '',
-        days: [false, false, false, false, false],
-        scheduleIndices: [],
+        days: this.props.customEvent
+            ? this.props.customEvent.days
+            : [false, false, false, false, false],
+        scheduleIndices: this.props.customEvent
+            ? this.props.customEvent.scheduleIndices
+            : [],
         customEventID: this.props.customEvent
             ? this.props.customEvent.customEventID
             : 0,
@@ -42,6 +47,8 @@ class CustomEventDialog extends PureComponent {
     handleClose = (cancel) => {
         if (!cancel) this.handleAddToCalendar();
         if (!this.props.customEvent) this.props.handleSubmenuClose();
+
+        this.setState({ open: false });
     };
 
     handleEventNameChange = (event) => {
@@ -63,15 +70,13 @@ class CustomEventDialog extends PureComponent {
     handleAddToCalendar = () => {
         if (!this.state.days.some((day) => day)) return;
 
-        const customEvent = {
+        const newCustomEvent = {
             color: this.props.customEvent
                 ? this.props.customEvent.color
                 : '#551a8b',
             title: this.state.eventName,
             days: this.state.days,
-            scheduleIndices: this.props.customEvent
-                ? this.props.customEvent.scheduleIndices
-                : this.state.scheduleIndices,
+            scheduleIndices: this.state.scheduleIndices,
             start: this.state.start,
             end: this.state.end,
             customEventID: this.props.customEvent
@@ -79,9 +84,8 @@ class CustomEventDialog extends PureComponent {
                 : Date.now(),
         };
 
-        if (this.props.customEvent)
-            this.props.onEditCustomEvent(this.props.customEvent);
-        else addCustomEvent(customEvent);
+        if (this.props.customEvent) editCustomEvent(newCustomEvent);
+        else addCustomEvent(newCustomEvent);
     };
 
     handleSelectScheduleIndices = (scheduleIndices) => {
@@ -91,22 +95,21 @@ class CustomEventDialog extends PureComponent {
     render() {
         return (
             <Fragment>
-                <Button
-                    disableRipple={true}
-                    onClick={() => this.setState({ open: true })}
-                >
-                    {this.props.customEvent ? (
-                        <Create />
-                    ) : (
+                {this.props.customEvent ? (
+                    <IconButton onClick={() => this.setState({ open: true })}>
+                        <Edit fontSize="small" />
+                    </IconButton>
+                ) : (
+                    <Button
+                        disableRipple={true}
+                        onClick={() => this.setState({ open: true })}
+                    >
                         <Fragment>
                             <Add /> Add Custom
                         </Fragment>
-                    )}
-                </Button>
-                <Dialog
-                    open={this.state.open}
-                    onClose={() => this.setState({ open: false })}
-                >
+                    </Button>
+                )}
+                <Dialog open={this.state.open}>
                     <DialogContent>
                         <FormControl>
                             <InputLabel htmlFor="EventNameInput">

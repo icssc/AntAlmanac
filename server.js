@@ -26,11 +26,42 @@ app.post('/api/saveUserData', (req, res) => {
             userData: req.body.userData // save user schedules
         }
     };
-    dynamoDb.put(params, (err, data) => {
+    dynamoDb.put(params, (err) => {
         if (err)
             res.status(500).send();
         else
             res.status(200).send();
+    });
+});
+
+app.post('/api/registerAlerts', (req, res) => {
+    const phoneNumber = req.body.phoneNumber;
+    const email = req.body.email;
+    const sectionCode = req.body.sectionCode;
+
+    //TODO: Error Handling
+    const params = {
+
+        TableName: "AANTS-DB",
+        Key: {
+            "sectionCode": sectionCode
+        },
+        UpdateExpression: "ADD emails :email, phoneNumbers :phoneNumber",
+        ExpressionAttributeValues:{
+            ':email': dynamoDb.createSet([email]),
+            ':phoneNumber': dynamoDb.createSet([phoneNumber])
+        },
+        ReturnValues:"ALL_NEW"
+    };
+
+    dynamoDb.update(params, function(err, data) {
+        if (err) {
+            console.error("Unable to add item. Error JSON:", JSON.stringify(err, null, 2));
+            res.status(500).send();
+        } else {
+            console.log("Added item:", JSON.stringify(data, null, 2));
+            res.status(200).send();
+        }
     });
 });
 
@@ -43,8 +74,12 @@ app.get('/api/loadUserData', (req, res) => {
         }
     };
     dynamoDb.get(params, (err, data) => {
-        if (err) console.log(err);
-        else res.status(200).send(data.Item);
+        if (err) {
+            console.error(err);
+            res.status(500).send();
+        } else {
+            res.status(200).send(data.Item);
+        }
     });
 });
 

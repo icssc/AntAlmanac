@@ -70,45 +70,6 @@ class App extends Component {
         this.setState({ activeTab: value });
     };
 
-    //copy schedule
-    handleCopySchedule = (moveTo) => {
-        // let allSchedules = [0, 1, 2, 3];
-        // let schedulesToMoveTo = [];
-        // //if move to all schedules
-        // if (moveTo === 4) {
-        //   allSchedules.forEach((schedule) => {
-        //     if (schedule !== this.state.currentScheduleIndex) {
-        //       schedulesToMoveTo.push(schedule);
-        //     }
-        //   });
-        // } else {
-        //   schedulesToMoveTo.push(moveTo);
-        // }
-        //
-        // // for each schedule index to add to
-        // let newCourses = [];
-        // schedulesToMoveTo.forEach((schedule) => {
-        //   newCourses = newCourses.concat(this.getClassesAfterCopyingTo(schedule));
-        //   this.setState({
-        //     courseEvents: this.state.courseEvents.concat(newCourses),
-        //   });
-        // });
-    };
-
-    getClassesAfterCopyingTo = (moveTo) => {
-        // let moveFrom = this.state.currentScheduleIndex;
-        // const oldClasses = this.state.courseEvents.filter(
-        //   (courseEvent) => courseEvent.scheduleIndex === moveFrom
-        // );
-        // let newCourses = [];
-        // oldClasses.forEach((oldClass) => {
-        //   let newClass = Object.assign({}, oldClass);
-        //   newClass.scheduleIndex = moveTo;
-        //   newCourses.push(newClass);
-        // });
-        // return newCourses;
-    };
-
     handleDismissSearchResults = () => {
         this.setState({ showSearch: true, data: null });
     };
@@ -123,29 +84,6 @@ class App extends Component {
             dept: dept,
             ge: ge,
         });
-    };
-
-    handleEditCustomEvent = (newEvents, oldEvent) => {
-        // let newCourseEvents = this.state.courseEvents.filter(
-        //   (courseEvent) =>
-        //     !courseEvent.isCustomEvent ||
-        //     courseEvent.customEventID !== oldEvent.customEventID ||
-        //     courseEvent.scheduleIndex !== oldEvent.scheduleIndex
-        // );
-        // this.setState({ courseEvents: newCourseEvents.concat(newEvents) });
-    };
-
-    displayFinal = (schedule) => {
-        this.setState(
-            {
-                showFinalSchedule: !this.state.showFinalSchedule,
-            },
-            () => {
-                if (this.state.showFinalSchedule) {
-                    this.setState({ finalSchedule: schedule });
-                }
-            }
-        );
     };
 
     render() {

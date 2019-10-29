@@ -3,7 +3,7 @@ import React, { Component, Fragment } from 'react';
 import { Grid, Typography } from '@material-ui/core';
 import SectionTable from '../SectionTable/SectionTable.js';
 import { withStyles } from '@material-ui/core/styles';
-import { CustomEventTable } from './CustomEventTable.js';
+import CustomEventDetailView from './CustomEventDetailView';
 
 const styles = {
     container: {
@@ -14,7 +14,8 @@ const styles = {
         alignItems: 'center',
     },
     titleRow: {
-        display: 'inline-flex',
+        display: 'flex',
+        width: '100%',
         justifyContent: 'space-between',
     },
 };
@@ -28,15 +29,21 @@ class AddedCoursePane extends Component {
 
     componentDidMount = () => {
         this.loadCourses();
+        this.loadCustomEvents();
         AppStore.on('addedCoursesChange', this.loadCourses);
-        // AppStore.on('customEventsChange', this.calendarizeEvents);
+        AppStore.on('customEventsChange', this.loadCustomEvents);
         AppStore.on('currentScheduleIndexChange', this.loadCourses);
+        AppStore.on('currentScheduleIndexChange', this.loadCustomEvents);
     };
 
     componentWillUnmount() {
         AppStore.removeListener('addedCoursesChange', this.loadCourses);
-        // AppStore.removeListener('customEventsChange', this.calendarizeEvents);
+        AppStore.removeListener('customEventsChange', this.loadCustomEvents);
         AppStore.removeListener('currentScheduleIndexChange', this.loadCourses);
+        AppStore.removeListener(
+            'currentScheduleIndexChange',
+            this.loadCustomEvents
+        );
     }
 
     loadCourses = () => {
@@ -58,7 +65,10 @@ class AddedCoursePane extends Component {
                 );
 
                 if (formattedCourse) {
-                    formattedCourse.sections.push(addedCourse.section);
+                    formattedCourse.sections.push({
+                        ...addedCourse.section,
+                        color: addedCourse.color,
+                    });
                 } else {
                     formattedCourse = {
                         deptCode: addedCourse.deptCode,
@@ -66,7 +76,12 @@ class AddedCoursePane extends Component {
                         prerequisiteLink: addedCourse.prerequisiteLink,
                         courseNumber: addedCourse.courseNumber,
                         courseTitle: addedCourse.courseTitle,
-                        sections: [addedCourse.section],
+                        sections: [
+                            {
+                                ...addedCourse.section,
+                                color: addedCourse.color,
+                            },
+                        ],
                     };
                     formattedCourses.push(formattedCourse);
                 }
@@ -76,11 +91,16 @@ class AddedCoursePane extends Component {
             }
         }
         //formattedCourses.sections.sort(function(a,b) {return a.sectionCode - b.sectionCode})
-        console.log(formattedCourses)
-        formattedCourses.forEach(function (course) {
-          course.sections.sort(function(a,b) {return a.sectionCode - b.sectionCode})
-        })
+        formattedCourses.forEach(function(course) {
+            course.sections.sort(function(a, b) {
+                return a.sectionCode - b.sectionCode;
+            });
+        });
         this.setState({ courses: formattedCourses, totalUnits });
+    };
+
+    loadCustomEvents = () => {
+        this.setState({ customEvents: AppStore.getCustomEvents() });
     };
 
     getGrid = () => {
@@ -99,12 +119,28 @@ class AddedCoursePane extends Component {
                             <SectionTable
                                 courseDetails={course}
                                 term={course.term}
+                                colorAndDelete={true}
                             />
                         </Grid>
                     );
                 })}
                 <Typography variant="h6">Custom Events</Typography>
-                  <CustomEventTable customEvents = {this.state.customEvents}/>
+                {this.state.customEvents.map((customEvent) => {
+                    if (
+                        customEvent.scheduleIndices.includes(
+                            AppStore.getCurrentScheduleIndex()
+                        )
+                    ) {
+                        return (
+                            <Grid item md={12} xs={12}>
+                                <CustomEventDetailView
+                                    customEvent={customEvent}
+                                    currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
+                                />
+                            </Grid>
+                        );
+                    }
+                })}
             </Fragment>
         );
     };
@@ -113,22 +149,9 @@ class AddedCoursePane extends Component {
         const { classes } = this.props;
         return (
             <div>
-                {this.state.courses.length === 0 ? (
-                    <div className={classes.container}>
-                        <p>
-                            There's nothing here yet ... because you haven't
-                            added anything to your calendar yet!
-                            <br />
-                            Go to class search to find classes to put into your
-                            schedules,then come back here to see details on all
-                            your listed classes!
-                        </p>
-                    </div>
-                ) : (
-                    <Grid container spacing={16}>
-                        {this.getGrid()}
-                    </Grid>
-                )}
+                <Grid container spacing={16}>
+                    {this.getGrid()}
+                </Grid>
             </div>
         );
     }

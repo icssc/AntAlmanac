@@ -83,10 +83,12 @@ class AppStore extends EventEmitter {
                 this.customEvents = action.customEventsAfterDelete;
                 this.emit('customEventsChange');
                 break;
-            case 'COLOR_CHANGE':
+            case 'COURSE_COLOR_CHANGE':
                 this.addedCourses = action.addedCoursesAfterColorChange;
-                this.customEvents = action.customEventsAfterColorChange;
                 this.emit('addedCoursesChange');
+                break;
+            case 'CUSTOM_EVENT_COLOR_CHANGE':
+                this.customEvents = action.customEventsAfterColorChange;
                 this.emit('customEventsChange');
                 break;
             case 'LOAD_SCHEDULE':
@@ -100,6 +102,9 @@ class AppStore extends EventEmitter {
                 this.snackbarMessage = action.message;
                 this.emit('openSnackbar');
                 break;
+            case 'EDIT_CUSTOM_EVENTS':
+                this.customEvents = action.customEventsAfterEdit;
+                this.emit('customEventsChange');
         }
     }
 }
