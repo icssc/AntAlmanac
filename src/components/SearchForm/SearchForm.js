@@ -92,7 +92,7 @@ class SearchForm extends Component {
         dept: '',
         label: '',
         ge: 'ANY',
-        term: '2019 Fall',
+        term: '2020 Winter',
         courseNum: '',
         courseCode: '',
         instructor: '',
@@ -187,13 +187,12 @@ class SearchForm extends Component {
         </div>
 
         <div className={classes.margin}>
-          {isMobile ?
-            (
+          {isMobile ? (
             <MobileDeptSelector
               dept={this.state.dept}
               setDept={this.setDeptMobile}
             />
-            ) : (
+          ) : (
             <DeptSearchBar dept={this.state.label} setDept={this.setDept} />
           )}
           <CourseNumberSearchBar
