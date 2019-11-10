@@ -132,7 +132,7 @@ class SearchForm extends Component {
   };
 
   setDept = (dept) => {
-    if (dept == null) this.setState({ dept: null });
+    if (dept == null) this.setState({ dept: null, label: null });
     else this.setState({ dept: dept.value, label: dept.label });
   };
 
