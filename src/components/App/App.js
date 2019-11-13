@@ -344,7 +344,7 @@ class App extends Component {
 
   handleAddClass = (section, courseDetails, scheduleIndex, courseTerm) => {
     this.changeSave(false); //marks as need saving
-    const randomColor = arrayOfColors.find((color) => {
+    let randomColor = arrayOfColors.find((color) => {
       let isAvailableColor = true;
       this.state.unavailableColors.forEach((colorAndScheduleIndex) => {
         if (
@@ -358,6 +358,11 @@ class App extends Component {
       });
       return isAvailableColor;
     });
+
+    if (randomColor === undefined) {
+      randomColor =
+        arrayOfColors[Math.floor(Math.random() * arrayOfColors.length)];
+    } //hotfix for undefined color
 
     const doesExist = this.state.courseEvents.find(
       (course) =>
@@ -571,13 +576,14 @@ class App extends Component {
     let courses = this.state.courseEvents;
 
     if (
+      true || //hotfix for setting things to the same color
       undefined ===
-      this.state.unavailableColors.find(function(element) {
-        return (
-          element.color === color &&
-          element.scheduleIndex === course.scheduleIndex
-        );
-      })
+        this.state.unavailableColors.find(function(element) {
+          return (
+            element.color === color &&
+            element.scheduleIndex === course.scheduleIndex
+          );
+        })
     ) {
       for (let item of courses) {
         if (course.isCustomEvent) {
