@@ -78,6 +78,8 @@ class DeptSearchBar extends React.Component {
 
       this.setState({ history: copy_history }); //add search to front
       window.localStorage.setItem('history', JSON.stringify(copy_history));
+    } else {
+      this.props.setDept(null);
     }
   };
 
