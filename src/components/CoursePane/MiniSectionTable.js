@@ -292,9 +292,7 @@ Units: ${section.units}`}
             <Suspense
               fallback={
                 <Typography>
-                  <strong>{`${section.numCurrentlyEnrolled[0]} / ${
-                    section.maxCapacity
-                  }`}</strong>
+                  <strong>{`${section.numCurrentlyEnrolled[0]} / ${section.maxCapacity}`}</strong>
                   {`
 WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
@@ -308,9 +306,7 @@ NOR: ${section.numNewOnlyReserved}`}
                   classes[section.status.toLowerCase()]
                 }
               >
-                <strong>{`${section.numCurrentlyEnrolled[0]} / ${
-                  section.maxCapacity
-                }`}</strong>
+                <strong>{`${section.numCurrentlyEnrolled[0]} / ${section.maxCapacity}`}</strong>
                 {`
 WL: ${section.numOnWaitlist}
 NOR: ${section.numNewOnlyReserved}`}
@@ -352,8 +348,8 @@ class MiniSectionTable extends Component {
   // }
   componentDidMount = async () => {
     //let {building,courseCode,courseNum,coursesFull,dept,endTime,ge,instructor,label,startTime,term,units}=this.props.formData;
-    let { dept, ge } = this.props.formData;
-    if (ge !== 'ANY' && dept === null) {
+    let { ge } = this.props.formData;
+    if (ge !== 'ANY') {
       //please put all the form's props condition in to prevent search bugs
       const params = {
         department: this.props.courseDetails.name[0],
@@ -365,7 +361,7 @@ class MiniSectionTable extends Component {
       const url =
         'https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/websoc?' +
         querystring.stringify(params);
-      await fetch(url.toString())
+      await fetch(url)
         .then((resp) => resp.json())
         .then((json) => {
           const sections = json.reduce((accumulator, school) => {

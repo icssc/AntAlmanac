@@ -26,6 +26,8 @@ const translateNumForIcs = {
 const quartersFirstMondays = {
   '2019 Spring': 'April 1, 2019',
   '2019 Fall': 'September 30, 2019',
+  '2020 Winter': 'January 6, 2020',
+  '2020 Spring': 'March 30, 2020',
 };
 
 function ExportButton(props) {
