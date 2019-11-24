@@ -28,7 +28,7 @@ function OptOutPopover(props) {
     <WithState>
       {({ anchorEl, updateAnchorEl }) => {
         const open = Boolean(anchorEl);
-        const sep = props.isDesktop ? 25 : 5;
+        const sep = props.isDesktop ? 15 : 5;
 
         return (
           <Fragment>
