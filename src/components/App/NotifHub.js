@@ -116,14 +116,15 @@ class NotifHub extends Component {
           onClose={() => {
             this.setState({ open: false });
           }}
+          scroll="paper"
           aria-labelledby="notifications-hub"
           aria-describedby="notifications-registered-on-device"
         >
           <DialogTitle id="dialog-title">
-            {'Notifications Currently Registered to this Device'}
+            Notifications Currently Registered to this Device
           </DialogTitle>
 
-          <DialogContent>
+          <DialogContent dividers={true}>
             <DialogContentText id="content">
               {this.state.email === null ? (
                 <p>You have not signed up for any email notifications!</p>
@@ -132,7 +133,11 @@ class NotifHub extends Component {
                   <p>Watchlist for {this.state.email}:</p>
                   <ul>
                     {this.state.email_wl.map((course) => {
-                      return <li>{course.name}</li>;
+                      return (
+                        <li>
+                          {course.name}: {course.code}
+                        </li>
+                      );
                     })}
                   </ul>
                 </div>
@@ -145,7 +150,11 @@ class NotifHub extends Component {
                   <p>Watchlist for {this.state.sms}:</p>
                   <ul>
                     {this.state.sms_wl.map((course) => {
-                      return <li>{course.name}</li>;
+                      return (
+                        <li>
+                          {course.name}: {course.code}
+                        </li>
+                      );
                     })}
                   </ul>
                 </div>
@@ -164,7 +173,11 @@ class NotifHub extends Component {
                   <p>Push notif watchlist for this device:</p>
                   <ul>
                     {this.state.push_wl.map((course) => {
-                      return <li>{course.name}</li>;
+                      return (
+                        <li>
+                          {course.name}: {course.code}
+                        </li>
+                      );
                     })}
                   </ul>
                 </div>

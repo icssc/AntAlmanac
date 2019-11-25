@@ -5,7 +5,7 @@ import CourseDetailPane from './CourseDetailPane';
 import SchoolDeptCard from './SchoolDeptCard';
 import NoNothing from './no_results.png';
 import loadingGif from '../CoursePane/loading.mp4';
-import Outreach from './Outreach';
+import Banner from './Banner';
 
 const MiniSectionTable = React.lazy(() => import('./MiniSectionTable'));
 
@@ -188,7 +188,7 @@ class CourseRenderPane extends Component {
         ) : (
           <Grid container spacing={16}>
             <Grid item md={12} xs={12}>
-              <Outreach
+              <Banner
                 className={this.props.classes.ad}
                 dept={this.props.deptName}
               />

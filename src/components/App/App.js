@@ -658,7 +658,6 @@ class App extends Component {
   };
 
   render() {
-    console.log(this.state.courseEvents);
     return (
       <Fragment>
         <CssBaseline />
