@@ -46,64 +46,71 @@ class AlmanacGraph extends Component {
         this.state = {
             open: false,
             term: '2018 Fall',
-            sections: [],
+            sections: this.props.courseDetails.sections,
             length: 0,
         };
+        console.log(this.props)
+
         this.handleOpen = this.handleOpen.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        this.fetchCourseData = this.fetchCourseData.bind(this);
+
         this.handleChange = this.handleChange.bind(this);
     }
 
-    fetchCourseData() {
-        const params = {
-            department: this.props.courseDetails.name[0],
-            term: this.state.term,
-            courseTitle: this.props.courseDetails.name[2],
-            courseNum: this.props.courseDetails.name[1],
-        };
-
-        const url =
-            'https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/websoc?' +
-            querystring.stringify(params);
-
-        fetch(url.toString())
-            .then((resp) => resp.json())
-            .then((json) => {
-                const sections = json.reduce((accumulator, school) => {
-                    school.departments.forEach((dept) => {
-                        dept.courses.forEach((course) => {
-                            course.sections.forEach((section) => {
-                                if (section.units !== '0')
-                                    accumulator.push(section);
-                            });
-                        });
-                    });
-
-                    return accumulator;
-                }, []);
-
-                this.setState({ length: sections.length }, () => {
-                    this.setState({ sections: sections });
-                });
-            });
+    handleOpen() {
+      this.setState({
+        open: true,
+      })
+      console.log(this.props)
     }
 
+    // fetchCourseData() {
+    //     const params = {
+    //         department: this.props.courseDetails.name[0],
+    //         term: this.state.term,
+    //         courseTitle: this.props.courseDetails.name[2],
+    //         courseNum: this.props.courseDetails.name[1],
+    //     };
+    //
+    //     const url =
+    //         'https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/websoc?' +
+    //         querystring.stringify(params);
+    //
+    //     fetch(url.toString())
+    //         .then((resp) => resp.json())
+    //         .then((json) => {
+    //             const sections = json.reduce((accumulator, school) => {
+    //                 school.departments.forEach((dept) => {
+    //                     dept.courses.forEach((course) => {
+    //                         course.sections.forEach((section) => {
+    //                             if (section.units !== '0')
+    //                                 accumulator.push(section);
+    //                         });
+    //                     });
+    //                 });
+    //
+    //                 return accumulator;
+    //             }, []);
+    //
+    //             this.setState({ length: sections.length }, () => {
+    //                 this.setState({ sections: sections });
+    //             });
+    //         });
+    // }
+
     handleChange(event) {
-        this.setState({ [event.target.name]: event.target.value }, () => {
-            this.fetchCourseData();
-        });
+        this.setState({ [event.target.name]: event.target.value })
     }
 
     handleOpen() {
+        console.log(this.props)
         this.setState({ open: true });
-        this.fetchCourseData();
         ReactGA.event({
             category: 'Pass_enrollment',
             action:
-                this.props.courseDetails.name[0] +
+                this.props.courseDetails.deptCode +
                 ' ' +
-                this.props.courseDetails.name[1],
+                this.props.courseDetails.courseNumber,
             label: this.state.term,
         });
     }
@@ -132,9 +139,9 @@ class AlmanacGraph extends Component {
                             className={this.props.classes.flex}
                         >
                             {'Historical Enrollments for ' +
-                                this.props.courseDetails.name[0] +
+                                this.props.courseDetails.deptCode +
                                 ' ' +
-                                this.props.courseDetails.name[1] +
+                                this.props.courseDetails.courseNumber +
                                 '   '}
                             <Tooltip title="Need Help with Graphs?">
                                 <a
