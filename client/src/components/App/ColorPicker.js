@@ -40,6 +40,7 @@ class ColorPicker extends PureComponent {
     };
 
     render() {
+        console.log(this.props.courseInMoreInfo);
         return (
             <div
                 style={{ backgroundColor: this.state.color }}

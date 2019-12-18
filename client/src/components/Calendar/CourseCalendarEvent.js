@@ -136,7 +136,16 @@ const CourseCalendarEvent = (props) => {
                                 <td>Color</td>
                                 <td className={classes.colorPicker}>
                                     <ColorPicker
-                                        courseInMoreInfo={courseInMoreInfo}
+                                        color={courseInMoreInfo.color}
+                                        isCustomEvent={
+                                            courseInMoreInfo.isCustomEvent
+                                        }
+                                        customEventID={
+                                            courseInMoreInfo.customEventID
+                                        }
+                                        sectionCode={
+                                            courseInMoreInfo.sectionCode
+                                        }
                                     />
                                 </td>
                             </tr>
@@ -163,7 +172,13 @@ const CourseCalendarEvent = (props) => {
                             <tr>
                                 <td className={classes.colorPicker}>
                                     <ColorPicker
-                                        courseInMoreInfo={courseInMoreInfo}
+                                        color={courseInMoreInfo.color}
+                                        isCustomEvent={
+                                            courseInMoreInfo.isCustomEvent
+                                        }
+                                        customEventID={
+                                            courseInMoreInfo.customEventID
+                                        }
                                     />
                                 </td>
                                 <td className={classes.rightCells}>

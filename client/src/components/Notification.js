@@ -55,7 +55,6 @@ function MySnackbarContent(props) {
     return (
         <SnackbarContent
             className={classNames(classes[variant], className)}
-            aria-describedby="client-snackbar"
             message={
                 <span id="client-snackbar" className={classes.message}>
                     <Icon

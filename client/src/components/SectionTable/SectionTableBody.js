@@ -114,22 +114,6 @@ const styles = (theme) => ({
 const ScheduleAddCell = withStyles(styles)((props) => {
     const { classes, section, courseDetails, term } = props;
     const popupState = usePopupState({ variant: 'popover' });
-    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(0);
-
-    useEffect(() => {
-        const updateCurrentScheduleIndex = () => {
-            setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
-        };
-
-        AppStore.on('currentScheduleIndexChange', updateCurrentScheduleIndex);
-
-        return () => {
-            AppStore.removeListener(
-                'currentScheduleIndexChange',
-                updateCurrentScheduleIndex
-            );
-        };
-    });
 
     const closeAndAddCourse = (scheduleIndex) => {
         popupState.close();
@@ -149,7 +133,9 @@ const ScheduleAddCell = withStyles(styles)((props) => {
     return (
         <td className={classes.cell}>
             <IconButton
-                onClick={() => closeAndAddCourse(currentScheduleIndex)}
+                onClick={() =>
+                    closeAndAddCourse(AppStore.getCurrentScheduleIndex())
+                }
                 className={classes.button}
             >
                 <Add fontSize="large" />
