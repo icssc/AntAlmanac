@@ -1,9 +1,11 @@
 import AppStore from '../../stores/AppStore';
 import React, { Component, Fragment } from 'react';
-import { Grid, Typography } from '@material-ui/core';
+import { Grid, Typography, Button, Menu, MenuItem } from '@material-ui/core';
 import SectionTable from '../SectionTable/SectionTable.js';
 import { withStyles } from '@material-ui/core/styles';
 import CustomEventDetailView from './CustomEventDetailView';
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+import { copySchedule } from '../../actions/AppStoreActions';
 
 const styles = {
     container: {
@@ -90,7 +92,6 @@ class AddedCoursePane extends Component {
                     totalUnits += Number(addedCourse.section.units);
             }
         }
-        //formattedCourses.sections.sort(function(a,b) {return a.sectionCode - b.sectionCode})
         formattedCourses.forEach(function(course) {
             course.sections.sort(function(a, b) {
                 return a.sectionCode - b.sectionCode;
@@ -112,6 +113,53 @@ class AddedCoursePane extends Component {
                             this.state.totalUnits
                         } Units)`}
                     </Typography>
+
+                    <PopupState variant="popover" popupId="demo-popup-menu">
+                        {(popupState) => (
+                            <React.Fragment>
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    {...bindTrigger(popupState)}
+                                >
+                                    Copy Schedule
+                                </Button>
+                                <Menu {...bindMenu(popupState)}>
+                                    {[0, 1, 2, 3].map((index) => {
+                                        return (
+                                            <MenuItem
+                                                disabled={
+                                                    AppStore.getCurrentScheduleIndex() ===
+                                                    index
+                                                }
+                                                onClick={() => {
+                                                    console.log(index);
+                                                    copySchedule(
+                                                        AppStore.getCurrentScheduleIndex(),
+                                                        index
+                                                    );
+                                                    popupState.close();
+                                                }}
+                                            >
+                                                Copy to Schedule {index + 1}
+                                            </MenuItem>
+                                        );
+                                    })}
+                                    <MenuItem
+                                        onClick={() => {
+                                            copySchedule(
+                                                AppStore.getCurrentScheduleIndex(),
+                                                4
+                                            );
+                                            popupState.close();
+                                        }}
+                                    >
+                                        Copy to All Schedules
+                                    </MenuItem>
+                                </Menu>
+                            </React.Fragment>
+                        )}
+                    </PopupState>
                 </div>
                 {this.state.courses.map((course) => {
                     return (

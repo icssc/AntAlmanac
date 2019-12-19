@@ -72,8 +72,7 @@ class AppStore extends EventEmitter {
                 this.emit('customEventsChange');
                 break;
             case 'ADD_CUSTOM_EVENT':
-                console.log('Adding Event')
-                console.log(action.customEvent)
+                console.log(action.customEvent);
                 this.customEvents = this.customEvents.concat(
                     action.customEvent
                 );
@@ -105,6 +104,13 @@ class AppStore extends EventEmitter {
             case 'EDIT_CUSTOM_EVENTS':
                 this.customEvents = action.customEventsAfterEdit;
                 this.emit('customEventsChange');
+                break;
+            case 'COPY_SCHEDULE':
+                this.addedCourses = action.addedCoursesAfterCopy;
+                this.customEvents = action.customEventsAfterCopy;
+                this.emit('addedCoursesChange');
+                this.emit('customEventsChange');
+                break;
         }
     }
 }

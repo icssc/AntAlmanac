@@ -23,7 +23,6 @@ import {
 import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality';
 import ReactGA from 'react-ga';
 import loadingGif from '../SearchForm/Gifs/loading.mp4';
-import TabularView from './TabularView';
 import AddedCoursePane from '../AddedCourses/AddedCoursePane';
 
 import NotificationSnackbar from './NotificationSnackbar';
@@ -101,9 +100,7 @@ class App extends Component {
                     <Toolbar variant="dense">
                         <div style={{ flexGrow: 1 }}>{/*    LOGO*/}</div>
 
-                        <LoadSaveScheduleFunctionality
-                            isDesktop={this.state.isDesktop}
-                        />
+                        <LoadSaveScheduleFunctionality />
 
                         {this.state.isDesktop ? (
                             <Tooltip title="Give Us Feedback!">

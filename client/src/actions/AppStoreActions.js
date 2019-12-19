@@ -344,7 +344,6 @@ export const changeCustomEventColor = (customEventID, newColor) => {
 };
 
 export const changeCourseColor = (sectionCode, newColor) => {
-    console.log('asdasd');
     const addedCourses = AppStore.getAddedCourses();
 
     const addedCoursesAfterColorChange = addedCourses.map((addedCourse) => {
@@ -358,5 +357,50 @@ export const changeCourseColor = (sectionCode, newColor) => {
     dispatcher.dispatch({
         type: 'COURSE_COLOR_CHANGE',
         addedCoursesAfterColorChange,
+    });
+};
+
+export const copySchedule = (from, to) => {
+    const addedCourses = AppStore.getAddedCourses();
+    const customEvents = AppStore.getCustomEvents();
+
+    const addedCoursesAfterCopy = addedCourses.map((addedCourse) => {
+        if (
+            addedCourse.scheduleIndices.includes(from) &&
+            !addedCourse.scheduleIndices.includes(to)
+        ) {
+            if (to === 4)
+                return { ...addedCourse, scheduleIndices: [0, 1, 2, 3] };
+            else
+                return {
+                    ...addedCourse,
+                    scheduleIndices: addedCourse.scheduleIndices.concat(to),
+                };
+        } else {
+            return addedCourse;
+        }
+    });
+
+    const customEventsAfterCopy = customEvents.map((customEvent) => {
+        if (
+            customEvent.scheduleIndices.includes(from) &&
+            !customEvent.scheduleIndices.includes(to)
+        ) {
+            if (to === 4)
+                return { ...customEvent, scheduleIndices: [0, 1, 2, 3] };
+            else
+                return {
+                    ...customEvent,
+                    scheduleIndices: customEvent.scheduleIndices.concat(to),
+                };
+        } else {
+            return customEvent;
+        }
+    });
+
+    dispatcher.dispatch({
+        type: 'COPY_SCHEDULE',
+        addedCoursesAfterCopy,
+        customEventsAfterCopy,
     });
 };
