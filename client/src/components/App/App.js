@@ -11,7 +11,6 @@ import {
     Typography,
     Button,
 } from '@material-ui/core';
-import SearchForm from '../SearchForm/SearchForm';
 import Calendar from '../Calendar/Calendar';
 import {
     Info,
@@ -22,67 +21,40 @@ import {
 } from '@material-ui/icons';
 import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality';
 import ReactGA from 'react-ga';
-import loadingGif from '../SearchForm/Gifs/loading.mp4';
 import AddedCoursePane from '../AddedCourses/AddedCoursePane';
-
 import NotificationSnackbar from './NotificationSnackbar';
-
-const CoursePane = React.lazy(() => import('../CoursePane/CoursePane'));
+import RightPane from './RightPane';
+import { undoDelete } from '../../actions/AppStoreActions';
 
 class App extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            data: null,
-            currentScheduleIndex: 0,
-            showSearch: true,
-            customEvents: [],
-            addedCourses: [],
-            backupArray: [],
-            userID: null,
             rightPaneView: 0,
-            showFinalSchedule: false,
             activeTab: 0,
         };
     }
 
     componentDidMount = () => {
-        document.addEventListener('keydown', this.handleUndo, false);
+        document.addEventListener('keydown', undoDelete, false);
 
         ReactGA.initialize('UA-133683751-1');
         ReactGA.pageview('/homepage');
     };
 
     componentWillUnmount() {
-        document.removeEventListener('keydown', this.handleUndo, false);
+        document.removeEventListener('keydown', undoDelete, false);
     }
 
     //what the right panel shows
     handleRightPaneViewChange = (event, rightPaneView) => {
-        this.setState({ rightPaneView, showSearch: true });
-        console.log(this.state);
+        this.setState({ rightPaneView });
     };
 
     //change the tab
     handleTabChange = (event, value) => {
         this.setState({ activeTab: value });
-    };
-
-    handleDismissSearchResults = () => {
-        this.setState({ showSearch: true, data: null });
-    };
-
-    //Where Form is updated
-    updateData = async (data, term, dept, ge) => {
-        data = await data;
-        this.setState({
-            Data: data,
-            showSearch: false,
-            term: term,
-            dept: dept,
-            ge: ge,
-        });
     };
 
     render() {
@@ -233,41 +205,8 @@ class App extends Component {
                             >
                                 {this.state.rightPaneView ? (
                                     <AddedCoursePane />
-                                ) : this.state.showSearch ? (
-                                    <SearchForm updateData={this.updateData} />
                                 ) : (
-                                    <Suspense
-                                        fallback={
-                                            <div
-                                                style={{
-                                                    height: '100%',
-                                                    width: '100%',
-                                                    display: 'flex',
-                                                    justifyContent: 'center',
-                                                    alignItems: 'center',
-                                                    backgroundColor: 'white',
-                                                }}
-                                            >
-                                                <video autoPlay loop>
-                                                    <source
-                                                        src={loadingGif}
-                                                        type="video/mp4"
-                                                    />
-                                                </video>
-                                            </div>
-                                        }
-                                    >
-                                        <CoursePane
-                                            Data={this.state.Data}
-                                            term={this.state.term}
-                                            dept={this.state.dept}
-                                            ge={this.state.ge}
-                                            onAddClass={this.handleAddClass}
-                                            onDismissSearchResults={
-                                                this.handleDismissSearchResults
-                                            }
-                                        />
-                                    </Suspense>
+                                    <RightPane />
                                 )}
                             </div>
                         </div>
