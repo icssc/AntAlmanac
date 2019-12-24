@@ -3,6 +3,7 @@ import SearchForm from '../SearchForm/SearchForm';
 import loadingGif from '../SearchForm/Gifs/loading.mp4';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
 import { withStyles } from '@material-ui/core/styles';
+import ReactGA from 'react-ga';
 
 const CourseRenderPane = React.lazy(() =>
     import('../CoursePane/CourseRenderPane')
@@ -28,15 +29,48 @@ class RightPane extends Component {
         };
     }
 
-    updateData = async (data, term, dept, ge) => {
-        data = await data;
-        this.setState({
-            courseData: data,
-            showSearch: false,
-            term: term,
-            dept: dept,
-            ge: ge,
+    searchWebSoc = async ({
+        dept,
+        term,
+        ge,
+        courseNum,
+        courseCode,
+        instructor,
+        units,
+        endTime,
+        startTime,
+        coursesFull,
+        building,
+    }) => {
+        ReactGA.event({
+            category: 'Search',
+            action: dept,
+            label: term,
         });
+
+        const params = {
+            department: dept,
+            term: term,
+            ge: ge,
+            courseNumber: courseNum,
+            sectionCodes: courseCode,
+            instructorName: instructor,
+            units: units,
+            endTime: endTime,
+            startTime: startTime,
+            fullCourses: coursesFull,
+            building: building,
+        };
+
+        const response = await fetch('/api/websocapi', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(params),
+        });
+
+        const jsonResp = await response.json();
+
+        this.setState({ courseData: jsonResp, showSearch: false });
     };
 
     handleDismissSearchResults = () => {
@@ -48,7 +82,7 @@ class RightPane extends Component {
         let currentView;
 
         if (this.state.showSearch) {
-            currentView = <SearchForm updateData={this.updateData} />;
+            currentView = <SearchForm searchWebSoc={this.searchWebSoc} />;
         } else {
             currentView = (
                 <Suspense
@@ -61,12 +95,10 @@ class RightPane extends Component {
                     }
                 >
                     <CourseRenderPane
-                        onToggleDismissButton={this.handleToggleDismissButton}
                         courseData={this.state.courseData}
-                        view={2}
-                        term={this.props.term}
-                        ge={this.props.ge}
-                        dept={this.props.dept}
+                        // term={this.props.term}
+                        // ge={this.props.ge}
+                        // dept={this.props.dept}
                     />
                 </Suspense>
             );

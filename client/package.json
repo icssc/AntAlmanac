@@ -18,6 +18,7 @@
         "react-scripts": "^2.1.8",
         "react-input-mask": "^2.0.4",
         "recharts": "^1.6.2",
+        "react-device-detect": "^1.11.14",
         "material-ui-popup-state": "^1.4.0",
         "flux": "^3.1.3"
     },
