@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import {
     Grid,
     Paper,
@@ -40,11 +40,8 @@ const styles = (theme) => ({
     },
 });
 
-class SchoolDeptCard extends Component {
-    constructor(props) {
-        super(props);
-        this.state = { commentsOpen: false };
-    }
+class SchoolDeptCard extends PureComponent {
+    state = { commentsOpen: false };
 
     render() {
         const html = { __html: [this.props.comment] };

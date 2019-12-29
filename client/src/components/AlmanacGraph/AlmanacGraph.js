@@ -49,7 +49,6 @@ class AlmanacGraph extends Component {
             sections: this.props.courseDetails.sections,
             length: 0,
         };
-        console.log(this.props)
 
         this.handleOpen = this.handleOpen.bind(this);
         this.handleClose = this.handleClose.bind(this);
@@ -58,10 +57,9 @@ class AlmanacGraph extends Component {
     }
 
     handleOpen() {
-      this.setState({
-        open: true,
-      })
-      console.log(this.props)
+        this.setState({
+            open: true,
+        });
     }
 
     // fetchCourseData() {
@@ -99,11 +97,10 @@ class AlmanacGraph extends Component {
     // }
 
     handleChange(event) {
-        this.setState({ [event.target.name]: event.target.value })
+        this.setState({ [event.target.name]: event.target.value });
     }
 
     handleOpen() {
-        console.log(this.props)
         this.setState({ open: true });
         ReactGA.event({
             category: 'Pass_enrollment',

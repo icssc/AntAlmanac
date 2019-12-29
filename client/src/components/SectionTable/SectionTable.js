@@ -1,11 +1,11 @@
-import React, { Component, Fragment, PureComponent } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph';
 import CourseInfoBar from './CourseInfoBar';
 import SectionTableBody from './SectionTableBody';
 import PropTypes from 'prop-types';
-import ReactGA from 'react-ga';
+import RightPaneStore from '../../stores/RightPaneStore';
 
 const styles = {
     table: {
@@ -43,39 +43,34 @@ const styles = {
 
 class SectionTable extends PureComponent {
     //TODO: for efficiency, search multiple classes at once
+    state = {
+        courseDetails: this.props.courseDetails,
+    };
 
-    // state = { courseDetails: this.props.courseDetails };
+    async componentDidMount() {
+        const formData = RightPaneStore.getFormData();
 
-    // componentDidMount = async () => {
-    //     //let {building,courseCode,courseNum,coursesFull,dept,endTime,ge,instructor,label,startTime,term,units}=this.props.formData;
-    //     let { dept, ge } = this.props;
-    //
-    //     if (ge !== 'ANY' && dept === '') {
-    //         //please put all the form's props condition in to prevent search bugs
-    //         const { term } = this.props;
-    //
-    //         const params = {
-    //             department: this.state.courseDetails.deptCode,
-    //             term: term,
-    //             courseNumber: this.state.courseDetails.courseNumber,
-    //             courseTitle: this.state.courseDetails.courseTitle,
-    //         };
-    //
-    //         const response = await fetch('/api/websocapi', {
-    //             method: 'POST',
-    //             headers: { 'Content-Type': 'application/json' },
-    //             body: JSON.stringify(params),
-    //         });
-    //
-    //         const jsonResp = await response.json();
-    //
-    //         const courseDetails = jsonResp.schools[0].departments[0].courses[0];
-    //
-    //         this.setState({
-    //             courseDetails,
-    //         });
-    //     }
-    // };
+        if (formData.ge !== 'ANY') {
+            const params = {
+                department: this.props.courseDetails.deptCode,
+                term: formData.term,
+                ge: 'ANY',
+                courseNumber: this.props.courseDetails.courseNumber,
+            };
+
+            const response = await fetch('/api/websocapi', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(params),
+            });
+
+            const jsonResp = await response.json();
+
+            this.setState({
+                courseDetails: jsonResp.schools[0].departments[0].courses[0],
+            });
+        }
+    }
 
     render() {
         const { classes, term } = this.props;
@@ -88,17 +83,17 @@ class SectionTable extends PureComponent {
                     }}
                 >
                     <CourseInfoBar
-                        deptCode={this.props.courseDetails.deptCode}
-                        courseTitle={this.props.courseDetails.courseTitle}
-                        courseNumber={this.props.courseDetails.courseNumber}
+                        deptCode={this.state.courseDetails.deptCode}
+                        courseTitle={this.state.courseDetails.courseTitle}
+                        courseNumber={this.state.courseDetails.courseNumber}
                     />
 
                     <AlmanacGraphWrapped
-                      term={term}
-                      courseDetails={this.props.courseDetails}
+                        term={term}
+                        courseDetails={this.state.courseDetails}
                     />
 
-                    {this.props.courseDetails.prerequisiteLink ? (
+                    {this.state.courseDetails.prerequisiteLink ? (
                         <Typography
                             variant="h6"
                             style={{ flexGrow: '2', marginTop: 9 }}
@@ -109,7 +104,7 @@ class SectionTable extends PureComponent {
                                     textDecoration: 'none',
                                     color: '#72a9ed',
                                 }}
-                                href={this.props.courseDetails.prerequisiteLink}
+                                href={this.state.courseDetails.prerequisiteLink}
                                 rel="noopener noreferrer"
                             >
                                 Prerequisites
@@ -134,11 +129,11 @@ class SectionTable extends PureComponent {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.courseDetails.sections.map((section) => {
+                        {this.state.courseDetails.sections.map((section) => {
                             return (
                                 <SectionTableBody
                                     section={section}
-                                    courseDetails={this.props.courseDetails}
+                                    courseDetails={this.state.courseDetails}
                                     term={term}
                                     colorAndDelete={this.props.colorAndDelete}
                                 />
@@ -152,11 +147,7 @@ class SectionTable extends PureComponent {
 }
 
 SectionTable.propTypes = {
-    classes: PropTypes.object.isRequired,
     courseDetails: PropTypes.object.isRequired,
-    dept: PropTypes.string.isRequired,
-    ge: PropTypes.string.isRequired,
-    term: PropTypes.string.isRequired,
     colorAndDelete: PropTypes.bool.isRequired,
 };
 

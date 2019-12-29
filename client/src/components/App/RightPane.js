@@ -1,4 +1,4 @@
-import React, { Component, Suspense } from 'react';
+import React, { PureComponent, Suspense } from 'react';
 import SearchForm from '../SearchForm/SearchForm';
 import loadingGif from '../SearchForm/Gifs/loading.mp4';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
@@ -21,7 +21,7 @@ const styles = {
     },
 };
 
-class RightPane extends Component {
+class RightPane extends PureComponent {
     state = {
         courseData: null,
         showSearch: true,

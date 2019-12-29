@@ -1,8 +1,8 @@
 import { withStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
-import React, { Component, Fragment } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import SchoolDeptCard from './SchoolDeptCard';
-import SectionTable from '../SectionTable/SectionTable.js';
+import SectionTable from '../SectionTable/SectionTable';
 import NoNothing from './static/no_results.png';
 import AdAd from './static/ad_ad.png';
 
@@ -44,15 +44,7 @@ const styles = (theme) => ({
     },
 });
 
-class CourseRenderPane extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            courseDetailsOpen: false,
-            course: null,
-        };
-    }
-
+class CourseRenderPane extends PureComponent {
     //TODO: HOC for School/Dept separation instead of the solution I got now
     getGrid = (SOCObject) => {
         return (
@@ -79,10 +71,7 @@ class CourseRenderPane extends Component {
                                         {department.courses.map((course) => (
                                             <Grid item md={12} xs={12}>
                                                 <SectionTable
-                                                    ge={this.props.ge}
-                                                    dept={this.props.dept}
                                                     courseDetails={course}
-                                                    term={this.props.term}
                                                 />
                                             </Grid>
                                         ))}
