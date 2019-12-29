@@ -3,40 +3,41 @@ import Downshift from 'mui-downshift';
 import defaultDepts from './depts';
 import FormControl from '@material-ui/core/FormControl';
 import { isMobile } from 'react-device-detect';
-import PropTypes from 'prop-types';
+import { updateFormValue } from '../../../actions/RightPaneActions';
+import RightPaneStore from '../../../stores/RightPaneStore.js';
+import { withStyles } from '@material-ui/core/styles';
+
+const style = {
+    formControl: {
+        flexGrow: 1,
+        marginRight: 15,
+        width: '50%',
+    },
+};
 
 class DeptSearchBar extends React.Component {
     constructor(props) {
         super(props);
-        let history = null;
+        let history = [];
         if (typeof Storage !== 'undefined') {
             history = JSON.parse(window.localStorage.getItem('history'));
-        }
-        if (history === null) {
-            //nothing stored
-            history = [];
         }
         this.state = {
             filteredItems: history.concat(defaultDepts), // Inital state is history + rest
             history: history, // Just the history
         };
-        this.handleFilterDepts = this.handleFilterDepts.bind(this);
     }
 
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
-        return nextState !== this.state;
-    }
-
-    determineDropdownLength() {
+    determineDropdownLength = () => {
         if (isMobile) {
             return 3;
         }
         // return document.documentElement.scrollHeight
         // - 96 - 24;
         return 6;
-    }
+    };
 
-    handleFilterDepts(changes) {
+    handleFilterDepts = (changes) => {
         if (typeof changes.inputValue === 'string') {
             if (changes.inputValue !== '') {
                 // Match depts by label (ignoring case) and filter out the non matching depts
@@ -54,15 +55,12 @@ class DeptSearchBar extends React.Component {
                 });
             }
         }
-    }
-
-    defautlRen = () => {
-        return { label: this.props.dept, value: 0 };
     };
 
     handleSetDept = (dept) => {
         if (dept !== null) {
-            this.props.setDept(dept); //set it in search form
+            updateFormValue('deptValue', dept.value);
+            updateFormValue('deptLabel', dept.label);
 
             let copy_history = this.state.history;
             if (copy_history.filter((i) => i.value === dept.value).length > 0) {
@@ -88,38 +86,38 @@ class DeptSearchBar extends React.Component {
                 JSON.stringify(copy_history)
             );
         } else {
-            this.props.setDept(null);
+            updateFormValue('deptValue', null);
+            updateFormValue('deptLabel', null);
         }
     };
 
     render() {
+        const { classes } = this.props;
+
         return (
             <FormControl
-                style={{ flexGrow: 1, marginRight: 15, width: '50%' }}
+                className={classes.formControl}
                 //Fixes positioning of DeptSearchBar next to CodeNumberSearchBar
             >
                 <Downshift
                     items={this.state.filteredItems}
                     onStateChange={this.handleFilterDepts}
-                    defaultSelectedItem={this.defautlRen()}
+                    defaultSelectedItem={{
+                        label: RightPaneStore.getFormData().deptLabel,
+                        value: RightPaneStore.getFormData().deptValue,
+                    }}
                     onChange={this.handleSetDept}
                     getInputProps={() => ({
                         // Downshift requires this syntax to pass down these props to the text field
                         label: 'Type to search department',
                         required: true,
                     })}
-                    //getInputProps={() => <input />}
                     menuItemCount={this.determineDropdownLength()}
                     // menuHeight={this.determineDropdownLength()}
-                    {...this.props} //Pass down other props to the Downshift layer
                 />
             </FormControl>
         );
     }
 }
 
-DeptSearchBar.propTypes = {
-    label: PropTypes.string,
-    onChange: PropTypes.bool,
-};
-export default DeptSearchBar;
+export default withStyles(style)(DeptSearchBar);

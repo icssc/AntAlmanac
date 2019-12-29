@@ -1,45 +1,31 @@
 import React, { Component } from 'react';
 import { TextField } from '@material-ui/core';
-import PropTypes from 'prop-types';
+import { updateFormValue } from '../../actions/RightPaneActions';
+import RightPaneStore from '../../stores/RightPaneStore';
 
 class CourseNumberSearchBar extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            courseCode: '',
-        };
-    }
+    state = {
+        courseNumber: RightPaneStore.getFormData().courseNumber,
+    };
 
-    /**
-     *  Handles user input under CourseNumberSearchBar object and sets the state to its given input.
-     */
-    handleChange = (name) => (event) => {
-        this.setState({ [name]: event.target.value }, () => {
-            this.props.onAdvancedSearchChange(this.state);
-        });
-        //Removed unnecessary if-else statements (6-28-19)
+    handleChange = (event) => {
+        this.setState({ courseNumber: event.target.value });
+        updateFormValue('courseNumber', event.target.value);
     };
 
     render() {
-        //const {classes} = this.props;
-
         return (
             <div>
                 <TextField
-                    id="course-num"
                     label="Course Number(s)"
                     type="search"
-                    value={this.props.params.courseNum}
-                    onChange={this.handleChange('courseNum')}
+                    value={this.state.courseNumber}
+                    onChange={this.handleChange}
                     helperText="ex. 6B, 17, 30-40"
                 />
             </div>
         );
     }
 }
-
-CourseNumberSearchBar.propTypes = {
-    onAdvancedSearchChange: PropTypes.func,
-};
 
 export default CourseNumberSearchBar;

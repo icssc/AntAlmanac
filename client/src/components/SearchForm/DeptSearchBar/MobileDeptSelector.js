@@ -4,44 +4,43 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import depts from './depts';
+import { updateFormValue } from '../../../actions/RightPaneActions';
+import RightPaneStore from '../../../stores/RightPaneStore.js';
+import { withStyles } from '@material-ui/core/styles';
+
+const style = {
+    formControl: {
+        flexGrow: 1,
+        marginRight: 15,
+        width: '50%',
+    },
+};
 
 class MobileDeptSelector extends Component {
-    constructor(props) {
-        super(props);
+    state = {
+        deptLabel: RightPaneStore.getFormData().deptLabel,
+    };
 
-        this.state = {
-            dept: '',
-        };
-
-        this.handleChange = this.handleChange.bind(this);
-    }
-
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
-        return this.state.dept !== nextState.dept;
-    }
-
-    handleChange(event) {
-        this.setState({ [event.target.name]: event.target.value });
-        this.props.setDept(event.target.value);
-    }
+    handleChange = (event) => {
+        this.setState({ deptLabel: event.target.value });
+        updateFormValue('deptLabel', event.target.value);
+    };
 
     render() {
+        const { classes } = this.props;
+
         return (
-            <FormControl style={{ flexGrow: 1, marginRight: 15, width: '50%' }}>
-                <InputLabel htmlFor="dept-select">Department</InputLabel>
+            <FormControl className={classes.formControl}>
+                <InputLabel>Department</InputLabel>
                 <Select
-                    value={this.props.dept}
+                    value={this.state.deptLabel}
                     onChange={this.handleChange}
-                    inputProps={{ name: 'dept', id: 'dept-select' }}
                     fullWidth
                 >
-                    {depts.map((category) => {
+                    {depts.map((dept) => {
                         return (
-                            <MenuItem
-                                key={category.value}
-                                value={category.value}
-                            >
-                                {category.label}
+                            <MenuItem key={dept.value} value={dept.value}>
+                                {dept.label}
                             </MenuItem>
                         );
                     })}
@@ -51,4 +50,4 @@ class MobileDeptSelector extends Component {
     }
 }
 
-export default MobileDeptSelector;
+export default withStyles(style)(MobileDeptSelector);

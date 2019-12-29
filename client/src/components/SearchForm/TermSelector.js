@@ -3,36 +3,24 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import { updateFormValue } from '../../actions/RightPaneActions';
+import RightPaneStore from '../../stores/RightPaneStore.js';
 
 class TermSelector extends Component {
-    constructor(props) {
-        super(props);
+    state = {
+        term: RightPaneStore.getFormData().term,
+    };
 
-        this.state = {
-            term: '2020 Winter',
-        };
-
-        this.handleChange = this.handleChange.bind(this);
-    }
-
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
-        return this.state.term !== nextState.term;
-    }
-
-    handleChange(event) {
-        this.setState({ [event.target.name]: event.target.value });
-        this.props.setTerm(event.target.value);
-    }
+    handleChange = (event) => {
+        this.setState({ term: event.target.value });
+        updateFormValue('term', event.target.value);
+    };
 
     render() {
         return (
             <FormControl fullWidth>
-                <InputLabel htmlFor="term-select">Term</InputLabel>
-                <Select
-                    value={this.props.term}
-                    onChange={this.handleChange}
-                    inputProps={{ name: 'term', id: 'term-select' }}
-                >
+                <InputLabel>Term</InputLabel>
+                <Select value={this.state.term} onChange={this.handleChange}>
                     <MenuItem value={'2020 Winter'}>
                         2020 Winter Quarter
                     </MenuItem>

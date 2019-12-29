@@ -4,6 +4,7 @@ import loadingGif from '../SearchForm/Gifs/loading.mp4';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
 import { withStyles } from '@material-ui/core/styles';
 import ReactGA from 'react-ga';
+import RightPaneStore from '../../stores/RightPaneStore.js';
 
 const CourseRenderPane = React.lazy(() =>
     import('../CoursePane/CourseRenderPane')
@@ -21,45 +22,32 @@ const styles = {
 };
 
 class RightPane extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            courseData: null,
-            showSearch: true,
-        };
-    }
+    state = {
+        courseData: null,
+        showSearch: true,
+    };
 
-    searchWebSoc = async ({
-        dept,
-        term,
-        ge,
-        courseNum,
-        courseCode,
-        instructor,
-        units,
-        endTime,
-        startTime,
-        coursesFull,
-        building,
-    }) => {
-        ReactGA.event({
-            category: 'Search',
-            action: dept,
-            label: term,
-        });
+    searchWebSoc = async () => {
+        const formData = RightPaneStore.getFormData();
+        console.log(formData);
+        // ReactGA.event({
+        //     category: 'Search',
+        //     action: formData.deptValue,
+        //     label: formData.term,
+        // });
 
         const params = {
-            department: dept,
-            term: term,
-            ge: ge,
-            courseNumber: courseNum,
-            sectionCodes: courseCode,
-            instructorName: instructor,
-            units: units,
-            endTime: endTime,
-            startTime: startTime,
-            fullCourses: coursesFull,
-            building: building,
+            department: formData.deptValue,
+            term: formData.term,
+            ge: formData.ge,
+            courseNumber: formData.courseNumber,
+            sectionCodes: formData.sectionCodes,
+            instructorName: formData.instructor,
+            units: formData.units,
+            endTime: formData.endTime,
+            startTime: formData.startTime,
+            fullCourses: formData.coursesFull,
+            building: formData.building,
         };
 
         const response = await fetch('/api/websocapi', {
@@ -94,12 +82,7 @@ class RightPane extends Component {
                         </div>
                     }
                 >
-                    <CourseRenderPane
-                        courseData={this.state.courseData}
-                        // term={this.props.term}
-                        // ge={this.props.ge}
-                        // dept={this.props.dept}
-                    />
+                    <CourseRenderPane courseData={this.state.courseData} />
                 </Suspense>
             );
         }

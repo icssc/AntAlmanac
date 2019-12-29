@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
     MenuItem,
     Select,
@@ -7,16 +7,15 @@ import {
     InputLabel,
     Switch,
     FormControlLabel,
+    Typography,
+    Collapse,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import PropTypes from 'prop-types';
+import RightPaneStore from '../../stores/RightPaneStore';
+import { ExpandLess, ExpandMore } from '@material-ui/icons';
+import { updateFormValue } from '../../actions/RightPaneActions';
 
-const styles = {
-    courseNum: {
-        borderStyle: 'solid',
-        borderWidth: '0px 8px 8px 0px',
-        borderColor: 'transparent',
-    },
+const styles1 = {
     courseCode: {
         border: 'solid 8px transparent',
         borderLeft: '0px',
@@ -54,19 +53,15 @@ const styles = {
 };
 
 class AdvancedSearchTextFields extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            courseNum: '',
-            courseCode: '',
-            instructor: '',
-            units: '',
-            endTime: '',
-            startTime: '',
-            coursesFull: 'ANY',
-            building: this.props.params.building,
-        };
-    }
+    state = {
+        courseCode: RightPaneStore.getFormData().courseCode,
+        instructor: RightPaneStore.getFormData().instructor,
+        units: RightPaneStore.getFormData().units,
+        endTime: RightPaneStore.getFormData().endTime,
+        startTime: RightPaneStore.getFormData().startTime,
+        coursesFull: RightPaneStore.getFormData().coursesFull,
+        building: RightPaneStore.getFormData().building,
+    };
 
     handleChange = (name) => (event) => {
         if (name === 'endTime' || name === 'startTime') {
@@ -80,7 +75,8 @@ class AdvancedSearchTextFields extends Component {
                                 ':00pm',
                         },
                         () => {
-                            this.props.onAdvancedSearchChange(this.state);
+                            updateFormValue('startTime', this.state.startTime);
+                            updateFormValue('endTime', this.state.endTime);
                         }
                     );
                 else
@@ -91,28 +87,27 @@ class AdvancedSearchTextFields extends Component {
                                 ':00am',
                         },
                         () => {
-                            this.props.onAdvancedSearchChange(this.state);
+                            updateFormValue('startTime', this.state.startTime);
+                            updateFormValue('endTime', this.state.endTime);
                         }
                     );
             } else {
                 this.setState({ [name]: '' }, () => {
-                    this.props.onAdvancedSearchChange(this.state);
+                    updateFormValue('startTime', '');
+                    updateFormValue('endTime', '');
                 });
             }
         } else if (name === 'online') {
             if (event.target.checked) {
-                this.setState({ building: 'ON' }, () => {
-                    this.props.onAdvancedSearchChange(this.state);
-                });
+                this.setState({ building: 'ON' });
+                updateFormValue('building', 'ON');
             } else {
-                this.setState({ building: '' }, () => {
-                    this.props.onAdvancedSearchChange(this.state);
-                });
+                this.setState({ building: '' });
+                updateFormValue('building', 'ON');
             }
         } else {
-            this.setState({ [name]: event.target.value }, () => {
-                this.props.onAdvancedSearchChange(this.state);
-            });
+            this.setState({ [name]: event.target.value });
+            updateFormValue(name, event.target.value);
         }
     };
 
@@ -126,10 +121,9 @@ class AdvancedSearchTextFields extends Component {
         return (
             <div className={classes.smallTextFields}>
                 <TextField
-                    id="instructor"
                     label="Instructor"
                     type="search"
-                    value={this.props.params.instructor}
+                    value={this.state.instructor}
                     onChange={this.handleChange('instructor')}
                     className={classes.instructor}
                     helperText="Last name only"
@@ -138,7 +132,7 @@ class AdvancedSearchTextFields extends Component {
                 <TextField
                     id="units"
                     label="Units"
-                    value={this.props.params.units}
+                    value={this.state.units}
                     onChange={this.handleChange('units')}
                     type="number"
                     helperText="ex. 3, 4, 1.7"
@@ -148,7 +142,7 @@ class AdvancedSearchTextFields extends Component {
                 <FormControl className={classes.coursesFull}>
                     <InputLabel>Class Full Option</InputLabel>
                     <Select
-                        value={this.props.params.coursesFull}
+                        value={this.state.coursesFull}
                         onChange={this.handleChange('coursesFull')}
                     >
                         <MenuItem value={'ANY'}>Include all classes</MenuItem>
@@ -213,14 +207,67 @@ class AdvancedSearchTextFields extends Component {
     }
 }
 
-AdvancedSearchTextFields.propTypes = {
-    onAdvancedSearchChange: PropTypes.func,
-    value: PropTypes.arrayOf({
-        units: PropTypes.string,
-        instructor: PropTypes.string,
-        courseFull: PropTypes.string,
-    }),
-    building: PropTypes.string,
+AdvancedSearchTextFields = withStyles(styles1)(AdvancedSearchTextFields);
+
+const parentStyles = {
+    container: {
+        display: 'inline-flex',
+        marginTop: 10,
+        marginBottom: 10,
+        cursor: 'pointer',
+
+        '& > div': {
+            marginRight: 5,
+        },
+    },
 };
 
-export default withStyles(styles)(AdvancedSearchTextFields);
+class AdvancedSearch extends Component {
+    constructor(props) {
+        super(props);
+
+        let advanced = false;
+        if (typeof Storage !== 'undefined') {
+            advanced = window.localStorage.getItem('advanced') === 'expanded';
+        }
+
+        this.state = {
+            expandAdvanced: advanced,
+        };
+    }
+
+    handleExpand = () => {
+        const nextExpansionState = !this.state.expandAdvanced;
+        window.localStorage.setItem(
+            'advanced',
+            nextExpansionState ? 'expanded' : 'notexpanded'
+        );
+        this.setState({ expandAdvanced: nextExpansionState });
+    };
+
+    render() {
+        const { classes } = this.props;
+
+        return (
+            <Fragment>
+                <div onClick={this.handleExpand} className={classes.container}>
+                    <div>
+                        <Typography noWrap variant="subheading">
+                            Advanced Search Options
+                        </Typography>
+                    </div>
+                    {this.state.expandAdvanced ? (
+                        <ExpandLess />
+                    ) : (
+                        <ExpandMore />
+                    )}
+                </div>
+                <Collapse in={this.state.expandAdvanced}>
+                    <AdvancedSearchTextFields />
+                </Collapse>
+            </Fragment>
+        );
+    }
+}
+
+export default withStyles(parentStyles)(AdvancedSearch);
