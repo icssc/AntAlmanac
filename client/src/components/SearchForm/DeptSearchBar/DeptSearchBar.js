@@ -18,13 +18,19 @@ const style = {
 class DeptSearchBar extends React.Component {
     constructor(props) {
         super(props);
-        let history = [];
+        let favorites = [];
         if (typeof Storage !== 'undefined') {
-            history = JSON.parse(window.localStorage.getItem('history'));
+            const locallyStoredFavorites = window.localStorage.getItem(
+                'favorites'
+            );
+            favorites =
+                locallyStoredFavorites !== null
+                    ? JSON.parse(locallyStoredFavorites)
+                    : [];
         }
         this.state = {
-            filteredItems: history.concat(defaultDepts), // Inital state is history + rest
-            history: history, // Just the history
+            filteredItems: favorites.concat(defaultDepts), // Initial state is favorites + rest
+            favorites: favorites, // Just the favorites
         };
     }
 
@@ -51,7 +57,7 @@ class DeptSearchBar extends React.Component {
             } else {
                 // if change is empty string: reset to depts
                 this.setState({
-                    filteredItems: this.state.history.concat(defaultDepts),
+                    filteredItems: this.state.favorites.concat(defaultDepts),
                 });
             }
         }
@@ -62,10 +68,12 @@ class DeptSearchBar extends React.Component {
             updateFormValue('deptValue', dept.value);
             updateFormValue('deptLabel', dept.label);
 
-            let copy_history = this.state.history;
-            if (copy_history.filter((i) => i.value === dept.value).length > 0) {
-                // Already in history, reshuffle history array to push to front
-                copy_history.sort((a, b) => {
+            let copy_favorites = this.state.favorites;
+            if (
+                copy_favorites.filter((i) => i.value === dept.value).length > 0
+            ) {
+                // Already in favorites, reshuffle favorites array to push to front
+                copy_favorites.sort((a, b) => {
                     return a.value === dept.value
                         ? -1
                         : b.value === dept.value
@@ -73,17 +81,17 @@ class DeptSearchBar extends React.Component {
                         : 0;
                 });
             } else {
-                // Not already in history, add to front if history <= 5 items long
-                copy_history = [dept].concat(copy_history);
-                if (copy_history.length > 5) {
-                    copy_history.pop();
+                // Not already in favorites, add to front if favorites <= 5 items long
+                copy_favorites = [dept].concat(copy_favorites);
+                if (copy_favorites.length > 5) {
+                    copy_favorites.pop();
                 }
             }
 
-            this.setState({ history: copy_history }); //add search to front
+            this.setState({ favorites: copy_favorites }); //add search to front
             window.localStorage.setItem(
-                'history',
-                JSON.stringify(copy_history)
+                'favorites',
+                JSON.stringify(copy_favorites)
             );
         } else {
             updateFormValue('deptValue', null);
@@ -113,7 +121,6 @@ class DeptSearchBar extends React.Component {
                         required: true,
                     })}
                     menuItemCount={this.determineDropdownLength()}
-                    // menuHeight={this.determineDropdownLength()}
                 />
             </FormControl>
         );

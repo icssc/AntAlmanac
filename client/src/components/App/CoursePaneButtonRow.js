@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { ArrowBack, Dns, ListAlt, Refresh } from '@material-ui/icons';
@@ -19,7 +19,7 @@ const styles = {
     },
 };
 
-class CoursePaneButtonRow extends Component {
+class CoursePaneButtonRow extends PureComponent {
     render() {
         const { classes } = this.props;
 
