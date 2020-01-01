@@ -19,6 +19,8 @@
         "react-input-mask": "^2.0.4",
         "recharts": "^1.6.2",
         "react-device-detect": "^1.11.14",
+        "@john-osullivan/react-window-dynamic-fork": "^1.9.0-alpha.1",
+        "react-virtualized-auto-sizer": "^1.0.2",
         "material-ui-popup-state": "^1.4.0",
         "flux": "^3.1.3"
     },

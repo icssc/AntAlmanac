@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent, Suspense } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import SearchForm from '../SearchForm/SearchForm';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
 import CourseRenderPane from '../CoursePane/CourseRenderPane';

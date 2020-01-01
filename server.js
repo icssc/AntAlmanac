@@ -8,7 +8,7 @@ AWS.config.loadFromPath('./config.json');
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const app = express();
 
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, '/client/build')));
 app.use(bodyParser.json());
 
 app.post('/api/websocapi/', (req, res) => {

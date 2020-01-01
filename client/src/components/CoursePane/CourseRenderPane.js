@@ -1,16 +1,14 @@
 import { withStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
-import React, { Fragment, PureComponent, Suspense } from 'react';
+import React, { PureComponent } from 'react';
 import SchoolDeptCard from './SchoolDeptCard';
 import SectionTable from '../SectionTable/SectionTable';
 import NoNothing from './static/no_results.png';
 import AdAd from './static/ad_ad.png';
 import RightPaneStore from '../../stores/RightPaneStore';
 import loadingGif from '../SearchForm/Gifs/loading.mp4';
-
-// const SectionTable = React.lazy(() =>
-//     import('../SectionTable/SectionTable')
-// );
+import { DynamicSizeList } from '@john-osullivan/react-window-dynamic-fork';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 const styles = (theme) => ({
     course: {
@@ -58,6 +56,55 @@ const styles = (theme) => ({
     },
 });
 
+const flattenSOCObject = (SOCObject) => {
+    return SOCObject.schools.reduce((accumulator, school) => {
+        accumulator.push(school);
+
+        school.departments.forEach((dept) => {
+            accumulator.push(dept);
+
+            dept.courses.forEach((course) => {
+                accumulator.push(course);
+            });
+        });
+
+        return accumulator;
+    }, []);
+};
+
+const SectionTableWrapped = React.forwardRef(({ style, index, data }, ref) => {
+    let component;
+
+    if (data[index].schoolName !== undefined) {
+        component = (
+            <SchoolDeptCard
+                comment={data[index].schoolComment}
+                type={'school'}
+                name={data[index].schoolName}
+            />
+        );
+    } else if (data[index].deptName !== undefined) {
+        component = (
+            <SchoolDeptCard
+                name={'Department of ' + data[index].deptName}
+                comment={data[index].deptComment}
+                type={'dept'}
+            />
+        );
+    } else {
+        component = (
+            <Grid item md={12} xs={12}>
+                <SectionTable courseDetails={data[index]} />
+            </Grid>
+        );
+    }
+    return (
+        <div style={style} ref={ref}>
+            {component}
+        </div>
+    );
+});
+
 class CourseRenderPane extends PureComponent {
     state = {
         courseData: null,
@@ -95,49 +142,12 @@ class CourseRenderPane extends PureComponent {
             });
 
             const jsonResp = await response.json();
-            this.setState({ loading: false, courseData: jsonResp });
+            this.setState({
+                loading: false,
+                courseData: flattenSOCObject(jsonResp),
+            });
         });
     }
-
-    //TODO: HOC for School/Dept separation instead of the solution I got now
-    getGrid = (SOCObject) => {
-        return (
-            <Fragment>
-                {SOCObject.schools.map((school) => {
-                    return (
-                        <Fragment>
-                            <SchoolDeptCard
-                                comment={school.schoolComment}
-                                type={'school'}
-                                name={school.schoolName}
-                            />
-                            {school.departments.map((department) => {
-                                return (
-                                    <Fragment>
-                                        <SchoolDeptCard
-                                            name={
-                                                'Department of ' +
-                                                department.deptName
-                                            }
-                                            comment={department.deptComment}
-                                            type={'dept'}
-                                        />
-                                        {department.courses.map((course) => (
-                                            <Grid item md={12} xs={12}>
-                                                <SectionTable
-                                                    courseDetails={course}
-                                                />
-                                            </Grid>
-                                        ))}
-                                    </Fragment>
-                                );
-                            })}
-                        </Fragment>
-                    );
-                })}
-            </Fragment>
-        );
-    };
 
     render() {
         const { classes } = this.props;
@@ -159,22 +169,34 @@ class CourseRenderPane extends PureComponent {
                             <img src={NoNothing} alt="No Results Found" />
                         </div>
                     ) : (
-                        <Grid container spacing={16}>
-                            <Grid item md={12} xs={12}>
-                                <a
-                                    href="https://forms.gle/irQBrBkqHYYxcEU39"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                        // <Grid container spacing={16}>
+                        //     <Grid item md={12} xs={12}>
+                        //         <a
+                        //             href="https://forms.gle/irQBrBkqHYYxcEU39"
+                        //             target="_blank"
+                        //             rel="noopener noreferrer"
+                        //         >
+                        //             <img
+                        //                 src={AdAd}
+                        //                 alt="This could be you!"
+                        //                 className={classes.ad}
+                        //             />
+                        //         </a>
+                        //     </Grid>
+                        //
+                        // </Grid>
+                        <AutoSizer>
+                            {({ height, width }) => (
+                                <DynamicSizeList
+                                    height={height}
+                                    itemData={this.state.courseData}
+                                    itemCount={this.state.courseData.length}
+                                    width={width}
                                 >
-                                    <img
-                                        src={AdAd}
-                                        alt="This could be you!"
-                                        className={classes.ad}
-                                    />
-                                </a>
-                            </Grid>
-                            {this.getGrid(this.state.courseData)}
-                        </Grid>
+                                    {SectionTableWrapped}
+                                </DynamicSizeList>
+                            )}
+                        </AutoSizer>
                     )}
                 </div>
             );
