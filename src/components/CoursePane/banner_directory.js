@@ -52,8 +52,8 @@ export default [
     url:
       'https://docs.google.com/forms/d/e/1FAIpQLScTvgvLJsdtkmXl3sOZWnk0sUKjnc8CCqyNA_VG15ACmTgLog/viewform?fbclid=IwAR2CQMTt5kaVf5oCUTMYUQfRr4ytSPOmpi4XYbrldLapHXWoQV1UKGdMWkw',
     banner: 'https://www.ics.uci.edu/~rang1/AntAlmanac/img/banners/MAISS.png',
-    dept:
-      'COMPSCI . . . . Computer Science, ECON . . . . . . . Economics, FIN . . . . . . . . . Finance (started 2017 Fall), I&C SCI . . . . . . Information and Computer Science, IN4MATX . . . . . Informatics, MGMT . . . . . . .Management',
+    dept: 'any',
+    // 'COMPSCI . . . . Computer Science, ECON . . . . . . . Economics, FIN . . . . . . . . . Finance (started 2017 Fall), I&C SCI . . . . . . Information and Computer Science, IN4MATX . . . . . Informatics, MGMT . . . . . . .Management',
   },
   {
     url: 'https://www.facebook.com/groups/uci.open.jam/',
