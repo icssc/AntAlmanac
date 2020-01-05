@@ -1,18 +1,18 @@
 import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, Snackbar, Typography } from '@material-ui/core';
+import { Button, Snackbar } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import ReactGA from 'react-ga';
-import grades from './f18.json';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from 'recharts';
+// import grades from './f18.json';
+// import {
+//   BarChart,
+//   Bar,
+//   XAxis,
+//   YAxis,
+//   CartesianGrid,
+//   Tooltip,
+//   Legend,
+// } from 'recharts';
 
 const styles = () => ({
   multiline: {
@@ -163,25 +163,6 @@ Units: ${this.props.section.units}`}
           <Fragment>
             {this.state.open ? (
               <Fragment>
-                <Typography variant="h5">From Fall 2018</Typography>
-                <BarChart
-                  width={window.innerWidth * 0.65 * 0.88}
-                  height={500}
-                  data={grades[this.props.section.classCode]}
-                  margin={{
-                    top: 10,
-                    right: 30,
-                    left: 30,
-                    bottom: 10,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="ct" fill="#8884d8" />
-                </BarChart>
                 <Button
                   onClick={() => {
                     ReactGA.event({

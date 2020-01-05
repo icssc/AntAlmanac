@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Typography } from '@material-ui/core';
 import directory from './banner_directory';
+import ReactGA from 'react-ga';
 
-export default class Outreach extends Component {
+export default class Banner extends Component {
   constructor(props) {
     super(props);
     this.assignedProb = {};
@@ -70,9 +71,11 @@ export default class Outreach extends Component {
         <Typography fontSize="1" align="right">
           AntAlmanac is not affiliated with the following club/activity
         </Typography>
-        <a
-          href={directory[this.state.lucky].url}
+        <ReactGA.OutboundLink
+          eventLabel={directory[this.state.lucky].url}
+          to={directory[this.state.lucky].url}
           target="_blank"
+          trackerNames={['banner', this.state.lucky.toString()]}
           rel="noopener noreferrer"
         >
           <img
@@ -80,7 +83,7 @@ export default class Outreach extends Component {
             alt="banner"
             className={this.props.className}
           />
-        </a>
+        </ReactGA.OutboundLink>
       </div>
     );
   }

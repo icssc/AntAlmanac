@@ -43,6 +43,7 @@ import {
 } from '@material-ui/core/colors';
 import SearchForm from '../SearchForm/SearchForm';
 import UCIMap from '../Map/UCIMap';
+import NotifHub from './NotifHub';
 
 const TabularView = React.lazy(() => import('./TabularView'));
 const OptOutPopover = React.lazy(() => import('../CoursePane/OptOutPopover'));
@@ -701,6 +702,8 @@ class App extends Component {
                 isDesktop={this.state.isDesktop}
               />
             </Suspense>
+
+            <NotifHub isDesktop={this.state.isDesktop} />
 
             {this.state.isDesktop ? (
               <Tooltip title="Give Us Feedback!">

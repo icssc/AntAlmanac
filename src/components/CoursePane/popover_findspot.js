@@ -32,6 +32,7 @@ class SPopover extends React.Component {
     userEmail: '',
     addEmailMessageOn: false,
     addPushMessageOn: false,
+    validPushToken: true,
     isRegistered: false,
     cacheSMS: '(  )    -    ',
     cachePushToken: '',
@@ -99,12 +100,20 @@ class SPopover extends React.Component {
     const token = this.state.cachePushToken;
     const name = this.props.name[1] + ' ' + this.props.name[2];
 
-    let url =
-      'https://3jbsyx3se1.execute-api.us-west-1.amazonaws.com/dev/pushnotif/';
-
-    url = url + code + '/' + name + '/' + token;
-    fetch(url);
-    this.setState({ addPushMessageOn: true });
+    if (token.length < 15) {
+      this.setState({
+        addPushMessageOn: true,
+        validPushToken: false,
+        cachePushToken: null,
+      });
+      window.localStorage.setItem('cachePushToken', null);
+    } else {
+      let url =
+        'https://3jbsyx3se1.execute-api.us-west-1.amazonaws.com/dev/pushnotif/';
+      url = url + code + '/' + name + '/' + token;
+      fetch(url);
+      this.setState({ addPushMessageOn: true, validPushToken: true });
+    }
   };
 
   /* Caches token and closes popover */
@@ -177,7 +186,13 @@ class SPopover extends React.Component {
           {this.state.addPushMessageOn ? (
             <Typography className={classes.typography}>
               <p>
-                <font color="green">Added device to watchlist!!!</font>
+                {this.state.validPushToken ? (
+                  <font color="green">Added device to watchlist!!!</font>
+                ) : (
+                  <font color="red">
+                    Push notif was not set up correctly. Please try again!
+                  </font>
+                )}
               </p>
             </Typography>
           ) : null}
@@ -236,7 +251,8 @@ class SPopover extends React.Component {
                 >
                   Help
                 </Button>
-                {this.state.cachePushToken === null ? (
+                {this.state.cachePushToken === null ||
+                this.state.cachePushToken.length < 15 ? (
                   <Button
                     variant="text"
                     color="primary"
