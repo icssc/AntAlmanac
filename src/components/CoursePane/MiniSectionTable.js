@@ -324,6 +324,13 @@ NOR: ${section.numNewOnlyReserved}`}
             {this.statusforFindingSpot(section.status, section.classCode)}
           </td>
         </tr>
+        {section.comment ? (
+          <tr>
+            <td>{section.comment}</td>
+          </tr>
+        ) : (
+          <Fragment />
+        )}
         <Snackbar
           anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           open={this.state.snacking}

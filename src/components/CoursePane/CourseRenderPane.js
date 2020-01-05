@@ -67,12 +67,11 @@ class CourseRenderPane extends Component {
   getGrid(SOCObject) {
     if ('departments' in SOCObject) {
       return (
-        // <SchoolDeptCard
-        //   comment={SOCObject.comment}
-        //   type={"school"}
-        //   name={SOCObject.name}
-        // />
-        <Fragment />
+        <SchoolDeptCard
+          comment={SOCObject.comment}
+          type={'school'}
+          name={SOCObject.name}
+        />
       );
     } else if ('courses' in SOCObject) {
       return (
@@ -83,6 +82,7 @@ class CourseRenderPane extends Component {
         />
       );
     } else {
+      //1: is Tile view and 0 is list view
       return this.props.view === 1 ? (
         <Grid item md={6} xs={12}>
           <Paper
