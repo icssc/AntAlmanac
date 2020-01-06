@@ -7,6 +7,17 @@ import Locator from './Locator';
 import MuiDownshift from 'mui-downshift';
 import { Tab, Tabs, Fab } from '@material-ui/core/';
 import WalkIcon from '@material-ui/icons/DirectionsWalk';
+import DoraMarker from './DoraMarker';
+
+function coordsInArr(arr, coords) {
+  let coords_str = JSON.stringify(coords);
+
+  let contains = arr.some(function(ele) {
+    return JSON.stringify(ele) === coords_str;
+  });
+
+  return contains;
+}
 
 const locateOptions = {
   position: 'topleft',
@@ -30,10 +41,11 @@ export default class UCIMap extends Component<{}, State> {
     selected: null,
     selected_img: '',
     selected_url: '',
+    selected_acronym: '',
     filteredItems: yellowpages,
   };
 
-  filerLocations = (changes) => {
+  filterLocations = (changes) => {
     if (typeof changes.inputValue === 'string') {
       const filteredItems = yellowpages.filter((item) =>
         item.label.toLowerCase().includes(changes.inputValue.toLowerCase())
@@ -52,6 +64,7 @@ export default class UCIMap extends Component<{}, State> {
       if (!event.start.toString().includes(DAYS[this.state.day])) return;
 
       //try catch for finding the location of classes
+      let coords = [];
       let lat = null;
       let lng = null;
       let loc = null;
@@ -91,66 +104,78 @@ export default class UCIMap extends Component<{}, State> {
         ],
       });
     });
-    // console.log(trace);
+
+    // Tracks coords to shift the marker appropritately
+    let usedCoords = [];
+
+    // Tracks courses that have already been pinned on the map, so there are
+    // no duplicates
+    let pinnedCourses = [];
 
     let markers = []; //to put into a list of markers
+    let lngTemp = 0;
+
     trace.forEach((item, index) => {
-      let roomURLConnector = '';
-      if (item.acronym.search(/[0-9]/) > -1) {
-        roomURLConnector = '-';
+      // Current course is already pinned on map
+      if (pinnedCourses.includes(item.sections[0])) return;
+
+      lngTemp = item.lng;
+      while (coordsInArr(usedCoords, [item.lat, lngTemp])) {
+        lngTemp += 0.00015;
       }
 
-      let atThisBuilding = trace.filter((section) => {
-        return section.blding === item.blding;
-      });
-      atThisBuilding = atThisBuilding.filter((thing, index) => {
-        return (
-          index ===
-          atThisBuilding.findIndex((obj) => {
-            return JSON.stringify(obj) === JSON.stringify(thing);
-          })
-        );
-      });
+      usedCoords.push([item.lat, lngTemp]);
+      pinnedCourses.push(item.sections[0]);
+
+      // Makes acronym able to be used in the URL for classrooms
+      item.acronym = item.acronym.toLowerCase();
 
       markers.push(
         <Marker
-          position={[item.lat, item.lng]}
+          position={[item.lat, lngTemp]}
           icon={L.divIcon({
             className: 'my-custom-pin',
             iconAnchor: [0, 14],
             labelAnchor: [-3.5, 0],
             popupAnchor: [0, -21],
             html: `<div style="position:relative;
-                    left: -1rem;
-                    top: -1rem;">
-                      <span style="background-color: ${item.color};
-                        width: 1.75rem;
-                        height: 1.75rem;
-                        position: absolute;
-                        border-radius: 1.9rem 1.9rem 0;
-                        transform: rotate(45deg);
-                        border: 1px solid #FFFFFF" >
-                      </span>
-                      <div style="position: absolute;
-                        width: 1.75rem;
-                        height: 1.75rem;
-                        top: 0.25rem;
-                        text-align: center" >
-                        ${this.state.day ? index + 1 : ''}
-                      </div>
-                    <div>`,
+                  left: -1rem;
+                  top: -1rem;">
+                    <span style="background-color: ${item.color};
+                      width: 1.75rem;
+                      height: 1.75rem;
+                      position: absolute;
+                      border-radius: 1.9rem 1.9rem 0;
+                      transform: rotate(45deg);
+                      border: 1px solid #FFFFFF" >
+                    </span>
+                    <div style="position: absolute;
+                      width: 1.75rem;
+                      height: 1.75rem;
+                      top: 0.25rem;
+                      text-align: center" >
+                      ${this.state.day ? index + 1 : ''}
+                    </div>
+                  <div>`,
           })}
         >
           <Popup>
             {item.url ? (
-              <a href={item.url} target="_blank" rel="noopener noreferrer">
+              <a
+                href={
+                  'http://www.classrooms.uci.edu/classrooms/' + item.acronym
+                }
+                target="_blank"
+              >
                 {' '}
                 {item.blding}{' '}
               </a>
             ) : (
               item.blding
             )}
+
             <br />
+
             {item.img ? (
               <img
                 src={
@@ -163,33 +188,31 @@ export default class UCIMap extends Component<{}, State> {
               />
             ) : null}
 
-            {atThisBuilding.map((section) => {
-              return (
-                <Fragment>
-                  <hr />
-                  Class: {section.sections[0]}
-                  <br />
-                  Room:{' '}
-                  {item.url ? (
-                    <a
-                      href={
-                        'http://www.classrooms.uci.edu/GAC/' +
-                        item.acronym +
-                        roomURLConnector +
-                        section.sections[1] +
-                        '.html'
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {section.sections[1]}
-                    </a>
-                  ) : (
-                    section.sections[1]
-                  )}
-                </Fragment>
-              );
-            })}
+            {
+              <Fragment>
+                <hr />
+                Class: {item.sections[0]}
+                <br />
+                Room:{' '}
+                {item.url ? (
+                  <a
+                    href={
+                      'http://www.classrooms.uci.edu/classrooms/' +
+                      item.acronym +
+                      '/' +
+                      item.acronym +
+                      '-' +
+                      item.sections[1]
+                    }
+                    target="_blank"
+                  >
+                    {item.sections[1]}
+                  </a>
+                ) : (
+                  item.sections[1]
+                )}
+              </Fragment>
+            }
 
             <br />
             <br />
@@ -212,10 +235,14 @@ export default class UCIMap extends Component<{}, State> {
 
   handleSearch = (selected) => {
     if (selected) {
+      let temp = selected.label.split(' ').pop();
+      temp = temp.slice(1, temp.length - 1);
+
       this.setState({
         lat: selected.lat,
         lng: selected.lng,
         selected: selected.label,
+        selected_acronym: temp,
         zoom: 18,
       });
 
@@ -304,7 +331,7 @@ export default class UCIMap extends Component<{}, State> {
           >
             <MuiDownshift
               items={this.state.filteredItems}
-              onStateChange={this.filerLocations}
+              onStateChange={this.filterLocations}
               {...this.props}
               // inputRef={(node) => {
               //   this.input = node;
@@ -322,7 +349,7 @@ export default class UCIMap extends Component<{}, State> {
           <Locator options={locateOptions} />
 
           <TileLayer
-            attribution='&amp;copy <a href="http://osm.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463" target="_blank" rel="noopener noreferrer">UCI Map</a>'
+            attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>'
             //url = "https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw"
             url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
           />
@@ -330,6 +357,7 @@ export default class UCIMap extends Component<{}, State> {
           {this.createMarkers()}
 
           {this.state.selected ? (
+            //<DoraMarker />
             <Marker
               position={[this.state.lat, this.state.lng]}
               icon={L.divIcon({
@@ -352,9 +380,11 @@ export default class UCIMap extends Component<{}, State> {
               <Popup>
                 {this.state.selected_url ? (
                   <a
-                    href={this.state.selected_url}
+                    href={
+                      'http://www.classrooms.uci.edu/classrooms/' +
+                      this.state.selected_acronym
+                    }
                     target="_blank"
-                    rel="noopener noreferrer"
                   >
                     {' '}
                     {this.state.selected}{' '}
