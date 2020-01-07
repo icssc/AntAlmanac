@@ -7,7 +7,6 @@ import Locator from './Locator';
 import MuiDownshift from 'mui-downshift';
 import { Tab, Tabs, Fab } from '@material-ui/core/';
 import WalkIcon from '@material-ui/icons/DirectionsWalk';
-import DoraMarker from './DoraMarker';
 
 function coordsInArr(arr, coords) {
   let coords_str = JSON.stringify(coords);
@@ -357,7 +356,6 @@ export default class UCIMap extends Component<{}, State> {
           {this.createMarkers()}
 
           {this.state.selected ? (
-            //<DoraMarker />
             <Marker
               position={[this.state.lat, this.state.lng]}
               icon={L.divIcon({
