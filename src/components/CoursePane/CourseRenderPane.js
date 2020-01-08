@@ -1,6 +1,6 @@
 import { withStyles } from '@material-ui/core/styles';
 import { Paper, Typography, Grid, Modal } from '@material-ui/core';
-import React, { Component, Fragment, Suspense } from 'react';
+import React, { Component, Suspense } from 'react';
 import CourseDetailPane from './CourseDetailPane';
 import SchoolDeptCard from './SchoolDeptCard';
 import NoNothing from './no_results.png';

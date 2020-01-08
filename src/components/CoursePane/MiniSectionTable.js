@@ -11,7 +11,6 @@ import {
 import { Add, ArrowDropDown } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import querystring from 'querystring';
-import ReactGA from 'react-ga';
 import locations from './locations.json';
 import stensal from './stensal.png';
 
@@ -327,7 +326,9 @@ NOR: ${section.numNewOnlyReserved}`}
         </tr>
         {section.comment ? (
           <tr>
-            <td>{section.comment}</td>
+            <td colspan="9">
+              <div dangerouslySetInnerHTML={{ __html: section.comment }} />
+            </td>
           </tr>
         ) : (
           <Fragment />
@@ -395,16 +396,14 @@ class MiniSectionTable extends Component {
     return (
       <Fragment>
         {this.props.name.includes('I&C SCI 46') ? (
-          <ReactGA.OutboundLink
-            eventLabel={'https://stensal.com'}
-            to={'https://stensal.com'}
+          <a
+            href="https://stensal.com"
             target="_blank"
-            trackerNames={['banner', 'stensal']}
             rel="noopener noreferrer"
             style={{ marginBottom: 8 }}
           >
             <img src={stensal} alt="banner" width="100%" />
-          </ReactGA.OutboundLink>
+          </a>
         ) : (
           <Fragment />
         )}
