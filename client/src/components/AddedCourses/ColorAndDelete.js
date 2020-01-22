@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import ColorPicker from '../App/ColorPicker';
 import { IconButton } from '@material-ui/core';
-import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
+import { deleteCourse } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
 import { Delete } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';

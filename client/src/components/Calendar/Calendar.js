@@ -374,9 +374,7 @@ class Calendar extends Component {
                         style={
                             !this.state.screenshotting
                                 ? {
-                                      height: `calc(100vh - 96px - 12px - ${
-                                          this.props.isDesktop ? '0px' : '48px'
-                                      })`,
+                                      height: `calc(100vh - 104px)`,
                                   }
                                 : {
                                       height: `${

@@ -9,3 +9,10 @@ export const updateFormValue = (field, value) => {
         formData,
     });
 };
+
+export const handleTabChange = (event, value) => {
+    dispatcher.dispatch({
+        type: 'TAB_CHANGE',
+        activeTab: value,
+    });
+};

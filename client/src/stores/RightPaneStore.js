@@ -18,10 +18,15 @@ class RightPaneStore extends EventEmitter {
             coursesFull: 'ANY',
             building: '',
         };
+        this.activeTab = 0;
     }
 
     getFormData() {
         return this.formData;
+    }
+
+    getActiveTab() {
+        return this.activeTab;
     }
 
     handleActions(action) {
@@ -29,6 +34,10 @@ class RightPaneStore extends EventEmitter {
             case 'UPDATE_FORM_FIELD':
                 this.formData = action.formData;
                 this.emit('formDataChange');
+                break;
+            case 'TAB_CHANGE':
+                this.activeTab = action.activeTab;
+                this.emit('tabChange');
                 break;
         }
     }

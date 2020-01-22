@@ -2,6 +2,13 @@ import React, { Fragment, PureComponent } from 'react';
 import SearchForm from '../SearchForm/SearchForm';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
 import CourseRenderPane from '../CoursePane/CourseRenderPane';
+import { withStyles } from '@material-ui/core/styles';
+
+const styles = {
+    container: {
+        height: '100%',
+    },
+};
 
 class RightPane extends PureComponent {
     state = {
@@ -17,6 +24,8 @@ class RightPane extends PureComponent {
     };
 
     render() {
+        const { classes } = this.props;
+
         return (
             <Fragment>
                 <CoursePaneButtonRow
@@ -33,4 +42,4 @@ class RightPane extends PureComponent {
     }
 }
 
-export default RightPane;
+export default withStyles(styles)(RightPane);

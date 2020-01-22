@@ -6,9 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
     buttonRow: {
-        position: 'sticky',
         width: '100%',
-        top: 0,
         zIndex: 3,
         marginBottom: 8,
     },

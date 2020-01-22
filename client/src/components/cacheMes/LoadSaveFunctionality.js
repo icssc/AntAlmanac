@@ -1,13 +1,5 @@
 import React, { Fragment, PureComponent, useEffect, useState } from 'react';
-import {
-    CheckCircle,
-    Close,
-    CloudDownload,
-    Error,
-    Save,
-    Warning,
-} from '@material-ui/icons';
-import { amber, green } from '@material-ui/core/colors';
+import { CloudDownload, Save } from '@material-ui/icons';
 import {
     Button,
     Dialog,
@@ -15,68 +7,20 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-    IconButton,
-    SnackbarContent,
     TextField,
-    Typography,
 } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
 import { loadSchedule, saveSchedule } from '../../actions/AppStoreActions';
+import { withStyles } from '@material-ui/core/styles';
+import { isMobile } from 'react-device-detect';
 
-const iconVariants = {
-    success: CheckCircle,
-    warning: Warning,
-    error: Error,
+const styles = {
+    buttonMarginSave: {
+        marginRight: '4px',
+    },
+    buttonMarginLoad: {
+        marginRight: '8px',
+    },
 };
-
-const snackbarStyles = (theme) => ({
-    success: {
-        backgroundColor: green[600],
-    },
-    error: {
-        backgroundColor: theme.palette.error.dark,
-    },
-    warning: {
-        backgroundColor: amber[700],
-    },
-    icon: {
-        fontSize: 20,
-        opacity: 0.9,
-        marginRight: theme.spacing.unit,
-    },
-    message: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-});
-
-const SnackBarMessageDisplay = withStyles(snackbarStyles)((props) => {
-    const { classes, message, onClose, variant, ...other } = props;
-    const Icon = iconVariants[variant];
-
-    return (
-        <SnackbarContent
-            className={classes[variant]}
-            message={
-                <span className={classes.message}>
-                    <Icon className={classes.icon} />
-                    {message}
-                </span>
-            }
-            action={[
-                <IconButton
-                    key="close"
-                    color="inherit"
-                    className={classes.close}
-                    onClick={onClose}
-                >
-                    <Close className={classes.icon} />
-                </IconButton>,
-            ]}
-            {...other}
-        />
-    );
-});
 
 class LoadSaveButtonBase extends PureComponent {
     state = {
@@ -124,7 +68,7 @@ class LoadSaveButtonBase extends PureComponent {
 
     render() {
         return (
-            <div>
+            <Fragment>
                 <Button
                     onClick={() => this.setState({ isOpen: true })}
                     color="inherit"
@@ -166,12 +110,12 @@ class LoadSaveButtonBase extends PureComponent {
                         </Button>
                     </DialogActions>
                 </Dialog>
-            </div>
+            </Fragment>
         );
     }
 }
 
-const LoadSaveScheduleFunctionality = () => {
+const LoadSaveScheduleFunctionality = (props) => {
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
             const savedUserID = window.localStorage.getItem('userID');
@@ -182,6 +126,8 @@ const LoadSaveScheduleFunctionality = () => {
         }
     }, []);
 
+    const { classes } = props;
+
     return (
         <Fragment>
             <LoadSaveButtonBase
@@ -189,8 +135,8 @@ const LoadSaveScheduleFunctionality = () => {
                 action={saveSchedule}
                 button={
                     <Fragment>
-                        <Save />
-                        <Typography color="inherit">Save</Typography>
+                        <Save className={classes.buttonMarginSave} />
+                        {!isMobile ? 'Save' : ''}
                     </Fragment>
                 }
             />
@@ -199,8 +145,8 @@ const LoadSaveScheduleFunctionality = () => {
                 action={loadSchedule}
                 button={
                     <Fragment>
-                        <CloudDownload />
-                        <Typography color="inherit">Load</Typography>
+                        <CloudDownload className={classes.buttonMarginLoad} />
+                        {!isMobile ? 'Load' : ''}
                     </Fragment>
                 }
             />
@@ -208,6 +154,4 @@ const LoadSaveScheduleFunctionality = () => {
     );
 };
 
-//TODO: Render buttons differently on mobile/desktop
-
-export default LoadSaveScheduleFunctionality;
+export default withStyles(styles)(LoadSaveScheduleFunctionality);

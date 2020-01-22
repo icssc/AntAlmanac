@@ -1,14 +1,13 @@
 import { withStyles } from '@material-ui/core/styles';
-import { Grid } from '@material-ui/core';
 import React, { PureComponent } from 'react';
 import SchoolDeptCard from './SchoolDeptCard';
 import SectionTable from '../SectionTable/SectionTable';
 import NoNothing from './static/no_results.png';
-import AdAd from './static/ad_ad.png';
 import RightPaneStore from '../../stores/RightPaneStore';
 import loadingGif from '../SearchForm/Gifs/loading.mp4';
 import { DynamicSizeList } from '@john-osullivan/react-window-dynamic-fork';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import AdAd from './static/ad_ad.png';
 
 const styles = (theme) => ({
     course: {
@@ -37,7 +36,7 @@ const styles = (theme) => ({
     },
     root: {
         height: '100%',
-        position: 'relative',
+        // position: 'relative',
     },
     noResultsDiv: {
         height: '100%',
@@ -75,7 +74,7 @@ const flattenSOCObject = (SOCObject) => {
 const SectionTableWrapped = React.forwardRef(({ style, index, data }, ref) => {
     let component;
 
-    if (data[index].schoolName !== undefined) {
+    if (data[index].schoolName !== undefined && index === 0) {
         component = (
             <SchoolDeptCard
                 comment={data[index].schoolComment}
@@ -92,14 +91,27 @@ const SectionTableWrapped = React.forwardRef(({ style, index, data }, ref) => {
             />
         );
     } else {
-        component = (
-            <Grid item md={12} xs={12}>
-                <SectionTable courseDetails={data[index]} />
-            </Grid>
-        );
+        component = <SectionTable courseDetails={data[index]} />;
     }
     return (
         <div style={style} ref={ref}>
+            {index === 0 ? (
+                <a
+                    href="https://forms.gle/irQBrBkqHYYxcEU39"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <img
+                        src={AdAd}
+                        alt="This could be you!"
+                        style={{
+                            flexGrow: 1,
+                            display: 'inline',
+                            width: '100%',
+                        }}
+                    />
+                </a>
+            ) : null}
             {component}
         </div>
     );
@@ -114,7 +126,6 @@ class CourseRenderPane extends PureComponent {
     componentDidMount() {
         this.setState({ loading: true }, async () => {
             const formData = RightPaneStore.getFormData();
-            // console.log(formData);
             // ReactGA.event({
             //     category: 'Search',
             //     action: formData.deptValue,
@@ -169,26 +180,10 @@ class CourseRenderPane extends PureComponent {
                             <img src={NoNothing} alt="No Results Found" />
                         </div>
                     ) : (
-                        // <Grid container spacing={16}>
-                        //     <Grid item md={12} xs={12}>
-                        //         <a
-                        //             href="https://forms.gle/irQBrBkqHYYxcEU39"
-                        //             target="_blank"
-                        //             rel="noopener noreferrer"
-                        //         >
-                        //             <img
-                        //                 src={AdAd}
-                        //                 alt="This could be you!"
-                        //                 className={classes.ad}
-                        //             />
-                        //         </a>
-                        //     </Grid>
-                        //
-                        // </Grid>
                         <AutoSizer>
                             {({ height, width }) => (
                                 <DynamicSizeList
-                                    height={height}
+                                    height={height - 56}
                                     itemData={this.state.courseData}
                                     itemCount={this.state.courseData.length}
                                     width={width}
