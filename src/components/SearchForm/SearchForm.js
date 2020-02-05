@@ -244,6 +244,7 @@ class SearchForm extends Component {
               variant="contained"
               onClick={() => this.props.updateFormData(this.state)}
               style={{ backgroundColor: '#72a9ed', boxShadow: 'none' }}
+              fullWidth
             >
               Search
             </Button>

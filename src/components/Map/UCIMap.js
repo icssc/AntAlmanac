@@ -33,7 +33,7 @@ export default class UCIMap extends Component<{}, State> {
     filteredItems: yellowpages,
   };
 
-  filerLocations = (changes) => {
+  filterLocations = (changes) => {
     if (typeof changes.inputValue === 'string') {
       const filteredItems = yellowpages.filter((item) =>
         item.label.toLowerCase().includes(changes.inputValue.toLowerCase())
@@ -91,7 +91,6 @@ export default class UCIMap extends Component<{}, State> {
         ],
       });
     });
-    // console.log(trace);
 
     let markers = []; //to put into a list of markers
     trace.forEach((item, index) => {
@@ -304,7 +303,7 @@ export default class UCIMap extends Component<{}, State> {
           >
             <MuiDownshift
               items={this.state.filteredItems}
-              onStateChange={this.filerLocations}
+              onStateChange={this.filterLocations}
               {...this.props}
               // inputRef={(node) => {
               //   this.input = node;

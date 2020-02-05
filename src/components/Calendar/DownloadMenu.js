@@ -3,7 +3,7 @@ import {
   Menu,
   MenuItem,
   MenuList,
-  IconButton,
+  Button,
   Typography,
   Tooltip,
 } from '@material-ui/core';
@@ -31,9 +31,15 @@ class DownloadMenu extends React.Component {
     return (
       <Fragment>
         <Tooltip title="Download">
-          <IconButton onClick={this.handleClick}>
-            <GetApp fontSize="small" />
-          </IconButton>
+          <Button
+            onClick={this.handleClick}
+            style={{ marginRight: 10, marginLeft: 5 }}
+            className={'menu-button'}
+            variant="outlined"
+            size="small"
+          >
+            <GetApp fontSize="small" /> Export
+          </Button>
         </Tooltip>
         <Menu
           id="downloadMenu"
