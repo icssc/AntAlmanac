@@ -38,7 +38,6 @@ export default class ClearSched extends React.Component {
       three: false,
       four: false,
     });
-    this.props.handleSubmenuClose();
   };
 
   handleClear = () => {
@@ -81,10 +80,12 @@ export default class ClearSched extends React.Component {
         <Button
           onClick={this.handleClickOpen}
           disableRipple={true}
-          style={{ width: '100%' }}
+          style={{ marginRight: 5, marginLeft: 10 }}
           className={'menu-button'}
+          variant="outlined"
+          size="small"
         >
-          <Delete /> Clear
+          <Delete fontSize="small" color="action" /> Clear
         </Button>
         <Dialog
           open={this.state.open}

@@ -157,13 +157,14 @@ class DialogSelect extends Component {
           disableRipple={true}
           className={'menu-button'}
           onClick={() => this.setState({ open: true })}
-          style={{ width: '100%' }}
+          variant="outlined"
+          size="small"
         >
           {this.props.editMode ? (
             <Create />
           ) : (
             <Fragment>
-              <Add /> Add Custom
+              <Add fontSize="small" color="action" /> Custom
             </Fragment>
           )}
         </Button>
