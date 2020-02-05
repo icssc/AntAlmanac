@@ -164,7 +164,7 @@ class DialogSelect extends Component {
             <Create />
           ) : (
             <Fragment>
-              <Add fontSize="small" /> Custom
+              <Add fontSize="small" color="action" /> Custom
             </Fragment>
           )}
         </Button>

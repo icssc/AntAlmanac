@@ -38,7 +38,7 @@ class DownloadMenu extends React.Component {
             variant="outlined"
             size="small"
           >
-            <GetApp fontSize="small" /> Export
+            <GetApp fontSize="small" color="action" /> Export
           </Button>
         </Tooltip>
         <Menu

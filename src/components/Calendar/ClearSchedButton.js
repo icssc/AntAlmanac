@@ -85,7 +85,7 @@ export default class ClearSched extends React.Component {
           variant="outlined"
           size="small"
         >
-          <Delete fontSize="small" /> Clear
+          <Delete fontSize="small" color="action" /> Clear
         </Button>
         <Dialog
           open={this.state.open}

@@ -59,6 +59,19 @@ const genMapLink = (location) => {
   }
 };
 
+const clickToCopy = (event, code) => {
+  if (!event) event = window.event;
+  event.cancelBubble = true;
+  if (event.stopPropagation) event.stopPropagation();
+
+  let Juanito = document.createElement('input');
+  document.body.appendChild(Juanito);
+  Juanito.setAttribute('value', code);
+  Juanito.select();
+  document.execCommand('copy');
+  document.body.removeChild(Juanito);
+};
+
 const CourseCalendarEvent = (props) => {
   const { classes, courseInMoreInfo } = props;
   if (!courseInMoreInfo.isCustomEvent) {
@@ -75,6 +88,17 @@ const CourseCalendarEvent = (props) => {
           </div>
           <table className={classes.table}>
             <tbody>
+              <tr>
+                <td className={classes.alignToTop}>Section code</td>
+                <Tooltip title="Click to copy course code" placement="right">
+                  <td
+                    onClick={(e) => clickToCopy(e, section.classCode)}
+                    className={classes.rightCells}
+                  >
+                    <u>{section.classCode}</u>
+                  </td>
+                </Tooltip>
+              </tr>
               <tr>
                 <td className={classes.alignToTop}>Instructors</td>
                 <td className={classes.multiline + ' ' + classes.rightCells}>
