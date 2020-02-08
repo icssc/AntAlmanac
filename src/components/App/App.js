@@ -112,7 +112,7 @@ class App extends Component {
     window.addEventListener('beforeunload', (event) => {
       if (!this.state.saved) {
         //not saved
-        event.returnValue = `Are you sure you want to leave?`;
+        event.returnValue = `Are you sure you want to leave? You have unsaved changes!`;
       }
     });
   };

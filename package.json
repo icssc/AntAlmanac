@@ -18,7 +18,7 @@
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-big-calendar": "^0.19.2",
-    "react-color": "^2.17.3",
+    "react-color": "^2.18.0",
     "react-device-detect": "1.6.1",
     "react-dom": "^16.12.0",
     "react-ga": "^2.7.0",
@@ -28,7 +28,7 @@
     "react-scripts": "^2.1.8",
     "react-share": "^2.4.0",
     "react-text-mask": "^5.4.3",
-    "react-to-print": "^2.5.0",
+    "react-to-print": "^2.5.1",
     "react-web-notification": "^0.6.1",
     "readline": "^1.3.0",
     "recharts": "^1.6.2"

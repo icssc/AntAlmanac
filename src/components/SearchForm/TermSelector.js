@@ -9,7 +9,7 @@ class TermSelector extends Component {
     super(props);
 
     this.state = {
-      term: '2020 Winter',
+      term: '2020 Spring',
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -33,6 +33,7 @@ class TermSelector extends Component {
           onChange={this.handleChange}
           inputProps={{ name: 'term', id: 'term-select' }}
         >
+          <MenuItem value={'2020 Spring'}>2020 Spring Quarter</MenuItem>
           <MenuItem value={'2020 Winter'}>2020 Winter Quarter</MenuItem>
           <MenuItem value={'2019 Fall'}>2019 Fall Quarter</MenuItem>
           <MenuItem value={'2019 Summer2'}>2019 Summer Session 2</MenuItem>

@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import {
-  Badge,
   Button,
   Tooltip,
   Typography,
@@ -97,10 +96,8 @@ class NotifHub extends Component {
             }}
             color="inherit"
           >
-            <Badge color="error" variant="dot">
-              {/*todo: remember if viewed*/}
-              <Notifications />
-            </Badge>
+            {/*todo: remember if viewed*/}
+            <Notifications />
             {this.props.isDesktop ? (
               <Typography color="inherit">
                 Notifications&nbsp;&nbsp;&nbsp;&nbsp;

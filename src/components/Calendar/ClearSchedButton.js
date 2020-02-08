@@ -80,7 +80,7 @@ export default class ClearSched extends React.Component {
         <Button
           onClick={this.handleClickOpen}
           disableRipple={true}
-          style={{ marginRight: 5, marginLeft: 10 }}
+          style={{ marginRight: 10, marginLeft: 10 }}
           className={'menu-button'}
           variant="outlined"
           size="small"

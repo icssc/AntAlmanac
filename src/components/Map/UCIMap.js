@@ -63,7 +63,6 @@ export default class UCIMap extends Component<{}, State> {
       if (!event.start.toString().includes(DAYS[this.state.day])) return;
 
       //try catch for finding the location of classes
-      let coords = [];
       let lat = null;
       let lng = null;
       let loc = null;
@@ -164,6 +163,7 @@ export default class UCIMap extends Component<{}, State> {
                   'http://www.classrooms.uci.edu/classrooms/' + item.acronym
                 }
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 {' '}
                 {item.blding}{' '}
@@ -203,6 +203,7 @@ export default class UCIMap extends Component<{}, State> {
                       item.sections[1]
                     }
                     target="_blank"
+                    rel="noopener noreferrer"
                   >
                     {item.sections[1]}
                   </a>
@@ -382,6 +383,7 @@ export default class UCIMap extends Component<{}, State> {
                       this.state.selected_acronym
                     }
                     target="_blank"
+                    rel="noopener noreferrer"
                   >
                     {' '}
                     {this.state.selected}{' '}
