@@ -58,7 +58,7 @@ class SchoolDeptCard extends Component {
         >
           <Typography
             noWrap
-            variant={this.props.type === 'school' ? 'headline' : 'subheading'}
+            variant={this.props.type === 'school' ? 'h5' : 'subtitle1'}
             className={this.props.classes.text}
           >
             {this.props.name}

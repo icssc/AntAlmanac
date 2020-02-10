@@ -37,7 +37,7 @@ class CourseDetailPane extends Component {
           >
             <ArrowBack />
           </IconButton>
-          <Typography variant="title" style={{ flexGrow: '2', marginTop: 12 }}>
+          <Typography variant="h6" style={{ flexGrow: '2', marginTop: 12 }}>
             {this.props.courseDetails.name[0] +
               ' ' +
               this.props.courseDetails.name[1]}
@@ -48,10 +48,7 @@ class CourseDetailPane extends Component {
             courseDetails={this.props.courseDetails}
           />
           {this.props.courseDetails.prerequisiteLink ? (
-            <Typography
-              variant="title"
-              style={{ flexGrow: '2', marginTop: 12 }}
-            >
+            <Typography variant="h6" style={{ flexGrow: '2', marginTop: 12 }}>
               &nbsp;&nbsp;&nbsp;&nbsp;
               <a
                 target="blank"

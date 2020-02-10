@@ -223,7 +223,7 @@ class SearchForm extends Component {
           }}
         >
           <div style={{ marginRight: 5 }}>
-            <Typography noWrap variant="subheading">
+            <Typography noWrap variant="subtitle1">
               Advanced Search Options
             </Typography>
           </div>

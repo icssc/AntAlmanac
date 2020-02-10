@@ -348,9 +348,10 @@ export default class UCIMap extends Component<{}, State> {
           <Locator options={locateOptions} />
 
           <TileLayer
-            attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>'
-            //url = "https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw"
-            url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
+            attribution='&amp;copy<a href="https://www.mapbox.com/" target="_blank" rel="noopener noreferrer">Mapbox</a> | Building images from <a href="https://map.uci.edu/?id=463" target="_blank" rel="noopener noreferrer">UCI Map</a>'
+            // url = "https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw"
+            // url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
+            url="https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw"
           />
 
           {this.createMarkers()}

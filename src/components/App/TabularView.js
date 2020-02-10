@@ -267,7 +267,7 @@ class TabularView extends Component {
           className={classes.container}
           style={{ display: 'inline-flex', width: '100%', marginBottom: 10 }}
         >
-          <Typography variant="title" style={{ flexGrow: 1 }}>
+          <Typography variant="h6" style={{ flexGrow: 1 }}>
             Schedule {this.props.scheduleIndex + 1} ({totalUnits} Units)
           </Typography>
 
@@ -390,7 +390,7 @@ class TabularView extends Component {
                   courseDetails={event}
                 />
 
-                <Typography variant="title" style={{ flexGrow: '2' }}>
+                <Typography variant="h6" style={{ flexGrow: '2' }}>
                   &nbsp;
                 </Typography>
 
@@ -399,7 +399,7 @@ class TabularView extends Component {
                   courseDetails={event}
                 />
 
-                <Typography variant="title" style={{ flexGrow: '2' }}>
+                <Typography variant="h6" style={{ flexGrow: '2' }}>
                   &nbsp;
                 </Typography>
 
@@ -407,6 +407,7 @@ class TabularView extends Component {
                   <Typography
                     variant="h6"
                     style={{ flexGrow: '2', marginTop: 9 }}
+                    align="right"
                   >
                     <a
                       target="blank"
@@ -526,9 +527,7 @@ ${secEach.units} units`}
                               classes[secEach.status.toLowerCase()]
                             }
                           >
-                            {`${secEach.numCurrentlyEnrolled[0]} / ${
-                              secEach.maxCapacity
-                            }
+                            {`${secEach.numCurrentlyEnrolled[0]} / ${secEach.maxCapacity}
 WL: ${secEach.numOnWaitlist}
 NOR: ${secEach.numNewOnlyReserved}`}
                           </MouseOverPopover>

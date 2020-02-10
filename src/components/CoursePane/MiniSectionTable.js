@@ -434,7 +434,7 @@ class MiniSectionTable extends Component {
             />
           </Suspense>
 
-          <Typography variant="title" style={{ flexGrow: '2' }}>
+          <Typography variant="h6" style={{ flexGrow: '2' }}>
             &nbsp;
           </Typography>
 
@@ -456,12 +456,16 @@ class MiniSectionTable extends Component {
             />
           </Suspense>
 
-          <Typography variant="title" style={{ flexGrow: '2' }}>
+          <Typography variant="h6" style={{ flexGrow: '2' }}>
             &nbsp;
           </Typography>
 
           {this.props.courseDetails.prerequisiteLink ? (
-            <Typography variant="h6" style={{ flexGrow: '2', marginTop: 9 }}>
+            <Typography
+              variant="h6"
+              style={{ flexGrow: '2', marginTop: 9 }}
+              align="right"
+            >
               <a
                 target="blank"
                 style={{ textDecoration: 'none', color: '#72a9ed' }}

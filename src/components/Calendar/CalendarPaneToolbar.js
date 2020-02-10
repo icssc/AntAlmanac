@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import CustomEventsDialog from '../CustomEvents/Popup';
 import DownloadMenu from './DownloadMenu';
 import FinalSwitch from './FinalSwitch';
-import ClearSchedButton from './ClearSchedButton';
+// import ClearSchedButton from './ClearSchedButton';
 
 const styles = {
   toolbar: {
@@ -130,7 +130,7 @@ class CalendarPaneToolbar extends Component {
             value={this.state.name}
           />
         ) : (
-          <Typography variant="subheading" className={classes.inline}>
+          <Typography variant="subtitle1" className={classes.inline}>
             {'Schedule ' + (this.props.currentScheduleIndex + 1)}
           </Typography>
         )}
@@ -175,11 +175,11 @@ class CalendarPaneToolbar extends Component {
           handleSubmenuClose={this.handleClose}
         />
 
-        <ClearSchedButton
+        {/*<ClearSchedButton
           handleSubmenuClose={this.handleClose}
           handleClearSchedule={this.props.handleClearSchedule}
           currentScheduleIndex={this.props.currentScheduleIndex}
-        />
+        /> */}
       </div>
     );
   }

@@ -7,6 +7,7 @@ import {
   RadioGroup,
   FormControlLabel,
   FormControl,
+  Tooltip,
   Typography,
   FormLabel,
 } from '@material-ui/core';
@@ -32,24 +33,26 @@ function OptOutPopover(props) {
 
         return (
           <Fragment>
-            <Button
-              aria-owns={open ? 'render-props-popover' : undefined}
-              aria-haspopup="true"
-              onClick={(event) => {
-                updateAnchorEl(event.currentTarget);
-              }}
-              color="inherit"
-              style={{ marginLeft: sep, marginRight: sep }}
-            >
-              {' '}
-              {/* For desktop mode only*/}
-              <Settings />
-              {props.isDesktop ? (
-                <Typography color="inherit">&nbsp;&nbsp;Settings</Typography>
-              ) : (
-                <Fragment />
-              )}
-            </Button>
+            <Tooltip title="RateMyProfessor or EaterEval">
+              <Button
+                aria-owns={open ? 'render-props-popover' : undefined}
+                aria-haspopup="true"
+                onClick={(event) => {
+                  updateAnchorEl(event.currentTarget);
+                }}
+                color="inherit"
+                style={{ marginLeft: sep, marginRight: sep }}
+              >
+                {' '}
+                {/* For desktop mode only*/}
+                <Settings />
+                {props.isDesktop ? (
+                  <Typography color="inherit">&nbsp;&nbsp;Ratings</Typography>
+                ) : (
+                  <Fragment />
+                )}
+              </Button>
+            </Tooltip>
             <Popover
               id="render-props-popover"
               open={open}

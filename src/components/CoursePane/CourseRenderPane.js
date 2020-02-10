@@ -91,7 +91,7 @@ class CourseRenderPane extends Component {
             square
             onClick={() => this.toRender(SOCObject)}
           >
-            <Typography variant="button" className={this.props.classes.text}>
+            <Typography variant="h5" className={this.props.classes.text}>
               {SOCObject.name[0] +
                 ' ' +
                 SOCObject.name[1] +

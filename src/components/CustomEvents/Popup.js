@@ -159,6 +159,7 @@ class DialogSelect extends Component {
           onClick={() => this.setState({ open: true })}
           variant="outlined"
           size="small"
+          style={{ marginRight: 8 }}
         >
           {this.props.editMode ? (
             <Create />

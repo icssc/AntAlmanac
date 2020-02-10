@@ -42,7 +42,7 @@ class GraphModalContent extends Component {
   render() {
     return (
       <Paper className={this.props.classes.paper}>
-        <Typography variant="title" className={this.props.classes.flex}>
+        <Typography variant="h6" className={this.props.classes.flex}>
           {'Historical Enrollments for ' +
             this.props.courseDetails.name[0] +
             ' ' +

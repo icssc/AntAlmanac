@@ -97,7 +97,7 @@ export default class ClearSched extends React.Component {
           </DialogTitle>
           <DialogContent>
             <div>
-              <Typography variant="subheading">
+              <Typography variant="subtitle1">
                 You cannot undo this action,
                 <br />
                 but you can load your schedule again.
