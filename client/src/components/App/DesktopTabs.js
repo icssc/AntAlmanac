@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react';
 import { Grid, Tab, Tabs, Typography } from '@material-ui/core';
-import { FormatListBulleted, Search } from '@material-ui/icons';
+import { FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
 import AddedCoursePane from '../AddedCourses/AddedCoursePane';
 import RightPane from './RightPane';
 import RightPaneStore from '../../stores/RightPaneStore';
 import { handleTabChange } from '../../actions/RightPaneActions';
+import UCIMap from '../Map/UCIMap';
 
 const styles = {};
 
@@ -32,7 +33,8 @@ class DesktopTabs extends PureComponent {
             currentTab = <RightPane />;
         } else if (RightPaneStore.getActiveTab() === 1) {
             currentTab = <AddedCoursePane />;
-        } else {
+        } else if (RightPaneStore.getActiveTab() === 2) {
+            currentTab = <UCIMap />;
         }
 
         return (
@@ -59,9 +61,10 @@ class DesktopTabs extends PureComponent {
                                     <div
                                         style={{
                                             display: 'inline-flex',
+                                            alignItems: 'center',
                                         }}
                                     >
-                                        <Search style={{ height: 20 }} />
+                                        <Search style={{ height: 16 }} />
                                         <Typography>Class Search</Typography>
                                     </div>
                                 }
@@ -71,12 +74,26 @@ class DesktopTabs extends PureComponent {
                                     <div
                                         style={{
                                             display: 'inline-flex',
+                                            alignItems: 'center',
                                         }}
                                     >
                                         <FormatListBulleted
-                                            style={{ height: 20 }}
+                                            style={{ height: 16 }}
                                         />
                                         <Typography>Added Classes</Typography>
+                                    </div>
+                                }
+                            />
+                            <Tab
+                                label={
+                                    <div
+                                        style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        <MyLocation style={{ height: 16 }} />
+                                        <Typography>Map</Typography>
                                     </div>
                                 }
                             />

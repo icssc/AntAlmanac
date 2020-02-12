@@ -168,9 +168,14 @@ class Calendar extends Component {
             }
         }
 
-        this.setState({
-            eventsInCalendar: courseEventsInCalendar,
-        });
+        this.setState(
+            {
+                eventsInCalendar: courseEventsInCalendar,
+            },
+            () => {
+                console.log(this.state.eventsInCalendar);
+            }
+        );
     };
 
     calendarizeFinals = () => {

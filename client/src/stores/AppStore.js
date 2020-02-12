@@ -10,6 +10,9 @@ class AppStore extends EventEmitter {
         this.deletedCourses = [];
         this.snackbarMessage = '';
         this.snackbarVariant = 'info';
+
+        this.eventsInCalendar = [];
+        this.finalsEventsInCalendar = [];
     }
 
     getCurrentScheduleIndex() {
