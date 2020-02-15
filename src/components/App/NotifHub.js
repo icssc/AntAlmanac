@@ -131,7 +131,7 @@ class NotifHub extends Component {
                   <ul>
                     {this.state.email_wl.map((course) => {
                       return (
-                        <li>
+                        <li id={course.code}>
                           {course.name}: {course.code}
                         </li>
                       );
@@ -148,7 +148,7 @@ class NotifHub extends Component {
                   <ul>
                     {this.state.sms_wl.map((course) => {
                       return (
-                        <li>
+                        <li id={course.code}>
                           {course.name}: {course.code}
                         </li>
                       );
@@ -171,7 +171,7 @@ class NotifHub extends Component {
                   <ul>
                     {this.state.push_wl.map((course) => {
                       return (
-                        <li>
+                        <li id={course.code}>
                           {course.name}: {course.code}
                         </li>
                       );

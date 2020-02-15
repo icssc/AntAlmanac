@@ -184,7 +184,14 @@ class ScheduleAddSelector extends Component {
     const section = this.props.section;
     return (
       <Fragment>
-        <tr className={classes.tr}>
+        <tr
+          className={classes.tr}
+          style={
+            this.props.selectedCodes.has(section.classCode)
+              ? { backgroundColor: '#ffffe0' }
+              : {}
+          }
+        >
           <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
             <IconButton
               onClick={this.handleAddCurrent}
@@ -326,8 +333,8 @@ NOR: ${section.numNewOnlyReserved}`}
           </td>
         </tr>
         {section.comment ? (
-          <tr>
-            <td colspan="9">
+          <tr className={classes.tr}>
+            <td colSpan="9">
               <div dangerouslySetInnerHTML={{ __html: section.comment }} />
             </td>
           </tr>
@@ -480,14 +487,16 @@ class MiniSectionTable extends Component {
           )}
         </div>
         <table className={classes.table}>
-          <tr className={classes.tr}>
-            <Typography
-              dangerouslySetInnerHTML={{
-                __html: this.props.courseDetails.comment, //course comments
-              }}
-              style={{ marginLeft: 8, marginRight: 8 }}
-            />
-          </tr>
+          <tbody>
+            <tr className={classes.tr}>
+              <Typography
+                dangerouslySetInnerHTML={{
+                  __html: this.props.courseDetails.comment, //course comments
+                }}
+                style={{ marginLeft: 8, marginRight: 8 }}
+              />
+            </tr>
+          </tbody>
         </table>
         <table className={classes.table}>
           <thead>
@@ -514,6 +523,7 @@ class MiniSectionTable extends Component {
                   termName={this.props.termName}
                   currentScheduleIndex={this.props.currentScheduleIndex}
                   destination={this.props.destination}
+                  selectedCodes={this.props.selectedCodes}
                 />
               );
             })}

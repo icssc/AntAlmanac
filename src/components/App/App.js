@@ -658,6 +658,16 @@ class App extends Component {
   };
 
   render() {
+    const selectedCodes = this.state.courseEvents.reduce(
+      (result, courseEvent) => {
+        if (courseEvent.scheduleIndex === this.state.currentScheduleIndex) {
+          result.add(courseEvent.courseCode);
+        }
+        return result;
+      },
+      new Set()
+    );
+
     return (
       <Fragment>
         <CssBaseline />
@@ -969,6 +979,7 @@ class App extends Component {
                       currentScheduleIndex={this.state.currentScheduleIndex}
                       term={this.state.formData}
                       destination={this.state.destination}
+                      selectedCodes={selectedCodes}
                     />
                   </Suspense>
                 )}

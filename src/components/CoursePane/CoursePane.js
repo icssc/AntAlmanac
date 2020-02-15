@@ -34,7 +34,8 @@ class CoursePane extends Component {
       this.state !== nextState ||
       nextProps.formData !== this.props.formData ||
       nextProps.currentScheduleIndex !== this.props.currentScheduleIndex ||
-      nextProps.destination !== this.props.destination
+      nextProps.destination !== this.props.destination ||
+      nextProps.selectedCodes !== this.props.selectedCodes
     );
   }
 
@@ -228,6 +229,7 @@ class CoursePane extends Component {
               deptName={this.state.deptName}
               termName={this.state.termName}
               destination={this.props.destination}
+              selectedCodes={this.props.selectedCodes}
             />
           </Suspense>
         </Fragment>

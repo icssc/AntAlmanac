@@ -78,6 +78,7 @@ class Instructors extends React.Component {
             onClick={(e) => {
               this.redirect(e, item);
             }}
+            id={item}
           >
             {item}
           </div>
@@ -93,7 +94,7 @@ class Instructors extends React.Component {
 
     return (
       <Fragment>
-        <Typography
+        <div
           aria-owns={open ? 'mouse-over-popover' : undefined}
           aria-haspopup="true"
           onMouseEnter={this.handlePopoverOpen}
@@ -101,7 +102,7 @@ class Instructors extends React.Component {
           className={this.props.className}
         >
           {this.linkRMP(this.props.children)}
-        </Typography>
+        </div>
         <Popover
           id="mouse-over-popover"
           className={classes.popover}
