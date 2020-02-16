@@ -232,6 +232,7 @@ class CoursePane extends Component {
               termName={this.state.termName}
               destination={this.props.destination}
               selectedCodes={this.props.selectedCodes}
+              lastUpdatedSection={this.props.lastUpdatedSection}
             />
           </Suspense>
         </Fragment>

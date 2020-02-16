@@ -135,6 +135,7 @@ class CourseRenderPane extends Component {
               termName={this.props.termName}
               destination={this.props.destination}
               selectedCodes={this.props.selectedCodes}
+              lastUpdatedSection={this.props.lastUpdatedSection}
             />
           </Suspense>
         </Grid>

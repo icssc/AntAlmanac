@@ -94,6 +94,7 @@ class App extends Component {
       activeTab: 0,
       destination: InstructorEvals,
       saved: true,
+      lastUpdatedSection: '',
     };
     this.handleSelectRMP = this.handleSelectRMP.bind(this);
     this.handleSelectEE = this.handleSelectEE.bind(this);
@@ -336,6 +337,7 @@ class App extends Component {
     this.setState({
       courseEvents: eventsAfterRemovingItem,
       backupArray: this.state.backupArray.concat(newBackupArray),
+      lastUpdatedSection: deletedEvent.courseCode,
     });
   };
 
@@ -487,6 +489,7 @@ class App extends Component {
 
       this.setState({
         courseEvents: this.state.courseEvents.concat(newCourses),
+        lastUpdatedSection: section.classCode,
       });
     }
   };
@@ -980,6 +983,7 @@ class App extends Component {
                       term={this.state.formData}
                       destination={this.state.destination}
                       selectedCodes={selectedCodes}
+                      lastUpdatedSection={this.state.lastUpdatedSection}
                     />
                   </Suspense>
                 )}

@@ -101,6 +101,13 @@ class ScheduleAddSelector extends Component {
     this.state = { snacking: false, anchor: null, message: '' };
   }
 
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
+    return (
+      this.state !== nextState ||
+      nextProps.lastUpdatedSection === this.props.section.classCode
+    );
+  }
+
   handleAddMore = (event) => {
     this.setState({ anchor: event.currentTarget });
   };
@@ -523,6 +530,7 @@ class MiniSectionTable extends Component {
                   currentScheduleIndex={this.props.currentScheduleIndex}
                   destination={this.props.destination}
                   selectedCodes={this.props.selectedCodes}
+                  lastUpdatedSection={this.props.lastUpdatedSection}
                 />
               );
             })}
