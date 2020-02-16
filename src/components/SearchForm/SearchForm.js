@@ -71,6 +71,7 @@ class SearchForm extends Component {
         startTime,
         coursesFull,
         building,
+        room,
       } = this.props.prevFormData;
       this.state = {
         dept: dept,
@@ -85,6 +86,7 @@ class SearchForm extends Component {
         startTime: startTime,
         coursesFull: coursesFull,
         building: building,
+        room: room,
         expandAdvanced: advanced,
       };
     } else {
@@ -101,6 +103,7 @@ class SearchForm extends Component {
         startTime: '',
         coursesFull: 'ANY',
         building: '',
+        room: '',
         expandAdvanced: advanced,
       };
     }

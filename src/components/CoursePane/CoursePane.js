@@ -80,6 +80,7 @@ class CoursePane extends Component {
       startTime,
       coursesFull,
       building,
+      room,
     } = this.props.formData;
 
     ReactGA.event({
@@ -102,6 +103,7 @@ class CoursePane extends Component {
       startTime: startTime,
       fullCourses: coursesFull,
       building: building,
+      room: room,
     };
     const url =
       'https://fanrn93vye.execute-api.us-west-1.amazonaws.com/latest/api/websoc/?' +

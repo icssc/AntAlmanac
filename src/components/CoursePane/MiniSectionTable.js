@@ -364,7 +364,6 @@ class MiniSectionTable extends Component {
   //   return this.props.courseDetails !== nextProps.courseDetails;
   // }
   componentDidMount = async () => {
-    //let {building,courseCode,courseNum,coursesFull,dept,endTime,ge,instructor,label,startTime,term,units}=this.props.formData;
     let { ge } = this.props.formData;
     if (ge !== 'ANY') {
       //please put all the form's props condition in to prevent search bugs

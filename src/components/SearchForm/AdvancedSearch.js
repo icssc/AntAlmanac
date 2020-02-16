@@ -22,7 +22,7 @@ const styles = {
     borderLeft: '0px',
     borderTop: '0px',
   },
-  instructor: {
+  textSearch: {
     border: 'solid 8px transparent',
     borderLeft: '0px',
     borderTop: '0px',
@@ -57,14 +57,15 @@ class AdvancedSearchTextFields extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      courseNum: '',
-      courseCode: '',
-      instructor: '',
-      units: '',
-      endTime: '',
-      startTime: '',
-      coursesFull: 'ANY',
+      courseNum: this.props.params.courseNum,
+      courseCode: this.props.params.courseCode,
+      instructor: this.props.params.instructor,
+      units: this.props.params.units,
+      endTime: this.props.params.endTime,
+      startTime: this.props.params.startTime,
+      coursesFull: this.props.params.coursesFull,
       building: this.props.params.building,
+      room: this.props.params.room,
     };
   }
 
@@ -95,11 +96,11 @@ class AdvancedSearchTextFields extends Component {
       }
     } else if (name === 'online') {
       if (event.target.checked) {
-        this.setState({ building: 'ON' }, () => {
+        this.setState({ building: 'ON', room: 'LINE' }, () => {
           this.props.onAdvancedSearchChange(this.state);
         });
       } else {
-        this.setState({ building: '' }, () => {
+        this.setState({ building: '', room: '' }, () => {
           this.props.onAdvancedSearchChange(this.state);
         });
       }
@@ -110,23 +111,22 @@ class AdvancedSearchTextFields extends Component {
     }
   };
 
-  /** 
-   * UPDATE (6-28-19): Transfered course code and course number search boxes to 
+  /**
+   * UPDATE (6-28-19): Transfered course code and course number search boxes to
    * separate classes.
-  */
+   */
   render() {
     const { classes } = this.props;
 
     return (
       <div className={classes.smallTextFields}>
-
         <TextField
           id="instructor"
           label="Instructor"
           type="search"
           value={this.props.params.instructor}
           onChange={this.handleChange('instructor')}
-          className={classes.instructor}
+          className={classes.textSearch}
           helperText="Last name only"
         />
 
@@ -160,18 +160,6 @@ class AdvancedSearchTextFields extends Component {
           </Select>
         </FormControl>
 
-        <FormControlLabel
-          control={
-            <Switch
-              onChange={this.handleChange('online')}
-              value="online"
-              color="primary"
-              checked={this.state.building === 'ON'}
-            />
-          }
-          label="Online Classes Only"
-        />
-
         <form className={classes.timePicker}>
           <TextField
             onChange={this.handleChange('startTime')}
@@ -201,21 +189,49 @@ class AdvancedSearchTextFields extends Component {
             }}
           />
         </form>
+
+        <FormControlLabel
+          control={
+            <Switch
+              onChange={this.handleChange('online')}
+              value="online"
+              color="primary"
+              checked={this.state.building === 'ON'}
+            />
+          }
+          label="Online Classes Only"
+        />
+
+        <TextField
+          id="building"
+          label="Building"
+          type="search"
+          value={this.props.params.building}
+          onChange={this.handleChange('building')}
+          className={classes.textSearch}
+        />
+
+        <TextField
+          id="room"
+          label="Room"
+          type="search"
+          value={this.props.params.room}
+          onChange={this.handleChange('room')}
+          className={classes.textSearch}
+        />
       </div>
     );
   }
-
-  
 }
 
 AdvancedSearchTextFields.propTypes = {
-    onAdvancedSearchChange: PropTypes.func,
-    value: PropTypes.arrayOf({
-      units: PropTypes.string,
-      instructor: PropTypes.string,
-      courseFull: PropTypes.string,
-    }),
-    building: PropTypes.string
+  onAdvancedSearchChange: PropTypes.func,
+  value: PropTypes.arrayOf({
+    units: PropTypes.string,
+    instructor: PropTypes.string,
+    courseFull: PropTypes.string,
+  }),
+  building: PropTypes.string,
 };
 
 export default withStyles(styles)(AdvancedSearchTextFields);
