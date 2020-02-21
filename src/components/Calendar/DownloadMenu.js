@@ -38,7 +38,12 @@ class DownloadMenu extends React.Component {
             variant="outlined"
             size="small"
           >
-            <GetApp fontSize="small" color="action" /> Export
+            <GetApp fontSize="small" color="action" />
+            {this.props.isDesktop ? (
+              <Typography>Export</Typography>
+            ) : (
+              <Fragment />
+            )}
           </Button>
         </Tooltip>
         <Menu

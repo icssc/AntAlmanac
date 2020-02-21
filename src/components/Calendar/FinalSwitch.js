@@ -27,7 +27,7 @@ class FinalSwitch extends React.Component {
               color="primary"
             />
           }
-          label="FINALS"
+          label={this.props.isDesktop ? 'FINALS' : 'Fn'}
         />
       </Fragment>
     );

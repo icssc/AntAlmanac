@@ -157,6 +157,7 @@ class Calendar extends Component {
           eventsInCalendar={this.props.eventsInCalendar}
           showFinalSchedule={this.props.showFinalSchedule}
           displayFinal={this.props.displayFinal}
+          isDesktop={this.props.isDesktop}
         />
         <div>
           <div

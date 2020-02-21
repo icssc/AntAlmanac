@@ -11,6 +11,7 @@ import {
   FormControl,
   Input,
   InputLabel,
+  Typography,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { Add, Create } from '@material-ui/icons';
@@ -165,7 +166,12 @@ class DialogSelect extends Component {
             <Create />
           ) : (
             <Fragment>
-              <Add fontSize="small" color="action" /> Custom
+              <Add fontSize="small" color="action" />{' '}
+              {this.props.isDesktop ? (
+                <Typography>Custom</Typography>
+              ) : (
+                <Fragment />
+              )}
             </Fragment>
           )}
         </Button>

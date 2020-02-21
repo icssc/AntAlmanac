@@ -131,7 +131,9 @@ class CalendarPaneToolbar extends Component {
           />
         ) : (
           <Typography variant="subtitle1" className={classes.inline}>
-            {'Schedule ' + (this.props.currentScheduleIndex + 1)}
+            {this.props.isDesktop
+              ? 'Schedule ' + (this.props.currentScheduleIndex + 1)
+              : this.props.currentScheduleIndex + 1}
           </Typography>
         )}
         {/* <Input
@@ -152,6 +154,7 @@ class CalendarPaneToolbar extends Component {
           displayFinal={this.props.displayFinal}
           schedule={finalSchedule}
           showFinalSchedule={this.props.showFinalSchedule}
+          isDesktop={this.props.isDesktop}
         />
 
         <div className={classes.spacer} />
@@ -167,12 +170,14 @@ class CalendarPaneToolbar extends Component {
           <DownloadMenu
             onTakeScreenshot={this.props.onTakeScreenshot}
             eventsInCalendar={this.props.eventsInCalendar}
+            isDesktop={this.props.isDesktop}
           />
         </Tooltip>
 
         <CustomEventsDialog
           onAddCustomEvent={this.props.onAddCustomEvent}
           handleSubmenuClose={this.handleClose}
+          isDesktop={this.props.isDesktop}
         />
 
         {/*<ClearSchedButton
