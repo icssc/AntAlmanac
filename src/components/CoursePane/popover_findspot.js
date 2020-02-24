@@ -76,12 +76,19 @@ class SPopover extends React.Component {
     const name = this.props.name[1] + ' ' + this.props.name[2];
 
     let url =
-      'https://3jbsyx3se1.execute-api.us-west-1.amazonaws.com/dev/email/';
+      'https://dqb4drylx2.execute-api.us-west-2.amazonaws.com/default/AANTS-DB-manager';
 
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!re.test(email)) {
     } else {
-      url = url + code + '/' + name + '/' + email;
+      const params = new URLSearchParams({
+        code,
+        email,
+        name,
+        sms: '',
+        command: 'update',
+      }).toString();
+      url = url + '?' + params;
       window.localStorage.setItem('email', email);
       fetch(url);
       this.setState({ addEmailMessageOn: true });
@@ -231,7 +238,7 @@ class SPopover extends React.Component {
             />
 
             {/* Push Notifications */}
-            <FormControl
+            {/* <FormControl
               className={classes.container}
               style={{ width: '100%' }}
             >
@@ -286,7 +293,7 @@ class SPopover extends React.Component {
                   </div>
                 )}
               </div>
-            </FormControl>
+            </FormControl> */}
           </div>
         </Popover>
 

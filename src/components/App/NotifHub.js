@@ -42,13 +42,19 @@ class NotifHub extends Component {
 
     // If using email notif, send request to lookup
     if (local_email !== null) {
-      await fetch(
-        'https://3jbsyx3se1.execute-api.us-west-1.amazonaws.com/dev/lookup/email/' +
-          local_email
-      )
+      let url =
+        'https://dqb4drylx2.execute-api.us-west-2.amazonaws.com/default/AANTS-DB-manager';
+      const params = new URLSearchParams({
+        notif_type: 'email',
+        key: local_email,
+        command: 'lookup',
+      }).toString();
+      url = url + '?' + params;
+
+      await fetch(url)
         .then((resp) => resp.json())
         .then((json) => {
-          this.setState({ email_wl: json });
+          this.setState({ email_wl: json.result });
         });
     }
 
@@ -57,32 +63,40 @@ class NotifHub extends Component {
       const regex = /\d+/g;
       local_sms = local_sms.match(regex);
       local_sms = local_sms.join('');
-      await fetch(
-        'https://3jbsyx3se1.execute-api.us-west-1.amazonaws.com/dev/lookup/sms/' +
-          local_sms
-      )
+
+      let url =
+        'https://dqb4drylx2.execute-api.us-west-2.amazonaws.com/default/AANTS-DB-manager';
+      const params = new URLSearchParams({
+        notif_type: 'sms',
+        key: local_sms,
+        command: 'lookup',
+      }).toString();
+      url = url + '?' + params;
+      console.log('asdasd');
+
+      await fetch(url)
         .then((resp) => resp.json())
         .then((json) => {
-          this.setState({ sms_wl: json });
+          this.setState({ sms_wl: json.result });
         });
     }
 
     // Possible to catch bad token here
-    if (local_token !== null) {
-      if (local_token.length < 15) {
-        //undefined token, clear token cache
-        window.localStorage.setItem('cachePushToken', null);
-      } else {
-        await fetch(
-          'https://3jbsyx3se1.execute-api.us-west-1.amazonaws.com/dev/lookup/push/' +
-            local_token
-        )
-          .then((resp) => resp.json())
-          .then((json) => {
-            this.setState({ push_wl: json });
-          });
-      }
-    }
+    // if (local_token !== null) {
+    //   if (local_token.length < 15) {
+    //     //undefined token, clear token cache
+    //     window.localStorage.setItem('cachePushToken', null);
+    //   } else {
+    //     await fetch(
+    //       'https://3jbsyx3se1.execute-api.us-west-1.amazonaws.com/dev/lookup/push/' +
+    //         local_token
+    //     )
+    //       .then((resp) => resp.json())
+    //       .then((json) => {
+    //         this.setState({ push_wl: json });
+    //       });
+    //   }
+    // }
   };
 
   render() {
@@ -157,7 +171,7 @@ class NotifHub extends Component {
                 </div>
               )}
 
-              {this.state.token === null ? (
+              {/* {this.state.token === null ? (
                 <p>You have not signed up for any push notifications!</p>
               ) : this.state.token === undefined ||
                 this.state.token.length < 15 ? ( //undefined token
@@ -178,7 +192,7 @@ class NotifHub extends Component {
                     })}
                   </ul>
                 </div>
-              )}
+              )} */}
             </DialogContentText>
           </DialogContent>
 

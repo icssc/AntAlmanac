@@ -115,14 +115,19 @@ class FormattedInputs extends React.Component {
     if (matches > 999999999) {
       this.setState({ smsOn: true }, () => {
         window.localStorage.setItem('sms', this.state.textmask);
-        fetch(
-          'https://3jbsyx3se1.execute-api.us-west-1.amazonaws.com/dev/sms/' +
-            code +
-            '/' +
-            name +
-            '/' +
-            matches
-        );
+
+        let url =
+          'https://dqb4drylx2.execute-api.us-west-2.amazonaws.com/default/AANTS-DB-manager';
+        const params = new URLSearchParams({
+          code,
+          email: '',
+          name,
+          sms: matches,
+          command: 'update',
+        }).toString();
+        url = url + '?' + params;
+
+        fetch(url);
       });
       if (window.localStorage.getItem('sms') === null) {
         this.setState({ open: true });
