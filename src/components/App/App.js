@@ -687,14 +687,14 @@ class App extends Component {
               {this.state.isDesktop ? (
                 <img
                   src={Logo_wide}
-                  height={36}
+                  height={32}
                   alt={'logo'}
                   style={{ marginTop: 5 }}
                 />
               ) : (
                 <img
                   src={Logo_tight}
-                  height={36}
+                  height={32}
                   alt={'logo'}
                   style={{ marginTop: 5 }}
                 />

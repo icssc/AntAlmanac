@@ -427,6 +427,7 @@ class MiniSectionTable extends Component {
         <div
           style={{
             display: 'inline-flex',
+            marginTop: 12,
           }}
         >
           <Suspense

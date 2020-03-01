@@ -25,6 +25,7 @@ class FinalSwitch extends React.Component {
               onChange={this.handleChange('showFinal')}
               value="showFinal"
               color="primary"
+              size="small"
             />
           }
           label={this.props.isDesktop ? 'FINALS' : 'Fn'}

@@ -238,6 +238,10 @@ class SPopover extends React.Component {
             />
 
             {/* Push Notifications */}
+            <Typography className={classes.typography}>
+              Push notifications under maintenance! <br />
+              Sorry for the inconvenience; please check back next quarter!
+            </Typography>
             {/* <FormControl
               className={classes.container}
               style={{ width: '100%' }}
