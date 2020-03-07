@@ -205,7 +205,7 @@ class SPopover extends React.Component {
           ) : null}
 
           <div className={classes.container}>
-            {/* Email Notifications */}
+            {/* Email Notifications
             <FormControl className={classes.formControl}>
               <InputLabel htmlFor="formatted-email-input">
                 Enter email:
@@ -229,7 +229,7 @@ class SPopover extends React.Component {
             >
               Add
             </Button>
-
+            */}
             {/* SMS Notifications */}
             <SMS
               code={this.props.code}
@@ -239,7 +239,10 @@ class SPopover extends React.Component {
 
             {/* Push Notifications */}
             <Typography className={classes.typography}>
-              Push notifications under maintenance! <br />
+              Push and email notifications are under maintenance!
+              <br />
+              Please use SMS notifications.
+              <br />
               Sorry for the inconvenience; please check back next quarter!
             </Typography>
             {/* <FormControl

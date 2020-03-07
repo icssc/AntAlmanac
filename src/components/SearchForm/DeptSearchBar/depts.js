@@ -54,7 +54,7 @@ export default [
   { label: 'ENGRCEE: Engineering, Civil & Environmental', value: 'ENGRCEE' },
   { label: 'ENGRMAE: Engineering, Mechanical & Aerospace', value: 'ENGRMAE' },
   {
-    label: 'ENGRMSE: Chemical Engr & Materials Science (Grad)',
+    label: 'ENGRMSE: Materials Science and Engineering',
     value: 'ENGRMSE',
   },
   { label: 'EPIDEM: Epidemiology', value: 'EPIDEM' },
@@ -101,7 +101,6 @@ export default [
   { label: 'MIC BIO: Microbiology', value: 'MIC BIO' },
   { label: 'MOL BIO: Molecular Biology & Biochemistry', value: 'MOL BIO' },
   { label: 'MPAC: Accounting', value: 'MPAC' },
-  { label: 'MSE: Materials Science and Engineering (F18-F18)', value: 'MSE' },
   { label: 'MUSIC: Music', value: 'MUSIC' },
   { label: 'NET SYS: Networked Systems', value: 'NET SYS' },
   { label: 'NEURBIO: Neurobiology & Behavior', value: 'NEURBIO' },
