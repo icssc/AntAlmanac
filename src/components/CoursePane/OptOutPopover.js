@@ -10,6 +10,7 @@ import {
   Tooltip,
   Typography,
   FormLabel,
+  Badge,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import toRenderProps from 'recompose/toRenderProps';
@@ -45,7 +46,9 @@ function OptOutPopover(props) {
               >
                 {' '}
                 {/* For desktop mode only*/}
-                <Settings />
+                <Badge color="secondary" variant="dot">
+                  <Settings />
+                </Badge>
                 {props.isDesktop ? (
                   <Typography color="inherit">&nbsp;&nbsp;Ratings</Typography>
                 ) : (
