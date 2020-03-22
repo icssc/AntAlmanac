@@ -160,24 +160,24 @@ export default class UCIMap extends PureComponent {
         return markers;
     };
 
-    handleSearch = (selected) => {
-        if (selected) {
-            let temp = selected.label.split(' ').pop();
+    handleSearch = (event, newValue) => {
+        if (newValue) {
+            let temp = newValue.label.split(' ').pop();
             temp = temp.slice(1, temp.length - 1);
 
             this.setState({
-                lat: selected.lat,
-                lng: selected.lng,
-                selected: selected.label,
+                lat: newValue.lat,
+                lng: newValue.lng,
+                selected: newValue.label,
                 selected_acronym: temp,
                 zoom: 18,
             });
 
             // If there is an image, add the image and url
-            if (selected.img) {
+            if (newValue.img) {
                 this.setState({
-                    selected_img: selected.img,
-                    selected_url: selected.url,
+                    selected_img: newValue.img,
+                    selected_url: newValue.url,
                 });
             } else {
                 this.setState({ selected_img: '', selected_url: '' });

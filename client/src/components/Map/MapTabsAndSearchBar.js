@@ -1,9 +1,10 @@
 import React, { Fragment, PureComponent } from 'react';
 import { Tab, Tabs } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import MuiDownshift from 'mui-downshift';
 import buildingCatalogue from './buildingCatalogue';
 import PropTypes from 'prop-types';
+import { Autocomplete } from '@material-ui/lab';
+import TextField from '@material-ui/core/TextField';
 
 const styles = {
     tabContainer: {
@@ -35,17 +36,6 @@ class MapTabsAndSearchBar extends PureComponent {
         filteredItems: buildingCatalogue,
     };
 
-    filterLocations = (changes) => {
-        if (typeof changes.inputValue === 'string') {
-            const filteredItems = buildingCatalogue.filter((item) =>
-                item.label
-                    .toLowerCase()
-                    .includes(changes.inputValue.toLowerCase())
-            );
-            this.setState({ filteredItems: filteredItems });
-        }
-    };
-
     render() {
         const { classes } = this.props;
 
@@ -73,16 +63,29 @@ class MapTabsAndSearchBar extends PureComponent {
                 </div>
 
                 <div className={classes.searchBarContainer}>
-                    <MuiDownshift
-                        items={this.state.filteredItems}
-                        onStateChange={this.filterLocations}
-                        getInputProps={() => ({
-                            variant: 'filled',
-                            label: 'Search for a place',
-                        })}
+                    <Autocomplete
+                        options={this.state.filteredItems}
+                        getOptionLabel={(option) => option.label}
                         onChange={this.props.handleSearch}
-                        menuItemCount={window.innerWidth > 960 ? 6 : 3}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                label="Search for a place"
+                                variant="filled"
+                            />
+                        )}
                     />
+
+                    {/*<MuiDownshift*/}
+                    {/*    items={this.state.filteredItems}*/}
+                    {/*    onStateChange={this.filterLocations}*/}
+                    {/*    getInputProps={() => ({*/}
+                    {/*        variant: 'filled',*/}
+                    {/*        label: 'Search for a place',*/}
+                    {/*    })}*/}
+                    {/*    onChange={this.props.handleSearch}*/}
+                    {/*    menuItemCount={window.innerWidth > 960 ? 6 : 3}*/}
+                    {/*/>*/}
                 </div>
             </Fragment>
         );
