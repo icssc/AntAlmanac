@@ -1,35 +1,17 @@
-import React, { Component, Fragment, PureComponent } from 'react';
-import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
-import L from 'leaflet';
-import yellowpages from './yellowpages';
+import React, { Fragment, PureComponent } from 'react';
+import { Map, TileLayer } from 'react-leaflet';
+import buildingCatalogue from './buildingCatalogue';
 import locations from '../SectionTable/static/locations.json';
-import Locator from './Locator';
-import MuiDownshift from 'mui-downshift';
-import { Tab, Tabs, Fab } from '@material-ui/core';
-import WalkIcon from '@material-ui/icons/DirectionsWalk';
 import AppStore from '../../stores/AppStore';
+import DayTabs from './MapTabsAndSearchBar';
+import MapMarkerPopup from './MapMarkerPopup';
 
-function coordsInArr(arr, coords) {
-    let coords_str = JSON.stringify(coords);
-
-    let contains = arr.some(function(ele) {
-        return JSON.stringify(ele) === coords_str;
-    });
-
-    return contains;
-}
-
-const locateOptions = {
-    position: 'topleft',
-    strings: {
-        title: 'Look for your lost soul',
-    },
-    flyTo: true,
+const coordsInArr = (arr, coords) => {
+    const coords_str = JSON.stringify(coords);
+    return arr.some((ele) => JSON.stringify(ele) === coords_str);
 };
 
 const DAYS = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-const GMAPURL =
-    'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';
 
 export default class UCIMap extends PureComponent {
     state = {
@@ -42,106 +24,8 @@ export default class UCIMap extends PureComponent {
         selected_img: '',
         selected_url: '',
         selected_acronym: '',
-        filteredItems: yellowpages,
-        eventsInCalendar: [],
+        eventsInCalendar: AppStore.getEventsInCalendar(),
         currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
-    };
-
-    calendarizeCourseEvents = () => {
-        const addedCourses = AppStore.getAddedCourses();
-        const courseEventsInCalendar = [];
-
-        for (const course of addedCourses) {
-            for (const meeting of course.section.meetings) {
-                const timeString = meeting.time.replace(/\s/g, '');
-
-                if (timeString !== 'TBA') {
-                    let [
-                        ,
-                        startHr,
-                        startMin,
-                        endHr,
-                        endMin,
-                        ampm,
-                    ] = timeString.match(
-                        /(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/
-                    );
-
-                    startHr = parseInt(startHr, 10);
-                    startMin = parseInt(startMin, 10);
-                    endHr = parseInt(endHr, 10);
-                    endMin = parseInt(endMin, 10);
-
-                    let dates = [
-                        meeting.days.includes('M'),
-                        meeting.days.includes('Tu'),
-                        meeting.days.includes('W'),
-                        meeting.days.includes('Th'),
-                        meeting.days.includes('F'),
-                    ];
-
-                    if (ampm === 'p' && endHr !== 12) {
-                        startHr += 12;
-                        endHr += 12;
-                        if (startHr > endHr) startHr -= 12;
-                    }
-
-                    dates.forEach((shouldBeInCal, index) => {
-                        if (shouldBeInCal) {
-                            const newEvent = {
-                                color: course.color,
-                                // term: term,
-                                title:
-                                    course.deptCode + ' ' + course.courseNumber,
-                                courseTitle: course.courseTitle,
-                                bldg: meeting.bldg,
-                                instructors: course.section.instructors,
-                                sectionCode: course.section.sectionCode,
-                                sectionType: course.section.sectionType,
-                                start: new Date(
-                                    2018,
-                                    0,
-                                    index + 1,
-                                    startHr,
-                                    startMin
-                                ),
-                                end: new Date(
-                                    2018,
-                                    0,
-                                    index + 1,
-                                    endHr,
-                                    endMin
-                                ),
-                                isCustomEvent: false,
-                                scheduleIndices: course.scheduleIndices,
-                            };
-
-                            courseEventsInCalendar.push(newEvent);
-                        }
-                    });
-                }
-            }
-        }
-
-        this.setState(
-            {
-                eventsInCalendar: courseEventsInCalendar,
-            },
-            () => {
-                console.log(this.state.eventsInCalendar);
-            }
-        );
-    };
-
-    filterLocations = (changes) => {
-        if (typeof changes.inputValue === 'string') {
-            const filteredItems = yellowpages.filter((item) =>
-                item.label
-                    .toLowerCase()
-                    .includes(changes.inputValue.toLowerCase())
-            );
-            this.setState({ filteredItems: filteredItems });
-        }
     };
 
     updateCurrentScheduleIndex = () => {
@@ -150,46 +34,60 @@ export default class UCIMap extends PureComponent {
         });
     };
 
+    updateEventsInCalendar = () => {
+        this.setState({
+            eventsInCalendar: AppStore.getEventsInCalendar(),
+        });
+    };
+
     componentDidMount = () => {
-        AppStore.on('addedCoursesChange', this.calendarizeCourseEvents);
+        AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.on(
             'currentScheduleIndexChange',
             this.updateCurrentScheduleIndex
         );
-        this.calendarizeCourseEvents();
+    };
+
+    componentWillUnmount = () => {
+        AppStore.removeListener(
+            'addedCoursesChange',
+            this.updateEventsInCalendar
+        );
+        AppStore.removeListener(
+            'currentScheduleIndexChange',
+            this.updateCurrentScheduleIndex
+        );
     };
 
     createMarkers = () => {
         let trace = [];
 
         this.state.eventsInCalendar.forEach((event) => {
-            //filter out those in a different sched
+            //filter out those in a different schedule or those not on a certain day (mon, tue, etc)
             if (
-                !event.scheduleIndices.includes(this.state.currentScheduleIndex)
+                !event.scheduleIndices.includes(
+                    this.state.currentScheduleIndex
+                ) ||
+                !event.start.toString().includes(DAYS[this.state.day])
             )
                 return;
-            //filter out those not on a certain day (mon, tue, etc)
-            if (!event.start.toString().includes(DAYS[this.state.day])) return;
 
             //try catch for finding the location of classes
-            let coords = [];
             let lat = null;
             let lng = null;
             let loc = null;
             let acronym = null;
+
             try {
-                loc = yellowpages.find((entry) => {
+                loc = buildingCatalogue.find((entry) => {
                     return entry.id === locations[event.bldg.split(' ')[0]];
                 });
                 lat = loc.lat;
                 lng = loc.lng;
                 acronym = event.bldg.split(' ')[0];
             } catch (e) {
-                console.log(e);
                 return;
             }
-
-            //hotfix for when some events have undefined colors
 
             //collect all the events for the map
             trace.push({
@@ -197,7 +95,7 @@ export default class UCIMap extends PureComponent {
                 lng: lng,
                 color: event.color,
                 blding: loc.label,
-                acronym: acronym,
+                acronym: acronym.toLowerCase(),
                 url: loc.url,
                 img: loc.img,
                 sections: [
@@ -207,7 +105,7 @@ export default class UCIMap extends PureComponent {
             });
         });
 
-        // Tracks coords to shift the marker appropritately
+        // Tracks coords to shift the marker appropriately
         let usedCoords = [];
 
         // Tracks courses that have already been pinned on the map, so there are
@@ -217,7 +115,7 @@ export default class UCIMap extends PureComponent {
         let markers = []; //to put into a list of markers
         let lngTemp = 0;
 
-        trace.forEach((item, index) => {
+        trace.forEach((item) => {
             // Current course is already pinned on map
             if (pinnedCourses.includes(item.sections[0])) return;
 
@@ -229,110 +127,36 @@ export default class UCIMap extends PureComponent {
             usedCoords.push([item.lat, lngTemp]);
             pinnedCourses.push(item.sections[0]);
 
-            // Makes acronym able to be used in the URL for classrooms
-            item.acronym = item.acronym.toLowerCase();
-
             markers.push(
-                <Marker
-                    position={[item.lat, lngTemp]}
-                    icon={L.divIcon({
-                        className: 'my-custom-pin',
-                        iconAnchor: [0, 14],
-                        labelAnchor: [-3.5, 0],
-                        popupAnchor: [0, -21],
-                        html: `<div style="position:relative;
-                  left: -1rem;
-                  top: -1rem;">
-                    <span style="background-color: ${item.color};
-                      width: 1.75rem;
-                      height: 1.75rem;
-                      position: absolute;
-                      border-radius: 1.9rem 1.9rem 0;
-                      transform: rotate(45deg);
-                      border: 1px solid #FFFFFF" >
-                    </span>
-                    <div style="position: absolute;
-                      width: 1.75rem;
-                      height: 1.75rem;
-                      top: 0.25rem;
-                      text-align: center" >
-                      ${this.state.day ? index + 1 : ''}
-                    </div>
-                  <div>`,
-                    })}
+                <MapMarkerPopup
+                    image={item.img}
+                    markerColor={item.color}
+                    location={item.blding}
+                    lat={item.lat}
+                    lng={item.lng}
+                    acronym={item.acronym}
                 >
-                    <Popup>
+                    <Fragment>
+                        <hr />
+                        Class: {item.sections[0]}
+                        <br />
+                        Room:{' '}
                         {item.url ? (
                             <a
-                                href={
-                                    'http://www.classrooms.uci.edu/classrooms/' +
-                                    item.acronym
-                                }
+                                href={`http://www.classrooms.uci.edu/classrooms/${item.acronym}/${item.acronym}-${item.sections[1]}`}
                                 target="_blank"
+                                rel="noopener noreferrer"
                             >
-                                {' '}
-                                {item.blding}{' '}
+                                {item.sections[1]}
                             </a>
                         ) : (
-                            item.blding
+                            item.sections[1]
                         )}
-
-                        <br />
-
-                        {item.img ? (
-                            <img
-                                src={
-                                    'https://www.myatlascms.com/map/lib/image-cache/i.php?mapId=463&image=' +
-                                    item.img +
-                                    '&w=900&h=508&r=1'
-                                }
-                                alt="Building Snapshot"
-                                style={{ width: '100%' }}
-                            />
-                        ) : null}
-
-                        {
-                            <Fragment>
-                                <hr />
-                                Class: {item.sections[0]}
-                                <br />
-                                Room:{' '}
-                                {item.url ? (
-                                    <a
-                                        href={
-                                            'http://www.classrooms.uci.edu/classrooms/' +
-                                            item.acronym +
-                                            '/' +
-                                            item.acronym +
-                                            '-' +
-                                            item.sections[1]
-                                        }
-                                        target="_blank"
-                                    >
-                                        {item.sections[1]}
-                                    </a>
-                                ) : (
-                                    item.sections[1]
-                                )}
-                            </Fragment>
-                        }
-
-                        <br />
-                        <br />
-                        <Fab
-                            variant="extended"
-                            aria-label="delete"
-                            size="small"
-                            href={GMAPURL + item.lat + ',' + item.lng}
-                            target="_blank"
-                            format="centered"
-                        >
-                            <WalkIcon /> Walk Here
-                        </Fab>
-                    </Popup>
-                </Marker>
+                    </Fragment>
+                </MapMarkerPopup>
             );
         });
+
         return markers;
     };
 
@@ -351,11 +175,12 @@ export default class UCIMap extends PureComponent {
 
             // If there is an image, add the image and url
             if (selected.img) {
-                this.setState({ selected_img: selected.img });
-                this.setState({ selected_url: selected.url });
+                this.setState({
+                    selected_img: selected.img,
+                    selected_url: selected.url,
+                });
             } else {
-                this.setState({ selected_img: '' });
-                this.setState({ selected_url: '' });
+                this.setState({ selected_img: '', selected_url: '' });
             }
         } else {
             this.setState({ selected: null });
@@ -371,175 +196,32 @@ export default class UCIMap extends PureComponent {
                     maxZoom={19}
                     style={{ height: '100%' }}
                 >
-                    <div
-                        style={{
-                            // position: 'sticky',
-                            zIndex: 1000,
-                            marginLeft: 45,
-                            marginRight: 45,
-                            marginTop: 11,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            position: 'relative',
+                    <DayTabs
+                        day={this.state.day}
+                        setDay={(day) => {
+                            this.setState({ day: day });
                         }}
-                    >
-                        <Tabs
-                            value={this.state.day}
-                            onChange={(event, newValue) => {
-                                this.setState({ day: newValue });
-                            }}
-                            indicatorColor="primary"
-                            textColor="primary"
-                            variant="standard"
-                            scrollButtons="auto"
-                            centered
-                        >
-                            <Tab
-                                label="All"
-                                style={{
-                                    minWidth: '10%',
-                                    backgroundColor: '#FFFFFF',
-                                }}
-                            />
-                            <Tab
-                                label="Mon"
-                                style={{
-                                    minWidth: '10%',
-                                    backgroundColor: '#FFFFFF',
-                                }}
-                            />
-                            <Tab
-                                label="Tue"
-                                style={{
-                                    minWidth: '10%',
-                                    backgroundColor: '#FFFFFF',
-                                }}
-                            />
-                            <Tab
-                                label="Wed"
-                                style={{
-                                    minWidth: '10%',
-                                    backgroundColor: '#FFFFFF',
-                                }}
-                            />
-                            <Tab
-                                label="Thu"
-                                style={{
-                                    minWidth: '10%',
-                                    backgroundColor: '#FFFFFF',
-                                }}
-                            />
-                            <Tab
-                                label="Fri"
-                                style={{
-                                    minWidth: '10%',
-                                    backgroundColor: '#FFFFFF',
-                                }}
-                            />
-                        </Tabs>
-                    </div>
-
-                    <div
-                        style={{
-                            minWidth: '60%',
-                            position: 'relative',
-                            marginLeft: '15%',
-                            marginRight: '15%',
-                            marginTop: 5,
-                            backgroundColor: '#FFFFFF',
-                            zIndex: 1000,
-                        }}
-                    >
-                        <MuiDownshift
-                            items={this.state.filteredItems}
-                            onStateChange={this.filterLocations}
-                            getInputProps={() => ({
-                                // Downshift requires this syntax to pass down these props to the text field
-                                label: '  Search for...',
-                                required: true,
-                            })}
-                            onChange={this.handleSearch}
-                            menuItemCount={window.innerWidth > 960 ? 6 : 3}
-                        />
-                    </div>
-
-                    <Locator options={locateOptions} />
+                        handleSearch={this.handleSearch}
+                    />
 
                     <TileLayer
                         attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>'
-                        //url = "https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw"
-                        url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
+                        url="https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw"
+                        // url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
                     />
 
                     {this.createMarkers()}
 
                     {this.state.selected ? (
-                        <Marker
-                            position={[this.state.lat, this.state.lng]}
-                            icon={L.divIcon({
-                                className: 'my-custom-pin',
-                                iconAnchor: [0, 14],
-                                labelAnchor: [-3.5, 0],
-                                popupAnchor: [0, -21],
-                                html: `<span style="background-color: #FF0000;
-                            width: 1.75rem;
-                            height: 1.75rem;
-                            display: block;
-                            left: -1rem;
-                            top: -1rem;
-                            position: relative;
-                            border-radius: 1.9rem 1.9rem 0;
-                            transform: rotate(45deg);
-                            border: 1px solid #FFFFFF" />`,
-                            })}
-                        >
-                            <Popup>
-                                {this.state.selected_url ? (
-                                    <a
-                                        href={
-                                            'http://www.classrooms.uci.edu/classrooms/' +
-                                            this.state.selected_acronym
-                                        }
-                                        target="_blank"
-                                    >
-                                        {' '}
-                                        {this.state.selected}{' '}
-                                    </a>
-                                ) : (
-                                    this.state.selected
-                                )}
-                                <br />
-                                {this.state.selected_img ? (
-                                    <img
-                                        src={
-                                            'https://www.myatlascms.com/map/lib/image-cache/i.php?mapId=463&image=' +
-                                            this.state.selected_img +
-                                            '&w=900&h=508&r=1'
-                                        }
-                                        alt="Building Snapshot"
-                                        style={{ width: '100%' }}
-                                    />
-                                ) : null}
-
-                                <br />
-                                <br />
-                                <Fab
-                                    variant="extended"
-                                    aria-label="walk-nav"
-                                    size="small"
-                                    href={
-                                        GMAPURL +
-                                        this.state.lat +
-                                        ',' +
-                                        this.state.lng
-                                    }
-                                    target="_blank"
-                                    format="centered"
-                                >
-                                    <WalkIcon /> Walk Here
-                                </Fab>
-                            </Popup>
-                        </Marker>
+                        <MapMarkerPopup
+                            url={this.state.selected_url}
+                            image={this.state.selected_img}
+                            location={this.state.selected}
+                            lat={this.state.lat}
+                            lng={this.state.lng}
+                            acronym={this.state.selected_acronym}
+                            markerColor="#FF0000"
+                        />
                     ) : (
                         <Fragment />
                     )}
