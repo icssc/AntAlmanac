@@ -50,7 +50,6 @@ const styles = (theme) => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'white',
     },
 });
 
@@ -128,6 +127,7 @@ class CourseRenderPane extends PureComponent {
                 startTime: formData.startTime,
                 fullCourses: formData.coursesFull,
                 building: formData.building,
+                room: formData.room,
             };
 
             const response = await fetch('/api/websocapi', {

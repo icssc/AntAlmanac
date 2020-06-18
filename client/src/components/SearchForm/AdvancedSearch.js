@@ -21,7 +21,7 @@ const styles1 = {
         borderLeft: '0px',
         borderTop: '0px',
     },
-    instructor: {
+    textSearch: {
         border: 'solid 8px transparent',
         borderLeft: '0px',
         borderTop: '0px',
@@ -61,6 +61,7 @@ class AdvancedSearchTextFields extends PureComponent {
         startTime: RightPaneStore.getFormData().startTime,
         coursesFull: RightPaneStore.getFormData().coursesFull,
         building: RightPaneStore.getFormData().building,
+        room: RightPaneStore.getFormData().room,
     };
 
     handleChange = (name) => (event) => {
@@ -99,11 +100,13 @@ class AdvancedSearchTextFields extends PureComponent {
             }
         } else if (name === 'online') {
             if (event.target.checked) {
-                this.setState({ building: 'ON' });
+                this.setState({ building: 'ON', room: 'LINE' });
                 updateFormValue('building', 'ON');
+                updateFormValue('room', 'LINE');
             } else {
-                this.setState({ building: '' });
-                updateFormValue('building', 'ON');
+                this.setState({ building: '', room: '' });
+                updateFormValue('building', '');
+                updateFormValue('room', '');
             }
         } else {
             this.setState({ [name]: event.target.value });
@@ -125,7 +128,7 @@ class AdvancedSearchTextFields extends PureComponent {
                     type="search"
                     value={this.state.instructor}
                     onChange={this.handleChange('instructor')}
-                    className={classes.instructor}
+                    className={classes.textSearch}
                     helperText="Last name only"
                 />
 
@@ -161,18 +164,6 @@ class AdvancedSearchTextFields extends PureComponent {
                     </Select>
                 </FormControl>
 
-                <FormControlLabel
-                    control={
-                        <Switch
-                            onChange={this.handleChange('online')}
-                            value="online"
-                            color="primary"
-                            checked={this.state.building === 'ON'}
-                        />
-                    }
-                    label="Online Classes Only"
-                />
-
                 <form className={classes.timePicker}>
                     <TextField
                         onChange={this.handleChange('startTime')}
@@ -202,6 +193,36 @@ class AdvancedSearchTextFields extends PureComponent {
                         }}
                     />
                 </form>
+
+                <FormControlLabel
+                    control={
+                        <Switch
+                            onChange={this.handleChange('online')}
+                            value="online"
+                            color="primary"
+                            checked={this.state.building === 'ON'}
+                        />
+                    }
+                    label="Online Classes Only"
+                />
+
+                <TextField
+                  id="building"
+                  label="Building"
+                  type="search"
+                  value={this.state.building}
+                  onChange={this.handleChange('building')}
+                  className={classes.textSearch}
+                />
+
+                <TextField
+                  id="room"
+                  label="Room"
+                  type="search"
+                  value={this.state.room}
+                  onChange={this.handleChange('room')}
+                  className={classes.textSearch}
+                />
             </div>
         );
     }

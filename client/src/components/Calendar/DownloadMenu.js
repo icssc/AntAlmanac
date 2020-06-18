@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Menu, MenuItem, MenuList, IconButton } from '@material-ui/core';
+import { Menu, MenuItem, MenuList, Button, Typography } from '@material-ui/core';
 import { GetApp } from '@material-ui/icons';
 import ScreenshotButton from './ScreenshotButton';
 import ExportButton from './ExportCalendar';
@@ -24,9 +24,15 @@ class DownloadMenu extends React.Component {
         return (
             <Fragment>
                 <Tooltip title="Download">
-                    <IconButton onClick={this.handleClick}>
-                        <GetApp fontSize="small" />
-                    </IconButton>
+                  <Button
+                    onClick={this.handleClick}
+                    style={{ marginRight: 5, marginLeft: 5 }}
+                    variant="outlined"
+                    size="small"
+                  >
+                    <GetApp fontSize="small" />
+                      Export
+                  </Button>
                 </Tooltip>
                 <Menu
                     id="downloadMenu"

@@ -1,16 +1,25 @@
-import React, { Fragment, PureComponent } from 'react';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { Grid } from '@material-ui/core';
+import React, { PureComponent } from 'react';
+import { Grid, CssBaseline, createMuiTheme } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/styles';
 import Calendar from '../Calendar/ScheduleCalendar';
 import ReactGA from 'react-ga';
 import NotificationSnackbar from './NotificationSnackbar';
 import { undoDelete } from '../../actions/AppStoreActions';
 import Bar from './CustomAppBar';
 import DesktopTabs from '../CoursePane/DesktopTabs';
+import AppStore from '../../stores/AppStore';
 
 class App extends PureComponent {
+    state = {
+        darkMode: AppStore.getDarkMode()
+    };
+
     componentDidMount = () => {
         document.addEventListener('keydown', undoDelete, false);
+
+        AppStore.on('darkModeToggle', () => {
+          this.setState({darkMode: AppStore.getDarkMode()});
+        });
 
         ReactGA.initialize('UA-133683751-1');
         ReactGA.pageview('/homepage');
@@ -21,8 +30,14 @@ class App extends PureComponent {
     }
 
     render() {
+        const theme = createMuiTheme({
+          palette: {
+            type: this.state.darkMode ? 'dark' : 'light',
+          },
+        });
+
         return (
-            <Fragment>
+            <ThemeProvider theme={theme}>
                 <CssBaseline />
                 <Bar />
                 <Grid
@@ -54,7 +69,7 @@ class App extends PureComponent {
                     {/*</Hidden>*/}
                 </Grid>
                 <NotificationSnackbar />
-            </Fragment>
+            </ThemeProvider>
         );
     }
 }

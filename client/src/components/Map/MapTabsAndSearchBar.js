@@ -1,35 +1,39 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Tab, Tabs } from '@material-ui/core';
+import { Tab, Tabs, Paper, TextField, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import buildingCatalogue from './buildingCatalogue';
 import PropTypes from 'prop-types';
 import { Autocomplete } from '@material-ui/lab';
-import TextField from '@material-ui/core/TextField';
+import {styled} from '@material-ui/core/styles';
 
 const styles = {
     tabContainer: {
         zIndex: 1000,
-        marginLeft: 45,
-        marginRight: 45,
-        marginTop: 11,
-        display: 'flex',
-        flexDirection: 'column',
+        marginLeft: '15%',
+        marginRight: '15%',
+        marginTop: '8px',
+        marginBottom: '8px',
         position: 'relative',
-    },
-    tab: {
-        minWidth: '10%',
-        backgroundColor: '#FFFFFF',
     },
     searchBarContainer: {
         minWidth: '60%',
         position: 'relative',
         marginLeft: '15%',
         marginRight: '15%',
-        marginTop: 5,
-        backgroundColor: '#FFFFFF',
         zIndex: 1000,
+        alignItems: 'center'
     },
 };
+
+const StyledTabs = styled(Tabs)({
+    minHeight: 0
+});
+
+const StyledTab = styled(Tab)({
+    minHeight: "auto",
+    minWidth: '10%',
+    padding: 0
+});
 
 class MapTabsAndSearchBar extends PureComponent {
     state = {
@@ -41,28 +45,28 @@ class MapTabsAndSearchBar extends PureComponent {
 
         return (
             <Fragment>
-                <div className={classes.tabContainer}>
-                    <Tabs
+                <Paper elevation={0} className={classes.tabContainer}>
+                    <StyledTabs
                         value={this.props.day}
                         onChange={(event, newDay) => {
                             this.props.setDay(newDay);
                         }}
                         indicatorColor="primary"
                         textColor="primary"
-                        variant="standard"
+                        variant="fullWidth"
                         scrollButtons="auto"
                         centered
                     >
-                        <Tab label="All" className={classes.tab} />
-                        <Tab label="Mon" className={classes.tab} />
-                        <Tab label="Tue" className={classes.tab} />
-                        <Tab label="Wed" className={classes.tab} />
-                        <Tab label="Thu" className={classes.tab} />
-                        <Tab label="Fri" className={classes.tab} />
-                    </Tabs>
-                </div>
+                        <StyledTab label="All"/>
+                        <StyledTab label="Mon"/>
+                        <StyledTab label="Tue"/>
+                        <StyledTab label="Wed"/>
+                        <StyledTab label="Thu"/>
+                        <StyledTab label="Fri"/>
+                    </StyledTabs>
+                </Paper>
 
-                <div className={classes.searchBarContainer}>
+                <Paper elevation={0} className={classes.searchBarContainer}>
                     <Autocomplete
                         options={this.state.filteredItems}
                         getOptionLabel={(option) => option.label}
@@ -75,18 +79,7 @@ class MapTabsAndSearchBar extends PureComponent {
                             />
                         )}
                     />
-
-                    {/*<MuiDownshift*/}
-                    {/*    items={this.state.filteredItems}*/}
-                    {/*    onStateChange={this.filterLocations}*/}
-                    {/*    getInputProps={() => ({*/}
-                    {/*        variant: 'filled',*/}
-                    {/*        label: 'Search for a place',*/}
-                    {/*    })}*/}
-                    {/*    onChange={this.props.handleSearch}*/}
-                    {/*    menuItemCount={window.innerWidth > 960 ? 6 : 3}*/}
-                    {/*/>*/}
-                </div>
+                </Paper>
             </Fragment>
         );
     }

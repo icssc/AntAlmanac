@@ -1,15 +1,37 @@
-import React, { Fragment, PureComponent } from 'react';
-import { Map, TileLayer } from 'react-leaflet';
+import React, { Component, Fragment, PureComponent } from 'react';
+import { Map, TileLayer, withLeaflet } from 'react-leaflet';
 import buildingCatalogue from './buildingCatalogue';
 import locations from '../SectionTable/static/locations.json';
 import AppStore from '../../stores/AppStore';
 import DayTabs from './MapTabsAndSearchBar';
 import MapMarkerPopup from './MapMarkerPopup';
+import Locate from 'leaflet.locatecontrol';
 
 const coordsInArr = (arr, coords) => {
     const coords_str = JSON.stringify(coords);
     return arr.some((ele) => JSON.stringify(ele) === coords_str);
 };
+
+class LocateControl extends PureComponent {
+    componentDidMount() {
+        const { map } = this.props.leaflet;
+
+        const lc = new Locate({
+            position: 'topleft',
+            strings: {
+                title: 'Look for your lost soul',
+            },
+            flyTo: true,
+        });
+        lc.addTo(map);
+    }
+
+    render() {
+        return null;
+    }
+}
+
+LocateControl = withLeaflet(LocateControl);
 
 const DAYS = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
@@ -204,10 +226,12 @@ export default class UCIMap extends PureComponent {
                         handleSearch={this.handleSearch}
                     />
 
+                    <LocateControl />
+
                     <TileLayer
                         attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>'
                         url="https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw"
-                        // url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
+                        // url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
                     />
 
                     {this.createMarkers()}

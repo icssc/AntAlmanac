@@ -9,6 +9,14 @@ import {
 class AppStore extends EventEmitter {
     constructor() {
         super();
+
+        // Get cached user Settings
+        let evalDestination, darkMode = null;
+        if (typeof Storage !== 'undefined') {
+            evalDestination = window.localStorage.getItem('InstructorEvals');
+            darkMode = window.localStorage.getItem('DarkMode')
+        }
+
         this.currentScheduleIndex = 0;
         this.customEvents = [];
         this.addedCourses = [];
@@ -19,6 +27,10 @@ class AppStore extends EventEmitter {
         this.snackbarPosition = { vertical: 'bottom', horizontal: 'left'};
         this.eventsInCalendar = [];
         this.finalsEventsInCalendar = [];
+
+        this.darkMode = (darkMode === null) ? false : darkMode === "true";
+
+        this.evalDestination = (evalDestination === null) ? 'eatereval' : evalDestination;
     }
 
     getCurrentScheduleIndex() {
@@ -59,6 +71,14 @@ class AppStore extends EventEmitter {
 
     getSnackbarDuration() {
         return this.snackbarDuration;
+    }
+
+    getDarkMode() {
+        return this.darkMode;
+    }
+
+    getEvalDestination() {
+        return this.evalDestination;
     }
 
     handleActions(action) {
@@ -176,6 +196,16 @@ class AppStore extends EventEmitter {
                 );
                 this.emit('addedCoursesChange');
                 this.emit('customEventsChange');
+                break;
+            case 'TOGGLE_DARK_MODE':
+                this.darkMode = action.darkMode;
+                this.emit('darkModeToggle');
+                window.localStorage.setItem('DarkMode', action.darkMode);
+                break;
+            case 'TOGGLE_EVALS':
+                this.evalDestination = action.evalDestination;
+                this.emit('evalsToggle');
+                window.localStorage.setItem('InstructorEvals', action.evalDestination);
                 break;
         }
     }

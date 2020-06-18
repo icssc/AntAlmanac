@@ -17,6 +17,7 @@ class RightPaneStore extends EventEmitter {
             startTime: '',
             coursesFull: 'ANY',
             building: '',
+            room: '',
         };
         this.activeTab = 0;
     }

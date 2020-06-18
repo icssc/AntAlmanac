@@ -35,6 +35,7 @@ class MapMarkerPopup extends PureComponent {
                 <a
                     href={`http://www.classrooms.uci.edu/classrooms/${this.props.acronym}`}
                     target="_blank"
+                    rel="noopener noreferrer"
                 >
                     {' '}
                     {this.props.location}{' '}

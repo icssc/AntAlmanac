@@ -4,7 +4,6 @@ import {
     Button,
     Toolbar,
     Tooltip,
-    Typography,
 } from '@material-ui/core';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { Assignment, Info } from '@material-ui/icons';
@@ -12,12 +11,14 @@ import { isMobile } from 'react-device-detect';
 import { withStyles } from '@material-ui/core/styles';
 import logo from './logo.png';
 import NotificationHub from './NotificationHub';
+import SettingsMenu from './SettingsMenu'
 
 const styles = {
     appBar: {
         marginBottom: '4px',
         boxShadow: 'none',
         backgroundColor: '#305db7',
+        minHeight: 0,
     },
     buttonMargin: {
         marginRight: '4px',
@@ -36,6 +37,8 @@ class CustomAppBar extends PureComponent {
                     <div style={{flexGrow: '1'}} />
 
                     <LoadSaveScheduleFunctionality />
+
+                    <SettingsMenu />
 
                     <NotificationHub />
 

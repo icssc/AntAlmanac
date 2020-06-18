@@ -420,3 +420,17 @@ export const copySchedule = (from, to) => {
         customEventsAfterCopy,
     });
 };
+
+export const toggleDarkMode = (switchEvent) => {
+    dispatcher.dispatch({
+        type: 'TOGGLE_DARK_MODE',
+        darkMode: switchEvent.target.checked,
+    });
+};
+
+export const toggleEvals = (radioEvent) => {
+    dispatcher.dispatch({
+        type: 'TOGGLE_EVALS',
+        evalDestination: radioEvent.target.value,
+    });
+};

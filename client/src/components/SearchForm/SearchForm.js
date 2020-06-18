@@ -105,6 +105,8 @@ class SearchForm extends PureComponent {
                             variant="contained"
                             onClick={() => this.props.searchWebSoc()}
                             className={classes.searchButton}
+                            fullWidth
+                            size='large'
                         >
                             Search
                         </Button>

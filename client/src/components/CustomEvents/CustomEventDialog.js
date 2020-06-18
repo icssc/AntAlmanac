@@ -12,7 +12,7 @@ import {
     TextField,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { Add, Edit } from '@material-ui/icons';
+import { Add, Edit, GetApp } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import { addCustomEvent, editCustomEvent } from '../../actions/AppStoreActions';
 import ScheduleSelector from './ScheduleSelector';
@@ -45,8 +45,8 @@ class CustomEventDialog extends PureComponent {
     };
 
     handleClose = (cancel) => {
-        if (!cancel) this.handleAddToCalendar();
-        if (!this.props.customEvent) this.props.handleSubmenuClose();
+        if (!cancel)
+            this.handleAddToCalendar();
 
         this.setState({ open: false });
     };
@@ -103,10 +103,11 @@ class CustomEventDialog extends PureComponent {
                     <Button
                         disableRipple={true}
                         onClick={() => this.setState({ open: true })}
+                        variant="outlined"
+                        size="small"
+                        style={{ marginRight: 8 }}
                     >
-                        <Fragment>
-                            <Add /> Add Custom
-                        </Fragment>
+                        <Add fontSize="small" /> Add Custom
                     </Button>
                 )}
                 <Dialog open={this.state.open}>
@@ -189,7 +190,6 @@ class CustomEventDialog extends PureComponent {
 
 CustomEventDialog.propTypes = {
     customEvent: PropTypes.object,
-    handleSubmenuClose: PropTypes.func,
 };
 
 export default withStyles(styles)(CustomEventDialog);
