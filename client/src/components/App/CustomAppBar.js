@@ -6,11 +6,12 @@ import {
     Tooltip,
     Typography,
 } from '@material-ui/core';
-import LoadSaveScheduleFunctionality from '../cacheMes/LoadSaveFunctionality';
+import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { Assignment, Info } from '@material-ui/icons';
 import { isMobile } from 'react-device-detect';
 import { withStyles } from '@material-ui/core/styles';
 import logo from './logo.png';
+import NotificationHub from './NotificationHub';
 
 const styles = {
     appBar: {
@@ -30,11 +31,13 @@ class CustomAppBar extends PureComponent {
         return (
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar variant="dense">
-                    <div style={{ flexGrow: 1 }}>
-                        <img height={32} src={logo} alt={'Logo'} />
-                    </div>
+                    <img height={32} src={logo} alt={'Logo'} />
+
+                    <div style={{flexGrow: '1'}} />
 
                     <LoadSaveScheduleFunctionality />
+
+                    <NotificationHub />
 
                     {!isMobile ? (
                         <Tooltip title="Give Us Feedback!">

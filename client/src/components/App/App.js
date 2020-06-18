@@ -1,13 +1,12 @@
 import React, { Fragment, PureComponent } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { Grid } from '@material-ui/core';
-import Calendar from '../Calendar/Calendar';
+import Calendar from '../Calendar/ScheduleCalendar';
 import ReactGA from 'react-ga';
 import NotificationSnackbar from './NotificationSnackbar';
 import { undoDelete } from '../../actions/AppStoreActions';
 import Bar from './CustomAppBar';
-import { isMobile } from 'react-device-detect';
-import DesktopTabs from './DesktopTabs';
+import DesktopTabs from '../CoursePane/DesktopTabs';
 
 class App extends PureComponent {
     componentDidMount = () => {

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent} from 'react';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
@@ -79,7 +79,7 @@ const CustomEvent = (props) => {
         );
 };
 
-class MobileCalendar extends Component {
+class MobileCalendar extends PureComponent {
     render() {
         const { classes } = this.props;
 

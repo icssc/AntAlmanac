@@ -6,8 +6,9 @@
     /*width: 100%;*/
 }
 
-.rbc-time-view .rbc-row {
-    min-height: 0;
+.rbc-time-view .rbc-allday-cell {
+    height: 0;
+    z-index: -1000;
 }
 
 .rbc-timeslot-group {

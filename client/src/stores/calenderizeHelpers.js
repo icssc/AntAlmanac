@@ -55,6 +55,7 @@ export const calendarizeCourseEvents = () => {
                                 startHr,
                                 startMin
                             ),
+                            finalExam: course.section.finalExam,
                             end: new Date(2018, 0, index + 1, endHr, endMin),
                             isCustomEvent: false,
                             scheduleIndices: course.scheduleIndices,

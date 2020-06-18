@@ -7,7 +7,7 @@ import RightPaneStore from '../../stores/RightPaneStore';
 import loadingGif from '../SearchForm/Gifs/loading.mp4';
 import { DynamicSizeList } from '@john-osullivan/react-window-dynamic-fork';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import AdAd from './static/ad_ad.png';
+import AdBanner from '../AdBanner/AdBanner';
 
 const styles = (theme) => ({
     course: {
@@ -36,7 +36,6 @@ const styles = (theme) => ({
     },
     root: {
         height: '100%',
-        // position: 'relative',
     },
     noResultsDiv: {
         height: '100%',
@@ -72,45 +71,33 @@ const flattenSOCObject = (SOCObject) => {
 };
 
 const SectionTableWrapped = React.forwardRef(({ style, index, data }, ref) => {
+    const { courseData, bannerName, bannerLink } = data;
+
     let component;
 
-    if (data[index].schoolName !== undefined && index === 0) {
+    if (courseData[index].schoolName !== undefined && index === 0) {
         component = (
             <SchoolDeptCard
-                comment={data[index].schoolComment}
+                comment={courseData[index].schoolComment}
                 type={'school'}
-                name={data[index].schoolName}
+                name={courseData[index].schoolName}
             />
         );
-    } else if (data[index].deptName !== undefined) {
+    } else if (courseData[index].deptName !== undefined) {
         component = (
             <SchoolDeptCard
-                name={'Department of ' + data[index].deptName}
-                comment={data[index].deptComment}
+                name={`Department of ${courseData[index].deptName}`}
+                comment={courseData[index].deptComment}
                 type={'dept'}
             />
         );
     } else {
-        component = <SectionTable courseDetails={data[index]} />;
+        component = <SectionTable term={RightPaneStore.getFormData().term} courseDetails={courseData[index]} colorAndDelete={false}/>;
     }
     return (
         <div style={style} ref={ref}>
             {index === 0 ? (
-                <a
-                    href="https://forms.gle/irQBrBkqHYYxcEU39"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <img
-                        src={AdAd}
-                        alt="This could be you!"
-                        style={{
-                            flexGrow: 1,
-                            display: 'inline',
-                            width: '100%',
-                        }}
-                    />
-                </a>
+                <AdBanner bannerName={bannerName} bannerLink={bannerLink}/>
             ) : null}
             {component}
         </div>
@@ -121,16 +108,13 @@ class CourseRenderPane extends PureComponent {
     state = {
         courseData: null,
         loading: true,
+        bannerName: '',
+        bannerLink: '',
     };
 
-    componentDidMount() {
+    componentDidMount () {
         this.setState({ loading: true }, async () => {
             const formData = RightPaneStore.getFormData();
-            // ReactGA.event({
-            //     category: 'Search',
-            //     action: formData.deptValue,
-            //     label: formData.term,
-            // });
 
             const params = {
                 department: formData.deptValue,
@@ -153,14 +137,21 @@ class CourseRenderPane extends PureComponent {
             });
 
             const jsonResp = await response.json();
+
+            const adBannerInfo = await fetch('/api/getRandomAd');
+
+            const jsonAdInfo = await adBannerInfo.json();
+
             this.setState({
                 loading: false,
                 courseData: flattenSOCObject(jsonResp),
+                bannerName: jsonAdInfo.bannerName,
+                bannerLink: jsonAdInfo.bannerLink,
             });
         });
     }
 
-    render() {
+    render () {
         const { classes } = this.props;
         let currentView;
 
@@ -168,23 +159,29 @@ class CourseRenderPane extends PureComponent {
             currentView = (
                 <div className={classes.loadingGifStyle}>
                     <video autoPlay loop>
-                        <source src={loadingGif} type="video/mp4" />
+                        <source src={loadingGif} type="video/mp4"/>
                     </video>
                 </div>
             );
         } else {
+            const renderData = {
+                courseData: this.state.courseData,
+                bannerName: this.state.bannerName,
+                bannerLink: this.state.bannerLink,
+            };
+
             currentView = (
                 <div className={classes.root}>
                     {this.state.courseData.length === 0 ? (
                         <div className={classes.noResultsDiv}>
-                            <img src={NoNothing} alt="No Results Found" />
+                            <img src={NoNothing} alt="No Results Found"/>
                         </div>
                     ) : (
                         <AutoSizer>
                             {({ height, width }) => (
                                 <DynamicSizeList
                                     height={height - 56}
-                                    itemData={this.state.courseData}
+                                    itemData={renderData}
                                     itemCount={this.state.courseData.length}
                                     width={width}
                                 >

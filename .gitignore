@@ -1,7 +1,7 @@
-/node_modules
+node_modules/
 
 # production
-/build
+build/
 
 # misc
 .DS_Store
@@ -16,12 +16,14 @@ yarn-debug.log*
 yarn-error.log*
 
 #config
+aws_config.json
 config.json
 
-# npm client-install
-/client/node_modules
-/client/package-lock.json
+# client
+client/node_modules/
+client/package-lock.json
 package-lock.json
 
-#personal Nodes
-notes.txt
+# ad images folder
+ad_banners/*.png
+ad_banners/*.jpg

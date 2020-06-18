@@ -1,7 +1,7 @@
 import React, { Fragment, PureComponent } from 'react';
 import SearchForm from '../SearchForm/SearchForm';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
-import CourseRenderPane from '../CoursePane/CourseRenderPane';
+import CourseRenderPane from './CourseRenderPane';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
@@ -24,12 +24,10 @@ class RightPane extends PureComponent {
     };
 
     render() {
-        const { classes } = this.props;
-
         return (
             <Fragment>
                 <CoursePaneButtonRow
-                    show={!this.state.showSearch}
+                    showSearch={!this.state.showSearch}
                     onDismissSearchResults={this.handleDismissSearchResults}
                 />
                 {this.state.showSearch ? (

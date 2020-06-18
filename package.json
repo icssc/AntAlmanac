@@ -14,10 +14,12 @@
     "nodemon": "^1.14.6"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "aws-sdk": "^2.501.0",
     "concurrently": "^3.5.1",
     "express": "^4.16.2",
     "body-parser": "^1.19.0",
-    "websoc-api": "^0.0.5"
+    "websoc-api": "^0.0.5",
+    "mongodb": "^3.5.6"
   }
 }

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent} from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { IconButton, Tooltip, Typography, InputBase } from '@material-ui/core';
 import { ChevronLeft, ChevronRight, Undo } from '@material-ui/icons';
@@ -25,7 +25,7 @@ const styles = {
     },
 };
 
-class CalendarPaneToolbar extends Component {
+class CalendarPaneToolbar extends PureComponent {
     constructor(props) {
         super(props);
 
@@ -50,7 +50,7 @@ class CalendarPaneToolbar extends Component {
                 {/*        value={this.state.name}*/}
                 {/*    />*/}
                 {/*) : (*/}
-                <Typography variant="subheading" className={classes.inline}>
+                <Typography variant="body2" className={classes.inline}>
                     {'Schedule ' + (this.props.currentScheduleIndex + 1)}
                 </Typography>
                 {/*)}*/}

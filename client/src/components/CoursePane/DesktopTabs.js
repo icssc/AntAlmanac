@@ -65,7 +65,7 @@ class DesktopTabs extends PureComponent {
                                         }}
                                     >
                                         <Search style={{ height: 16 }} />
-                                        <Typography>Class Search</Typography>
+                                        <Typography variant="body2">Class Search</Typography>
                                     </div>
                                 }
                             />
@@ -80,7 +80,7 @@ class DesktopTabs extends PureComponent {
                                         <FormatListBulleted
                                             style={{ height: 16 }}
                                         />
-                                        <Typography>Added Classes</Typography>
+                                        <Typography variant="body2">Added Classes</Typography>
                                     </div>
                                 }
                             />
@@ -93,7 +93,7 @@ class DesktopTabs extends PureComponent {
                                         }}
                                     >
                                         <MyLocation style={{ height: 16 }} />
-                                        <Typography>Map</Typography>
+                                        <Typography variant="body2">Map</Typography>
                                     </div>
                                 }
                             />

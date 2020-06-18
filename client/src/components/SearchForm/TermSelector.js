@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent} from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -6,7 +6,7 @@ import Select from '@material-ui/core/Select';
 import { updateFormValue } from '../../actions/RightPaneActions';
 import RightPaneStore from '../../stores/RightPaneStore.js';
 
-class TermSelector extends Component {
+class TermSelector extends PureComponent {
     state = {
         term: RightPaneStore.getFormData().term,
     };
@@ -21,6 +21,9 @@ class TermSelector extends Component {
             <FormControl fullWidth>
                 <InputLabel>Term</InputLabel>
                 <Select value={this.state.term} onChange={this.handleChange}>
+                    <MenuItem value={'2020 Spring'}>
+                        2020 Spring Quarter
+                    </MenuItem>
                     <MenuItem value={'2020 Winter'}>
                         2020 Winter Quarter
                     </MenuItem>

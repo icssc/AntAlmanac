@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import {
     XAxis,
     YAxis,
@@ -116,30 +116,24 @@ const CustomToolTipNum = ({ active, payload, label }) => {
     return null;
 };
 
-export default class Graph extends Component {
-    constructor(props) {
-        super(props);
-        //console.log(props);
-        this.state = {
-            enrolledColor: '#8884d8',
-            reqColor: '#82ca9d',
-            waitColor: '#fad700',
-            maxColor: '#ff0000',
-            wait: true,
-            enrolled: true,
-            max: true,
-            req: false,
-            data: {},
-        };
-        this.handleOnClick = this.handleOnClick.bind(this);
-        this.formatData = this.formatData.bind(this);
-    }
+export default class OldGraph extends PureComponent {
+   state = {
+        enrolledColor: '#8884d8',
+        reqColor: '#82ca9d',
+        waitColor: '#fad700',
+        maxColor: '#ff0000',
+        wait: true,
+        enrolled: true,
+        max: true,
+        req: false,
+        data: {},
+    };
 
     async componentDidMount() {
         try {
             this.fetchCourseData(this.props.courseID, this.props.session);
         } catch (err) {
-            //console.log(err);
+            console.log(err);
         }
     }
 
@@ -149,7 +143,7 @@ export default class Graph extends Component {
         }
     }
 
-    async fetchCourseData(courseID, session) {
+     fetchCourseData = async (courseID, session) => {
         //Get the course Data
         const params = {
             id: courseID,

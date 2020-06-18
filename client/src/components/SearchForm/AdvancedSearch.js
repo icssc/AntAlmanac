@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import {
     MenuItem,
     Select,
@@ -52,7 +52,7 @@ const styles1 = {
     },
 };
 
-class AdvancedSearchTextFields extends Component {
+class AdvancedSearchTextFields extends PureComponent {
     state = {
         courseCode: RightPaneStore.getFormData().courseCode,
         instructor: RightPaneStore.getFormData().instructor,
@@ -222,7 +222,7 @@ const parentStyles = {
     },
 };
 
-class AdvancedSearch extends Component {
+class AdvancedSearch extends PureComponent {
     constructor(props) {
         super(props);
 
@@ -252,7 +252,7 @@ class AdvancedSearch extends Component {
             <Fragment>
                 <div onClick={this.handleExpand} className={classes.container}>
                     <div>
-                        <Typography noWrap variant="subheading">
+                        <Typography noWrap variant="body1">
                             Advanced Search Options
                         </Typography>
                     </div>

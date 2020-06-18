@@ -93,20 +93,26 @@ export const addCourse = (
     }
 };
 
-export const openSnackbar = (variant, message) => {
+export const openSnackbar = (variant, message, duration, position) => {
     dispatcher.dispatch({
         type: 'OPEN_SNACKBAR',
         variant: variant,
         message: message,
+        duration: duration,
+        position: position
     });
 };
 
-export const saveSchedule = async (userID) => {
+export const saveSchedule = async (userID, rememberMe) => {
     if (userID != null) {
         userID = userID.replace(/\s+/g, '');
 
         if (userID.length > 0) {
-            window.localStorage.setItem('userID', userID);
+            if (rememberMe) {
+                window.localStorage.setItem('userID', userID);
+            } else {
+                window.localStorage.removeItem('userID');
+            }
 
             const addedCourses = AppStore.getAddedCourses();
             const customEvents = AppStore.getCustomEvents();
@@ -137,7 +143,6 @@ export const saveSchedule = async (userID) => {
                     `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
                 );
             } catch (e) {
-                console.log('save went wrong');
                 openSnackbar(
                     'error',
                     `Schedule could not be saved under username "${userID}`
@@ -147,15 +152,26 @@ export const saveSchedule = async (userID) => {
     }
 };
 
-export const loadSchedule = async (userID) => {
+export const loadSchedule = async (userID, rememberMe) => {
     if (userID != null) {
         userID = userID.replace(/\s+/g, '');
 
         if (userID.length > 0) {
-            try {
-                const data = await fetch(`/api/loadUserData/?userID=${userID}`);
-                const json = await data.json();
+            if (rememberMe) {
                 window.localStorage.setItem('userID', userID);
+            } else {
+                window.localStorage.removeItem('userID');
+            }
+
+            try {
+                const data = await fetch('/api/loadUserData', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({userID: userID}),
+                });
+
+                const json = await data.json();
+
                 dispatcher.dispatch({
                     type: 'LOAD_SCHEDULE',
                     userData: await getCoursesData(json.userData),

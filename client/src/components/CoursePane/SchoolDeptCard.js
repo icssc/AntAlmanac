@@ -56,9 +56,7 @@ class SchoolDeptCard extends PureComponent {
                     <Typography
                         noWrap
                         variant={
-                            this.props.type === 'school'
-                                ? 'headline'
-                                : 'subheading'
+                            this.props.type === 'school' ? 'h6' : 'subtitle1'
                         }
                         className={this.props.classes.text}
                     >

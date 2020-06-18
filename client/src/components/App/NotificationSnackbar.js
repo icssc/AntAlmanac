@@ -48,6 +48,7 @@ class NotificationSnackbar extends PureComponent {
         open: false,
         message: '',
         variant: 'info',
+        duration: 3000
     };
 
     openSnackbar = () => {
@@ -55,6 +56,8 @@ class NotificationSnackbar extends PureComponent {
             open: true,
             message: AppStore.getSnackbarMessage(),
             variant: AppStore.getSnackbarVariant(),
+            duration: AppStore.getSnackbarDuration(),
+            position: AppStore.getSnackbarPosition()
         });
     };
 
@@ -62,9 +65,9 @@ class NotificationSnackbar extends PureComponent {
         this.setState({ open: false });
     };
 
-    componentDidMount() {
+    componentDidMount = () => {
         AppStore.on('openSnackbar', this.openSnackbar);
-    }
+    };
 
     handleClose = (event, reason) => {
         if (reason === 'clickaway') {
@@ -74,25 +77,22 @@ class NotificationSnackbar extends PureComponent {
         this.closeSnackbar();
     };
 
-    render() {
+    render () {
         const { classes } = this.props;
         const Icon = variantIcon[this.state.variant];
 
         return (
             <Snackbar
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                }}
+                anchorOrigin={this.state.position}
                 open={this.state.open}
-                autoHideDuration={4000}
+                autoHideDuration={this.state.duration}
                 onClose={this.handleClose}
             >
                 <SnackbarContent
                     className={classes[this.state.variant]}
                     message={
                         <span className={classes.message}>
-                            <Icon className={classes.icon} />
+                            <Icon className={classes.icon}/>
                             {this.state.message}
                         </span>
                     }
@@ -102,7 +102,7 @@ class NotificationSnackbar extends PureComponent {
                             color="inherit"
                             onClick={this.closeSnackbar}
                         >
-                            <CloseIcon className={classes.icon} />
+                            <CloseIcon className={classes.icon}/>
                         </IconButton>,
                     ]}
                 />

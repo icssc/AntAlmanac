@@ -1,9 +1,15 @@
 import React from 'react';
-import { hydrate, render } from 'react-dom';
+import { render } from 'react-dom';
 import App from './components/App/App';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { unregister } from './registerServiceWorker';
-
+// import whyDidYouRender from '@welldone-software/why-did-you-render';
+// if (process.env.NODE_ENV === 'development') {
+// const whyDidYouRender = require('@welldone-software/why-did-you-render/dist/no-classes-transpile/umd/whyDidYouRender.min.js');
+//     whyDidYouRender(React, {
+//         trackAllPureComponents: true,
+//     });
+// // }
 const theme = createMuiTheme({
     typography: {
         htmlFontSize: parseInt(
@@ -38,21 +44,18 @@ const theme = createMuiTheme({
     spacing: 4,
 });
 
+// if (process.env.NODE_ENV === 'development') {
+//     whyDidYouRender(React, {
+//         trackAllPureComponents: true,
+//     });
+// }
+
 const rootElement = document.getElementById('root');
-// if (rootElement.hasChildNodes()) {
-//     hydrate(
-//         <MuiThemeProvider theme={theme}>
-//             <App style={{ height: '100%' }} />
-//         </MuiThemeProvider>,
-//         rootElement
-//     );
-// } else {
 render(
     <MuiThemeProvider theme={theme}>
         <App style={{ height: '100%' }} />
     </MuiThemeProvider>,
     rootElement
 );
-// }
 
 unregister();

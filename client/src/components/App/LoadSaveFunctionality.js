@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent, useEffect, useState } from 'react';
+import React, { Fragment, PureComponent, useEffect } from 'react';
 import { CloudDownload, Save } from '@material-ui/icons';
 import {
     Button,
@@ -12,6 +12,8 @@ import {
 import { loadSchedule, saveSchedule } from '../../actions/AppStoreActions';
 import { withStyles } from '@material-ui/core/styles';
 import { isMobile } from 'react-device-detect';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const styles = {
     buttonMarginSave: {
@@ -26,33 +28,42 @@ class LoadSaveButtonBase extends PureComponent {
     state = {
         isOpen: false,
         userID: '',
+        rememberMe: true
     };
 
-    handleClose = (wasCancelled) => {
-        if (wasCancelled)
-            this.setState({ isOpen: false }, () => {
-                document.removeEventListener('keydown', this.enterEvent, false);
-            });
-        else
-            this.setState({ isOpen: false }, () => {
-                document.removeEventListener('keydown', this.enterEvent, false);
-                this.props.action(this.state.userID);
-            });
-    };
-
-    componentDidMount() {
+    handleOpen = () => {
+        this.setState({isOpen: true});
         if (typeof Storage !== 'undefined') {
             const userID = window.localStorage.getItem('userID');
             if (userID !== null) {
                 this.setState({ userID: userID });
             }
         }
-    }
+    };
+
+    handleClose = (wasCancelled) => {
+        if (wasCancelled)
+            this.setState({ isOpen: false }, () => {
+                document.removeEventListener('keydown', this.enterEvent, false);
+                this.setState({userID: ''});
+            });
+        else
+            this.setState({ isOpen: false }, () => {
+                document.removeEventListener('keydown', this.enterEvent, false);
+                this.props.action(this.state.userID, this.state.rememberMe);
+                this.setState({ userID: '' });
+            });
+    };
+
+    handleToggleRememberMe = (event) => {
+        this.setState({rememberMe: event.target.checked})
+    };
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.state.isOpen)
+        if (!prevState.isOpen && this.state.isOpen)
             document.addEventListener('keydown', this.enterEvent, false);
-        else document.removeEventListener('keydown', this.enterEvent, false);
+        else if (prevState.isOpen && !this.state.isOpen)
+            document.removeEventListener('keydown', this.enterEvent, false);
     }
 
     enterEvent = (event) => {
@@ -70,7 +81,7 @@ class LoadSaveButtonBase extends PureComponent {
         return (
             <Fragment>
                 <Button
-                    onClick={() => this.setState({ isOpen: true })}
+                    onClick={this.handleOpen}
                     color="inherit"
                 >
                     {this.props.button}
@@ -93,6 +104,16 @@ class LoadSaveButtonBase extends PureComponent {
                             onChange={(event) =>
                                 this.setState({ userID: event.target.value })
                             }
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={this.state.rememberMe}
+                                    onChange={this.handleToggleRememberMe}
+                                    color="primary"
+                                />
+                            }
+                            label="Remember Me (Uncheck on shared computers)"
                         />
                     </DialogContent>
                     <DialogActions>

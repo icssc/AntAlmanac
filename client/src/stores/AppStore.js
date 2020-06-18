@@ -15,7 +15,8 @@ class AppStore extends EventEmitter {
         this.deletedCourses = [];
         this.snackbarMessage = '';
         this.snackbarVariant = 'info';
-
+        this.snackbarDuration = 3000;
+        this.snackbarPosition = { vertical: 'bottom', horizontal: 'left'};
         this.eventsInCalendar = [];
         this.finalsEventsInCalendar = [];
     }
@@ -50,6 +51,14 @@ class AppStore extends EventEmitter {
 
     getSnackbarVariant() {
         return this.snackbarVariant;
+    }
+
+    getSnackbarPosition() {
+        return this.snackbarPosition;
+    }
+
+    getSnackbarDuration() {
+        return this.snackbarDuration;
     }
 
     handleActions(action) {
@@ -146,6 +155,8 @@ class AppStore extends EventEmitter {
             case 'OPEN_SNACKBAR':
                 this.snackbarVariant = action.variant;
                 this.snackbarMessage = action.message;
+                this.snackbarDuration = action.duration ? action.duration : this.snackbarDuration;
+                this.snackbarPosition = action.position ? action.position : this.snackbarPosition;
                 this.emit('openSnackbar');
                 break;
             case 'EDIT_CUSTOM_EVENTS':

@@ -4,8 +4,8 @@ import GESelector from './GESelector';
 import TermSelector from './TermSelector';
 import SectionCodeSearchBar from './SectionCodeSearchBar';
 import CourseNumberSearchBar from './CourseNumberSearchBar';
-import React, { Component, Fragment } from 'react';
-import { Button, Typography, Collapse } from '@material-ui/core';
+import React, { PureComponent, Fragment } from 'react';
+import { Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AdvancedSearch from './AdvancedSearch';
 
@@ -42,7 +42,7 @@ const styles = {
     },
 };
 
-class SearchForm extends Component {
+class SearchForm extends PureComponent {
     componentDidMount = () => {
         document.addEventListener('keydown', this.enterEvent, false);
     };

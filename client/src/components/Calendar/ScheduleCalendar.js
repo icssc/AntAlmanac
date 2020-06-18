@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import BigCalendar from 'react-big-calendar';
+import React, { PureComponent} from 'react';
+import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
 import { withStyles } from '@material-ui/core/styles';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
@@ -9,7 +9,7 @@ import CalendarPaneToolbar from './CalendarPaneToolbar';
 import CourseCalendarEvent from './CourseCalendarEvent';
 import AppStore from '../../stores/AppStore';
 
-BigCalendar.momentLocalizer(moment);
+const localizer = momentLocalizer(moment);
 
 const styles = {
     container: {
@@ -69,7 +69,7 @@ const CustomEvent = ({ classes }) => (event) => {
     }
 };
 
-class Calendar extends Component {
+class ScheduleCalendar extends PureComponent {
     state = {
         screenshotting: false,
         anchorEvent: null,
@@ -147,10 +147,10 @@ class Calendar extends Component {
         event.stopPropagation();
 
         if (courseInMoreInfo.sectionType !== 'Fin')
-            this.setState((state) => ({
-                anchorEvent: Boolean(state.anchorEvent) ? null : currentTarget,
+            this.setState({
+                anchorEvent: currentTarget,
                 courseInMoreInfo: courseInMoreInfo,
-            }));
+            });
     };
 
     handleClosePopover = () => {
@@ -228,7 +228,8 @@ class Calendar extends Component {
                                 }
                             />
                         </Popper>
-                        <BigCalendar
+                        <Calendar
+                            localizer={localizer}
                             toolbar={false}
                             formats={{
                                 timeGutterFormat: (date, culture, localizer) =>
@@ -241,15 +242,15 @@ class Calendar extends Component {
                                           ),
                                 dayFormat: 'ddd',
                             }}
-                            defaultView={BigCalendar.Views.WORK_WEEK}
-                            views={[BigCalendar.Views.WORK_WEEK]}
+                            defaultView={Views.WORK_WEEK}
+                            views={[Views.WORK_WEEK]}
                             step={15}
                             timeslots={2}
                             defaultDate={new Date(2018, 0, 1)}
                             min={new Date(2018, 0, 1, 7)}
                             max={new Date(2018, 0, 1, 23)}
                             events={this.getEventsForCalendar()}
-                            eventPropGetter={Calendar.eventStyleGetter}
+                            eventPropGetter={ScheduleCalendar.eventStyleGetter}
                             showMultiDayTimes={false}
                             components={{ event: CustomEvent({ classes }) }}
                             onSelectEvent={this.handleEventClick}
@@ -267,6 +268,6 @@ class Calendar extends Component {
     }
 }
 
-Calendar.propTypes = {};
+ScheduleCalendar.propTypes = {};
 
-export default withStyles(styles)(Calendar);
+export default withStyles(styles)(ScheduleCalendar);

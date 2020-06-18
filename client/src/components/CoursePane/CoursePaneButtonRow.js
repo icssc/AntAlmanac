@@ -24,7 +24,7 @@ class CoursePaneButtonRow extends PureComponent {
         return (
             <div
                 className={classes.buttonRow}
-                style={{ display: this.props.show ? 'block' : 'none' }}
+                style={{ display: this.props.showSearch ? 'block' : 'none' }}
             >
                 <Tooltip title="Back">
                     <IconButton
@@ -48,6 +48,9 @@ class CoursePaneButtonRow extends PureComponent {
     }
 }
 
-CoursePaneButtonRow.propTypes = {};
+CoursePaneButtonRow.propTypes = {
+    showSearch: PropTypes.bool.isRequired,
+    onDismissSearchResults: PropTypes.func.isRequired
+};
 
 export default withStyles(styles)(CoursePaneButtonRow);

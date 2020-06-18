@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, Tooltip } from '@material-ui/core';
+import { IconButton, Paper, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import ColorPicker from '../App/ColorPicker.js';
@@ -50,6 +50,17 @@ const styles = {
     },
 };
 
+const clickToCopy = (event, code) => {
+    event.stopPropagation();
+
+    let Juanito = document.createElement('input');
+    document.body.appendChild(Juanito);
+    Juanito.setAttribute('value', code);
+    Juanito.select();
+    document.execCommand('copy');
+    document.body.removeChild(Juanito);
+};
+
 const genMapLink = (location) => {
     try {
         const location_id = locations[location.split(' ')[0]];
@@ -67,92 +78,165 @@ const CourseCalendarEvent = (props) => {
             instructors,
             sectionCode,
             courseTitle,
-            final: finalExam,
+            finalExam,
             bldg,
         } = courseInMoreInfo;
 
+        // return (
+        //     <div>
+        //         <Paper className={classes.container}>
+        //             <div className={classes.titleBar}>
+        //                 <span className={classes.title}>{courseTitle}</span>
+        //                 <Tooltip title="Delete">
+        //                     <IconButton size="small" onClick={() =>
+        //                         deleteCourse(
+        //                             sectionCode,
+        //                             currentScheduleIndex,
+        //                         )
+        //                     }>
+        //                         <Delete fontSize="inherit"/>
+        //                     </IconButton>
+        //                 </Tooltip>
+        //             </div>
+        //             <div>
+        //                 <table className={classes.table}>
+        //                     <tbody>
+        //                     <tr>
+        //                         <td className={classes.alignToTop}>
+        //                             Instructors
+        //                         </td>
+        //                         <td>
+        //                             <ul style={{listStyle: "none", margin: 0}}>
+        //                                 {instructors.map((instructor, index) =>
+        //                                     <li key={index}>{instructor}</li>
+        //                                 )}
+        //                             </ul>
+        //                             {/*{instructors.join('\n')}*/}
+        //                         </td>
+        //                     </tr>
+        //                     <tr>
+        //                         <td className={classes.alignToTop}>Location</td>
+        //                         <td
+        //                             className={
+        //                                 classes.multiline +
+        //                                 ' ' +
+        //                                 classes.rightCells
+        //                             }
+        //                         >
+        //                             {bldg !== 'TBA' ? (
+        //                                 <a
+        //                                     href={genMapLink(bldg)}
+        //                                     target="_blank"
+        //                                     rel="noopener noreferrer"
+        //                                 >
+        //                                     {bldg}
+        //                                 </a>
+        //                             ) : (
+        //                                 bldg
+        //                             )}
+        //                         </td>
+        //                     </tr>
+        //                     <tr>
+        //                         <td>Final</td>
+        //                         <td className={classes.rightCells}>
+        //                             {finalExam}
+        //                         </td>
+        //                     </tr>
+        //                     <tr>
+        //                         <td>Color</td>
+        //                         <td className={classes.colorPicker}>
+        //                             <ColorPicker
+        //                                 color={courseInMoreInfo.color}
+        //                                 isCustomEvent={
+        //                                     courseInMoreInfo.isCustomEvent
+        //                                 }
+        //                                 customEventID={
+        //                                     courseInMoreInfo.customEventID
+        //                                 }
+        //                                 sectionCode={
+        //                                     courseInMoreInfo.sectionCode
+        //                                 }
+        //                             />
+        //                         </td>
+        //                     </tr>
+        //                     </tbody>
+        //                 </table>
+        //             </div>
+        //         </Paper>
+        //     </div>
+        // );
+
         return (
-            <div>
-                <Paper className={classes.container}>
-                    <div className={classes.titleBar}>
-                        <span className={classes.title}>{courseTitle}</span>
-                        <Tooltip title="Delete">
-                            <Delete
-                                className={classes.icon}
-                                onClick={() =>
-                                    deleteCourse(
-                                        sectionCode,
-                                        currentScheduleIndex
-                                    )
+            <Paper className={classes.container}>
+                <div className={classes.titleBar}>
+                    <span className={classes.title}>{courseTitle}</span>
+                    <Tooltip title="Delete">
+                        <IconButton size="small" onClick={() =>
+                            deleteCourse(sectionCode, currentScheduleIndex)
+                        }>
+                            <Delete fontSize="inherit"/>
+                        </IconButton>
+                    </Tooltip>
+                </div>
+                <table className={classes.table}>
+                    <tbody>
+                    <tr>
+                        <td className={classes.alignToTop}>Section code</td>
+                        <Tooltip title="Click to copy course code" placement="right">
+                            <td
+                                onClick={(e) => clickToCopy(e, sectionCode)}
+                                className={classes.rightCells}
+                            >
+                                <u>{sectionCode}</u>
+                            </td>
+                        </Tooltip>
+                    </tr>
+                    <tr>
+                        <td className={classes.alignToTop}>Instructors</td>
+                        <td className={classes.multiline + ' ' + classes.rightCells}>
+                            {instructors.join('\n')}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className={classes.alignToTop}>Location</td>
+                        <td className={classes.multiline + ' ' + classes.rightCells}>
+                            {bldg !== 'TBA' ? (
+                                <a
+                                    href={genMapLink(bldg)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    {bldg}
+                                </a>
+                            ) : (
+                                bldg
+                            )}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Final</td>
+                        <td className={classes.rightCells}>{finalExam}</td>
+                    </tr>
+                    <tr>
+                        <td>Color</td>
+                        <td className={classes.colorPicker}>
+                            <ColorPicker
+                                color={courseInMoreInfo.color}
+                                isCustomEvent={
+                                    courseInMoreInfo.isCustomEvent
+                                }
+                                customEventID={
+                                    courseInMoreInfo.customEventID
+                                }
+                                sectionCode={
+                                    courseInMoreInfo.sectionCode
                                 }
                             />
-                        </Tooltip>
-                    </div>
-                    <table className={classes.table}>
-                        <tbody>
-                            <tr>
-                                <td className={classes.alignToTop}>
-                                    Instructors
-                                </td>
-                                <td
-                                    className={
-                                        classes.multiline +
-                                        ' ' +
-                                        classes.rightCells
-                                    }
-                                >
-                                    {instructors.join('\n')}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td className={classes.alignToTop}>Location</td>
-                                <td
-                                    className={
-                                        classes.multiline +
-                                        ' ' +
-                                        classes.rightCells
-                                    }
-                                >
-                                    {bldg !== 'TBA' ? (
-                                        <a
-                                            href={genMapLink(bldg)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            {bldg}
-                                        </a>
-                                    ) : (
-                                        bldg
-                                    )}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Final</td>
-                                <td className={classes.rightCells}>
-                                    {finalExam}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Color</td>
-                                <td className={classes.colorPicker}>
-                                    <ColorPicker
-                                        color={courseInMoreInfo.color}
-                                        isCustomEvent={
-                                            courseInMoreInfo.isCustomEvent
-                                        }
-                                        customEventID={
-                                            courseInMoreInfo.customEventID
-                                        }
-                                        sectionCode={
-                                            courseInMoreInfo.sectionCode
-                                        }
-                                    />
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </Paper>
-            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </Paper>
         );
     } else {
         const { title, customEventID } = courseInMoreInfo;
@@ -169,44 +253,44 @@ const CourseCalendarEvent = (props) => {
                     </div>
                     <table className={classes.table}>
                         <tbody>
-                            <tr>
-                                <td className={classes.colorPicker}>
-                                    <ColorPicker
-                                        color={courseInMoreInfo.color}
-                                        isCustomEvent={
-                                            courseInMoreInfo.isCustomEvent
-                                        }
-                                        customEventID={
-                                            courseInMoreInfo.customEventID
+                        <tr>
+                            <td className={classes.colorPicker}>
+                                <ColorPicker
+                                    color={courseInMoreInfo.color}
+                                    isCustomEvent={
+                                        courseInMoreInfo.isCustomEvent
+                                    }
+                                    customEventID={
+                                        courseInMoreInfo.customEventID
+                                    }
+                                />
+                            </td>
+                            <td className={classes.rightCells}>
+                                To edit go to
+                                <br/>
+                                Added Classes
+                                {/*<CustomEventsDialog editMode={true} event={courseInMoreInfo} onEditCustomEvent={props.onEditCustomEvent}/>*/}
+                            </td>
+                            <td
+                                className={
+                                    classes.rightCells +
+                                    ' ' +
+                                    classes.alignToTop
+                                }
+                            >
+                                <Tooltip title="Delete">
+                                    <Delete
+                                        className={classes.icon}
+                                        onClick={() =>
+                                            deleteCustomEvent(
+                                                customEventID,
+                                                currentScheduleIndex,
+                                            )
                                         }
                                     />
-                                </td>
-                                <td className={classes.rightCells}>
-                                    To edit go to
-                                    <br />
-                                    Added Classes
-                                    {/*<CustomEventsDialog editMode={true} event={courseInMoreInfo} onEditCustomEvent={props.onEditCustomEvent}/>*/}
-                                </td>
-                                <td
-                                    className={
-                                        classes.rightCells +
-                                        ' ' +
-                                        classes.alignToTop
-                                    }
-                                >
-                                    <Tooltip title="Delete">
-                                        <Delete
-                                            className={classes.icon}
-                                            onClick={() =>
-                                                deleteCustomEvent(
-                                                    customEventID,
-                                                    currentScheduleIndex
-                                                )
-                                            }
-                                        />
-                                    </Tooltip>
-                                </td>
-                            </tr>
+                                </Tooltip>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </Paper>

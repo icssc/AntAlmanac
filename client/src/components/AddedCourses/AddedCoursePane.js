@@ -1,5 +1,5 @@
 import AppStore from '../../stores/AppStore';
-import React, { Component, Fragment } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { Grid, Typography, Button, Menu, MenuItem } from '@material-ui/core';
 import SectionTable from '../SectionTable/SectionTable.js';
 import { withStyles } from '@material-ui/core/styles';
@@ -22,7 +22,7 @@ const styles = {
     },
 };
 
-class AddedCoursePane extends Component {
+class AddedCoursePane extends PureComponent {
     state = {
         courses: [],
         customEvents: [],
@@ -133,7 +133,6 @@ class AddedCoursePane extends Component {
                                                     index
                                                 }
                                                 onClick={() => {
-                                                    console.log(index);
                                                     copySchedule(
                                                         AppStore.getCurrentScheduleIndex(),
                                                         index

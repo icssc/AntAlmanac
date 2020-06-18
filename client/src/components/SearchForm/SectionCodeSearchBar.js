@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { TextField } from '@material-ui/core';
 import { updateFormValue } from '../../actions/RightPaneActions';
 import RightPaneStore from '../../stores/RightPaneStore';
 
-class SectionCodeSearchBar extends Component {
+class SectionCodeSearchBar extends PureComponent {
     state = {
         sectionCode: RightPaneStore.getFormData().sectionCode,
     };

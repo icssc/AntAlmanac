@@ -1,7 +1,7 @@
 import React, { Fragment, PureComponent } from 'react';
 import { Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import AlmanacGraphWrapped from '../AlmanacGraph/AlmanacGraph';
+import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph';
 import CourseInfoBar from './CourseInfoBar';
 import SectionTableBody from './SectionTableBody';
 import PropTypes from 'prop-types';
@@ -88,8 +88,7 @@ class SectionTable extends PureComponent {
                         courseNumber={this.state.courseDetails.courseNumber}
                     />
 
-                    <AlmanacGraphWrapped
-                        term={term}
+                    <AlmanacGraph
                         courseDetails={this.state.courseDetails}
                     />
 
@@ -148,6 +147,7 @@ class SectionTable extends PureComponent {
 
 SectionTable.propTypes = {
     courseDetails: PropTypes.object.isRequired,
+    term: PropTypes.string.isRequired,
     colorAndDelete: PropTypes.bool.isRequired,
 };
 
