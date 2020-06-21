@@ -128,7 +128,8 @@ class SectionTable extends PureComponent {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.courseDetails.sections.map((section) => {
+                        {
+                            this.state.courseDetails.sections.map((section) => {
                             return (
                                 <SectionTableBody
                                     section={section}

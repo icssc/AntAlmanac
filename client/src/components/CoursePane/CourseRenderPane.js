@@ -74,7 +74,7 @@ const SectionTableWrapped = React.forwardRef(({ style, index, data }, ref) => {
 
     let component;
 
-    if (courseData[index].schoolName !== undefined && index === 0) {
+    if (courseData[index].departments !== undefined) {
         component = (
             <SchoolDeptCard
                 comment={courseData[index].schoolComment}
@@ -82,7 +82,7 @@ const SectionTableWrapped = React.forwardRef(({ style, index, data }, ref) => {
                 name={courseData[index].schoolName}
             />
         );
-    } else if (courseData[index].deptName !== undefined) {
+    } else if (courseData[index].courses !== undefined) {
         component = (
             <SchoolDeptCard
                 name={`Department of ${courseData[index].deptName}`}

@@ -13,7 +13,6 @@
         "leaflet": "^1.6.0",
         "material-ui-popup-state": "^1.5.3",
         "moment": "^2.24.0",
-        "mui-downshift": "^1.4.1",
         "prop-types": "^15.7.2",
         "react": "^16.13.1",
         "react-big-calendar": "^0.24.1",
