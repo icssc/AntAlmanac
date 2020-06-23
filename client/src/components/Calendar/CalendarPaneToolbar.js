@@ -1,12 +1,12 @@
 import React, { PureComponent} from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { IconButton, Tooltip, Typography, InputBase, Paper, Button } from '@material-ui/core';
+import { IconButton, Tooltip, Typography,  Paper, Button } from '@material-ui/core';
 import { ChevronLeft, ChevronRight, Undo } from '@material-ui/icons';
 import PropTypes from 'prop-types';
-import DownloadMenu from './DownloadMenu';
 import { undoDelete } from '../../actions/AppStoreActions';
 import CustomEventsDialog from '../CustomEvents/CustomEventDialog';
 import { changeCurrentSchedule } from '../../actions/AppStoreActions';
+import ScreenshotButton from './ScreenshotButton';
 
 const styles = {
   toolbar: {
@@ -44,13 +44,13 @@ class CalendarPaneToolbar extends PureComponent {
 
                 <div className={classes.spacer} />
 
-                <Tooltip title="Undo Last Delete">
+                <Tooltip title="Undo last deleted course">
                     <IconButton onClick={() => undoDelete(null)}>
                         <Undo fontSize="small" />
                     </IconButton>
                 </Tooltip>
 
-                <Tooltip title="Show Finals Schedule">
+                <Tooltip title="Toggle showing finals schedule">
                   <Button
                     variant={(this.props.showFinalsSchedule) ? 'contained' : 'outlined'}
                     onClick={this.props.toggleDisplayFinalsSchedule}
@@ -61,16 +61,9 @@ class CalendarPaneToolbar extends PureComponent {
                   </Button>
                 </Tooltip>
 
-                <Tooltip title="Download Menu">
-                    <DownloadMenu
-                        onTakeScreenshot={this.props.onTakeScreenshot}
-                        eventsInCalendar={this.props.eventsInCalendar}
-                    />
-                </Tooltip>
+                <ScreenshotButton onTakeScreenshot={this.props.onTakeScreenshot}/>
 
-                <Tooltip title="Add Custom Events">
-                    <CustomEventsDialog editMode={false}/>
-                </Tooltip>
+                <CustomEventsDialog editMode={false}/>
             </Paper>
         );
     }

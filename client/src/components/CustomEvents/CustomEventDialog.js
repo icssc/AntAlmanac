@@ -9,10 +9,10 @@ import {
     IconButton,
     Input,
     InputLabel,
-    TextField,
+    TextField, Tooltip,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { Add, Edit, GetApp } from '@material-ui/icons';
+import { Add, Edit } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import { addCustomEvent, editCustomEvent } from '../../actions/AppStoreActions';
 import ScheduleSelector from './ScheduleSelector';
@@ -100,15 +100,17 @@ class CustomEventDialog extends PureComponent {
                         <Edit fontSize="small" />
                     </IconButton>
                 ) : (
-                    <Button
-                        disableRipple={true}
-                        onClick={() => this.setState({ open: true })}
-                        variant="outlined"
-                        size="small"
-                        style={{ marginRight: 8 }}
-                    >
-                        <Add fontSize="small" /> Add Custom
-                    </Button>
+                    <Tooltip title="Add custom events">
+                        <Button
+                            disableRipple={true}
+                            onClick={() => this.setState({ open: true })}
+                            variant="outlined"
+                            size="small"
+                            startIcon={<Add fontSize="small" />}
+                        >
+                             Add Custom
+                        </Button>
+                    </Tooltip>
                 )}
                 <Dialog open={this.state.open}>
                     <DialogContent>

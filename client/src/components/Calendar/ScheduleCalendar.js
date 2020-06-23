@@ -1,4 +1,5 @@
-import React, { PureComponent} from 'react';
+import React, { PureComponent } from 'react';
+import ReactDOM from 'react-dom';
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
 import { withStyles } from '@material-ui/core/styles';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -88,6 +89,7 @@ class ScheduleCalendar extends PureComponent {
                 cursor: 'pointer',
                 borderStyle: 'none',
                 borderRadius: 0,
+                isScreenshotting: false,
             },
         };
     };
@@ -116,28 +118,32 @@ class ScheduleCalendar extends PureComponent {
         AppStore.on('customEventsChange', this.updateEventsInCalendar);
         AppStore.on(
             'currentScheduleIndexChange',
-            this.updateCurrentScheduleIndex
+            this.updateCurrentScheduleIndex,
         );
     };
 
     componentWillUnmount = () => {
         AppStore.removeListener(
             'addedCoursesChange',
-            this.updateEventsInCalendar
+            this.updateEventsInCalendar,
         );
         AppStore.removeListener(
             'customEventsChange',
-            this.updateEventsInCalendar
+            this.updateEventsInCalendar,
         );
         AppStore.removeListener(
             'currentScheduleIndexChange',
-            this.updateCurrentScheduleIndex
+            this.updateCurrentScheduleIndex,
         );
     };
 
     handleTakeScreenshot = async (html2CanvasScreenshot) => {
+        const calendarHeader = ReactDOM.findDOMNode(this).getElementsByClassName('rbc-time-header');
+        const oldMargin = calendarHeader[0].style.marginRight;
+        calendarHeader[0].style.marginRight = '0px';
         this.setState({ screenshotting: true }, async () => {
             await html2CanvasScreenshot();
+            calendarHeader[0].style.marginRight = oldMargin;
             this.setState({ screenshotting: false });
         });
     };
@@ -165,12 +171,12 @@ class ScheduleCalendar extends PureComponent {
         return eventSet.filter(
             (event) =>
                 event.scheduleIndices.includes(
-                    this.state.currentScheduleIndex
-                ) || event.scheduleIndices.length === 4
+                    this.state.currentScheduleIndex,
+                ) || event.scheduleIndices.length === 4,
         );
     };
 
-    render() {
+    render () {
         const { classes } = this.props;
         return (
             <div
@@ -180,88 +186,67 @@ class ScheduleCalendar extends PureComponent {
                 <CalendarPaneToolbar
                     onTakeScreenshot={this.handleTakeScreenshot}
                     currentScheduleIndex={this.state.currentScheduleIndex}
-                    toggleDisplayFinalsSchedule={
-                        this.toggleDisplayFinalsSchedule
-                    }
+                    toggleDisplayFinalsSchedule={this.toggleDisplayFinalsSchedule}
                     showFinalsSchedule={this.state.showFinalsSchedule}
                 />
-                <div>
-                    <div
-                        id="screenshot"
-                        style={
-                            !this.state.screenshotting
-                                ? {
-                                      height: `calc(100vh - 104px)`,
-                                  }
-                                : {
-                                      height: `${
-                                          this.props.isDesktop
-                                              ? '100%'
-                                              : '100vh'
-                                      }`,
-                                      display: `${
-                                          this.props.isDesktop
-                                              ? 'null'
-                                              : 'inline-block'
-                                      }`,
-                                  }
-                        }
+                <div
+                    id="screenshot"
+                    style={!this.state.screenshotting ? { height: `calc(100vh - 104px)` } : { height: '100%', width: '1000px' }}
+                >
+                    <Popper
+                        anchorEl={this.state.anchorEvent}
+                        placement="right"
+                        modifiers={{
+                            flip: {
+                                enabled: true,
+                            },
+                            preventOverflow: {
+                                enabled: true,
+                                boundariesElement: 'scrollParent',
+                            },
+                        }}
+                        open={Boolean(this.state.anchorEvent)}
                     >
-                        <Popper
-                            anchorEl={this.state.anchorEvent}
-                            placement="right"
-                            modifiers={{
-                                flip: {
-                                    enabled: true,
-                                },
-                                preventOverflow: {
-                                    enabled: true,
-                                    boundariesElement: 'scrollParent',
-                                },
-                            }}
-                            open={Boolean(this.state.anchorEvent)}
-                        >
-                            <CourseCalendarEvent
-                                courseInMoreInfo={this.state.courseInMoreInfo}
-                                currentScheduleIndex={
-                                    this.state.currentScheduleIndex
-                                }
-                            />
-                        </Popper>
-                        <Calendar
-                            localizer={localizer}
-                            toolbar={false}
-                            formats={{
-                                timeGutterFormat: (date, culture, localizer) =>
-                                    date.getMinutes() > 0
-                                        ? ''
-                                        : localizer.format(
-                                              date,
-                                              'h A',
-                                              culture
-                                          ),
-                                dayFormat: 'ddd',
-                            }}
-                            defaultView={Views.WORK_WEEK}
-                            views={[Views.WORK_WEEK]}
-                            step={15}
-                            timeslots={2}
-                            defaultDate={new Date(2018, 0, 1)}
-                            min={new Date(2018, 0, 1, 7)}
-                            max={new Date(2018, 0, 1, 23)}
-                            events={this.getEventsForCalendar()}
-                            eventPropGetter={ScheduleCalendar.eventStyleGetter}
-                            showMultiDayTimes={false}
-                            components={{ event: CustomEvent({ classes }) }}
-                            onSelectEvent={this.handleEventClick}
+                        <CourseCalendarEvent
+                            courseInMoreInfo={this.state.courseInMoreInfo}
+                            currentScheduleIndex={
+                                this.state.currentScheduleIndex
+                            }
                         />
-                        {/*<Fragment/>*/}
-                        {/*// <MobileCalendar*/}
-                        {/*//     classEventsInCalendar={classEventsInCalendar}*/}
-                        {/*//     EventBox={CustomEvent({ classes })}*/}
-                        {/*//     onSelectEvent={this.handleEventClick}*/}
-                        {/*// />*/}
-                    </div>
+                    </Popper>
+                    <Calendar
+                        localizer={localizer}
+                        toolbar={false}
+                        formats={{
+                            timeGutterFormat: (date, culture, localizer) =>
+                                date.getMinutes() > 0
+                                    ? ''
+                                    : localizer.format(
+                                    date,
+                                    'h A',
+                                    culture,
+                                    ),
+                            dayFormat: 'ddd',
+                        }}
+                        defaultView={Views.WORK_WEEK}
+                        views={[Views.WORK_WEEK]}
+                        step={15}
+                        timeslots={2}
+                        defaultDate={new Date(2018, 0, 1)}
+                        min={new Date(2018, 0, 1, 7)}
+                        max={new Date(2018, 0, 1, 23)}
+                        events={this.getEventsForCalendar()}
+                        eventPropGetter={ScheduleCalendar.eventStyleGetter}
+                        showMultiDayTimes={false}
+                        components={{ event: CustomEvent({ classes }) }}
+                        onSelectEvent={this.handleEventClick}
+                    />
+                    {/*<Fragment/>*/}
+                    {/*// <MobileCalendar*/}
+                    {/*//     classEventsInCalendar={classEventsInCalendar}*/}
+                    {/*//     EventBox={CustomEvent({ classes })}*/}
+                    {/*//     onSelectEvent={this.handleEventClick}*/}
+                    {/*// />*/}
                 </div>
             </div>
         );
