@@ -10,19 +10,8 @@ import {
     TextField,
 } from '@material-ui/core';
 import { loadSchedule, saveSchedule } from '../../actions/AppStoreActions';
-import { withStyles } from '@material-ui/core/styles';
-import { isMobile } from 'react-device-detect';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-
-const styles = {
-    buttonMarginSave: {
-        marginRight: '4px',
-    },
-    buttonMarginLoad: {
-        marginRight: '8px',
-    },
-};
 
 class LoadSaveButtonBase extends PureComponent {
     state = {
@@ -83,8 +72,9 @@ class LoadSaveButtonBase extends PureComponent {
                 <Button
                     onClick={this.handleOpen}
                     color="inherit"
+                    startIcon={this.props.actionName === 'Save' ? <Save/> : <CloudDownload/>}
                 >
-                    {this.props.button}
+                    {this.props.actionName}
                 </Button>
                 <Dialog open={this.state.isOpen}>
                     <DialogTitle>{this.props.actionName}</DialogTitle>
@@ -136,43 +126,29 @@ class LoadSaveButtonBase extends PureComponent {
     }
 }
 
-const LoadSaveScheduleFunctionality = (props) => {
+const LoadSaveScheduleFunctionality = () => {
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
             const savedUserID = window.localStorage.getItem('userID');
 
             if (savedUserID != null) {
-                loadSchedule(savedUserID);
+                loadSchedule(savedUserID, true);
             }
         }
     }, []);
-
-    const { classes } = props;
 
     return (
         <Fragment>
             <LoadSaveButtonBase
                 actionName={'Save'}
                 action={saveSchedule}
-                button={
-                    <Fragment>
-                        <Save className={classes.buttonMarginSave} />
-                        {!isMobile ? 'Save' : ''}
-                    </Fragment>
-                }
             />
             <LoadSaveButtonBase
                 actionName={'Load'}
                 action={loadSchedule}
-                button={
-                    <Fragment>
-                        <CloudDownload className={classes.buttonMarginLoad} />
-                        {!isMobile ? 'Load' : ''}
-                    </Fragment>
-                }
             />
         </Fragment>
     );
 };
 
-export default withStyles(styles)(LoadSaveScheduleFunctionality);
+export default LoadSaveScheduleFunctionality;

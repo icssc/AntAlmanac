@@ -6,11 +6,23 @@ import ColorPicker from '../App/ColorPicker.js';
 import { Delete } from '@material-ui/icons';
 import locations from '../SectionTable/static/locations.json';
 import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
+import CustomEventDialog from '../CustomEvents/CustomEventDialog';
+import AppStore from '../../stores/AppStore';
 
 const styles = {
-    container: {
+    courseContainer: {
         padding: '0.5rem',
         minWidth: '15rem',
+    },
+    customEventContainer: {
+        padding: '0.5rem',
+    },
+    buttonBar: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+    customEventColorPicker: {
+        padding: '0.75rem 0.75rem 0.75rem 0rem'
     },
     title: {
         fontSize: '0.9rem',
@@ -39,10 +51,14 @@ const styles = {
     multiline: {
         whiteSpace: 'pre',
     },
-    colorPicker: {
+    stickToRight: {
         float: 'right',
+    },
+    colorPicker: {
         cursor: 'pointer',
+        display: 'inline-block',
         '& > div': {
+            display: 'inline-block',
             height: '1.5rem',
             width: '1.5rem',
             borderRadius: '50%',
@@ -53,12 +69,12 @@ const styles = {
 const clickToCopy = (event, code) => {
     event.stopPropagation();
 
-    let Juanito = document.createElement('input');
-    document.body.appendChild(Juanito);
-    Juanito.setAttribute('value', code);
-    Juanito.select();
+    let inputElem = document.createElement('input');
+    document.body.appendChild(inputElem);
+    inputElem.setAttribute('value', code);
+    inputElem.select();
     document.execCommand('copy');
-    document.body.removeChild(Juanito);
+    document.body.removeChild(inputElem);
 };
 
 const genMapLink = (location) => {
@@ -82,92 +98,8 @@ const CourseCalendarEvent = (props) => {
             bldg,
         } = courseInMoreInfo;
 
-        // return (
-        //     <div>
-        //         <Paper className={classes.container}>
-        //             <div className={classes.titleBar}>
-        //                 <span className={classes.title}>{courseTitle}</span>
-        //                 <Tooltip title="Delete">
-        //                     <IconButton size="small" onClick={() =>
-        //                         deleteCourse(
-        //                             sectionCode,
-        //                             currentScheduleIndex,
-        //                         )
-        //                     }>
-        //                         <Delete fontSize="inherit"/>
-        //                     </IconButton>
-        //                 </Tooltip>
-        //             </div>
-        //             <div>
-        //                 <table className={classes.table}>
-        //                     <tbody>
-        //                     <tr>
-        //                         <td className={classes.alignToTop}>
-        //                             Instructors
-        //                         </td>
-        //                         <td>
-        //                             <ul style={{listStyle: "none", margin: 0}}>
-        //                                 {instructors.map((instructor, index) =>
-        //                                     <li key={index}>{instructor}</li>
-        //                                 )}
-        //                             </ul>
-        //                             {/*{instructors.join('\n')}*/}
-        //                         </td>
-        //                     </tr>
-        //                     <tr>
-        //                         <td className={classes.alignToTop}>Location</td>
-        //                         <td
-        //                             className={
-        //                                 classes.multiline +
-        //                                 ' ' +
-        //                                 classes.rightCells
-        //                             }
-        //                         >
-        //                             {bldg !== 'TBA' ? (
-        //                                 <a
-        //                                     href={genMapLink(bldg)}
-        //                                     target="_blank"
-        //                                     rel="noopener noreferrer"
-        //                                 >
-        //                                     {bldg}
-        //                                 </a>
-        //                             ) : (
-        //                                 bldg
-        //                             )}
-        //                         </td>
-        //                     </tr>
-        //                     <tr>
-        //                         <td>Final</td>
-        //                         <td className={classes.rightCells}>
-        //                             {finalExam}
-        //                         </td>
-        //                     </tr>
-        //                     <tr>
-        //                         <td>Color</td>
-        //                         <td className={classes.colorPicker}>
-        //                             <ColorPicker
-        //                                 color={courseInMoreInfo.color}
-        //                                 isCustomEvent={
-        //                                     courseInMoreInfo.isCustomEvent
-        //                                 }
-        //                                 customEventID={
-        //                                     courseInMoreInfo.customEventID
-        //                                 }
-        //                                 sectionCode={
-        //                                     courseInMoreInfo.sectionCode
-        //                                 }
-        //                             />
-        //                         </td>
-        //                     </tr>
-        //                     </tbody>
-        //                 </table>
-        //             </div>
-        //         </Paper>
-        //     </div>
-        // );
-
         return (
-            <Paper className={classes.container}>
+            <Paper className={classes.courseContainer}>
                 <div className={classes.titleBar}>
                     <span className={classes.title}>{courseTitle}</span>
                     <Tooltip title="Delete">
@@ -193,13 +125,13 @@ const CourseCalendarEvent = (props) => {
                     </tr>
                     <tr>
                         <td className={classes.alignToTop}>Instructors</td>
-                        <td className={classes.multiline + ' ' + classes.rightCells}>
+                        <td className={`${classes.multiline} ${classes.rightCells}`}>
                             {instructors.join('\n')}
                         </td>
                     </tr>
                     <tr>
                         <td className={classes.alignToTop}>Location</td>
-                        <td className={classes.multiline + ' ' + classes.rightCells}>
+                        <td className={`${classes.multiline} ${classes.rightCells}`}>
                             {bldg !== 'TBA' ? (
                                 <a
                                     href={genMapLink(bldg)}
@@ -219,18 +151,12 @@ const CourseCalendarEvent = (props) => {
                     </tr>
                     <tr>
                         <td>Color</td>
-                        <td className={classes.colorPicker}>
+                        <td className={`${classes.colorPicker} ${classes.stickToRight}`}>
                             <ColorPicker
                                 color={courseInMoreInfo.color}
-                                isCustomEvent={
-                                    courseInMoreInfo.isCustomEvent
-                                }
-                                customEventID={
-                                    courseInMoreInfo.customEventID
-                                }
-                                sectionCode={
-                                    courseInMoreInfo.sectionCode
-                                }
+                                isCustomEvent={courseInMoreInfo.isCustomEvent}
+                                customEventID={courseInMoreInfo.customEventID}
+                                sectionCode={courseInMoreInfo.sectionCode}
                             />
                         </td>
                     </tr>
@@ -241,66 +167,46 @@ const CourseCalendarEvent = (props) => {
     } else {
         const { title, customEventID } = courseInMoreInfo;
         return (
-            <div>
-                <Paper className={classes.container}>
-                    <div className={classes.titleBar}>
-                        <span
-                            className={classes.title}
-                            style={{ marginBottom: 5 }}
-                        >
-                            {title}
-                        </span>
+            <Paper className={classes.customEventContainer} onClick={(event) => event.stopPropagation()}>
+                <div className={classes.title}>
+                    {title}
+                </div>
+                <div className={classes.buttonBar}>
+                    <div className={`${classes.colorPicker} ${classes.customEventColorPicker}`}>
+                        <ColorPicker
+                            color={courseInMoreInfo.color}
+                            isCustomEvent={true}
+                            customEventID={courseInMoreInfo.customEventID}
+                        />
                     </div>
-                    <table className={classes.table}>
-                        <tbody>
-                        <tr>
-                            <td className={classes.colorPicker}>
-                                <ColorPicker
-                                    color={courseInMoreInfo.color}
-                                    isCustomEvent={
-                                        courseInMoreInfo.isCustomEvent
-                                    }
-                                    customEventID={
-                                        courseInMoreInfo.customEventID
-                                    }
-                                />
-                            </td>
-                            <td className={classes.rightCells}>
-                                To edit go to
-                                <br/>
-                                Added Classes
-                                {/*<CustomEventsDialog editMode={true} event={courseInMoreInfo} onEditCustomEvent={props.onEditCustomEvent}/>*/}
-                            </td>
-                            <td
-                                className={
-                                    classes.rightCells +
-                                    ' ' +
-                                    classes.alignToTop
-                                }
-                            >
-                                <Tooltip title="Delete">
-                                    <Delete
-                                        className={classes.icon}
-                                        onClick={() =>
-                                            deleteCustomEvent(
-                                                customEventID,
-                                                currentScheduleIndex,
-                                            )
-                                        }
-                                    />
-                                </Tooltip>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </Paper>
-            </div>
+                    <CustomEventDialog onDialogClose={props.closePopover}
+                                       customEvent={
+                                           AppStore.getCustomEvents().find(customEvent => customEvent.customEventID === customEventID)
+                                       }/>
+
+                    <Tooltip title="Delete">
+                        <IconButton
+                            onClick={() => {
+                                props.closePopover();
+                                deleteCustomEvent(
+                                    customEventID,
+                                    currentScheduleIndex,
+                                );
+                            }}
+                        >
+                            <Delete fontSize="small"/>
+                        </IconButton>
+                    </Tooltip>
+                </div>
+            </Paper>
         );
     }
 };
 
 CourseCalendarEvent.propTypes = {
     courseInMoreInfo: PropTypes.object.isRequired,
+    closePopover: PropTypes.func.isRequired,
+    currentScheduleIndex: PropTypes.number.isRequired,
 };
 
 export default withStyles(styles)(CourseCalendarEvent);

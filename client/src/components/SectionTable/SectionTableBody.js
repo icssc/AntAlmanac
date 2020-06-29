@@ -1,27 +1,13 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import locations from './static/locations';
 import restrictionsMapping from './static/restrictionsMapping';
 import RMPData from './static/RMP';
-import {
-    IconButton,
-    Menu,
-    MenuItem,
-    Tooltip,
-    Typography,
-    Popover,
-} from '@material-ui/core';
-import {
-    usePopupState,
-    bindHover,
-    bindTrigger,
-    bindPopover,
-    bindMenu,
-} from 'material-ui-popup-state/hooks';
+import { IconButton, Menu, Button, ButtonGroup, MenuItem, Popover, Tooltip, Typography } from '@material-ui/core';
+import { bindHover, bindMenu, bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { withStyles } from '@material-ui/core/styles';
 import { Add, ArrowDropDown } from '@material-ui/icons';
 import OpenSpotAlertPopover from './OpenSpotAlertPopover';
 import PropTypes from 'prop-types';
-import ReactGA from 'react-ga';
 import { addCourse, openSnackbar } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
 import ColorAndDelete from '../AddedCourses/ColorAndDelete';
@@ -138,10 +124,10 @@ const ScheduleAddCell = withStyles(styles)((props) => {
                 }
                 className={classes.button}
             >
-                <Add fontSize="large" />
+                <Add fontSize="large"/>
             </IconButton>
             <IconButton {...bindTrigger(popupState)} className={classes.button}>
-                <ArrowDropDown />
+                <ArrowDropDown/>
             </IconButton>
             <Menu
                 {...bindMenu(popupState)}
@@ -207,59 +193,72 @@ const SectionDetailsCell = withStyles(styles)((props) => {
     return (
         <td className={classes.multiline + ' ' + classes[sectionType]}>
             {`${sectionType}` +
-                '\n' +
-                `Sec: ${sectionNum}` +
-                '\n' +
-                `Units: ${units}`}
+            '\n' +
+            `Sec: ${sectionNum}` +
+            '\n' +
+            `Units: ${units}`}
         </td>
     );
 });
 
 const InstructorsCell = withStyles(styles)((props) => {
     const { classes, instructors } = props;
-    const popupState = usePopupState({ variant: 'popover' });
 
-    const openRMPorEaterEval = (name) => {
-        // const lastName = name.substring(0, name.indexOf(','));
-        // if (props.linkToRMPSetting === false) {
-        //     window.open(
-        //         'https://eaterevals.eee.uci.edu/browse/instructor#' + lastName,
-        //     );
-        //     ReactGA.event({
-        //         category: 'ProffRating_OPTION',
-        //         action: 'redirect_eatereval',
-        //         label: lastName,
-        //     });
-        // } else {
-        //     const professorName = RMPData[name];
-        //
-        //     ReactGA.event({
-        //         category: 'ProffRating_OPTION',
-        //         action: 'redirect_rmp',
-        //         label: lastName,
-        //     });
-        //
-        //     if (professorName !== undefined)
-        //         window.open('https://www.ratemyprofessors.com' + professorName);
-        //     else
-        //         window.open(
-        //             `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`,
-        //         );
-        // }
+    const CustomTooltip = withStyles((theme) => ({
+        tooltip: {
+            backgroundColor: theme.palette.background.paper,
+            color: theme.palette.text.primary
+        },
+    }))(Tooltip);
+
+    const handleChange = (isRMP, profName) => {
+        const lastName = profName.substring(0, profName.indexOf(','));
+
+        if (!isRMP) {
+            window.open(`https://eaterevals.eee.uci.edu/instructor/${lastName}`);
+        } else {
+            const name = RMPData[profName];
+
+            if (name !== undefined)
+                window.open(`https://www.ratemyprofessors.com${name}`);
+            else
+                window.open(
+                    `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`,
+                );
+        }
+    };
+
+    const DualButton = (props) => {
+        return (
+            <ButtonGroup size="small">
+                <Button key={1} value="left" onClick={() => handleChange(false, props.profName)}>
+                    EaterEvals
+                </Button>
+                <Button key={2} value="right" onClick={() => handleChange(true, props.profName)}>
+                    RMP
+                </Button>
+            </ButtonGroup>
+        );
     };
 
     const getLinks = (professorNames) => {
         return professorNames.map((profName) => {
             if (profName !== 'STAFF') {
                 return (
-                    <a
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={classes.link}
-                        // href={openRMPorEaterEval(profName)}
+                    <CustomTooltip
+                        interactive
+                        placement='left'
+                        title={<DualButton profName={profName}/>}
                     >
-                        {profName}
-                    </a>
+                        <a
+                            style={{ 'display': 'block' }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={classes.link}
+                        >
+                            {profName}
+                        </a>
+                    </CustomTooltip>
                 );
             } else {
                 return profName;
@@ -269,19 +268,7 @@ const InstructorsCell = withStyles(styles)((props) => {
 
     return (
         <td>
-            <Typography {...bindHover(popupState)} className={classes.link}>
-                {getLinks(instructors)}
-            </Typography>
-            <Popover
-                {...bindPopover(popupState)}
-                className={classes.popover}
-                classes={{
-                    paper: classes.paper,
-                }}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                disableRestoreFocus
-            ></Popover>
+            {getLinks(instructors)}
         </td>
     );
 });
@@ -311,7 +298,7 @@ const LocationsCell = withStyles(styles)((props) => {
                         >
                             {meeting.bldg}
                         </a>
-                        <br />
+                        <br/>
                     </Fragment>
                 ) : (
                     <div>{meeting.bldg}</div>
@@ -336,9 +323,9 @@ const SectionEnrollmentCell = withStyles(styles)((props) => {
             <div {...bindHover(popupState)} className={classes.multiline}>
                 <strong>
                     {`${numCurrentlyEnrolled.totalEnrolled}` +
-                        ' / ' +
-                        `${maxCapacity}` +
-                        '\n'}
+                    ' / ' +
+                    `${maxCapacity}` +
+                    '\n'}
                 </strong>
                 {`WL: ${numOnWaitlist}` + '\n' + `NOR: ${numNewOnlyReserved}`}
             </div>
@@ -352,9 +339,9 @@ const SectionEnrollmentCell = withStyles(styles)((props) => {
             >
                 <Typography>
                     Enrolled/Capacity
-                    <br />
+                    <br/>
                     Waitlist
-                    <br />
+                    <br/>
                     New-Only Reserved
                 </Typography>
             </Popover>
@@ -369,7 +356,7 @@ const RestrictionsCell = withStyles(styles)((props) => {
                 return (
                     <Fragment key={index}>
                         {restrictionsMapping[code]}
-                        <br />
+                        <br/>
                     </Fragment>
                 );
             }
@@ -461,22 +448,22 @@ const SectionTableBody = withStyles(styles)((props) => {
                     sectionCode={section.sectionCode}
                 />
             )}
-            <CourseCodeCell sectionCode={section.sectionCode} />
+            <CourseCodeCell sectionCode={section.sectionCode}/>
             <SectionDetailsCell
                 sectionType={section.sectionType}
                 sectionNum={section.sectionNum}
                 units={section.units}
             />
-            <InstructorsCell instructors={section.instructors} />
-            <DayAndTimeCell meetings={section.meetings} />
-            <LocationsCell meetings={section.meetings} />
+            <InstructorsCell instructors={section.instructors}/>
+            <DayAndTimeCell meetings={section.meetings}/>
+            <LocationsCell meetings={section.meetings}/>
             <SectionEnrollmentCell
                 numCurrentlyEnrolled={section.numCurrentlyEnrolled}
                 maxCapacity={section.maxCapacity}
                 numOnWaitlist={section.numOnWaitlist}
                 numNewOnlyReserved={section.numNewOnlyReserved}
             />
-            <RestrictionsCell restrictions={section.restrictions} />
+            <RestrictionsCell restrictions={section.restrictions}/>
             <StatusCell
                 term={term}
                 status={section.status}

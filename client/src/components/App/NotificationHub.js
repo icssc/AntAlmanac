@@ -1,12 +1,12 @@
 import React, { Fragment, PureComponent } from 'react';
 import {
     Button,
-    Tooltip,
     Dialog,
     DialogActions,
     DialogContent,
     DialogContentText,
     DialogTitle,
+    Tooltip,
 } from '@material-ui/core';
 import { Notifications } from '@material-ui/icons';
 
@@ -55,8 +55,8 @@ class NotificationHub extends PureComponent {
                             this.getNotificationLists();
                         }}
                         color="inherit"
+                        startIcon={<Notifications/>}
                     >
-                        <Notifications />
                         Notifications
                     </Button>
                 </Tooltip>

@@ -169,10 +169,7 @@ class ScheduleCalendar extends PureComponent {
             : this.state.eventsInCalendar;
 
         return eventSet.filter(
-            (event) =>
-                event.scheduleIndices.includes(
-                    this.state.currentScheduleIndex,
-                ) || event.scheduleIndices.length === 4,
+            (event) => event.scheduleIndices.includes(this.state.currentScheduleIndex) || event.scheduleIndices.length === 4,
         );
     };
 
@@ -191,12 +188,19 @@ class ScheduleCalendar extends PureComponent {
                 />
                 <div
                     id="screenshot"
-                    style={!this.state.screenshotting ? { height: `calc(100vh - 104px)` } : { height: '100%', width: '1000px' }}
+                    style={!this.state.screenshotting ? { height: `calc(100vh - 104px)` } : {
+                        height: '100%',
+                        width: '1000px',
+                    }}
                 >
                     <Popper
                         anchorEl={this.state.anchorEvent}
                         placement="right"
                         modifiers={{
+                            offset: {
+                                enabled: true,
+                                offset: '0, 10'
+                            },
                             flip: {
                                 enabled: true,
                             },
@@ -208,10 +212,9 @@ class ScheduleCalendar extends PureComponent {
                         open={Boolean(this.state.anchorEvent)}
                     >
                         <CourseCalendarEvent
+                            closePopover={this.handleClosePopover}
                             courseInMoreInfo={this.state.courseInMoreInfo}
-                            currentScheduleIndex={
-                                this.state.currentScheduleIndex
-                            }
+                            currentScheduleIndex={this.state.currentScheduleIndex}
                         />
                     </Popper>
                     <Calendar
@@ -219,13 +222,7 @@ class ScheduleCalendar extends PureComponent {
                         toolbar={false}
                         formats={{
                             timeGutterFormat: (date, culture, localizer) =>
-                                date.getMinutes() > 0
-                                    ? ''
-                                    : localizer.format(
-                                    date,
-                                    'h A',
-                                    culture,
-                                    ),
+                                date.getMinutes() > 0 ? '' : localizer.format(date, 'h A', culture),
                             dayFormat: 'ddd',
                         }}
                         defaultView={Views.WORK_WEEK}
@@ -241,12 +238,6 @@ class ScheduleCalendar extends PureComponent {
                         components={{ event: CustomEvent({ classes }) }}
                         onSelectEvent={this.handleEventClick}
                     />
-                    {/*<Fragment/>*/}
-                    {/*// <MobileCalendar*/}
-                    {/*//     classEventsInCalendar={classEventsInCalendar}*/}
-                    {/*//     EventBox={CustomEvent({ classes })}*/}
-                    {/*//     onSelectEvent={this.handleEventClick}*/}
-                    {/*// />*/}
                 </div>
             </div>
         );

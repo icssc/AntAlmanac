@@ -70,7 +70,8 @@ class CalendarPaneToolbar extends PureComponent {
 }
 
 CalendarPaneToolbar.propTypes = {
-    showFinalsSchedule: PropTypes.bool.isRequired
+    showFinalsSchedule: PropTypes.bool.isRequired,
+    currentScheduleIndex: PropTypes.number.isRequired
 };
 
 export default withStyles(styles)(CalendarPaneToolbar);

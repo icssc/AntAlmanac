@@ -137,7 +137,6 @@ export const saveSchedule = async (userID, rememberMe) => {
                     body: JSON.stringify({ userID, userData }),
                 });
 
-                dispatcher.dispatch({ type: 'SAVE_SCHEDULE', userID });
                 openSnackbar(
                     'success',
                     `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`

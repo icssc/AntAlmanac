@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import {
     AppBar,
     Button,
@@ -7,7 +7,6 @@ import {
 } from '@material-ui/core';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { Assignment, Info } from '@material-ui/icons';
-import { isMobile } from 'react-device-detect';
 import { withStyles } from '@material-ui/core/styles';
 import logo from './logo.png';
 import NotificationHub from './NotificationHub';
@@ -42,24 +41,20 @@ class CustomAppBar extends PureComponent {
 
                     <NotificationHub />
 
-                    {!isMobile ? (
-                        <Tooltip title="Give Us Feedback!">
-                            <Button
-                                onClick={() => {
-                                    window.open(
-                                        'https://goo.gl/forms/eIHy4kp56pZKP9fK2',
-                                        '_blank'
-                                    );
-                                }}
-                                color="inherit"
-                            >
-                                <Assignment className={classes.buttonMargin} />
-                                {!isMobile ? 'Feedback' : ''}
-                            </Button>
-                        </Tooltip>
-                    ) : (
-                        <Fragment />
-                    )}
+                    <Tooltip title="Give Us Feedback!">
+                        <Button
+                            onClick={() => {
+                                window.open(
+                                    'https://goo.gl/forms/eIHy4kp56pZKP9fK2',
+                                    '_blank'
+                                );
+                            }}
+                            color="inherit"
+                            startIcon={<Assignment />}
+                        >
+                            Feedback
+                        </Button>
+                    </Tooltip>
 
                     <Tooltip title="Info Page">
                         <Button
@@ -70,9 +65,9 @@ class CustomAppBar extends PureComponent {
                                 );
                             }}
                             color="inherit"
+                            startIcon={<Info />}
                         >
-                            <Info className={classes.buttonMargin} />
-                            {!isMobile ? 'About' : ''}
+                            About
                         </Button>
                     </Tooltip>
                 </Toolbar>

@@ -1,9 +1,5 @@
-* {
-    font-family: Roboto, sans-serif;
-}
-
-.rbc-events-container {
-    /*width: 100%;*/
+.rbc-header {
+    border-bottom: none;
 }
 
 .rbc-time-view .rbc-allday-cell {
@@ -12,7 +8,7 @@
 }
 
 .rbc-day-slot .rbc-time-slot {
-    border: 0px;
+    border: 0;
 }
 
 .rbc-timeslot-group {

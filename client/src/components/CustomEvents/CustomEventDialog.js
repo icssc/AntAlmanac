@@ -45,8 +45,11 @@ class CustomEventDialog extends PureComponent {
     };
 
     handleClose = (cancel) => {
-        if (!cancel)
+        if (!cancel) {
+            if (this.props.onDialogClose)
+                this.props.onDialogClose();
             this.handleAddToCalendar();
+        }
 
         this.setState({ open: false });
     };
@@ -68,7 +71,7 @@ class CustomEventDialog extends PureComponent {
     };
 
     handleAddToCalendar = () => {
-        if (!this.state.days.some((day) => day)) return;
+        if (!this.state.days.some((day) => day) || this.state.scheduleIndices.length === 0) return;
 
         const newCustomEvent = {
             color: this.props.customEvent
@@ -84,8 +87,10 @@ class CustomEventDialog extends PureComponent {
                 : Date.now(),
         };
 
-        if (this.props.customEvent) editCustomEvent(newCustomEvent);
-        else addCustomEvent(newCustomEvent);
+        if (this.props.customEvent)
+            editCustomEvent(newCustomEvent);
+        else
+            addCustomEvent(newCustomEvent);
     };
 
     handleSelectScheduleIndices = (scheduleIndices) => {
@@ -108,6 +113,7 @@ class CustomEventDialog extends PureComponent {
                             size="small"
                             startIcon={<Add fontSize="small" />}
                         >
+
                              Add Custom
                         </Button>
                     </Tooltip>
@@ -192,6 +198,7 @@ class CustomEventDialog extends PureComponent {
 
 CustomEventDialog.propTypes = {
     customEvent: PropTypes.object,
+    onDialogClose: PropTypes.func
 };
 
 export default withStyles(styles)(CustomEventDialog);
