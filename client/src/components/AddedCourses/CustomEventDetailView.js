@@ -36,37 +36,25 @@ const CustomEventDetailView = (props) => {
             minutes: end.slice(3, 5),
         });
 
-        const daysString = days.reduce(
-            (accumulator, currentValue, index, array) => {
-                switch (index) {
-                    case 0:
-                        return array[0]
-                            ? accumulator + 'Mon '
-                            : accumulator + '';
-                    case 1:
-                        return array[1]
-                            ? accumulator + 'Tue '
-                            : accumulator + '';
-                    case 2:
-                        return array[2]
-                            ? accumulator + 'Wed '
-                            : accumulator + '';
-                    case 3:
-                        return array[3]
-                            ? accumulator + 'Thu '
-                            : accumulator + '';
-                    case 4:
-                        return array[4]
-                            ? accumulator + 'Fri '
-                            : accumulator + '';
-                }
-            },
-            ''
-        );
+        const daysString = days.reduce((accumulator, currentValue, index, array) => {
+            switch (index) {
+                case 0:
+                    return array[0] ? accumulator + 'Mon ' : accumulator + '';
+                case 1:
+                    return array[1] ? accumulator + 'Tue ' : accumulator + '';
+                case 2:
+                    return array[2] ? accumulator + 'Wed ' : accumulator + '';
+                case 3:
+                    return array[3] ? accumulator + 'Thu ' : accumulator + '';
+                case 4:
+                    return array[4] ? accumulator + 'Fri ' : accumulator + '';
+                default:
+                    console.log(`[Warning] CustomEventDetailView invalid index: ${index}`);
+                    return accumulator + '';
+            }
+        }, '');
 
-        return `${startTime.format('h:mm A')} — ${endTime.format(
-            'h:mm A'
-        )} • ${daysString}`;
+        return `${startTime.format('h:mm A')} — ${endTime.format('h:mm A')} • ${daysString}`;
     };
 
     return (
@@ -75,11 +63,7 @@ const CustomEventDetailView = (props) => {
                 titleTypographyProps={{ variant: 'subtitle1' }}
                 className={classes.root}
                 title={customEvent.title}
-                subheader={readableDateAndTimeFormat(
-                    customEvent.start,
-                    customEvent.end,
-                    customEvent.days
-                )}
+                subheader={readableDateAndTimeFormat(customEvent.start, customEvent.end, customEvent.days)}
             />
             <CardActions disableSpacing={true}>
                 <div className={classes.colorPicker}>
@@ -89,14 +73,7 @@ const CustomEventDetailView = (props) => {
                         customEventID={customEvent.customEventID}
                     />
                 </div>
-                <IconButton
-                    onClick={() =>
-                        deleteCustomEvent(
-                            customEvent.customEventID,
-                            props.currentScheduleIndex
-                        )
-                    }
-                >
+                <IconButton onClick={() => deleteCustomEvent(customEvent.customEventID, props.currentScheduleIndex)}>
                     <Delete fontSize="small" />
                 </IconButton>
                 <CustomEventDialog customEvent={customEvent} />

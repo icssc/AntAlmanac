@@ -1,10 +1,10 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Tab, Tabs, Paper, TextField, Typography } from '@material-ui/core';
+import { Tab, Tabs, Paper, TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import buildingCatalogue from './buildingCatalogue';
 import PropTypes from 'prop-types';
 import { Autocomplete } from '@material-ui/lab';
-import {styled} from '@material-ui/core/styles';
+import { styled } from '@material-ui/core/styles';
 
 const styles = {
     tabContainer: {
@@ -21,18 +21,18 @@ const styles = {
         marginLeft: '15%',
         marginRight: '15%',
         zIndex: 1000,
-        alignItems: 'center'
+        alignItems: 'center',
     },
 };
 
 const StyledTabs = styled(Tabs)({
-    minHeight: 0
+    minHeight: 0,
 });
 
 const StyledTab = styled(Tab)({
-    minHeight: "auto",
+    minHeight: 'auto',
     minWidth: '10%',
-    padding: 0
+    padding: 0,
 });
 
 class MapTabsAndSearchBar extends PureComponent {
@@ -57,12 +57,12 @@ class MapTabsAndSearchBar extends PureComponent {
                         scrollButtons="auto"
                         centered
                     >
-                        <StyledTab label="All"/>
-                        <StyledTab label="Mon"/>
-                        <StyledTab label="Tue"/>
-                        <StyledTab label="Wed"/>
-                        <StyledTab label="Thu"/>
-                        <StyledTab label="Fri"/>
+                        <StyledTab label="All" />
+                        <StyledTab label="Mon" />
+                        <StyledTab label="Tue" />
+                        <StyledTab label="Wed" />
+                        <StyledTab label="Thu" />
+                        <StyledTab label="Fri" />
                     </StyledTabs>
                 </Paper>
 
@@ -71,13 +71,7 @@ class MapTabsAndSearchBar extends PureComponent {
                         options={this.state.filteredItems}
                         getOptionLabel={(option) => option.label}
                         onChange={this.props.handleSearch}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label="Search for a place"
-                                variant="filled"
-                            />
-                        )}
+                        renderInput={(params) => <TextField {...params} label="Search for a place" variant="filled" />}
                     />
                 </Paper>
             </Fragment>
