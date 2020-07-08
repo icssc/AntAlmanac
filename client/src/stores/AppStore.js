@@ -1,10 +1,6 @@
 import { EventEmitter } from 'events';
 import dispatcher from '../dispatcher';
-import {
-    calendarizeCourseEvents,
-    calendarizeCustomEvents,
-    calendarizeFinals,
-} from './calenderizeHelpers';
+import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calenderizeHelpers';
 
 class AppStore extends EventEmitter {
     constructor() {
@@ -17,15 +13,14 @@ class AppStore extends EventEmitter {
         this.snackbarMessage = '';
         this.snackbarVariant = 'info';
         this.snackbarDuration = 3000;
-        this.snackbarPosition = { vertical: 'bottom', horizontal: 'left'};
+        this.snackbarPosition = { vertical: 'bottom', horizontal: 'left' };
         this.eventsInCalendar = [];
         this.finalsEventsInCalendar = [];
 
         let darkMode = null;
-        if (typeof Storage !== 'undefined')
-            darkMode = window.localStorage.getItem('DarkMode');
+        if (typeof Storage !== 'undefined') darkMode = window.localStorage.getItem('DarkMode');
 
-        this.darkMode = (darkMode === null) ? false : darkMode === "true";
+        this.darkMode = darkMode === null ? false : darkMode === 'true';
     }
 
     getCurrentScheduleIndex() {
@@ -81,33 +76,23 @@ class AppStore extends EventEmitter {
             case 'ADD_COURSE':
                 this.addedCourses = this.addedCourses.concat(action.newCourse);
                 this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(
-                    calendarizeCustomEvents()
-                );
+                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.emit('addedCoursesChange');
                 break;
             case 'ADD_SECTION':
                 this.addedCourses = this.addedCourses.map((course) => {
-                    if (
-                        course.section.sectionCode ===
-                        action.newSection.section.sectionCode
-                    )
-                        return action.newSection;
+                    if (course.section.sectionCode === action.newSection.section.sectionCode) return action.newSection;
                     else return course;
                 });
                 this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(
-                    calendarizeCustomEvents()
-                );
+                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.emit('addedCoursesChange');
                 break;
             case 'DELETE_COURSE':
                 this.addedCourses = action.addedCoursesAfterDelete;
                 this.deletedCourses = action.deletedCourses;
                 this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(
-                    calendarizeCustomEvents()
-                );
+                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.emit('addedCoursesChange');
                 break;
             case 'CHANGE_CURRENT_SCHEDULE':
@@ -121,36 +106,26 @@ class AppStore extends EventEmitter {
                 this.addedCourses = action.addedCoursesAfterClear;
                 this.customEvents = action.customEventsAfterClear;
                 this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(
-                    calendarizeCustomEvents()
-                );
+                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.emit('addedCoursesChange');
                 this.emit('customEventsChange');
                 break;
             case 'ADD_CUSTOM_EVENT':
-                this.customEvents = this.customEvents.concat(
-                    action.customEvent
-                );
+                this.customEvents = this.customEvents.concat(action.customEvent);
                 this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(
-                    calendarizeCustomEvents()
-                );
+                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.emit('customEventsChange');
                 break;
             case 'DELETE_CUSTOM_EVENT':
                 this.customEvents = action.customEventsAfterDelete;
                 this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(
-                    calendarizeCustomEvents()
-                );
+                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.emit('customEventsChange');
                 break;
             case 'COURSE_COLOR_CHANGE':
                 this.addedCourses = action.addedCoursesAfterColorChange;
                 this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(
-                    calendarizeCustomEvents()
-                );
+                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.emit('addedCoursesChange');
                 break;
             case 'CUSTOM_EVENT_COLOR_CHANGE':
@@ -161,9 +136,7 @@ class AppStore extends EventEmitter {
                 this.addedCourses = action.userData.addedCourses;
                 this.customEvents = action.userData.customEvents;
                 this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(
-                    calendarizeCustomEvents()
-                );
+                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.emit('addedCoursesChange');
                 this.emit('customEventsChange');
                 break;
@@ -177,18 +150,14 @@ class AppStore extends EventEmitter {
             case 'EDIT_CUSTOM_EVENTS':
                 this.customEvents = action.customEventsAfterEdit;
                 this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(
-                    calendarizeCustomEvents()
-                );
+                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.emit('customEventsChange');
                 break;
             case 'COPY_SCHEDULE':
                 this.addedCourses = action.addedCoursesAfterCopy;
                 this.customEvents = action.customEventsAfterCopy;
                 this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(
-                    calendarizeCustomEvents()
-                );
+                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.emit('addedCoursesChange');
                 this.emit('customEventsChange');
                 break;
@@ -197,6 +166,8 @@ class AppStore extends EventEmitter {
                 this.emit('darkModeToggle');
                 window.localStorage.setItem('DarkMode', action.darkMode);
                 break;
+            default:
+                console.log(`[Warning] AppStore invalid action type: ${action.type}`);
         }
     }
 }

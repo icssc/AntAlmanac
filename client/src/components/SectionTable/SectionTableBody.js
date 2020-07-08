@@ -119,35 +119,20 @@ const ScheduleAddCell = withStyles(styles)((props) => {
     return (
         <td className={classes.cell}>
             <IconButton
-                onClick={() =>
-                    closeAndAddCourse(AppStore.getCurrentScheduleIndex())
-                }
+                onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}
                 className={classes.button}
             >
-                <Add fontSize="large"/>
+                <Add fontSize="large" />
             </IconButton>
             <IconButton {...bindTrigger(popupState)} className={classes.button}>
-                <ArrowDropDown/>
+                <ArrowDropDown />
             </IconButton>
-            <Menu
-                {...bindMenu(popupState)}
-                onClose={() => closeAndAddCourse(-1)}
-            >
-                <MenuItem onClick={() => closeAndAddCourse(0)}>
-                    Add to schedule 1
-                </MenuItem>
-                <MenuItem onClick={() => closeAndAddCourse(1)}>
-                    Add to schedule 2
-                </MenuItem>
-                <MenuItem onClick={() => closeAndAddCourse(2)}>
-                    Add to schedule 3
-                </MenuItem>
-                <MenuItem onClick={() => closeAndAddCourse(3)}>
-                    Add to schedule 4
-                </MenuItem>
-                <MenuItem onClick={() => closeAndAddCourse(4)}>
-                    Add to all
-                </MenuItem>
+            <Menu {...bindMenu(popupState)} onClose={() => closeAndAddCourse(-1)}>
+                <MenuItem onClick={() => closeAndAddCourse(0)}>Add to schedule 1</MenuItem>
+                <MenuItem onClick={() => closeAndAddCourse(1)}>Add to schedule 2</MenuItem>
+                <MenuItem onClick={() => closeAndAddCourse(2)}>Add to schedule 3</MenuItem>
+                <MenuItem onClick={() => closeAndAddCourse(3)}>Add to schedule 4</MenuItem>
+                <MenuItem onClick={() => closeAndAddCourse(4)}>Add to all</MenuItem>
             </Menu>
         </td>
     );
@@ -176,10 +161,7 @@ const CourseCodeCell = withStyles(styles)((props) => {
                 enterDelay={300}
                 classes={{ tooltip: classes.lightTooltip }}
             >
-                <div
-                    onClick={(event) => clickToCopy(event, sectionCode)}
-                    className={classes.sectionCode}
-                >
+                <div onClick={(event) => clickToCopy(event, sectionCode)} className={classes.sectionCode}>
                     {sectionCode}
                 </div>
             </Tooltip>
@@ -192,11 +174,7 @@ const SectionDetailsCell = withStyles(styles)((props) => {
 
     return (
         <td className={classes.multiline + ' ' + classes[sectionType]}>
-            {`${sectionType}` +
-            '\n' +
-            `Sec: ${sectionNum}` +
-            '\n' +
-            `Units: ${units}`}
+            {`${sectionType}` + '\n' + `Sec: ${sectionNum}` + '\n' + `Units: ${units}`}
         </td>
     );
 });
@@ -207,7 +185,7 @@ const InstructorsCell = withStyles(styles)((props) => {
     const CustomTooltip = withStyles((theme) => ({
         tooltip: {
             backgroundColor: theme.palette.background.paper,
-            color: theme.palette.text.primary
+            color: theme.palette.text.primary,
         },
     }))(Tooltip);
 
@@ -219,11 +197,10 @@ const InstructorsCell = withStyles(styles)((props) => {
         } else {
             const name = RMPData[profName];
 
-            if (name !== undefined)
-                window.open(`https://www.ratemyprofessors.com${name}`);
+            if (name !== undefined) window.open(`https://www.ratemyprofessors.com${name}`);
             else
                 window.open(
-                    `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`,
+                    `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
                 );
         }
     };
@@ -245,19 +222,15 @@ const InstructorsCell = withStyles(styles)((props) => {
         return professorNames.map((profName) => {
             if (profName !== 'STAFF') {
                 return (
-                    <CustomTooltip
-                        interactive
-                        placement='left'
-                        title={<DualButton profName={profName}/>}
-                    >
-                        <a
-                            style={{ 'display': 'block' }}
+                    <CustomTooltip interactive placement="left" title={<DualButton profName={profName} />}>
+                        <div
+                            style={{ display: 'block' }}
                             target="_blank"
                             rel="noopener noreferrer"
                             className={classes.link}
                         >
                             {profName}
-                        </a>
+                        </div>
                     </CustomTooltip>
                 );
             } else {
@@ -266,11 +239,7 @@ const InstructorsCell = withStyles(styles)((props) => {
         });
     };
 
-    return (
-        <td>
-            {getLinks(instructors)}
-        </td>
-    );
+    return <td>{getLinks(instructors)}</td>;
 });
 
 const LocationsCell = withStyles(styles)((props) => {
@@ -283,22 +252,16 @@ const LocationsCell = withStyles(styles)((props) => {
                     <Fragment>
                         <a
                             href={(() => {
-                                const location_id =
-                                    locations[meeting.bldg.split(' ')[0]];
-                                if (location_id !== undefined)
-                                    return (
-                                        'https://map.uci.edu/?id=463#!m/' +
-                                        location_id
-                                    );
-                                else
-                                    return 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034';
+                                const location_id = locations[meeting.bldg.split(' ')[0]];
+                                if (location_id !== undefined) return 'https://map.uci.edu/?id=463#!m/' + location_id;
+                                else return 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034';
                             })()}
                             target="_blank"
                             rel="noopener noreferrer"
                         >
                             {meeting.bldg}
                         </a>
-                        <br/>
+                        <br />
                     </Fragment>
                 ) : (
                     <div>{meeting.bldg}</div>
@@ -309,25 +272,14 @@ const LocationsCell = withStyles(styles)((props) => {
 });
 
 const SectionEnrollmentCell = withStyles(styles)((props) => {
-    const {
-        classes,
-        numCurrentlyEnrolled,
-        maxCapacity,
-        numOnWaitlist,
-        numNewOnlyReserved,
-    } = props;
+    const { classes, numCurrentlyEnrolled, maxCapacity, numOnWaitlist, numNewOnlyReserved } = props;
     const popupState = usePopupState({ variant: 'popover' });
 
     return (
         <td>
             <div {...bindHover(popupState)} className={classes.multiline}>
-                <strong>
-                    {`${numCurrentlyEnrolled.totalEnrolled}` +
-                    ' / ' +
-                    `${maxCapacity}` +
-                    '\n'}
-                </strong>
-                {`WL: ${numOnWaitlist}` + '\n' + `NOR: ${numNewOnlyReserved}`}
+                <strong>{`${numCurrentlyEnrolled.totalEnrolled}` + ' / ' + `${maxCapacity}` + '\n'}</strong>
+                {`WL: ${numOnWaitlist}\nNOR: ${numNewOnlyReserved}`}
             </div>
             <Popover
                 {...bindPopover(popupState)}
@@ -339,9 +291,9 @@ const SectionEnrollmentCell = withStyles(styles)((props) => {
             >
                 <Typography>
                     Enrolled/Capacity
-                    <br/>
+                    <br />
                     Waitlist
-                    <br/>
+                    <br />
                     New-Only Reserved
                 </Typography>
             </Popover>
@@ -356,10 +308,11 @@ const RestrictionsCell = withStyles(styles)((props) => {
                 return (
                     <Fragment key={index}>
                         {restrictionsMapping[code]}
-                        <br/>
+                        <br />
                     </Fragment>
                 );
             }
+            return null;
         });
     };
 
@@ -397,23 +350,12 @@ const DayAndTimeCell = withStyles(styles)((props) => {
     const { classes, meetings } = props;
 
     return (
-        <td className={classes.multiline}>
-            {meetings
-                .map((meeting) => meeting.days + ' ' + meeting.time)
-                .join('\n')}
-        </td>
+        <td className={classes.multiline}>{meetings.map((meeting) => meeting.days + ' ' + meeting.time).join('\n')}</td>
     );
 });
 
 const StatusCell = withStyles(styles)((props) => {
-    const {
-        sectionCode,
-        term,
-        courseTitle,
-        courseNumber,
-        status,
-        classes,
-    } = props;
+    const { sectionCode, term, courseTitle, courseNumber, status, classes } = props;
 
     if (term === '2019 Fall' && (status === 'NewOnly' || status === 'FULL')) {
         return (
@@ -437,33 +379,26 @@ const SectionTableBody = withStyles(styles)((props) => {
     return (
         <tr className={classes.tr}>
             {!colorAndDelete ? (
-                <ScheduleAddCell
-                    section={section}
-                    courseDetails={courseDetails}
-                    term={term}
-                />
+                <ScheduleAddCell section={section} courseDetails={courseDetails} term={term} />
             ) : (
-                <ColorAndDelete
-                    color={section.color}
-                    sectionCode={section.sectionCode}
-                />
+                <ColorAndDelete color={section.color} sectionCode={section.sectionCode} />
             )}
-            <CourseCodeCell sectionCode={section.sectionCode}/>
+            <CourseCodeCell sectionCode={section.sectionCode} />
             <SectionDetailsCell
                 sectionType={section.sectionType}
                 sectionNum={section.sectionNum}
                 units={section.units}
             />
-            <InstructorsCell instructors={section.instructors}/>
-            <DayAndTimeCell meetings={section.meetings}/>
-            <LocationsCell meetings={section.meetings}/>
+            <InstructorsCell instructors={section.instructors} />
+            <DayAndTimeCell meetings={section.meetings} />
+            <LocationsCell meetings={section.meetings} />
             <SectionEnrollmentCell
                 numCurrentlyEnrolled={section.numCurrentlyEnrolled}
                 maxCapacity={section.maxCapacity}
                 numOnWaitlist={section.numOnWaitlist}
                 numNewOnlyReserved={section.numNewOnlyReserved}
             />
-            <RestrictionsCell restrictions={section.restrictions}/>
+            <RestrictionsCell restrictions={section.restrictions} />
             <StatusCell
                 term={term}
                 status={section.status}

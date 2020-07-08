@@ -42,10 +42,7 @@ class AddedCoursePane extends PureComponent {
         AppStore.removeListener('addedCoursesChange', this.loadCourses);
         AppStore.removeListener('customEventsChange', this.loadCustomEvents);
         AppStore.removeListener('currentScheduleIndexChange', this.loadCourses);
-        AppStore.removeListener(
-            'currentScheduleIndexChange',
-            this.loadCustomEvents
-        );
+        AppStore.removeListener('currentScheduleIndexChange', this.loadCustomEvents);
     }
 
     loadCourses = () => {
@@ -54,15 +51,10 @@ class AddedCoursePane extends PureComponent {
         const formattedCourses = [];
 
         for (const addedCourse of addedCourses) {
-            if (
-                addedCourse.scheduleIndices.includes(
-                    AppStore.getCurrentScheduleIndex()
-                )
-            ) {
+            if (addedCourse.scheduleIndices.includes(AppStore.getCurrentScheduleIndex())) {
                 let formattedCourse = formattedCourses.find(
                     (needleCourse) =>
-                        needleCourse.courseNumber ===
-                            addedCourse.courseNumber &&
+                        needleCourse.courseNumber === addedCourse.courseNumber &&
                         needleCourse.deptCode === addedCourse.deptCode
                 );
 
@@ -88,12 +80,11 @@ class AddedCoursePane extends PureComponent {
                     formattedCourses.push(formattedCourse);
                 }
 
-                if (!isNaN(Number(addedCourse.section.units)))
-                    totalUnits += Number(addedCourse.section.units);
+                if (!isNaN(Number(addedCourse.section.units))) totalUnits += Number(addedCourse.section.units);
             }
         }
-        formattedCourses.forEach(function(course) {
-            course.sections.sort(function(a, b) {
+        formattedCourses.forEach(function (course) {
+            course.sections.sort(function (a, b) {
                 return a.sectionCode - b.sectionCode;
             });
         });
@@ -109,34 +100,22 @@ class AddedCoursePane extends PureComponent {
             <Fragment>
                 <div className={this.props.classes.titleRow}>
                     <Typography variant="h6">
-                        {`Schedule ${AppStore.getCurrentScheduleIndex() + 1} (${
-                            this.state.totalUnits
-                        } Units)`}
+                        {`Schedule ${AppStore.getCurrentScheduleIndex() + 1} (${this.state.totalUnits} Units)`}
                     </Typography>
 
                     <PopupState variant="popover" popupId="demo-popup-menu">
                         {(popupState) => (
                             <React.Fragment>
-                                <Button
-                                    variant="outlined"
-                                    color="primary"
-                                    {...bindTrigger(popupState)}
-                                >
+                                <Button variant="outlined" color="primary" {...bindTrigger(popupState)}>
                                     Copy Schedule
                                 </Button>
                                 <Menu {...bindMenu(popupState)}>
                                     {[0, 1, 2, 3].map((index) => {
                                         return (
                                             <MenuItem
-                                                disabled={
-                                                    AppStore.getCurrentScheduleIndex() ===
-                                                    index
-                                                }
+                                                disabled={AppStore.getCurrentScheduleIndex() === index}
                                                 onClick={() => {
-                                                    copySchedule(
-                                                        AppStore.getCurrentScheduleIndex(),
-                                                        index
-                                                    );
+                                                    copySchedule(AppStore.getCurrentScheduleIndex(), index);
                                                     popupState.close();
                                                 }}
                                             >
@@ -146,10 +125,7 @@ class AddedCoursePane extends PureComponent {
                                     })}
                                     <MenuItem
                                         onClick={() => {
-                                            copySchedule(
-                                                AppStore.getCurrentScheduleIndex(),
-                                                4
-                                            );
+                                            copySchedule(AppStore.getCurrentScheduleIndex(), 4);
                                             popupState.close();
                                         }}
                                     >
@@ -163,21 +139,13 @@ class AddedCoursePane extends PureComponent {
                 {this.state.courses.map((course) => {
                     return (
                         <Grid item md={12} xs={12}>
-                            <SectionTable
-                                courseDetails={course}
-                                term={course.term}
-                                colorAndDelete={true}
-                            />
+                            <SectionTable courseDetails={course} term={course.term} colorAndDelete={true} />
                         </Grid>
                     );
                 })}
                 <Typography variant="h6">Custom Events</Typography>
                 {this.state.customEvents.map((customEvent) => {
-                    if (
-                        customEvent.scheduleIndices.includes(
-                            AppStore.getCurrentScheduleIndex()
-                        )
-                    ) {
+                    if (customEvent.scheduleIndices.includes(AppStore.getCurrentScheduleIndex())) {
                         return (
                             <Grid item md={12} xs={12}>
                                 <CustomEventDetailView
@@ -187,13 +155,13 @@ class AddedCoursePane extends PureComponent {
                             </Grid>
                         );
                     }
+                    return null;
                 })}
             </Fragment>
         );
     };
 
     render() {
-        const { classes } = this.props;
         return (
             <div>
                 <Grid container spacing={16}>

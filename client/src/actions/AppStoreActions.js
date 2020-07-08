@@ -33,13 +33,7 @@ const arrayOfColors = [
     blueGrey[500],
 ];
 
-export const addCourse = (
-    section,
-    courseDetails,
-    term,
-    scheduleIndex,
-    color
-) => {
+export const addCourse = (section, courseDetails, term, scheduleIndex, color) => {
     const addedCourses = AppStore.getAddedCourses();
 
     let existingCourse;
@@ -56,12 +50,11 @@ export const addCourse = (
     }
 
     if (color === undefined) {
-        const setOfUsedColors = new Set(
-            addedCourses.map((course) => course.color)
-        );
+        const setOfUsedColors = new Set(addedCourses.map((course) => course.color));
 
         color = arrayOfColors.find((materialColor) => {
             if (!setOfUsedColors.has(materialColor)) return materialColor;
+            else return undefined;
         });
 
         if (color === undefined) color = '#5ec8e0';
@@ -76,18 +69,14 @@ export const addCourse = (
             courseTitle: courseDetails.courseTitle,
             courseComment: courseDetails.courseComment,
             prerequisiteLink: courseDetails.prerequisiteLink,
-            scheduleIndices:
-                scheduleIndex === 4 ? [0, 1, 2, 3] : [scheduleIndex],
+            scheduleIndices: scheduleIndex === 4 ? [0, 1, 2, 3] : [scheduleIndex],
             section: section,
         };
         dispatcher.dispatch({ type: 'ADD_COURSE', newCourse });
     } else {
         const newSection = {
             ...existingCourse,
-            scheduleIndices:
-                scheduleIndex === 4
-                    ? [0, 1, 2, 3]
-                    : existingCourse.scheduleIndices.concat(scheduleIndex),
+            scheduleIndices: scheduleIndex === 4 ? [0, 1, 2, 3] : existingCourse.scheduleIndices.concat(scheduleIndex),
         };
         dispatcher.dispatch({ type: 'ADD_SECTION', newSection });
     }
@@ -99,7 +88,7 @@ export const openSnackbar = (variant, message, duration, position) => {
         variant: variant,
         message: message,
         duration: duration,
-        position: position
+        position: position,
     });
 };
 
@@ -142,10 +131,7 @@ export const saveSchedule = async (userID, rememberMe) => {
                     `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
                 );
             } catch (e) {
-                openSnackbar(
-                    'error',
-                    `Schedule could not be saved under username "${userID}`
-                );
+                openSnackbar('error', `Schedule could not be saved under username "${userID}`);
             }
         }
     }
@@ -166,7 +152,7 @@ export const loadSchedule = async (userID, rememberMe) => {
                 const data = await fetch('/api/loadUserData', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({userID: userID}),
+                    body: JSON.stringify({ userID: userID }),
                 });
 
                 const json = await data.json();
@@ -175,15 +161,9 @@ export const loadSchedule = async (userID, rememberMe) => {
                     type: 'LOAD_SCHEDULE',
                     userData: await getCoursesData(json.userData),
                 });
-                openSnackbar(
-                    'success',
-                    `Schedule for username "${userID}" loaded.`
-                );
+                openSnackbar('success', `Schedule for username "${userID}" loaded.`);
             } catch (e) {
-                openSnackbar(
-                    'error',
-                    `Couldn't find schedules for username "${userID}.`
-                );
+                openSnackbar('error', `Couldn't find schedules for username "${userID}.`);
             }
         }
     }
@@ -202,9 +182,7 @@ export const deleteCourse = (sectionCode, scheduleIndex) => {
             if (course.scheduleIndices.length === 1) {
                 return false;
             } else {
-                course.scheduleIndices = course.scheduleIndices.filter(
-                    (index) => index !== scheduleIndex
-                );
+                course.scheduleIndices = course.scheduleIndices.filter((index) => index !== scheduleIndex);
 
                 return true;
             }
@@ -227,9 +205,7 @@ export const deleteCustomEvent = (customEventID, scheduleIndex) => {
             if (customEvent.scheduleIndices.length === 1) {
                 return false;
             } else {
-                customEvent.scheduleIndices = customEvent.scheduleIndices.filter(
-                    (index) => index !== scheduleIndex
-                );
+                customEvent.scheduleIndices = customEvent.scheduleIndices.filter((index) => index !== scheduleIndex);
 
                 return true;
             }
@@ -244,13 +220,10 @@ export const deleteCustomEvent = (customEventID, scheduleIndex) => {
 };
 
 export const editCustomEvent = (newCustomEvent) => {
-    const customEventsAfterEdit = AppStore.getCustomEvents().map(
-        (customEvent) => {
-            if (newCustomEvent.customEventID !== customEvent.customEventID)
-                return customEvent;
-            else return newCustomEvent;
-        }
-    );
+    const customEventsAfterEdit = AppStore.getCustomEvents().map((customEvent) => {
+        if (newCustomEvent.customEventID !== customEvent.customEventID) return customEvent;
+        else return newCustomEvent;
+    });
     dispatcher.dispatch({ type: 'EDIT_CUSTOM_EVENTS', customEventsAfterEdit });
 };
 
@@ -262,9 +235,7 @@ export const clearSchedules = (scheduleIndicesToClear) => {
         if (course.scheduleIndices.length === 1) {
             return false;
         } else {
-            course.scheduleIndices = course.scheduleIndices.filter(
-                (index) => !scheduleIndicesToClear.includes(index)
-            );
+            course.scheduleIndices = course.scheduleIndices.filter((index) => !scheduleIndicesToClear.includes(index));
 
             return course.scheduleIndices.length !== 0;
         }
@@ -296,35 +267,22 @@ export const addCustomEvent = (customEvent) => {
 export const undoDelete = (event) => {
     const deletedCourses = AppStore.getDeletedCourses();
 
-    if (
-        deletedCourses.length > 0 &&
-        (event == null ||
-            (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))
-    ) {
+    if (deletedCourses.length > 0 && (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))) {
         const lastDeleted = deletedCourses[deletedCourses.length - 1];
 
         if (lastDeleted !== undefined) {
-            addCourse(
-                lastDeleted.section,
-                lastDeleted,
-                lastDeleted.term,
-                lastDeleted.scheduleIndex,
-                lastDeleted.color
-            );
+            addCourse(lastDeleted.section, lastDeleted, lastDeleted.term, lastDeleted.scheduleIndex, lastDeleted.color);
 
             dispatcher.dispatch({
                 type: 'UNDO_DELETE',
-                deletedCourses: deletedCourses.slice(
-                    0,
-                    deletedCourses.length - 1
-                ),
+                deletedCourses: deletedCourses.slice(0, deletedCourses.length - 1),
             });
 
             openSnackbar(
                 'success',
-                `Undo delete ${lastDeleted.deptCode} ${
-                    lastDeleted.courseNumber
-                } in schedule ${lastDeleted.scheduleIndex + 1}.`
+                `Undo delete ${lastDeleted.deptCode} ${lastDeleted.courseNumber} in schedule ${
+                    lastDeleted.scheduleIndex + 1
+                }.`
             );
         }
     }
@@ -333,10 +291,8 @@ export const undoDelete = (event) => {
 export const changeCurrentSchedule = (direction) => {
     let newScheduleIndex;
 
-    if (direction === 0)
-        newScheduleIndex = (AppStore.getCurrentScheduleIndex() - 1 + 4) % 4;
-    else if (direction === 1)
-        newScheduleIndex = (AppStore.getCurrentScheduleIndex() + 1) % 4;
+    if (direction === 0) newScheduleIndex = (AppStore.getCurrentScheduleIndex() - 1 + 4) % 4;
+    else if (direction === 1) newScheduleIndex = (AppStore.getCurrentScheduleIndex() + 1) % 4;
 
     dispatcher.dispatch({ type: 'CHANGE_CURRENT_SCHEDULE', newScheduleIndex });
 };
@@ -380,12 +336,8 @@ export const copySchedule = (from, to) => {
     const customEvents = AppStore.getCustomEvents();
 
     const addedCoursesAfterCopy = addedCourses.map((addedCourse) => {
-        if (
-            addedCourse.scheduleIndices.includes(from) &&
-            !addedCourse.scheduleIndices.includes(to)
-        ) {
-            if (to === 4)
-                return { ...addedCourse, scheduleIndices: [0, 1, 2, 3] };
+        if (addedCourse.scheduleIndices.includes(from) && !addedCourse.scheduleIndices.includes(to)) {
+            if (to === 4) return { ...addedCourse, scheduleIndices: [0, 1, 2, 3] };
             else
                 return {
                     ...addedCourse,
@@ -397,12 +349,8 @@ export const copySchedule = (from, to) => {
     });
 
     const customEventsAfterCopy = customEvents.map((customEvent) => {
-        if (
-            customEvent.scheduleIndices.includes(from) &&
-            !customEvent.scheduleIndices.includes(to)
-        ) {
-            if (to === 4)
-                return { ...customEvent, scheduleIndices: [0, 1, 2, 3] };
+        if (customEvent.scheduleIndices.includes(from) && !customEvent.scheduleIndices.includes(to)) {
+            if (to === 4) return { ...customEvent, scheduleIndices: [0, 1, 2, 3] };
             else
                 return {
                     ...customEvent,

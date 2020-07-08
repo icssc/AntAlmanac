@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { FormControl, InputLabel, MenuItem, Paper, Select, Tooltip, Typography } from '@material-ui/core';
+import { FormControl, InputLabel, MenuItem, Paper, Select, Typography } from '@material-ui/core';
 import GraphRenderPane from './GraphRenderPane';
 
 const styles = {
@@ -54,8 +54,7 @@ class GraphModalContent extends PureComponent {
             school.departments.forEach((dept) => {
                 dept.courses.forEach((course) => {
                     course.sections.forEach((section) => {
-                        if (section.units !== '0')
-                            accumulator.push(section);
+                        if (section.units !== '0') accumulator.push(section);
                     });
                 });
             });
@@ -70,55 +69,34 @@ class GraphModalContent extends PureComponent {
         this.setState({ value: event.target.value });
     };
 
-    render () {
+    render() {
         const { classes } = this.props;
 
         let whatToDisplay;
 
         if (this.state.pastSections === null) {
-            whatToDisplay = (
-                <div
-                    className={classes.courseNotOfferedContainer}
-                >
-                    Loading...
-                </div>);
+            whatToDisplay = <div className={classes.courseNotOfferedContainer}>Loading...</div>;
         } else if (this.state.pastSections.length === 0) {
             whatToDisplay = (
-                <div
-                    className={classes.courseNotOfferedContainer}
-                >
-                    <Typography variant="h5">
-                        {`This course wasn't offered in ${this.state.pastTerm}`}
-                    </Typography>
-                </div>);
-        } else {
-            whatToDisplay = (
-                this.state.pastSections.map((pastSection) => {
-                    return (
-                        <GraphRenderPane
-                            pastTerm={this.state.pastTerm}
-                            pastSection={pastSection}
-                        />
-                    );
-                })
+                <div className={classes.courseNotOfferedContainer}>
+                    <Typography variant="h5">{`This course wasn't offered in ${this.state.pastTerm}`}</Typography>
+                </div>
             );
+        } else {
+            whatToDisplay = this.state.pastSections.map((pastSection) => {
+                return <GraphRenderPane pastTerm={this.state.pastTerm} pastSection={pastSection} />;
+            });
         }
 
         return (
             <Paper className={classes.paper}>
-                <Typography
-                    variant="h5"
-                    className={classes.flex}
-                >
+                <Typography variant="h5" className={classes.flex}>
                     {`Historical Enrollment for  ${this.props.courseDetails.deptCode} ${this.props.courseDetails.courseNumber}`}
                 </Typography>
 
                 <FormControl fullWidth>
                     <InputLabel>Term</InputLabel>
-                    <Select
-                        value={this.state.pastTerm}
-                        onChange={this.handleChange}
-                    >
+                    <Select value={this.state.pastTerm} onChange={this.handleChange}>
                         <MenuItem value={'2020 Spring'}>2020 Spring Quarter</MenuItem>
                     </Select>
                 </FormControl>

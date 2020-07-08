@@ -5,7 +5,7 @@ import { Typography, Button, Popover } from '@material-ui/core';
 import course_info from '../CoursePane/static/course_info.json';
 import { MoreVert } from '@material-ui/icons';
 import ReactGA from 'react-ga';
-import { bindPopover, bindTrigger } from 'material-ui-popup-state/core';
+import { bindPopover } from 'material-ui-popup-state/core';
 import { usePopupState } from 'material-ui-popup-state/hooks';
 
 const styles = (theme) => ({
@@ -57,10 +57,7 @@ const CourseInfoBar = (props) => {
                     <div
                         className={classes.courseInfoPane}
                         dangerouslySetInnerHTML={{
-                            __html:
-                                course_info[deptCode] === undefined
-                                    ? ''
-                                    : course_info[deptCode][courseNumber],
+                            __html: course_info[deptCode] === undefined ? '' : course_info[deptCode][courseNumber],
                         }}
                     />
                 </Typography>

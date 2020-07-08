@@ -1,4 +1,4 @@
-import React, { Component, Fragment, PureComponent } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { Map, TileLayer, withLeaflet } from 'react-leaflet';
 import buildingCatalogue from './buildingCatalogue';
 import locations from '../SectionTable/static/locations.json';
@@ -64,21 +64,12 @@ export default class UCIMap extends PureComponent {
 
     componentDidMount = () => {
         AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
-        AppStore.on(
-            'currentScheduleIndexChange',
-            this.updateCurrentScheduleIndex
-        );
+        AppStore.on('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
     };
 
     componentWillUnmount = () => {
-        AppStore.removeListener(
-            'addedCoursesChange',
-            this.updateEventsInCalendar
-        );
-        AppStore.removeListener(
-            'currentScheduleIndexChange',
-            this.updateCurrentScheduleIndex
-        );
+        AppStore.removeListener('addedCoursesChange', this.updateEventsInCalendar);
+        AppStore.removeListener('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
     };
 
     createMarkers = () => {
@@ -87,9 +78,7 @@ export default class UCIMap extends PureComponent {
         this.state.eventsInCalendar.forEach((event) => {
             //filter out those in a different schedule or those not on a certain day (mon, tue, etc)
             if (
-                !event.scheduleIndices.includes(
-                    this.state.currentScheduleIndex
-                ) ||
+                !event.scheduleIndices.includes(this.state.currentScheduleIndex) ||
                 !event.start.toString().includes(DAYS[this.state.day])
             )
                 return;
@@ -120,10 +109,7 @@ export default class UCIMap extends PureComponent {
                 acronym: acronym.toLowerCase(),
                 url: loc.url,
                 img: loc.img,
-                sections: [
-                    event.title + ' ' + event.sectionType,
-                    event.bldg.split(' ')[1],
-                ],
+                sections: [event.title + ' ' + event.sectionType, event.bldg.split(' ')[1]],
             });
         });
 
