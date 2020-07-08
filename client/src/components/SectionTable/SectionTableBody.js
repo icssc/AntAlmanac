@@ -174,7 +174,7 @@ const SectionDetailsCell = withStyles(styles)((props) => {
 
     return (
         <td className={classes.multiline + ' ' + classes[sectionType]}>
-            {`${sectionType}` + '\n' + `Sec: ${sectionNum}` + '\n' + `Units: ${units}`}
+            {`${sectionType}\nSec: ${sectionNum}\nUnits: ${units}`}
         </td>
     );
 });
@@ -278,7 +278,7 @@ const SectionEnrollmentCell = withStyles(styles)((props) => {
     return (
         <td>
             <div {...bindHover(popupState)} className={classes.multiline}>
-                <strong>{`${numCurrentlyEnrolled.totalEnrolled}` + ' / ' + `${maxCapacity}` + '\n'}</strong>
+                <strong>{`${numCurrentlyEnrolled.totalEnrolled} / ${maxCapacity}\n`}</strong>
                 {`WL: ${numOnWaitlist}\nNOR: ${numNewOnlyReserved}`}
             </div>
             <Popover
