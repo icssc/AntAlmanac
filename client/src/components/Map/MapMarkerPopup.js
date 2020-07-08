@@ -5,8 +5,7 @@ import PropTypes from 'prop-types';
 import { Button } from '@material-ui/core';
 import Leaflet from 'leaflet';
 
-const GOOGLE_MAPS_URL =
-    'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';
+const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';
 
 class MapMarkerPopup extends PureComponent {
     getMarkerIcon = (color) => {
@@ -14,6 +13,7 @@ class MapMarkerPopup extends PureComponent {
             iconAnchor: [0, 14],
             labelAnchor: [-3.5, 0],
             popupAnchor: [0, -21],
+            className: '',
             html: `<span style="background-color: ${color};
                             width: 1.75rem;
                             height: 1.75rem;
@@ -46,10 +46,7 @@ class MapMarkerPopup extends PureComponent {
         }
 
         return (
-            <Marker
-                position={[this.props.lat, this.props.lng]}
-                icon={this.getMarkerIcon(this.props.markerColor)}
-            >
+            <Marker position={[this.props.lat, this.props.lng]} icon={this.getMarkerIcon(this.props.markerColor)}>
                 <Popup>
                     {locationString}
 
