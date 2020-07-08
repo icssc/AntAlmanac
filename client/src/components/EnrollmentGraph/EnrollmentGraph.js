@@ -1,17 +1,12 @@
 import React, { PureComponent, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { Help, Image } from '@material-ui/icons';
+import { Image } from '@material-ui/icons';
 import PropTypes from 'prop-types';
-import ReactGA from 'react-ga';
-import {
-    Modal,
-    Button,
-    Typography,
-} from '@material-ui/core';
+import { Modal, Button, Typography } from '@material-ui/core';
 import GraphModalContent from './GraphModalContent';
 
 const styles = (theme) => ({
-    flex: { flexGrow: 1 }
+    flex: { flexGrow: 1 },
 });
 
 class EnrollmentGraph extends PureComponent {
@@ -45,7 +40,7 @@ class EnrollmentGraph extends PureComponent {
                 </Button>
 
                 <Modal open={this.state.open} onClose={this.handleClose}>
-                    <GraphModalContent courseDetails={this.props.courseDetails}/>
+                    <GraphModalContent courseDetails={this.props.courseDetails} />
                 </Modal>
             </Fragment>
         );
@@ -53,7 +48,7 @@ class EnrollmentGraph extends PureComponent {
 }
 
 EnrollmentGraph.propTypes = {
-    courseDetails: PropTypes.object.isRequired
+    courseDetails: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(EnrollmentGraph);

@@ -40,6 +40,8 @@ class RightPaneStore extends EventEmitter {
                 this.activeTab = action.activeTab;
                 this.emit('tabChange');
                 break;
+            default:
+                console.log(`[Warning] RightPaneStore invalid action type: ${action.type}`);
         }
     }
 }
