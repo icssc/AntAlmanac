@@ -162,8 +162,5 @@ app.post('/api/graphData', (req, res) => {
         });
 });
 
-app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
 
 app.listen(8080, () => console.log('Started Express server'));

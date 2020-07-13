@@ -40,6 +40,10 @@ class DeptSearchBar extends PureComponent {
         };
     }
 
+    compareValues = (option, value) => {
+        return option.deptValue === value.deptValue;
+    };
+
     handleSetDept = (event, newDept) => {
         let setDeptValue = newDept === null ? options[0] : newDept;
 
@@ -76,6 +80,7 @@ class DeptSearchBar extends PureComponent {
                     options={this.state.favorites.concat(options)}
                     autoHighlight={true}
                     openOnFocus={true}
+                    getOptionSelected={this.compareValues}
                     getOptionLabel={(option) => option.deptLabel}
                     blurOnSelect
                     onChange={this.handleSetDept}

@@ -21,9 +21,6 @@ const styles = {
         display: 'flex',
         alignItems: 'center',
     },
-    customEventColorPicker: {
-        padding: '0.75rem 0.75rem 0.75rem 0rem'
-    },
     title: {
         fontSize: '0.9rem',
         fontWeight: 500,
@@ -56,13 +53,12 @@ const styles = {
     },
     colorPicker: {
         cursor: 'pointer',
-        display: 'inline-block',
         '& > div': {
-            display: 'inline-block',
-            height: '1.5rem',
-            width: '1.5rem',
+            margin: '0px 8px 0px 4px',
+            height: '20px',
+            width: '20px',
             borderRadius: '50%',
-        },
+        }
     },
 };
 
@@ -172,7 +168,7 @@ const CourseCalendarEvent = (props) => {
                     {title}
                 </div>
                 <div className={classes.buttonBar}>
-                    <div className={`${classes.colorPicker} ${classes.customEventColorPicker}`}>
+                    <div className={`${classes.colorPicker}`}>
                         <ColorPicker
                             color={courseInMoreInfo.color}
                             isCustomEvent={true}
