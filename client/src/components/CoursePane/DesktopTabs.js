@@ -46,7 +46,6 @@ class DesktopTabs extends PureComponent {
                             overflow: 'hidden',
                             marginBottom: '4px',
                             marginRight: '4px',
-                            height: '45px',
                         }}
                     >
                         <Tabs

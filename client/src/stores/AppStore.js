@@ -67,10 +67,6 @@ class AppStore extends EventEmitter {
         return this.darkMode;
     }
 
-    getEvalDestination() {
-        return this.evalDestination;
-    }
-
     handleActions(action) {
         switch (action.type) {
             case 'ADD_COURSE':
@@ -130,6 +126,8 @@ class AppStore extends EventEmitter {
                 break;
             case 'CUSTOM_EVENT_COLOR_CHANGE':
                 this.customEvents = action.customEventsAfterColorChange;
+                this.finalsEventsInCalendar = calendarizeFinals();
+                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.emit('customEventsChange');
                 break;
             case 'LOAD_SCHEDULE':

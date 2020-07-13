@@ -14,7 +14,6 @@ const styles = {
     overflow: 'auto',
     marginBottom: '4px',
     alignItems: 'center',
-    height: '45px',
   },
   inline: {
     display: 'inline',
@@ -55,7 +54,7 @@ class CalendarPaneToolbar extends PureComponent {
                     variant={(this.props.showFinalsSchedule) ? 'contained' : 'outlined'}
                     onClick={this.props.toggleDisplayFinalsSchedule}
                     size='small'
-                    color={(this.props.showFinalsSchedule) ? 'primary' : ''}
+                    color={(this.props.showFinalsSchedule) ? 'primary' : 'default'}
                   >
                       Finals
                   </Button>

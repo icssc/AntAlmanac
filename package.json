@@ -11,15 +11,15 @@
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "devDependencies": {
-    "nodemon": "^1.14.6"
+    "nodemon": "^1.19.4"
   },
   "dependencies": {
+    "aws-sdk": "^2.711.0",
     "axios": "^0.19.2",
-    "aws-sdk": "^2.501.0",
-    "concurrently": "^3.5.1",
-    "express": "^4.16.2",
     "body-parser": "^1.19.0",
-    "websoc-api": "^0.0.5",
-    "mongodb": "^3.5.6"
+    "concurrently": "^5.2.0",
+    "express": "^4.16.2",
+    "mongodb": "^3.5.9",
+    "websoc-api": "^1.0.0"
   }
 }
