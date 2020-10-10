@@ -1,40 +1,36 @@
-import React from "react";
-import { Fragment } from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import {
-  Typography,
-  Popover,
-  Button
-} from "@material-ui/core";
-import Share from "@material-ui/icons/Share";
-import html2canvas from "html2canvas";
-import { FacebookShareButton, FacebookIcon } from "react-share";
-const styles = theme => ({
+import React from 'react';
+import { Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import { Typography, Popover, Button } from '@material-ui/core';
+import Share from '@material-ui/icons/Share';
+import html2canvas from 'html2canvas';
+import { FacebookShareButton, FacebookIcon } from 'react-share';
+const styles = (theme) => ({
   typography: {
-    margin: theme.spacing.unit * 2
-  }
+    margin: theme.spacing.unit * 2,
+  },
 });
 
 class Sharing extends React.Component {
   state = {
     anchorEl: null,
     image: null,
-    loading: true
+    loading: true,
   };
 
-  handleClick = event => {
+  handleClick = (event) => {
     this.setState(
       {
         loading: true,
-        anchorEl: event.currentTarget
+        anchorEl: event.currentTarget,
       },
       () => {
         this.props.onTakeScreenshot(() => {
-          html2canvas(document.getElementById("screenshot")).then(canvas => {
-            let img = canvas.toDataURL("image/png");
+          html2canvas(document.getElementById('screenshot')).then((canvas) => {
+            let img = canvas.toDataURL('image/png');
 
-            var arr = img.split(","),
+            let arr = img.split(','),
               mime = arr[0].match(/:(.*?);/)[1],
               bstr = atob(arr[1]),
               n = bstr.length,
@@ -42,30 +38,29 @@ class Sharing extends React.Component {
             while (n--) {
               u8arr[n] = bstr.charCodeAt(n);
             }
-            var file = new File([u8arr], "ok", { type: mime });
+            let file = new File([u8arr], 'ok', { type: mime });
 
-            var formData = new FormData();
+            let formData = new FormData();
 
             formData.append(0, file);
 
             fetch(
               `https://jfz4nqa9na.execute-api.us-west-1.amazonaws.com/latest/image-upload`,
               {
-                method: "POST",
-                body: formData
+                method: 'POST',
+                body: formData,
               }
             )
-              .then(res => {
+              .then((res) => {
                 if (!res.ok) {
                   throw res;
                 }
                 return res.json();
               })
-              .then(images => {
-                console.log("ok", images[0]);
+              .then((images) => {
                 this.setState({ image: images[0].secure_url, loading: false });
               })
-              .catch(err => {});
+              .catch((err) => {});
           });
         });
       }
@@ -74,12 +69,12 @@ class Sharing extends React.Component {
 
   handleClose = () => {
     this.setState({
-      anchorEl: null
+      anchorEl: null,
     });
   };
 
   dataURLtoFile = (dataurl, filename) => {
-    var arr = dataurl.split(","),
+    let arr = dataurl.split(','),
       mime = arr[0].match(/:(.*?);/)[1],
       bstr = atob(arr[1]),
       n = bstr.length,
@@ -98,16 +93,16 @@ class Sharing extends React.Component {
     return (
       <Fragment>
         <Button
-          aria-owns={open ? "simple-popper" : undefined}
+          aria-owns={open ? 'simple-popper' : undefined}
           aria-haspopup="true"
           disableRipple={true}
           onClick={this.handleClick}
-          className={"menu-button"}
+          className={'menu-button'}
           style={{
-            width:"100%"
+            width: '100%',
           }}
         >
-            <Share /> FB Share
+          <Share /> FB Share
         </Button>
         <Popover
           id="simple-popper"
@@ -115,12 +110,12 @@ class Sharing extends React.Component {
           anchorEl={anchorEl}
           onClose={this.handleClose}
           anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left"
+            vertical: 'bottom',
+            horizontal: 'left',
           }}
           transformOrigin={{
-            vertical: "bottom",
-            horizontal: "right"
+            vertical: 'bottom',
+            horizontal: 'right',
           }}
         >
           {/* {!this.state.loading ? (
@@ -140,14 +135,12 @@ class Sharing extends React.Component {
                     Image Link
                   </a>
                 </Typography>
-                <Typography>
-                  Share on:
-                </Typography>
+                <Typography>Share on:</Typography>
                 <FacebookShareButton
                   url={this.state.image}
                   quote="Shared from Poor Peter's AntAlmanac: https://antalmanac.com/ !! "
                   hashtag="#AntAlmanac"
-                  style={{cursor: "pointer"}}
+                  style={{ cursor: 'pointer' }}
                 >
                   <FacebookIcon size={80} round />
                 </FacebookShareButton>
@@ -167,12 +160,10 @@ class Sharing extends React.Component {
 }
 
 Sharing.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Sharing);
-
-
 
 // WEBPACK FOOTER //
 // ./src/components/Calendar/Sharing.js

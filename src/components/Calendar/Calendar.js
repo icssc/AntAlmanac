@@ -1,14 +1,14 @@
-import React, {Component} from "react";
-import BigCalendar from "react-big-calendar";
-import {withStyles} from '@material-ui/core/styles';
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import moment from "moment";
-import {Popper} from "@material-ui/core";
+import React, { Component, Fragment } from 'react';
+import BigCalendar from 'react-big-calendar';
+import { withStyles } from '@material-ui/core/styles';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import moment from 'moment';
+import { Popper } from '@material-ui/core';
 import PropTypes from 'prop-types';
-import "./calendar.css";
-import CalendarPaneToolbar from "./CalendarPaneToolbar";
-import CourseCalendarEvent from "./CourseCalendarEvent";
-import MobileCalendar from './MobileCalendar'
+import './calendar.css';
+import CalendarPaneToolbar from './CalendarPaneToolbar';
+import CourseCalendarEvent from './CourseCalendarEvent';
+import MobileCalendar from './MobileCalendar';
 
 BigCalendar.momentLocalizer(moment);
 
@@ -17,23 +17,32 @@ const styles = {
     margin: '0px 4px 4px 4px',
   },
   firstLineContainer: {
-    display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontWeight: 500, fontSize: "0.85rem"
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    fontWeight: 500,
+    fontSize: '0.85rem',
   },
   courseType: {
-    fontSize: "0.8rem"
+    fontSize: '0.8rem',
   },
   secondLineContainer: {
-    display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontSize: "0.8rem"
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    fontSize: '0.8rem',
   },
   customEventContainer: {
-    marginTop: 2, marginBottom: 2, fontSize: "0.85rem"
+    marginTop: 2,
+    marginBottom: 2,
+    fontSize: '0.85rem',
   },
   customEventTitle: {
-    fontWeight: 500
-  }
+    fontWeight: 500,
+  },
 };
 
-const CustomEvent = ({classes}) => (event) => {
+const CustomEvent = ({ classes }) => (event) => {
   const actualEvent = event.event;
 
   if (!actualEvent.isCustomEvent)
@@ -61,55 +70,86 @@ const CustomEvent = ({classes}) => (event) => {
 class Calendar extends Component {
   constructor(props) {
     super(props);
-    this.state = {screenshotting: false, anchorEvent: null, moreInfoOpen: false, courseInMoreInfo: null};
+    this.state = {
+      screenshotting: false,
+      anchorEvent: null,
+      moreInfoOpen: false,
+      courseInMoreInfo: null,
+    };
   }
 
   handleTakeScreenshot = async (html2CanvasScreenshot) => {
-    this.setState({screenshotting: true}, async () => {
+    this.setState({ screenshotting: true }, async () => {
       await html2CanvasScreenshot();
-      this.setState({screenshotting: false});
+      this.setState({ screenshotting: false });
     });
   };
 
   handleEventClick = (courseInMoreInfo, event) => {
-    const {currentTarget} = event;
+    const { currentTarget } = event;
     event.stopPropagation();
 
-    if (courseInMoreInfo.courseType !== "Fin" && !courseInMoreInfo.isCustomEvent)
-      this.setState(state => ({
+    if (courseInMoreInfo.courseType !== 'Fin')
+      this.setState((state) => ({
         anchorEvent: currentTarget,
-        moreInfoOpen: state.anchorEvent === currentTarget ? !state.moreInfoOpen : true,
-        courseInMoreInfo: courseInMoreInfo
+        moreInfoOpen:
+          state.anchorEvent === currentTarget ? !state.moreInfoOpen : true,
+        courseInMoreInfo: courseInMoreInfo,
       }));
-    else if (courseInMoreInfo.isCustomEvent){
-      //temporary click to delete custom events
-      this.props.onClassDelete(courseInMoreInfo);
-    }
   };
 
   handleClosePopover = () => {
-    this.setState({anchorEvent: null, moreInfoOpen: false});
+    this.setState({ anchorEvent: null, moreInfoOpen: false });
+  };
+
+  handleDragCustomEvent = (slot) => {
+    if (slot.action === 'select') {
+      //if a selection was dragged out
+      this.props.onAddCustomEvent([
+        {
+          color: '#696969',
+          title: 'Waiting for a Name',
+          scheduleIndex: this.props.currentScheduleIndex,
+          start: slot.start,
+          end: slot.end,
+          isCustomEvent: true,
+          customEventID: Math.floor(Math.random() * 1000000),
+        },
+      ]);
+    } else if (slot.action === 'doubleClick') {
+      this.props.onAddCustomEvent([
+        {
+          color: '#696969',
+          title: 'Waiting for a Name',
+          scheduleIndex: this.props.currentScheduleIndex,
+          start: slot.start,
+          end: new Date(slot.start.getTime() + 60 * 60000),
+          isCustomEvent: true,
+          customEventID: Math.floor(Math.random() * 1000000),
+        },
+      ]);
+    }
   };
 
   static eventStyleGetter = (event) => {
     return {
       style: {
         backgroundColor: event.color,
-        cursor: "pointer",
+        cursor: 'pointer',
         borderStyle: 'none',
-        borderRadius: 4
-      }
+        borderRadius: 4,
+      },
     };
   };
 
   render() {
-    const {classes, classEventsInCalendar} = this.props;
+    const { classes, classEventsInCalendar } = this.props;
 
     return (
       <div className={classes.container} onClick={this.handleClosePopover}>
         <CalendarPaneToolbar
           onScheduleChange={this.props.onScheduleChange}
-          onClearSchedule={this.props.onClearSchedule}
+          handleClearSchedule={this.props.handleClearSchedule}
           onUndo={this.props.onUndo}
           onAddCustomEvent={this.props.onAddCustomEvent}
           onTakeScreenshot={this.handleTakeScreenshot}
@@ -119,11 +159,23 @@ class Calendar extends Component {
           displayFinal={this.props.displayFinal}
         />
         <div>
-          <div id="screenshot"
-               style={(!this.state.screenshotting ?
-                 {height: `calc(100vh - 96px - 12px - ${this.props.isDesktop ? '0px' : '48px'})`} :
-                 {height: `${this.props.isDesktop ? '100%' : '100vh'}`,display:`${this.props.isDesktop ? 'null' : 'inline-block'}`})
-               }>
+          <div
+            id="screenshot"
+            style={
+              !this.state.screenshotting
+                ? {
+                    height: `calc(100vh - 96px - 12px - ${
+                      this.props.isDesktop ? '0px' : '48px'
+                    })`,
+                  }
+                : {
+                    height: `${this.props.isDesktop ? '100%' : '100vh'}`,
+                    display: `${
+                      this.props.isDesktop ? 'null' : 'inline-block'
+                    }`,
+                  }
+            }
+          >
             <Popper
               anchorEl={this.state.anchorEvent}
               placement="right"
@@ -138,21 +190,28 @@ class Calendar extends Component {
               }}
               open={this.state.moreInfoOpen}
             >
-              {this.state.moreInfoOpen ?
+              {this.state.moreInfoOpen ? (
                 <CourseCalendarEvent
                   courseInMoreInfo={this.state.courseInMoreInfo}
-                  onClassDelete={() => this.props.onClassDelete(this.state.courseInMoreInfo)}
+                  onClassDelete={() =>
+                    this.props.onClassDelete(this.state.courseInMoreInfo)
+                  }
                   onColorChange={this.props.onColorChange}
-                /> : null}
+                  onEditCustomEvent={this.props.onEditCustomEvent}
+                />
+              ) : (
+                <Fragment />
+              )}
             </Popper>
-            {this.props.isDesktop ? <BigCalendar
+            {this.props.isDesktop ? (
+              <BigCalendar
                 toolbar={false}
                 formats={{
                   timeGutterFormat: (date, culture, localizer) =>
                     date.getMinutes() > 0
-                      ? ""
-                      : localizer.format(date, "h A", culture),
-                  dayFormat: "ddd"
+                      ? ''
+                      : localizer.format(date, 'h A', culture),
+                  dayFormat: 'ddd',
                 }}
                 defaultView={BigCalendar.Views.WORK_WEEK}
                 views={[BigCalendar.Views.WORK_WEEK]}
@@ -164,14 +223,18 @@ class Calendar extends Component {
                 events={classEventsInCalendar}
                 eventPropGetter={Calendar.eventStyleGetter}
                 showMultiDayTimes={false}
-                components={{event: CustomEvent({classes})}}
+                components={{ event: CustomEvent({ classes }) }}
+                onSelectEvent={this.handleEventClick}
+                selectable={true}
+                onSelectSlot={this.handleDragCustomEvent}
+              />
+            ) : (
+              <MobileCalendar
+                classEventsInCalendar={classEventsInCalendar}
+                EventBox={CustomEvent({ classes })}
                 onSelectEvent={this.handleEventClick}
               />
-              : <MobileCalendar
-                classEventsInCalendar={classEventsInCalendar}
-                EventBox={CustomEvent({classes})}
-                onSelectEvent={this.handleEventClick}
-              />}
+            )}
           </div>
         </div>
       </div>
@@ -181,37 +244,47 @@ class Calendar extends Component {
 
 Calendar.propTypes = {
   currentScheduleIndex: PropTypes.number,
-  classEventsInCalendar: PropTypes.shape({
-    color: PropTypes.string,
-    title: PropTypes.string,
-    start: PropTypes.instanceOf(Date),
-    end: PropTypes.instanceOf(Date),
-    courseID: PropTypes.string,
-    courseTerm: PropTypes.string,
-    location: PropTypes.string,
-    type: PropTypes.string,
-    isCustomEvent: PropTypes.bool,
-    section: PropTypes.object,
-    name: PropTypes.string
-  }),
+  classEventsInCalendar: PropTypes.arrayOf(
+    PropTypes.shape({
+      color: PropTypes.string,
+      title: PropTypes.string,
+      start: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.instanceOf(Date),
+      ]),
+      end: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
+      courseID: PropTypes.string,
+      courseTerm: PropTypes.string,
+      location: PropTypes.string,
+      type: PropTypes.string,
+      isCustomEvent: PropTypes.bool,
+      section: PropTypes.object,
+      name: PropTypes.arrayOf(PropTypes.string),
+    })
+  ),
   onScheduleChange: PropTypes.func,
   onClearSchedule: PropTypes.func,
   onClassDelete: PropTypes.func,
   onAddCustomEvent: PropTypes.func,
   onColorChange: PropTypes.func,
-  eventsInCalendar: PropTypes.shape({
-    color: PropTypes.string,
-    title: PropTypes.string,
-    start: PropTypes.instanceOf(Date),
-    end: PropTypes.instanceOf(Date),
-    courseID: PropTypes.string,
-    courseTerm: PropTypes.string,
-    location: PropTypes.string,
-    type: PropTypes.string,
-    isCustomEvent: PropTypes.bool,
-    section: PropTypes.object,
-    name: PropTypes.string
-  })
+  eventsInCalendar: PropTypes.arrayOf(
+    PropTypes.shape({
+      color: PropTypes.string,
+      title: PropTypes.string,
+      start: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.instanceOf(Date),
+      ]),
+      end: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
+      courseID: PropTypes.string,
+      courseTerm: PropTypes.string,
+      location: PropTypes.string,
+      type: PropTypes.string,
+      isCustomEvent: PropTypes.bool,
+      section: PropTypes.object,
+      name: PropTypes.arrayOf(PropTypes.string),
+    })
+  ),
 };
 
 export default withStyles(styles)(Calendar);

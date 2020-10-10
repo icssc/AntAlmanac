@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import Popover from '@material-ui/core/Popover';
 import Typography from '@material-ui/core/Typography';
-import code_lookup from "./restrictions.json";
+import code_lookup from './restrictions.json';
 import { withStyles } from '@material-ui/core/styles';
 
-const styles = theme => ({
+const styles = (theme) => ({
   popover: {
     pointerEvents: 'none',
   },
@@ -19,7 +19,7 @@ class RstrPopover extends React.Component {
     anchorEl: null,
   };
 
-  handlePopoverOpen = event => {
+  handlePopoverOpen = (event) => {
     this.setState({ anchorEl: event.currentTarget });
   };
 
@@ -27,15 +27,15 @@ class RstrPopover extends React.Component {
     this.setState({ anchorEl: null });
   };
 
-  parseRstr = rstr => {
-    var explained = [];
-    for (var code of rstr.split(" ")){
-      if (code !== "and" && code !== "or"){
+  parseRstr = (rstr) => {
+    const explained = [];
+    for (let code of rstr.split(' ')) {
+      if (code !== 'and' && code !== 'or') {
         explained.push(code_lookup[code]);
       }
     }
     return explained;
- };
+  };
 
   render() {
     const { classes } = this.props;
@@ -53,7 +53,7 @@ class RstrPopover extends React.Component {
             target="_blank"
             rel="noopener noreferrer"
           >
-          {this.props.restrictions}
+            {this.props.restrictions}
           </a>
         </Typography>
         <Popover
@@ -75,9 +75,14 @@ class RstrPopover extends React.Component {
           onClose={this.handlePopoverClose}
           disableRestoreFocus
         >
-          <Typography>{this.parseRstr(this.props.restrictions).map( r =>
-            <p>{r}</p>
-          )}</Typography>
+          <Typography>
+            {this.parseRstr(this.props.restrictions).map((r) => (
+              <Fragment key={r}>
+                {r}
+                <br />
+              </Fragment>
+            ))}
+          </Typography>
         </Popover>
       </div>
     );

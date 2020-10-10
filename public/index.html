@@ -1,31 +1,59 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
-
   <head>
     <style>
-      @media
-      (min-resolution: 120dpi){
+      @media (min-resolution: 120dpi) {
         html {
           font-size: 14px;
         }
       }
-      @media
-      (min-resolution: 144dpi){
+      @media (min-resolution: 144dpi) {
         html {
           font-size: 12px;
         }
       }
     </style>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
-    <meta name="theme-color" content="#000000">
-    <meta name="keywords" content="UCI,Anteater,search,classes, AI,Calendar,Computer Science,development,software,add classes,investing,investor,sexy developers">
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no"
+    />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="keywords"
+      content="UCI,Anteater,search,classes, AI,Calendar,Computer Science,development,software,add classes,investing,investor,sexy developers"
+    />
 
-    <meta name="description" content="A scheduling planning and time management tool that provides UCI anteaters with historical course information in a visual and intuitive way to help with scheduling and course planning. With a long-term focus on course availability by quarter and registration history, The AntAlmanac enables UC Irvine student to make better academic course planning decisions. Through history enrollment graphs as well as past course offerings, UCI anteaters can pick courses without the anxiety!">
+    <meta
+      name="description"
+      content="A scheduling planning and time management tool that provides UCI anteaters with historical course information in a visual and intuitive way to help with scheduling and course planning. With a long-term focus on course availability by quarter and registration history, The AntAlmanac enables UC Irvine student to make better academic course planning decisions. Through history enrollment graphs as well as past course offerings, UCI anteaters can pick courses without the anxiety!"
+    />
 
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="%PUBLIC_URL%/google_font_roboto_300_400_500_700.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.67.0/dist/L.Control.Locate.min.css"
+    />
+    <style type="text/css">
+      .leaflet-container {
+        height: 800px;
+      }
+    </style>
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -37,13 +65,6 @@
     -->
     <title>AntAlmanac</title>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-133683751-1"></script>
-    <script>
-     window.dataLayer = window.dataLayer || [];
-     function gtag(){dataLayer.push(arguments);}
-     gtag('js', new Date());
-     gtag('config', 'UA-133683751-1');
-    </script>
   </head>
   <body>
     <noscript>
@@ -51,4 +72,17 @@
     </noscript>
     <div id="root"></div>
   </body>
+  <script>
+    if ('serviceWorker' in navigator) {
+      // console.log('Will the service worker register?');
+      navigator.serviceWorker
+        .register('service-worker.js')
+        .then(function(reg) {
+          console.log('');
+        })
+        .catch(function(err) {
+          console.log("No it didn't. This happened: ", err);
+        });
+    }
+  </script>
 </html>
