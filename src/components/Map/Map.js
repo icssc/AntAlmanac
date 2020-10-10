@@ -59,12 +59,7 @@ export default class UCIMap extends Component<{}, State> {
       }
 
       //hotfix for when some events have undefined colors
-      let pin_color = '';
-      if (event.color === undefined) {
-        pin_color = '#0000FF';
-      } else {
-        pin_color = event.color;
-      }
+      const pin_color = event.color === undefined ? '#000FF' : event.color;
       const blding = loc.label;
 
       //collect all the events for the map

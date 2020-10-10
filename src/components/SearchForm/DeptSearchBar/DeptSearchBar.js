@@ -17,12 +17,9 @@ class DeptSearchBar extends React.Component {
   }
 
   determineDropdownLength() {
-    if (isMobile) {
-      return 3;
-    }
     // return document.documentElement.scrollHeight
     // - 96 - 24;
-    return 6;
+    return isMobile ? 3 : 6
   }
 
   handleStateChange(changes) {

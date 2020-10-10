@@ -42,14 +42,10 @@ class SPopover extends React.Component {
     if (!event) event = window.event;
     event.cancelBubble = true;
     if (event.stopPropagation) event.stopPropagation();
-    let email = '';
-    let sms = '(  )    -    ';
-    let token = '';
-    if (typeof Storage !== 'undefined') {
-      email = window.localStorage.getItem('email');
-      sms = window.localStorage.getItem('sms');
-      token = window.localStorage.getItem('token');
-    }
+    const isStorage = typeof Storage !== 'undefined';
+    const email = isStorage ? window.localStorage.getItem('email'): '';
+    const sms = isStorage ? window.localStorage.getItem('sms') : '(  )    -    ';
+    const token = isStorage ? window.localStorage.getItem('token') : '';
 
     this.setState({
       anchorEl: event.currentTarget,
@@ -78,9 +74,8 @@ class SPopover extends React.Component {
       'https://3jbsyx3se1.execute-api.us-west-1.amazonaws.com/dev/email/';
 
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (!re.test(email)) {
-    } else {
-      url = url + code + '/' + name + '/' + email;
+    if (re.test(email)) {
+      url = `${url}${code}/${name}/${email}`;
       window.localStorage.setItem('email', email);
       fetch(url);
       this.setState({ addEmailMessageOn: true });
@@ -99,11 +94,11 @@ class SPopover extends React.Component {
     const token = this.state.cachePushToken;
     const name = this.props.name[1] + ' ' + this.props.name[2];
 
-    let url =
+    const url =
       'https://3jbsyx3se1.execute-api.us-west-1.amazonaws.com/dev/pushnotif/';
 
-    url = url + code + '/' + name + '/' + token;
-    fetch(url);
+      // should this one have await?
+    fetch(`${url}${code}/${name}/${token}`);
     this.setState({ addPushMessageOn: true });
   };
 

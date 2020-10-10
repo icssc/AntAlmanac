@@ -3,7 +3,7 @@
 
 import 'file-saver';
 
-export let ics = function(uidDomain, prodId) {
+export const ics = function(uidDomain, prodId) {
   if (
     navigator.userAgent.indexOf('MSIE') > -1 &&
     navigator.userAgent.indexOf('MSIE 10') === -1
@@ -19,7 +19,7 @@ export let ics = function(uidDomain, prodId) {
     prodId = 'Calendar';
   }
 
-  let SEPARATOR = navigator.appVersion.indexOf('Win') !== -1 ? '\r\n' : '\n';
+  const SEPARATOR = navigator.appVersion.indexOf('Win') !== -1 ? '\r\n' : '\n';
   let calendarEvents = [];
   let calendarStart = [
     'BEGIN:VCALENDAR',
@@ -27,7 +27,7 @@ export let ics = function(uidDomain, prodId) {
     'VERSION:2.0',
   ].join(SEPARATOR);
   let calendarEnd = SEPARATOR + 'END:VCALENDAR';
-  let BYDAY_VALUES = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+  const BYDAY_VALUES = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
 
   return {
     /**
@@ -132,32 +132,32 @@ export let ics = function(uidDomain, prodId) {
         }
       }
 
-      let start_date = new Date(begin);
-      let end_date = new Date(stop);
-      let now_date = new Date();
+      const start_date = new Date(begin);
+      const end_date = new Date(stop);
+      const now_date = new Date();
 
-      let start_year = ('0000' + start_date.getFullYear().toString()).slice(-4);
-      let start_month = ('00' + (start_date.getMonth() + 1).toString()).slice(
+      const start_year = ('0000' + start_date.getFullYear().toString()).slice(-4);
+      const start_month = ('00' + (start_date.getMonth() + 1).toString()).slice(
         -2
       );
-      let start_day = ('00' + start_date.getDate().toString()).slice(-2);
-      let start_hours = ('00' + start_date.getHours().toString()).slice(-2);
-      let start_minutes = ('00' + start_date.getMinutes().toString()).slice(-2);
-      let start_seconds = ('00' + start_date.getSeconds().toString()).slice(-2);
+      const start_day = ('00' + start_date.getDate().toString()).slice(-2);
+      const start_hours = ('00' + start_date.getHours().toString()).slice(-2);
+      const start_minutes = ('00' + start_date.getMinutes().toString()).slice(-2);
+      const start_seconds = ('00' + start_date.getSeconds().toString()).slice(-2);
 
-      let end_year = ('0000' + end_date.getFullYear().toString()).slice(-4);
-      let end_month = ('00' + (end_date.getMonth() + 1).toString()).slice(-2);
-      let end_day = ('00' + end_date.getDate().toString()).slice(-2);
-      let end_hours = ('00' + end_date.getHours().toString()).slice(-2);
-      let end_minutes = ('00' + end_date.getMinutes().toString()).slice(-2);
-      let end_seconds = ('00' + end_date.getSeconds().toString()).slice(-2);
+      const end_year = ('0000' + end_date.getFullYear().toString()).slice(-4);
+      const end_month = ('00' + (end_date.getMonth() + 1).toString()).slice(-2);
+      const end_day = ('00' + end_date.getDate().toString()).slice(-2);
+      const end_hours = ('00' + end_date.getHours().toString()).slice(-2);
+      const end_minutes = ('00' + end_date.getMinutes().toString()).slice(-2);
+      const end_seconds = ('00' + end_date.getSeconds().toString()).slice(-2);
 
-      let now_year = ('0000' + now_date.getFullYear().toString()).slice(-4);
-      let now_month = ('00' + (now_date.getMonth() + 1).toString()).slice(-2);
-      let now_day = ('00' + now_date.getDate().toString()).slice(-2);
-      let now_hours = ('00' + now_date.getHours().toString()).slice(-2);
-      let now_minutes = ('00' + now_date.getMinutes().toString()).slice(-2);
-      let now_seconds = ('00' + now_date.getSeconds().toString()).slice(-2);
+      const now_year = ('0000' + now_date.getFullYear().toString()).slice(-4);
+      const now_month = ('00' + (now_date.getMonth() + 1).toString()).slice(-2);
+      const now_day = ('00' + now_date.getDate().toString()).slice(-2);
+      const now_hours = ('00' + now_date.getHours().toString()).slice(-2);
+      const now_minutes = ('00' + now_date.getMinutes().toString()).slice(-2);
+      const now_seconds = ('00' + now_date.getSeconds().toString()).slice(-2);
 
       // Since some calendars don't add 0 second events, we need to remove time if there is none...
       let start_time = '';
@@ -174,11 +174,11 @@ export let ics = function(uidDomain, prodId) {
         start_time = 'T' + start_hours + start_minutes + start_seconds;
         end_time = 'T' + end_hours + end_minutes + end_seconds;
       }
-      let now_time = 'T' + now_hours + now_minutes + now_seconds;
+      const now_time = 'T' + now_hours + now_minutes + now_seconds;
 
-      let start = start_year + start_month + start_day + start_time;
-      let end = end_year + end_month + end_day + end_time;
-      let now = now_year + now_month + now_day + now_time;
+      const start = start_year + start_month + start_day + start_time;
+      const end = end_year + end_month + end_day + end_time;
+      const now = now_year + now_month + now_day + now_time;
 
       // recurrence rrule lets
       let rruleString;
@@ -189,7 +189,7 @@ export let ics = function(uidDomain, prodId) {
           rruleString = 'RRULE:FREQ=' + rrule.freq;
 
           if (rrule.until) {
-            let uDate = new Date(Date.parse(rrule.until)).toISOString();
+            const uDate = new Date(Date.parse(rrule.until)).toISOString();
             rruleString +=
               ';UNTIL=' +
               uDate.substring(0, uDate.length - 13).replace(/[-]/g, '') +
@@ -246,7 +246,7 @@ export let ics = function(uidDomain, prodId) {
 
       ext = typeof ext !== 'undefined' ? ext : '.ics';
       filename = typeof filename !== 'undefined' ? filename : 'calendar';
-      let calendar =
+      const calendar =
         calendarStart +
         SEPARATOR +
         calendarEvents.join(SEPARATOR) +
@@ -258,7 +258,7 @@ export let ics = function(uidDomain, prodId) {
         blob = new Blob([calendar]);
       } else {
         // ie
-        let bb = new BlobBuilder();
+        const bb = new BlobBuilder();
         bb.append(calendar);
         blob = bb.getBlob('text/x-vCalendar;charset=' + document.characterSet);
       }
@@ -270,13 +270,7 @@ export let ics = function(uidDomain, prodId) {
      * Build and return the ical contents
      */
     build: function() {
-      if (calendarEvents.length < 1) {
-        return false;
-      }
-
-      return (
-        calendarStart + SEPARATOR + calendarEvents.join(SEPARATOR) + calendarEnd
-      ); // return calendar
+      return calendarEvents.length < 1 ? false : (calendarStart + SEPARATOR + calendarEvents.join(SEPARATOR) + calendarEnd);
     },
   };
 };
