@@ -5,6 +5,7 @@ const User = mongoose.Schema({
   userData: {
     addedCourses: [{
       color: String,
+      term: String,
       sectionCode: String,
       scheduleIndices: [Number]
     }],

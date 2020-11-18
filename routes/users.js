@@ -20,17 +20,19 @@ router.post('/loadUserData', async (req, res) => {
 })
 
 router.post('/saveUserData', async (req, res) => {
-  await connectToDb()
+  await connectToDb();
 
   try {
     const userID = req.body.userID
+    const userData = req.body.userData
+
     await User.findByIdAndUpdate(
       userID,
-      { $set: { _id: req.body.userID, userData: req.body.userData } },
+      { $set: { _id: userID, userData: userData } },
       { upsert: true })
     res.status(200).send();
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).send({error: err.message});
   }
 })
 
