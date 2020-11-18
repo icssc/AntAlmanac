@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router();
 const Notification = require('../models/Notification')
 
-router.post('/registerAlerts', async (req, res) => {
+router.post('/registerNotifications', async (req, res) => {
   const {phoneNumber, sectionCode, courseTitle} = req.body;
 
   try {
