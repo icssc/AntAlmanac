@@ -1,0 +1,28 @@
+service: antalmanac-backend
+
+# Create an optimized package for our functions
+#package:
+#  individually: true
+
+plugins:
+  - serverless-offline
+#  - serverless-dotenv-plugin # Load .env as environment variables
+
+custom:
+  serverless-offline:
+    httpPort: 8080
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: us-west-1
+
+functions:
+    app:
+      handler: server.handler
+      events:
+        - http:
+            path: /{proxy+}
+            method: ANY
+            cors: true
