@@ -118,7 +118,7 @@ export const saveSchedule = async (userID, rememberMe) => {
             });
 
             try {
-                await fetch(`/api/saveUserData`, {
+                await fetch(`/api/users/saveUserData`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -149,7 +149,7 @@ export const loadSchedule = async (userID, rememberMe) => {
             }
 
             try {
-                const data = await fetch('/api/loadUserData', {
+                const data = await fetch('/api/users/loadUserData', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userID: userID }),

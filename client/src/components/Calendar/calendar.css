@@ -6,6 +6,10 @@
     border: none;
 }
 
+.rbc-header + .rbc-header {
+    border: none;
+}
+
 .rbc-time-view .rbc-allday-cell {
     height: 0;
     z-index: -1000;

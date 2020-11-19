@@ -8,7 +8,7 @@ class RightPaneStore extends EventEmitter {
             deptValue: 'ALL',
             deptLabel: 'ALL: Include All Departments',
             ge: 'ANY',
-            term: '2020 Spring',
+            term: '2021 Winter',
             courseNumber: '',
             sectionCode: '',
             instructor: '',

@@ -138,7 +138,7 @@ class CourseRenderPane extends PureComponent {
 
             const jsonResp = await response.json();
 
-            const adBannerInfo = await fetch('/api/getRandomAd');
+            const adBannerInfo = await fetch('/api/ads/getRandomAd');
 
             const jsonAdInfo = await adBannerInfo.json();
 
