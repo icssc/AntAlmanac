@@ -13,33 +13,28 @@ import { Notifications } from '@material-ui/icons';
 class NotificationHub extends PureComponent {
     state = {
         open: false,
-        email: '',
         phoneNumber: '',
-        emailNotificationList: [],
         smsNotificationList: [],
     };
 
     getNotificationLists = async () => {
-        let storedEmail, storedPhoneNumber;
+        let storedPhoneNumber;
 
         if (typeof Storage !== 'undefined') {
-            storedEmail = window.localStorage.getItem('email');
             storedPhoneNumber = window.localStorage.getItem('phoneNumber');
         }
 
-        if (storedEmail || storedPhoneNumber) {
-            const response = await fetch('/api/lookupNotifications', {
+        if (storedPhoneNumber) {
+            const response = await fetch('/api/notifications/lookupNotifications', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({email: storedEmail, phoneNumber: storedPhoneNumber.replace(/ /g,'')}),
+                body: JSON.stringify({phoneNumber: storedPhoneNumber.replace(/ /g,'')}),
             });
 
             const jsonResp = await response.json();
 
             this.setState({
-                email: storedEmail,
                 phoneNumber: storedPhoneNumber,
-                emailNotificationList: jsonResp.emailNotificationList,
                 smsNotificationList: jsonResp.smsNotificationList
             });
         }
@@ -74,38 +69,21 @@ class NotificationHub extends PureComponent {
 
                     <DialogContent dividers={true}>
                         <DialogContentText>
-                            {this.state.email ? (
-                                <div>
-                                    Watchlist for {this.state.email}:
-                                    <ul>
-                                        {this.state.emailNotificationList.map((course, index) => {
-                                            return (
-                                                <li id={index}>
-                                                    {course.name}: {course.code}
-                                                </li>
-                                            );
-                                        })}
-                                    </ul>
-                                </div>
-                            ) : (
-                                "You have not signed up for any email notifications!"
-                            )}
-
                             {this.state.phoneNumber ? (
                                 <div>
                                     Watchlist for {this.state.phoneNumber}:
                                     <ul>
-                                        {this.state.smsNotificationList.map((course, index) => {
+                                        {this.state.smsNotificationList.map((section, index) => {
                                             return (
                                                 <li id={index}>
-                                                    {course.name}: {course.code}
+                                                    {section.courseTitle}: {section.sectionCode}
                                                 </li>
                                             );
                                         })}
                                     </ul>
                                 </div>
                             ) : (
-                                "You have not signed up for any SMS notifications!"
+                                "You have not registered for SMS notifications on this PC!"
                             )}
                         </DialogContentText>
                     </DialogContent>

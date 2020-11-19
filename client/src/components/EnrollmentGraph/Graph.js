@@ -40,7 +40,7 @@ class Graph extends PureComponent {
     };
 
     fetchGraphData = async () => {
-        const data = await fetch(`/api/graphData`, {
+        const data = await fetch(`/api/enrollmentData`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

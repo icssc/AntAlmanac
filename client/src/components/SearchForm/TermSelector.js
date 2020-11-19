@@ -21,6 +21,8 @@ class TermSelector extends PureComponent {
             <FormControl fullWidth>
                 <InputLabel>Term</InputLabel>
                 <Select value={this.state.term} onChange={this.handleChange}>
+                    <MenuItem value={'2021 Winter'}>2021 Winter Quarter</MenuItem>
+                    <MenuItem value={'2020 Fall'}>2020 Fall Quarter</MenuItem>
                     <MenuItem value={'2020 Spring'}>
                         2020 Spring Quarter
                     </MenuItem>
@@ -108,37 +110,6 @@ class TermSelector extends PureComponent {
                         2015 Winter Quarter
                     </MenuItem>
                     <MenuItem value={'2014 Fall'}>2014 Fall Quarter</MenuItem>
-                    <MenuItem value={'2014 Summer2'}>
-                        2014 Summer Session 2
-                    </MenuItem>
-                    <MenuItem value={'2014 Summer10wk'}>
-                        2014 10-wk Summer
-                    </MenuItem>
-                    <MenuItem value={'2014 Summer1'}>
-                        2014 Summer Session 1
-                    </MenuItem>
-                    <MenuItem value={'2014 Spring'}>
-                        2014 Spring Quarter
-                    </MenuItem>
-                    <MenuItem value={'2014 Winter'}>
-                        2014 Winter Quarter
-                    </MenuItem>
-                    <MenuItem value={'2013 Fall'}>2013 Fall Quarter</MenuItem>
-                    <MenuItem value={'2013 Summer2'}>
-                        2013 Summer Session 2
-                    </MenuItem>
-                    <MenuItem value={'2013 Summer10wk'}>
-                        2013 10-wk Summer
-                    </MenuItem>
-                    <MenuItem value={'2013 Summer1'}>
-                        2013 Summer Session 1
-                    </MenuItem>
-                    <MenuItem value={'2013 Spring'}>
-                        2013 Spring Quarter
-                    </MenuItem>
-                    <MenuItem value={'2013 Winter'}>
-                        2013 Winter Quarter
-                    </MenuItem>
                 </Select>
             </FormControl>
         );

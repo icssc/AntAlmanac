@@ -24,7 +24,7 @@ class AdBanner extends PureComponent {
                    target="_blank"
                    rel="noopener noreferrer">
                     <img
-                        src={`/api/getAdImage/${this.props.bannerName}`}
+                        src={`/api/ads/getAdImage/${this.props.bannerName}`}
                         alt="banner"
                         className={classes.ad}
                     /></a>
