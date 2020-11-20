@@ -1,0 +1,13 @@
+component: website
+name: antalmanac-site
+#org: antalmanac
+#app: my-app
+stage: dev
+
+inputs:
+  src:
+    src: ./src
+  #  domain: antalmanac.com
+    region: us-west-1
+    hook: npm run build
+    dist: ./build
