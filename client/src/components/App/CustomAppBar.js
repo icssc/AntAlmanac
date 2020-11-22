@@ -8,9 +8,9 @@ import {
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { Assignment, Info } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
-import logo from './logo.png';
 import NotificationHub from './NotificationHub';
 import SettingsMenu from './SettingsMenu'
+import {ReactComponent as Logo} from './logo.svg';
 
 const styles = {
     appBar: {
@@ -31,7 +31,7 @@ class CustomAppBar extends PureComponent {
         return (
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar variant="dense">
-                    <img height={32} src={logo} alt={'Logo'} />
+                    <Logo height={32}/>
 
                     <div style={{flexGrow: '1'}} />
 
