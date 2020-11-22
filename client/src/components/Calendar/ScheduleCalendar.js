@@ -89,9 +89,27 @@ class ScheduleCalendar extends PureComponent {
         cursor: 'pointer',
         borderStyle: 'none',
         borderRadius: 0,
+        color: this.colorContrastSufficient(event.color) ? 'white' : 'black'
       },
     }
   }
+
+  static colorContrastSufficient = (bg) => {
+    // This equation is taken from w3c, does not use the colour difference part
+    const minBrightnessDiff = 125;
+
+    let bgRgb = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(bg); // returns {hex, r, g, b}
+    bgRgb = { r: parseInt(bgRgb[1], 16), g: parseInt(bgRgb[2], 16), b: parseInt(bgRgb[3], 16) };
+    let textRgb = { r: 255, g: 255, b: 255 }; // white text
+
+    const getBrightness = (color) => {
+      return (color.r * 299 + color.g * 587 + color.b * 114) / 1000;
+    };
+
+    const bgBrightness = getBrightness(bgRgb);
+    const textBrightness = getBrightness(textRgb);
+    return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff;
+  };
 
   toggleDisplayFinalsSchedule = () => {
     this.handleClosePopover()
