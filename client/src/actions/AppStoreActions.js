@@ -142,7 +142,11 @@ export const saveSchedule = async (userID, rememberMe) => {
 };
 
 export const loadSchedule = async (userID, rememberMe) => {
-  if (userID != null) {
+  if (
+    userID != null &&
+    (!AppStore.hasUnsavedChanges() ||
+      window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
+  ) {
     userID = userID.replace(/\s+/g, '');
 
     if (userID.length > 0) {

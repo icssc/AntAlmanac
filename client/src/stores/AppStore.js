@@ -74,6 +74,10 @@ class AppStore extends EventEmitter {
     return this.darkMode;
   }
 
+  hasUnsavedChanges() {
+    return this.unsavedChanges;
+  }
+
   handleActions(action) {
     switch (action.type) {
       case 'ADD_COURSE':
