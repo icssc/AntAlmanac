@@ -130,6 +130,10 @@ export const saveSchedule = async (userID, rememberMe) => {
                     'success',
                     `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
                 );
+
+                dispatcher.dispatch({
+                    type: 'SAVE_SCHEDULE',
+                });
             } catch (e) {
                 openSnackbar('error', `Schedule could not be saved under username "${userID}`);
             }
@@ -138,7 +142,11 @@ export const saveSchedule = async (userID, rememberMe) => {
 };
 
 export const loadSchedule = async (userID, rememberMe) => {
-    if (userID != null) {
+    if (
+        userID != null &&
+        (!AppStore.hasUnsavedChanges() ||
+            window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
+    ) {
         userID = userID.replace(/\s+/g, '');
 
         if (userID.length > 0) {
@@ -280,9 +288,7 @@ export const undoDelete = (event) => {
 
             openSnackbar(
                 'success',
-                `Undo delete ${lastDeleted.deptCode} ${lastDeleted.courseNumber} in schedule ${
-                    lastDeleted.scheduleIndex + 1
-                }.`
+                `Undo delete ${lastDeleted.deptCode} ${lastDeleted.courseNumber} in schedule ${lastDeleted.scheduleIndex + 1}.`
             );
         }
     }
