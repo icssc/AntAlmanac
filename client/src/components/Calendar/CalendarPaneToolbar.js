@@ -1,9 +1,9 @@
 import React, { PureComponent} from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { IconButton, Tooltip, Typography,  Paper, Button } from '@material-ui/core';
-import { ChevronLeft, ChevronRight, Undo } from '@material-ui/icons';
+import { ChevronLeft, ChevronRight, Delete, Undo } from '@material-ui/icons';
 import PropTypes from 'prop-types';
-import { undoDelete } from '../../actions/AppStoreActions';
+import { clearSchedules, undoDelete } from '../../actions/AppStoreActions';
 import CustomEventsDialog from '../CustomEvents/CustomEventDialog';
 import { changeCurrentSchedule } from '../../actions/AppStoreActions';
 import ScreenshotButton from './ScreenshotButton';
@@ -46,6 +46,22 @@ class CalendarPaneToolbar extends PureComponent {
                 <Tooltip title="Undo last deleted course">
                     <IconButton onClick={() => undoDelete(null)}>
                         <Undo fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+
+                <Tooltip title="Clear schedule">
+                    <IconButton
+                        onClick={() => {
+                            if (
+                              window.confirm(
+                                'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
+                              )
+                            ) {
+                              clearSchedules([this.props.currentScheduleIndex]);
+                            }
+                        }}
+                    >
+                        <Delete fontSize="small" />
                     </IconButton>
                 </Tooltip>
 

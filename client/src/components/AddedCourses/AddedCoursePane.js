@@ -5,7 +5,7 @@ import SectionTable from '../SectionTable/SectionTable.js';
 import { withStyles } from '@material-ui/core/styles';
 import CustomEventDetailView from './CustomEventDetailView';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
-import { copySchedule } from '../../actions/AppStoreActions';
+import { clearSchedules, copySchedule } from '../../actions/AppStoreActions';
 
 const styles = {
     container: {
@@ -103,38 +103,55 @@ class AddedCoursePane extends PureComponent {
                         {`Schedule ${AppStore.getCurrentScheduleIndex() + 1} (${this.state.totalUnits} Units)`}
                     </Typography>
 
-                    <PopupState variant="popover" popupId="demo-popup-menu">
-                        {(popupState) => (
-                            <React.Fragment>
-                                <Button variant="outlined" color="primary" {...bindTrigger(popupState)}>
-                                    Copy Schedule
-                                </Button>
-                                <Menu {...bindMenu(popupState)}>
-                                    {[0, 1, 2, 3].map((index) => {
-                                        return (
-                                            <MenuItem
-                                                disabled={AppStore.getCurrentScheduleIndex() === index}
-                                                onClick={() => {
-                                                    copySchedule(AppStore.getCurrentScheduleIndex(), index);
-                                                    popupState.close();
-                                                }}
-                                            >
-                                                Copy to Schedule {index + 1}
-                                            </MenuItem>
-                                        );
-                                    })}
-                                    <MenuItem
-                                        onClick={() => {
-                                            copySchedule(AppStore.getCurrentScheduleIndex(), 4);
-                                            popupState.close();
-                                        }}
-                                    >
-                                        Copy to All Schedules
-                                    </MenuItem>
-                                </Menu>
-                            </React.Fragment>
-                        )}
-                    </PopupState>
+                    <div>
+                        <PopupState variant="popover" popupId="demo-popup-menu">
+                            {(popupState) => (
+                                <React.Fragment>
+                                    <Button variant="outlined" color="primary" {...bindTrigger(popupState)}>
+                                        Copy Schedule
+                                    </Button>
+                                    <Menu {...bindMenu(popupState)}>
+                                        {[0, 1, 2, 3].map((index) => {
+                                            return (
+                                                <MenuItem
+                                                    disabled={AppStore.getCurrentScheduleIndex() === index}
+                                                    onClick={() => {
+                                                        copySchedule(AppStore.getCurrentScheduleIndex(), index);
+                                                        popupState.close();
+                                                    }}
+                                                >
+                                                    Copy to Schedule {index + 1}
+                                                </MenuItem>
+                                            );
+                                        })}
+                                        <MenuItem
+                                            onClick={() => {
+                                                copySchedule(AppStore.getCurrentScheduleIndex(), 4);
+                                                popupState.close();
+                                            }}
+                                        >
+                                            Copy to All Schedules
+                                        </MenuItem>
+                                    </Menu>
+                                </React.Fragment>
+                            )}
+                        </PopupState>
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={() => {
+                                if (
+                                window.confirm(
+                                    'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
+                                )
+                                ) {
+                                clearSchedules([AppStore.getCurrentScheduleIndex()]);
+                                }
+                            }}
+                        >
+                            Clear Schedule
+                        </Button>
+                    </div>
                 </div>
                 {this.state.courses.map((course) => {
                     return (
