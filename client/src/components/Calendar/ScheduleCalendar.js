@@ -156,7 +156,8 @@ class ScheduleCalendar extends PureComponent {
     const canvas = document.getElementById('screenshot')
     const calendarHeader = ReactDOM.findDOMNode(this).getElementsByClassName('rbc-time-header')[0]
 
-    // Save the old margin, so we can add it back afterwards
+    // Save the current styling, so we can add it back afterwards
+    const oldColor = canvas.style.color
     const oldMargin = calendarHeader.style.marginRight
 
     // Update the canvas and calendar header for the picture
@@ -168,7 +169,7 @@ class ScheduleCalendar extends PureComponent {
       await html2CanvasScreenshot()
       
       // Revert the temporary changes to the canvas and calendar
-      canvas.style.removeProperty('color')
+      canvas.style.color = oldColor
       calendarHeader.style.marginRight = oldMargin
       
       this.setState({ screenshotting: false })
