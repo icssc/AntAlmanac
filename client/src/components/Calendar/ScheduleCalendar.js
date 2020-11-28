@@ -147,12 +147,30 @@ class ScheduleCalendar extends PureComponent {
   }
 
   handleTakeScreenshot = async (html2CanvasScreenshot) => {
-    const calendarHeader = ReactDOM.findDOMNode(this).getElementsByClassName('rbc-time-header')
-    const oldMargin = calendarHeader[0].style.marginRight
-    calendarHeader[0].style.marginRight = '0px'
+    // This function takes a screenshot of the user's schedule
+    // Before we take the screenshot, we need to make some adjustments to the canvas:
+    //  - Set the color to black, so that the weekdays/times still appear when Dark Mode is on
+    //  - Remove the right margin on the calendar header, so the extra area for the scrollbar is removed
+
+    // Fetch the canvas and calendarHeader
+    const canvas = document.getElementById('screenshot')
+    const calendarHeader = ReactDOM.findDOMNode(this).getElementsByClassName('rbc-time-header')[0]
+
+    // Save the old margin, so we can add it back afterwards
+    const oldMargin = calendarHeader.style.marginRight
+
+    // Update the canvas and calendar header for the picture
+    canvas.style.color = "black"
+    calendarHeader.style.marginRight = '0px'
+
     this.setState({ screenshotting: true }, async () => {
+      // Take the picture
       await html2CanvasScreenshot()
-      calendarHeader[0].style.marginRight = oldMargin
+      
+      // Revert the temporary changes to the canvas and calendar
+      canvas.style.removeProperty('color')
+      calendarHeader.style.marginRight = oldMargin
+      
       this.setState({ screenshotting: false })
     })
   }
