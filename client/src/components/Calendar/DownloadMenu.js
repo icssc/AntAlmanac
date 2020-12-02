@@ -24,15 +24,15 @@ class DownloadMenu extends React.Component {
         return (
             <Fragment>
                 <Tooltip title="Download">
-                  <Button
-                    onClick={this.handleClick}
-                    style={{ marginRight: 5, marginLeft: 5 }}
-                    variant="outlined"
-                    size="small"
-                  >
-                    <GetApp fontSize="small" />
-                      Export
-                  </Button>
+                    <Button
+                        onClick={this.handleClick}
+                        style={{ marginRight: 5, marginLeft: 5 }}
+                        variant="outlined"
+                        size="small"
+                    >
+                        <GetApp fontSize="small" />
+                        Export
+                    </Button>
                 </Tooltip>
                 <Menu
                     id="downloadMenu"
@@ -50,16 +50,10 @@ class DownloadMenu extends React.Component {
                 >
                     <MenuList>
                         <div>
-                            <MenuItem
-                                component={ScreenshotButton}
-                                onTakeScreenshot={this.props.onTakeScreenshot}
-                            />
+                            <MenuItem component={ScreenshotButton} onTakeScreenshot={this.props.onTakeScreenshot} />
                         </div>
                         <div>
-                            <MenuItem
-                                component={ExportButton}
-                                eventsInCalendar={this.props.eventsInCalendar}
-                            />
+                            <MenuItem component={ExportButton} eventsInCalendar={this.props.eventsInCalendar} />
                         </div>
                     </MenuList>
                 </Menu>

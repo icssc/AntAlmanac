@@ -17,23 +17,7 @@ class ScreenshotButton extends PureComponent {
 
             if (document.createEvent) {
                 const e = document.createEvent('MouseEvents');
-                e.initMouseEvent(
-                    'click',
-                    true,
-                    true,
-                    window,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    false,
-                    false,
-                    false,
-                    false,
-                    0,
-                    null,
-                );
+                e.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
                 lnk.dispatchEvent(e);
             } else if (lnk.fireEvent) {
                 lnk.fireEvent('onclick');
@@ -41,7 +25,7 @@ class ScreenshotButton extends PureComponent {
         });
     };
 
-    render () {
+    render() {
         return (
             <Tooltip title="Get a screenshot of your schedule">
                 <Button
@@ -58,7 +42,7 @@ class ScreenshotButton extends PureComponent {
 }
 
 ScreenshotButton.propTypes = {
-    onTakeScreenshot: PropTypes.func.isRequired
+    onTakeScreenshot: PropTypes.func.isRequired,
 };
 
 export default ScreenshotButton;

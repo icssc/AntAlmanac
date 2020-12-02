@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import {InputLabel, MenuItem, FormControl, Select} from '@material-ui/core';
+import { InputLabel, MenuItem, FormControl, Select } from '@material-ui/core';
 import RightPaneStore from '../../stores/RightPaneStore';
 import { updateFormValue } from '../../actions/RightPaneActions';
 import { withStyles } from '@material-ui/core/styles';
@@ -42,17 +42,10 @@ class GESelector extends PureComponent {
         return (
             <FormControl className={classes.formControl}>
                 <InputLabel>General Education</InputLabel>
-                <Select
-                    value={this.state.ge}
-                    onChange={this.handleChange}
-                    fullWidth
-                >
+                <Select value={this.state.ge} onChange={this.handleChange} fullWidth>
                     {geList.map((category) => {
                         return (
-                            <MenuItem
-                                key={category.value}
-                                value={category.value}
-                            >
+                            <MenuItem key={category.value} value={category.value}>
                                 {category.label}
                             </MenuItem>
                         );

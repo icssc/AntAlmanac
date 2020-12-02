@@ -56,23 +56,12 @@ function MySnackbarContent(props) {
             className={classNames(classes[variant], className)}
             message={
                 <span id="client-snackbar" className={classes.message}>
-                    <Icon
-                        className={classNames(
-                            classes.icon,
-                            classes.iconVariant
-                        )}
-                    />
+                    <Icon className={classNames(classes.icon, classes.iconVariant)} />
                     {message}
                 </span>
             }
             action={[
-                <IconButton
-                    key="close"
-                    aria-label="Close"
-                    color="inherit"
-                    className={classes.close}
-                    onClick={onClose}
-                >
+                <IconButton key="close" aria-label="Close" color="inherit" className={classes.close} onClick={onClose}>
                     <CloseIcon className={classes.icon} />
                 </IconButton>,
             ]}
@@ -86,8 +75,7 @@ MySnackbarContent.propTypes = {
     className: PropTypes.string,
     message: PropTypes.node,
     onClose: PropTypes.func,
-    variant: PropTypes.oneOf(['success', 'warning', 'error', 'info'])
-        .isRequired,
+    variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,
 };
 
 const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);

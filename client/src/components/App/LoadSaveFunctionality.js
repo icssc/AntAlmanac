@@ -17,11 +17,11 @@ class LoadSaveButtonBase extends PureComponent {
     state = {
         isOpen: false,
         userID: '',
-        rememberMe: true
+        rememberMe: true,
     };
 
     handleOpen = () => {
-        this.setState({isOpen: true});
+        this.setState({ isOpen: true });
         if (typeof Storage !== 'undefined') {
             const userID = window.localStorage.getItem('userID');
             if (userID !== null) {
@@ -34,7 +34,7 @@ class LoadSaveButtonBase extends PureComponent {
         if (wasCancelled)
             this.setState({ isOpen: false }, () => {
                 document.removeEventListener('keydown', this.enterEvent, false);
-                this.setState({userID: ''});
+                this.setState({ userID: '' });
             });
         else
             this.setState({ isOpen: false }, () => {
@@ -45,12 +45,11 @@ class LoadSaveButtonBase extends PureComponent {
     };
 
     handleToggleRememberMe = (event) => {
-        this.setState({rememberMe: event.target.checked})
+        this.setState({ rememberMe: event.target.checked });
     };
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (!prevState.isOpen && this.state.isOpen)
-            document.addEventListener('keydown', this.enterEvent, false);
+        if (!prevState.isOpen && this.state.isOpen) document.addEventListener('keydown', this.enterEvent, false);
         else if (prevState.isOpen && !this.state.isOpen)
             document.removeEventListener('keydown', this.enterEvent, false);
     }
@@ -72,7 +71,7 @@ class LoadSaveButtonBase extends PureComponent {
                 <Button
                     onClick={this.handleOpen}
                     color="inherit"
-                    startIcon={this.props.actionName === 'Save' ? <Save/> : <CloudDownload/>}
+                    startIcon={this.props.actionName === 'Save' ? <Save /> : <CloudDownload />}
                 >
                     {this.props.actionName}
                 </Button>
@@ -80,8 +79,7 @@ class LoadSaveButtonBase extends PureComponent {
                     <DialogTitle>{this.props.actionName}</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Enter your username here to{' '}
-                            {this.props.actionName.toLowerCase()} your schedule.
+                            Enter your username here to {this.props.actionName.toLowerCase()} your schedule.
                         </DialogContentText>
                         <TextField
                             autoFocus
@@ -91,9 +89,7 @@ class LoadSaveButtonBase extends PureComponent {
                             fullWidth
                             placeholder="Enter here"
                             value={this.state.userID}
-                            onChange={(event) =>
-                                this.setState({ userID: event.target.value })
-                            }
+                            onChange={(event) => this.setState({ userID: event.target.value })}
                         />
                         <FormControlLabel
                             control={
@@ -107,16 +103,10 @@ class LoadSaveButtonBase extends PureComponent {
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button
-                            onClick={() => this.handleClose(true)}
-                            color="primary"
-                        >
+                        <Button onClick={() => this.handleClose(true)} color="primary">
                             Cancel
                         </Button>
-                        <Button
-                            onClick={() => this.handleClose(false)}
-                            color="primary"
-                        >
+                        <Button onClick={() => this.handleClose(false)} color="primary">
                             {this.props.actionName}
                         </Button>
                     </DialogActions>
@@ -139,14 +129,8 @@ const LoadSaveScheduleFunctionality = () => {
 
     return (
         <Fragment>
-            <LoadSaveButtonBase
-                actionName={'Save'}
-                action={saveSchedule}
-            />
-            <LoadSaveButtonBase
-                actionName={'Load'}
-                action={loadSchedule}
-            />
+            <LoadSaveButtonBase actionName={'Save'} action={saveSchedule} />
+            <LoadSaveButtonBase actionName={'Load'} action={loadSchedule} />
         </Fragment>
     );
 };

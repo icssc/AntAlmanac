@@ -1,6 +1,6 @@
-import React, { PureComponent} from 'react';
+import React, { PureComponent } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { IconButton, Tooltip, Typography,  Paper, Button } from '@material-ui/core';
+import { IconButton, Tooltip, Typography, Paper, Button } from '@material-ui/core';
 import { ChevronLeft, ChevronRight, Delete, Undo } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import { clearSchedules, undoDelete } from '../../actions/AppStoreActions';
@@ -9,18 +9,18 @@ import { changeCurrentSchedule } from '../../actions/AppStoreActions';
 import ScreenshotButton from './ScreenshotButton';
 
 const styles = {
-  toolbar: {
-    display: 'flex',
-    overflow: 'auto',
-    marginBottom: '4px',
-    alignItems: 'center',
-  },
-  inline: {
-    display: 'inline',
-  },
-  spacer: {
-    flexGrow: '1',
-  },
+    toolbar: {
+        display: 'flex',
+        overflow: 'auto',
+        marginBottom: '4px',
+        alignItems: 'center',
+    },
+    inline: {
+        display: 'inline',
+    },
+    spacer: {
+        flexGrow: '1',
+    },
 };
 
 class CalendarPaneToolbar extends PureComponent {
@@ -53,11 +53,11 @@ class CalendarPaneToolbar extends PureComponent {
                     <IconButton
                         onClick={() => {
                             if (
-                              window.confirm(
-                                'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
-                              )
+                                window.confirm(
+                                    'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
+                                )
                             ) {
-                              clearSchedules([this.props.currentScheduleIndex]);
+                                clearSchedules([this.props.currentScheduleIndex]);
                             }
                         }}
                     >
@@ -66,19 +66,19 @@ class CalendarPaneToolbar extends PureComponent {
                 </Tooltip>
 
                 <Tooltip title="Toggle showing finals schedule">
-                  <Button
-                    variant={(this.props.showFinalsSchedule) ? 'contained' : 'outlined'}
-                    onClick={this.props.toggleDisplayFinalsSchedule}
-                    size='small'
-                    color={(this.props.showFinalsSchedule) ? 'primary' : 'default'}
-                  >
-                      Finals
-                  </Button>
+                    <Button
+                        variant={this.props.showFinalsSchedule ? 'contained' : 'outlined'}
+                        onClick={this.props.toggleDisplayFinalsSchedule}
+                        size="small"
+                        color={this.props.showFinalsSchedule ? 'primary' : 'default'}
+                    >
+                        Finals
+                    </Button>
                 </Tooltip>
 
-                <ScreenshotButton onTakeScreenshot={this.props.onTakeScreenshot}/>
+                <ScreenshotButton onTakeScreenshot={this.props.onTakeScreenshot} />
 
-                <CustomEventsDialog editMode={false}/>
+                <CustomEventsDialog editMode={false} />
             </Paper>
         );
     }
@@ -86,7 +86,7 @@ class CalendarPaneToolbar extends PureComponent {
 
 CalendarPaneToolbar.propTypes = {
     showFinalsSchedule: PropTypes.bool.isRequired,
-    currentScheduleIndex: PropTypes.number.isRequired
+    currentScheduleIndex: PropTypes.number.isRequired,
 };
 
 export default withStyles(styles)(CalendarPaneToolbar);

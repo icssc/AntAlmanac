@@ -88,15 +88,10 @@ class SectionTable extends PureComponent {
                         courseNumber={this.state.courseDetails.courseNumber}
                     />
 
-                    <AlmanacGraph
-                        courseDetails={this.state.courseDetails}
-                    />
+                    <AlmanacGraph courseDetails={this.state.courseDetails} />
 
                     {this.state.courseDetails.prerequisiteLink ? (
-                        <Typography
-                            variant="h6"
-                            style={{ flexGrow: '2', marginTop: 9 }}
-                        >
+                        <Typography variant="h6" style={{ flexGrow: '2', marginTop: 9 }}>
                             <a
                                 target="blank"
                                 style={{
@@ -128,8 +123,7 @@ class SectionTable extends PureComponent {
                         </tr>
                     </thead>
                     <tbody>
-                        {
-                            this.state.courseDetails.sections.map((section) => {
+                        {this.state.courseDetails.sections.map((section) => {
                             return (
                                 <SectionTableBody
                                     section={section}

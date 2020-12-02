@@ -288,7 +288,9 @@ export const undoDelete = (event) => {
 
             openSnackbar(
                 'success',
-                `Undo delete ${lastDeleted.deptCode} ${lastDeleted.courseNumber} in schedule ${lastDeleted.scheduleIndex + 1}.`
+                `Undo delete ${lastDeleted.deptCode} ${lastDeleted.courseNumber} in schedule ${
+                    lastDeleted.scheduleIndex + 1
+                }.`
             );
         }
     }

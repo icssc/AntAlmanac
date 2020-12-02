@@ -34,7 +34,7 @@ class OpenSpotAlertPopover extends PureComponent {
         const params = {
             phoneNumber: this.state.phoneNumber.replace(/\s/g, ''),
             sectionCode: this.props.sectionCode,
-            courseTitle: `${this.props.courseNumber} ${this.props.courseTitle}`
+            courseTitle: `${this.props.courseNumber} ${this.props.courseTitle}`,
         };
 
         const validPhoneNumber = phoneNumberRegex.test(params.phoneNumber);
@@ -47,15 +47,9 @@ class OpenSpotAlertPopover extends PureComponent {
             });
 
             if (response.status === 200) {
-                window.localStorage.setItem(
-                  'phoneNumber',
-                  this.state.phoneNumber
-                );
+                window.localStorage.setItem('phoneNumber', this.state.phoneNumber);
                 this.setState({ anchorElement: null, invalidInput: false });
-                openSnackbar(
-                  'success',
-                  `Added to watch list for ${params.sectionCode}`
-                );
+                openSnackbar('success', `Added to watch list for ${params.sectionCode}`);
                 //TODO: Dialog with the message about txt messages paywall etc etc
             } else {
                 //TODO: Error state
@@ -72,69 +66,53 @@ class OpenSpotAlertPopover extends PureComponent {
         const { classes, status } = this.props;
 
         return (
-          <Fragment>
-              <Button
-                variant="outlined"
-                color="inherit"
-                onClick={(event) =>
-                  this.setState({ anchorElement: event.currentTarget })
-                }
-              >
-                  {status}
-              </Button>
-              <Popover
-                anchorEl={this.state.anchorElement}
-                open={Boolean(this.state.anchorElement)}
-                onClose={() =>
-                  this.setState({
-                      anchorElement: null,
-                      invalidInput: false,
-                  })
-                }
-                anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
-                }}
-                transformOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                }}
-              >
-                  <div className={classes.container}>
-                      <Typography>Get notified when a spot opens!</Typography>
-                      {this.state.invalidInput ? (
-                        <Typography>
-                            {this.state.invalidInputMessage}
-                        </Typography>
-                      ) : null}
-                      <div>
-                          <InputMask
-                            maskChar={null}
-                            mask="999 999 9999"
-                            value={this.state.phoneNumber}
-                            onChange={this.handlePhoneNumberChange}
-                          >
-                              {() => (
-                                <TextField
-                                  label="Phone number"
-                                  margin="dense"
-                                  type="text"
-                                />
-                              )}
-                          </InputMask>
-                      </div>
-                      <div className={classes.buttonContainer}>
-                          <Button
-                            onClick={this.registerForAlerts}
-                            variant="outlined"
-                            color="primary"
-                          >
-                              Notify me
-                          </Button>
-                      </div>
-                  </div>
-              </Popover>
-          </Fragment>
+            <Fragment>
+                <Button
+                    variant="outlined"
+                    color="inherit"
+                    onClick={(event) => this.setState({ anchorElement: event.currentTarget })}
+                >
+                    {status}
+                </Button>
+                <Popover
+                    anchorEl={this.state.anchorElement}
+                    open={Boolean(this.state.anchorElement)}
+                    onClose={() =>
+                        this.setState({
+                            anchorElement: null,
+                            invalidInput: false,
+                        })
+                    }
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                    }}
+                >
+                    <div className={classes.container}>
+                        <Typography>Get notified when a spot opens!</Typography>
+                        {this.state.invalidInput ? <Typography>{this.state.invalidInputMessage}</Typography> : null}
+                        <div>
+                            <InputMask
+                                maskChar={null}
+                                mask="999 999 9999"
+                                value={this.state.phoneNumber}
+                                onChange={this.handlePhoneNumberChange}
+                            >
+                                {() => <TextField label="Phone number" margin="dense" type="text" />}
+                            </InputMask>
+                        </div>
+                        <div className={classes.buttonContainer}>
+                            <Button onClick={this.registerForAlerts} variant="outlined" color="primary">
+                                Notify me
+                            </Button>
+                        </div>
+                    </div>
+                </Popover>
+            </Fragment>
         );
     }
 }

@@ -22,9 +22,9 @@ class AppStore extends EventEmitter {
         if (typeof Storage !== 'undefined') darkMode = window.localStorage.getItem('DarkMode');
 
         window.addEventListener('beforeunload', (event) => {
-        if (this.unsavedChanges) {
-            event.returnValue = `Are you sure you want to leave? You have unsaved changes!`;
-        }
+            if (this.unsavedChanges) {
+                event.returnValue = `Are you sure you want to leave? You have unsaved changes!`;
+            }
         });
 
         this.darkMode = darkMode === null ? false : darkMode === 'true';

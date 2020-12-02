@@ -9,7 +9,8 @@ import {
     IconButton,
     Input,
     InputLabel,
-    TextField, Tooltip,
+    TextField,
+    Tooltip,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { Add, Edit } from '@material-ui/icons';
@@ -33,21 +34,14 @@ class CustomEventDialog extends PureComponent {
         start: this.props.customEvent ? this.props.customEvent.start : '10:30',
         end: this.props.customEvent ? this.props.customEvent.end : '15:30',
         eventName: this.props.customEvent ? this.props.customEvent.title : '',
-        days: this.props.customEvent
-            ? this.props.customEvent.days
-            : [false, false, false, false, false],
-        scheduleIndices: this.props.customEvent
-            ? this.props.customEvent.scheduleIndices
-            : [],
-        customEventID: this.props.customEvent
-            ? this.props.customEvent.customEventID
-            : 0,
+        days: this.props.customEvent ? this.props.customEvent.days : [false, false, false, false, false],
+        scheduleIndices: this.props.customEvent ? this.props.customEvent.scheduleIndices : [],
+        customEventID: this.props.customEvent ? this.props.customEvent.customEventID : 0,
     };
 
     handleClose = (cancel) => {
         if (!cancel) {
-            if (this.props.onDialogClose)
-                this.props.onDialogClose();
+            if (this.props.onDialogClose) this.props.onDialogClose();
             this.handleAddToCalendar();
         }
 
@@ -74,23 +68,17 @@ class CustomEventDialog extends PureComponent {
         if (!this.state.days.some((day) => day) || this.state.scheduleIndices.length === 0) return;
 
         const newCustomEvent = {
-            color: this.props.customEvent
-                ? this.props.customEvent.color
-                : '#551a8b',
+            color: this.props.customEvent ? this.props.customEvent.color : '#551a8b',
             title: this.state.eventName,
             days: this.state.days,
             scheduleIndices: this.state.scheduleIndices,
             start: this.state.start,
             end: this.state.end,
-            customEventID: this.props.customEvent
-                ? this.props.customEvent.customEventID
-                : Date.now(),
+            customEventID: this.props.customEvent ? this.props.customEvent.customEventID : Date.now(),
         };
 
-        if (this.props.customEvent)
-            editCustomEvent(newCustomEvent);
-        else
-            addCustomEvent(newCustomEvent);
+        if (this.props.customEvent) editCustomEvent(newCustomEvent);
+        else addCustomEvent(newCustomEvent);
     };
 
     handleSelectScheduleIndices = (scheduleIndices) => {
@@ -113,22 +101,15 @@ class CustomEventDialog extends PureComponent {
                             size="small"
                             startIcon={<Add fontSize="small" />}
                         >
-
-                             Add Custom
+                            Add Custom
                         </Button>
                     </Tooltip>
                 )}
                 <Dialog open={this.state.open}>
                     <DialogContent>
                         <FormControl>
-                            <InputLabel htmlFor="EventNameInput">
-                                Event Name
-                            </InputLabel>
-                            <Input
-                                required={true}
-                                value={this.state.eventName}
-                                onChange={this.handleEventNameChange}
-                            />
+                            <InputLabel htmlFor="EventNameInput">Event Name</InputLabel>
+                            <Input required={true} value={this.state.eventName} onChange={this.handleEventNameChange} />
                         </FormControl>
                         <form noValidate>
                             <TextField
@@ -165,29 +146,18 @@ class CustomEventDialog extends PureComponent {
                         />
                         <ScheduleSelector
                             scheduleIndices={this.state.scheduleIndices}
-                            onSelectScheduleIndices={
-                                this.handleSelectScheduleIndices
-                            }
+                            onSelectScheduleIndices={this.handleSelectScheduleIndices}
                             customEvent={this.props.customEvent}
                         />
                     </DialogContent>
 
                     <DialogActions>
-                        <Button
-                            onClick={() => this.handleClose(true)}
-                            color="primary"
-                        >
+                        <Button onClick={() => this.handleClose(true)} color="primary">
                             Cancel
                         </Button>
 
-                        <Button
-                            onClick={() => this.handleClose(false)}
-                            variant="contained"
-                            color="primary"
-                        >
-                            {this.props.customEvent
-                                ? 'Save Changes'
-                                : 'Add Event'}
+                        <Button onClick={() => this.handleClose(false)} variant="contained" color="primary">
+                            {this.props.customEvent ? 'Save Changes' : 'Add Event'}
                         </Button>
                     </DialogActions>
                 </Dialog>
@@ -198,7 +168,7 @@ class CustomEventDialog extends PureComponent {
 
 CustomEventDialog.propTypes = {
     customEvent: PropTypes.object,
-    onDialogClose: PropTypes.func
+    onDialogClose: PropTypes.func,
 };
 
 export default withStyles(styles)(CustomEventDialog);

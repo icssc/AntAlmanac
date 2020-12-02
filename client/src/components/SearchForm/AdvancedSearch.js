@@ -70,10 +70,7 @@ class AdvancedSearchTextFields extends PureComponent {
                 if (parseInt(event.target.value.slice(0, 2), 10) > 12)
                     this.setState(
                         {
-                            [name]:
-                                parseInt(event.target.value.slice(0, 2), 10) -
-                                12 +
-                                ':00pm',
+                            [name]: parseInt(event.target.value.slice(0, 2), 10) - 12 + ':00pm',
                         },
                         () => {
                             updateFormValue('startTime', this.state.startTime);
@@ -83,9 +80,7 @@ class AdvancedSearchTextFields extends PureComponent {
                 else
                     this.setState(
                         {
-                            [name]:
-                                parseInt(event.target.value.slice(0, 2), 10) +
-                                ':00am',
+                            [name]: parseInt(event.target.value.slice(0, 2), 10) + ':00am',
                         },
                         () => {
                             updateFormValue('startTime', this.state.startTime);
@@ -144,23 +139,12 @@ class AdvancedSearchTextFields extends PureComponent {
 
                 <FormControl className={classes.coursesFull}>
                     <InputLabel>Class Full Option</InputLabel>
-                    <Select
-                        value={this.state.coursesFull}
-                        onChange={this.handleChange('coursesFull')}
-                    >
+                    <Select value={this.state.coursesFull} onChange={this.handleChange('coursesFull')}>
                         <MenuItem value={'ANY'}>Include all classes</MenuItem>
-                        <MenuItem value={'SkipFullWaitlist'}>
-                            Include full courses if space on waitlist
-                        </MenuItem>
-                        <MenuItem value={'SkipFull'}>
-                            Skip full courses
-                        </MenuItem>
-                        <MenuItem value={'FullOnly'}>
-                            Show only full or waitlisted courses
-                        </MenuItem>
-                        <MenuItem value={'Overenrolled'}>
-                            Show only over-enrolled courses
-                        </MenuItem>
+                        <MenuItem value={'SkipFullWaitlist'}>Include full courses if space on waitlist</MenuItem>
+                        <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
+                        <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
+                        <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
                     </Select>
                 </FormControl>
 
@@ -207,21 +191,21 @@ class AdvancedSearchTextFields extends PureComponent {
                 />
 
                 <TextField
-                  id="building"
-                  label="Building"
-                  type="search"
-                  value={this.state.building}
-                  onChange={this.handleChange('building')}
-                  className={classes.textSearch}
+                    id="building"
+                    label="Building"
+                    type="search"
+                    value={this.state.building}
+                    onChange={this.handleChange('building')}
+                    className={classes.textSearch}
                 />
 
                 <TextField
-                  id="room"
-                  label="Room"
-                  type="search"
-                  value={this.state.room}
-                  onChange={this.handleChange('room')}
-                  className={classes.textSearch}
+                    id="room"
+                    label="Room"
+                    type="search"
+                    value={this.state.room}
+                    onChange={this.handleChange('room')}
+                    className={classes.textSearch}
                 />
             </div>
         );
@@ -259,10 +243,7 @@ class AdvancedSearch extends PureComponent {
 
     handleExpand = () => {
         const nextExpansionState = !this.state.expandAdvanced;
-        window.localStorage.setItem(
-            'advanced',
-            nextExpansionState ? 'expanded' : 'notexpanded'
-        );
+        window.localStorage.setItem('advanced', nextExpansionState ? 'expanded' : 'notexpanded');
         this.setState({ expandAdvanced: nextExpansionState });
     };
 
@@ -277,11 +258,7 @@ class AdvancedSearch extends PureComponent {
                             Advanced Search Options
                         </Typography>
                     </div>
-                    {this.state.expandAdvanced ? (
-                        <ExpandLess />
-                    ) : (
-                        <ExpandMore />
-                    )}
+                    {this.state.expandAdvanced ? <ExpandLess /> : <ExpandMore />}
                 </div>
                 <Collapse in={this.state.expandAdvanced}>
                     <AdvancedSearchTextFields />

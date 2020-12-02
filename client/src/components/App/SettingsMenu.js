@@ -1,5 +1,5 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Badge, Button, FormControl, FormControlLabel, Popover, Switch, Paper} from '@material-ui/core';
+import { Badge, Button, FormControl, FormControlLabel, Popover, Switch, Paper } from '@material-ui/core';
 import { Settings } from '@material-ui/icons';
 import AppStore from '../../stores/AppStore';
 import { toggleDarkMode } from '../../actions/AppStoreActions';
@@ -25,7 +25,7 @@ class SettingsMenu extends PureComponent {
         });
     };
 
-    render () {
+    render() {
         const { classes } = this.props;
 
         return (
@@ -35,18 +35,24 @@ class SettingsMenu extends PureComponent {
                         this.setState({ anchorEl: event.currentTarget });
                     }}
                     color="inherit"
-                    startIcon={<Settings/>}
+                    startIcon={<Settings />}
                 >
-                    <Badge color="secondary" variant="dot" classes={{
-                        anchorOriginTopRightRectangle: classes.betaBadge,
-                    }}>
+                    <Badge
+                        color="secondary"
+                        variant="dot"
+                        classes={{
+                            anchorOriginTopRightRectangle: classes.betaBadge,
+                        }}
+                    >
                         Settings
                     </Badge>
                 </Button>
                 <Popover
                     open={Boolean(this.state.anchorEl)}
                     anchorEl={this.state.anchorEl}
-                    onClose={() => {this.setState({ anchorEl: null });}}
+                    onClose={() => {
+                        this.setState({ anchorEl: null });
+                    }}
                     anchorOrigin={{
                         vertical: 'bottom',
                         horizontal: 'center',
@@ -68,9 +74,13 @@ class SettingsMenu extends PureComponent {
                                     />
                                 }
                                 label={
-                                    <Badge badgeContent={'BETA'} color="error" classes={{
-                                        anchorOriginTopRightRectangle: classes.betaBadge,
-                                    }}>
+                                    <Badge
+                                        badgeContent={'BETA'}
+                                        color="error"
+                                        classes={{
+                                            anchorOriginTopRightRectangle: classes.betaBadge,
+                                        }}
+                                    >
                                         Dark Mode
                                     </Badge>
                                 }

@@ -47,13 +47,8 @@ function ExportButton(props) {
     function getCustomEventDays(customEventID) {
         let days = [];
         for (let i = 0; i < eventsInCalendar.length; i++) {
-            if (
-                eventsInCalendar[i].isCustomEvent &&
-                eventsInCalendar[i].customEventID === customEventID
-            ) {
-                days.push(
-                    translateNumForIcs[eventsInCalendar[i].start.getDay()]
-                );
+            if (eventsInCalendar[i].isCustomEvent && eventsInCalendar[i].customEventID === customEventID) {
+                days.push(translateNumForIcs[eventsInCalendar[i].start.getDay()]);
             }
         }
         return days;
@@ -93,40 +88,26 @@ function ExportButton(props) {
 
                         if (!event.isCustomEvent) {
                             // for courses
-                            firstMonday = new Date(
-                                quartersFirstMondays[event.courseTerm]
-                            ); // set first Monday based off quarter
+                            firstMonday = new Date(quartersFirstMondays[event.courseTerm]); // set first Monday based off quarter
 
                             if (added.indexOf(event.courseCode) === -1) {
-                                let title =
-                                    event.courseType + ' ' + event.title;
+                                let title = event.courseType + ' ' + event.title;
                                 let location = event.location;
                                 let description =
-                                    event.name.join(' ') +
-                                    ' Course Code: ' +
-                                    eventsInCalendar[i].courseCode;
+                                    event.name.join(' ') + ' Course Code: ' + eventsInCalendar[i].courseCode;
 
                                 let times = getStartStopTimes(event);
                                 let start_time = times[0];
                                 let end_time = times[1];
 
-                                let days = getCourseEventDays(
-                                    event.section.meetings[0][0]
-                                ); // pass in days class occurs in a string ex: "TuTh", "MWF"
+                                let days = getCourseEventDays(event.section.meetings[0][0]); // pass in days class occurs in a string ex: "TuTh", "MWF"
                                 let rrule = {
                                     freq: 'WEEKLY',
                                     count: 10 * days.length, // 10 weeks in the quarter * number days it occurs in a week
                                     byday: days, // days it occurs in an array ex: ["TU", "TH"]
                                 };
 
-                                cal.addEvent(
-                                    title,
-                                    description,
-                                    location,
-                                    start_time,
-                                    end_time,
-                                    rrule
-                                ); // add event to ics file
+                                cal.addEvent(title, description, location, start_time, end_time, rrule); // add event to ics file
 
                                 added.push(event.courseCode); // we added this course
 
@@ -137,36 +118,18 @@ function ExportButton(props) {
                                     event.section.finalExam !== '' &&
                                     event.section.finalExam !== 'TBA'
                                 ) {
-                                    let final_info = event.section.finalExam.split(
-                                        ' '
-                                    );
+                                    let final_info = event.section.finalExam.split(' ');
                                     let end_hour = final_info[3].split('-')[1]; // get time that final ends to calculate when final begins
 
                                     let final_date =
-                                        final_info[0] +
-                                        ' ' +
-                                        final_info[1] +
-                                        ' ' +
-                                        firstMonday.getFullYear(); // get date of the day of the final
+                                        final_info[0] + ' ' + final_info[1] + ' ' + firstMonday.getFullYear(); // get date of the day of the final
                                     let final_end = new Date(
-                                        final_date +
-                                            ' ' +
-                                            end_hour.slice(0, -2) +
-                                            ' ' +
-                                            end_hour.slice(-2)
+                                        final_date + ' ' + end_hour.slice(0, -2) + ' ' + end_hour.slice(-2)
                                     ); // strange formatting to make Date object work
                                     let final_start = new Date(final_end);
-                                    final_start.setHours(
-                                        final_start.getHours() - 2
-                                    ); // finals start two hours before they end
+                                    final_start.setHours(final_start.getHours() - 2); // finals start two hours before they end
 
-                                    cal.addEvent(
-                                        'Final: ' + event.title,
-                                        '',
-                                        '',
-                                        final_start,
-                                        final_end
-                                    );
+                                    cal.addEvent('Final: ' + event.title, '', '', final_start, final_end);
                                 }
                             }
                         }
@@ -185,14 +148,7 @@ function ExportButton(props) {
                                 byday: days, // days it occurs in an array ex: ["MO", "WE", "FR"]
                             };
 
-                            cal.addEvent(
-                                title,
-                                '',
-                                '',
-                                start_time,
-                                end_time,
-                                rrule
-                            ); // add event to ics file, description and location are blank
+                            cal.addEvent(title, '', '', start_time, end_time, rrule); // add event to ics file, description and location are blank
 
                             added.push(event.customEventID); // we added this custom event
                         }

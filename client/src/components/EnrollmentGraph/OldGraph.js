@@ -1,15 +1,5 @@
 import React, { PureComponent } from 'react';
-import {
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    AreaChart,
-    Area,
-    Legend,
-    Label,
-    Tooltip,
-    ReferenceLine,
-} from 'recharts';
+import { XAxis, YAxis, CartesianGrid, AreaChart, Area, Legend, Label, Tooltip, ReferenceLine } from 'recharts';
 import querystring from 'querystring';
 
 const CustomToolTipNum = ({ active, payload, label }) => {
@@ -69,41 +59,25 @@ const CustomToolTipNum = ({ active, payload, label }) => {
     if (active) {
         if (waitList) {
             return (
-                <div
-                    className="custom-tooltip"
-                    style={{ border: '1px solid black', background: '#F4F4F4' }}
-                >
+                <div className="custom-tooltip" style={{ border: '1px solid black', background: '#F4F4F4' }}>
                     <p className="label">{lable}</p>
                     <p>
-                        Max:{' '}
-                        <span
-                            style={{ color: 'red', opacity: '.8' }}
-                        >{`${max}`}</span>
+                        Max: <span style={{ color: 'red', opacity: '.8' }}>{`${max}`}</span>
                     </p>
                     <p>
                         Enrolled: <span style={style}>{`${enroll}`}</span>
                     </p>
                     <p>
-                        Waitlist:{' '}
-                        <span style={{ color: '#BBBB00' }}>
-                            {' '}
-                            {`${waitlist}`}
-                        </span>
+                        Waitlist: <span style={{ color: '#BBBB00' }}> {`${waitlist}`}</span>
                     </p>
                 </div>
             );
         } else {
             return (
-                <div
-                    className="custom-tooltip"
-                    style={{ border: '1px solid black', background: '#F4F4F4' }}
-                >
+                <div className="custom-tooltip" style={{ border: '1px solid black', background: '#F4F4F4' }}>
                     <p className="label">{lable}</p>
                     <p>
-                        Max:{' '}
-                        <span
-                            style={{ color: 'red', opacity: '.8' }}
-                        >{`${max}`}</span>
+                        Max: <span style={{ color: 'red', opacity: '.8' }}>{`${max}`}</span>
                     </p>
                     <p>
                         Enrolled: <span style={style}>{`${enroll}`}</span>
@@ -117,7 +91,7 @@ const CustomToolTipNum = ({ active, payload, label }) => {
 };
 
 export default class OldGraph extends PureComponent {
-   state = {
+    state = {
         enrolledColor: '#8884d8',
         reqColor: '#82ca9d',
         waitColor: '#fad700',
@@ -143,7 +117,7 @@ export default class OldGraph extends PureComponent {
         }
     }
 
-     fetchCourseData = async (courseID, session) => {
+    fetchCourseData = async (courseID, session) => {
         //Get the course Data
         const params = {
             id: courseID,
@@ -164,7 +138,7 @@ export default class OldGraph extends PureComponent {
                     });
                 }
             });
-    }
+    };
 
     noSlash(ssv) {
         /*
@@ -235,47 +209,17 @@ export default class OldGraph extends PureComponent {
                 margin={{ top: 25, right: 30, left: 70, bottom: 5 }}
             >
                 <defs>
-                    <linearGradient
-                        id="colorenrolled"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                    >
-                        <stop
-                            offset="5%"
-                            stopColor="#82ca9d"
-                            stopOpacity={0.0}
-                        />
-                        <stop
-                            offset="95%"
-                            stopColor="#82ca9d"
-                            stopOpacity={0}
-                        />
+                    <linearGradient id="colorenrolled" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.0} />
+                        <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="colorwait" x1="0" y1="0" x2="0" y2="1">
-                        <stop
-                            offset="5%"
-                            stopColor="#edd209"
-                            stopOpacity={0.0}
-                        />
-                        <stop
-                            offset="100%"
-                            stopColor="#edd209"
-                            stopOpacity={0}
-                        />
+                        <stop offset="5%" stopColor="#edd209" stopOpacity={0.0} />
+                        <stop offset="100%" stopColor="#edd209" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="full" x1="0" y1="0" x2="0" y2="1">
-                        <stop
-                            offset="5%"
-                            stopColor="#d31027"
-                            stopOpacity={0.0}
-                        />
-                        <stop
-                            offset="95%"
-                            stopColor="#d31027"
-                            stopOpacity={0}
-                        />
+                        <stop offset="5%" stopColor="#d31027" stopOpacity={0.0} />
+                        <stop offset="95%" stopColor="#d31027" stopOpacity={0} />
                     </linearGradient>
                 </defs>
                 <XAxis dataKey="name" stroke="black" fillOpacity={1} />
@@ -327,40 +271,28 @@ export default class OldGraph extends PureComponent {
                             id: 'maxenroll',
                             value: 'Max Enrollment',
                             type: 'line',
-                            color: `${
-                                this.state.max ? this.state.maxColor : '#FFFFFF'
-                            }`,
+                            color: `${this.state.max ? this.state.maxColor : '#FFFFFF'}`,
                             iconSize: '30',
                         },
                         {
                             id: 'enrolled',
                             value: 'Enrolled',
                             type: 'line',
-                            color: `${
-                                this.state.enrolled
-                                    ? this.state.enrolledColor
-                                    : '#FFFFFF'
-                            }`,
+                            color: `${this.state.enrolled ? this.state.enrolledColor : '#FFFFFF'}`,
                             iconSize: '30',
                         },
                         {
                             id: 'waitlist',
                             value: 'Waitlist',
                             type: 'line',
-                            color: `${
-                                this.state.wait
-                                    ? this.state.waitColor
-                                    : '#FFFFFF'
-                            }`,
+                            color: `${this.state.wait ? this.state.waitColor : '#FFFFFF'}`,
                             iconSize: '30',
                         },
                         {
                             id: 'requested',
                             value: 'Requested',
                             type: 'line',
-                            color: `${
-                                this.state.req ? this.state.reqColor : '#FFFFFF'
-                            }`,
+                            color: `${this.state.req ? this.state.reqColor : '#FFFFFF'}`,
                             iconSize: '30',
                         },
                     ]}

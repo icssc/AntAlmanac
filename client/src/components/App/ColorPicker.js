@@ -2,10 +2,7 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Popover } from '@material-ui/core';
 import { SketchPicker } from 'react-color';
-import {
-    changeCourseColor,
-    changeCustomEventColor,
-} from '../../actions/AppStoreActions';
+import { changeCourseColor, changeCustomEventColor } from '../../actions/AppStoreActions';
 
 class ColorPicker extends PureComponent {
     state = {
@@ -30,11 +27,7 @@ class ColorPicker extends PureComponent {
 
     handleColorChange = (color) => {
         this.setState({ color: color.hex }, () => {
-            if (this.props.isCustomEvent)
-                changeCustomEventColor(
-                    this.props.customEventID,
-                    this.state.color
-                );
+            if (this.props.isCustomEvent) changeCustomEventColor(this.props.customEventID, this.state.color);
             else changeCourseColor(this.props.sectionCode, this.state.color);
         });
     };
@@ -60,10 +53,7 @@ class ColorPicker extends PureComponent {
                         horizontal: 'left',
                     }}
                 >
-                    <SketchPicker
-                        color={this.state.color}
-                        onChange={this.handleColorChange}
-                    />
+                    <SketchPicker color={this.state.color} onChange={this.handleColorChange} />
                 </Popover>
             </div>
         );

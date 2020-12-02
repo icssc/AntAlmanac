@@ -48,7 +48,7 @@ class NotificationSnackbar extends PureComponent {
         open: false,
         message: '',
         variant: 'info',
-        duration: 3000
+        duration: 3000,
     };
 
     openSnackbar = () => {
@@ -57,7 +57,7 @@ class NotificationSnackbar extends PureComponent {
             message: AppStore.getSnackbarMessage(),
             variant: AppStore.getSnackbarVariant(),
             duration: AppStore.getSnackbarDuration(),
-            position: AppStore.getSnackbarPosition()
+            position: AppStore.getSnackbarPosition(),
         });
     };
 
@@ -77,7 +77,7 @@ class NotificationSnackbar extends PureComponent {
         this.closeSnackbar();
     };
 
-    render () {
+    render() {
         const { classes } = this.props;
         const Icon = variantIcon[this.state.variant];
 
@@ -92,17 +92,13 @@ class NotificationSnackbar extends PureComponent {
                     className={classes[this.state.variant]}
                     message={
                         <span className={classes.message}>
-                            <Icon className={classes.icon}/>
+                            <Icon className={classes.icon} />
                             {this.state.message}
                         </span>
                     }
                     action={[
-                        <IconButton
-                            key="close"
-                            color="inherit"
-                            onClick={this.closeSnackbar}
-                        >
-                            <CloseIcon className={classes.icon}/>
+                        <IconButton key="close" color="inherit" onClick={this.closeSnackbar}>
+                            <CloseIcon className={classes.icon} />
                         </IconButton>,
                     ]}
                 />

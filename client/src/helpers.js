@@ -4,13 +4,10 @@ export async function getCoursesData(userData) {
 
     let sectionCodeToInfoMapping;
     if (userData.addedCourses.length !== 0) {
-        sectionCodeToInfoMapping = userData.addedCourses.reduce(
-            (accumulator, addedCourse) => {
-                accumulator[addedCourse.sectionCode] = { ...addedCourse };
-                return accumulator;
-            },
-            {}
-        );
+        sectionCodeToInfoMapping = userData.addedCourses.reduce((accumulator, addedCourse) => {
+            accumulator[addedCourse.sectionCode] = { ...addedCourse };
+            return accumulator;
+        }, {});
     }
 
     for (let i = 0; i < userData.addedCourses.length; ++i) {
@@ -18,10 +15,8 @@ export async function getCoursesData(userData) {
         const sectionsOfTermArray = dataToSend[addedCourse.term];
 
         if (sectionsOfTermArray !== undefined) {
-            const lastSectionArray =
-                sectionsOfTermArray[sectionsOfTermArray.length - 1];
-            if (lastSectionArray.length === 10)
-                sectionsOfTermArray.push([addedCourse.sectionCode]);
+            const lastSectionArray = sectionsOfTermArray[sectionsOfTermArray.length - 1];
+            if (lastSectionArray.length === 10) sectionsOfTermArray.push([addedCourse.sectionCode]);
             else lastSectionArray.push(addedCourse.sectionCode);
         } else {
             dataToSend[addedCourse.term] = [[addedCourse.sectionCode]];
@@ -49,9 +44,7 @@ export async function getCoursesData(userData) {
                     for (const course of department.courses) {
                         for (const section of course.sections) {
                             addedCourses.push({
-                                ...sectionCodeToInfoMapping[
-                                    section.sectionCode
-                                ],
+                                ...sectionCodeToInfoMapping[section.sectionCode],
                                 deptCode: department.deptCode,
                                 courseNumber: course.courseNumber,
                                 courseTitle: course.courseTitle,

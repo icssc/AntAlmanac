@@ -91,13 +91,17 @@ const SectionTableWrapped = React.forwardRef(({ style, index, data }, ref) => {
             />
         );
     } else {
-        component = <SectionTable term={RightPaneStore.getFormData().term} courseDetails={courseData[index]} colorAndDelete={false}/>;
+        component = (
+            <SectionTable
+                term={RightPaneStore.getFormData().term}
+                courseDetails={courseData[index]}
+                colorAndDelete={false}
+            />
+        );
     }
     return (
         <div style={style} ref={ref}>
-            {index === 0 ? (
-                <AdBanner bannerName={bannerName} bannerLink={bannerLink}/>
-            ) : null}
+            {index === 0 ? <AdBanner bannerName={bannerName} bannerLink={bannerLink} /> : null}
             {component}
         </div>
     );
@@ -111,7 +115,7 @@ class CourseRenderPane extends PureComponent {
         bannerLink: '',
     };
 
-    componentDidMount () {
+    componentDidMount() {
         this.setState({ loading: true }, async () => {
             const formData = RightPaneStore.getFormData();
 
@@ -151,7 +155,7 @@ class CourseRenderPane extends PureComponent {
         });
     }
 
-    render () {
+    render() {
         const { classes } = this.props;
         let currentView;
 
@@ -159,7 +163,7 @@ class CourseRenderPane extends PureComponent {
             currentView = (
                 <div className={classes.loadingGifStyle}>
                     <video autoPlay loop>
-                        <source src={loadingGif} type="video/mp4"/>
+                        <source src={loadingGif} type="video/mp4" />
                     </video>
                 </div>
             );
@@ -174,7 +178,7 @@ class CourseRenderPane extends PureComponent {
                 <div className={classes.root}>
                     {this.state.courseData.length === 0 ? (
                         <div className={classes.noResultsDiv}>
-                            <img src={NoNothing} alt="No Results Found"/>
+                            <img src={NoNothing} alt="No Results Found" />
                         </div>
                     ) : (
                         <AutoSizer>

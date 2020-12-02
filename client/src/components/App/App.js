@@ -11,14 +11,14 @@ import AppStore from '../../stores/AppStore';
 
 class App extends PureComponent {
     state = {
-        darkMode: AppStore.getDarkMode()
+        darkMode: AppStore.getDarkMode(),
     };
 
     componentDidMount = () => {
         document.addEventListener('keydown', undoDelete, false);
 
         AppStore.on('darkModeToggle', () => {
-          this.setState({darkMode: AppStore.getDarkMode()});
+            this.setState({ darkMode: AppStore.getDarkMode() });
         });
 
         ReactGA.initialize('UA-133683751-1');
@@ -31,20 +31,16 @@ class App extends PureComponent {
 
     render() {
         const theme = createMuiTheme({
-          palette: {
-            type: this.state.darkMode ? 'dark' : 'light',
-          },
+            palette: {
+                type: this.state.darkMode ? 'dark' : 'light',
+            },
         });
 
         return (
             <ThemeProvider theme={theme}>
                 <CssBaseline />
                 <Bar />
-                <Grid
-                    container
-                    alignItems={'stretch'}
-                    style={{ flexGrow: '1' }}
-                >
+                <Grid container alignItems={'stretch'} style={{ flexGrow: '1' }}>
                     <Grid item xs={12} s={6} md={6} lg={6} xl={6}>
                         <Calendar />
                     </Grid>

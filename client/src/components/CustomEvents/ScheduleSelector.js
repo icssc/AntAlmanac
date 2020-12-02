@@ -5,9 +5,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 class ScheduleSelector extends PureComponent {
     state = {
-        scheduleIndices: this.props.customEvent
-            ? this.props.customEvent.scheduleIndices
-            : [],
+        scheduleIndices: this.props.customEvent ? this.props.customEvent.scheduleIndices : [],
     };
 
     handleChange = (dayIndex) => (event) => {

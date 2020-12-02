@@ -141,11 +141,11 @@ class AddedCoursePane extends PureComponent {
                             color="secondary"
                             onClick={() => {
                                 if (
-                                window.confirm(
-                                    'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
-                                )
+                                    window.confirm(
+                                        'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
+                                    )
                                 ) {
-                                clearSchedules([AppStore.getCurrentScheduleIndex()]);
+                                    clearSchedules([AppStore.getCurrentScheduleIndex()]);
                                 }
                             }}
                         >

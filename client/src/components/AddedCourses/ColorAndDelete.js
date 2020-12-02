@@ -26,20 +26,9 @@ const ColorAndDelete = (props) => {
     return (
         <Fragment>
             <div className={classes.colorPicker}>
-                <ColorPicker
-                    color={color}
-                    isCustomEvent={false}
-                    sectionCode={sectionCode}
-                />
+                <ColorPicker color={color} isCustomEvent={false} sectionCode={sectionCode} />
             </div>
-            <IconButton
-                onClick={() =>
-                    deleteCourse(
-                        sectionCode,
-                        AppStore.getCurrentScheduleIndex()
-                    )
-                }
-            >
+            <IconButton onClick={() => deleteCourse(sectionCode, AppStore.getCurrentScheduleIndex())}>
                 <Delete fontSize="small" />
             </IconButton>
         </Fragment>

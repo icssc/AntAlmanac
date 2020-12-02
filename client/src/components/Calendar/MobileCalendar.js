@@ -1,4 +1,4 @@
-import React, { PureComponent} from 'react';
+import React, { PureComponent } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
@@ -95,20 +95,12 @@ class MobileCalendar extends PureComponent {
                 <div className={classes.dayboxes}>
                     <div>
                         {this.props.classEventsInCalendar.map((event) => {
-                            if (
-                                event.start !== 'tba' &&
-                                event.start.getDay() === 1
-                            ) {
+                            if (event.start !== 'tba' && event.start.getDay() === 1) {
                                 const style = {
-                                    width: `${(Math.floor(
-                                        (event.end - event.start) / 1000 / 60
-                                    ) /
-                                        60) *
-                                        6.5}%`,
-                                    left: `${(event.start.getHours() - 6) /
-                                        0.16 +
-                                        (event.start.getMinutes() / 60) *
-                                            6.25}%`,
+                                    width: `${(Math.floor((event.end - event.start) / 1000 / 60) / 60) * 6.5}%`,
+                                    left: `${
+                                        (event.start.getHours() - 6) / 0.16 + (event.start.getMinutes() / 60) * 6.25
+                                    }%`,
                                     height: '90%',
                                     position: 'absolute',
                                     borderRadius: 4,
@@ -116,12 +108,7 @@ class MobileCalendar extends PureComponent {
                                 };
                                 return (
                                     <div
-                                        onClick={(clickEvent) =>
-                                            this.props.onSelectEvent(
-                                                event,
-                                                clickEvent
-                                            )
-                                        }
+                                        onClick={(clickEvent) => this.props.onSelectEvent(event, clickEvent)}
                                         style={style}
                                     >
                                         <CustomEvent event={event} />
@@ -134,20 +121,12 @@ class MobileCalendar extends PureComponent {
 
                     <div>
                         {this.props.classEventsInCalendar.map((event) => {
-                            if (
-                                event.start !== 'tba' &&
-                                event.start.getDay() === 2
-                            ) {
+                            if (event.start !== 'tba' && event.start.getDay() === 2) {
                                 const style = {
-                                    width: `${(Math.floor(
-                                        (event.end - event.start) / 1000 / 60
-                                    ) /
-                                        60) *
-                                        6.25}%`,
-                                    left: `${(event.start.getHours() - 6) /
-                                        0.16 +
-                                        (event.start.getMinutes() / 60) *
-                                            6.25}%`,
+                                    width: `${(Math.floor((event.end - event.start) / 1000 / 60) / 60) * 6.25}%`,
+                                    left: `${
+                                        (event.start.getHours() - 6) / 0.16 + (event.start.getMinutes() / 60) * 6.25
+                                    }%`,
                                     height: '90%',
                                     position: 'absolute',
                                     borderRadius: 4,
@@ -155,12 +134,7 @@ class MobileCalendar extends PureComponent {
                                 };
                                 return (
                                     <div
-                                        onClick={(clickEvent) =>
-                                            this.props.onSelectEvent(
-                                                event,
-                                                clickEvent
-                                            )
-                                        }
+                                        onClick={(clickEvent) => this.props.onSelectEvent(event, clickEvent)}
                                         style={style}
                                     >
                                         <CustomEvent event={event} />
@@ -173,20 +147,12 @@ class MobileCalendar extends PureComponent {
 
                     <div>
                         {this.props.classEventsInCalendar.map((event) => {
-                            if (
-                                event.start !== 'tba' &&
-                                event.start.getDay() === 3
-                            ) {
+                            if (event.start !== 'tba' && event.start.getDay() === 3) {
                                 const style = {
-                                    width: `${(Math.floor(
-                                        (event.end - event.start) / 1000 / 60
-                                    ) /
-                                        60) *
-                                        6.25}%`,
-                                    left: `${(event.start.getHours() - 6) /
-                                        0.16 +
-                                        (event.start.getMinutes() / 60) *
-                                            6.25}%`,
+                                    width: `${(Math.floor((event.end - event.start) / 1000 / 60) / 60) * 6.25}%`,
+                                    left: `${
+                                        (event.start.getHours() - 6) / 0.16 + (event.start.getMinutes() / 60) * 6.25
+                                    }%`,
                                     height: '90%',
                                     position: 'absolute',
                                     borderRadius: 4,
@@ -194,12 +160,7 @@ class MobileCalendar extends PureComponent {
                                 };
                                 return (
                                     <div
-                                        onClick={(clickEvent) =>
-                                            this.props.onSelectEvent(
-                                                event,
-                                                clickEvent
-                                            )
-                                        }
+                                        onClick={(clickEvent) => this.props.onSelectEvent(event, clickEvent)}
                                         style={style}
                                     >
                                         <CustomEvent event={event} />
@@ -212,20 +173,12 @@ class MobileCalendar extends PureComponent {
 
                     <div>
                         {this.props.classEventsInCalendar.map((event) => {
-                            if (
-                                event.start !== 'tba' &&
-                                event.start.getDay() === 4
-                            ) {
+                            if (event.start !== 'tba' && event.start.getDay() === 4) {
                                 const style = {
-                                    width: `${(Math.floor(
-                                        (event.end - event.start) / 1000 / 60
-                                    ) /
-                                        60) *
-                                        6.25}%`,
-                                    left: `${(event.start.getHours() - 6) /
-                                        0.16 +
-                                        (event.start.getMinutes() / 60) *
-                                            6.25}%`,
+                                    width: `${(Math.floor((event.end - event.start) / 1000 / 60) / 60) * 6.25}%`,
+                                    left: `${
+                                        (event.start.getHours() - 6) / 0.16 + (event.start.getMinutes() / 60) * 6.25
+                                    }%`,
                                     height: '90%',
                                     position: 'absolute',
                                     borderRadius: 4,
@@ -233,12 +186,7 @@ class MobileCalendar extends PureComponent {
                                 };
                                 return (
                                     <div
-                                        onClick={(clickEvent) =>
-                                            this.props.onSelectEvent(
-                                                event,
-                                                clickEvent
-                                            )
-                                        }
+                                        onClick={(clickEvent) => this.props.onSelectEvent(event, clickEvent)}
                                         style={style}
                                     >
                                         <CustomEvent event={event} />
@@ -251,20 +199,12 @@ class MobileCalendar extends PureComponent {
 
                     <div>
                         {this.props.classEventsInCalendar.map((event) => {
-                            if (
-                                event.start !== 'tba' &&
-                                event.start.getDay() === 5
-                            ) {
+                            if (event.start !== 'tba' && event.start.getDay() === 5) {
                                 const style = {
-                                    width: `${(Math.floor(
-                                        (event.end - event.start) / 1000 / 60
-                                    ) /
-                                        60) *
-                                        6.25}%`,
-                                    left: `${(event.start.getHours() - 6) /
-                                        0.16 +
-                                        (event.start.getMinutes() / 60) *
-                                            6.25}%`,
+                                    width: `${(Math.floor((event.end - event.start) / 1000 / 60) / 60) * 6.25}%`,
+                                    left: `${
+                                        (event.start.getHours() - 6) / 0.16 + (event.start.getMinutes() / 60) * 6.25
+                                    }%`,
                                     height: '90%',
                                     position: 'absolute',
                                     borderRadius: 4,
@@ -275,12 +215,7 @@ class MobileCalendar extends PureComponent {
 
                                 return (
                                     <div
-                                        onClick={(clickEvent) =>
-                                            this.props.onSelectEvent(
-                                                event,
-                                                clickEvent
-                                            )
-                                        }
+                                        onClick={(clickEvent) => this.props.onSelectEvent(event, clickEvent)}
                                         style={style}
                                     >
                                         <CustomEvent event={event} />

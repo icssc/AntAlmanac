@@ -58,7 +58,7 @@ const styles = {
             height: '20px',
             width: '20px',
             borderRadius: '50%',
-        }
+        },
     },
 };
 
@@ -86,76 +86,59 @@ const CourseCalendarEvent = (props) => {
     const { classes, courseInMoreInfo, currentScheduleIndex } = props;
 
     if (!courseInMoreInfo.isCustomEvent) {
-        const {
-            instructors,
-            sectionCode,
-            courseTitle,
-            finalExam,
-            bldg,
-        } = courseInMoreInfo;
+        const { instructors, sectionCode, courseTitle, finalExam, bldg } = courseInMoreInfo;
 
         return (
             <Paper className={classes.courseContainer}>
                 <div className={classes.titleBar}>
                     <span className={classes.title}>{courseTitle}</span>
                     <Tooltip title="Delete">
-                        <IconButton size="small" onClick={() =>
-                            deleteCourse(sectionCode, currentScheduleIndex)
-                        }>
-                            <Delete fontSize="inherit"/>
+                        <IconButton size="small" onClick={() => deleteCourse(sectionCode, currentScheduleIndex)}>
+                            <Delete fontSize="inherit" />
                         </IconButton>
                     </Tooltip>
                 </div>
                 <table className={classes.table}>
                     <tbody>
-                    <tr>
-                        <td className={classes.alignToTop}>Section code</td>
-                        <Tooltip title="Click to copy course code" placement="right">
-                            <td
-                                onClick={(e) => clickToCopy(e, sectionCode)}
-                                className={classes.rightCells}
-                            >
-                                <u>{sectionCode}</u>
+                        <tr>
+                            <td className={classes.alignToTop}>Section code</td>
+                            <Tooltip title="Click to copy course code" placement="right">
+                                <td onClick={(e) => clickToCopy(e, sectionCode)} className={classes.rightCells}>
+                                    <u>{sectionCode}</u>
+                                </td>
+                            </Tooltip>
+                        </tr>
+                        <tr>
+                            <td className={classes.alignToTop}>Instructors</td>
+                            <td className={`${classes.multiline} ${classes.rightCells}`}>{instructors.join('\n')}</td>
+                        </tr>
+                        <tr>
+                            <td className={classes.alignToTop}>Location</td>
+                            <td className={`${classes.multiline} ${classes.rightCells}`}>
+                                {bldg !== 'TBA' ? (
+                                    <a href={genMapLink(bldg)} target="_blank" rel="noopener noreferrer">
+                                        {bldg}
+                                    </a>
+                                ) : (
+                                    bldg
+                                )}
                             </td>
-                        </Tooltip>
-                    </tr>
-                    <tr>
-                        <td className={classes.alignToTop}>Instructors</td>
-                        <td className={`${classes.multiline} ${classes.rightCells}`}>
-                            {instructors.join('\n')}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={classes.alignToTop}>Location</td>
-                        <td className={`${classes.multiline} ${classes.rightCells}`}>
-                            {bldg !== 'TBA' ? (
-                                <a
-                                    href={genMapLink(bldg)}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    {bldg}
-                                </a>
-                            ) : (
-                                bldg
-                            )}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Final</td>
-                        <td className={classes.rightCells}>{finalExam}</td>
-                    </tr>
-                    <tr>
-                        <td>Color</td>
-                        <td className={`${classes.colorPicker} ${classes.stickToRight}`}>
-                            <ColorPicker
-                                color={courseInMoreInfo.color}
-                                isCustomEvent={courseInMoreInfo.isCustomEvent}
-                                customEventID={courseInMoreInfo.customEventID}
-                                sectionCode={courseInMoreInfo.sectionCode}
-                            />
-                        </td>
-                    </tr>
+                        </tr>
+                        <tr>
+                            <td>Final</td>
+                            <td className={classes.rightCells}>{finalExam}</td>
+                        </tr>
+                        <tr>
+                            <td>Color</td>
+                            <td className={`${classes.colorPicker} ${classes.stickToRight}`}>
+                                <ColorPicker
+                                    color={courseInMoreInfo.color}
+                                    isCustomEvent={courseInMoreInfo.isCustomEvent}
+                                    customEventID={courseInMoreInfo.customEventID}
+                                    sectionCode={courseInMoreInfo.sectionCode}
+                                />
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </Paper>
@@ -164,9 +147,7 @@ const CourseCalendarEvent = (props) => {
         const { title, customEventID } = courseInMoreInfo;
         return (
             <Paper className={classes.customEventContainer} onClick={(event) => event.stopPropagation()}>
-                <div className={classes.title}>
-                    {title}
-                </div>
+                <div className={classes.title}>{title}</div>
                 <div className={classes.buttonBar}>
                     <div className={`${classes.colorPicker}`}>
                         <ColorPicker
@@ -175,22 +156,21 @@ const CourseCalendarEvent = (props) => {
                             customEventID={courseInMoreInfo.customEventID}
                         />
                     </div>
-                    <CustomEventDialog onDialogClose={props.closePopover}
-                                       customEvent={
-                                           AppStore.getCustomEvents().find(customEvent => customEvent.customEventID === customEventID)
-                                       }/>
+                    <CustomEventDialog
+                        onDialogClose={props.closePopover}
+                        customEvent={AppStore.getCustomEvents().find(
+                            (customEvent) => customEvent.customEventID === customEventID
+                        )}
+                    />
 
                     <Tooltip title="Delete">
                         <IconButton
                             onClick={() => {
                                 props.closePopover();
-                                deleteCustomEvent(
-                                    customEventID,
-                                    currentScheduleIndex,
-                                );
+                                deleteCustomEvent(customEventID, currentScheduleIndex);
                             }}
                         >
-                            <Delete fontSize="small"/>
+                            <Delete fontSize="small" />
                         </IconButton>
                     </Tooltip>
                 </div>

@@ -46,11 +46,7 @@ class KeepMounted extends PureComponent {
     render() {
         const { isMounted, render } = this.props;
         this.hasBeenMounted = this.hasBeenMounted || isMounted;
-        return (
-            <div style={{ display: isMounted ? null : 'none' }}>
-                {this.hasBeenMounted ? render() : null}
-            </div>
-        );
+        return <div style={{ display: isMounted ? null : 'none' }}>{this.hasBeenMounted ? render() : null}</div>;
     }
 }
 
@@ -64,63 +60,61 @@ class GraphRenderPane extends PureComponent {
         this.setState({ graphOpen: !this.state.graphOpen });
     };
 
-    render () {
+    render() {
         const { classes } = this.props;
 
         return (
             <Fragment>
                 <table className={classes.table}>
                     <tbody>
-                    <tr className={classes.tr}>
-                        <th>Toggle Graph</th>
-                        <th>Type</th>
-                        <th>Instructors</th>
-                        <th>Times</th>
-                        <th>Places</th>
-                        <th>Max Capacity</th>
-                    </tr>
-                    <tr className={classes.tr}>
-                        <td style={{ textAlign: 'center' }}>
-                            <Button
-                                variant="contained"
-                                onClick={() => this.toggleDisplayGraph()}
-                                style={{
-                                    marginTop: 3,
-                                    backgroundColor: '#72a9ed',
-                                    boxShadow: 'none',
-                                    width: '90%',
-                                }}
-                            >
-                                {this.state.graphOpen ? 'Close' : 'Open'}
-                            </Button>
-                        </td>
-                        <td className={classes.multiline}>
-                            {`${this.props.pastSection.sectionType}
+                        <tr className={classes.tr}>
+                            <th>Toggle Graph</th>
+                            <th>Type</th>
+                            <th>Instructors</th>
+                            <th>Times</th>
+                            <th>Places</th>
+                            <th>Max Capacity</th>
+                        </tr>
+                        <tr className={classes.tr}>
+                            <td style={{ textAlign: 'center' }}>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => this.toggleDisplayGraph()}
+                                    style={{
+                                        marginTop: 3,
+                                        backgroundColor: '#72a9ed',
+                                        boxShadow: 'none',
+                                        width: '90%',
+                                    }}
+                                >
+                                    {this.state.graphOpen ? 'Close' : 'Open'}
+                                </Button>
+                            </td>
+                            <td className={classes.multiline}>
+                                {`${this.props.pastSection.sectionType}
 Section: ${this.props.pastSection.sectionCode}
 Units: ${this.props.pastSection.units}`}
-                        </td>
-                        <td className={classes.multiline}>
-                            {this.props.pastSection.instructors.join('\n')}
-                        </td>
-                        <td className={classes.multiline}>
-                            {this.props.pastSection.meetings
-                                .map((meeting) => meeting.days + ' ' + meeting.time)
-                                .join('\n')}
-                        </td>
-                        <td className={classes.multiline}>
-                            {this.props.pastSection.meetings
-                                .map((meeting) => meeting.bldg)
-                                .join('\n')}
-                        </td>
-                        <td>{this.props.pastSection.maxCapacity}</td>
-                    </tr>
+                            </td>
+                            <td className={classes.multiline}>{this.props.pastSection.instructors.join('\n')}</td>
+                            <td className={classes.multiline}>
+                                {this.props.pastSection.meetings
+                                    .map((meeting) => meeting.days + ' ' + meeting.time)
+                                    .join('\n')}
+                            </td>
+                            <td className={classes.multiline}>
+                                {this.props.pastSection.meetings.map((meeting) => meeting.bldg).join('\n')}
+                            </td>
+                            <td>{this.props.pastSection.maxCapacity}</td>
+                        </tr>
                     </tbody>
                 </table>
                 <KeepMounted
                     isMounted={this.state.graphOpen}
-                    render={() => <Graph pastSectionCode={this.props.pastSection.sectionCode} pastTerm={this.props.pastTerm}/> }
+                    render={() => (
+                        <Graph pastSectionCode={this.props.pastSection.sectionCode} pastTerm={this.props.pastTerm} />
+                    )}
                 />
-                <hr/>
+                <hr />
             </Fragment>
         );
     }
