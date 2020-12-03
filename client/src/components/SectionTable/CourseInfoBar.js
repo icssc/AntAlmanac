@@ -1,16 +1,13 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { Typography, Button, Popover } from '@material-ui/core';
-import course_info from '../CoursePane/static/course_info.json';
+import { Button, Popover } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 import { MoreVert } from '@material-ui/icons';
-import ReactGA from 'react-ga';
-import { bindPopover } from 'material-ui-popup-state/core';
-import { usePopupState } from 'material-ui-popup-state/hooks';
 
-const styles = (theme) => ({
-    typography: {
-        margin: theme.spacing.unit * 2,
+const styles = () => ({
+    rightSpace: {
+        marginRight: 4,
     },
     button: {
         backgroundColor: '#72a9ed',
@@ -18,53 +15,127 @@ const styles = (theme) => ({
     },
     courseInfoPane: {
         margin: 10,
-        maxWidth: 500,
+        width: 500,
+    },
+    skeleton: {
+        margin: 10,
+        width: 500,
+        height: 150,
     },
 });
 
-const CourseInfoBar = (props) => {
-    const { classes, courseTitle, courseNumber, deptCode } = props;
-    const popupState = usePopupState({ variant: 'popover' });
+class CourseInfoBar extends PureComponent {
+    state = {
+        loading: true,
+        anchorEl: null,
+        title: null,
+        prerequisite_text: null,
+        prerequisite_for: null,
+        description: null,
+    };
 
-    return (
-        <Fragment>
-            <Button
-                variant="contained"
-                size="small"
-                onClick={(event) => {
-                    ReactGA.event({
-                        category: 'Course_info',
-                        action: `${deptCode} ${courseNumber}`,
-                    });
-                    popupState.toggle(event.currentTarget);
-                }}
-            >
-                {`${deptCode} ${courseNumber} | ${courseTitle}`}
-                <MoreVert fontSize="small" />
-            </Button>
-            <Popover
-                {...bindPopover(popupState)}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                }}
-            >
-                <Typography className={classes.typography}>
-                    <div
-                        className={classes.courseInfoPane}
-                        dangerouslySetInnerHTML={{
-                            __html: course_info[deptCode] === undefined ? '' : course_info[deptCode][courseNumber],
-                        }}
-                    />
-                </Typography>
-            </Popover>
-        </Fragment>
-    );
-};
+    togglePopover = async (currentTarget) => {
+        if (Boolean(this.state.anchorEl)) {
+            this.setState({ anchorEl: false });
+        } else {
+            this.setState({ anchorEl: currentTarget });
+
+            if (this.state.loading === true) {
+                const { courseNumber, deptCode } = this.props;
+                const response = await fetch(`/api/peterportalapi/courses/${deptCode}/${courseNumber}`);
+                const jsonResp = await response.json();
+
+                this.setState({
+                    anchorEl: currentTarget,
+                    loading: false,
+                    title: jsonResp.title,
+                    prerequisite_text: jsonResp.prerequisite_text,
+                    prerequisite_for: jsonResp.dependencies.join(', '),
+                    description: jsonResp.description,
+                }, () => console.log('state update'));
+            }
+        }
+    };
+
+    getPopoverContent = () => {
+        if (this.state.loading) {
+            return (
+                <div className={this.props.classes.skeleton}>
+                    <p>
+                        <Skeleton variant="text" animation='wave' height={30} width='50%'/>
+                    </p>
+                    <p>
+                        <Skeleton variant="text" animation='wave'/>
+                        <Skeleton variant="text" animation="wave"/>
+                        <Skeleton variant="text" animation="wave"/>
+                        <Skeleton variant="text" animation="wave"/>
+                        <Skeleton variant="text" animation="wave"/>
+                    </p>
+                </div>
+            );
+        } else {
+            return (
+                <div className={this.props.classes.courseInfoPane}>
+                    <p>
+                        <strong>{this.state.title}</strong>
+                    </p>
+                    <p>
+                        {this.state.description}
+                    </p>
+                    {this.state.prerequisite_text !== '' ?
+                        <p>
+                            <span className={this.props.classes.rightSpace}>Prerequisites:</span>
+                            {this.state.prerequisite_text}
+                        </p>
+                        : null
+                    }
+                    {this.state.prerequisite_for !== '' ?
+                        <p>
+                            <span className={this.props.classes.rightSpace}>Prerequisite For:</span>
+                            {this.state.prerequisite_for}
+                        </p>
+                        : null
+                    }
+                </div>
+            );
+        }
+    };
+
+    render () {
+        const { courseTitle, courseNumber, deptCode } = this.props;
+
+        return (
+            <Fragment>
+                <Button
+                    variant="contained"
+                    size="small"
+                    onClick={(event) => {
+                        const currentTarget = event.currentTarget;
+                        this.togglePopover(currentTarget);
+                    }}
+                >
+                    {`${deptCode} ${courseNumber} | ${courseTitle}`}
+                    <MoreVert fontSize="small"/>
+                </Button>
+                <Popover
+                    anchorEl={this.state.anchorEl}
+                    open={Boolean(this.state.anchorEl)}
+                    onClose={() => this.togglePopover(null)}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
+                    }}
+                >
+                    {this.getPopoverContent()}
+                </Popover>
+            </Fragment>
+        );
+    }
+}
 
 CourseInfoBar.propTypes = {
     classes: PropTypes.object.isRequired,
