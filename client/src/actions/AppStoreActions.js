@@ -171,7 +171,7 @@ export const loadSchedule = async (userID, rememberMe) => {
                 });
                 openSnackbar('success', `Schedule for username "${userID}" loaded.`);
             } catch (e) {
-                openSnackbar('error', `Couldn't find schedules for username "${userID}.`);
+                openSnackbar('error', `Couldn't find schedules for username "${userID}".`);
             }
         }
     }

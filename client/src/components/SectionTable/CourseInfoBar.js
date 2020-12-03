@@ -52,7 +52,7 @@ class CourseInfoBar extends PureComponent {
                     prerequisite_text: jsonResp.prerequisite_text,
                     prerequisite_for: jsonResp.dependencies.join(', '),
                     description: jsonResp.description,
-                }, () => console.log('state update'));
+                });
             }
         }
     };
@@ -62,14 +62,14 @@ class CourseInfoBar extends PureComponent {
             return (
                 <div className={this.props.classes.skeleton}>
                     <p>
-                        <Skeleton variant="text" animation='wave' height={30} width='50%'/>
+                        <Skeleton variant="text" animation="wave" height={30} width="50%" />
                     </p>
                     <p>
-                        <Skeleton variant="text" animation='wave'/>
-                        <Skeleton variant="text" animation="wave"/>
-                        <Skeleton variant="text" animation="wave"/>
-                        <Skeleton variant="text" animation="wave"/>
-                        <Skeleton variant="text" animation="wave"/>
+                        <Skeleton variant="text" animation="wave" />
+                        <Skeleton variant="text" animation="wave" />
+                        <Skeleton variant="text" animation="wave" />
+                        <Skeleton variant="text" animation="wave" />
+                        <Skeleton variant="text" animation="wave" />
                     </p>
                 </div>
             );
@@ -79,29 +79,25 @@ class CourseInfoBar extends PureComponent {
                     <p>
                         <strong>{this.state.title}</strong>
                     </p>
-                    <p>
-                        {this.state.description}
-                    </p>
-                    {this.state.prerequisite_text !== '' ?
+                    <p>{this.state.description}</p>
+                    {this.state.prerequisite_text !== '' ? (
                         <p>
                             <span className={this.props.classes.rightSpace}>Prerequisites:</span>
                             {this.state.prerequisite_text}
                         </p>
-                        : null
-                    }
-                    {this.state.prerequisite_for !== '' ?
+                    ) : null}
+                    {this.state.prerequisite_for !== '' ? (
                         <p>
                             <span className={this.props.classes.rightSpace}>Prerequisite For:</span>
                             {this.state.prerequisite_for}
                         </p>
-                        : null
-                    }
+                    ) : null}
                 </div>
             );
         }
     };
 
-    render () {
+    render() {
         const { courseTitle, courseNumber, deptCode } = this.props;
 
         return (
@@ -115,7 +111,7 @@ class CourseInfoBar extends PureComponent {
                     }}
                 >
                     {`${deptCode} ${courseNumber} | ${courseTitle}`}
-                    <MoreVert fontSize="small"/>
+                    <MoreVert fontSize="small" />
                 </Button>
                 <Popover
                     anchorEl={this.state.anchorEl}
