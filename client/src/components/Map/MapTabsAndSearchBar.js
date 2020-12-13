@@ -1,7 +1,7 @@
 import React, { Fragment, PureComponent } from 'react';
 import { Tab, Tabs, Paper, TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import buildingCatalogue from './buildingCatalogue';
+import buildingCatalogue from './static/buildingCatalogue';
 import PropTypes from 'prop-types';
 import { Autocomplete } from '@material-ui/lab';
 import { styled } from '@material-ui/core/styles';
@@ -37,7 +37,7 @@ const StyledTab = styled(Tab)({
 
 class MapTabsAndSearchBar extends PureComponent {
     state = {
-        filteredItems: buildingCatalogue,
+        filteredItems: Object.values(buildingCatalogue),
     };
 
     render() {
@@ -69,7 +69,7 @@ class MapTabsAndSearchBar extends PureComponent {
                 <Paper elevation={0} className={classes.searchBarContainer}>
                     <Autocomplete
                         options={this.state.filteredItems}
-                        getOptionLabel={(option) => option.label}
+                        getOptionLabel={(option) => option.name}
                         onChange={this.props.handleSearch}
                         renderInput={(params) => <TextField {...params} label="Search for a place" variant="filled" />}
                     />
@@ -82,7 +82,7 @@ class MapTabsAndSearchBar extends PureComponent {
 MapTabsAndSearchBar.propTypes = {
     handleSearch: PropTypes.func.isRequired,
     setDay: PropTypes.func.isRequired,
-    day: PropTypes.string.isRequired,
+    day: PropTypes.number.isRequired,
 };
 
 export default withStyles(styles)(MapTabsAndSearchBar);
