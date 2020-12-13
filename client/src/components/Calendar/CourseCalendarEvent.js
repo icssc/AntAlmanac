@@ -68,7 +68,7 @@ const genMapLink = (location) => {
         const location_id = locations[location.split(' ')[0]];
         return 'https://map.uci.edu/?id=463#!m/' + location_id;
     } catch (err) {
-        return 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034';
+        return 'https://map.uci.edu/';
     }
 };
 
