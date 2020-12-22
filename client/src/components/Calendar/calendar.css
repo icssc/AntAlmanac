@@ -1,5 +1,9 @@
 .rbc-header {
     border-bottom: none;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .rbc-header + .rbc-header {
@@ -56,22 +60,22 @@
 
 /* width */
 ::-webkit-scrollbar {
-  width: 8px;
+    width: 8px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #f1f1f1C0;
+    background: #f1f1f1c0;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #808080;
+    background: #808080;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+    background: #555;
 }
 
 /*.menu-button:hover,*/

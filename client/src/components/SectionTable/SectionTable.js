@@ -12,6 +12,7 @@ const styles = {
         boxSizing: 'border-box',
         width: '100%',
         marginTop: '0.285rem',
+        marginBottom: '1.25rem',
 
         '& thead': {
             position: 'sticky',
