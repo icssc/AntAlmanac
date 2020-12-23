@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import quarterDayRanges from './static/quarter_day_ranges';
 import PropTypes from 'prop-types';
-import RightPaneStore from '../../stores/RightPaneStore';
 import moment from 'moment';
 
 const timeFormatter = (unixTime) => {
@@ -28,8 +27,8 @@ class CustomTooltip extends PureComponent {
 }
 
 class Graph extends PureComponent {
-    start = new Date(quarterDayRanges[RightPaneStore.getFormData().term].start);
-    end = new Date(quarterDayRanges[RightPaneStore.getFormData().term].end);
+    start = new Date(quarterDayRanges[this.props.pastTerm].start);
+    end = new Date(quarterDayRanges[this.props.pastTerm].end);
 
     state = {
         graphData: null,

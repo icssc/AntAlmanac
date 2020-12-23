@@ -26,7 +26,7 @@ const styles = {
 
 class GraphModalContent extends PureComponent {
     state = {
-        pastTerm: '2020 Spring',
+        pastTerm: '2021 Winter',
         pastSections: null,
     };
 
@@ -66,7 +66,7 @@ class GraphModalContent extends PureComponent {
     };
 
     handleChange = (event) => {
-        this.setState({ value: event.target.value });
+        this.setState({ pastTerm: event.target.value }, () => this.fetchCourseData());
     };
 
     render() {
@@ -97,7 +97,7 @@ class GraphModalContent extends PureComponent {
                 <FormControl fullWidth>
                     <InputLabel>Term</InputLabel>
                     <Select value={this.state.pastTerm} onChange={this.handleChange}>
-                        <MenuItem value={'2020 Spring'}>2020 Spring Quarter</MenuItem>
+                        <MenuItem value={'2021 Winter'}>2021 Winter Quarter</MenuItem>
                     </Select>
                 </FormControl>
                 {whatToDisplay}
