@@ -8,7 +8,7 @@ router.post('/', async (req, res) => {
 
   try {
     const quarter = req.body.pastTerm.split(" ")[1].toLowerCase();
-    const year = parseInt(req.body.pastTerm.split(" ")[0]);
+    const year = req.body.pastTerm.split(" ")[0];
     const sectionCode = req.body.sectionCode;
 
     const result = await EnrollmentData.findOne({quarter: quarter, year: year, sectionCode: sectionCode})

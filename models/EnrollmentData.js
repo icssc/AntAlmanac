@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const EnrollmentData = mongoose.Schema({
   quarter: String,
   sectionCode: String,
-  year: Number,
+  year: String,
   data: [{
     date: String,
     maxCapacity: String,
@@ -14,4 +14,4 @@ const EnrollmentData = mongoose.Schema({
   }]
 })
 
-module.exports = mongoose.model('EnrollmentData', EnrollmentData)
+module.exports = mongoose.model('EnrollmentData', EnrollmentData, 'enrollment_data')
