@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import locations from './static/locations';
 import restrictionsMapping from './static/restrictionsMapping';
 import RMPData from './static/RMP';
@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import { addCourse, openSnackbar } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
 import ColorAndDelete from '../AddedCourses/ColorAndDelete';
+import classNames from 'classnames';
 
 const styles = (theme) => ({
     popover: {
@@ -57,6 +58,9 @@ const styles = (theme) => ({
             // border: '1px solid rgb(222, 226, 230)',
             textAlign: 'left',
             verticalAlign: 'top',
+        },
+        '&.addedCourse': {
+            backgroundColor: '#fcfc97',
         },
     },
     open: {
@@ -375,9 +379,27 @@ const StatusCell = withStyles(styles)((props) => {
 //TODO: SectionNum name parity -> SectionNumber
 const SectionTableBody = withStyles(styles)((props) => {
     const { classes, section, courseDetails, term, colorAndDelete } = props;
+    const [addedCourse, setAddedCourse] = useState(false);
+
+    const toggleHighlight = () => {
+        if (AppStore.getAddedSectionCodes()[AppStore.getCurrentScheduleIndex()].has(section.sectionCode))
+            setAddedCourse(true);
+        else setAddedCourse(false);
+    };
+
+    useEffect(() => {
+        toggleHighlight();
+        AppStore.on('addedCoursesChange', toggleHighlight);
+        AppStore.on('currentScheduleIndexChange', toggleHighlight);
+
+        return () => {
+            AppStore.removeListener('addedCoursesChange', toggleHighlight);
+            AppStore.removeListener('currentScheduleIndexChange', toggleHighlight);
+        };
+    }, []);
 
     return (
-        <tr className={classes.tr}>
+        <tr className={classNames(classes.tr, { addedCourse: addedCourse })}>
             {!colorAndDelete ? (
                 <ScheduleAddCell section={section} courseDetails={courseDetails} term={term} />
             ) : (
