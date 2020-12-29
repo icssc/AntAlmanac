@@ -65,6 +65,7 @@ class AddedCoursePane extends PureComponent {
                     });
                 } else {
                     formattedCourse = {
+                        term: addedCourse.term,
                         deptCode: addedCourse.deptCode,
                         courseComment: addedCourse.courseComment,
                         prerequisiteLink: addedCourse.prerequisiteLink,
@@ -104,9 +105,9 @@ class AddedCoursePane extends PureComponent {
                     </Typography>
 
                     <div>
-                        <PopupState variant="popover" popupId="demo-popup-menu">
+                        <PopupState variant="popover">
                             {(popupState) => (
-                                <React.Fragment>
+                                <Fragment>
                                     <Button variant="outlined" color="primary" {...bindTrigger(popupState)}>
                                         Copy Schedule
                                     </Button>
@@ -114,6 +115,7 @@ class AddedCoursePane extends PureComponent {
                                         {[0, 1, 2, 3].map((index) => {
                                             return (
                                                 <MenuItem
+                                                    key={index}
                                                     disabled={AppStore.getCurrentScheduleIndex() === index}
                                                     onClick={() => {
                                                         copySchedule(AppStore.getCurrentScheduleIndex(), index);
@@ -133,7 +135,7 @@ class AddedCoursePane extends PureComponent {
                                             Copy to All Schedules
                                         </MenuItem>
                                     </Menu>
-                                </React.Fragment>
+                                </Fragment>
                             )}
                         </PopupState>
                         <Button
@@ -181,7 +183,7 @@ class AddedCoursePane extends PureComponent {
     render() {
         return (
             <div>
-                <Grid container spacing={16}>
+                <Grid container spacing={2}>
                     {this.getGrid()}
                 </Grid>
             </div>

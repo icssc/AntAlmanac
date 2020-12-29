@@ -222,15 +222,13 @@ const InstructorsCell = withStyles(styles)((props) => {
         return professorNames.map((profName) => {
             if (profName !== 'STAFF') {
                 return (
-                    <CustomTooltip interactive placement="left" title={<DualButton profName={profName} />}>
-                        <div
-                            style={{ display: 'block' }}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={classes.link}
-                        >
-                            {profName}
-                        </div>
+                    <CustomTooltip
+                        key={profName}
+                        interactive
+                        placement="left"
+                        title={<DualButton profName={profName} />}
+                    >
+                        <div className={classes.link}>{profName}</div>
                     </CustomTooltip>
                 );
             } else {
@@ -249,7 +247,7 @@ const LocationsCell = withStyles(styles)((props) => {
         <td className={classes.multiline}>
             {meetings.map((meeting) => {
                 return meeting.bldg !== 'TBA' ? (
-                    <Fragment>
+                    <Fragment key={meeting.bldg}>
                         <a
                             href={(() => {
                                 const location_id = locations[meeting.bldg.split(' ')[0]];

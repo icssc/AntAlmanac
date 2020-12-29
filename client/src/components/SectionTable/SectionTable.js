@@ -5,7 +5,6 @@ import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph';
 import CourseInfoBar from './CourseInfoBar';
 import SectionTableBody from './SectionTableBody';
 import PropTypes from 'prop-types';
-import RightPaneStore from '../../stores/RightPaneStore';
 
 const styles = {
     table: {
@@ -42,38 +41,8 @@ const styles = {
 };
 
 class SectionTable extends PureComponent {
-    //TODO: for efficiency, search multiple classes at once
-    state = {
-        courseDetails: this.props.courseDetails,
-    };
-
-    async componentDidMount() {
-        const formData = RightPaneStore.getFormData();
-
-        if (formData.ge !== 'ANY') {
-            const params = {
-                department: this.props.courseDetails.deptCode,
-                term: formData.term,
-                ge: 'ANY',
-                courseNumber: this.props.courseDetails.courseNumber,
-            };
-
-            const response = await fetch('/api/websocapi', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(params),
-            });
-
-            const jsonResp = await response.json();
-
-            this.setState({
-                courseDetails: jsonResp.schools[0].departments[0].courses[0],
-            });
-        }
-    }
-
     render() {
-        const { classes, term } = this.props;
+        const { classes } = this.props;
 
         return (
             <Fragment>
@@ -83,14 +52,14 @@ class SectionTable extends PureComponent {
                     }}
                 >
                     <CourseInfoBar
-                        deptCode={this.state.courseDetails.deptCode}
-                        courseTitle={this.state.courseDetails.courseTitle}
-                        courseNumber={this.state.courseDetails.courseNumber}
+                        deptCode={this.props.courseDetails.deptCode}
+                        courseTitle={this.props.courseDetails.courseTitle}
+                        courseNumber={this.props.courseDetails.courseNumber}
                     />
 
-                    <AlmanacGraph courseDetails={this.state.courseDetails} />
+                    <AlmanacGraph courseDetails={this.props.courseDetails} />
 
-                    {this.state.courseDetails.prerequisiteLink ? (
+                    {this.props.courseDetails.prerequisiteLink ? (
                         <Typography variant="h6" style={{ flexGrow: '2', marginTop: 9 }}>
                             <a
                                 target="blank"
@@ -98,7 +67,7 @@ class SectionTable extends PureComponent {
                                     textDecoration: 'none',
                                     color: '#72a9ed',
                                 }}
-                                href={this.state.courseDetails.prerequisiteLink}
+                                href={this.props.courseDetails.prerequisiteLink}
                                 rel="noopener noreferrer"
                             >
                                 Prerequisites
@@ -123,12 +92,13 @@ class SectionTable extends PureComponent {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.courseDetails.sections.map((section) => {
+                        {this.props.courseDetails.sections.map((section) => {
                             return (
                                 <SectionTableBody
+                                    key={section.sectionCode}
                                     section={section}
-                                    courseDetails={this.state.courseDetails}
-                                    term={term}
+                                    courseDetails={this.props.courseDetails}
+                                    term={this.props.term}
                                     colorAndDelete={this.props.colorAndDelete}
                                 />
                             );
