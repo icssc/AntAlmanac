@@ -6,11 +6,19 @@ service: antalmanac-backend
 
 plugins:
   - serverless-offline
+  - serverless-domain-manager
 #  - serverless-dotenv-plugin # Load .env as environment variables
 
 custom:
   serverless-offline:
     httpPort: 8080
+
+  customDomain:
+    domainName: api.antalmanacdev.de
+    certificateName: '*.antalmanacdev.de'
+    basePath: ''
+    stage: ${self:provider.stage}
+    createRoute53Record: true
 
 provider:
   name: aws
