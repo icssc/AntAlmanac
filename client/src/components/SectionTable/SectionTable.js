@@ -6,6 +6,7 @@ import CourseInfoBar from './CourseInfoBar';
 import SectionTableBody from './SectionTableBody';
 import PropTypes from 'prop-types';
 import RightPaneStore from '../../stores/RightPaneStore';
+import { WEBSOC_ENDPOINT } from '../../api/endpoints';
 
 const styles = {
     table: {
@@ -58,7 +59,7 @@ class SectionTable extends PureComponent {
                 courseNumber: this.props.courseDetails.courseNumber,
             };
 
-            const response = await fetch('/api/websocapi', {
+            const response = await fetch(WEBSOC_ENDPOINT, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(params),

@@ -1,3 +1,5 @@
+import { WEBSOC_ENDPOINT } from './api/endpoints';
+
 export async function getCoursesData(userData) {
     const dataToSend = {};
     const addedCourses = [];
@@ -31,7 +33,7 @@ export async function getCoursesData(userData) {
                 sectionCodes: sectionArray.join(','),
             };
 
-            const response = await fetch('/api/websocapi', {
+            const response = await fetch(WEBSOC_ENDPOINT, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(params),

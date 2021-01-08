@@ -8,6 +8,7 @@ import loadingGif from '../SearchForm/Gifs/loading.mp4';
 import { DynamicSizeList } from '@john-osullivan/react-window-dynamic-fork';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import AdBanner from '../AdBanner/AdBanner';
+import { RANDOM_AD_ENDPOINT, WEBSOC_ENDPOINT } from '../../api/endpoints';
 
 const styles = (theme) => ({
     course: {
@@ -134,7 +135,7 @@ class CourseRenderPane extends PureComponent {
                 room: formData.room,
             };
 
-            const response = await fetch('/api/websocapi', {
+            const response = await fetch(WEBSOC_ENDPOINT, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(params),
@@ -142,7 +143,7 @@ class CourseRenderPane extends PureComponent {
 
             const jsonResp = await response.json();
 
-            const adBannerInfo = await fetch('/api/ads/getRandomAd');
+            const adBannerInfo = await fetch(RANDOM_AD_ENDPOINT);
 
             const jsonAdInfo = await adBannerInfo.json();
 
