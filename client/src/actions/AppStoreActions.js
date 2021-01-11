@@ -1,5 +1,6 @@
 import dispatcher from '../dispatcher';
 import AppStore from '../stores/AppStore';
+import ReactGA from 'react-ga';
 import {
     amber,
     blue,
@@ -378,6 +379,10 @@ export const toggleDarkMode = (switchEvent) => {
     dispatcher.dispatch({
         type: 'TOGGLE_DARK_MODE',
         darkMode: switchEvent.target.checked,
+    });
+    ReactGA.event({
+        category: 'antalmanac-rewrite',
+        action: 'toggle dark mode',
     });
 };
 
