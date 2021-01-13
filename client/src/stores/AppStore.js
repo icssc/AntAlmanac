@@ -9,6 +9,7 @@ class AppStore extends EventEmitter {
         this.currentScheduleIndex = 0;
         this.customEvents = [];
         this.addedCourses = [];
+        this.addedSectionCodes = { 0: new Set(), 1: new Set(), 2: new Set(), 3: new Set() };
         this.deletedCourses = [];
         this.snackbarMessage = '';
         this.snackbarVariant = 'info';
@@ -74,14 +75,28 @@ class AppStore extends EventEmitter {
         return this.darkMode;
     }
 
+    getAddedSectionCodes() {
+        return this.addedSectionCodes;
+    }
+
     hasUnsavedChanges() {
         return this.unsavedChanges;
+    }
+
+    updateAddedSectionCodes() {
+        this.addedSectionCodes = { 0: new Set(), 1: new Set(), 2: new Set(), 3: new Set() };
+        for (const course of this.addedCourses) {
+            for (const scheduleIndex of course.scheduleIndices) {
+                this.addedSectionCodes[scheduleIndex].add(course.section.sectionCode);
+            }
+        }
     }
 
     handleActions(action) {
         switch (action.type) {
             case 'ADD_COURSE':
                 this.addedCourses = this.addedCourses.concat(action.newCourse);
+                this.updateAddedSectionCodes();
                 this.finalsEventsInCalendar = calendarizeFinals();
                 this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.unsavedChanges = true;
@@ -92,6 +107,7 @@ class AppStore extends EventEmitter {
                     if (course.section.sectionCode === action.newSection.section.sectionCode) return action.newSection;
                     else return course;
                 });
+                this.updateAddedSectionCodes();
                 this.finalsEventsInCalendar = calendarizeFinals();
                 this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.unsavedChanges = true;
@@ -99,6 +115,7 @@ class AppStore extends EventEmitter {
                 break;
             case 'DELETE_COURSE':
                 this.addedCourses = action.addedCoursesAfterDelete;
+                this.updateAddedSectionCodes();
                 this.deletedCourses = action.deletedCourses;
                 this.finalsEventsInCalendar = calendarizeFinals();
                 this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
@@ -115,6 +132,7 @@ class AppStore extends EventEmitter {
                 break;
             case 'CLEAR_SCHEDULE':
                 this.addedCourses = action.addedCoursesAfterClear;
+                this.updateAddedSectionCodes();
                 this.customEvents = action.customEventsAfterClear;
                 this.finalsEventsInCalendar = calendarizeFinals();
                 this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
@@ -138,6 +156,7 @@ class AppStore extends EventEmitter {
                 break;
             case 'COURSE_COLOR_CHANGE':
                 this.addedCourses = action.addedCoursesAfterColorChange;
+                this.updateAddedSectionCodes();
                 this.finalsEventsInCalendar = calendarizeFinals();
                 this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.unsavedChanges = true;
@@ -152,6 +171,7 @@ class AppStore extends EventEmitter {
                 break;
             case 'LOAD_SCHEDULE':
                 this.addedCourses = action.userData.addedCourses;
+                this.updateAddedSectionCodes();
                 this.customEvents = action.userData.customEvents;
                 this.finalsEventsInCalendar = calendarizeFinals();
                 this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
@@ -178,6 +198,7 @@ class AppStore extends EventEmitter {
                 break;
             case 'COPY_SCHEDULE':
                 this.addedCourses = action.addedCoursesAfterCopy;
+                this.updateAddedSectionCodes();
                 this.customEvents = action.customEventsAfterCopy;
                 this.finalsEventsInCalendar = calendarizeFinals();
                 this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
