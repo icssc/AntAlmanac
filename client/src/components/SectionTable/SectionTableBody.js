@@ -227,12 +227,7 @@ const InstructorsCell = withStyles(styles)((props) => {
             if (profName !== 'STAFF') {
                 return (
                     <CustomTooltip interactive placement="left" title={<DualButton profName={profName} />}>
-                        <div
-                            style={{ display: 'block' }}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={classes.link}
-                        >
+                        <div style={{ display: 'block' }} rel="noopener noreferrer" className={classes.link}>
                             {profName}
                         </div>
                     </CustomTooltip>
@@ -399,7 +394,7 @@ const SectionTableBody = withStyles(styles)((props) => {
     }, []);
 
     return (
-        <tr className={classNames(classes.tr, { addedCourse: addedCourse })}>
+        <tr className={classNames(classes.tr, { addedCourse: addedCourse && !colorAndDelete })}>
             {!colorAndDelete ? (
                 <ScheduleAddCell section={section} courseDetails={courseDetails} term={term} />
             ) : (
