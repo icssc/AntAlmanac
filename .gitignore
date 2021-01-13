@@ -14,5 +14,3 @@ yarn-error.log*
 
 # client
 client/node_modules/
-client/package-lock.json
-package-lock.json
