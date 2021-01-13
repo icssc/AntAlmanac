@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import ColorPicker from '../App/ColorPicker';
 import { IconButton } from '@material-ui/core';
 import { deleteCourse } from '../../actions/AppStoreActions';
@@ -24,14 +24,14 @@ const styles = {
 const ColorAndDelete = (props) => {
     const { sectionCode, color, classes } = props;
     return (
-        <Fragment>
+        <td>
             <div className={classes.colorPicker}>
                 <ColorPicker color={color} isCustomEvent={false} sectionCode={sectionCode} />
             </div>
             <IconButton onClick={() => deleteCourse(sectionCode, AppStore.getCurrentScheduleIndex())}>
                 <Delete fontSize="small" />
             </IconButton>
-        </Fragment>
+        </td>
     );
 };
 

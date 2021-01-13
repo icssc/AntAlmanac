@@ -3,7 +3,6 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "@john-osullivan/react-window-dynamic-fork": "^1.9.0-alpha.1",
         "@material-ui/core": "^4.11.0",
         "@material-ui/icons": "^4.9.1",
         "@material-ui/lab": "^4.0.0-alpha.56",
@@ -22,9 +21,9 @@
         "react-dom": "^16.13.1",
         "react-ga": "^2.7.0",
         "react-input-mask": "^2.0.4",
+        "react-lazyload": "^3.1.0",
         "react-leaflet": "^2.7.0",
         "react-scripts": "^3.4.1",
-        "react-virtualized-auto-sizer": "^1.0.2",
         "recharts": "^1.8.5"
     },
     "scripts": {
