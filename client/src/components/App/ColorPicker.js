@@ -49,6 +49,7 @@ class ColorPicker extends PureComponent {
                     open={Boolean(this.state.anchorEl)}
                     anchorEl={this.state.anchorEl}
                     onClose={this.handleClose}
+                    onClick={(e) => e.stopPropagation()}
                     anchorOrigin={{
                         vertical: 'bottom',
                         horizontal: 'center',
