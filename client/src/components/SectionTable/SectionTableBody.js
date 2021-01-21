@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import locations from './static/locations';
 import restrictionsMapping from './static/restrictionsMapping';
-import RMPData from './static/RMP';
 import { IconButton, Menu, Button, ButtonGroup, MenuItem, Popover, Tooltip, Typography } from '@material-ui/core';
 import { bindHover, bindMenu, bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { withStyles } from '@material-ui/core/styles';
@@ -182,29 +181,25 @@ const InstructorsCell = withStyles(styles)((props) => {
         },
     }))(Tooltip);
 
-    const handleChange = (isRMP, profName) => {
+    const handleClick = (isRMP, profName) => {
         const lastName = profName.substring(0, profName.indexOf(','));
 
         if (!isRMP) {
-            window.open(`https://eaterevals.eee.uci.edu/instructor/${lastName}`);
+            window.open(`https://eaterevals.eee.uci.edu/browse/instructor#${lastName}`);
         } else {
-            const name = RMPData[profName];
-
-            if (name !== undefined) window.open(`https://www.ratemyprofessors.com${name}`);
-            else
-                window.open(
-                    `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
-                );
+            window.open(
+                `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
+            );
         }
     };
 
     const DualButton = (props) => {
         return (
             <ButtonGroup size="small">
-                <Button key={1} value="left" onClick={() => handleChange(false, props.profName)}>
+                <Button key={1} value="left" onClick={() => handleClick(false, props.profName)}>
                     EaterEvals
                 </Button>
-                <Button key={2} value="right" onClick={() => handleChange(true, props.profName)}>
+                <Button key={2} value="right" onClick={() => handleClick(true, props.profName)}>
                     RMP
                 </Button>
             </ButtonGroup>
