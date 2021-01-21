@@ -81,7 +81,7 @@ class SectionTable extends PureComponent {
                 <table className={classes.table}>
                     <thead>
                         <tr>
-                            <th>Add</th>
+                            {!this.props.colorAndDelete ? <th>Add</th> : <th style={{ border: 'none' }} />}
                             <th>Code</th>
                             <th>Type</th>
                             <th>Instructors</th>

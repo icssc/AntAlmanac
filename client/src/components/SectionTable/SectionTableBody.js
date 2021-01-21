@@ -11,6 +11,7 @@ import { addCourse, openSnackbar } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
 import ColorAndDelete from '../AddedCourses/ColorAndDelete';
 import classNames from 'classnames';
+import { clickToCopy } from '../../helpers';
 
 const styles = (theme) => ({
     popover: {
@@ -142,18 +143,6 @@ const ScheduleAddCell = withStyles(styles)((props) => {
 });
 
 const CourseCodeCell = withStyles(styles)((props) => {
-    const clickToCopy = (event, sectionCode) => {
-        event.stopPropagation();
-
-        let tempEventTarget = document.createElement('input');
-        document.body.appendChild(tempEventTarget);
-        tempEventTarget.setAttribute('value', sectionCode);
-        tempEventTarget.select();
-        document.execCommand('copy');
-        document.body.removeChild(tempEventTarget);
-        openSnackbar('success', 'Section code copied to clipboard');
-    };
-
     const { classes, sectionCode } = props;
 
     return (
