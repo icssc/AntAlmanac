@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import InputMask from 'react-input-mask';
 import { Button, Popover, TextField, Typography } from '@material-ui/core';
 import { openSnackbar } from '../../actions/AppStoreActions';
+import { REGISTER_NOTIFICATIONS_ENDPOINT } from '../../api/endpoints';
 
 const phoneNumberRegex = RegExp(/\d{10}/);
 
@@ -40,7 +41,7 @@ class OpenSpotAlertPopover extends PureComponent {
         const validPhoneNumber = phoneNumberRegex.test(params.phoneNumber);
 
         if (validPhoneNumber) {
-            const response = await fetch('/api/notifications/registerNotifications', {
+            const response = await fetch(REGISTER_NOTIFICATIONS_ENDPOINT, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(params),

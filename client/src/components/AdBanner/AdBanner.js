@@ -2,6 +2,7 @@ import React, { Fragment, PureComponent } from 'react';
 import { Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import { AD_IMAGE_ENDPOINT } from '../../api/endpoints';
 
 const styles = {
     ad: {
@@ -21,7 +22,7 @@ class AdBanner extends PureComponent {
                 </Typography>
 
                 <a href={this.props.bannerLink} target="_blank" rel="noopener noreferrer">
-                    <img src={`/api/ads/getAdImage/${this.props.bannerName}`} alt="banner" className={classes.ad} />
+                    <img src={`${AD_IMAGE_ENDPOINT}${this.props.bannerName}`} alt="banner" className={classes.ad} />
                 </a>
             </Fragment>
         );

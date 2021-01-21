@@ -6,6 +6,7 @@ import NoNothing from './static/no_results.png';
 import RightPaneStore from '../../stores/RightPaneStore';
 import loadingGif from '../SearchForm/Gifs/loading.mp4';
 import AdBanner from '../AdBanner/AdBanner';
+import { RANDOM_AD_ENDPOINT, WEBSOC_ENDPOINT } from '../../api/endpoints';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import LazyLoad from 'react-lazyload';
 
@@ -136,7 +137,7 @@ class CourseRenderPane extends PureComponent {
                 room: formData.room,
             };
 
-            const response = await fetch('/api/websocapi', {
+            const response = await fetch(WEBSOC_ENDPOINT, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(params),
@@ -144,7 +145,7 @@ class CourseRenderPane extends PureComponent {
 
             const jsonResp = await response.json();
 
-            const adBannerInfo = await fetch('/api/ads/getRandomAd');
+            const adBannerInfo = await fetch(RANDOM_AD_ENDPOINT);
 
             const jsonAdInfo = await adBannerInfo.json();
 
