@@ -8,7 +8,7 @@ import MapMarkerPopup from './MapMarkerPopup';
 import Locate from 'leaflet.locatecontrol';
 
 class LocateControl extends PureComponent {
-    componentDidMount () {
+    componentDidMount() {
         const { map } = this.props.leaflet;
 
         const lc = new Locate({
@@ -21,7 +21,7 @@ class LocateControl extends PureComponent {
         lc.addTo(map);
     }
 
-    render () {
+    render() {
         return null;
     }
 }
@@ -29,8 +29,9 @@ class LocateControl extends PureComponent {
 LocateControl = withLeaflet(LocateControl);
 
 const DAYS = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-
-const ATTRIBUTION_MARKUP = '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
+const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+const ATTRIBUTION_MARKUP =
+    '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
 
 export default class UCIMap extends PureComponent {
     state = {
@@ -74,7 +75,8 @@ export default class UCIMap extends PureComponent {
 
         this.state.eventsInCalendar.forEach((event) => {
             // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
-            if (!event.scheduleIndices.includes(this.state.currentScheduleIndex) ||
+            if (
+                !event.scheduleIndices.includes(this.state.currentScheduleIndex) ||
                 !event.start.toString().includes(DAYS[this.state.day])
             )
                 return;
@@ -85,11 +87,13 @@ export default class UCIMap extends PureComponent {
             const locationData = buildingCatalogue[id];
             const courseString = `${event.title} ${event.sectionType} @ ${event.bldg}`;
 
-            if (locationData === undefined || pinnedCourses.has(courseString))
-                return;
+            if (locationData === undefined || pinnedCourses.has(courseString)) return;
 
             // Acronym, if it exists, is in between parentheses
-            const acronym = locationData.name.substring(locationData.name.indexOf('(') + 1, locationData.name.indexOf(')'));
+            const acronym = locationData.name.substring(
+                locationData.name.indexOf('(') + 1,
+                locationData.name.indexOf(')')
+            );
 
             pinnedCourses.add(courseString);
 
@@ -103,14 +107,13 @@ export default class UCIMap extends PureComponent {
                     acronym={acronym}
                 >
                     <Fragment>
-                        <hr/>
+                        <hr />
                         Class: {`${event.title} ${event.sectionType}`}
-                        <br/>
+                        <br />
                         Room: {event.bldg.split(' ')[1]}
                     </Fragment>
-                </MapMarkerPopup>,
+                </MapMarkerPopup>
             );
-
         });
 
         return markers;
@@ -119,7 +122,10 @@ export default class UCIMap extends PureComponent {
     handleSearch = (event, searchValue) => {
         if (searchValue) {
             // Acronym, if it exists, is in between parentheses
-            const acronym = searchValue.name.substring(searchValue.name.indexOf('(') + 1, searchValue.name.indexOf(')'));
+            const acronym = searchValue.name.substring(
+                searchValue.name.indexOf('(') + 1,
+                searchValue.name.indexOf(')')
+            );
 
             this.setState({
                 lat: searchValue.lat,
@@ -138,7 +144,7 @@ export default class UCIMap extends PureComponent {
         }
     };
 
-    render () {
+    render() {
         return (
             <Fragment>
                 <Map
@@ -155,11 +161,11 @@ export default class UCIMap extends PureComponent {
                         handleSearch={this.handleSearch}
                     />
 
-                    <LocateControl/>
+                    <LocateControl />
 
                     <TileLayer
                         attribution={ATTRIBUTION_MARKUP}
-                        url="https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw"
+                        url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`}
                     />
 
                     {this.createMarkers()}
