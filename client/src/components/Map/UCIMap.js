@@ -166,6 +166,8 @@ export default class UCIMap extends PureComponent {
                     <TileLayer
                         attribution={ATTRIBUTION_MARKUP}
                         url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`}
+                        tileSize={512}
+                        zoomOffset={-1}
                     />
 
                     {this.createMarkers()}
