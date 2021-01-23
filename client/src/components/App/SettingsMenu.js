@@ -4,11 +4,12 @@ import { Settings } from '@material-ui/icons';
 import AppStore from '../../stores/AppStore';
 import { toggleDarkMode } from '../../actions/AppStoreActions';
 import { withStyles } from '@material-ui/core/styles';
+import classNames from 'classnames';
 
 const styles = {
     container: {
         padding: '0.5rem',
-        minWidth: '11.5rem',
+        minWidth: '12.25rem',
     },
     betaBadge: { transform: 'scale(1) translate(95%, -50%)' },
 };

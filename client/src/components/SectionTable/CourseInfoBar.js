@@ -38,6 +38,7 @@ const CourseInfoBar = (props) => {
                     });
                     popupState.toggle(event.currentTarget);
                 }}
+                style={{ marginRight: '4px' }}
             >
                 {`${deptCode} ${courseNumber} | ${courseTitle}`}
                 <MoreVert fontSize="small" />

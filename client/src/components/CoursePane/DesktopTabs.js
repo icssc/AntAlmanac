@@ -55,7 +55,7 @@ class DesktopTabs extends PureComponent {
                             textColor="primary"
                             variant="fullWidth"
                             centered
-                            style={{ minHeight: 0 }}
+                            style={{ height: '48px' }}
                         >
                             <Tab
                                 label={
@@ -71,7 +71,7 @@ class DesktopTabs extends PureComponent {
                                 }
                                 style={{
                                     minHeight: 'auto',
-                                    height: '40px',
+                                    height: '44px',
                                     padding: 3,
                                 }}
                             />

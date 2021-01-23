@@ -33,7 +33,7 @@ class EnrollmentGraph extends PureComponent {
                 <Button
                     variant="contained"
                     onClick={this.handleOpen}
-                    style={{ backgroundColor: '#f8f17c', boxShadow: 'none' }}
+                    style={{ backgroundColor: '#f8f17c', boxShadow: 'none', marginRight: '4px' }}
                 >
                     Past Enrollment
                     <Image fontSize="small" />
