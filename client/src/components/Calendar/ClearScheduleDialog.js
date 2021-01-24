@@ -72,11 +72,7 @@ export default class ClearScheduleDialog extends PureComponent {
                 <Button onClick={this.handleClickOpen} disableRipple={true}>
                     <Delete /> Clear
                 </Button>
-                <Dialog
-                    maxWidth="xs"
-                    open={this.state.open}
-                    onClose={this.handleClose}
-                >
+                <Dialog maxWidth="xs" open={this.state.open} onClose={this.handleClose}>
                     <DialogTitle>Select a Schedule to Clear</DialogTitle>
                     <DialogContent>
                         <div>
@@ -87,44 +83,26 @@ export default class ClearScheduleDialog extends PureComponent {
                             </Typography>
                             <FormGroup>
                                 <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={this.state.one}
-                                            onChange={this.handleChange('one')}
-                                        />
-                                    }
+                                    control={<Checkbox checked={this.state.one} onChange={this.handleChange('one')} />}
                                     value="one"
                                     label="Schedule 1"
                                     color="primary"
                                 />
                                 <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={this.state.two}
-                                            onChange={this.handleChange('two')}
-                                        />
-                                    }
+                                    control={<Checkbox checked={this.state.two} onChange={this.handleChange('two')} />}
                                     value="two"
                                     label="Schedule 2"
                                 />
                                 <FormControlLabel
                                     control={
-                                        <Checkbox
-                                            checked={this.state.three}
-                                            onChange={this.handleChange(
-                                                'three'
-                                            )}
-                                        />
+                                        <Checkbox checked={this.state.three} onChange={this.handleChange('three')} />
                                     }
                                     value="three"
                                     label="Schedule 3"
                                 />
                                 <FormControlLabel
                                     control={
-                                        <Checkbox
-                                            checked={this.state.four}
-                                            onChange={this.handleChange('four')}
-                                        />
+                                        <Checkbox checked={this.state.four} onChange={this.handleChange('four')} />
                                     }
                                     value="four"
                                     label="Schedule 4"

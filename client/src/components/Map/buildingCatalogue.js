@@ -223,8 +223,7 @@ export default [
         lng: -117.846451,
         id: 83060,
         label: 'Center for the Neurobiology of Learning & Memory Annex (CNLMA)',
-        img:
-            '463%2Fcenter-for-the-neurobiology-of-learning-and-memory-annex.jpg',
+        img: '463%2Fcenter-for-the-neurobiology-of-learning-and-memory-annex.jpg',
         lat: 33.646648,
     },
     {
@@ -674,8 +673,7 @@ export default [
     {
         lng: -117.846789,
         id: 83163,
-        label:
-            'Humanities Interim Classroom Facility / Studio Art Trailer (HICF)',
+        label: 'Humanities Interim Classroom Facility / Studio Art Trailer (HICF)',
         url: 'http://www.classrooms.uci.edu/GAC/HICF.html',
         img: '463%2Fhumanities-interim-classroom-facility.jpg',
         lat: 33.6469,
@@ -1037,10 +1035,8 @@ export default [
     {
         lng: -117.841217,
         id: 114579,
-        label:
-            'California Institute for Telecommunications and Information Technology (Calit2)',
-        img:
-            '463%2Fcalifornia-institute-for-telecommunications-and-information-technology.jpg',
+        label: 'California Institute for Telecommunications and Information Technology (Calit2)',
+        img: '463%2Fcalifornia-institute-for-telecommunications-and-information-technology.jpg',
         lat: 33.643063,
     },
     {
@@ -1073,8 +1069,7 @@ export default [
     {
         lng: -117.854378,
         id: 114588,
-        label:
-            'Beckman Center of the National Academies of Sciences & Engineering',
+        label: 'Beckman Center of the National Academies of Sciences & Engineering',
         img: '463%2Fbeckman-center-of-the-national-academies.jpg',
         lat: 33.649414,
     },
@@ -1110,8 +1105,7 @@ export default [
         lng: -117.846451,
         id: 114596,
         label: 'Center for the Neurobiology of Learning & Memory Annex (CNLMA)',
-        img:
-            '463%2Fcenter-for-the-neurobiology-of-learning-and-memory-annex.jpg',
+        img: '463%2Fcenter-for-the-neurobiology-of-learning-and-memory-annex.jpg',
         lat: 33.646648,
     },
     {
@@ -1159,8 +1153,7 @@ export default [
     {
         lng: -117.847198,
         id: 114603,
-        label:
-            'Humanities Interim Classroom Facility / Studio Art Trailer (HICF)',
+        label: 'Humanities Interim Classroom Facility / Studio Art Trailer (HICF)',
         img: '463%2Fhumanities-interim-classroom-facility.jpg',
         lat: 33.646526,
     },
@@ -2663,8 +2656,7 @@ export default [
         lng: -117.844078,
         id: 125438,
         label: 'Emergency Phone   1',
-        img:
-            'https:%2F%2Fdata.map.uci.edu%2Fimg%2Fbuilding-services-building.jpg',
+        img: 'https:%2F%2Fdata.map.uci.edu%2Fimg%2Fbuilding-services-building.jpg',
         lat: 33.653877,
     },
     {

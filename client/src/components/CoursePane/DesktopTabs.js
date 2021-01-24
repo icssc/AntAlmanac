@@ -57,7 +57,7 @@ class DesktopTabs extends PureComponent {
                             textColor="primary"
                             variant="fullWidth"
                             centered
-                            style={{minHeight: 0}}
+                            style={{ minHeight: 0 }}
                         >
                             <Tab
                                 label={
@@ -72,10 +72,10 @@ class DesktopTabs extends PureComponent {
                                     </div>
                                 }
                                 style={{
-                                  minHeight: "auto",
-                                  height: "40px",
-                                  padding: 3
-                              }}
+                                    minHeight: 'auto',
+                                    height: '40px',
+                                    padding: 3,
+                                }}
                             />
                             <Tab
                                 label={
@@ -85,17 +85,15 @@ class DesktopTabs extends PureComponent {
                                             alignItems: 'center',
                                         }}
                                     >
-                                        <FormatListBulleted
-                                            style={{ height: 16 }}
-                                        />
+                                        <FormatListBulleted style={{ height: 16 }} />
                                         <Typography variant="body2">Added Classes</Typography>
                                     </div>
                                 }
                                 style={{
-                                  minHeight: "auto",
-                                  height: "44px",
-                                  padding: 3
-                              }}
+                                    minHeight: 'auto',
+                                    height: '44px',
+                                    padding: 3,
+                                }}
                             />
                             <Tab
                                 label={
@@ -110,16 +108,16 @@ class DesktopTabs extends PureComponent {
                                     </div>
                                 }
                                 style={{
-                                  minHeight: "auto",
-                                  height: "44px",
-                                  padding: 3
-                              }}
+                                    minHeight: 'auto',
+                                    height: '44px',
+                                    padding: 3,
+                                }}
                             />
                         </Tabs>
                     </Paper>
                     <div
                         style={{
-                            padding: (RightPaneStore.getActiveTab() === 2) ? '0px' : '8px',
+                            padding: RightPaneStore.getActiveTab() === 2 ? '0px' : '8px',
                             height: `calc(100vh - 104px)`,
                         }}
                     >

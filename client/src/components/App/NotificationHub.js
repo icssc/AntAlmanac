@@ -29,14 +29,14 @@ class NotificationHub extends PureComponent {
             const response = await fetch('/api/notifications/lookupNotifications', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({phoneNumber: storedPhoneNumber.replace(/ /g,'')}),
+                body: JSON.stringify({ phoneNumber: storedPhoneNumber.replace(/ /g, '') }),
             });
 
             const jsonResp = await response.json();
 
             this.setState({
                 phoneNumber: storedPhoneNumber,
-                smsNotificationList: jsonResp.smsNotificationList
+                smsNotificationList: jsonResp.smsNotificationList,
             });
         }
     };
@@ -55,7 +55,7 @@ class NotificationHub extends PureComponent {
                             });
                         }}
                         color="inherit"
-                        startIcon={<Notifications/>}
+                        startIcon={<Notifications />}
                     >
                         Notifications
                     </Button>
@@ -68,9 +68,7 @@ class NotificationHub extends PureComponent {
                     }}
                     scroll="paper"
                 >
-                    <DialogTitle>
-                        Notifications You've Registered For
-                    </DialogTitle>
+                    <DialogTitle>Notifications You've Registered For</DialogTitle>
 
                     <DialogContent dividers={true}>
                         <DialogContentText>
@@ -88,7 +86,7 @@ class NotificationHub extends PureComponent {
                                     </ul>
                                 </div>
                             ) : (
-                                "You have not registered for SMS notifications on this PC!"
+                                'You have not registered for SMS notifications on this PC!'
                             )}
                         </DialogContentText>
                     </DialogContent>

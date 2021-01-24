@@ -11,7 +11,7 @@ const styles = {
 };
 
 class AdBanner extends PureComponent {
-    render () {
+    render() {
         const { classes } = this.props;
 
         return (
@@ -20,14 +20,9 @@ class AdBanner extends PureComponent {
                     AntAlmanac is not affiliated with the following club/activity
                 </Typography>
 
-                <a href={this.props.bannerLink}
-                   target="_blank"
-                   rel="noopener noreferrer">
-                    <img
-                        src={`/api/ads/getAdImage/${this.props.bannerName}`}
-                        alt="banner"
-                        className={classes.ad}
-                    /></a>
+                <a href={this.props.bannerLink} target="_blank" rel="noopener noreferrer">
+                    <img src={`/api/ads/getAdImage/${this.props.bannerName}`} alt="banner" className={classes.ad} />
+                </a>
             </Fragment>
         );
     }
@@ -35,7 +30,7 @@ class AdBanner extends PureComponent {
 
 AdBanner.propTypes = {
     bannerName: PropTypes.string.isRequired,
-    bannerLink: PropTypes.string.isRequired
+    bannerLink: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(AdBanner);

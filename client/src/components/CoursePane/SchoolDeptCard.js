@@ -1,11 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import {
-    Grid,
-    Paper,
-    Typography,
-    withStyles,
-    Collapse,
-} from '@material-ui/core';
+import { Grid, Paper, Typography, withStyles, Collapse } from '@material-ui/core';
 import { Subject } from '@material-ui/icons';
 
 const styles = (theme) => ({
@@ -48,16 +42,10 @@ class SchoolDeptCard extends PureComponent {
 
         return (
             <Grid item xs={12}>
-                <Paper
-                    className={this.props.classes[this.props.type]}
-                    elevation={1}
-                    square
-                >
+                <Paper className={this.props.classes[this.props.type]} elevation={1} square>
                     <Typography
                         noWrap
-                        variant={
-                            this.props.type === 'school' ? 'h6' : 'subtitle1'
-                        }
+                        variant={this.props.type === 'school' ? 'h6' : 'subtitle1'}
                         className={this.props.classes.text}
                     >
                         {this.props.name}
@@ -72,19 +60,11 @@ class SchoolDeptCard extends PureComponent {
                             className={this.props.classes.icon}
                         />
 
-                        <Collapse
-                            in={this.state.commentsOpen}
-                            className={this.props.classes.collapse}
-                        >
+                        <Collapse in={this.state.commentsOpen} className={this.props.classes.collapse}>
                             <Typography variant="body2">
-                                {this.props.comment === ''
-                                    ? 'No comments found'
-                                    : 'Comments:'}
+                                {this.props.comment === '' ? 'No comments found' : 'Comments:'}
                             </Typography>
-                            <div
-                                dangerouslySetInnerHTML={html}
-                                className={this.props.classes.comments}
-                            />
+                            <div dangerouslySetInnerHTML={html} className={this.props.classes.comments} />
                         </Collapse>
                     </Fragment>
                 </Paper>

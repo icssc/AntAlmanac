@@ -1,16 +1,11 @@
 import React, { PureComponent } from 'react';
-import {
-    AppBar,
-    Button,
-    Toolbar,
-    Tooltip,
-} from '@material-ui/core';
+import { AppBar, Button, Toolbar, Tooltip } from '@material-ui/core';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { Assignment, Info } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import NotificationHub from './NotificationHub';
-import SettingsMenu from './SettingsMenu'
-import {ReactComponent as Logo} from './logo.svg';
+import SettingsMenu from './SettingsMenu';
+import { ReactComponent as Logo } from './logo.svg';
 
 const styles = {
     appBar: {
@@ -31,9 +26,9 @@ class CustomAppBar extends PureComponent {
         return (
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar variant="dense">
-                    <Logo height={32}/>
+                    <Logo height={32} />
 
-                    <div style={{flexGrow: '1'}} />
+                    <div style={{ flexGrow: '1' }} />
 
                     <LoadSaveScheduleFunctionality />
 
@@ -44,10 +39,7 @@ class CustomAppBar extends PureComponent {
                     <Tooltip title="Give Us Feedback!">
                         <Button
                             onClick={() => {
-                                window.open(
-                                    'https://goo.gl/forms/eIHy4kp56pZKP9fK2',
-                                    '_blank'
-                                );
+                                window.open('https://goo.gl/forms/eIHy4kp56pZKP9fK2', '_blank');
                             }}
                             color="inherit"
                             startIcon={<Assignment />}
@@ -59,10 +51,7 @@ class CustomAppBar extends PureComponent {
                     <Tooltip title="Info Page">
                         <Button
                             onClick={() => {
-                                window.open(
-                                    'https://www.ics.uci.edu/~rang1/AntAlmanac/index.html',
-                                    '_blank'
-                                );
+                                window.open('https://www.ics.uci.edu/~rang1/AntAlmanac/index.html', '_blank');
                             }}
                             color="inherit"
                             startIcon={<Info />}

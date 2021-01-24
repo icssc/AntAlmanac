@@ -4,7 +4,7 @@ import { updateFormValue } from '../../../actions/RightPaneActions';
 import { withStyles } from '@material-ui/core/styles';
 import { TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-import RightPaneStore from '../../../stores/RightPaneStore'
+import RightPaneStore from '../../../stores/RightPaneStore';
 
 const style = {
     formControl: {
@@ -34,7 +34,7 @@ class DeptSearchBar extends PureComponent {
             value: {
                 deptValue: RightPaneStore.getFormData().deptValue,
                 deptLabel: RightPaneStore.getFormData().deptLabel,
-                isFavorite: false
+                isFavorite: false,
             },
             favorites: favorites,
         };
@@ -47,12 +47,11 @@ class DeptSearchBar extends PureComponent {
     handleSetDept = (event, newDept) => {
         let setDeptValue = newDept === null ? options[0] : newDept;
 
-        this.setState({value: setDeptValue});
+        this.setState({ value: setDeptValue });
         updateFormValue('deptValue', setDeptValue.deptValue);
         updateFormValue('deptLabel', setDeptValue.deptLabel);
 
-        if (newDept === null || newDept.deptValue === 'ALL')
-            return;
+        if (newDept === null || newDept.deptValue === 'ALL') return;
 
         const favorites = this.state.favorites;
         let updatedFavorites = [...favorites];
@@ -62,11 +61,10 @@ class DeptSearchBar extends PureComponent {
                 return a.deptValue === newDept.deptValue ? -1 : b.deptValue === newDept.deptValue ? 1 : 0;
             });
         } else {
-            updatedFavorites = [{...newDept, isFavorite: true}].concat(favorites);
-            if (updatedFavorites.length > 5)
-                updatedFavorites.pop();
+            updatedFavorites = [{ ...newDept, isFavorite: true }].concat(favorites);
+            if (updatedFavorites.length > 5) updatedFavorites.pop();
         }
-        this.setState({favorites: updatedFavorites});
+        this.setState({ favorites: updatedFavorites });
         window.localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
     };
 
@@ -86,17 +84,11 @@ class DeptSearchBar extends PureComponent {
                     onChange={this.handleSetDept}
                     includeInputInList={true}
                     noOptionsText="No departments match the search"
-                    groupBy={(dept) => dept.isFavorite ? 'Recent Departments' : 'Departments'}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label="Search for a department"
-                        />
-                    )}
+                    groupBy={(dept) => (dept.isFavorite ? 'Recent Departments' : 'Departments')}
+                    renderInput={(params) => <TextField {...params} label="Search for a department" />}
                 />
             </div>
-
-        )
+        );
     }
 }
 

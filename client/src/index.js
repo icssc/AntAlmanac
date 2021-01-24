@@ -12,19 +12,8 @@ import { unregister } from './registerServiceWorker';
 // // }
 const theme = createMuiTheme({
     typography: {
-        htmlFontSize: parseInt(
-            window
-                .getComputedStyle(document.documentElement)
-                .getPropertyValue('font-size'),
-            10
-        ),
-        fontSize:
-            parseInt(
-                window
-                    .getComputedStyle(document.documentElement)
-                    .getPropertyValue('font-size'),
-                10
-            ) * 0.9,
+        htmlFontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10),
+        fontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
     },
     palette: {
         // type: 'dark',

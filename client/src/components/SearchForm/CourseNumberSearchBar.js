@@ -1,4 +1,4 @@
-import React, { PureComponent} from 'react';
+import React, { PureComponent } from 'react';
 import { TextField } from '@material-ui/core';
 import { updateFormValue } from '../../actions/RightPaneActions';
 import RightPaneStore from '../../stores/RightPaneStore';

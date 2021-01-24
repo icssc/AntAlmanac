@@ -9,14 +9,9 @@ export const calendarizeCourseEvents = () => {
             const timeString = meeting.time.replace(/\s/g, '');
 
             if (timeString !== 'TBA') {
-                let [
-                    ,
-                    startHr,
-                    startMin,
-                    endHr,
-                    endMin,
-                    ampm,
-                ] = timeString.match(/(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/);
+                let [, startHr, startMin, endHr, endMin, ampm] = timeString.match(
+                    /(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/
+                );
 
                 startHr = parseInt(startHr, 10);
                 startMin = parseInt(startMin, 10);
@@ -48,13 +43,7 @@ export const calendarizeCourseEvents = () => {
                             instructors: course.section.instructors,
                             sectionCode: course.section.sectionCode,
                             sectionType: course.section.sectionType,
-                            start: new Date(
-                                2018,
-                                0,
-                                index + 1,
-                                startHr,
-                                startMin
-                            ),
+                            start: new Date(2018, 0, index + 1, startHr, startMin),
                             finalExam: course.section.finalExam,
                             end: new Date(2018, 0, index + 1, endHr, endMin),
                             isCustomEvent: false,
@@ -78,17 +67,7 @@ export const calendarizeFinals = () => {
     for (const course of addedCourses) {
         const finalExam = course.section.finalExam;
         if (finalExam.length > 5) {
-            let [
-                ,
-                date,
-                ,
-                ,
-                start,
-                startMin,
-                end,
-                endMin,
-                ampm,
-            ] = finalExam.match(
+            let [, date, , , start, startMin, end, endMin, ampm] = finalExam.match(
                 /([A-za-z]+) ([A-Za-z]+) *(\d{1,2}) *(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(am|pm)/
             );
             start = parseInt(start, 10);

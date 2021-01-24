@@ -14,247 +14,261 @@ import ReactGA from 'react-ga';
 const localizer = momentLocalizer(moment)
 
 const styles = {
-  container: {
-    margin: '0px 4px 4px 4px',
-  },
-  firstLineContainer: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    fontWeight: 500,
-    fontSize: '0.85rem',
-  },
-  sectionType: {
-    fontSize: '0.8rem',
-  },
-  secondLineContainer: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    fontSize: '0.8rem',
-  },
-  customEventContainer: {
-    marginTop: 2,
-    marginBottom: 2,
-    fontSize: '0.85rem',
-  },
-  customEventTitle: {
-    fontWeight: 500,
-  },
-}
+    container: {
+        margin: '0px 4px 4px 4px',
+    },
+    firstLineContainer: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        fontWeight: 500,
+        fontSize: '0.85rem',
+    },
+    sectionType: {
+        fontSize: '0.8rem',
+    },
+    secondLineContainer: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        fontSize: '0.8rem',
+    },
+    customEventContainer: {
+        marginTop: 2,
+        marginBottom: 2,
+        fontSize: '0.85rem',
+    },
+    customEventTitle: {
+        fontWeight: 500,
+    },
+};
 
 const CustomEvent = ({ classes }) => (event) => {
-  const actualEvent = event.event
+    const actualEvent = event.event;
 
-  if (!actualEvent.isCustomEvent)
-    return (
-      <div>
-        <div className={classes.firstLineContainer}>
-          <div> {actualEvent.title}</div>
-          <div className={classes.sectionType}>
-            {' '}
-            {actualEvent.sectionType}
-          </div>
-        </div>
-        <div className={classes.secondLineContainer}>
-          <div>{actualEvent.bldg}</div>
-          <div>{actualEvent.sectionCode}</div>
-        </div>
-      </div>
-    )
-  else {
-    return (
-      <div className={classes.customEventContainer}>
-        <div className={classes.customEventTitle}>{event.title}</div>
-      </div>
-    )
-  }
-}
+    if (!actualEvent.isCustomEvent)
+        return (
+            <div>
+                <div className={classes.firstLineContainer}>
+                    <div> {actualEvent.title}</div>
+                    <div className={classes.sectionType}> {actualEvent.sectionType}</div>
+                </div>
+                <div className={classes.secondLineContainer}>
+                    <div>{actualEvent.bldg}</div>
+                    <div>{actualEvent.sectionCode}</div>
+                </div>
+            </div>
+        );
+    else {
+        return (
+            <div className={classes.customEventContainer}>
+                <div className={classes.customEventTitle}>{event.title}</div>
+            </div>
+        );
+    }
+};
 
 class ScheduleCalendar extends PureComponent {
-  state = {
-    screenshotting: false,
-    anchorEvent: null,
-    showFinalsSchedule: false,
-    moreInfoOpen: false,
-    courseInMoreInfo: null,
-    eventsInCalendar: AppStore.getEventsInCalendar(),
-    finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
-    currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
-  }
-
-  static eventStyleGetter = (event) => {
-    return {
-      style: {
-        backgroundColor: event.color,
-        cursor: 'pointer',
-        borderStyle: 'none',
-        borderRadius: 0,
-        color: this.colorContrastSufficient(event.color) ? 'white' : 'black'
-      },
-    }
-  }
-
-  static colorContrastSufficient = (bg) => {
-    // This equation is taken from w3c, does not use the colour difference part
-    const minBrightnessDiff = 125;
-
-    let bgRgb = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(bg); // returns {hex, r, g, b}
-    bgRgb = { r: parseInt(bgRgb[1], 16), g: parseInt(bgRgb[2], 16), b: parseInt(bgRgb[3], 16) };
-    let textRgb = { r: 255, g: 255, b: 255 }; // white text
-
-    const getBrightness = (color) => {
-      return (color.r * 299 + color.g * 587 + color.b * 114) / 1000;
+    state = {
+        screenshotting: false,
+        anchorEvent: null,
+        showFinalsSchedule: false,
+        moreInfoOpen: false,
+        courseInMoreInfo: null,
+        eventsInCalendar: AppStore.getEventsInCalendar(),
+        finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
+        currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
     };
 
-    const bgBrightness = getBrightness(bgRgb);
-    const textBrightness = getBrightness(textRgb);
-    return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff;
-  };
+    static eventStyleGetter = (event) => {
+        return {
+            style: {
+                backgroundColor: event.color,
+                cursor: 'pointer',
+                borderStyle: 'none',
+                borderRadius: 0,
+                color: this.colorContrastSufficient(event.color) ? 'white' : 'black',
+            },
+        };
+    };
 
-  toggleDisplayFinalsSchedule = () => {
-    this.handleClosePopover()
+    static colorContrastSufficient = (bg) => {
+        // This equation is taken from w3c, does not use the colour difference part
+        const minBrightnessDiff = 125;
 
-    this.setState((prevState) => {
-      return { showFinalsSchedule: !prevState.showFinalsSchedule }
-    })
-  }
+        let bgRgb = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(bg); // returns {hex, r, g, b}
+        bgRgb = { r: parseInt(bgRgb[1], 16), g: parseInt(bgRgb[2], 16), b: parseInt(bgRgb[3], 16) };
+        let textRgb = { r: 255, g: 255, b: 255 }; // white text
 
-  updateCurrentScheduleIndex = () => {
-    this.handleClosePopover()
+        const getBrightness = (color) => {
+            return (color.r * 299 + color.g * 587 + color.b * 114) / 1000;
+        };
 
-    this.setState({
-      currentScheduleIndex: AppStore.currentScheduleIndex,
-    })
-  }
+        const bgBrightness = getBrightness(bgRgb);
+        const textBrightness = getBrightness(textRgb);
+        return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff;
+    };
 
-  updateEventsInCalendar = () => {
-    this.setState({
-      eventsInCalendar: AppStore.getEventsInCalendar(),
-      finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
-    })
-  }
+    toggleDisplayFinalsSchedule = () => {
+        this.handleClosePopover();
 
-  componentDidMount = () => {
-    AppStore.on('addedCoursesChange', this.updateEventsInCalendar)
-    AppStore.on('customEventsChange', this.updateEventsInCalendar)
-    AppStore.on('currentScheduleIndexChange', this.updateCurrentScheduleIndex)
-  }
+        this.setState((prevState) => {
+            return { showFinalsSchedule: !prevState.showFinalsSchedule };
+        });
+    };
 
-  componentWillUnmount = () => {
-    AppStore.removeListener('addedCoursesChange', this.updateEventsInCalendar)
-    AppStore.removeListener('customEventsChange', this.updateEventsInCalendar)
-    AppStore.removeListener('currentScheduleIndexChange', this.updateCurrentScheduleIndex)
-  }
+    updateCurrentScheduleIndex = () => {
+        this.handleClosePopover();
 
-  handleTakeScreenshot = async (html2CanvasScreenshot) => {
-    const calendarHeader = ReactDOM.findDOMNode(this).getElementsByClassName('rbc-time-header')
-    const oldMargin = calendarHeader[0].style.marginRight
-    calendarHeader[0].style.marginRight = '0px'
-    this.setState({ screenshotting: true }, async () => {
-      await html2CanvasScreenshot()
-      calendarHeader[0].style.marginRight = oldMargin
-      this.setState({ screenshotting: false })
-    })
-    ReactGA.event({
-      category: 'antalmanac-rewrite',
-      action: 'screenshot',
-    });
-  }
+        this.setState({
+            currentScheduleIndex: AppStore.currentScheduleIndex,
+        });
+    };
 
-  handleEventClick = (courseInMoreInfo, event) => {
-    const { currentTarget } = event
-    event.stopPropagation()
+    updateEventsInCalendar = () => {
+        this.setState({
+            eventsInCalendar: AppStore.getEventsInCalendar(),
+            finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
+        });
+    };
 
-    if (courseInMoreInfo.sectionType !== 'Fin')
-      this.setState({ anchorEvent: currentTarget, courseInMoreInfo: courseInMoreInfo })
-  }
+    componentDidMount = () => {
+        AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
+        AppStore.on('customEventsChange', this.updateEventsInCalendar);
+        AppStore.on('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
+    };
 
-  handleClosePopover = () => {
-    this.setState({ anchorEvent: null })
-  }
+    componentWillUnmount = () => {
+        AppStore.removeListener('addedCoursesChange', this.updateEventsInCalendar);
+        AppStore.removeListener('customEventsChange', this.updateEventsInCalendar);
+        AppStore.removeListener('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
+    };
 
-  getEventsForCalendar = () => {
-    const eventSet = this.state.showFinalsSchedule
-      ? this.state.finalsEventsInCalendar
-      : this.state.eventsInCalendar
+    handleTakeScreenshot = async (html2CanvasScreenshot) => {
+        // This function takes a screenshot of the user's schedule
+        // Before we take the screenshot, we need to make some adjustments to the canvas:
+        //  - Set the color to black, so that the weekdays/times still appear when Dark Mode is on
+        //  - Remove the right margin on the calendar header, so the extra area for the scrollbar is removed
 
-    return eventSet.filter(
-      (event) => event.scheduleIndices.includes(this.state.currentScheduleIndex) || event.scheduleIndices.length === 4
-    )
-  }
+        // Fetch the canvas and calendarHeader
+        const canvas = document.getElementById('screenshot');
+        const calendarHeader = ReactDOM.findDOMNode(this).getElementsByClassName('rbc-time-header')[0];
 
-  render () {
-    const { classes } = this.props
-    return (
-      <div
-        className={classes.container}
-        onClick={this.handleClosePopover}
-      >
-        <CalendarPaneToolbar
-          onTakeScreenshot={this.handleTakeScreenshot}
-          currentScheduleIndex={this.state.currentScheduleIndex}
-          toggleDisplayFinalsSchedule={this.toggleDisplayFinalsSchedule}
-          showFinalsSchedule={this.state.showFinalsSchedule}
-        />
-        <div
-          id="screenshot"
-          style={!this.state.screenshotting ? { height: `calc(100vh - 104px)` } : {
-            height: '100%',
-            width: '1000px',
-          }}
-        >
-          <Popper
-            anchorEl={this.state.anchorEvent}
-            placement="right"
-            modifiers={{
-              offset: {
-                enabled: true,
-                offset: '0, 10'
-              },
-              flip: {
-                enabled: true,
-              },
-              preventOverflow: {
-                enabled: true,
-                boundariesElement: 'scrollParent',
-              },
-            }}
-            open={Boolean(this.state.anchorEvent)}
-          >
-            <CourseCalendarEvent
-              closePopover={this.handleClosePopover}
-              courseInMoreInfo={this.state.courseInMoreInfo}
-              currentScheduleIndex={this.state.currentScheduleIndex}
-            />
-          </Popper>
-          <Calendar
-            localizer={localizer}
-            toolbar={false}
-            formats={{
-              timeGutterFormat: (date, culture, localizer) =>
-                date.getMinutes() > 0 ? '' : localizer.format(date, 'h A', culture),
-              dayFormat: 'ddd',
-            }}
-            defaultView={Views.WORK_WEEK}
-            views={[Views.WORK_WEEK]}
-            step={15}
-            timeslots={2}
-            defaultDate={new Date(2018, 0, 1)}
-            min={new Date(2018, 0, 1, 7)}
-            max={new Date(2018, 0, 1, 23)}
-            events={this.getEventsForCalendar()}
-            eventPropGetter={ScheduleCalendar.eventStyleGetter}
-            showMultiDayTimes={false}
-            components={{ event: CustomEvent({ classes }) }}
-            onSelectEvent={this.handleEventClick}
-          />
-        </div>
-      </div>
-    )
-  }
+        // Save the current styling, so we can add it back afterwards
+        const oldColor = canvas.style.color;
+        const oldMargin = calendarHeader.style.marginRight;
+
+        // Update the canvas and calendar header for the picture
+        canvas.style.color = 'black';
+        calendarHeader.style.marginRight = '0px';
+
+        this.setState({ screenshotting: true }, async () => {
+            // Take the picture
+            await html2CanvasScreenshot();
+
+            // Revert the temporary changes to the canvas and calendar
+            canvas.style.color = oldColor;
+            calendarHeader.style.marginRight = oldMargin;
+
+            this.setState({ screenshotting: false });
+        });
+    };
+
+    handleEventClick = (courseInMoreInfo, event) => {
+        const { currentTarget } = event;
+        event.stopPropagation();
+
+        if (courseInMoreInfo.sectionType !== 'Fin')
+            this.setState({ anchorEvent: currentTarget, courseInMoreInfo: courseInMoreInfo });
+    };
+
+    handleClosePopover = () => {
+        this.setState({ anchorEvent: null });
+    };
+
+    getEventsForCalendar = () => {
+        const eventSet = this.state.showFinalsSchedule
+            ? this.state.finalsEventsInCalendar
+            : this.state.eventsInCalendar;
+
+        return eventSet.filter(
+            (event) =>
+                event.scheduleIndices.includes(this.state.currentScheduleIndex) || event.scheduleIndices.length === 4
+        );
+    };
+
+    render() {
+        const { classes } = this.props;
+        return (
+            <div className={classes.container} onClick={this.handleClosePopover}>
+                <CalendarPaneToolbar
+                    onTakeScreenshot={this.handleTakeScreenshot}
+                    currentScheduleIndex={this.state.currentScheduleIndex}
+                    toggleDisplayFinalsSchedule={this.toggleDisplayFinalsSchedule}
+                    showFinalsSchedule={this.state.showFinalsSchedule}
+                />
+                <div
+                    id="screenshot"
+                    style={
+                        !this.state.screenshotting
+                            ? { height: `calc(100vh - 104px)` }
+                            : {
+                                  height: '100%',
+                                  width: '1000px',
+                              }
+                    }
+                >
+                    <Popper
+                        anchorEl={this.state.anchorEvent}
+                        placement="right"
+                        modifiers={{
+                            offset: {
+                                enabled: true,
+                                offset: '0, 10',
+                            },
+                            flip: {
+                                enabled: true,
+                            },
+                            preventOverflow: {
+                                enabled: true,
+                                boundariesElement: 'scrollParent',
+                            },
+                        }}
+                        open={Boolean(this.state.anchorEvent)}
+                    >
+                        <CourseCalendarEvent
+                            closePopover={this.handleClosePopover}
+                            courseInMoreInfo={this.state.courseInMoreInfo}
+                            currentScheduleIndex={this.state.currentScheduleIndex}
+                        />
+                    </Popper>
+                    <Calendar
+                        localizer={localizer}
+                        toolbar={false}
+                        formats={{
+                            timeGutterFormat: (date, culture, localizer) =>
+                                date.getMinutes() > 0 ? '' : localizer.format(date, 'h A', culture),
+                            dayFormat: 'ddd',
+                        }}
+                        defaultView={Views.WORK_WEEK}
+                        views={[Views.WORK_WEEK]}
+                        step={15}
+                        timeslots={2}
+                        defaultDate={new Date(2018, 0, 1)}
+                        min={new Date(2018, 0, 1, 7)}
+                        max={new Date(2018, 0, 1, 23)}
+                        events={this.getEventsForCalendar()}
+                        eventPropGetter={ScheduleCalendar.eventStyleGetter}
+                        showMultiDayTimes={false}
+                        components={{ event: CustomEvent({ classes }) }}
+                        onSelectEvent={this.handleEventClick}
+                    />
+                </div>
+            </div>
+        );
+    }
 }
 
-ScheduleCalendar.propTypes = {}
+ScheduleCalendar.propTypes = {};
 
-export default withStyles(styles)(ScheduleCalendar)
+export default withStyles(styles)(ScheduleCalendar);

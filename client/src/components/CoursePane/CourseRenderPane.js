@@ -5,9 +5,9 @@ import SectionTable from '../SectionTable/SectionTable';
 import NoNothing from './static/no_results.png';
 import RightPaneStore from '../../stores/RightPaneStore';
 import loadingGif from '../SearchForm/Gifs/loading.mp4';
-import { DynamicSizeList } from '@john-osullivan/react-window-dynamic-fork';
-import AutoSizer from 'react-virtualized-auto-sizer';
 import AdBanner from '../AdBanner/AdBanner';
+import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
+import LazyLoad from 'react-lazyload';
 
 const styles = (theme) => ({
     course: {
@@ -35,7 +35,9 @@ const styles = (theme) => ({
         marginLeft: theme.spacing.unit,
     },
     root: {
-        height: '100%',
+        height: 'calc(100% - 68px)',
+        overflowY: 'scroll',
+        position: 'relative',
     },
     noResultsDiv: {
         height: '100%',
@@ -69,8 +71,9 @@ const flattenSOCObject = (SOCObject) => {
     }, []);
 };
 
-const SectionTableWrapped = React.forwardRef(({ style, index, data }, ref) => {
+const SectionTableWrapped = (index, data) => {
     const { courseData, bannerName, bannerLink } = data;
+    const formData = RightPaneStore.getFormData();
 
     let component;
 
@@ -90,18 +93,21 @@ const SectionTableWrapped = React.forwardRef(({ style, index, data }, ref) => {
                 type={'dept'}
             />
         );
+    } else if (formData.ge !== 'ANY') {
+        component = (
+            <GeDataFetchProvider term={formData.term} courseDetails={courseData[index]} colorAndDelete={false} />
+        );
     } else {
-        component = <SectionTable term={RightPaneStore.getFormData().term} courseDetails={courseData[index]} colorAndDelete={false}/>;
+        component = <SectionTable term={formData.term} courseDetails={courseData[index]} colorAndDelete={false} />;
     }
+
     return (
-        <div style={style} ref={ref}>
-            {index === 0 ? (
-                <AdBanner bannerName={bannerName} bannerLink={bannerLink}/>
-            ) : null}
+        <div>
+            {index === 0 ? <AdBanner bannerName={bannerName} bannerLink={bannerLink} /> : null}
             {component}
         </div>
     );
-});
+};
 
 class CourseRenderPane extends PureComponent {
     state = {
@@ -111,7 +117,7 @@ class CourseRenderPane extends PureComponent {
         bannerLink: '',
     };
 
-    componentDidMount () {
+    componentDidMount() {
         this.setState({ loading: true }, async () => {
             const formData = RightPaneStore.getFormData();
 
@@ -151,7 +157,7 @@ class CourseRenderPane extends PureComponent {
         });
     }
 
-    render () {
+    render() {
         const { classes } = this.props;
         let currentView;
 
@@ -159,7 +165,7 @@ class CourseRenderPane extends PureComponent {
             currentView = (
                 <div className={classes.loadingGifStyle}>
                     <video autoPlay loop>
-                        <source src={loadingGif} type="video/mp4"/>
+                        <source src={loadingGif} type="video/mp4" />
                     </video>
                 </div>
             );
@@ -174,21 +180,20 @@ class CourseRenderPane extends PureComponent {
                 <div className={classes.root}>
                     {this.state.courseData.length === 0 ? (
                         <div className={classes.noResultsDiv}>
-                            <img src={NoNothing} alt="No Results Found"/>
+                            <img src={NoNothing} alt="No Results Found" />
                         </div>
                     ) : (
-                        <AutoSizer>
-                            {({ height, width }) => (
-                                <DynamicSizeList
-                                    height={height - 56}
-                                    itemData={renderData}
-                                    itemCount={this.state.courseData.length}
-                                    width={width}
-                                >
-                                    {SectionTableWrapped}
-                                </DynamicSizeList>
-                            )}
-                        </AutoSizer>
+                        this.state.courseData.map((_, index) => {
+                            let heightEstimate = 300;
+                            if (this.state.courseData[index].sections !== undefined)
+                                heightEstimate = this.state.courseData[index].sections.length * 60 + 20 + 40;
+
+                            return (
+                                <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
+                                    {SectionTableWrapped(index, renderData)}
+                                </LazyLoad>
+                            );
+                        })
                     )}
                 </div>
             );

@@ -53,10 +53,7 @@ class SearchForm extends PureComponent {
 
     enterEvent = (event) => {
         const charCode = event.which ? event.which : event.keyCode;
-        if (
-            (charCode === 13 || charCode === 10) &&
-            document.activeElement.id === 'downshift-0-input'
-        ) {
+        if ((charCode === 13 || charCode === 10) && document.activeElement.id === 'downshift-0-input') {
             this.props.searchWebSoc(this.state);
             event.preventDefault();
 
@@ -106,7 +103,7 @@ class SearchForm extends PureComponent {
                             onClick={() => this.props.searchWebSoc()}
                             className={classes.searchButton}
                             fullWidth
-                            size='large'
+                            size="large"
                         >
                             Search
                         </Button>

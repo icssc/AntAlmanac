@@ -1,4 +1,4 @@
-import React, { PureComponent} from 'react';
+import React, { PureComponent } from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -32,11 +32,7 @@ class MobileDeptSelector extends PureComponent {
         return (
             <FormControl className={classes.formControl}>
                 <InputLabel>Department</InputLabel>
-                <Select
-                    value={this.state.deptLabel}
-                    onChange={this.handleChange}
-                    fullWidth
-                >
+                <Select value={this.state.deptLabel} onChange={this.handleChange} fullWidth>
                     {depts.map((dept) => {
                         return (
                             <MenuItem key={dept.value} value={dept.value}>

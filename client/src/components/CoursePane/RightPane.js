@@ -30,11 +30,7 @@ class RightPane extends PureComponent {
                     showSearch={!this.state.showSearch}
                     onDismissSearchResults={this.handleDismissSearchResults}
                 />
-                {this.state.showSearch ? (
-                    <SearchForm searchWebSoc={this.searchWebSoc} />
-                ) : (
-                    <CourseRenderPane />
-                )}
+                {this.state.showSearch ? <SearchForm searchWebSoc={this.searchWebSoc} /> : <CourseRenderPane />}
             </Fragment>
         );
     }
