@@ -1,17 +1,17 @@
-import React, { PureComponent } from 'react'
-import ReactDOM from 'react-dom'
-import { Calendar, momentLocalizer, Views } from 'react-big-calendar'
-import { withStyles } from '@material-ui/core/styles'
-import 'react-big-calendar/lib/css/react-big-calendar.css'
-import moment from 'moment'
-import { Popper } from '@material-ui/core'
-import './calendar.css'
-import CalendarPaneToolbar from './CalendarPaneToolbar'
-import CourseCalendarEvent from './CourseCalendarEvent'
-import AppStore from '../../stores/AppStore'
+import React, { PureComponent } from 'react';
+import ReactDOM from 'react-dom';
+import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
+import { withStyles } from '@material-ui/core/styles';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import moment from 'moment';
+import { Popper } from '@material-ui/core';
+import './calendar.css';
+import CalendarPaneToolbar from './CalendarPaneToolbar';
+import CourseCalendarEvent from './CourseCalendarEvent';
+import AppStore from '../../stores/AppStore';
 import ReactGA from 'react-ga';
 
-const localizer = momentLocalizer(moment)
+const localizer = momentLocalizer(moment);
 
 const styles = {
     container: {
