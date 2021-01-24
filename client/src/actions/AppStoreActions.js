@@ -239,7 +239,10 @@ export const editCustomEvent = (newCustomEvent) => {
 export const clearSchedules = (scheduleIndicesToClear) => {
     const addedCourses = AppStore.getAddedCourses();
     const customEvents = AppStore.getCustomEvents();
-
+    ReactGA.event({
+        category: 'antalmanac-rewrite',
+        action: 'Click Clear button',
+    });
     const addedCoursesAfterClear = addedCourses.filter((course) => {
         if (course.scheduleIndices.length === 1) {
             return false;
@@ -275,6 +278,11 @@ export const addCustomEvent = (customEvent) => {
 
 export const undoDelete = (event) => {
     const deletedCourses = AppStore.getDeletedCourses();
+
+    ReactGA.event({
+        category: 'antalmanac-rewrite',
+        action: 'Click Undo button',
+    });
 
     if (deletedCourses.length > 0 && (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))) {
         const lastDeleted = deletedCourses[deletedCourses.length - 1];

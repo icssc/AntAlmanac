@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
 import { clearSchedules } from '../../actions/AppStoreActions';
+import ReactGA from 'react-ga';
 
 export default class ClearScheduleDialog extends PureComponent {
     state = {
@@ -53,7 +54,10 @@ export default class ClearScheduleDialog extends PureComponent {
         if (this.state.four) {
             toDelete.push(3);
         }
-
+        ReactGA.event({
+            category: 'antalmanac-rewrite',
+            action: 'Click Clear button',
+        });
         clearSchedules(toDelete);
         this.handleClose();
     };

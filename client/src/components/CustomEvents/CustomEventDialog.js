@@ -16,6 +16,7 @@ import { Add, Edit } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import { addCustomEvent, editCustomEvent } from '../../actions/AppStoreActions';
 import ScheduleSelector from './ScheduleSelector';
+import ReactGA from 'react-ga';
 
 const styles = () => ({
     container: {
@@ -42,6 +43,14 @@ class CustomEventDialog extends PureComponent {
         customEventID: this.props.customEvent
             ? this.props.customEvent.customEventID
             : 0,
+    };
+
+    handleOpen = () => {
+        this.setState({ open: true })
+        ReactGA.event({
+            category: 'antalmanac-rewrite',
+            action: 'Click Custom Event button',
+        });
     };
 
     handleClose = (cancel) => {
@@ -108,7 +117,7 @@ class CustomEventDialog extends PureComponent {
                     <Tooltip title="Add custom events">
                         <Button
                             disableRipple={true}
-                            onClick={() => this.setState({ open: true })}
+                            onClick={this.handleOpen}
                             variant="outlined"
                             size="small"
                             startIcon={<Add fontSize="small" />}
