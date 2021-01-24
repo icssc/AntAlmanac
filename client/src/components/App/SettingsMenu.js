@@ -36,7 +36,7 @@ class SettingsMenu extends PureComponent {
                         this.setState({ anchorEl: event.currentTarget });
                         ReactGA.event({
                             category: 'antalmanac-rewrite',
-                            action: ' Click "Settings"',
+                            action: 'Click "Settings"',
                         });
                     }}
                     color="inherit"
