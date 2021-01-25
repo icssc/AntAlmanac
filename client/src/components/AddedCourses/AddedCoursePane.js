@@ -6,6 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 import CustomEventDetailView from './CustomEventDetailView';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import { clearSchedules, copySchedule } from '../../actions/AppStoreActions';
+import ReactGA from 'react-ga';
 
 const styles = {
     container: {
@@ -119,6 +120,10 @@ class AddedCoursePane extends PureComponent {
                                                     disabled={AppStore.getCurrentScheduleIndex() === index}
                                                     onClick={() => {
                                                         copySchedule(AppStore.getCurrentScheduleIndex(), index);
+                                                        ReactGA.event({
+                                                            category: 'antalmanac-rewrite',
+                                                            action: 'Click Copy Schedule',
+                                                        });
                                                         popupState.close();
                                                     }}
                                                 >
@@ -129,6 +134,10 @@ class AddedCoursePane extends PureComponent {
                                         <MenuItem
                                             onClick={() => {
                                                 copySchedule(AppStore.getCurrentScheduleIndex(), 4);
+                                                ReactGA.event({
+                                                    category: 'antalmanac-rewrite',
+                                                    action: 'Click Copy Schedule',
+                                                });
                                                 popupState.close();
                                             }}
                                         >
