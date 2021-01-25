@@ -4,6 +4,7 @@ import { Popover, IconButton } from '@material-ui/core';
 import { SketchPicker } from 'react-color';
 import { changeCourseColor, changeCustomEventColor } from '../../actions/AppStoreActions';
 import { ColorLens } from '@material-ui/icons';
+import ReactGA from 'react-ga';
 
 class ColorPicker extends PureComponent {
     state = {
@@ -30,6 +31,12 @@ class ColorPicker extends PureComponent {
         this.setState({ color: color.hex }, () => {
             if (this.props.isCustomEvent) changeCustomEventColor(this.props.customEventID, this.state.color);
             else changeCourseColor(this.props.sectionCode, this.state.color);
+        });
+        // TODO: differentiate color change locations (calendar pane vs added courses pane)
+        // TODO: change color for custom event vs course
+        ReactGA.event({
+            category: 'antalmanac-rewrite',
+            action: 'Change Course Color',
         });
     };
 
