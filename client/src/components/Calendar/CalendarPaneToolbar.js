@@ -7,6 +7,7 @@ import { clearSchedules, undoDelete } from '../../actions/AppStoreActions';
 import CustomEventsDialog from '../CustomEvents/CustomEventDialog';
 import { changeCurrentSchedule } from '../../actions/AppStoreActions';
 import ScreenshotButton from './ScreenshotButton';
+import ReactGA from 'react-ga';
 
 const styles = {
     toolbar: {
@@ -58,6 +59,11 @@ class CalendarPaneToolbar extends PureComponent {
                                 )
                             ) {
                                 clearSchedules([this.props.currentScheduleIndex]);
+                                ReactGA.event({
+                                    category: 'antalmanac-rewrite',
+                                    action: 'Click Clear button',
+                                    label: 'Calendar Pane Toolbar'
+                                });
                             }
                         }}
                     >

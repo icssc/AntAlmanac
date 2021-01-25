@@ -57,6 +57,7 @@ export default class ClearScheduleDialog extends PureComponent {
         ReactGA.event({
             category: 'antalmanac-rewrite',
             action: 'Click Clear button',
+            label: 'Clear Schedule Dialog'
         });
         clearSchedules(toDelete);
         this.handleClose();

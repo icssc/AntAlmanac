@@ -240,10 +240,10 @@ export const editCustomEvent = (newCustomEvent) => {
 export const clearSchedules = (scheduleIndicesToClear) => {
     const addedCourses = AppStore.getAddedCourses();
     const customEvents = AppStore.getCustomEvents();
-    ReactGA.event({
-        category: 'antalmanac-rewrite',
-        action: 'Click Clear button',
-    });
+    // ReactGA.event({
+    //     category: 'antalmanac-rewrite',
+    //     action: 'Click Clear button',
+    // });
     const addedCoursesAfterClear = addedCourses.filter((course) => {
         if (course.scheduleIndices.length === 1) {
             return false;
