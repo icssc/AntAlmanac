@@ -5,9 +5,11 @@ name: antalmanac-site
 stage: dev
 
 inputs:
+  domain: antalmanacdev.de
+  certificateName: '*.antalmanacdev.de'
+
+  #  region: us-west-1
   src:
     src: ./src
-  #  domain: antalmanac.com
-    region: us-west-1
     hook: npm run build
     dist: ./build

@@ -10,6 +10,7 @@ import {
 } from '@material-ui/core';
 import { Notifications } from '@material-ui/icons';
 import ReactGA from 'react-ga';
+import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '../../api/endpoints';
 
 class NotificationHub extends PureComponent {
     state = {
@@ -26,7 +27,7 @@ class NotificationHub extends PureComponent {
         }
 
         if (storedPhoneNumber) {
-            const response = await fetch('/api/notifications/lookupNotifications', {
+            const response = await fetch(LOOKUP_NOTIFICATIONS_ENDPOINT, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phoneNumber: storedPhoneNumber.replace(/ /g, '') }),

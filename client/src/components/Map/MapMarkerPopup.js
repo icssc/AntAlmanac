@@ -6,6 +6,7 @@ import { Button } from '@material-ui/core';
 import Leaflet from 'leaflet';
 
 const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';
+const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId=463&image=';
 
 class MapMarkerPopup extends PureComponent {
     getMarkerIcon = (color) => {
@@ -30,15 +31,14 @@ class MapMarkerPopup extends PureComponent {
     render() {
         let locationString;
 
-        if (this.props.url) {
+        if (this.props.acronym) {
             locationString = (
                 <a
                     href={`http://www.classrooms.uci.edu/classrooms/${this.props.acronym}`}
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    {' '}
-                    {this.props.location}{' '}
+                    {this.props.location}
                 </a>
             );
         } else {
@@ -54,7 +54,7 @@ class MapMarkerPopup extends PureComponent {
 
                     {this.props.image ? (
                         <img
-                            src={`https://www.myatlascms.com/map/lib/image-cache/i.php?mapId=463&image=${this.props.image}&w=900&h=508&r=1`}
+                            src={`${IMAGE_CMS_URL}${this.props.image}`}
                             alt="Building Snapshot"
                             style={{ width: '100%' }}
                         />
@@ -72,7 +72,7 @@ class MapMarkerPopup extends PureComponent {
                         target="_blank"
                         format="centered"
                     >
-                        Walk Here
+                        Directions
                     </Button>
                 </Popup>
             </Marker>
@@ -82,11 +82,10 @@ class MapMarkerPopup extends PureComponent {
 
 MapMarkerPopup.propTypes = {
     markerColor: PropTypes.string.isRequired,
-    url: PropTypes.string,
-    image: PropTypes.string.isRequired,
+    image: PropTypes.string,
     location: PropTypes.string.isRequired,
-    lat: PropTypes.string.isRequired,
-    lng: PropTypes.string.isRequired,
+    lat: PropTypes.number.isRequired,
+    lng: PropTypes.number.isRequired,
     acronym: PropTypes.string.isRequired,
 };
 

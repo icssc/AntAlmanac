@@ -1,3 +1,6 @@
+import { openSnackbar } from './actions/AppStoreActions';
+import { WEBSOC_ENDPOINT } from './api/endpoints';
+
 export async function getCoursesData(userData) {
     const dataToSend = {};
     const addedCourses = [];
@@ -31,7 +34,7 @@ export async function getCoursesData(userData) {
                 sectionCodes: sectionArray.join(','),
             };
 
-            const response = await fetch('/api/websocapi', {
+            const response = await fetch(WEBSOC_ENDPOINT, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(params),
@@ -63,4 +66,16 @@ export async function getCoursesData(userData) {
         addedCourses: addedCourses,
         customEvents: userData.customEvents,
     };
+}
+
+export function clickToCopy(event, sectionCode) {
+    event.stopPropagation();
+
+    let tempEventTarget = document.createElement('input');
+    document.body.appendChild(tempEventTarget);
+    tempEventTarget.setAttribute('value', sectionCode);
+    tempEventTarget.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempEventTarget);
+    openSnackbar('success', 'Section code copied to clipboard');
 }

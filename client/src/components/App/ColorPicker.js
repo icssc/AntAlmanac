@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Popover } from '@material-ui/core';
+import { Popover, IconButton } from '@material-ui/core';
 import { SketchPicker } from 'react-color';
 import { changeCourseColor, changeCustomEventColor } from '../../actions/AppStoreActions';
+import { ColorLens } from '@material-ui/icons';
 
 class ColorPicker extends PureComponent {
     state = {
@@ -34,16 +35,21 @@ class ColorPicker extends PureComponent {
 
     render() {
         return (
-            <div
-                style={{ backgroundColor: this.state.color }}
-                onClick={(e) => {
-                    this.handleClick(e);
-                }}
-            >
+            <span style={{ color: this.state.color }}>
+                <IconButton
+                    color="inherit"
+                    onClick={(e) => {
+                        this.handleClick(e);
+                    }}
+                >
+                    <ColorLens fontSize="small" />
+                </IconButton>
+
                 <Popover
                     open={Boolean(this.state.anchorEl)}
                     anchorEl={this.state.anchorEl}
                     onClose={this.handleClose}
+                    onClick={(e) => e.stopPropagation()}
                     anchorOrigin={{
                         vertical: 'bottom',
                         horizontal: 'center',
@@ -55,7 +61,7 @@ class ColorPicker extends PureComponent {
                 >
                     <SketchPicker color={this.state.color} onChange={this.handleColorChange} />
                 </Popover>
-            </div>
+            </span>
         );
     }
 }

@@ -7,30 +7,25 @@ import { Delete } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
-    root: {
-        padding: '4px 4px 0px 8px',
+    td: {
+        width: '100px',
     },
-    colorPicker: {
-        cursor: 'pointer',
-        '& > div': {
-            margin: '0px 8px 0px 4px',
-            height: '20px',
-            width: '20px',
-            borderRadius: '50%',
-        },
+    container: {
+        display: 'flex',
+        justifyContent: 'space-evenly',
     },
 };
 
 const ColorAndDelete = (props) => {
     const { sectionCode, color, classes } = props;
     return (
-        <td>
-            <div className={classes.colorPicker}>
+        <td className={classes.td}>
+            <div className={classes.container}>
                 <ColorPicker color={color} isCustomEvent={false} sectionCode={sectionCode} />
+                <IconButton onClick={() => deleteCourse(sectionCode, AppStore.getCurrentScheduleIndex())}>
+                    <Delete fontSize="small" />
+                </IconButton>
             </div>
-            <IconButton onClick={() => deleteCourse(sectionCode, AppStore.getCurrentScheduleIndex())}>
-                <Delete fontSize="small" />
-            </IconButton>
         </td>
     );
 };
