@@ -157,6 +157,11 @@ class AddedCoursePane extends PureComponent {
                                     )
                                 ) {
                                     clearSchedules([AppStore.getCurrentScheduleIndex()]);
+                                    ReactGA.event({
+                                        category: 'antalmanac-rewrite',
+                                        action: 'Click Clear button',
+                                        label: 'Added Course pane'
+                                    });
                                 }
                             }}
                         >
