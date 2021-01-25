@@ -6,6 +6,7 @@ import ColorPicker from '../App/ColorPicker';
 import moment from 'moment';
 import { deleteCustomEvent } from '../../actions/AppStoreActions';
 import CustomEventDialog from '../CustomEvents/CustomEventDialog';
+import ReactGA from 'react-ga';
 
 const styles = {
     root: {
@@ -73,7 +74,14 @@ const CustomEventDetailView = (props) => {
                         customEventID={customEvent.customEventID}
                     />
                 </div>
-                <IconButton onClick={() => deleteCustomEvent(customEvent.customEventID, props.currentScheduleIndex)}>
+                <IconButton onClick={() => {
+                    deleteCustomEvent(customEvent.customEventID, props.currentScheduleIndex)
+                    ReactGA.event({
+                        category: 'antalmanac-rewrite',
+                        action: 'Click Delete Custom Event',
+                        label: 'Added Course pane'
+                    });
+                }}>
                     <Delete fontSize="small" />
                 </IconButton>
                 <CustomEventDialog customEvent={customEvent} />

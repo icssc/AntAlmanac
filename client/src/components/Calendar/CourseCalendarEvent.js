@@ -166,6 +166,11 @@ const CourseCalendarEvent = (props) => {
                             onClick={() => {
                                 props.closePopover();
                                 deleteCustomEvent(customEventID, currentScheduleIndex);
+                                ReactGA.event({
+                                    category: 'antalmanac-rewrite',
+                                    action: 'Click Delete Custom Event',
+                                    label: 'Course Calendar Event'
+                                });
                             }}
                         >
                             <Delete fontSize="small" />
