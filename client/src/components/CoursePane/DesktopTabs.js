@@ -19,6 +19,7 @@ class DesktopTabs extends PureComponent {
 
     componentDidMount() {
         RightPaneStore.on('tabChange', this.changeTab);
+        ReactGA.initialize('UA-133683751-1', {debug: true});
     }
 
     componentWillUnmount() {
