@@ -172,6 +172,10 @@ class ScheduleCalendar extends PureComponent {
 
             this.setState({ screenshotting: false });
         });
+        ReactGA.event({
+            category: 'antalmanac-rewrite',
+            action: 'screenshot',
+        });
     };
 
     handleEventClick = (courseInMoreInfo, event) => {
