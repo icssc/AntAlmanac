@@ -195,7 +195,8 @@ const InstructorsCell = withStyles(styles)((props) => {
             window.open(`https://eaterevals.eee.uci.edu/browse/instructor#${lastName}`);
             ReactGA.event({
                 category: 'antalmanac-rewrite',
-                action: `Click instructor name for EaterEvals`,
+                action: `Click instructor name`,
+                label: `EaterEvals`
             });
         } else {
             window.open(
@@ -203,7 +204,8 @@ const InstructorsCell = withStyles(styles)((props) => {
             );
             ReactGA.event({
                 category: 'antalmanac-rewrite',
-                action: `Click instructor name for RateMyProfessors`,
+                action: `Click instructor name`,
+                label: `RateMyProfessors`
             });
         }
     };
