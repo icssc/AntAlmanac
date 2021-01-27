@@ -17,13 +17,13 @@ export const handleTabChange = (event, value) => {
         case 1:
             ReactGA.event({
                 category: 'antalmanac-rewrite',
-                action: `Switched tab to Added Classes`,
+                action: `Switch tab to Added Classes`,
             });
             break;
         case 2:
             ReactGA.event({
                 category: 'antalmanac-rewrite',
-                action: `Switched tab to Map`,
+                action: `Switch tab to Map`,
             });
             break;
     }
