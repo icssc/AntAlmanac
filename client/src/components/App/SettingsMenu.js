@@ -4,7 +4,6 @@ import { Settings } from '@material-ui/icons';
 import AppStore from '../../stores/AppStore';
 import { toggleDarkMode } from '../../actions/AppStoreActions';
 import { withStyles } from '@material-ui/core/styles';
-import classNames from 'classnames';
 
 const styles = {
     container: {

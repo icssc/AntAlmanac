@@ -28,7 +28,6 @@
         ]
     },
     "dependencies": {
-        "notistack": "^1.0.2",
-        "react-lazyload": "^3.1.0"
+        "notistack": "^1.0.2"
     }
 }
