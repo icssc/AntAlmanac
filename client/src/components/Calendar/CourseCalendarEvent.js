@@ -8,6 +8,7 @@ import locations from '../SectionTable/static/locations.json';
 import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
 import CustomEventDialog from '../CustomEvents/CustomEventDialog';
 import AppStore from '../../stores/AppStore';
+import { clickToCopy } from '../../helpers';
 
 const styles = {
     courseContainer: {
@@ -62,23 +63,12 @@ const styles = {
     },
 };
 
-const clickToCopy = (event, code) => {
-    event.stopPropagation();
-
-    let inputElem = document.createElement('input');
-    document.body.appendChild(inputElem);
-    inputElem.setAttribute('value', code);
-    inputElem.select();
-    document.execCommand('copy');
-    document.body.removeChild(inputElem);
-};
-
 const genMapLink = (location) => {
     try {
         const location_id = locations[location.split(' ')[0]];
         return 'https://map.uci.edu/?id=463#!m/' + location_id;
     } catch (err) {
-        return 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034';
+        return 'https://map.uci.edu/';
     }
 };
 

@@ -16,6 +16,7 @@ import {
     teal,
 } from '@material-ui/core/colors';
 import { getCoursesData } from '../helpers';
+import { LOAD_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '../api/endpoints';
 
 const arrayOfColors = [
     red[500],
@@ -118,7 +119,7 @@ export const saveSchedule = async (userID, rememberMe) => {
             });
 
             try {
-                await fetch(`/api/users/saveUserData`, {
+                await fetch(SAVE_DATA_ENDPOINT, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -157,7 +158,7 @@ export const loadSchedule = async (userID, rememberMe) => {
             }
 
             try {
-                const data = await fetch('/api/users/loadUserData', {
+                const data = await fetch(LOAD_DATA_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userID: userID }),
@@ -171,7 +172,7 @@ export const loadSchedule = async (userID, rememberMe) => {
                 });
                 openSnackbar('success', `Schedule for username "${userID}" loaded.`);
             } catch (e) {
-                openSnackbar('error', `Couldn't find schedules for username "${userID}.`);
+                openSnackbar('error', `Couldn't find schedules for username "${userID}".`);
             }
         }
     }

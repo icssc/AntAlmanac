@@ -3,6 +3,7 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis, Tool
 import quarterDayRanges from './static/quarter_day_ranges';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { ENROLLMENT_DATA_ENDPOINT } from '../../api/endpoints';
 
 const timeFormatter = (unixTime) => {
     return moment(unixTime).format('MM/DD/YY');
@@ -39,7 +40,7 @@ class Graph extends PureComponent {
     };
 
     fetchGraphData = async () => {
-        const data = await fetch(`/api/enrollmentData`, {
+        const data = await fetch(ENROLLMENT_DATA_ENDPOINT, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
