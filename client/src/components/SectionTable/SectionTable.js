@@ -50,6 +50,7 @@ class SectionTable extends PureComponent {
                 <div
                     style={{
                         display: 'inline-flex',
+                        marginTop: '4px',
                     }}
                 >
                     <CourseInfoBar

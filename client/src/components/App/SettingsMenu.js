@@ -9,7 +9,7 @@ import ReactGA from 'react-ga';
 const styles = {
     container: {
         padding: '0.5rem',
-        minWidth: '11.5rem',
+        minWidth: '12.25rem',
     },
     betaBadge: { transform: 'scale(1) translate(95%, -50%)' },
 };

@@ -34,6 +34,7 @@ class CourseInfoBar extends PureComponent {
         description: null,
     };
 
+
     togglePopover = async (currentTarget) => {
         if (Boolean(this.state.anchorEl)) {
             this.setState({ anchorEl: false });
@@ -109,6 +110,7 @@ class CourseInfoBar extends PureComponent {
                         const currentTarget = event.currentTarget;
                         this.togglePopover(currentTarget);
                     }}
+                  style={{ marginRight: '4px' }}
                 >
                     {`${deptCode} ${courseNumber} | ${courseTitle}`}
                     <MoreVert fontSize="small" />

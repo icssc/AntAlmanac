@@ -21,6 +21,10 @@ const styles = {
         width: '100%',
         justifyContent: 'space-between',
     },
+    clearSchedule: {
+        marginLeft: '4px',
+        marginRight: '4px',
+    },
 };
 
 class AddedCoursePane extends PureComponent {
@@ -148,6 +152,7 @@ class AddedCoursePane extends PureComponent {
                             )}
                         </PopupState>
                         <Button
+                            className={this.props.classes.clearSchedule}
                             variant="outlined"
                             color="secondary"
                             onClick={() => {
