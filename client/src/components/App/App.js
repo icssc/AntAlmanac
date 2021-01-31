@@ -21,7 +21,7 @@ class App extends PureComponent {
             this.setState({ darkMode: AppStore.getDarkMode() });
         });
 
-        ReactGA.initialize('UA-133683751-1', {debug: true});
+        ReactGA.initialize('UA-133683751-1');
         ReactGA.pageview('/homepage');
     };
 
