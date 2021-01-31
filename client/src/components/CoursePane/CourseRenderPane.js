@@ -114,6 +114,7 @@ class CourseRenderPane extends PureComponent {
     state = {
         courseData: null,
         loading: true,
+        error: false,
         bannerName: '',
         bannerLink: '',
     };
@@ -136,25 +137,39 @@ class CourseRenderPane extends PureComponent {
                 building: formData.building,
                 room: formData.room,
             };
+            try {
+                const response = await fetch(WEBSOC_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(params),
+                });
 
-            const response = await fetch(WEBSOC_ENDPOINT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(params),
-            });
+                if (response.ok) {
+                    const jsonResp = await response.json();
 
-            const jsonResp = await response.json();
+                    const adBannerInfo = await fetch(RANDOM_AD_ENDPOINT);
 
-            const adBannerInfo = await fetch(RANDOM_AD_ENDPOINT);
+                    const jsonAdInfo = await adBannerInfo.json();
 
-            const jsonAdInfo = await adBannerInfo.json();
-
-            this.setState({
-                loading: false,
-                courseData: flattenSOCObject(jsonResp),
-                bannerName: jsonAdInfo.bannerName,
-                bannerLink: jsonAdInfo.bannerLink,
-            });
+                    this.setState({
+                        loading: false,
+                        error: false,
+                        courseData: flattenSOCObject(jsonResp),
+                        bannerName: jsonAdInfo.bannerName,
+                        bannerLink: jsonAdInfo.bannerLink,
+                    });
+                } else {
+                    this.setState({
+                        loading: false,
+                        error: true,
+                    });
+                }
+            } catch (error) {
+                this.setState({
+                    loading: false,
+                    error: true,
+                });
+            }
         });
     }
 
@@ -170,7 +185,7 @@ class CourseRenderPane extends PureComponent {
                     </video>
                 </div>
             );
-        } else {
+        } else if (!this.state.error) {
             const renderData = {
                 courseData: this.state.courseData,
                 bannerName: this.state.bannerName,
@@ -196,6 +211,14 @@ class CourseRenderPane extends PureComponent {
                             );
                         })
                     )}
+                </div>
+            );
+        } else {
+            currentView = (
+                <div className={classes.root}>
+                    <div className={classes.noResultsDiv}>
+                        <img src={NoNothing} alt="No Results Found" />
+                    </div>
                 </div>
             );
         }
