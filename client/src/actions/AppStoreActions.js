@@ -375,6 +375,11 @@ export const copySchedule = (from, to) => {
         }
     });
 
+    ReactGA.event({
+        category: 'antalmanac-rewrite',
+        action: 'Click Copy Schedule',
+    });
+
     dispatcher.dispatch({
         type: 'COPY_SCHEDULE',
         addedCoursesAfterCopy,

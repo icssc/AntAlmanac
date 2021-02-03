@@ -12,7 +12,6 @@ export const updateFormValue = (field, value) => {
 };
 
 export const handleTabChange = (event, value) => {
-    // Track user clicking on the Added Classes or Map tab TODO: Maybe don't track user clicks if they're spamming the button (or clicking on the tab they're on)
     switch (
         value // 0 is Class Search Tab, 1 is Added Classes Tab, 2 is Map Tab
     ) {

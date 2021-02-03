@@ -32,8 +32,7 @@ class ColorPicker extends PureComponent {
             if (this.props.isCustomEvent) changeCustomEventColor(this.props.customEventID, this.state.color);
             else changeCourseColor(this.props.sectionCode, this.state.color);
         });
-        // TODO: differentiate color change locations (calendar pane vs added courses pane)
-        // TODO: change color for custom event vs course
+
         ReactGA.event({
             category: 'antalmanac-rewrite',
             action: 'Change Course Color',

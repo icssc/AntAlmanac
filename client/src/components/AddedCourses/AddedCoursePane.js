@@ -124,10 +124,6 @@ class AddedCoursePane extends PureComponent {
                                                     disabled={AppStore.getCurrentScheduleIndex() === index}
                                                     onClick={() => {
                                                         copySchedule(AppStore.getCurrentScheduleIndex(), index);
-                                                        ReactGA.event({
-                                                            category: 'antalmanac-rewrite',
-                                                            action: 'Click Copy Schedule',
-                                                        });
                                                         popupState.close();
                                                     }}
                                                 >
@@ -138,10 +134,6 @@ class AddedCoursePane extends PureComponent {
                                         <MenuItem
                                             onClick={() => {
                                                 copySchedule(AppStore.getCurrentScheduleIndex(), 4);
-                                                ReactGA.event({
-                                                    category: 'antalmanac-rewrite',
-                                                    action: 'Click Copy Schedule',
-                                                });
                                                 popupState.close();
                                             }}
                                         >
@@ -165,7 +157,7 @@ class AddedCoursePane extends PureComponent {
                                     ReactGA.event({
                                         category: 'antalmanac-rewrite',
                                         action: 'Click Clear button',
-                                        label: 'Added Course pane'
+                                        label: 'Added Course pane',
                                     });
                                 }
                             }}
