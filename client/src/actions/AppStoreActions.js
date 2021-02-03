@@ -1,5 +1,6 @@
 import dispatcher from '../dispatcher';
 import AppStore from '../stores/AppStore';
+import ReactGA from 'react-ga';
 import {
     amber,
     blue,
@@ -239,7 +240,6 @@ export const editCustomEvent = (newCustomEvent) => {
 export const clearSchedules = (scheduleIndicesToClear) => {
     const addedCourses = AppStore.getAddedCourses();
     const customEvents = AppStore.getCustomEvents();
-
     const addedCoursesAfterClear = addedCourses.filter((course) => {
         if (course.scheduleIndices.length === 1) {
             return false;
@@ -275,6 +275,11 @@ export const addCustomEvent = (customEvent) => {
 
 export const undoDelete = (event) => {
     const deletedCourses = AppStore.getDeletedCourses();
+
+    ReactGA.event({
+        category: 'antalmanac-rewrite',
+        action: 'Click Undo button',
+    });
 
     if (deletedCourses.length > 0 && (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))) {
         const lastDeleted = deletedCourses[deletedCourses.length - 1];
@@ -370,6 +375,11 @@ export const copySchedule = (from, to) => {
         }
     });
 
+    ReactGA.event({
+        category: 'antalmanac-rewrite',
+        action: 'Click Copy Schedule',
+    });
+
     dispatcher.dispatch({
         type: 'COPY_SCHEDULE',
         addedCoursesAfterCopy,
@@ -381,6 +391,10 @@ export const toggleDarkMode = (switchEvent) => {
     dispatcher.dispatch({
         type: 'TOGGLE_DARK_MODE',
         darkMode: switchEvent.target.checked,
+    });
+    ReactGA.event({
+        category: 'antalmanac-rewrite',
+        action: 'toggle dark mode',
     });
 };
 

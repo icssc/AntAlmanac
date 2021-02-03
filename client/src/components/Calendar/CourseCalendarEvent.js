@@ -9,6 +9,7 @@ import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
 import CustomEventDialog from '../CustomEvents/CustomEventDialog';
 import AppStore from '../../stores/AppStore';
 import { clickToCopy } from '../../helpers';
+import ReactGA from 'react-ga';
 
 const styles = {
     courseContainer: {
@@ -83,7 +84,14 @@ const CourseCalendarEvent = (props) => {
                 <div className={classes.titleBar}>
                     <span className={classes.title}>{courseTitle}</span>
                     <Tooltip title="Delete">
-                        <IconButton size="small" onClick={() => deleteCourse(sectionCode, currentScheduleIndex)}>
+                        <IconButton size="small" onClick={() => {
+                            deleteCourse(sectionCode, currentScheduleIndex)
+                            ReactGA.event({
+                                category: 'antalmanac-rewrite',
+                                action: 'Click Delete Course',
+                                label: 'Course Calendar Event'
+                            });
+                        }}>
                             <Delete fontSize="inherit" />
                         </IconButton>
                     </Tooltip>
@@ -158,6 +166,11 @@ const CourseCalendarEvent = (props) => {
                             onClick={() => {
                                 props.closePopover();
                                 deleteCustomEvent(customEventID, currentScheduleIndex);
+                                ReactGA.event({
+                                    category: 'antalmanac-rewrite',
+                                    action: 'Click Delete Custom Event',
+                                    label: 'Course Calendar Event'
+                                });
                             }}
                         >
                             <Delete fontSize="small" />

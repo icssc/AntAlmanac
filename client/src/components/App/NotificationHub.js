@@ -9,6 +9,7 @@ import {
     Tooltip,
 } from '@material-ui/core';
 import { Notifications } from '@material-ui/icons';
+import ReactGA from 'react-ga';
 import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '../../api/endpoints';
 
 class NotificationHub extends PureComponent {
@@ -49,6 +50,10 @@ class NotificationHub extends PureComponent {
                         onClick={() => {
                             this.setState({ open: true });
                             this.getNotificationLists();
+                            ReactGA.event({
+                                category: 'antalmanac-rewrite',
+                                action: 'Click "Notifications"',
+                            });
                         }}
                         color="inherit"
                         startIcon={<Notifications />}

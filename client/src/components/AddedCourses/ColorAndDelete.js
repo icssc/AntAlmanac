@@ -5,6 +5,7 @@ import { deleteCourse } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
 import { Delete } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
+import ReactGA from 'react-ga';
 
 const styles = {
     td: {
@@ -22,7 +23,14 @@ const ColorAndDelete = (props) => {
         <td className={classes.td}>
             <div className={classes.container}>
                 <ColorPicker color={color} isCustomEvent={false} sectionCode={sectionCode} />
-                <IconButton onClick={() => deleteCourse(sectionCode, AppStore.getCurrentScheduleIndex())}>
+                <IconButton onClick={() => {
+                    deleteCourse(sectionCode, AppStore.getCurrentScheduleIndex())
+                    ReactGA.event({
+                        category: 'antalmanac-rewrite',
+                        action: 'Click Delete Course',
+                        label: 'Added Course pane'
+                    });
+                }}>
                     <Delete fontSize="small" />
                 </IconButton>
             </div>

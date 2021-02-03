@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
+import ReactGA from 'react-ga';
 import locations from './static/locations';
 import restrictionsMapping from './static/restrictionsMapping';
 import { IconButton, Menu, Button, ButtonGroup, MenuItem, Popover, Tooltip, Typography } from '@material-ui/core';
@@ -153,7 +154,13 @@ const CourseCodeCell = withStyles(styles)((props) => {
                 enterDelay={300}
                 classes={{ tooltip: classes.lightTooltip }}
             >
-                <div onClick={(event) => clickToCopy(event, sectionCode)} className={classes.sectionCode}>
+                <div onClick={(event) => {
+                    clickToCopy(event, sectionCode)
+                    ReactGA.event({
+                        category: 'antalmanac-rewrite',
+                        action: `Click section code`,
+                    });
+                }}  className={classes.sectionCode}>
                     {sectionCode}
                 </div>
             </Tooltip>
@@ -186,10 +193,20 @@ const InstructorsCell = withStyles(styles)((props) => {
 
         if (!isRMP) {
             window.open(`https://eaterevals.eee.uci.edu/browse/instructor#${lastName}`);
+            ReactGA.event({
+                category: 'antalmanac-rewrite',
+                action: `Click instructor name`,
+                label: `EaterEvals`
+            });
         } else {
             window.open(
                 `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
             );
+            ReactGA.event({
+                category: 'antalmanac-rewrite',
+                action: `Click instructor name`,
+                label: `RateMyProfessors`
+            });
         }
     };
 

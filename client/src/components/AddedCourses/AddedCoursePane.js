@@ -6,6 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 import CustomEventDetailView from './CustomEventDetailView';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import { clearSchedules, copySchedule } from '../../actions/AppStoreActions';
+import ReactGA from 'react-ga';
 
 const styles = {
     container: {
@@ -153,6 +154,11 @@ class AddedCoursePane extends PureComponent {
                                     )
                                 ) {
                                     clearSchedules([AppStore.getCurrentScheduleIndex()]);
+                                    ReactGA.event({
+                                        category: 'antalmanac-rewrite',
+                                        action: 'Click Clear button',
+                                        label: 'Added Course pane',
+                                    });
                                 }
                             }}
                         >
