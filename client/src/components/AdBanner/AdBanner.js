@@ -22,7 +22,7 @@ class AdBanner extends PureComponent {
                 </Typography>
 
                 <a href={this.props.bannerLink} target="_blank" rel="noopener noreferrer">
-                    <img src={`${AD_IMAGE_ENDPOINT}${this.props.bannerName}`} alt="banner" className={classes.ad} />
+                    <img src={`${AD_IMAGE_ENDPOINT}/${this.props.bannerName}`} alt="banner" className={classes.ad} />
                 </a>
             </Fragment>
         );

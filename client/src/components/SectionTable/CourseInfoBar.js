@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { Button, Popover } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { MoreVert } from '@material-ui/icons';
+import { PETERPORTAL_DATA_ENDPOINT } from '../../api/endpoints';
 
 const styles = () => ({
     rightSpace: {
@@ -34,7 +35,6 @@ class CourseInfoBar extends PureComponent {
         description: null,
     };
 
-
     togglePopover = async (currentTarget) => {
         if (Boolean(this.state.anchorEl)) {
             this.setState({ anchorEl: false });
@@ -43,17 +43,40 @@ class CourseInfoBar extends PureComponent {
 
             if (this.state.loading === true) {
                 const { courseNumber, deptCode } = this.props;
-                const response = await fetch(`/api/peterportalapi/courses/${deptCode}/${courseNumber}`);
-                const jsonResp = await response.json();
+                try {
+                    const response = await fetch(`${PETERPORTAL_DATA_ENDPOINT}/courses/${deptCode}/${courseNumber}`);
 
-                this.setState({
-                    anchorEl: currentTarget,
-                    loading: false,
-                    title: jsonResp.title,
-                    prerequisite_text: jsonResp.prerequisite_text,
-                    prerequisite_for: jsonResp.dependencies.join(', '),
-                    description: jsonResp.description,
-                });
+                    if (response.ok) {
+                        const jsonResp = await response.json();
+
+                        this.setState({
+                            anchorEl: currentTarget,
+                            loading: false,
+                            title: jsonResp.title,
+                            prerequisite_text: jsonResp.prerequisite_text,
+                            prerequisite_for: jsonResp.dependencies.join(', '),
+                            description: jsonResp.description,
+                        });
+                    } else {
+                        this.setState({
+                            anchorEl: currentTarget,
+                            loading: false,
+                            title: 'No description available',
+                            prerequisite_text: '',
+                            prerequisite_for: '',
+                            description: '',
+                        });
+                    }
+                } catch (e) {
+                    this.setState({
+                        anchorEl: currentTarget,
+                        loading: false,
+                        title: 'No description available',
+                        prerequisite_text: '',
+                        prerequisite_for: '',
+                        description: '',
+                    });
+                }
             }
         }
     };
@@ -110,7 +133,7 @@ class CourseInfoBar extends PureComponent {
                         const currentTarget = event.currentTarget;
                         this.togglePopover(currentTarget);
                     }}
-                  style={{ marginRight: '4px' }}
+                    style={{ marginRight: '4px' }}
                 >
                     {`${deptCode} ${courseNumber} | ${courseTitle}`}
                     <MoreVert fontSize="small" />
