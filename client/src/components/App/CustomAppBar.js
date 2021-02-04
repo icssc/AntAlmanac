@@ -48,17 +48,17 @@ class CustomAppBar extends PureComponent {
                         </Button>
                     </Tooltip>
 
-                    <Tooltip title="Info Page">
-                        <Button
-                            onClick={() => {
-                                window.open('https://www.ics.uci.edu/~rang1/AntAlmanac/index.html', '_blank');
-                            }}
-                            color="inherit"
-                            startIcon={<Info />}
-                        >
-                            About
-                        </Button>
-                    </Tooltip>
+                    {/*<Tooltip title="Info Page">*/}
+                    {/*<Button*/}
+                    {/*    onClick={() => {*/}
+                    {/*        window.open('https://www.ics.uci.edu/~rang1/AntAlmanac/index.html', '_blank');*/}
+                    {/*    }}*/}
+                    {/*    color="inherit"*/}
+                    {/*    startIcon={<Info />}*/}
+                    {/*>*/}
+                    {/*    About*/}
+                    {/*</Button>*/}
+                    {/*</Tooltip>*/}
                 </Toolbar>
             </AppBar>
         );
