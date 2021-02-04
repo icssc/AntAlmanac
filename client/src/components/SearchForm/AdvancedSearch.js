@@ -16,11 +16,6 @@ import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import { updateFormValue } from '../../actions/RightPaneActions';
 
 const styles1 = {
-    courseCode: {
-        border: 'solid 8px transparent',
-        borderLeft: '0px',
-        borderTop: '0px',
-    },
     textSearch: {
         border: 'solid 8px transparent',
         borderLeft: '0px',
@@ -54,7 +49,6 @@ const styles1 = {
 
 class AdvancedSearchTextFields extends PureComponent {
     state = {
-        courseCode: RightPaneStore.getFormData().courseCode,
         instructor: RightPaneStore.getFormData().instructor,
         units: RightPaneStore.getFormData().units,
         endTime: RightPaneStore.getFormData().endTime,

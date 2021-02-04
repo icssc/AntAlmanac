@@ -128,7 +128,7 @@ class CourseRenderPane extends PureComponent {
                 term: formData.term,
                 ge: formData.ge,
                 courseNumber: formData.courseNumber,
-                sectionCodes: formData.sectionCodes,
+                sectionCodes: formData.sectionCode,
                 instructorName: formData.instructor,
                 units: formData.units,
                 endTime: formData.endTime,
