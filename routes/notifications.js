@@ -7,17 +7,7 @@ router.post('/registerNotifications', async (req, res) => {
   await connectToDb();
 
   const {phoneNumber, sectionCode, courseTitle} = req.body;
-
-  try {
-    await Notification.findOneAndUpdate(
-      {'sectionCode' : sectionCode, 'courseTitle': courseTitle},
-      {$addToSet : {'phoneNumbers': phoneNumber}},
-      { upsert: true })
-
-    res.status(200).send()
-  } catch (err) {
-    res.status(500).json({error: err.message})
-  }
+  await registerNotification(phoneNumber, sectionCode, courseTitle, res);
 });
 
 router.post('/lookupNotifications', async (req, res) => {
@@ -36,5 +26,25 @@ router.post('/lookupNotifications', async (req, res) => {
     res.status(500).json({error: err.message})
   }
 });
+
+router.get('/addBackNotifications/:sectionCode/:courseTitle/:phoneNumber', async (req, res) => {
+  await connectToDb();
+
+  const {phoneNumber, sectionCode, courseTitle} = req.params;
+  await registerNotification(phoneNumber, sectionCode, courseTitle, res)
+})
+
+async function registerNotification(phoneNumber, sectionCode, courseTitle, res) {
+  try {
+    await Notification.findOneAndUpdate(
+        {'sectionCode' : sectionCode, 'courseTitle': courseTitle},
+        {$addToSet : {'phoneNumbers': phoneNumber}},
+        { upsert: true })
+
+    res.status(200).send()
+  } catch (err) {
+    res.status(500).json({error: err.message})
+  }
+}
 
 module.exports = router;
