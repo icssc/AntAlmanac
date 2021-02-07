@@ -17,9 +17,7 @@ class AdBanner extends PureComponent {
 
         return (
             <Fragment>
-                <Typography fontSize="1" align="right">
-                    AntAlmanac is not affiliated with the following club/activity
-                </Typography>
+                <Typography variant="caption">AntAlmanac is not affiliated with the following club/activity</Typography>
 
                 <a href={this.props.bannerLink} target="_blank" rel="noopener noreferrer">
                     <img src={`${AD_IMAGE_ENDPOINT}/${this.props.bannerName}`} alt="banner" className={classes.ad} />

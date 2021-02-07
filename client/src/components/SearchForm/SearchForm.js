@@ -8,6 +8,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AdvancedSearch from './AdvancedSearch';
+import PrivacyPolicyBanner from '../App/PrivacyPolicyBanner';
 
 const styles = {
     container: {
@@ -110,17 +111,7 @@ class SearchForm extends PureComponent {
                     )}
                 </div>
 
-                {/*<div className={classes.new}>
-          <Typography>
-            <b>New on AntAlmanac:</b>
-            <br />
-            Add online/TBA classes!
-            <br />
-            Download .ics files of your calendars!
-            <br />
-            See finals schedules
-          </Typography>
-        />*/}
+                <PrivacyPolicyBanner />
             </div>
         );
     }

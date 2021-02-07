@@ -42,15 +42,7 @@ class SettingsMenu extends PureComponent {
                     color="inherit"
                     startIcon={<Settings />}
                 >
-                    <Badge
-                        color="secondary"
-                        variant="dot"
-                        classes={{
-                            anchorOriginTopRightRectangle: classes.betaBadge,
-                        }}
-                    >
-                        Settings
-                    </Badge>
+                    Settings
                 </Button>
                 <Popover
                     open={Boolean(this.state.anchorEl)}

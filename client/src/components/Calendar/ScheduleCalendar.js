@@ -16,13 +16,14 @@ const localizer = momentLocalizer(moment);
 const styles = {
     container: {
         margin: '0px 4px 4px 4px',
+        borderRadius: '1px',
     },
     firstLineContainer: {
         display: 'flex',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
         fontWeight: 500,
-        fontSize: '0.85rem',
+        fontSize: '0.8rem',
     },
     sectionType: {
         fontSize: '0.8rem',
@@ -31,7 +32,7 @@ const styles = {
         display: 'flex',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
-        fontSize: '0.8rem',
+        fontSize: '0.7rem',
     },
     customEventContainer: {
         marginTop: 2,
@@ -86,7 +87,7 @@ class ScheduleCalendar extends PureComponent {
                 backgroundColor: event.color,
                 cursor: 'pointer',
                 borderStyle: 'none',
-                borderRadius: 0,
+                borderRadius: '4px',
                 color: this.colorContrastSufficient(event.color) ? 'white' : 'black',
             },
         };
