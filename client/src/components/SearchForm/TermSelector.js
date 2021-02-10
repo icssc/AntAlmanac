@@ -21,6 +21,7 @@ class TermSelector extends PureComponent {
             <FormControl fullWidth>
                 <InputLabel>Term</InputLabel>
                 <Select value={this.state.term} onChange={this.handleChange}>
+                    <MenuItem value={'2021 Spring'}>2021 Spring Quarter</MenuItem>
                     <MenuItem value={'2021 Winter'}>2021 Winter Quarter</MenuItem>
                     <MenuItem value={'2020 Fall'}>2020 Fall Quarter</MenuItem>
                     <MenuItem value={'2020 Spring'}>2020 Spring Quarter</MenuItem>
