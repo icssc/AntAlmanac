@@ -5,11 +5,15 @@ const router = express.Router();
 const catalogue = require('./ad_banners/bannerCatalogue.js');
 
 router.get('/getAdImage/:bannerName', (req, res) => {
-  fs.access(path.join(__dirname, 'ad_banners', req.params.bannerName), fs.F_OK, (err) => {
+  fs.access(path.join(__dirname, 'ad_banners', req.params.bannerName), fs.constants.R_OK, (err) => {
     if (err) {
       res.status(404).send(err);
     } else {
-      res.status(200).sendFile(path.join(__dirname, 'ad_banners', req.params.bannerName));
+      const file_path = path.join(__dirname, 'ad_banners', req.params.bannerName)
+      res.type(path.extname(file_path))
+      res.setHeader('isBase64Encoded', 'true')
+      const file = fs.readFileSync(file_path);
+      res.status(200).send(file);
     }
   });
 });
