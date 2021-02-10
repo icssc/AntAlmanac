@@ -8,7 +8,7 @@ const usersRoute = require('./users')
 const websocapiRoute = require('./websocapi')
 const peterportalapiRoute = require('./peterportalapi')
 
-router.use('/ads', adsRoute)
+router.use('/banners', adsRoute)
 router.use('/enrollmentData', enrollmentData)
 router.use('/notifications', notificationsRoute)
 router.use('/users', usersRoute)
