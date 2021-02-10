@@ -29,7 +29,6 @@
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
-        "postbuild": "react-snap",
         "nodemon": "^1.14.6",
         "test": "react-scripts test --env=jsdom",
         "eject": "react-scripts eject"
