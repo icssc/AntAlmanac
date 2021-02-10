@@ -76,6 +76,7 @@ export default class UCIMap extends PureComponent {
         this.state.eventsInCalendar.forEach((event) => {
             // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
             if (
+                event.isCustomEvent ||
                 !event.scheduleIndices.includes(this.state.currentScheduleIndex) ||
                 !event.start.toString().includes(DAYS[this.state.day])
             )
