@@ -14,8 +14,8 @@ custom:
     httpPort: 8080
 
   customDomain:
-    domainName: api.antalmanacdev.de
-    certificateName: '*.antalmanacdev.de'
+    domainName: api.antalmanac.com
+    certificateName: '*.antalmanac.com'
     basePath: ''
     stage: ${self:provider.stage}
     createRoute53Record: true
@@ -24,7 +24,10 @@ provider:
   name: aws
   runtime: nodejs12.x
   stage: dev
-  region: us-west-1
+  region: us-east-1
+  apiGateway:
+    binaryMediaTypes:
+      - 'image/*'
 
 functions:
     app:
