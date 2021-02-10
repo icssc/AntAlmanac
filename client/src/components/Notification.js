@@ -21,7 +21,7 @@ const variantIcon = {
     info: InfoIcon,
 };
 
-const styles1 = (theme) => ({
+const styles = (theme) => ({
     success: {
         backgroundColor: green[600],
     },
@@ -78,7 +78,7 @@ MySnackbarContent.propTypes = {
     variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,
 };
 
-const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
+const MySnackbarContentWrapper = withStyles(styles, { withTheme: true })(MySnackbarContent);
 
 const styles2 = (theme) => ({
     margin: {

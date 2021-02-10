@@ -193,11 +193,9 @@ class AddedCoursePane extends PureComponent {
 
     render() {
         return (
-            <div>
-                <Grid container spacing={2}>
-                    {this.getGrid()}
-                </Grid>
-            </div>
+            <Grid container spacing={2}>
+                {this.getGrid()}
+            </Grid>
         );
     }
 }

@@ -15,34 +15,13 @@ import RightPaneStore from '../../stores/RightPaneStore';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import { updateFormValue } from '../../actions/RightPaneActions';
 
-const styles1 = {
-    textSearch: {
-        border: 'solid 8px transparent',
-        borderLeft: '0px',
-        borderTop: '0px',
-        minWidth: '120px',
-        flexBasis: '120px',
-    },
+const styles = {
     units: {
-        border: 'solid 8px transparent',
-        borderLeft: '0px',
-        borderTop: '0px',
-        minWidth: '80px',
-        flexBasis: '80px',
-    },
-    coursesFull: {
-        borderWidth: '8px 0px 8px 0px',
-        borderStyle: 'solid',
-        borderColor: 'transparent',
-    },
-    timePicker: {
-        borderWidth: '8px 0px 8px 0px',
-        borderStyle: 'solid',
-        borderColor: 'transparent',
+        width: '80px',
     },
     smallTextFields: {
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'space-around',
         flexWrap: 'wrap',
     },
 };
@@ -117,7 +96,6 @@ class AdvancedSearchTextFields extends PureComponent {
                     type="search"
                     value={this.state.instructor}
                     onChange={this.handleChange('instructor')}
-                    className={classes.textSearch}
                     helperText="Last name only"
                 />
 
@@ -131,7 +109,7 @@ class AdvancedSearchTextFields extends PureComponent {
                     className={classes.units}
                 />
 
-                <FormControl className={classes.coursesFull}>
+                <FormControl>
                     <InputLabel>Class Full Option</InputLabel>
                     <Select value={this.state.coursesFull} onChange={this.handleChange('coursesFull')}>
                         <MenuItem value={'ANY'}>Include all classes</MenuItem>
@@ -142,7 +120,7 @@ class AdvancedSearchTextFields extends PureComponent {
                     </Select>
                 </FormControl>
 
-                <form className={classes.timePicker}>
+                <form>
                     <TextField
                         onChange={this.handleChange('startTime')}
                         label="Starts After"
@@ -157,7 +135,7 @@ class AdvancedSearchTextFields extends PureComponent {
                     />
                 </form>
 
-                <form className={classes.timePicker}>
+                <form>
                     <TextField
                         onChange={this.handleChange('endTime')}
                         label="Ends Before"
@@ -190,7 +168,6 @@ class AdvancedSearchTextFields extends PureComponent {
                     type="search"
                     value={this.state.building}
                     onChange={this.handleChange('building')}
-                    className={classes.textSearch}
                 />
 
                 <TextField
@@ -199,14 +176,13 @@ class AdvancedSearchTextFields extends PureComponent {
                     type="search"
                     value={this.state.room}
                     onChange={this.handleChange('room')}
-                    className={classes.textSearch}
                 />
             </div>
         );
     }
 }
 
-AdvancedSearchTextFields = withStyles(styles1)(AdvancedSearchTextFields);
+AdvancedSearchTextFields = withStyles(styles)(AdvancedSearchTextFields);
 
 const parentStyles = {
     container: {

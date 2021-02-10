@@ -12,7 +12,7 @@ const timeFormatter = (unixTime) => {
 class CustomTooltip extends PureComponent {
     render() {
         const { active, payload, label } = this.props;
-        if (active) {
+        if (active && payload !== null) {
             return (
                 <div className="">
                     <p>Enrollment on {timeFormatter(label)}</p>
@@ -22,7 +22,6 @@ class CustomTooltip extends PureComponent {
                 </div>
             );
         }
-
         return null;
     }
 }

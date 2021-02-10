@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Grid, CssBaseline, createMuiTheme } from '@material-ui/core';
-import { ThemeProvider } from '@material-ui/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
 import Calendar from '../Calendar/ScheduleCalendar';
 import ReactGA from 'react-ga';
 import NotificationSnackbar from './NotificationSnackbar';
