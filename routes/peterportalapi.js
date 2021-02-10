@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const https = require('https');
+const http = require('http');
 
 router.get('/courses/:deptCode/:courseNumber', async (req, res) => {
   const courseID = `${req.params.deptCode.replace(/\s/g, '')}${req.params.courseNumber.replace(/\s/g, '')}`
@@ -13,7 +13,7 @@ router.get('/courses/:deptCode/:courseNumber', async (req, res) => {
     }
   }
 
-  https.get(options, (resp) => {
+  http.get(options, (resp) => {
     let data = '';
 
     resp.on('data', (chunk) => {data += chunk;});
