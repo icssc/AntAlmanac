@@ -19,10 +19,6 @@ module.exports = [{
     'bannerName': 'Panhellenic.png',
     'dept': ['any'],
 }, {
-    'url': 'https://www.facebook.com/EnglishMajorsAssociationUCI/',
-    'bannerName': 'EMA.png',
-    'dept': ['any'],
-}, {
     'url': 'https://vermillionvocalists.wixsite.com/vermillionvocalists',
     'bannerName': 'Vermillion.png',
     'dept': ['ART', 'ART HIS', 'ARTS', 'ARTSHUM', 'BIO SCI', 'DANCE', 'DRAMA', 'ENGR', 'FLM&MDA', 'HUMAN', 'HUMARTS', 'MATH', 'MUSIC', 'PSCI', 'PSYCH', 'UNI STU'],
@@ -31,15 +27,11 @@ module.exports = [{
     'bannerName': 'Fifth.png',
     'dept': ['any'],
 }, {
-    'url': 'https://docs.google.com/forms/d/e/1FAIpQLScTvgvLJsdtkmXl3sOZWnk0sUKjnc8CCqyNA_VG15ACmTgLog/viewform?fbclid=IwAR2CQMTt5kaVf5oCUTMYUQfRr4ytSPOmpi4XYbrldLapHXWoQV1UKGdMWkw',
-    'bannerName': 'MAISS.png',
-    'dept': ['any'],
-}, {
     'url': 'https://www.facebook.com/groups/uci.open.jam/',
     'bannerName': 'Open.png',
     'dept': ['any'],
 }, {
-    'url': 'https://forms.gle/irQBrBkqHYYxcEU39',
+    'url': 'tinyurl.com/antalmanacxbannerads',
     'bannerName': 'ad_for_ads.png',
     'dept': ['any'],
 }];
