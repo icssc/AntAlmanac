@@ -87,7 +87,7 @@ class AppStore extends EventEmitter {
         this.addedSectionCodes = { 0: new Set(), 1: new Set(), 2: new Set(), 3: new Set() };
         for (const course of this.addedCourses) {
             for (const scheduleIndex of course.scheduleIndices) {
-                this.addedSectionCodes[scheduleIndex].add(course.section.sectionCode);
+                this.addedSectionCodes[scheduleIndex].add(`${course.section.sectionCode} ${course.term}`);
             }
         }
     }
