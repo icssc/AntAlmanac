@@ -405,7 +405,7 @@ const SectionTableBody = withStyles(styles)((props) => {
             {!colorAndDelete ? (
                 <ScheduleAddCell section={section} courseDetails={courseDetails} term={term} />
             ) : (
-                <ColorAndDelete color={section.color} sectionCode={section.sectionCode} />
+                <ColorAndDelete color={section.color} sectionCode={section.sectionCode} term={courseDetails.term} />
             )}
             <CourseCodeCell sectionCode={section.sectionCode} />
             <SectionDetailsCell

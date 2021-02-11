@@ -30,7 +30,7 @@ class ColorPicker extends PureComponent {
     handleColorChange = (color) => {
         this.setState({ color: color.hex }, () => {
             if (this.props.isCustomEvent) changeCustomEventColor(this.props.customEventID, this.state.color);
-            else changeCourseColor(this.props.sectionCode, this.state.color);
+            else changeCourseColor(this.props.sectionCode, this.state.color, this.props.term);
         });
 
         ReactGA.event({
@@ -77,6 +77,7 @@ ColorPicker.propTypes = {
     sectionCode: PropTypes.string,
     isCustomEvent: PropTypes.bool.isRequired,
     customEventID: PropTypes.number,
+    term: PropTypes.string,
 };
 
 export default ColorPicker;

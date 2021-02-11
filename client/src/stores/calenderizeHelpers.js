@@ -36,7 +36,7 @@ export const calendarizeCourseEvents = () => {
                     if (shouldBeInCal) {
                         const newEvent = {
                             color: course.color,
-                            // term: term,
+                            term: course.term,
                             title: course.deptCode + ' ' + course.courseNumber,
                             courseTitle: course.courseTitle,
                             bldg: meeting.bldg,

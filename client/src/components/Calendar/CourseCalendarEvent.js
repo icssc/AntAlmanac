@@ -77,21 +77,24 @@ const CourseCalendarEvent = (props) => {
     const { classes, courseInMoreInfo, currentScheduleIndex } = props;
 
     if (!courseInMoreInfo.isCustomEvent) {
-        const { instructors, sectionCode, courseTitle, finalExam, bldg } = courseInMoreInfo;
+        const { term, instructors, sectionCode, courseTitle, finalExam, bldg } = courseInMoreInfo;
 
         return (
             <Paper className={classes.courseContainer}>
                 <div className={classes.titleBar}>
                     <span className={classes.title}>{courseTitle}</span>
                     <Tooltip title="Delete">
-                        <IconButton size="small" onClick={() => {
-                            deleteCourse(sectionCode, currentScheduleIndex)
-                            ReactGA.event({
-                                category: 'antalmanac-rewrite',
-                                action: 'Click Delete Course',
-                                label: 'Course Calendar Event'
-                            });
-                        }}>
+                        <IconButton
+                            size="small"
+                            onClick={() => {
+                                deleteCourse(sectionCode, currentScheduleIndex, term);
+                                ReactGA.event({
+                                    category: 'antalmanac-rewrite',
+                                    action: 'Click Delete Course',
+                                    label: 'Course Calendar Event',
+                                });
+                            }}
+                        >
                             <Delete fontSize="inherit" />
                         </IconButton>
                     </Tooltip>
@@ -134,6 +137,7 @@ const CourseCalendarEvent = (props) => {
                                     isCustomEvent={courseInMoreInfo.isCustomEvent}
                                     customEventID={courseInMoreInfo.customEventID}
                                     sectionCode={courseInMoreInfo.sectionCode}
+                                    term={courseInMoreInfo.term}
                                 />
                             </td>
                         </tr>
@@ -169,7 +173,7 @@ const CourseCalendarEvent = (props) => {
                                 ReactGA.event({
                                     category: 'antalmanac-rewrite',
                                     action: 'Click Delete Custom Event',
-                                    label: 'Course Calendar Event'
+                                    label: 'Course Calendar Event',
                                 });
                             }}
                         >

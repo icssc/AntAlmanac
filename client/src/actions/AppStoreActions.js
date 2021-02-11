@@ -41,7 +41,7 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
     let existingCourse;
 
     for (const course of addedCourses) {
-        if (course.section.sectionCode === section.sectionCode) {
+        if (course.section.sectionCode === section.sectionCode && term === course.term) {
             existingCourse = course;
             if (course.scheduleIndices.includes(scheduleIndex)) {
                 return;
@@ -179,12 +179,12 @@ export const loadSchedule = async (userID, rememberMe) => {
     }
 };
 
-export const deleteCourse = (sectionCode, scheduleIndex) => {
+export const deleteCourse = (sectionCode, scheduleIndex, term) => {
     const addedCourses = AppStore.getAddedCourses();
     let deletedCourses = AppStore.getDeletedCourses();
 
     const addedCoursesAfterDelete = addedCourses.filter((course) => {
-        if (course.section.sectionCode === sectionCode) {
+        if (course.section.sectionCode === sectionCode && course.term === term) {
             deletedCourses = deletedCourses.concat({
                 ...course,
                 scheduleIndex,
@@ -328,11 +328,11 @@ export const changeCustomEventColor = (customEventID, newColor) => {
     });
 };
 
-export const changeCourseColor = (sectionCode, newColor) => {
+export const changeCourseColor = (sectionCode, newColor, term) => {
     const addedCourses = AppStore.getAddedCourses();
 
     const addedCoursesAfterColorChange = addedCourses.map((addedCourse) => {
-        if (addedCourse.section.sectionCode === sectionCode) {
+        if (addedCourse.section.sectionCode === sectionCode && addedCourse.term === term) {
             return { ...addedCourse, color: newColor };
         } else {
             return addedCourse;
@@ -395,12 +395,5 @@ export const toggleDarkMode = (switchEvent) => {
     ReactGA.event({
         category: 'antalmanac-rewrite',
         action: 'toggle dark mode',
-    });
-};
-
-export const toggleEvals = (radioEvent) => {
-    dispatcher.dispatch({
-        type: 'TOGGLE_EVALS',
-        evalDestination: radioEvent.target.value,
     });
 };

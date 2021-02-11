@@ -18,19 +18,21 @@ const styles = {
 };
 
 const ColorAndDelete = (props) => {
-    const { sectionCode, color, classes } = props;
+    const { sectionCode, color, classes, term } = props;
     return (
         <td className={classes.td}>
             <div className={classes.container}>
-                <ColorPicker color={color} isCustomEvent={false} sectionCode={sectionCode} />
-                <IconButton onClick={() => {
-                    deleteCourse(sectionCode, AppStore.getCurrentScheduleIndex())
-                    ReactGA.event({
-                        category: 'antalmanac-rewrite',
-                        action: 'Click Delete Course',
-                        label: 'Added Course pane'
-                    });
-                }}>
+                <ColorPicker color={color} isCustomEvent={false} sectionCode={sectionCode} term={term} />
+                <IconButton
+                    onClick={() => {
+                        deleteCourse(sectionCode, AppStore.getCurrentScheduleIndex(), term);
+                        ReactGA.event({
+                            category: 'antalmanac-rewrite',
+                            action: 'Click Delete Course',
+                            label: 'Added Course pane',
+                        });
+                    }}
+                >
                     <Delete fontSize="small" />
                 </IconButton>
             </div>
