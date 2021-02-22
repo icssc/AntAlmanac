@@ -1,5 +1,6 @@
 service: antalmanac-backend
-
+org: antalmanac
+app: antalmanac
 # Create an optimized package for our functions
 #package:
 #  individually: true
