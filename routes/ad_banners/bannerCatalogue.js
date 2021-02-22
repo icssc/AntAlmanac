@@ -31,7 +31,7 @@ module.exports = [{
     'bannerName': 'Open.png',
     'dept': ['any'],
 }, {
-    'url': 'tinyurl.com/antalmanacxbannerads',
+    'url': 'https://tinyurl.com/antalmanacxbannerads',
     'bannerName': 'ad_for_ads.png',
     'dept': ['any'],
 }];

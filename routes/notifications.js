@@ -41,7 +41,7 @@ async function registerNotification(phoneNumber, sectionCode, courseTitle, res) 
         {$addToSet : {'phoneNumbers': phoneNumber}},
         { upsert: true })
 
-    res.status(200).send()
+    res.status(200).send(`Your number ${phoneNumber} has been added to the watchlist for ${courseTitle}`)
   } catch (err) {
     res.status(500).json({error: err.message})
   }
