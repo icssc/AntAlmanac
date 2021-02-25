@@ -1,167 +1,157 @@
-import React, { Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import Button from '@material-ui/core/Button';
+import { Tooltip } from '@material-ui/core';
 import Today from '@material-ui/icons/Today';
-import { ics } from './ics';
+import { saveAs } from 'file-saver';
+import { createEvents } from 'ics';
+import AppStore from '../../stores/AppStore';
 
-const daysOfWeek = ['M', 'Tu', 'W', 'Th', 'F'];
-const translateDaysForIcs = { M: 'MO', Tu: 'TU', W: 'WE', Th: 'TH', F: 'FR' };
-const translateNumForIcs = {
-    0: 'SU',
-    1: 'MO',
-    2: 'TU',
-    3: 'WE',
-    4: 'TH',
-    5: 'FR',
-    6: 'SA',
+// Hardcoded first mondays
+// Note(chase): doesn't account for week 0 in fall quarters
+const quarterStartDates = {
+    '2021 Spring': [2021, 3, 29],
 };
 
-// hardcoded in relevant first mondays, note: doesn't account for week 0 in fall quarters
-const quartersFirstMondays = {
-    '2019 Spring': 'April 1, 2019',
-    '2019 Fall': 'September 30, 2019',
-}; // used to get first monday depending on quarter
+const daysOfWeek = ['M', 'Tu', 'W', 'Th', 'F'];
+const daysOfWeekIcs = ['MO', 'TU', 'WE', 'TH', 'FR'];
+const translateDaysForIcs = { M: 'MO', Tu: 'TU', W: 'WE', Th: 'TH', F: 'FR' };
 
-function ExportButton(props) {
-    const { eventsInCalendar } = props;
-    // by default, set firstMonday to first Monday 2019 Fall (can be changed later on to different default)
-    // this is to account for in case a user tries to download a schedule with no courses in them (just custom events)
-    let firstMonday = new Date(quartersFirstMondays['2019 Fall']);
+// getByDays returns the days that a class occurs
+//  Given a string of days, convert it to a list of days in ics format
+//  Ex: ("TuThF") -> ["TU", "TH", "FR"]
+const getByDays = (days) => {
+    return daysOfWeek.filter((day) => days.includes(day)).map((day) => translateDaysForIcs[day]);
+};
 
-    // meetings is a string ex: "TuTh" or "MWF"
-    // used for class/course events (NOT custom ones.. that is below)
-    // returns days in an array with the proper format ex: ["TU", "TH"]
-    function getCourseEventDays(meetings) {
-        let meet = meetings.split(' ')[0];
-        let days = [];
-        for (let i = 0; i < daysOfWeek.length; i++) {
-            if (meet.includes(daysOfWeek[i])) {
-                days.push(translateDaysForIcs[daysOfWeek[i]]);
+// getClassStartDate returns the start date of a class
+//  Given the term and the first day of the week that a class occurs,
+//  this computes the start date of the class
+//
+//  Ex: ("2021 Spring", 'Tu') -> [2021, 3, 30]
+//
+// TODO: handle week 0 in fall quarters
+const getClassStartDate = (term, firstClassDay) => {
+    // Get the start date of the quarter (Monday)
+    const quarterStartDate = new Date(quarterStartDates[term]);
+
+    // dayOffset represents the number of days since the start of the quarter
+    const dayOffset = daysOfWeekIcs.indexOf(firstClassDay);
+
+    // Add the dayOffset to the quarterStartDate
+    // Date object will handle potential overflow into the next month
+    quarterStartDate.setDate(quarterStartDate.getDate() + dayOffset);
+
+    // Return [Year, Month, Date]
+    // Note: we add 1 to month since it is 0-indexed
+    return [quarterStartDate.getFullYear(), quarterStartDate.getMonth() + 1, quarterStartDate.getDate()];
+};
+
+// getFirstClass returns the start and end datetime of the first class
+//  Ex: ([2021, 3, 30], " 4:00-4:50p") -> [[2021, 3, 30, 16, 0], [2021, 3, 30, 16, 50]]
+const getFirstClass = (date, time) => {
+    const [classStartTime, classEndTime] = parseTimes(time);
+    return [
+        [...date, ...classStartTime],
+        [...date, ...classEndTime],
+    ];
+};
+
+// parseTimes converts a time string to a
+//  This is a helper function used by getFirstClass
+//  Ex: " 4:00-4:50p" -> [[16, 0], [16, 50]]
+const parseTimes = (time) => {
+    const [start, end] = time
+        .substring(0, time.length - 1) // Ex: " 4:00-4:50"
+        .split('-') // Ex: [" 4:00", "4:50"]
+        .map(
+            (timeString) =>
+                timeString
+                    .split(':') // Ex: [[" 4", "00"], ["4", "50"]]
+                    .map((val) => parseInt(val)) // Ex: [[4, 0], [4, 50]]
+        );
+
+    // Add 12 hours if the time is pm
+    if (time[time.length - 1] == 'p') {
+        start[0] += 12;
+        end[0] += 12;
+    }
+
+    return [start, end];
+};
+
+// getRRule returns a string representing the recurring rule for the VEvent
+//  Ex: ["TU", "TH"] -> "FREQ=WEEKLY;BYDAY=TU,TH;INTERVAL=1;COUNT=20"
+const getRRule = (bydays) => {
+    const count = 10 * bydays.length; // Number of occurances in the quarter
+    return `FREQ=WEEKLY;BYDAY=${bydays};INTERVAL=1;COUNT=${count}`;
+};
+
+class ExportCalendarButton extends PureComponent {
+    handleClick = () => {
+        // Fetch courses for the current schedule
+        const courses = AppStore.getAddedCourses().filter((course) => {
+            return course.scheduleIndices.includes(AppStore.getCurrentScheduleIndex());
+        });
+
+        // Construct an array of VEvents for each event
+        var events = [];
+        for (const course of courses) {
+            const {
+                term,
+                deptCode,
+                courseNumber,
+                courseTitle,
+                section: { sectionType, instructors, meetings },
+            } = course;
+
+            // Create a VEvent for each meeting
+            for (const meeting of meetings) {
+                const bydays = getByDays(meeting.days);
+                const classStartDate = getClassStartDate(term, bydays[0]);
+                const [firstClassStart, firstClassEnd] = getFirstClass(classStartDate, meeting.time);
+                const rrule = getRRule(bydays);
+
+                // Add VEvent to events array
+                events.push({
+                    productId: 'antalmanac/ics',
+                    title: `${deptCode} ${courseNumber} ${sectionType}`,
+                    description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
+                    location: `${meeting.bldg}`,
+                    start: firstClassStart,
+                    end: firstClassEnd,
+                    recurrenceRule: rrule,
+                });
             }
         }
-        return days;
-    }
 
-    // given a custom event ID,
-    // get days that custom event occurs in a week so can add to calendar as one event
-    // return days in array with the proper format ["MO", "WE", "FR"]
-    function getCustomEventDays(customEventID) {
-        let days = [];
-        for (let i = 0; i < eventsInCalendar.length; i++) {
-            if (eventsInCalendar[i].isCustomEvent && eventsInCalendar[i].customEventID === customEventID) {
-                days.push(translateNumForIcs[eventsInCalendar[i].start.getDay()]);
+        // Convert the events into a vcalendar
+        // Callback function triggers a download of the .ics file
+        createEvents(events, (err, val) => {
+            if (!err) {
+                console.log(val);
+                // Download the .ics file
+                var blob = new Blob([val], { type: 'text/plain;charset=utf-8' });
+                saveAs(blob, 'schedule.ics');
+            } else {
+                console.log(err);
             }
-        }
-        return days;
+        });
+    };
+
+    render() {
+        return (
+            <Tooltip title="Download Calendar as an .ics file">
+                <Button
+                    onClick={this.handleClick}
+                    variant="outlined"
+                    size="small"
+                    startIcon={<Today fontSize="small" />}
+                >
+                    Download
+                </Button>
+            </Tooltip>
+        );
     }
-
-    // calculate start and stop times in the format of Date objects given an event (course or custom)
-    // returned as an array [start_time, stop_time]
-    function getStartStopTimes(event) {
-        let times = [];
-
-        let start_time = new Date(firstMonday);
-        start_time.setDate(start_time.getDate() + event.start.getDay() - 1); // based on first monday, figure out which day the class starts
-        let end_time = new Date(start_time);
-
-        start_time.setHours(event.start.getHours());
-        start_time.setMinutes(event.start.getMinutes());
-        end_time.setHours(event.end.getHours());
-        end_time.setMinutes(event.end.getMinutes());
-
-        times.push(start_time);
-        times.push(end_time);
-        return times;
-    }
-
-    return (
-        <Fragment>
-            <Button
-                style={{ width: '100%', 'padding-right': '11px' }}
-                onClick={() => {
-                    let added = []; // keep track of events already added in ics file to avoid duplicate events
-                    let cal = ics(); // initialize ics file
-
-                    // adding courses
-                    for (let i = 0; i < eventsInCalendar.length; i++) {
-                        // loop over all events in calendar
-                        let event = eventsInCalendar[i];
-
-                        if (!event.isCustomEvent) {
-                            // for courses
-                            firstMonday = new Date(quartersFirstMondays[event.courseTerm]); // set first Monday based off quarter
-
-                            if (added.indexOf(event.courseCode) === -1) {
-                                let title = event.courseType + ' ' + event.title;
-                                let location = event.location;
-                                let description =
-                                    event.name.join(' ') + ' Course Code: ' + eventsInCalendar[i].courseCode;
-
-                                let times = getStartStopTimes(event);
-                                let start_time = times[0];
-                                let end_time = times[1];
-
-                                let days = getCourseEventDays(event.section.meetings[0][0]); // pass in days class occurs in a string ex: "TuTh", "MWF"
-                                let rrule = {
-                                    freq: 'WEEKLY',
-                                    count: 10 * days.length, // 10 weeks in the quarter * number days it occurs in a week
-                                    byday: days, // days it occurs in an array ex: ["TU", "TH"]
-                                };
-
-                                cal.addEvent(title, description, location, start_time, end_time, rrule); // add event to ics file
-
-                                added.push(event.courseCode); // we added this course
-
-                                // adding finals
-                                // note: this would be easier if could get final information in a better way (like Date object), had to splice a string to get all data
-                                if (
-                                    event.section.hasOwnProperty('finalExam') &&
-                                    event.section.finalExam !== '' &&
-                                    event.section.finalExam !== 'TBA'
-                                ) {
-                                    let final_info = event.section.finalExam.split(' ');
-                                    let end_hour = final_info[3].split('-')[1]; // get time that final ends to calculate when final begins
-
-                                    let final_date =
-                                        final_info[0] + ' ' + final_info[1] + ' ' + firstMonday.getFullYear(); // get date of the day of the final
-                                    let final_end = new Date(
-                                        final_date + ' ' + end_hour.slice(0, -2) + ' ' + end_hour.slice(-2)
-                                    ); // strange formatting to make Date object work
-                                    let final_start = new Date(final_end);
-                                    final_start.setHours(final_start.getHours() - 2); // finals start two hours before they end
-
-                                    cal.addEvent('Final: ' + event.title, '', '', final_start, final_end);
-                                }
-                            }
-                        }
-                        // adding custom events
-                        else if (added.indexOf(event.customEventID) === -1) {
-                            let title = event.title;
-
-                            let times = getStartStopTimes(event);
-                            let start_time = times[0];
-                            let end_time = times[1];
-
-                            let days = getCustomEventDays(event.customEventID); // pass in customEventID
-                            let rrule = {
-                                freq: 'WEEKLY',
-                                count: 10 * days.length, // 10 weeks in the quarter * number of days it occurs in a week
-                                byday: days, // days it occurs in an array ex: ["MO", "WE", "FR"]
-                            };
-
-                            cal.addEvent(title, '', '', start_time, end_time, rrule); // add event to ics file, description and location are blank
-
-                            added.push(event.customEventID); // we added this custom event
-                        }
-                    }
-
-                    cal.download(); // download ics file
-                }}
-            >
-                <Today style={{ 'margin-right': '5px' }} />
-                .ics
-            </Button>
-        </Fragment>
-    );
 }
 
-export default ExportButton;
+export default ExportCalendarButton;
