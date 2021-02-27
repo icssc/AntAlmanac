@@ -12,9 +12,9 @@ const quarterStartDates = {
     '2021 Spring': [2021, 3, 29],
 };
 
-const daysOfWeek = ['M', 'Tu', 'W', 'Th', 'F'];
-const daysOfWeekIcs = ['MO', 'TU', 'WE', 'TH', 'FR'];
-const translateDaysForIcs = { M: 'MO', Tu: 'TU', W: 'WE', Th: 'TH', F: 'FR' };
+const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
+const daysOffset = { SU: -1, MO: 0, TU: 1, WE: 2, TH: 3, FR: 4, SA: 5 };
+const translateDaysForIcs = { Su: 'SU', M: 'MO', Tu: 'TU', W: 'WE', Th: 'TH', F: 'FR', Sa: 'SA' };
 
 // getByDays returns the days that a class occurs
 //  Given a string of days, convert it to a list of days in ics format
@@ -35,7 +35,7 @@ const getClassStartDate = (term, firstClassDay) => {
     const quarterStartDate = new Date(quarterStartDates[term]);
 
     // dayOffset represents the number of days since the start of the quarter
-    const dayOffset = daysOfWeekIcs.indexOf(firstClassDay);
+    const dayOffset = daysOffset[firstClassDay];
 
     // Add the dayOffset to the quarterStartDate
     // Date object will handle potential overflow into the next month
@@ -44,6 +44,32 @@ const getClassStartDate = (term, firstClassDay) => {
     // Return [Year, Month, Date]
     // Note: we add 1 to month since it is 0-indexed
     return [quarterStartDate.getFullYear(), quarterStartDate.getMonth() + 1, quarterStartDate.getDate()];
+};
+
+// toUTC converts a list of times to UTC
+//  offsetHours is the time difference to UTC
+//
+// Note(chase): We currently don't use this function because timezones are too annoying.
+//  If you want to use this function, you also need to set the VEvent's
+//  startInputType/endInputType to 'utc'
+const toUTC = (times, offsetHours) => {
+    return times.map((time) => {
+        // Construct a Date object
+        // Subtract the month by one, since it should be 0-indexed
+        const dateTime = new Date(time[0], time[1] - 1, time[2], time[3], time[4]);
+
+        // Add the offsetHours to the Date object
+        dateTime.setHours(dateTime.getHours() + offsetHours);
+
+        // Return formatted for ics
+        return [
+            dateTime.getFullYear(),
+            dateTime.getMonth() + 1, // Add 1 month since it is 0-indexed
+            dateTime.getDate(),
+            dateTime.getHours(),
+            dateTime.getMinutes(),
+        ];
+    });
 };
 
 // getFirstClass returns the start and end datetime of the first class
@@ -60,8 +86,15 @@ const getFirstClass = (date, time) => {
 //  This is a helper function used by getFirstClass
 //  Ex: " 4:00-4:50p" -> [[16, 0], [16, 50]]
 const parseTimes = (time) => {
+    // Determine whether the time is in the afternoon (PM)
+    var pm = false;
+    if (time[time.length - 1] === 'p') {
+        time = time.substring(0, time.length - 1); // Remove 'p' from the end
+        pm = true;
+    }
+
+    // Get the [start, end] times in [hour, minute] format
     const [start, end] = time
-        .substring(0, time.length - 1) // Ex: " 4:00-4:50"
         .split('-') // Ex: [" 4:00", "4:50"]
         .map(
             (timeString) =>
@@ -70,9 +103,16 @@ const parseTimes = (time) => {
                     .map((val) => parseInt(val)) // Ex: [[4, 0], [4, 50]]
         );
 
-    // Add 12 hours if the time is pm
-    if (time[time.length - 1] == 'p') {
-        start[0] += 12;
+    // Add 12 hours if the time is PM
+    // However don't add 12 if it is noon
+    if (pm && end[0] !== 12) {
+        // Only add 12 to start if start is greater than end
+        // We don't want to add 12 if the start is in the AM
+        //  E.g. 11:00-12:00 => don't add 12 to start
+        //  E.g. 1:00-2:00 => add 12 to start
+        if (start[0] <= end[0]) {
+            start[0] += 12;
+        }
         end[0] += 12;
     }
 
@@ -114,6 +154,8 @@ class ExportCalendarButton extends PureComponent {
                 // Add VEvent to events array
                 events.push({
                     productId: 'antalmanac/ics',
+                    startOutputType: 'local',
+                    endOutputType: 'local',
                     title: `${deptCode} ${courseNumber} ${sectionType}`,
                     description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
                     location: `${meeting.bldg}`,
