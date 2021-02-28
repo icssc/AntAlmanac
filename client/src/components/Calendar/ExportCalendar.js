@@ -42,8 +42,16 @@ const getClassStartDate = (term, firstClassDay) => {
     quarterStartDate.setDate(quarterStartDate.getDate() + dayOffset);
 
     // Return [Year, Month, Date]
-    // Note: we add 1 to month since it is 0-indexed
-    return [quarterStartDate.getFullYear(), quarterStartDate.getMonth() + 1, quarterStartDate.getDate()];
+    return dateToIcs(quarterStartDate);
+};
+
+// dateToIcs takes a Date object and returns it in ics format [YYYY, MM, DD]
+const dateToIcs = (date) => {
+    return [
+        date.getFullYear(),
+        date.getMonth() + 1, // Add 1 month since it is 0-indexed
+        date.getDate(),
+    ];
 };
 
 // toUTC converts a list of times to UTC
@@ -62,13 +70,7 @@ const toUTC = (times, offsetHours) => {
         dateTime.setHours(dateTime.getHours() + offsetHours);
 
         // Return formatted for ics
-        return [
-            dateTime.getFullYear(),
-            dateTime.getMonth() + 1, // Add 1 month since it is 0-indexed
-            dateTime.getDate(),
-            dateTime.getHours(),
-            dateTime.getMinutes(),
-        ];
+        return [...dateToIcs(dateTime), dateTime.getHours(), dateTime.getMinutes()];
     });
 };
 
