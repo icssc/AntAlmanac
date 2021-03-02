@@ -7,7 +7,7 @@ module.exports = [{
     'bannerName': 'Triangle.jpg',
     'dept': ['BIO SCI', 'BME', 'CBE', 'CHEM', 'COGS', 'COMPSCI', 'CSE', 'EARTHSS', 'EECS', 'ENGR', 'ENGRCEE', 'ENGRMAE', 'I&C SCI', 'IN4MATX', 'MATH', 'PHRMSCI', 'PHY SCI', 'PHYSICS', 'POL SCI', 'PSYCH', 'STATS', 'SWE'],
 }, {
-    'url': 'https://www.facebook.com/campkesemucirvine/',
+    'url': 'https://instagram.com/campkesemucirvine',
     'bannerName': 'Kesem.png',
     'dept': ['any'],
 }, {
@@ -29,6 +29,18 @@ module.exports = [{
 }, {
     'url': 'https://www.facebook.com/groups/uci.open.jam/',
     'bannerName': 'Open.png',
+    'dept': ['any'],
+}, {
+    'url': 'https://www.thetatauuci.com/',
+    'bannerName': 'ThetaTau.png',
+    'dept': ['BME', 'CBE', 'COMPSCI', 'CSE', 'EECS', 'ENGR', 'ENGRCEE', 'ENGRMAE', 'ENGRMSE', 'I&C SCI', 'IN4MATX', 'SWE'],
+}, {
+    'url': 'https://sites.uci.edu/codepath/',
+    'bannerName': 'CodePath.png',
+    'dept': ['BME', 'CBE', 'COGS', 'COMPSCI', 'CSE', 'ECPS', 'EECS', 'ENGR', 'ENGRCEE', 'ENGRMAE', 'ENGRMSE', 'I&C SCI', 'IN4MATX', 'LSCI', 'MATH', 'NET SYS', 'STATS', 'SWE'],
+}, {
+    'url': 'https://forms.gle/CV76joocyRScFEcx5',
+    'bannerName': 'SASA.png',
     'dept': ['any'],
 }, {
     'url': 'https://tinyurl.com/antalmanacxbannerads',
