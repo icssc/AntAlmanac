@@ -11,13 +11,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { withSnackbar } from 'notistack';
 import { Fragment } from 'react';
 
-const variantIcon = {
-    success: CheckCircleIcon,
-    warning: WarningIcon,
-    error: ErrorIcon,
-    info: InfoIcon,
-};
-
 const styles = (theme) => ({
     success: {
         backgroundColor: green[600],
