@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import App from './components/App/App';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { unregister } from './registerServiceWorker';
+import { SnackbarProvider } from 'notistack';
 // import whyDidYouRender from '@welldone-software/why-did-you-render';
 // if (process.env.NODE_ENV === 'development') {
 // const whyDidYouRender = require('@welldone-software/why-did-you-render/dist/no-classes-transpile/umd/whyDidYouRender.min.js');
@@ -42,7 +43,9 @@ const theme = createMuiTheme({
 const rootElement = document.getElementById('root');
 render(
     <MuiThemeProvider theme={theme}>
-        <App style={{ height: '100%' }} />
+        <SnackbarProvider>
+            <App style={{ height: '100%' }} />
+        </SnackbarProvider>
     </MuiThemeProvider>,
     rootElement
 );

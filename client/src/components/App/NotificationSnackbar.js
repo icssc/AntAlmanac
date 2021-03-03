@@ -5,11 +5,11 @@ import InfoIcon from '@material-ui/icons/Info';
 import CloseIcon from '@material-ui/icons/Close';
 import { amber, green } from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
-import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import WarningIcon from '@material-ui/icons/Warning';
 import AppStore from '../../stores/AppStore';
 import { withStyles } from '@material-ui/core/styles';
+import { withSnackbar } from 'notistack';
+import { Fragment } from 'react';
 
 const variantIcon = {
     success: CheckCircleIcon,
@@ -45,66 +45,44 @@ const styles = (theme) => ({
 
 class NotificationSnackbar extends PureComponent {
     state = {
-        open: false,
         message: '',
         variant: 'info',
         duration: 3000,
     };
 
     openSnackbar = () => {
-        this.setState({
-            open: true,
-            message: AppStore.getSnackbarMessage(),
+        this.props.enqueueSnackbar(AppStore.getSnackbarMessage(), {
             variant: AppStore.getSnackbarVariant(),
             duration: AppStore.getSnackbarDuration(),
             position: AppStore.getSnackbarPosition(),
+            action: this.snackbarAction,
         });
     };
 
-    closeSnackbar = () => {
-        this.setState({ open: false });
+    snackbarAction = (key) => {
+        const { classes } = this.props;
+        return (
+            <Fragment>
+                <IconButton
+                    key="close"
+                    color="inherit"
+                    onClick={() => {
+                        this.props.closeSnackbar(key);
+                    }}
+                >
+                    <CloseIcon className={classes.icon} />
+                </IconButton>
+            </Fragment>
+        );
     };
 
     componentDidMount = () => {
         AppStore.on('openSnackbar', this.openSnackbar);
     };
 
-    handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        this.closeSnackbar();
-    };
-
     render() {
-        const { classes } = this.props;
-        const Icon = variantIcon[this.state.variant];
-
-        return (
-            <Snackbar
-                anchorOrigin={this.state.position}
-                open={this.state.open}
-                autoHideDuration={this.state.duration}
-                onClose={this.handleClose}
-            >
-                <SnackbarContent
-                    className={classes[this.state.variant]}
-                    message={
-                        <span className={classes.message}>
-                            <Icon className={classes.icon} />
-                            {this.state.message}
-                        </span>
-                    }
-                    action={[
-                        <IconButton key="close" color="inherit" onClick={this.closeSnackbar}>
-                            <CloseIcon className={classes.icon} />
-                        </IconButton>,
-                    ]}
-                />
-            </Snackbar>
-        );
+        return null;
     }
 }
 
-export default withStyles(styles)(NotificationSnackbar);
+export default withStyles(styles)(withSnackbar(NotificationSnackbar));
