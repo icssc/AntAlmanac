@@ -31,7 +31,7 @@ class News extends PureComponent {
         try {
             const data = await fetch(NEWS_ENDPOINT);
             const json = await data.json();
-            this.setState({ newsItems: json.news, loading: false });
+            this.setState({ newsItems: json.news.sort((a, b) => (a.date > b.date ? -1 : 1)), loading: false });
         } catch (e) {
             console.error('Error loading news items:', e);
             this.setState({ newsItems: null, loading: false });
@@ -41,24 +41,34 @@ class News extends PureComponent {
     getNewsItems = () => {
         const { classes } = this.props;
         if (this.state.loading === false && this.state.newsItems !== null) {
-            return this.state.newsItems.map((newsItem, index) => {
+            if (this.state.newsItems.length === 0) {
                 return (
-                    <Fragment key={newsItem['_id']}>
-                        <ListItem alignItems="flex-start" className={classes.listItem} dense>
-                            <Typography variant="body1" gutterBottom>
-                                {newsItem.title}
-                            </Typography>
-                            <Typography variant="body2" gutterBottom>
-                                {newsItem.body}
-                            </Typography>
-                            <Typography variant="caption" gutterBottom color="textSecondary">
-                                {moment(newsItem.date).tz('America/Los_Angeles').format('MMMM Do YYYY')}
-                            </Typography>
-                        </ListItem>
-                        {index !== this.state.newsItems.length - 1 ? <Divider /> : null}
-                    </Fragment>
+                    <ListItem alignItems="flex-start" className={classes.listItem} dense>
+                        <Typography variant="body2" gutterBottom>
+                            No news items found
+                        </Typography>
+                    </ListItem>
                 );
-            });
+            } else {
+                return this.state.newsItems.map((newsItem, index) => {
+                    return (
+                        <Fragment key={newsItem['_id']}>
+                            <ListItem alignItems="flex-start" className={classes.listItem} dense>
+                                <Typography variant="body1" gutterBottom>
+                                    {newsItem.title}
+                                </Typography>
+                                <Typography variant="body2" gutterBottom>
+                                    {newsItem.body}
+                                </Typography>
+                                <Typography variant="caption" gutterBottom color="textSecondary">
+                                    {moment(newsItem.date).tz('America/Los_Angeles').format('MMMM Do YYYY')}
+                                </Typography>
+                            </ListItem>
+                            {index !== this.state.newsItems.length - 1 ? <Divider /> : null}
+                        </Fragment>
+                    );
+                });
+            }
         } else if (this.state.loading === false && this.state.newsItems === null) {
             return (
                 <ListItem alignItems="flex-start" className={classes.listItem} dense>
