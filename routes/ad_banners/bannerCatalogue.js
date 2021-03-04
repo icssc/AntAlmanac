@@ -34,14 +34,17 @@ module.exports = [{
     'url': 'https://www.thetatauuci.com/',
     'bannerName': 'ThetaTau.png',
     'dept': ['BME', 'CBE', 'COMPSCI', 'CSE', 'EECS', 'ENGR', 'ENGRCEE', 'ENGRMAE', 'ENGRMSE', 'I&C SCI', 'IN4MATX', 'SWE'],
+    'endDate': '2021-04-01'
 }, {
     'url': 'https://sites.uci.edu/codepath/',
     'bannerName': 'CodePath.png',
     'dept': ['BME', 'CBE', 'COGS', 'COMPSCI', 'CSE', 'ECPS', 'EECS', 'ENGR', 'ENGRCEE', 'ENGRMAE', 'ENGRMSE', 'I&C SCI', 'IN4MATX', 'LSCI', 'MATH', 'NET SYS', 'STATS', 'SWE'],
+    'endDate': '2021-03-29'
 }, {
     'url': 'https://forms.gle/CV76joocyRScFEcx5',
     'bannerName': 'SASA.png',
     'dept': ['any'],
+    'endDate': '2021-04-03'
 }, {
     'url': 'https://tinyurl.com/antalmanacxbannerads',
     'bannerName': 'ad_for_ads.png',

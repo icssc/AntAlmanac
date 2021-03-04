@@ -23,11 +23,15 @@ router.get('/getRandomAd', (req, res) => {
   const adProbabilityArray = [];
 
   for (let i = 0; i < catalogue.length; i++) {
-    if (catalogue[i].dept.includes(deptCode)) {
-      for (let j = 0; j < 5; j++)
+    const currentDate = new Date().toISOString().slice(0,10);
+
+    if (catalogue[i].endDate === undefined || currentDate <= catalogue[i].endDate) {
+      if (catalogue[i].dept.includes(deptCode)) {
+        for (let j = 0; j < 5; j++)
+          adProbabilityArray.push(i);
+      } else {
         adProbabilityArray.push(i);
-    } else {
-      adProbabilityArray.push(i);
+      }
     }
   }
 
