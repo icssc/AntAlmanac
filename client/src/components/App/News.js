@@ -1,5 +1,16 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Button, Divider, List, ListItem, Paper, Popover, Tooltip, Typography, withStyles } from '@material-ui/core';
+import {
+    Badge,
+    Button,
+    Divider,
+    List,
+    ListItem,
+    Paper,
+    Popover,
+    Tooltip,
+    Typography,
+    withStyles,
+} from '@material-ui/core';
 import { RssFeed } from '@material-ui/icons';
 import { NEWS_ENDPOINT } from '../../api/endpoints';
 import { Skeleton } from '@material-ui/lab';
@@ -18,6 +29,9 @@ const styles = (theme) => ({
     skeleton: {
         padding: '4px',
     },
+    dot: {
+        right: '5%',
+    },
 });
 
 class News extends PureComponent {
@@ -25,16 +39,26 @@ class News extends PureComponent {
         anchorEl: null,
         newsItems: null,
         loading: true,
+        showDot: true,
     };
 
     componentDidMount = async () => {
         try {
             const data = await fetch(NEWS_ENDPOINT);
             const json = await data.json();
-            this.setState({ newsItems: json.news.sort((a, b) => (a.date > b.date ? -1 : 1)), loading: false });
+            const sortedNewsItems = json.news.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? 1 : 0));
+            this.setState({ newsItems: sortedNewsItems, loading: false });
+
+            if (typeof Storage !== 'undefined' && sortedNewsItems.length !== 0) {
+                const idOfLatestNewsItem = sortedNewsItems[0]['_id'];
+                const idOfLatestCheckedNewsItem = window.localStorage.getItem('idOfLatestCheckedNewsItem');
+
+                if (idOfLatestCheckedNewsItem !== null && idOfLatestNewsItem === idOfLatestCheckedNewsItem)
+                    this.setState({ showDot: false });
+            }
         } catch (e) {
             console.error('Error loading news items:', e);
-            this.setState({ newsItems: null, loading: false });
+            this.setState({ newsItems: null, loading: false, showDot: true });
         }
     };
 
@@ -94,19 +118,36 @@ class News extends PureComponent {
         }
     };
 
+    openPopup = (e) => {
+        this.setState({ anchorEl: e.currentTarget });
+
+        if (typeof Storage !== 'undefined') {
+            if (this.state.newsItems.length !== 0) {
+                window.localStorage.setItem('idOfLatestCheckedNewsItem', this.state.newsItems[0]['_id']);
+                this.setState({ showDot: false });
+            }
+        }
+    };
+
     render() {
         const { classes } = this.props;
 
         return (
             <div>
-                <Tooltip title="Toggle news panel">
-                    <Button
-                        onClick={(e) => this.setState({ anchorEl: e.currentTarget })}
-                        color="inherit"
-                        startIcon={<RssFeed />}
+                <Tooltip title="See latest updates">
+                    <Badge
+                        variant="dot"
+                        overlap="circle"
+                        color="error"
+                        invisible={!this.state.showDot}
+                        classes={{
+                            dot: classes.dot,
+                        }}
                     >
-                        News
-                    </Button>
+                        <Button onClick={this.openPopup} color="inherit" startIcon={<RssFeed />}>
+                            News
+                        </Button>
+                    </Badge>
                 </Tooltip>
                 <Popover
                     placement="bottom-end"
