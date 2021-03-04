@@ -39,7 +39,7 @@ class News extends PureComponent {
         anchorEl: null,
         newsItems: null,
         loading: true,
-        showDot: true,
+        showDot: false,
     };
 
     componentDidMount = async () => {
@@ -53,51 +53,41 @@ class News extends PureComponent {
                 const idOfLatestNewsItem = sortedNewsItems[0]['_id'];
                 const idOfLatestCheckedNewsItem = window.localStorage.getItem('idOfLatestCheckedNewsItem');
 
-                if (idOfLatestCheckedNewsItem !== null && idOfLatestNewsItem === idOfLatestCheckedNewsItem)
-                    this.setState({ showDot: false });
+                if (idOfLatestCheckedNewsItem === null || idOfLatestNewsItem !== idOfLatestCheckedNewsItem)
+                    this.setState({ showDot: true });
             }
         } catch (e) {
             console.error('Error loading news items:', e);
-            this.setState({ newsItems: null, loading: false, showDot: true });
+            this.setState({ newsItems: null, loading: false });
         }
     };
 
     getNewsItems = () => {
         const { classes } = this.props;
-        if (this.state.loading === false && this.state.newsItems !== null) {
-            if (this.state.newsItems.length === 0) {
+        if (this.state.loading === false && this.state.newsItems !== null && this.state.newsItems.length !== 0) {
+            return this.state.newsItems.map((newsItem, index) => {
                 return (
-                    <ListItem alignItems="flex-start" className={classes.listItem} dense>
-                        <Typography variant="body2" gutterBottom>
-                            No news items found
-                        </Typography>
-                    </ListItem>
+                    <Fragment key={newsItem['_id']}>
+                        <ListItem alignItems="flex-start" className={classes.listItem} dense>
+                            <Typography variant="body1" gutterBottom>
+                                {newsItem.title}
+                            </Typography>
+                            <Typography variant="body2" gutterBottom>
+                                {newsItem.body}
+                            </Typography>
+                            <Typography variant="caption" gutterBottom color="textSecondary">
+                                {moment(newsItem.date).tz('America/Los_Angeles').format('MMMM Do YYYY')}
+                            </Typography>
+                        </ListItem>
+                        {index !== this.state.newsItems.length - 1 ? <Divider /> : null}
+                    </Fragment>
                 );
-            } else {
-                return this.state.newsItems.map((newsItem, index) => {
-                    return (
-                        <Fragment key={newsItem['_id']}>
-                            <ListItem alignItems="flex-start" className={classes.listItem} dense>
-                                <Typography variant="body1" gutterBottom>
-                                    {newsItem.title}
-                                </Typography>
-                                <Typography variant="body2" gutterBottom>
-                                    {newsItem.body}
-                                </Typography>
-                                <Typography variant="caption" gutterBottom color="textSecondary">
-                                    {moment(newsItem.date).tz('America/Los_Angeles').format('MMMM Do YYYY')}
-                                </Typography>
-                            </ListItem>
-                            {index !== this.state.newsItems.length - 1 ? <Divider /> : null}
-                        </Fragment>
-                    );
-                });
-            }
-        } else if (this.state.loading === false && this.state.newsItems === null) {
+            });
+        } else if (this.state.loading === false) {
             return (
                 <ListItem alignItems="flex-start" className={classes.listItem} dense>
-                    <Typography variant="caption" gutterBottom>
-                        {'Error loading news items'}
+                    <Typography variant="body2" gutterBottom>
+                        No new announcements!
                     </Typography>
                 </ListItem>
             );
