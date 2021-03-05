@@ -7,9 +7,16 @@ import { createEvents } from 'ics';
 import AppStore from '../../stores/AppStore';
 
 // Hardcoded first mondays
-// Note(chase): doesn't account for week 0 in fall quarters
+// TODO(chase): account for week 0 in fall quarters
+// TODO(chase): support summer sessions
 const quarterStartDates = {
+    '2019 Fall': [2019, 9, 30],
+    '2020 Winter': [2020, 1, 6],
+    '2020 Spring': [2020, 3, 30],
+    '2020 Fall': [2020, 10, 5],
+    '2021 Winter': [2021, 1, 4],
     '2021 Spring': [2021, 3, 29],
+    '2021 Fall': [2021, 9, 27],
 };
 
 const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
