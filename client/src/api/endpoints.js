@@ -12,3 +12,4 @@ export const LOAD_DATA_ENDPOINT = endpointTransform('/api/users/loadUserData');
 export const SAVE_DATA_ENDPOINT = endpointTransform('/api/users/saveUserData');
 export const ENROLLMENT_DATA_ENDPOINT = endpointTransform('/api/enrollmentData');
 export const PETERPORTAL_DATA_ENDPOINT = endpointTransform('/api/peterportalapi');
+export const NEWS_ENDPOINT = endpointTransform('/api/news');

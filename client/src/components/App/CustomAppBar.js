@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
 import { AppBar, Button, Toolbar, Tooltip } from '@material-ui/core';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
-import { Assignment, Info } from '@material-ui/icons';
+import { Assignment } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import NotificationHub from './NotificationHub';
 import SettingsMenu from './SettingsMenu';
 import { ReactComponent as Logo } from './logo.svg';
+import News from './News';
 
 const styles = {
     appBar: {
@@ -47,6 +48,8 @@ class CustomAppBar extends PureComponent {
                             Feedback
                         </Button>
                     </Tooltip>
+
+                    <News />
 
                     {/*<Tooltip title="Info Page">*/}
                     {/*<Button*/}
