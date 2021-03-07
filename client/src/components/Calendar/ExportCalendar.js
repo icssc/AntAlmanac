@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import ReactGA from 'react-ga';
 import Button from '@material-ui/core/Button';
 import { Tooltip } from '@material-ui/core';
 import Today from '@material-ui/icons/Today';
@@ -186,6 +187,11 @@ class ExportCalendarButton extends PureComponent {
             } else {
                 console.log(err);
             }
+        });
+
+        ReactGA.event({
+            category: 'antalmanac-rewrite',
+            action: 'Download .ics file',
         });
     };
 
