@@ -2,7 +2,17 @@ import React, { Fragment, useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
 import locations from './static/locations';
 import restrictionsMapping from './static/restrictionsMapping';
-import { IconButton, Menu, Button, ButtonGroup, MenuItem, Popover, Tooltip, Typography } from '@material-ui/core';
+import {
+    TableRow,
+    IconButton,
+    Menu,
+    Button,
+    ButtonGroup,
+    MenuItem,
+    Popover,
+    Tooltip,
+    Typography,
+} from '@material-ui/core';
 import { bindHover, bindMenu, bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { withStyles } from '@material-ui/core/styles';
 import { Add, ArrowDropDown } from '@material-ui/icons';
@@ -401,7 +411,7 @@ const SectionTableBody = withStyles(styles)((props) => {
     }, []);
 
     return (
-        <tr className={classNames(classes.tr, { addedCourse: addedCourse && !colorAndDelete })}>
+        <TableRow className={classNames(classes.tr, { addedCourse: addedCourse && !colorAndDelete })}>
             {!colorAndDelete ? (
                 <ScheduleAddCell section={section} courseDetails={courseDetails} term={term} />
             ) : (
@@ -430,7 +440,7 @@ const SectionTableBody = withStyles(styles)((props) => {
                 courseTitle={courseDetails.courseTitle}
                 courseNumber={courseDetails.courseNumber}
             />
-        </tr>
+        </TableRow>
     );
 });
 

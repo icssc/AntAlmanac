@@ -1,5 +1,5 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Typography } from '@material-ui/core';
+import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph';
 import CourseInfoBar from './CourseInfoBar';
@@ -79,34 +79,36 @@ class SectionTable extends PureComponent {
                         <Fragment />
                     )}
                 </div>
-                <table className={classes.table}>
-                    <thead>
-                        <tr>
-                            {!this.props.colorAndDelete ? <th>Add</th> : <th style={{ border: 'none' }} />}
-                            <th>Code</th>
-                            <th>Type</th>
-                            <th>Instructors</th>
-                            <th>Times</th>
-                            <th>Places</th>
-                            <th>Enrollment</th>
-                            <th>Rstr</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.props.courseDetails.sections.map((section) => {
-                            return (
-                                <SectionTableBody
-                                    key={section.sectionCode}
-                                    section={section}
-                                    courseDetails={this.props.courseDetails}
-                                    term={this.props.term}
-                                    colorAndDelete={this.props.colorAndDelete}
-                                />
-                            );
-                        })}
-                    </tbody>
-                </table>
+
+                <TableContainer component={Paper}>
+                    <Table className={classes.table} aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Code</TableCell>
+                                <TableCell align="right">Type</TableCell>
+                                <TableCell align="right">Instructors</TableCell>
+                                <TableCell align="right">Times</TableCell>
+                                <TableCell align="right">Places</TableCell>
+                                <TableCell align="right">Enrollment</TableCell>
+                                <TableCell align="right">Rstr</TableCell>
+                                <TableCell align="right">Status</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {this.props.courseDetails.sections.map((section) => {
+                                return (
+                                    <SectionTableBody
+                                        key={section.sectionCode}
+                                        section={section}
+                                        courseDetails={this.props.courseDetails}
+                                        term={this.props.term}
+                                        colorAndDelete={this.props.colorAndDelete}
+                                    />
+                                );
+                            })}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </Fragment>
         );
     }
