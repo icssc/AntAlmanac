@@ -147,8 +147,9 @@ class CourseRenderPane extends PureComponent {
                 if (response.ok) {
                     const jsonResp = await response.json();
 
-                    const adBannerInfo = await fetch(RANDOM_AD_ENDPOINT);
-
+                    const adBannerInfo = await fetch(
+                        `${RANDOM_AD_ENDPOINT}?deptCode=${encodeURIComponent(formData.deptValue)}`
+                    );
                     const jsonAdInfo = await adBannerInfo.json();
 
                     this.setState({
