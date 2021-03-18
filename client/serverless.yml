@@ -1,7 +1,7 @@
 component: website
 name: antalmanac-site
-#org: antalmanac
-#app: my-app
+org: antalmanac
+app: antalmanac
 stage: dev
 
 inputs:
