@@ -17,6 +17,7 @@ class GeDataFetchProvider extends PureComponent {
             term: formData.term,
             ge: 'ANY',
             courseNumber: this.props.courseDetails.courseNumber,
+            courseTitle: this.props.courseDetails.courseTitle,
         };
 
         const response = await fetch(WEBSOC_ENDPOINT, {

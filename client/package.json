@@ -17,6 +17,7 @@
         "leaflet.locatecontrol": "^0.72.0",
         "material-ui-popup-state": "^1.6.1",
         "moment": "^2.27.0",
+        "notistack": "^1.0.2",
         "moment-timezone": "^0.5.33",
         "prop-types": "^15.7.2",
         "react": "^16.13.1",
@@ -39,8 +40,7 @@
         "eject": "react-scripts eject"
     },
     "devDependencies": {
-        "@welldone-software/why-did-you-render": "^4.2.5",
-        "react-snap": "^1.23.0"
+        "@welldone-software/why-did-you-render": "^4.2.5"
     },
     "browserslist": [
         ">0.2%",
@@ -48,8 +48,5 @@
         "not ie <= 11",
         "not op_mini all"
     ],
-    "reactSnap": {
-        "inlineCss": true
-    },
     "proxy": "http://localhost:8080"
 }
