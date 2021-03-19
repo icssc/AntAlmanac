@@ -9,6 +9,7 @@ import AdBanner from '../AdBanner/AdBanner';
 import { RANDOM_AD_ENDPOINT, WEBSOC_ENDPOINT } from '../../api/endpoints';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import LazyLoad from 'react-lazyload';
+import { format } from 'date-fns';
 
 const styles = (theme) => ({
     course: {
@@ -131,8 +132,8 @@ class CourseRenderPane extends PureComponent {
                 sectionCodes: formData.sectionCode,
                 instructorName: formData.instructor,
                 units: formData.units,
-                endTime: formData.endTime,
-                startTime: formData.startTime,
+                endTime: formData.endTime ? format(formData.endTime, 'hh:00aaa') : formData.endTime,
+                startTime: formData.startTime ? format(formData.startTime, 'hh:00aaa') : formData.startTime,
                 fullCourses: formData.coursesFull,
                 building: formData.building,
                 room: formData.room,

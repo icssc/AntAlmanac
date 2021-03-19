@@ -14,6 +14,8 @@ import { withStyles } from '@material-ui/core/styles';
 import RightPaneStore from '../../stores/RightPaneStore';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import { updateFormValue } from '../../actions/RightPaneActions';
+import { TimePicker } from '@material-ui/pickers';
+import { format } from 'date-fns';
 
 const styles = {
     units: {
@@ -39,27 +41,16 @@ class AdvancedSearchTextFields extends PureComponent {
 
     handleChange = (name) => (event) => {
         if (name === 'endTime' || name === 'startTime') {
-            if (event.target.value !== '') {
-                if (parseInt(event.target.value.slice(0, 2), 10) > 12)
-                    this.setState(
-                        {
-                            [name]: parseInt(event.target.value.slice(0, 2), 10) - 12 + ':00pm',
-                        },
-                        () => {
-                            updateFormValue('startTime', this.state.startTime);
-                            updateFormValue('endTime', this.state.endTime);
-                        }
-                    );
-                else
-                    this.setState(
-                        {
-                            [name]: parseInt(event.target.value.slice(0, 2), 10) + ':00am',
-                        },
-                        () => {
-                            updateFormValue('startTime', this.state.startTime);
-                            updateFormValue('endTime', this.state.endTime);
-                        }
-                    );
+            if (event !== '') {
+                this.setState(
+                    {
+                        [name]: event,
+                    },
+                    () => {
+                        updateFormValue('startTime', this.state.startTime);
+                        updateFormValue('endTime', this.state.endTime);
+                    }
+                );
             } else {
                 this.setState({ [name]: '' }, () => {
                     updateFormValue('startTime', '');
@@ -121,32 +112,23 @@ class AdvancedSearchTextFields extends PureComponent {
                 </FormControl>
 
                 <form>
-                    <TextField
-                        onChange={this.handleChange('startTime')}
+                    <TimePicker
                         label="Starts After"
-                        type="time"
-                        InputLabelProps={{
-                            //fix saved search params
-                            shrink: true,
-                        }}
-                        inputProps={{
-                            step: 3600,
-                        }}
+                        value={this.state.startTime}
+                        onChange={this.handleChange('startTime')}
+                        minutesStep={60}
+                        clearable
                     />
                 </form>
 
                 <form>
-                    <TextField
-                        onChange={this.handleChange('endTime')}
+                    <TimePicker
                         label="Ends Before"
-                        type="time"
-                        InputLabelProps={{
-                            //fix saved search param
-                            shrink: true,
-                        }}
-                        inputProps={{
-                            step: 3600,
-                        }}
+                        value={this.state.endTime}
+                        onChange={this.handleChange('endTime')}
+                        minutesStep={60}
+                        clearable
+                        width={0.15}
                     />
                 </form>
 
