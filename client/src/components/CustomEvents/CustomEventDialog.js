@@ -41,7 +41,7 @@ class CustomEventDialog extends PureComponent {
     };
 
     handleOpen = () => {
-        this.setState({ open: true })
+        this.setState({ open: true });
         ReactGA.event({
             category: 'antalmanac-rewrite',
             action: 'Click Custom Event button',
@@ -165,7 +165,12 @@ class CustomEventDialog extends PureComponent {
                             Cancel
                         </Button>
 
-                        <Button onClick={() => this.handleClose(false)} variant="contained" color="primary">
+                        <Button
+                            onClick={() => this.handleClose(false)}
+                            variant="contained"
+                            color="primary"
+                            disabled={!(this.state.scheduleIndices.length && this.state.days.some(Boolean))}
+                        >
                             {this.props.customEvent ? 'Save Changes' : 'Add Event'}
                         </Button>
                     </DialogActions>
