@@ -164,15 +164,21 @@ class CustomEventDialog extends PureComponent {
                         <Button onClick={() => this.handleClose(true)} color="primary">
                             Cancel
                         </Button>
-
-                        <Button
-                            onClick={() => this.handleClose(false)}
-                            variant="contained"
-                            color="primary"
-                            disabled={!(this.state.scheduleIndices.length && this.state.days.some(Boolean))}
+                        <Tooltip
+                            title="Schedule and day must be checked"
+                            disableHoverListener={this.state.scheduleIndices.length && this.state.days.some(Boolean)}
                         >
-                            {this.props.customEvent ? 'Save Changes' : 'Add Event'}
-                        </Button>
+                            <span>
+                                <Button
+                                    onClick={() => this.handleClose(false)}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={!(this.state.scheduleIndices.length && this.state.days.some(Boolean))}
+                                >
+                                    {this.props.customEvent ? 'Save Changes' : 'Add Event'}
+                                </Button>
+                            </span>
+                        </Tooltip>
                     </DialogActions>
                 </Dialog>
             </Fragment>
