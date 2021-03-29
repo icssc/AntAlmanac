@@ -54,7 +54,7 @@ class CustomEventDialog extends PureComponent {
             this.handleAddToCalendar();
         }
 
-        this.setState({ open: false });
+        this.setState({ open: false, eventName: '' });
     };
 
     handleEventNameChange = (event) => {
