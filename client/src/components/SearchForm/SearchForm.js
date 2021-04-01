@@ -1,14 +1,14 @@
 import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
-import MobileDeptSelector from './DeptSearchBar/MobileDeptSelector';
 import GESelector from './GESelector';
 import TermSelector from './TermSelector';
 import SectionCodeSearchBar from './SectionCodeSearchBar';
 import CourseNumberSearchBar from './CourseNumberSearchBar';
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AdvancedSearch from './AdvancedSearch';
 import PrivacyPolicyBanner from '../App/PrivacyPolicyBanner';
+import { resetFormValues } from '../../actions/RightPaneActions';
 
 const styles = {
     container: {
@@ -33,13 +33,18 @@ const styles = {
         left: 0,
     },
     searchButton: {
-        backgroundColor: '#72a9ed',
+        width: '50%',
         boxShadow: 'none',
     },
     mobileSearchButton: {
         backgroundColor: '#72a9ed',
         boxShadow: 'none',
         marginLeft: 5,
+    },
+    buttonContainer: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-evenly',
     },
 };
 
@@ -49,13 +54,13 @@ class SearchForm extends PureComponent {
     };
 
     componentWillUnmount = () => {
-        document.addEventListener('keydown', this.enterEvent, false);
+        document.removeEventListener('keydown', this.enterEvent, false);
     };
 
     enterEvent = (event) => {
         const charCode = event.which ? event.which : event.keyCode;
         if ((charCode === 13 || charCode === 10) && document.activeElement.id === 'downshift-0-input') {
-            this.props.searchWebSoc(this.state);
+            this.props.searchWebSoc();
             event.preventDefault();
 
             return false;
@@ -64,27 +69,15 @@ class SearchForm extends PureComponent {
 
     render() {
         const { classes } = this.props;
-        const isMobile = window.innerWidth < 960;
 
         return (
             <div className={classes.container}>
                 <div className={classes.margin}>
                     <TermSelector />
-                    {isMobile ? (
-                        <Button
-                            variant="contained"
-                            onClick={() => this.props.searchWebSoc()}
-                            className={classes.mobileSearchButton}
-                        >
-                            Search
-                        </Button>
-                    ) : (
-                        <Fragment />
-                    )}
                 </div>
 
                 <div className={classes.margin}>
-                    {isMobile ? <MobileDeptSelector /> : <DeptSearchBar />}
+                    <DeptSearchBar />
                     <CourseNumberSearchBar />
                 </div>
 
@@ -96,19 +89,20 @@ class SearchForm extends PureComponent {
                 <AdvancedSearch />
 
                 <div className={classes.search}>
-                    {isMobile ? (
-                        <Fragment />
-                    ) : (
+                    <div className={classes.buttonContainer}>
                         <Button
+                            className={classes.searchButton}
+                            color="primary"
                             variant="contained"
                             onClick={() => this.props.searchWebSoc()}
-                            className={classes.searchButton}
-                            fullWidth
-                            size="large"
                         >
                             Search
                         </Button>
-                    )}
+
+                        <Button variant="contained" onClick={resetFormValues}>
+                            Reset
+                        </Button>
+                    </div>
                 </div>
 
                 <PrivacyPolicyBanner />

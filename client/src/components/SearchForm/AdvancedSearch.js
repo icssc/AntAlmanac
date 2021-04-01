@@ -37,6 +37,26 @@ class AdvancedSearchTextFields extends PureComponent {
         room: RightPaneStore.getFormData().room,
     };
 
+    componentDidMount() {
+        RightPaneStore.on('formReset', this.resetField);
+    }
+
+    componentWillUnmount() {
+        RightPaneStore.removeListener('formReset', this.resetField);
+    }
+
+    resetField = () => {
+        this.setState({
+            instructor: RightPaneStore.getFormData().instructor,
+            units: RightPaneStore.getFormData().units,
+            endTime: RightPaneStore.getFormData().endTime,
+            startTime: RightPaneStore.getFormData().startTime,
+            coursesFull: RightPaneStore.getFormData().coursesFull,
+            building: RightPaneStore.getFormData().building,
+            room: RightPaneStore.getFormData().room,
+        });
+    };
+
     handleChange = (name) => (event) => {
         if (name === 'endTime' || name === 'startTime') {
             if (event.target.value !== '') {

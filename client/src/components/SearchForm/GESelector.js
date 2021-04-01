@@ -36,6 +36,18 @@ class GESelector extends PureComponent {
         updateFormValue('ge', event.target.value);
     };
 
+    componentDidMount() {
+        RightPaneStore.on('formReset', this.resetField);
+    }
+
+    componentWillUnmount() {
+        RightPaneStore.removeListener('formReset', this.resetField);
+    }
+
+    resetField = () => {
+        this.setState({ ge: RightPaneStore.getFormData().ge });
+    };
+
     render() {
         const { classes } = this.props;
 
