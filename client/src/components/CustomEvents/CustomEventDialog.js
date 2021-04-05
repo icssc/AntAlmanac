@@ -54,7 +54,7 @@ class CustomEventDialog extends PureComponent {
             this.handleAddToCalendar();
         }
 
-        this.setState({ open: false, eventName: '' });
+        this.setState({ open: false, eventName: '', days: [false, false, false, false, false], scheduleIndices: [] });
     };
 
     handleEventNameChange = (event) => {
@@ -92,6 +92,10 @@ class CustomEventDialog extends PureComponent {
 
     handleSelectScheduleIndices = (scheduleIndices) => {
         this.setState({ scheduleIndices: scheduleIndices });
+    };
+
+    isAddDisabled = () => {
+        return !(this.state.scheduleIndices.length && this.state.days.some(Boolean));
     };
 
     render() {
@@ -164,16 +168,13 @@ class CustomEventDialog extends PureComponent {
                         <Button onClick={() => this.handleClose(true)} color="primary">
                             Cancel
                         </Button>
-                        <Tooltip
-                            title="Schedule and day must be checked"
-                            disableHoverListener={this.state.scheduleIndices.length && this.state.days.some(Boolean)}
-                        >
+                        <Tooltip title="Schedule and day must be checked" disableHoverListener={!this.isAddDisabled()}>
                             <span>
                                 <Button
                                     onClick={() => this.handleClose(false)}
                                     variant="contained"
                                     color="primary"
-                                    disabled={!(this.state.scheduleIndices.length && this.state.days.some(Boolean))}
+                                    disabled={this.isAddDisabled()}
                                 >
                                     {this.props.customEvent ? 'Save Changes' : 'Add Event'}
                                 </Button>
