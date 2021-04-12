@@ -14,7 +14,8 @@ import { withStyles } from '@material-ui/core/styles';
 import RightPaneStore from '../../stores/RightPaneStore';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import { updateFormValue } from '../../actions/RightPaneActions';
-import { KeyboardTimePicker } from '@material-ui/pickers';
+import { TimePicker } from '@material-ui/pickers';
+import { format } from 'date-fns';
 
 const styles = {
     units: {
@@ -111,7 +112,7 @@ class AdvancedSearchTextFields extends PureComponent {
                 </FormControl>
 
                 <form>
-                    <KeyboardTimePicker
+                    <TimePicker
                         label="Starts After"
                         value={this.state.startTime}
                         onChange={this.handleChange('startTime')}
@@ -121,7 +122,7 @@ class AdvancedSearchTextFields extends PureComponent {
                 </form>
 
                 <form>
-                    <KeyboardTimePicker
+                    <TimePicker
                         label="Ends Before"
                         value={this.state.endTime}
                         onChange={this.handleChange('endTime')}
