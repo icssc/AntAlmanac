@@ -58,35 +58,7 @@ class AdvancedSearchTextFields extends PureComponent {
     };
 
     handleChange = (name) => (event) => {
-        if (name === 'endTime' || name === 'startTime') {
-            if (event.target.value !== '') {
-                if (parseInt(event.target.value.slice(0, 2), 10) > 12)
-                    this.setState(
-                        {
-                            [name]: parseInt(event.target.value.slice(0, 2), 10) - 12 + ':00pm',
-                        },
-                        () => {
-                            updateFormValue('startTime', this.state.startTime);
-                            updateFormValue('endTime', this.state.endTime);
-                        }
-                    );
-                else
-                    this.setState(
-                        {
-                            [name]: parseInt(event.target.value.slice(0, 2), 10) + ':00am',
-                        },
-                        () => {
-                            updateFormValue('startTime', this.state.startTime);
-                            updateFormValue('endTime', this.state.endTime);
-                        }
-                    );
-            } else {
-                this.setState({ [name]: '' }, () => {
-                    updateFormValue('startTime', '');
-                    updateFormValue('endTime', '');
-                });
-            }
-        } else if (name === 'online') {
+        if (name === 'online') {
             if (event.target.checked) {
                 this.setState({ building: 'ON', room: 'LINE' });
                 updateFormValue('building', 'ON');
@@ -142,6 +114,7 @@ class AdvancedSearchTextFields extends PureComponent {
 
                 <form>
                     <TextField
+                        value={this.state.startTime}
                         onChange={this.handleChange('startTime')}
                         label="Starts After"
                         type="time"
@@ -157,6 +130,7 @@ class AdvancedSearchTextFields extends PureComponent {
 
                 <form>
                     <TextField
+                        value={this.state.endTime}
                         onChange={this.handleChange('endTime')}
                         label="Ends Before"
                         type="time"

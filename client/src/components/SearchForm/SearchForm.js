@@ -34,12 +34,6 @@ const styles = {
     },
     searchButton: {
         width: '50%',
-        boxShadow: 'none',
-    },
-    mobileSearchButton: {
-        backgroundColor: '#72a9ed',
-        boxShadow: 'none',
-        marginLeft: 5,
     },
     buttonContainer: {
         width: '100%',
