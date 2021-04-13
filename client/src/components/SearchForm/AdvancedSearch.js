@@ -166,9 +166,7 @@ class AdvancedSearchTextFields extends PureComponent {
                         <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
                     </Select>
                 </FormControl>
-                <br />
-                <br />
-                <br />
+
                 <FormControl>
                     <InputLabel id="starts-after-dropdown-label">Starts After</InputLabel>
                     <Select
@@ -191,14 +189,6 @@ class AdvancedSearchTextFields extends PureComponent {
                     >
                         {endsBeforeMenuItems}
                     </Select>
-                    {/* <TimePicker
-                        label="Ends Before"
-                        value={this.state.endTime}
-                        onChange={this.handleChange('endTime')}
-                        minutesStep={60}
-                        clearable
-                        width={0.15}
-                    /> */}
                 </FormControl>
 
                 <FormControlLabel
