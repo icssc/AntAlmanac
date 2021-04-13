@@ -14,12 +14,13 @@ import { withStyles } from '@material-ui/core/styles';
 import RightPaneStore from '../../stores/RightPaneStore';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import { updateFormValue } from '../../actions/RightPaneActions';
-import { TimePicker } from '@material-ui/pickers';
-import { format } from 'date-fns';
 
 const styles = {
     units: {
         width: '80px',
+    },
+    timePicker: {
+        width: '130px',
     },
     smallTextFields: {
         display: 'flex',
@@ -44,7 +45,7 @@ class AdvancedSearchTextFields extends PureComponent {
             if (event !== '') {
                 this.setState(
                     {
-                        [name]: event,
+                        [name]: event.target.value,
                     },
                     () => {
                         updateFormValue('startTime', this.state.startTime);
@@ -80,6 +81,61 @@ class AdvancedSearchTextFields extends PureComponent {
     render() {
         const { classes } = this.props;
 
+        // Build arrays of MenuItem elements for time selection
+        const startsAfterMenuItems = [];
+        const endsBeforeMenuItems = [];
+
+        startsAfterMenuItems.push(
+            <MenuItem key="starts-after-none-item" value="">
+                <em>None</em>
+            </MenuItem>
+        );
+        endsBeforeMenuItems.push(
+            <MenuItem key="ends-before-none-item" value="">
+                <em>None</em>
+            </MenuItem>
+        );
+
+        startsAfterMenuItems.push(
+            <MenuItem key="starts-after-1am-item" value="1:00am">
+                1:00am
+            </MenuItem>
+        );
+        for (let hour = 2; hour <= 11; hour++) {
+            startsAfterMenuItems.push(
+                <MenuItem key={`starts-after-${hour}am-item`} value={`${hour}:00am`}>
+                    {hour}:00am
+                </MenuItem>
+            );
+            endsBeforeMenuItems.push(
+                <MenuItem key={`ends-before-${hour}am-item`} value={`${hour}:00am`}>
+                    {hour}:00am
+                </MenuItem>
+            );
+        }
+        startsAfterMenuItems.push(
+            <MenuItem key="starts-after-12pm-item" value="12:00pm">
+                12:00pm
+            </MenuItem>
+        );
+        endsBeforeMenuItems.push(
+            <MenuItem key="ends-before-12pm-item" value="12:00pm">
+                12:00pm
+            </MenuItem>
+        );
+        for (let hour = 1; hour <= 11; hour++) {
+            startsAfterMenuItems.push(
+                <MenuItem key={`starts-after-${hour}pm-item`} value={`${hour} + :00pm`}>
+                    {hour}:00pm
+                </MenuItem>
+            );
+            endsBeforeMenuItems.push(
+                <MenuItem key={`ends-before-${hour}pm-item`} value={`${hour} + :00pm`}>
+                    {hour}:00pm
+                </MenuItem>
+            );
+        }
+
         return (
             <div className={classes.smallTextFields}>
                 <TextField
@@ -110,27 +166,40 @@ class AdvancedSearchTextFields extends PureComponent {
                         <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
                     </Select>
                 </FormControl>
-
-                <form>
-                    <TimePicker
-                        label="Starts After"
+                <br />
+                <br />
+                <br />
+                <FormControl>
+                    <InputLabel id="starts-after-dropdown-label">Starts After</InputLabel>
+                    <Select
+                        labelId="starts-after-dropdown-label"
                         value={this.state.startTime}
                         onChange={this.handleChange('startTime')}
-                        minutesStep={60}
-                        clearable
-                    />
-                </form>
+                        className={classes.timePicker}
+                    >
+                        {startsAfterMenuItems}
+                    </Select>
+                </FormControl>
 
-                <form>
-                    <TimePicker
+                <FormControl>
+                    <InputLabel id="ends-before-dropdown-label">Ends Before</InputLabel>
+                    <Select
+                        labelId="ends-before-dropdown-label"
+                        value={this.state.endTime}
+                        onChange={this.handleChange('endTime')}
+                        className={classes.timePicker}
+                    >
+                        {endsBeforeMenuItems}
+                    </Select>
+                    {/* <TimePicker
                         label="Ends Before"
                         value={this.state.endTime}
                         onChange={this.handleChange('endTime')}
                         minutesStep={60}
                         clearable
                         width={0.15}
-                    />
-                </form>
+                    /> */}
+                </FormControl>
 
                 <FormControlLabel
                     control={
