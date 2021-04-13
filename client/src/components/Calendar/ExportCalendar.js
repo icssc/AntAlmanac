@@ -68,6 +68,7 @@ const dateToIcs = (date) => {
 // Note(chase): We currently don't use this function because timezones are too annoying.
 //  If you want to use this function, you also need to set the VEvent's
 //  startInputType/endInputType to 'utc'
+// eslint-disable-next-line
 const toUTC = (times, offsetHours) => {
     return times.map((time) => {
         // Construct a Date object
@@ -156,6 +157,11 @@ class ExportCalendarButton extends PureComponent {
 
             // Create a VEvent for each meeting
             for (const meeting of meetings) {
+                if (meeting.time == 'TBA') {
+                    // Skip this meeting if there is no meeting time
+                    continue;
+                }
+
                 const bydays = getByDays(meeting.days);
                 const classStartDate = getClassStartDate(term, bydays[0]);
                 const [firstClassStart, firstClassEnd] = getFirstClass(classStartDate, meeting.time);
