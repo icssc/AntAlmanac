@@ -11,6 +11,19 @@ class TermSelector extends PureComponent {
         term: RightPaneStore.getFormData().term,
     };
 
+    resetField = () => {
+        this.setState({ term: RightPaneStore.getFormData().term });
+    };
+
+    componentDidMount = () => {
+        document.addEventListener('keydown', this.enterEvent, false);
+        RightPaneStore.on('formReset', this.resetField);
+    };
+
+    componentWillUnmount() {
+        RightPaneStore.removeListener('formReset', this.resetField);
+    }
+
     handleChange = (event) => {
         this.setState({ term: event.target.value });
         updateFormValue('term', event.target.value);

@@ -40,6 +40,24 @@ class DeptSearchBar extends PureComponent {
         };
     }
 
+    componentDidMount() {
+        RightPaneStore.on('formReset', this.resetField);
+    }
+
+    componentWillUnmount() {
+        RightPaneStore.removeListener('formReset', this.resetField);
+    }
+
+    resetField = () => {
+        this.setState({
+            value: {
+                deptValue: RightPaneStore.getFormData().deptValue,
+                deptLabel: RightPaneStore.getFormData().deptLabel,
+                isFavorite: false,
+            },
+        });
+    };
+
     compareValues = (option, value) => {
         return option.deptValue === value.deptValue;
     };

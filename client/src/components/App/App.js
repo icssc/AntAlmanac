@@ -33,6 +33,9 @@ class App extends PureComponent {
         const theme = createMuiTheme({
             palette: {
                 type: this.state.darkMode ? 'dark' : 'light',
+                primary: {
+                    main: '#305db7',
+                },
             },
         });
 
