@@ -81,60 +81,21 @@ class AdvancedSearchTextFields extends PureComponent {
     render() {
         const { classes } = this.props;
 
+        // List of times from 2:00am-11:00pm
+        const menuItemTimes = [
+            ...[...Array(10).keys()].map((v) => v + 2 + ':00am'),
+            '12:00pm',
+            ...[...Array(11).keys()].map((v) => v + 1 + ':00pm'),
+        ];
+        // Creates a MenuItem for time selection
+        const createdMenuItemTime = (time) => (
+            <MenuItem key={time} value={`${time}`}>
+                {time ? time : <em>None</em>}
+            </MenuItem>
+        );
         // Build arrays of MenuItem elements for time selection
-        const startsAfterMenuItems = [];
-        const endsBeforeMenuItems = [];
-
-        startsAfterMenuItems.push(
-            <MenuItem key="starts-after-none-item" value="">
-                <em>None</em>
-            </MenuItem>
-        );
-        endsBeforeMenuItems.push(
-            <MenuItem key="ends-before-none-item" value="">
-                <em>None</em>
-            </MenuItem>
-        );
-
-        startsAfterMenuItems.push(
-            <MenuItem key="starts-after-1am-item" value="1:00am">
-                1:00am
-            </MenuItem>
-        );
-        for (let hour = 2; hour <= 11; hour++) {
-            startsAfterMenuItems.push(
-                <MenuItem key={`starts-after-${hour}am-item`} value={`${hour}:00am`}>
-                    {hour}:00am
-                </MenuItem>
-            );
-            endsBeforeMenuItems.push(
-                <MenuItem key={`ends-before-${hour}am-item`} value={`${hour}:00am`}>
-                    {hour}:00am
-                </MenuItem>
-            );
-        }
-        startsAfterMenuItems.push(
-            <MenuItem key="starts-after-12pm-item" value="12:00pm">
-                12:00pm
-            </MenuItem>
-        );
-        endsBeforeMenuItems.push(
-            <MenuItem key="ends-before-12pm-item" value="12:00pm">
-                12:00pm
-            </MenuItem>
-        );
-        for (let hour = 1; hour <= 11; hour++) {
-            startsAfterMenuItems.push(
-                <MenuItem key={`starts-after-${hour}pm-item`} value={`${hour} + :00pm`}>
-                    {hour}:00pm
-                </MenuItem>
-            );
-            endsBeforeMenuItems.push(
-                <MenuItem key={`ends-before-${hour}pm-item`} value={`${hour} + :00pm`}>
-                    {hour}:00pm
-                </MenuItem>
-            );
-        }
+        const startsAfterMenuItems = ['', '1:00am', ...menuItemTimes].map((time) => createdMenuItemTime(time));
+        const endsBeforeMenuItems = ['', ...menuItemTimes].map((time) => createdMenuItemTime(time));
 
         return (
             <div className={classes.smallTextFields}>
