@@ -61,24 +61,7 @@ class AdvancedSearchTextFields extends PureComponent {
     };
 
     handleChange = (name) => (event) => {
-        if (name === 'endTime' || name === 'startTime') {
-            if (event !== '') {
-                this.setState(
-                    {
-                        [name]: event.target.value,
-                    },
-                    () => {
-                        updateFormValue('startTime', this.state.startTime);
-                        updateFormValue('endTime', this.state.endTime);
-                    }
-                );
-            } else {
-                this.setState({ [name]: '' }, () => {
-                    updateFormValue('startTime', '');
-                    updateFormValue('endTime', '');
-                });
-            }
-        } else if (name === 'online') {
+        if (name === 'online') {
             if (event.target.checked) {
                 this.setState({ building: 'ON', room: 'LINE' });
                 updateFormValue('building', 'ON');
@@ -89,6 +72,7 @@ class AdvancedSearchTextFields extends PureComponent {
                 updateFormValue('room', '');
             }
         } else {
+            console.log(event.target.value);
             this.setState({ [name]: event.target.value });
             updateFormValue(name, event.target.value);
         }
