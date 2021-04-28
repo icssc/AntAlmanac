@@ -72,7 +72,6 @@ class AdvancedSearchTextFields extends PureComponent {
                 updateFormValue('room', '');
             }
         } else {
-            console.log(event.target.value);
             this.setState({ [name]: event.target.value });
             updateFormValue(name, event.target.value);
         }
