@@ -123,12 +123,6 @@ class CourseRenderPane extends PureComponent {
         this.setState({ loading: true }, async () => {
             const formData = RightPaneStore.getFormData();
 
-            const startHour = parseInt(formData.startTime.slice(0, 2), 10);
-            const endHour = parseInt(formData.endTime.slice(0, 2), 10);
-            const startTimeString =
-                formData.startTime !== '' ? startHour - 12 + `${startHour > 12 ? ':00pm' : ':00am'}` : '';
-            const endTimeString = formData.endTime !== '' ? endHour - 12 + `${endHour > 12 ? ':00pm' : ':00am'}` : '';
-
             const params = {
                 department: formData.deptValue,
                 term: formData.term,
@@ -137,8 +131,8 @@ class CourseRenderPane extends PureComponent {
                 sectionCodes: formData.sectionCode,
                 instructorName: formData.instructor,
                 units: formData.units,
-                endTime: endTimeString,
-                startTime: startTimeString,
+                endTime: formData.endTime,
+                startTime: formData.startTime,
                 fullCourses: formData.coursesFull,
                 building: formData.building,
                 room: formData.room,
