@@ -13,6 +13,18 @@ class SectionCodeSearchBar extends PureComponent {
         updateFormValue('sectionCode', event.target.value);
     };
 
+    componentDidMount() {
+        RightPaneStore.on('formReset', this.resetField);
+    }
+
+    componentWillUnmount() {
+        RightPaneStore.removeListener('formReset', this.resetField);
+    }
+
+    resetField = () => {
+        this.setState({ sectionCode: RightPaneStore.getFormData().sectionCode });
+    };
+
     render() {
         return (
             <div>

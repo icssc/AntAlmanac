@@ -11,6 +11,12 @@ export const updateFormValue = (field, value) => {
     });
 };
 
+export const resetFormValues = () => {
+    dispatcher.dispatch({
+        type: 'RESET_FORM_FIELDS',
+    });
+};
+
 export const handleTabChange = (event, value) => {
     switch (
         value // 0 is Class Search Tab, 1 is Added Classes Tab, 2 is Map Tab
