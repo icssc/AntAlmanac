@@ -363,7 +363,7 @@ const DayAndTimeCell = withStyles(styles)((props) => {
 const StatusCell = withStyles(styles)((props) => {
     const { sectionCode, term, courseTitle, courseNumber, status, classes } = props;
 
-    if (term === '2021 Spring' && (status === 'NewOnly' || status === 'FULL')) {
+    if (term === '2021 Fall' && (status === 'NewOnly' || status === 'FULL')) {
         return (
             <td className={classes[status.toLowerCase()]}>
                 <OpenSpotAlertPopover
