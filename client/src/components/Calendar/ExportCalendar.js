@@ -101,14 +101,32 @@ const getFirstClass = (date, time) => {
     ];
 };
 
+// getExamTime returns the start and end datetime of an exam
+//  Ex: ("Mon Jun 7 10:30-12:30pm", "2019") -> [[2019, 6, 7, 10, 30], [2019, 6, 7, 12, 30]]
+const months = { Mar: 3, Apr: 4, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Nov: 11, Dec: 12 };
+const getExamTime = (exam, year) => {
+    const [, month, day, time] = exam.split(' ');
+    const [examStartTime, examEndTime] = parseTimes(time);
+
+    return [
+        [year, months[month], day, ...examStartTime],
+        [year, months[month], day, ...examEndTime],
+    ];
+};
+
 // parseTimes converts a time string to a
 //  This is a helper function used by getFirstClass
 //  Ex: " 4:00-4:50p" -> [[16, 0], [16, 50]]
 const parseTimes = (time) => {
     // Determine whether the time is in the afternoon (PM)
     var pm = false;
-    if (time[time.length - 1] === 'p') {
+    if (time.slice(-1) === 'p') {
+        // Course time strings would end with a 'p'
         time = time.substring(0, time.length - 1); // Remove 'p' from the end
+        pm = true;
+    } else if (time.slice(-2) === 'pm') {
+        // Final Exam time strings would end with a 'pm'
+        time = time.substring(0, time.length - 2); // Remove 'pm' from the end
         pm = true;
     }
 
@@ -138,6 +156,12 @@ const parseTimes = (time) => {
     return [start, end];
 };
 
+// getYear returns the year of a given term
+//  Ex: "2019 Fall" -> "2019"
+const getYear = (term) => {
+    return term.split(' ')[0];
+};
+
 // getQuarter returns the quarter of a given term
 //  Ex: "2019 Fall" -> "Fall"
 const getQuarter = (term) => {
@@ -156,6 +180,7 @@ const getRRule = (bydays, quarter) => {
                 case 'FR':
                 case 'SA':
                     count += 1;
+                    break;
                 default:
                     break;
             }
@@ -180,7 +205,7 @@ class ExportCalendarButton extends PureComponent {
                 deptCode,
                 courseNumber,
                 courseTitle,
-                section: { sectionType, instructors, meetings },
+                section: { sectionType, instructors, meetings, finalExam },
             } = course;
 
             // Create a VEvent for each meeting
@@ -208,13 +233,26 @@ class ExportCalendarButton extends PureComponent {
                     recurrenceRule: rrule,
                 });
             }
+
+            // Add Final to events
+            if (finalExam && finalExam !== 'TBA') {
+                const [examStart, examEnd] = getExamTime(finalExam, getYear(term));
+                events.push({
+                    productId: 'antalmanac/ics',
+                    startOutputType: 'local',
+                    endOutputType: 'local',
+                    title: `${deptCode} ${courseNumber} Final Exam`,
+                    description: `Final Exam for ${courseTitle}`,
+                    start: examStart,
+                    end: examEnd,
+                });
+            }
         }
 
         // Convert the events into a vcalendar
         // Callback function triggers a download of the .ics file
         createEvents(events, (err, val) => {
             if (!err) {
-                console.log(val);
                 // Download the .ics file
                 var blob = new Blob([val], { type: 'text/plain;charset=utf-8' });
                 saveAs(blob, 'schedule.ics');
