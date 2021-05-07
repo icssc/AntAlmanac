@@ -39,9 +39,12 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
     const addedCourses = AppStore.getAddedCourses();
 
     let existingCourse;
+    let multipleTerms = false;
 
     for (const course of addedCourses) {
-        if (course.section.sectionCode === section.sectionCode && term === course.term) {
+        if (term !== course.term) {
+            multipleTerms = true;
+        } else if (course.section.sectionCode === section.sectionCode) {
             existingCourse = course;
             if (course.scheduleIndices.includes(scheduleIndex)) {
                 return;
@@ -50,6 +53,8 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
             }
         }
     }
+
+    if (multipleTerms) openSnackbar('warning', 'Course added from different term');
 
     if (color === undefined) {
         const setOfUsedColors = new Set(addedCourses.map((course) => course.color));
