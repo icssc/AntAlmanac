@@ -3,8 +3,10 @@ import React, { PureComponent } from 'react';
 import SchoolDeptCard from './SchoolDeptCard';
 import SectionTable from '../SectionTable/SectionTable';
 import NoNothing from './static/no_results.png';
+import AppStore from '../../stores/AppStore';
 import RightPaneStore from '../../stores/RightPaneStore';
-import loadingGif from '../SearchForm/Gifs/loading.mp4';
+import loadingGif from '../SearchForm/Gifs/loading.gif';
+import darkModeLoadingGif from '../SearchForm/Gifs/dark-loading.gif';
 import AdBanner from '../AdBanner/AdBanner';
 import { RANDOM_AD_ENDPOINT, WEBSOC_ENDPOINT } from '../../api/endpoints';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
@@ -182,9 +184,7 @@ class CourseRenderPane extends PureComponent {
         if (this.state.loading) {
             currentView = (
                 <div className={classes.loadingGifStyle}>
-                    <video autoPlay loop>
-                        <source src={loadingGif} type="video/mp4" />
-                    </video>
+                    <img src={AppStore.getDarkMode() ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
                 </div>
             );
         } else if (!this.state.error) {
