@@ -2,7 +2,8 @@ import { withStyles } from '@material-ui/core/styles';
 import React, { PureComponent } from 'react';
 import SchoolDeptCard from './SchoolDeptCard';
 import SectionTable from '../SectionTable/SectionTable';
-import NoNothing from './static/no_results.png';
+import noNothing from './static/no_results.png';
+import darkNoNothing from './static/dark-no_results.png';
 import AppStore from '../../stores/AppStore';
 import RightPaneStore from '../../stores/RightPaneStore';
 import loadingGif from '../SearchForm/Gifs/loading.gif';
@@ -198,7 +199,7 @@ class CourseRenderPane extends PureComponent {
                 <div className={classes.root}>
                     {this.state.courseData.length === 0 ? (
                         <div className={classes.noResultsDiv}>
-                            <img src={NoNothing} alt="No Results Found" />
+                            <img src={AppStore.getDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
                         </div>
                     ) : (
                         this.state.courseData.map((_, index) => {
@@ -219,7 +220,7 @@ class CourseRenderPane extends PureComponent {
             currentView = (
                 <div className={classes.root}>
                     <div className={classes.noResultsDiv}>
-                        <img src={NoNothing} alt="No Results Found" />
+                        <img src={AppStore.getDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
                     </div>
                 </div>
             );
