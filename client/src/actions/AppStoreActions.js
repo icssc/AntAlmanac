@@ -302,12 +302,7 @@ export const undoDelete = (event) => {
     }
 };
 
-export const changeCurrentSchedule = (direction) => {
-    let newScheduleIndex;
-
-    if (direction === 0) newScheduleIndex = (AppStore.getCurrentScheduleIndex() - 1 + 4) % 4;
-    else if (direction === 1) newScheduleIndex = (AppStore.getCurrentScheduleIndex() + 1) % 4;
-
+export const changeCurrentSchedule = (newScheduleIndex) => {
     dispatcher.dispatch({ type: 'CHANGE_CURRENT_SCHEDULE', newScheduleIndex });
 };
 
