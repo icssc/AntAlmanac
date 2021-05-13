@@ -48,7 +48,6 @@ class CalendarPaneToolbar extends PureComponent {
                     <MenuItem value={1}>Schedule 2</MenuItem>
                     <MenuItem value={2}>Schedule 3</MenuItem>
                     <MenuItem value={3}>Schedule 4</MenuItem>
-                    <MenuItem value={4}>Schedule 5</MenuItem>
                 </Select>
 
                 <div className={classes.spacer} />
