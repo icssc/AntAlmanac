@@ -1,13 +1,15 @@
 import React, { PureComponent } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { IconButton, Tooltip, Typography, Paper, Button } from '@material-ui/core';
-import { ChevronLeft, ChevronRight, Delete, Undo } from '@material-ui/icons';
+import { IconButton, Tooltip, Paper, Button } from '@material-ui/core';
+import { Delete, Undo } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import { clearSchedules, undoDelete } from '../../actions/AppStoreActions';
 import CustomEventsDialog from '../CustomEvents/CustomEventDialog';
 import { changeCurrentSchedule } from '../../actions/AppStoreActions';
 import ScreenshotButton from './ScreenshotButton';
 import ExportCalendar from './ExportCalendar';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import ReactGA from 'react-ga';
 
 const styles = {
@@ -21,6 +23,7 @@ const styles = {
         '& button': {
             marginRight: '4px',
         },
+        padding: '4px',
     },
     inline: {
         display: 'inline',
@@ -31,22 +34,21 @@ const styles = {
 };
 
 class CalendarPaneToolbar extends PureComponent {
+    handleScheduleChange(event) {
+        changeCurrentSchedule(event.target.value);
+    }
+
     render() {
         const { classes } = this.props;
 
         return (
             <Paper elevation={0} variant="outlined" square className={classes.toolbar}>
-                <IconButton onClick={() => changeCurrentSchedule(0)}>
-                    <ChevronLeft fontSize="small" />
-                </IconButton>
-
-                <Typography variant="body2" className={classes.inline}>
-                    {'Schedule ' + (this.props.currentScheduleIndex + 1)}
-                </Typography>
-
-                <IconButton onClick={() => changeCurrentSchedule(1)}>
-                    <ChevronRight fontSize="small" />
-                </IconButton>
+                <Select value={this.props.currentScheduleIndex} onChange={this.handleScheduleChange}>
+                    <MenuItem value={0}>Schedule 1</MenuItem>
+                    <MenuItem value={1}>Schedule 2</MenuItem>
+                    <MenuItem value={2}>Schedule 3</MenuItem>
+                    <MenuItem value={3}>Schedule 4</MenuItem>
+                </Select>
 
                 <div className={classes.spacer} />
 
