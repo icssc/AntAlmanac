@@ -39,12 +39,12 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
     const addedCourses = AppStore.getAddedCourses();
 
     let existingCourse;
-    let multipleTerms = false;
+    let multipleTerms = new Set([term]);
 
     for (const course of addedCourses) {
-        if (term !== course.term) {
-            multipleTerms = true;
-        } else if (course.section.sectionCode === section.sectionCode) {
+        multipleTerms.add(course.term);
+
+        if (course.section.sectionCode === section.sectionCode && term === course.term) {
             existingCourse = course;
             if (course.scheduleIndices.includes(scheduleIndex)) {
                 return;
@@ -54,7 +54,16 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
         }
     }
 
-    if (multipleTerms) openSnackbar('warning', 'Course added from different term');
+    if (multipleTerms.size > 1)
+        openSnackbar(
+            'warning',
+            `Course added from different term.\nSchedule now contains courses from ${[...multipleTerms]
+                .sort()
+                .join(', ')}`,
+            null,
+            null,
+            { whiteSpace: 'pre-line' }
+        );
 
     if (color === undefined) {
         const setOfUsedColors = new Set(addedCourses.map((course) => course.color));
@@ -89,13 +98,14 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
     }
 };
 
-export const openSnackbar = (variant, message, duration, position) => {
+export const openSnackbar = (variant, message, duration, position, style) => {
     dispatcher.dispatch({
         type: 'OPEN_SNACKBAR',
         variant: variant,
         message: message,
         duration: duration,
         position: position,
+        style: style,
     });
 };
 
