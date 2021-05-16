@@ -59,7 +59,7 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
             'warning',
             `Course added from different term.\nSchedule now contains courses from ${[...multipleTerms]
                 .sort()
-                .join(', ')}`,
+                .join(', ')}.`,
             null,
             null,
             { whiteSpace: 'pre-line' }
