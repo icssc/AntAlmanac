@@ -110,6 +110,10 @@ const CourseCalendarEvent = (props) => {
                             </Tooltip>
                         </tr>
                         <tr>
+                            <td className={classes.alignToTop}>Term</td>
+                            <td className={classes.rightCells}>{term}</td>
+                        </tr>
+                        <tr>
                             <td className={classes.alignToTop}>Instructors</td>
                             <td className={`${classes.multiline} ${classes.rightCells}`}>{instructors.join('\n')}</td>
                         </tr>
