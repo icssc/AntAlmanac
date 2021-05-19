@@ -44,6 +44,7 @@ const styles = {
 class SectionTable extends PureComponent {
     render() {
         const { classes } = this.props;
+        const urlEncode = encodeURIComponent(this.props.courseDetails.deptCode);
 
         return (
             <Fragment>
@@ -79,6 +80,28 @@ class SectionTable extends PureComponent {
                         <Fragment />
                     )}
                 </div>
+
+                <div
+                    style={{
+                        display: 'inline-flex',
+                        marginTop: '0px',
+                        fontSize: '15px',
+                    }}
+                >
+                    <a
+                        target="blank"
+                        href={
+                            'https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=' +
+                            urlEncode +
+                            '&classNum=' +
+                            this.props.courseDetails.courseNumber +
+                            '&code=&submit=Submit'
+                        }
+                    >
+                        Zotistics
+                    </a>
+                </div>
+
                 <table className={classes.table}>
                     <thead>
                         <tr>
