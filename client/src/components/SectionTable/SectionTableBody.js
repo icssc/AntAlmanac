@@ -76,6 +76,11 @@ const styles = (theme) => ({
     multiline: {
         whiteSpace: 'pre',
     },
+    sectionCode: {
+        '&:hover': {
+            cursor: 'pointer',
+        },
+    },
     Act: { color: '#c87137' },
     Col: { color: '#ff40b5' },
     Dis: { color: '#8d63f0' },
