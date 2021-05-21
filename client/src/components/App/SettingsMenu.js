@@ -1,5 +1,5 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Badge, Button, FormControl, FormControlLabel, Popover, Switch, Paper } from '@material-ui/core';
+import { Button, FormControl, FormControlLabel, Popover, Switch, Paper } from '@material-ui/core';
 import { Settings } from '@material-ui/icons';
 import AppStore from '../../stores/AppStore';
 import { toggleDarkMode } from '../../actions/AppStoreActions';
@@ -70,17 +70,7 @@ class SettingsMenu extends PureComponent {
                                         color="primary"
                                     />
                                 }
-                                label={
-                                    <Badge
-                                        badgeContent={'BETA'}
-                                        color="error"
-                                        classes={{
-                                            anchorOriginTopRightRectangle: classes.betaBadge,
-                                        }}
-                                    >
-                                        Dark Mode
-                                    </Badge>
-                                }
+                                label={'Dark Mode'}
                             />
                         </FormControl>
                     </Paper>

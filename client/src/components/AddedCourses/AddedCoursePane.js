@@ -113,7 +113,7 @@ class AddedCoursePane extends PureComponent {
                         <PopupState variant="popover">
                             {(popupState) => (
                                 <Fragment>
-                                    <Button variant="outlined" color="primary" {...bindTrigger(popupState)}>
+                                    <Button variant="outlined" {...bindTrigger(popupState)}>
                                         Copy Schedule
                                     </Button>
                                     <Menu {...bindMenu(popupState)}>

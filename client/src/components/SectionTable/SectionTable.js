@@ -1,42 +1,60 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import {
+    Paper,
+    Typography,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Tooltip,
+} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph';
 import CourseInfoBar from './CourseInfoBar';
 import SectionTableBody from './SectionTableBody';
+import { Help } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 
 const styles = {
-    table: {
-        borderCollapse: 'collapse',
-        boxSizing: 'border-box',
-        width: '100%',
-        marginTop: '0.285rem',
-        marginBottom: '1.25rem',
-
-        '& thead': {
-            position: 'sticky',
-
-            '& th': {
-                border: '1px solid rgb(222, 226, 230)',
-                fontSize: '0.85rem',
-                fontWeight: '500',
-                color: 'rgba(0, 0, 0, 0.54)',
-                textAlign: 'left',
-                verticalAlign: 'bottom',
-            },
-        },
+    flex: {
+        display: 'flex',
+        alignItems: 'center',
     },
-    tr: {
-        fontSize: '0.85rem',
-        '&:nth-child(odd)': {
-            backgroundColor: '#f5f5f5',
+    iconMargin: {
+        marginRight: '4px',
+    },
+    cellPadding: {
+        padding: '0px 0px 0px 0px',
+    },
+    row: {
+        '&:nth-child(1)': {
+            width: '8%',
         },
-
-        '& td': {
-            border: '1px solid rgb(222, 226, 230)',
-            textAlign: 'left',
-            verticalAlign: 'top',
+        '&:nth-child(2)': {
+            width: '8%',
+        },
+        '&:nth-child(3)': {
+            width: '8%',
+        },
+        '&:nth-child(4)': {
+            width: '15%',
+        },
+        '&:nth-child(5)': {
+            width: '12%',
+        },
+        '&:nth-child(6)': {
+            width: '10%',
+        },
+        '&:nth-child(7)': {
+            width: '10%',
+        },
+        '&:nth-child(8)': {
+            width: '8%',
+        },
+        '&:nth-child(9)': {
+            width: '8%',
         },
     },
 };
@@ -80,18 +98,55 @@ class SectionTable extends PureComponent {
                     )}
                 </div>
 
-                <TableContainer component={Paper}>
-                    <Table className={classes.table} aria-label="simple table">
+                <TableContainer
+                    component={Paper}
+                    style={{ margin: '8px 0px 8px 0px' }}
+                    elevation={0}
+                    variant="outlined"
+                >
+                    <Table className={classes.table} size="small">
                         <TableHead>
                             <TableRow>
-                                <TableCell>Code</TableCell>
-                                <TableCell align="right">Type</TableCell>
-                                <TableCell align="right">Instructors</TableCell>
-                                <TableCell align="right">Times</TableCell>
-                                <TableCell align="right">Places</TableCell>
-                                <TableCell align="right">Enrollment</TableCell>
-                                <TableCell align="right">Rstr</TableCell>
-                                <TableCell align="right">Status</TableCell>
+                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row} />
+                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                                    Code
+                                </TableCell>
+                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                                    Type
+                                </TableCell>
+                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                                    Instructors
+                                </TableCell>
+                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                                    Times
+                                </TableCell>
+                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                                    Places
+                                </TableCell>
+                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                                    <div className={classes.flex}>
+                                        <span className={classes.iconMargin}>Enrollment</span>
+                                        <Tooltip
+                                            title={
+                                                <Typography>
+                                                    Enrolled/Capacity
+                                                    <br />
+                                                    Waitlist
+                                                    <br />
+                                                    New-Only Reserved
+                                                </Typography>
+                                            }
+                                        >
+                                            <Help fontSize="small" />
+                                        </Tooltip>
+                                    </div>
+                                </TableCell>
+                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                                    Rstr
+                                </TableCell>
+                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                                    Status
+                                </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>

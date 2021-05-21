@@ -52,7 +52,6 @@ class DesktopTabs extends PureComponent {
                             value={this.state.activeTab}
                             onChange={handleTabChange}
                             indicatorColor="primary"
-                            textColor="primary"
                             variant="fullWidth"
                             centered
                             style={{ height: '48px' }}
