@@ -43,8 +43,8 @@ const styles = {
 
 class SectionTable extends PureComponent {
     render() {
-        const { classes } = this.props;
-        const urlEncode = encodeURIComponent(this.props.courseDetails.deptCode);
+        const { classes, courseDetails } = this.props;
+        const urlEncode = encodeURIComponent(courseDetails.deptCode);
 
         return (
             <Fragment>
@@ -55,14 +55,14 @@ class SectionTable extends PureComponent {
                     }}
                 >
                     <CourseInfoBar
-                        deptCode={this.props.courseDetails.deptCode}
-                        courseTitle={this.props.courseDetails.courseTitle}
-                        courseNumber={this.props.courseDetails.courseNumber}
+                        deptCode={courseDetails.deptCode}
+                        courseTitle={courseDetails.courseTitle}
+                        courseNumber={courseDetails.courseNumber}
                     />
 
-                    <AlmanacGraph courseDetails={this.props.courseDetails} />
+                    <AlmanacGraph courseDetails={courseDetails} />
 
-                    {this.props.courseDetails.prerequisiteLink ? (
+                    {courseDetails.prerequisiteLink ? (
                         <Typography variant="h6" style={{ flexGrow: '2', marginTop: 9 }}>
                             <a
                                 target="blank"
@@ -70,7 +70,7 @@ class SectionTable extends PureComponent {
                                     textDecoration: 'none',
                                     color: '#72a9ed',
                                 }}
-                                href={this.props.courseDetails.prerequisiteLink}
+                                href={courseDetails.prerequisiteLink}
                                 rel="noopener noreferrer"
                             >
                                 Prerequisites
@@ -79,22 +79,18 @@ class SectionTable extends PureComponent {
                     ) : (
                         <Fragment />
                     )}
-                </div>
 
-                <div
-                    style={{
-                        display: 'inline-flex',
-                        marginTop: '0px',
-                        fontSize: '15px',
-                    }}
-                >
                     <a
                         target="blank"
+                        style={{
+                            marginTop: '0px',
+                            fontSize: '15px',
+                        }}
                         href={
                             'https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=' +
                             urlEncode +
                             '&classNum=' +
-                            this.props.courseDetails.courseNumber +
+                            courseDetails.courseNumber +
                             '&code=&submit=Submit'
                         }
                     >
