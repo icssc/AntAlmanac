@@ -79,23 +79,26 @@ class SectionTable extends PureComponent {
                     ) : (
                         <Fragment />
                     )}
-
-                    <a
-                        target="blank"
-                        style={{
-                            marginTop: '0px',
-                            fontSize: '15px',
-                        }}
-                        href={
-                            'https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=' +
-                            urlEncode +
-                            '&classNum=' +
-                            courseDetails.courseNumber +
-                            '&code=&submit=Submit'
-                        }
-                    >
-                        Zotistics
-                    </a>
+                    <Typography variant="h6" style={{ flexGrow: '2', margin: 9 }}>
+                        <a
+                            target="blank"
+                            style={{
+                                marginTop: '0px',
+                                fontSize: '15px',
+                                textDecoration: 'none',
+                                color: '#72a9ed',
+                            }}
+                            href={
+                                'https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=' +
+                                urlEncode +
+                                '&classNum=' +
+                                courseDetails.courseNumber +
+                                '&code=&submit=Submit'
+                            }
+                        >
+                            Zotistics
+                        </a>
+                    </Typography>
                 </div>
 
                 <table className={classes.table}>
