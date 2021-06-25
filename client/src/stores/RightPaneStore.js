@@ -1,24 +1,26 @@
 import { EventEmitter } from 'events';
 import dispatcher from '../dispatcher';
 
+const defaultFormValues = {
+    deptValue: 'ALL',
+    deptLabel: 'ALL: Include All Departments',
+    ge: 'ANY',
+    term: '2021 Fall',
+    courseNumber: '',
+    sectionCode: '',
+    instructor: '',
+    units: '',
+    endTime: '',
+    startTime: '',
+    coursesFull: 'ANY',
+    building: '',
+    room: '',
+};
+
 class RightPaneStore extends EventEmitter {
     constructor() {
         super();
-        this.formData = {
-            deptValue: 'ALL',
-            deptLabel: 'ALL: Include All Departments',
-            ge: 'ANY',
-            term: '2021 Spring',
-            courseNumber: '',
-            sectionCode: '',
-            instructor: '',
-            units: '',
-            endTime: '',
-            startTime: '',
-            coursesFull: 'ANY',
-            building: '',
-            room: '',
-        };
+        this.formData = defaultFormValues;
         this.activeTab = 0;
     }
 
@@ -39,6 +41,10 @@ class RightPaneStore extends EventEmitter {
             case 'TAB_CHANGE':
                 this.activeTab = action.activeTab;
                 this.emit('tabChange');
+                break;
+            case 'RESET_FORM_FIELDS':
+                this.formData = defaultFormValues;
+                this.emit('formReset');
                 break;
             default:
                 console.log(`[Warning] RightPaneStore invalid action type: ${action.type}`);

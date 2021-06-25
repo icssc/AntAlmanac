@@ -19,6 +19,9 @@ const styles = {
     units: {
         width: '80px',
     },
+    timePicker: {
+        width: '130px',
+    },
     smallTextFields: {
         display: 'flex',
         justifyContent: 'space-around',
@@ -37,36 +40,28 @@ class AdvancedSearchTextFields extends PureComponent {
         room: RightPaneStore.getFormData().room,
     };
 
+    componentDidMount() {
+        RightPaneStore.on('formReset', this.resetField);
+    }
+
+    componentWillUnmount() {
+        RightPaneStore.removeListener('formReset', this.resetField);
+    }
+
+    resetField = () => {
+        this.setState({
+            instructor: RightPaneStore.getFormData().instructor,
+            units: RightPaneStore.getFormData().units,
+            endTime: RightPaneStore.getFormData().endTime,
+            startTime: RightPaneStore.getFormData().startTime,
+            coursesFull: RightPaneStore.getFormData().coursesFull,
+            building: RightPaneStore.getFormData().building,
+            room: RightPaneStore.getFormData().room,
+        });
+    };
+
     handleChange = (name) => (event) => {
-        if (name === 'endTime' || name === 'startTime') {
-            if (event.target.value !== '') {
-                if (parseInt(event.target.value.slice(0, 2), 10) > 12)
-                    this.setState(
-                        {
-                            [name]: parseInt(event.target.value.slice(0, 2), 10) - 12 + ':00pm',
-                        },
-                        () => {
-                            updateFormValue('startTime', this.state.startTime);
-                            updateFormValue('endTime', this.state.endTime);
-                        }
-                    );
-                else
-                    this.setState(
-                        {
-                            [name]: parseInt(event.target.value.slice(0, 2), 10) + ':00am',
-                        },
-                        () => {
-                            updateFormValue('startTime', this.state.startTime);
-                            updateFormValue('endTime', this.state.endTime);
-                        }
-                    );
-            } else {
-                this.setState({ [name]: '' }, () => {
-                    updateFormValue('startTime', '');
-                    updateFormValue('endTime', '');
-                });
-            }
-        } else if (name === 'online') {
+        if (name === 'online') {
             if (event.target.checked) {
                 this.setState({ building: 'ON', room: 'LINE' });
                 updateFormValue('building', 'ON');
@@ -88,6 +83,22 @@ class AdvancedSearchTextFields extends PureComponent {
      */
     render() {
         const { classes } = this.props;
+
+        // List of times from 2:00am-11:00pm
+        const menuItemTimes = [
+            ...[...Array(10).keys()].map((v) => v + 2 + ':00am'),
+            '12:00pm',
+            ...[...Array(11).keys()].map((v) => v + 1 + ':00pm'),
+        ];
+        // Creates a MenuItem for time selection
+        const createdMenuItemTime = (time) => (
+            <MenuItem key={time} value={`${time}`}>
+                {time ? time : <em>None</em>}
+            </MenuItem>
+        );
+        // Build arrays of MenuItem elements for time selection
+        const startsAfterMenuItems = ['', '1:00am', ...menuItemTimes].map((time) => createdMenuItemTime(time));
+        const endsBeforeMenuItems = ['', ...menuItemTimes].map((time) => createdMenuItemTime(time));
 
         return (
             <div className={classes.smallTextFields}>
@@ -120,35 +131,29 @@ class AdvancedSearchTextFields extends PureComponent {
                     </Select>
                 </FormControl>
 
-                <form>
-                    <TextField
+                <FormControl>
+                    <InputLabel id="starts-after-dropdown-label">Starts After</InputLabel>
+                    <Select
+                        labelId="starts-after-dropdown-label"
+                        value={this.state.startTime}
                         onChange={this.handleChange('startTime')}
-                        label="Starts After"
-                        type="time"
-                        InputLabelProps={{
-                            //fix saved search params
-                            shrink: true,
-                        }}
-                        inputProps={{
-                            step: 3600,
-                        }}
-                    />
-                </form>
+                        className={classes.timePicker}
+                    >
+                        {startsAfterMenuItems}
+                    </Select>
+                </FormControl>
 
-                <form>
-                    <TextField
+                <FormControl>
+                    <InputLabel id="ends-before-dropdown-label">Ends Before</InputLabel>
+                    <Select
+                        labelId="ends-before-dropdown-label"
+                        value={this.state.endTime}
                         onChange={this.handleChange('endTime')}
-                        label="Ends Before"
-                        type="time"
-                        InputLabelProps={{
-                            //fix saved search param
-                            shrink: true,
-                        }}
-                        inputProps={{
-                            step: 3600,
-                        }}
-                    />
-                </form>
+                        className={classes.timePicker}
+                    >
+                        {endsBeforeMenuItems}
+                    </Select>
+                </FormControl>
 
                 <FormControlLabel
                     control={

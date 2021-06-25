@@ -15,6 +15,7 @@ class AppStore extends EventEmitter {
         this.snackbarVariant = 'info';
         this.snackbarDuration = 3000;
         this.snackbarPosition = { vertical: 'bottom', horizontal: 'left' };
+        this.snackbarStyle = {};
         this.eventsInCalendar = [];
         this.finalsEventsInCalendar = [];
         this.unsavedChanges = false;
@@ -69,6 +70,10 @@ class AppStore extends EventEmitter {
 
     getSnackbarDuration() {
         return this.snackbarDuration;
+    }
+
+    getSnackbarStyle() {
+        return this.snackbarStyle;
     }
 
     getDarkMode() {
@@ -187,6 +192,7 @@ class AppStore extends EventEmitter {
                 this.snackbarMessage = action.message;
                 this.snackbarDuration = action.duration ? action.duration : this.snackbarDuration;
                 this.snackbarPosition = action.position ? action.position : this.snackbarPosition;
+                this.snackbarStyle = action.style ? action.style : this.snackbarStyle;
                 this.emit('openSnackbar');
                 break;
             case 'EDIT_CUSTOM_EVENTS':

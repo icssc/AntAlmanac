@@ -67,6 +67,11 @@ const styles = (theme) => ({
     full: {
         color: '#e53935',
     },
+    sectionCode: {
+        '&:hover': {
+            cursor: 'pointer',
+        },
+    },
     Act: { color: '#c87137' },
     Col: { color: '#ff40b5' },
     Dis: { color: '#8d63f0' },
@@ -337,7 +342,7 @@ const DayAndTimeCell = withStyles(styles)((props) => {
 const StatusCell = withStyles(styles)((props) => {
     const { sectionCode, term, courseTitle, courseNumber, status, classes } = props;
 
-    if (term === '2021 Spring' && (status === 'NewOnly' || status === 'FULL')) {
+    if (term === '2021 Fall' && (status === 'NewOnly' || status === 'FULL')) {
         return (
             <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>
                 <OpenSpotAlertPopover

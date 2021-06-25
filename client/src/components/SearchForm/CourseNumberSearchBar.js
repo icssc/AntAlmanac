@@ -13,6 +13,18 @@ class CourseNumberSearchBar extends PureComponent {
         updateFormValue('courseNumber', event.target.value);
     };
 
+    componentDidMount() {
+        RightPaneStore.on('formReset', this.resetField);
+    }
+
+    componentWillUnmount() {
+        RightPaneStore.removeListener('formReset', this.resetField);
+    }
+
+    resetField = () => {
+        this.setState({ courseNumber: RightPaneStore.getFormData().courseNumber });
+    };
+
     render() {
         return (
             <div>

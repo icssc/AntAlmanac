@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import ReactGA from 'react-ga';
 import Button from '@material-ui/core/Button';
 import { Tooltip } from '@material-ui/core';
 import Today from '@material-ui/icons/Today';
@@ -7,20 +8,20 @@ import { createEvents } from 'ics';
 import AppStore from '../../stores/AppStore';
 
 // Hardcoded first mondays
-// TODO(chase): account for week 0 in fall quarters
 // TODO(chase): support summer sessions
 const quarterStartDates = {
-    '2019 Fall': [2019, 9, 30],
+    '2019 Fall': [2019, 9, 26],
     '2020 Winter': [2020, 1, 6],
     '2020 Spring': [2020, 3, 30],
-    '2020 Fall': [2020, 10, 5],
+    '2020 Fall': [2020, 10, 1],
     '2021 Winter': [2021, 1, 4],
     '2021 Spring': [2021, 3, 29],
-    '2021 Fall': [2021, 9, 27],
+    '2021 Fall': [2021, 9, 23],
 };
 
 const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 const daysOffset = { SU: -1, MO: 0, TU: 1, WE: 2, TH: 3, FR: 4, SA: 5 };
+const fallDaysOffset = { TH: 0, FR: 1, SA: 2, SU: 3, MO: 4, TU: 5, WE: 6 };
 const translateDaysForIcs = { Su: 'SU', M: 'MO', Tu: 'TU', W: 'WE', Th: 'TH', F: 'FR', Sa: 'SA' };
 
 // getByDays returns the days that a class occurs
@@ -31,18 +32,26 @@ const getByDays = (days) => {
 };
 
 // getClassStartDate returns the start date of a class
-//  Given the term and the first day of the week that a class occurs,
-//  this computes the start date of the class
+//  Given the term and bydays, this computes the start date of the class
 //
 //  Ex: ("2021 Spring", 'Tu') -> [2021, 3, 30]
-//
-// TODO: handle week 0 in fall quarters
-const getClassStartDate = (term, firstClassDay) => {
+const getClassStartDate = (term, bydays) => {
     // Get the start date of the quarter (Monday)
     const quarterStartDate = new Date(quarterStartDates[term]);
 
     // dayOffset represents the number of days since the start of the quarter
-    const dayOffset = daysOffset[firstClassDay];
+    var dayOffset;
+    if (getQuarter(term) === 'Fall') {
+        // Since Fall quarter starts on a Thursday the first byday and offset
+        // will be different from other quarters
+        bydays.sort((day1, day2) => {
+            // Sorts bydays to match this ordering: [TH, FR, SA, SU, MO, TU, WE]
+            return fallDaysOffset[day1] - fallDaysOffset[day2];
+        });
+        dayOffset = fallDaysOffset[bydays[0]];
+    } else {
+        dayOffset = daysOffset[bydays[0]];
+    }
 
     // Add the dayOffset to the quarterStartDate
     // Date object will handle potential overflow into the next month
@@ -67,6 +76,7 @@ const dateToIcs = (date) => {
 // Note(chase): We currently don't use this function because timezones are too annoying.
 //  If you want to use this function, you also need to set the VEvent's
 //  startInputType/endInputType to 'utc'
+// eslint-disable-next-line
 const toUTC = (times, offsetHours) => {
     return times.map((time) => {
         // Construct a Date object
@@ -91,14 +101,32 @@ const getFirstClass = (date, time) => {
     ];
 };
 
+// getExamTime returns the start and end datetime of an exam
+//  Ex: ("Mon Jun 7 10:30-12:30pm", "2019") -> [[2019, 6, 7, 10, 30], [2019, 6, 7, 12, 30]]
+const months = { Mar: 3, Apr: 4, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Nov: 11, Dec: 12 };
+const getExamTime = (exam, year) => {
+    const [, month, day, time] = exam.split(' ');
+    const [examStartTime, examEndTime] = parseTimes(time);
+
+    return [
+        [year, months[month], day, ...examStartTime],
+        [year, months[month], day, ...examEndTime],
+    ];
+};
+
 // parseTimes converts a time string to a
 //  This is a helper function used by getFirstClass
 //  Ex: " 4:00-4:50p" -> [[16, 0], [16, 50]]
 const parseTimes = (time) => {
     // Determine whether the time is in the afternoon (PM)
     var pm = false;
-    if (time[time.length - 1] === 'p') {
+    if (time.slice(-1) === 'p') {
+        // Course time strings would end with a 'p'
         time = time.substring(0, time.length - 1); // Remove 'p' from the end
+        pm = true;
+    } else if (time.slice(-2) === 'pm') {
+        // Final Exam time strings would end with a 'pm'
+        time = time.substring(0, time.length - 2); // Remove 'pm' from the end
         pm = true;
     }
 
@@ -128,10 +156,37 @@ const parseTimes = (time) => {
     return [start, end];
 };
 
+// getYear returns the year of a given term
+//  Ex: "2019 Fall" -> "2019"
+const getYear = (term) => {
+    return term.split(' ')[0];
+};
+
+// getQuarter returns the quarter of a given term
+//  Ex: "2019 Fall" -> "Fall"
+const getQuarter = (term) => {
+    return term.split(' ')[1];
+};
+
 // getRRule returns a string representing the recurring rule for the VEvent
 //  Ex: ["TU", "TH"] -> "FREQ=WEEKLY;BYDAY=TU,TH;INTERVAL=1;COUNT=20"
-const getRRule = (bydays) => {
-    const count = 10 * bydays.length; // Number of occurances in the quarter
+const getRRule = (bydays, quarter) => {
+    var count = 10 * bydays.length; // Number of occurances in the quarter
+
+    if (quarter === 'Fall') {
+        for (const byday of bydays) {
+            switch (byday) {
+                case 'TH':
+                case 'FR':
+                case 'SA':
+                    count += 1;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     return `FREQ=WEEKLY;BYDAY=${bydays};INTERVAL=1;COUNT=${count}`;
 };
 
@@ -150,15 +205,20 @@ class ExportCalendarButton extends PureComponent {
                 deptCode,
                 courseNumber,
                 courseTitle,
-                section: { sectionType, instructors, meetings },
+                section: { sectionType, instructors, meetings, finalExam },
             } = course;
 
             // Create a VEvent for each meeting
             for (const meeting of meetings) {
+                if (meeting.time === 'TBA') {
+                    // Skip this meeting if there is no meeting time
+                    continue;
+                }
+
                 const bydays = getByDays(meeting.days);
-                const classStartDate = getClassStartDate(term, bydays[0]);
+                const classStartDate = getClassStartDate(term, bydays);
                 const [firstClassStart, firstClassEnd] = getFirstClass(classStartDate, meeting.time);
-                const rrule = getRRule(bydays);
+                const rrule = getRRule(bydays, getQuarter(term));
 
                 // Add VEvent to events array
                 events.push({
@@ -173,19 +233,37 @@ class ExportCalendarButton extends PureComponent {
                     recurrenceRule: rrule,
                 });
             }
+
+            // Add Final to events
+            if (finalExam && finalExam !== 'TBA') {
+                const [examStart, examEnd] = getExamTime(finalExam, getYear(term));
+                events.push({
+                    productId: 'antalmanac/ics',
+                    startOutputType: 'local',
+                    endOutputType: 'local',
+                    title: `${deptCode} ${courseNumber} Final Exam`,
+                    description: `Final Exam for ${courseTitle}`,
+                    start: examStart,
+                    end: examEnd,
+                });
+            }
         }
 
         // Convert the events into a vcalendar
         // Callback function triggers a download of the .ics file
         createEvents(events, (err, val) => {
             if (!err) {
-                console.log(val);
                 // Download the .ics file
                 var blob = new Blob([val], { type: 'text/plain;charset=utf-8' });
                 saveAs(blob, 'schedule.ics');
             } else {
                 console.log(err);
             }
+        });
+
+        ReactGA.event({
+            category: 'antalmanac-rewrite',
+            action: 'Download .ics file',
         });
     };
 

@@ -26,8 +26,5 @@
             "prettier --write",
             "git add"
         ]
-    },
-    "dependencies": {
-        "notistack": "^1.0.2"
     }
 }

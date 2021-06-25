@@ -12,7 +12,6 @@ const styles = {
     appBar: {
         marginBottom: '4px',
         boxShadow: 'none',
-        backgroundColor: '#305db7',
         minHeight: 0,
     },
     buttonMargin: {

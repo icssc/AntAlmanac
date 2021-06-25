@@ -54,7 +54,7 @@ class CourseInfoBar extends PureComponent {
                             loading: false,
                             title: jsonResp.title,
                             prerequisite_text: jsonResp.prerequisite_text,
-                            prerequisite_for: jsonResp.dependencies.join(', '),
+                            prerequisite_for: jsonResp.prerequisite_for.join(', '),
                             description: jsonResp.description,
                         });
                     } else {
