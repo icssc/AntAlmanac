@@ -29,9 +29,6 @@ const styles = (theme) => ({
     popover: {
         pointerEvents: 'none',
     },
-    cellPadding: {
-        padding: '0px 0px 0px 0px',
-    },
     sectionCode: {
         display: 'inline-block',
         cursor: 'pointer',
@@ -84,6 +81,10 @@ const styles = (theme) => ({
     Tut: { color: '#ffc705' },
 });
 
+const NoPaddingTableCell = withStyles({
+    sizeSmall: { padding: '0px 0px 0px 0px' },
+})(TableCell);
+
 const ScheduleAddCell = withStyles(styles)((props) => {
     const { classes, section, courseDetails, term } = props;
     const popupState = usePopupState({ variant: 'popover' });
@@ -104,7 +105,7 @@ const ScheduleAddCell = withStyles(styles)((props) => {
     };
 
     return (
-        <TableCell className={classes.cell} classes={{ sizeSmall: classes.cellPadding }}>
+        <NoPaddingTableCell className={classes.cell}>
             <div>
                 <IconButton
                     onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}
@@ -123,7 +124,7 @@ const ScheduleAddCell = withStyles(styles)((props) => {
                     <MenuItem onClick={() => closeAndAddCourse(4)}>Add to all</MenuItem>
                 </Menu>
             </div>
-        </TableCell>
+        </NoPaddingTableCell>
     );
 });
 
@@ -131,7 +132,7 @@ const CourseCodeCell = withStyles(styles)((props) => {
     const { classes, sectionCode } = props;
 
     return (
-        <TableCell className={classes.cell} classes={{ sizeSmall: classes.cellPadding }}>
+        <NoPaddingTableCell className={classes.cell}>
             <Tooltip title="Click to copy course code" placement="bottom" enterDelay={300}>
                 <div
                     onClick={(event) => {
@@ -146,7 +147,7 @@ const CourseCodeCell = withStyles(styles)((props) => {
                     {sectionCode}
                 </div>
             </Tooltip>
-        </TableCell>
+        </NoPaddingTableCell>
     );
 });
 
@@ -154,11 +155,11 @@ const SectionDetailsCell = withStyles(styles)((props) => {
     const { classes, sectionType, sectionNum, units } = props;
 
     return (
-        <TableCell className={classes.cell} classes={{ sizeSmall: classes.cellPadding }}>
+        <NoPaddingTableCell className={classes.cell}>
             <div className={classes[sectionType]}>{sectionType}</div>
             <div>Sec: {sectionNum}</div>
             <div>Units: {units}</div>
-        </TableCell>
+        </NoPaddingTableCell>
     );
 });
 
@@ -226,18 +227,14 @@ const InstructorsCell = withStyles(styles)((props) => {
         });
     };
 
-    return (
-        <TableCell className={classes.cell} classes={{ sizeSmall: classes.cellPadding }}>
-            {getLinks(instructors)}
-        </TableCell>
-    );
+    return <NoPaddingTableCell className={classes.cell}>{getLinks(instructors)}</NoPaddingTableCell>;
 });
 
 const LocationsCell = withStyles(styles)((props) => {
     const { classes, meetings } = props;
 
     return (
-        <TableCell className={classes.cell} classes={{ sizeSmall: classes.cellPadding }}>
+        <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
                 return meeting.bldg !== 'TBA' ? (
                     <Fragment key={meeting.bldg}>
@@ -258,7 +255,7 @@ const LocationsCell = withStyles(styles)((props) => {
                     <div>{meeting.bldg}</div>
                 );
             })}
-        </TableCell>
+        </NoPaddingTableCell>
     );
 });
 
@@ -266,7 +263,7 @@ const SectionEnrollmentCell = withStyles(styles)((props) => {
     const { classes, numCurrentlyEnrolled, maxCapacity, numOnWaitlist, numNewOnlyReserved } = props;
 
     return (
-        <TableCell className={classes.cell} classes={{ sizeSmall: classes.cellPadding }}>
+        <NoPaddingTableCell className={classes.cell}>
             <div>
                 <div>
                     <strong>
@@ -276,7 +273,7 @@ const SectionEnrollmentCell = withStyles(styles)((props) => {
                 <div>WL: {numOnWaitlist}</div>
                 <div>NOR: {numNewOnlyReserved}</div>
             </div>
-        </TableCell>
+        </NoPaddingTableCell>
     );
 });
 
@@ -299,7 +296,7 @@ const RestrictionsCell = withStyles(styles)((props) => {
     const popupState = usePopupState({ variant: 'popover' });
 
     return (
-        <TableCell className={classes.cell} classes={{ sizeSmall: classes.cellPadding }}>
+        <NoPaddingTableCell className={classes.cell}>
             <div>
                 <Typography {...bindHover(popupState)}>
                     <a
@@ -321,7 +318,7 @@ const RestrictionsCell = withStyles(styles)((props) => {
                     <Typography>{parseRestrictions(restrictions)}</Typography>
                 </Popover>
             </div>
-        </TableCell>
+        </NoPaddingTableCell>
     );
 });
 
@@ -329,11 +326,11 @@ const DayAndTimeCell = withStyles(styles)((props) => {
     const { classes, meetings } = props;
 
     return (
-        <TableCell className={classes.cell} classes={{ sizeSmall: classes.cellPadding }}>
+        <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => (
                 <div>{`${meeting.days} ${meeting.time}`}</div>
             ))}
-        </TableCell>
+        </NoPaddingTableCell>
     );
 });
 
@@ -342,26 +339,20 @@ const StatusCell = withStyles(styles)((props) => {
 
     if (term === '2021 Spring' && (status === 'NewOnly' || status === 'FULL')) {
         return (
-            <TableCell
-                classes={{ sizeSmall: classes.cellPadding }}
-                className={`${classes[status.toLowerCase()]} ${classes.cell}`}
-            >
+            <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>
                 <OpenSpotAlertPopover
                     courseTitle={courseTitle}
                     courseNumber={courseNumber}
                     status={status}
                     sectionCode={sectionCode}
                 />
-            </TableCell>
+            </NoPaddingTableCell>
         );
     } else {
         return (
-            <TableCell
-                classes={{ sizeSmall: classes.cellPadding }}
-                className={`${classes[status.toLowerCase()]} ${classes.cell}`}
-            >
+            <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>
                 {status}
-            </TableCell>
+            </NoPaddingTableCell>
         );
     }
 });
