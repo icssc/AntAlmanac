@@ -33,6 +33,15 @@ class App extends PureComponent {
 
     render() {
         const theme = createMuiTheme({
+            overrides: {
+                MuiCssBaseline: {
+                    '@global': {
+                        a: {
+                            color: this.state.darkMode ? 'dodgerblue' : 'blue',
+                        },
+                    },
+                },
+            },
             palette: {
                 type: this.state.darkMode ? 'dark' : 'light',
                 primary: {

@@ -2,7 +2,18 @@ import React, { Fragment, useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
 import locations from './static/locations';
 import restrictionsMapping from './static/restrictionsMapping';
-import { IconButton, Menu, Button, ButtonGroup, MenuItem, Popover, Tooltip, Typography } from '@material-ui/core';
+import {
+    TableRow,
+    IconButton,
+    Menu,
+    Button,
+    ButtonGroup,
+    MenuItem,
+    Popover,
+    Tooltip,
+    Typography,
+    TableCell,
+} from '@material-ui/core';
 import { bindHover, bindMenu, bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { withStyles } from '@material-ui/core/styles';
 import { Add, ArrowDropDown } from '@material-ui/icons';
@@ -18,52 +29,35 @@ const styles = (theme) => ({
     popover: {
         pointerEvents: 'none',
     },
+    sectionCode: {
+        display: 'inline-block',
+        cursor: 'pointer',
+        '&:hover': {
+            color: 'blueviolet',
+        },
+    },
+    row: {
+        '&:nth-of-type(odd)': {
+            backgroundColor: theme.palette.action.hover,
+        },
+    },
+    tr: {
+        '&.addedCourse': {
+            backgroundColor: AppStore.getDarkMode() ? '#b0b04f' : '#fcfc97',
+        },
+    },
+    cell: {
+        fontSize: '0.85rem',
+    },
     link: {
         textDecoration: 'underline',
-        color: '#0645AD',
+        color: AppStore.getDarkMode() ? 'dodgerblue' : 'blue',
         cursor: 'pointer',
     },
     paper: {
         padding: theme.spacing.unit,
     },
-    cell: { verticalAlign: 'middle', textAlign: 'center' },
-    button: { cursor: 'pointer', padding: 0 },
-    table: {
-        borderCollapse: 'collapse',
-        boxSizing: 'border-box',
-        width: '100%',
-        marginTop: '0.285rem',
-
-        '& thead': {
-            position: 'sticky',
-
-            '& th': {
-                border: '1px solid rgb(222, 226, 230)',
-                fontSize: '0.85rem',
-                fontWeight: '500',
-                color: 'rgba(0, 0, 0, 0.54)',
-                textAlign: 'left',
-                verticalAlign: 'bottom',
-            },
-        },
-    },
-    tr: {
-        fontSize: '0.85rem',
-        '&:nth-child(odd)': {
-            backgroundColor: '#f5f5f5',
-        },
-
-        '& td': {
-            borderLeft: '0px solid',
-            borderRight: '0px solid',
-            // border: '1px solid rgb(222, 226, 230)',
-            textAlign: 'left',
-            verticalAlign: 'top',
-        },
-        '&.addedCourse': {
-            backgroundColor: '#fcfc97',
-        },
-    },
+    button: { padding: '6px' },
     open: {
         color: '#00c853',
     },
@@ -72,9 +66,6 @@ const styles = (theme) => ({
     },
     full: {
         color: '#e53935',
-    },
-    multiline: {
-        whiteSpace: 'pre',
     },
     sectionCode: {
         '&:hover': {
@@ -93,19 +84,11 @@ const styles = (theme) => ({
     Stu: { color: '#179523' },
     Tap: { color: '#8d2df0' },
     Tut: { color: '#ffc705' },
-    lightTooltip: {
-        backgroundColor: 'rgba(255,255,255)',
-        color: 'rgba(0, 0, 0, 0.87)',
-        boxShadow: 0,
-        fontSize: 11,
-    },
-    code: {
-        cursor: 'pointer',
-        '&:hover': {
-            color: 'blueviolet',
-        },
-    },
 });
+
+const NoPaddingTableCell = withStyles({
+    sizeSmall: { padding: '0px 0px 0px 0px' },
+})(TableCell);
 
 const ScheduleAddCell = withStyles(styles)((props) => {
     const { classes, section, courseDetails, term } = props;
@@ -127,24 +110,26 @@ const ScheduleAddCell = withStyles(styles)((props) => {
     };
 
     return (
-        <td className={classes.cell}>
-            <IconButton
-                onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}
-                className={classes.button}
-            >
-                <Add fontSize="large" />
-            </IconButton>
-            <IconButton {...bindTrigger(popupState)} className={classes.button}>
-                <ArrowDropDown />
-            </IconButton>
-            <Menu {...bindMenu(popupState)} onClose={() => closeAndAddCourse(-1)}>
-                <MenuItem onClick={() => closeAndAddCourse(0)}>Add to schedule 1</MenuItem>
-                <MenuItem onClick={() => closeAndAddCourse(1)}>Add to schedule 2</MenuItem>
-                <MenuItem onClick={() => closeAndAddCourse(2)}>Add to schedule 3</MenuItem>
-                <MenuItem onClick={() => closeAndAddCourse(3)}>Add to schedule 4</MenuItem>
-                <MenuItem onClick={() => closeAndAddCourse(4)}>Add to all</MenuItem>
-            </Menu>
-        </td>
+        <NoPaddingTableCell className={classes.cell}>
+            <div>
+                <IconButton
+                    onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}
+                    className={classes.button}
+                >
+                    <Add />
+                </IconButton>
+                <IconButton {...bindTrigger(popupState)} className={classes.button}>
+                    <ArrowDropDown />
+                </IconButton>
+                <Menu {...bindMenu(popupState)} onClose={() => closeAndAddCourse(-1)}>
+                    <MenuItem onClick={() => closeAndAddCourse(0)}>Add to schedule 1</MenuItem>
+                    <MenuItem onClick={() => closeAndAddCourse(1)}>Add to schedule 2</MenuItem>
+                    <MenuItem onClick={() => closeAndAddCourse(2)}>Add to schedule 3</MenuItem>
+                    <MenuItem onClick={() => closeAndAddCourse(3)}>Add to schedule 4</MenuItem>
+                    <MenuItem onClick={() => closeAndAddCourse(4)}>Add to all</MenuItem>
+                </Menu>
+            </div>
+        </NoPaddingTableCell>
     );
 });
 
@@ -152,13 +137,8 @@ const CourseCodeCell = withStyles(styles)((props) => {
     const { classes, sectionCode } = props;
 
     return (
-        <td>
-            <Tooltip
-                title="Click to copy course code"
-                placement="bottom"
-                enterDelay={300}
-                classes={{ tooltip: classes.lightTooltip }}
-            >
+        <NoPaddingTableCell className={classes.cell}>
+            <Tooltip title="Click to copy course code" placement="bottom" enterDelay={300}>
                 <div
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);
@@ -172,7 +152,7 @@ const CourseCodeCell = withStyles(styles)((props) => {
                     {sectionCode}
                 </div>
             </Tooltip>
-        </td>
+        </NoPaddingTableCell>
     );
 });
 
@@ -180,9 +160,11 @@ const SectionDetailsCell = withStyles(styles)((props) => {
     const { classes, sectionType, sectionNum, units } = props;
 
     return (
-        <td className={classes.multiline + ' ' + classes[sectionType]}>
-            {`${sectionType}\nSec: ${sectionNum}\nUnits: ${units}`}
-        </td>
+        <NoPaddingTableCell className={classes.cell}>
+            <div className={classes[sectionType]}>{sectionType}</div>
+            <div>Sec: {sectionNum}</div>
+            <div>Units: {units}</div>
+        </NoPaddingTableCell>
     );
 });
 
@@ -250,14 +232,14 @@ const InstructorsCell = withStyles(styles)((props) => {
         });
     };
 
-    return <td>{getLinks(instructors)}</td>;
+    return <NoPaddingTableCell className={classes.cell}>{getLinks(instructors)}</NoPaddingTableCell>;
 });
 
 const LocationsCell = withStyles(styles)((props) => {
     const { classes, meetings } = props;
 
     return (
-        <td className={classes.multiline}>
+        <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
                 return meeting.bldg !== 'TBA' ? (
                     <Fragment key={meeting.bldg}>
@@ -278,37 +260,25 @@ const LocationsCell = withStyles(styles)((props) => {
                     <div>{meeting.bldg}</div>
                 );
             })}
-        </td>
+        </NoPaddingTableCell>
     );
 });
 
 const SectionEnrollmentCell = withStyles(styles)((props) => {
     const { classes, numCurrentlyEnrolled, maxCapacity, numOnWaitlist, numNewOnlyReserved } = props;
-    const popupState = usePopupState({ variant: 'popover' });
 
     return (
-        <td>
-            <div {...bindHover(popupState)} className={classes.multiline}>
-                <strong>{`${numCurrentlyEnrolled.totalEnrolled} / ${maxCapacity}\n`}</strong>
-                {`WL: ${numOnWaitlist}\nNOR: ${numNewOnlyReserved}`}
+        <NoPaddingTableCell className={classes.cell}>
+            <div>
+                <div>
+                    <strong>
+                        {numCurrentlyEnrolled.totalEnrolled} / {maxCapacity}
+                    </strong>
+                </div>
+                <div>WL: {numOnWaitlist}</div>
+                <div>NOR: {numNewOnlyReserved}</div>
             </div>
-            <Popover
-                {...bindPopover(popupState)}
-                className={classes.popover}
-                classes={{ paper: classes.paper }}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                disableRestoreFocus
-            >
-                <Typography>
-                    Enrolled/Capacity
-                    <br />
-                    Waitlist
-                    <br />
-                    New-Only Reserved
-                </Typography>
-            </Popover>
-        </td>
+        </NoPaddingTableCell>
     );
 });
 
@@ -331,7 +301,7 @@ const RestrictionsCell = withStyles(styles)((props) => {
     const popupState = usePopupState({ variant: 'popover' });
 
     return (
-        <td>
+        <NoPaddingTableCell className={classes.cell}>
             <div>
                 <Typography {...bindHover(popupState)}>
                     <a
@@ -353,7 +323,7 @@ const RestrictionsCell = withStyles(styles)((props) => {
                     <Typography>{parseRestrictions(restrictions)}</Typography>
                 </Popover>
             </div>
-        </td>
+        </NoPaddingTableCell>
     );
 });
 
@@ -361,7 +331,11 @@ const DayAndTimeCell = withStyles(styles)((props) => {
     const { classes, meetings } = props;
 
     return (
-        <td className={classes.multiline}>{meetings.map((meeting) => meeting.days + ' ' + meeting.time).join('\n')}</td>
+        <NoPaddingTableCell className={classes.cell}>
+            {meetings.map((meeting) => (
+                <div>{`${meeting.days} ${meeting.time}`}</div>
+            ))}
+        </NoPaddingTableCell>
     );
 });
 
@@ -370,17 +344,21 @@ const StatusCell = withStyles(styles)((props) => {
 
     if (term === '2021 Fall' && (status === 'NewOnly' || status === 'FULL')) {
         return (
-            <td className={classes[status.toLowerCase()]}>
+            <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>
                 <OpenSpotAlertPopover
                     courseTitle={courseTitle}
                     courseNumber={courseNumber}
                     status={status}
                     sectionCode={sectionCode}
                 />
-            </td>
+            </NoPaddingTableCell>
         );
     } else {
-        return <td className={classes[status.toLowerCase()]}>{status}</td>;
+        return (
+            <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>
+                {status}
+            </NoPaddingTableCell>
+        );
     }
 });
 //TODO: SectionNum name parity -> SectionNumber
@@ -406,7 +384,10 @@ const SectionTableBody = withStyles(styles)((props) => {
     }, []);
 
     return (
-        <tr className={classNames(classes.tr, { addedCourse: addedCourse && !colorAndDelete })}>
+        <TableRow
+            classes={{ root: classes.row }}
+            className={classNames(classes.tr, { addedCourse: addedCourse && !colorAndDelete })}
+        >
             {!colorAndDelete ? (
                 <ScheduleAddCell section={section} courseDetails={courseDetails} term={term} />
             ) : (
@@ -435,7 +416,7 @@ const SectionTableBody = withStyles(styles)((props) => {
                 courseTitle={courseDetails.courseTitle}
                 courseNumber={courseDetails.courseNumber}
             />
-        </tr>
+        </TableRow>
     );
 });
 
