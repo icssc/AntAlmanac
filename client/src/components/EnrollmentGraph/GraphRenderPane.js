@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 import PropTypes from 'prop-types';
@@ -41,19 +41,14 @@ const styles = () => ({
     },
 });
 
-class KeepMounted extends PureComponent {
-    hasBeenMounted = false;
-    render() {
-        const { isMounted, render } = this.props;
-        this.hasBeenMounted = this.hasBeenMounted || isMounted;
-        return <div style={{ display: isMounted ? null : 'none' }}>{this.hasBeenMounted ? render() : null}</div>;
-    }
-}
-
 class GraphRenderPane extends PureComponent {
     state = {
         graphOpen: false,
-        reported: false,
+    };
+
+    componentDidUpdate = (prevProps, prevState) => {
+        if (prevState.graphOpen === this.state.graphOpen && prevProps.pastTerm !== this.props.pastTerm)
+            this.setState({ graphOpen: false });
     };
 
     toggleDisplayGraph = () => {
@@ -108,12 +103,9 @@ Units: ${this.props.pastSection.units}`}
                         </tr>
                     </tbody>
                 </table>
-                <KeepMounted
-                    isMounted={this.state.graphOpen}
-                    render={() => (
-                        <Graph pastSectionCode={this.props.pastSection.sectionCode} pastTerm={this.props.pastTerm} />
-                    )}
-                />
+                {this.state.graphOpen ? (
+                    <Graph pastSectionCode={this.props.pastSection.sectionCode} pastTerm={this.props.pastTerm} />
+                ) : null}
                 <hr />
             </Fragment>
         );

@@ -99,6 +99,8 @@ class GraphModalContent extends PureComponent {
                     <InputLabel>Term</InputLabel>
                     <Select value={this.state.pastTerm} onChange={this.handleChange}>
                         <MenuItem value={'2021 Winter'}>2021 Winter Quarter</MenuItem>
+                        <MenuItem value={'2021 Spring'}>2021 Spring Quarter</MenuItem>
+                        <MenuItem value={'2021 Fall'}>2021 Fall Quarter</MenuItem>
                     </Select>
                 </FormControl>
                 {whatToDisplay}
