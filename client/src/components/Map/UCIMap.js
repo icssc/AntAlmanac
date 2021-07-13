@@ -73,7 +73,7 @@ export default class UCIMap extends PureComponent {
         // Tracks courses that have already been pinned on the map, so there are no duplicates
         let pinnedCourses = new Set();
 
-        this.state.eventsInCalendar.forEach((event) => {
+        this.state.eventsInCalendar.forEach((event, index) => {
             // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
             if (
                 event.isCustomEvent ||
@@ -106,6 +106,7 @@ export default class UCIMap extends PureComponent {
                     lat={locationData.lat}
                     lng={locationData.lng}
                     acronym={acronym}
+                    index={this.state.day ? (index + 1).toString() : ""}
                 >
                     <Fragment>
                         <hr />
