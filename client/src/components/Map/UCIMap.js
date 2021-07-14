@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent, createRef } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { Map, TileLayer, withLeaflet, Polyline } from 'react-leaflet';
 import buildingCatalogue from './static/buildingCatalogue';
 import locations from '../SectionTable/static/locations.json';
@@ -49,36 +49,36 @@ export default class UCIMap extends PureComponent {
         poly: [],
     };
 
-    refPolyline = createRef();
-
     getRoute = (day) => {
         let index = 0;
         let coords = '';
         let colors = [];
-        this.state.eventsInCalendar.forEach((event) => {
-            // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
-            if (
-                event.isCustomEvent ||
-                !event.scheduleIndices.includes(this.state.currentScheduleIndex) ||
-                !event.start.toString().includes(DAYS[day])
-            )
-                return;
+        this.state.eventsInCalendar
+            .sort((event, event2) => event.start - event2.start)
+            .forEach((event) => {
+                // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
+                if (
+                    event.isCustomEvent ||
+                    !event.scheduleIndices.includes(this.state.currentScheduleIndex) ||
+                    !event.start.toString().includes(DAYS[day])
+                )
+                    return;
 
-            // Get building code, get id of building code, which will get us the building data from buildingCatalogue
-            const buildingCode = event.bldg.split(' ')[0];
-            const id = locations[buildingCode];
-            const locationData = buildingCatalogue[id];
+                // Get building code, get id of building code, which will get us the building data from buildingCatalogue
+                const buildingCode = event.bldg.split(' ')[0];
+                const id = locations[buildingCode];
+                const locationData = buildingCatalogue[id];
 
-            if (locationData === undefined) return;
+                if (locationData === undefined) return;
 
-            colors.push(event.color);
+                colors.push(event.color);
 
-            if (day) {
-                if (coords) coords += ';';
-                coords += locationData.lng + ',' + locationData.lat;
-            }
-            index++;
-        });
+                if (day) {
+                    if (coords) coords += ';';
+                    coords += locationData.lng + ',' + locationData.lat;
+                }
+                index++;
+            });
         if (day && index > 1) {
             var url = new URL(DIRECTIONS_ENDPOINT + encodeURIComponent(coords));
 
@@ -144,51 +144,53 @@ export default class UCIMap extends PureComponent {
         let pinnedCourses = new Set();
         let index = 0;
 
-        this.state.eventsInCalendar.forEach((event) => {
-            // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
-            if (
-                event.isCustomEvent ||
-                !event.scheduleIndices.includes(this.state.currentScheduleIndex) ||
-                !event.start.toString().includes(DAYS[this.state.day])
-            )
-                return;
+        this.state.eventsInCalendar
+            .sort((event, event2) => event.start - event2.start)
+            .forEach((event) => {
+                // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
+                if (
+                    event.isCustomEvent ||
+                    !event.scheduleIndices.includes(this.state.currentScheduleIndex) ||
+                    !event.start.toString().includes(DAYS[this.state.day])
+                )
+                    return;
 
-            // Get building code, get id of building code, which will get us the building data from buildingCatalogue
-            const buildingCode = event.bldg.split(' ')[0];
-            const id = locations[buildingCode];
-            const locationData = buildingCatalogue[id];
-            const courseString = `${event.title} ${event.sectionType} @ ${event.bldg}`;
+                // Get building code, get id of building code, which will get us the building data from buildingCatalogue
+                const buildingCode = event.bldg.split(' ')[0];
+                const id = locations[buildingCode];
+                const locationData = buildingCatalogue[id];
+                const courseString = `${event.title} ${event.sectionType} @ ${event.bldg}`;
 
-            if (locationData === undefined || pinnedCourses.has(courseString)) return;
+                if (locationData === undefined || pinnedCourses.has(courseString)) return;
 
-            // Acronym, if it exists, is in between parentheses
-            const acronym = locationData.name.substring(
-                locationData.name.indexOf('(') + 1,
-                locationData.name.indexOf(')')
-            );
+                // Acronym, if it exists, is in between parentheses
+                const acronym = locationData.name.substring(
+                    locationData.name.indexOf('(') + 1,
+                    locationData.name.indexOf(')')
+                );
 
-            pinnedCourses.add(courseString);
+                pinnedCourses.add(courseString);
 
-            markers.push(
-                <MapMarkerPopup
-                    image={locationData.imageURLs[0]}
-                    markerColor={event.color}
-                    location={locationData.name}
-                    lat={locationData.lat}
-                    lng={locationData.lng}
-                    acronym={acronym}
-                    index={this.state.day ? (index + 1).toString() : ''}
-                >
-                    <Fragment>
-                        <hr />
-                        Class: {`${event.title} ${event.sectionType}`}
-                        <br />
-                        Room: {event.bldg.split(' ')[1]}
-                    </Fragment>
-                </MapMarkerPopup>
-            );
-            index++;
-        });
+                markers.push(
+                    <MapMarkerPopup
+                        image={locationData.imageURLs[0]}
+                        markerColor={event.color}
+                        location={locationData.name}
+                        lat={locationData.lat}
+                        lng={locationData.lng}
+                        acronym={acronym}
+                        index={this.state.day ? (index + 1).toString() : ''}
+                    >
+                        <Fragment>
+                            <hr />
+                            Class: {`${event.title} ${event.sectionType}`}
+                            <br />
+                            Room: {event.bldg.split(' ')[1]}
+                        </Fragment>
+                    </MapMarkerPopup>
+                );
+                index++;
+            });
 
         return markers;
     };
