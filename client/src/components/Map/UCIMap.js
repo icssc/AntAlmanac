@@ -1,11 +1,12 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Map, TileLayer, withLeaflet, Polyline } from 'react-leaflet';
+import { Map, TileLayer, withLeaflet, Polyline, Marker } from 'react-leaflet';
 import buildingCatalogue from './static/buildingCatalogue';
 import locations from '../SectionTable/static/locations.json';
 import AppStore from '../../stores/AppStore';
 import DayTabs from './MapTabsAndSearchBar';
 import MapMarkerPopup from './MapMarkerPopup';
 import Locate from 'leaflet.locatecontrol';
+import Leaflet from 'leaflet';
 
 class LocateControl extends PureComponent {
     componentDidMount() {
@@ -52,6 +53,7 @@ export default class UCIMap extends PureComponent {
     getRoute = (day) => {
         let index = 0;
         let coords = '';
+        let coords_array = [];
         let colors = [];
         this.state.eventsInCalendar
             .sort((event, event2) => event.start - event2.start)
@@ -76,6 +78,7 @@ export default class UCIMap extends PureComponent {
                 if (day) {
                     if (coords) coords += ';';
                     coords += locationData.lng + ',' + locationData.lat;
+                    coords_array.push([locationData.lat, locationData.lng]);
                 }
                 index++;
             });
@@ -96,16 +99,64 @@ export default class UCIMap extends PureComponent {
                 response.json().then((obj) => {
                     let latlng = obj['routes'][0]['geometry']['coordinates'];
                     let waypoint = 0;
-                    let path = [[]];
+                    let path = [
+                        [[obj['waypoints'][waypoint]['location'][1], obj['waypoints'][waypoint]['location'][0]]],
+                    ];
                     let poly = [];
+                    poly.push(<Polyline color={colors[0]} positions={[path[0][0], coords_array[0]]} dashArray="4" />);
+
                     for (let i of latlng) {
                         path[waypoint].push([i[1], i[0]]);
                         if (
                             i[0] === obj['waypoints'][waypoint]['location'][0] &&
                             i[1] === obj['waypoints'][waypoint]['location'][1]
                         ) {
-                            path.push([]);
-                            poly.push(<Polyline color={colors[waypoint - 1]} positions={path[waypoint]} />);
+                            path.push([[i[1], i[0]]]);
+                            if (waypoint != 0) {
+                                poly.push(<Polyline color={colors[waypoint - 1]} positions={path[waypoint]} />);
+                                poly.push(
+                                    <Polyline
+                                        color={colors[waypoint - 1]}
+                                        positions={[path[waypoint][path[waypoint].length - 1], coords_array[waypoint]]}
+                                        dashArray="4"
+                                    />
+                                );
+                                poly.push(
+                                    <Marker
+                                        position={path[waypoint][Math.floor(path[waypoint].length / 2)]}
+                                        icon={Leaflet.divIcon({
+                                            iconAnchor: [0, 14],
+                                            labelAnchor: [-3.5, 0],
+                                            popupAnchor: [0, -21],
+                                            className: '',
+                                            iconSize: [1000, 14],
+                                            html: `<div style="background-color: white;border-left-color: ${
+                                                colors[waypoint - 1]
+                                            };border-left-style: solid;width: fit-content;border-left-width: 5px;padding-left: 10px;padding-right: 10px;padding-top: 4px;padding-bottom: 4px;">
+                                    <span style="color:${colors[waypoint - 1]}"> ${
+                                                obj['routes'][0]['legs'][waypoint - 1]['duration'] > 30
+                                                    ? Math.round(
+                                                          obj['routes'][0]['legs'][waypoint - 1]['duration'] / 60
+                                                      ).toString() + ' min'
+                                                    : '<1 min'
+                                            } </span>
+                                    <br>
+                                    <span style="color:#888888">
+                                                ${
+                                                    (
+                                                        Math.floor(
+                                                            obj['routes'][0]['legs'][waypoint - 1]['distance'] /
+                                                                1.609 /
+                                                                10
+                                                        ) / 100
+                                                    ).toString() + ' mi'
+                                                }
+                                                </span>
+                                            </div>`,
+                                        })}
+                                    ></Marker>
+                                );
+                            }
                             waypoint++;
                         }
                     }
@@ -191,7 +242,6 @@ export default class UCIMap extends PureComponent {
                 );
                 index++;
             });
-
         return markers;
     };
 

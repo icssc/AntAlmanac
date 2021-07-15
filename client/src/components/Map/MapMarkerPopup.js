@@ -15,9 +15,7 @@ class MapMarkerPopup extends PureComponent {
             labelAnchor: [-3.5, 0],
             popupAnchor: [0, -21],
             className: '',
-            html: `<div style="position:relative;
-                                    left: -1rem;
-                                    top: -1rem;">
+            html: `<div style="position:relative;">
                         <span style="background-color: ${color};
                                         width: 1.75rem;
                                         height: 1.75rem;
@@ -34,8 +32,8 @@ class MapMarkerPopup extends PureComponent {
                                         height: 1.75rem;
                                         left: -1rem;
                                         top: -0.75rem;
-                                        text-align: center" 
-                                        text-color: "white" >
+                                        text-align: center; 
+                                        color: white" >
                                         ${this.props.index}
                         </div>
                     </div>`,
