@@ -34,7 +34,7 @@ class MapMarkerPopup extends PureComponent {
                                         top: -0.75rem;
                                         text-align: center; 
                                         color: white" >
-                                        ${this.props.index}
+                            ${this.props.index}
                         </div>
                     </div>`,
         });

@@ -19,7 +19,6 @@ class AppStore extends EventEmitter {
         this.eventsInCalendar = [];
         this.finalsEventsInCalendar = [];
         this.unsavedChanges = false;
-        this.setMaxListeners(100);
 
         let darkMode = null;
         if (typeof Storage !== 'undefined') darkMode = window.localStorage.getItem('DarkMode');
@@ -129,7 +128,6 @@ class AppStore extends EventEmitter {
                 this.emit('addedCoursesChange');
                 break;
             case 'CHANGE_CURRENT_SCHEDULE':
-                console.log('change current schedule');
                 this.currentScheduleIndex = action.newScheduleIndex;
                 this.emit('currentScheduleIndexChange');
                 break;
