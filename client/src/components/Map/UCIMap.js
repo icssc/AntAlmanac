@@ -7,7 +7,6 @@ import DayTabs from './MapTabsAndSearchBar';
 import MapMarkerPopup from './MapMarkerPopup';
 import Locate from 'leaflet.locatecontrol';
 import Leaflet from 'leaflet';
-import { duration } from '@material-ui/core';
 
 class LocateControl extends PureComponent {
     componentDidMount() {
@@ -54,6 +53,9 @@ export default class UCIMap extends PureComponent {
     };
 
     getRoute = (day) => {
+        // Clear any existing route on the map
+        this.setState({ poly: [], info_marker: null });
+        
         if (day) {
             let index = 0;
             let coords = ''; // lat and lng of markers to be passed to api
@@ -129,6 +131,7 @@ export default class UCIMap extends PureComponent {
                                 if (waypointIndex !== 0) {
                                     poly.push(
                                         <Polyline
+                                            zIndexOffset={100}
                                             color={colors[waypointIndex - 1]}
                                             positions={path[waypointIndex]}
                                             index={waypointIndex}
@@ -209,8 +212,6 @@ export default class UCIMap extends PureComponent {
                     });
                 });
             }
-        } else {
-            this.setState({ poly: [], info_marker: null });
         }
     };
 
@@ -259,7 +260,7 @@ export default class UCIMap extends PureComponent {
                 const locationData = buildingCatalogue[id];
                 const courseString = `${event.title} ${event.sectionType} @ ${event.bldg}`;
 
-                index++; // index temp fix for courses in same building
+                index++; // always increment index to account for courses within the same building
                 if (locationData === undefined || pinnedCourses.has(courseString)) return;
 
                 // Acronym, if it exists, is in between parentheses
@@ -278,7 +279,7 @@ export default class UCIMap extends PureComponent {
                         lat={locationData.lat}
                         lng={locationData.lng}
                         acronym={acronym}
-                        index={this.state.day ? (index + 1).toString() : ''}
+                        index={this.state.day ? index.toString() : ''}
                     >
                         <Fragment>
                             <hr />
