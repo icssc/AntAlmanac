@@ -170,6 +170,17 @@ export default class UCIMap extends PureComponent {
                                             }}
                                         />
                                     ); // Draw path from last waypoint to next waypoint
+
+                                    poly.push(
+                                        <Polyline
+                                            color={colors[waypointIndex - 1]}
+                                            positions={[
+                                                path[waypointIndex][path[waypointIndex].length - 1],
+                                                coords_array[waypointIndex],
+                                            ]}
+                                            dashArray="4"
+                                        />
+                                    ); // Draw a dashed line directly to waypoint
                                     let duration =
                                         obj['routes'][0]['legs'][waypointIndex - 1]['duration'] > 30
                                             ? Math.round(
@@ -182,17 +193,6 @@ export default class UCIMap extends PureComponent {
                                                 obj['routes'][0]['legs'][waypointIndex - 1]['distance'] / 1.609 / 10
                                             ) / 100
                                         ).toString() + ' mi';
-                                    poly.push(
-                                        <Polyline
-                                            color={colors[waypointIndex - 1]}
-                                            positions={[
-                                                path[waypointIndex][path[waypointIndex].length - 1],
-                                                coords_array[waypointIndex],
-                                            ]}
-                                            dashArray="4"
-                                        />
-                                    ); // Draw a dashed line directly to waypoint
-
                                     // Add a marker in the middle (roughly) of the path with miles and walk time
                                     info_markers.push([
                                         path[waypointIndex][Math.floor(path[waypointIndex].length / 2)],
