@@ -259,6 +259,7 @@ export default class UCIMap extends PureComponent {
                 const locationData = buildingCatalogue[id];
                 const courseString = `${event.title} ${event.sectionType} @ ${event.bldg}`;
 
+                index++; // index temp fix for courses in same building
                 if (locationData === undefined || pinnedCourses.has(courseString)) return;
 
                 // Acronym, if it exists, is in between parentheses
@@ -287,7 +288,6 @@ export default class UCIMap extends PureComponent {
                         </Fragment>
                     </MapMarkerPopup>
                 );
-                index++;
             });
         return markers;
     };
