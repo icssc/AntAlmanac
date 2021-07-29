@@ -121,7 +121,7 @@ export default class UCIMap extends PureComponent {
                                 lng === waypoints[waypointIndex]['location'][1]
                             ) {
                                 path.push([[lng, lat]]);
-                                if (waypointIndex != 0) {
+                                if (waypointIndex !== 0) {
                                     poly.push(
                                         <Polyline color={colors[waypointIndex - 1]} positions={path[waypointIndex]} />
                                     ); // Draw path from last waypoint to next waypoint
