@@ -7,6 +7,7 @@ import DayTabs from './MapTabsAndSearchBar';
 import MapMarkerPopup from './MapMarkerPopup';
 import Locate from 'leaflet.locatecontrol';
 import Leaflet from 'leaflet';
+import { duration } from '@material-ui/core';
 
 class LocateControl extends PureComponent {
     componentDidMount() {
@@ -48,13 +49,15 @@ export default class UCIMap extends PureComponent {
         eventsInCalendar: AppStore.getEventsInCalendar(),
         currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
         poly: [],
+        info_markers: [],
+        info_marker: null,
     };
 
     getRoute = (day) => {
         if (day) {
             let index = 0;
-            let coords = '';
-            let coords_array = [];
+            let coords = ''; // lat and lng of markers to be passed to api
+            let coords_array = []; // lat and lng of markers to be used later
             let colors = [];
 
             // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
@@ -110,6 +113,8 @@ export default class UCIMap extends PureComponent {
                         ]; // Path is a list of paths for each waypoint. For example, path[0] is the path to waypoint 0, path[1] is the path from 0 to 1... etc.
 
                         let poly = []; // Arrays of polyline to be added to map
+                        let info_markers = [];
+
                         poly.push(
                             <Polyline color={colors[0]} positions={[path[0][0], coords_array[0]]} dashArray="4" />
                         ); // Draw a dashline from waypoint 0 to start of route
@@ -123,7 +128,47 @@ export default class UCIMap extends PureComponent {
                                 path.push([[lng, lat]]);
                                 if (waypointIndex !== 0) {
                                     poly.push(
-                                        <Polyline color={colors[waypointIndex - 1]} positions={path[waypointIndex]} />
+                                        <Polyline
+                                            color={colors[waypointIndex - 1]}
+                                            positions={path[waypointIndex]}
+                                            index={waypointIndex}
+                                            map={this}
+                                            onmouseover={function () {
+                                                let [
+                                                    position,
+                                                    color,
+                                                    duration,
+                                                    miles,
+                                                ] = this.options.map.state.info_markers[this.options.index - 1];
+                                                this.options.map.setState({
+                                                    info_marker: (
+                                                        <Marker
+                                                            position={position}
+                                                            opacity={1.0}
+                                                            icon={Leaflet.divIcon({
+                                                                iconAnchor: [0, 14],
+                                                                labelAnchor: [-3.5, 0],
+                                                                popupAnchor: [0, -21],
+                                                                className: '',
+                                                                iconSize: [1000, 14],
+                                                                html: `<div style="background-color: white;border-left-color: ${color};border-left-style: solid;width: fit-content;border-left-width: 5px;padding-left: 10px;padding-right: 10px;padding-top: 4px;padding-bottom: 4px;">
+                                                                    <span style="color:${color}">
+                                                                    ${duration} 
+                                                                    </span>
+                                                                    <br>
+                                                                    <span style="color:#888888">
+                                                                    ${miles}
+                                                                    </span>
+                                                                </div>`,
+                                                            })}
+                                                        ></Marker>
+                                                    ),
+                                                });
+                                            }}
+                                            onmouseout={function () {
+                                                this.options.map.setState({ info_marker: null });
+                                            }}
+                                        />
                                     ); // Draw path from last waypoint to next waypoint
                                     let duration =
                                         obj['routes'][0]['legs'][waypointIndex - 1]['duration'] > 30
@@ -147,39 +192,25 @@ export default class UCIMap extends PureComponent {
                                             dashArray="4"
                                         />
                                     ); // Draw a dashed line directly to waypoint
-                                    poly.push(
-                                        <Marker
-                                            position={path[waypointIndex][Math.floor(path[waypointIndex].length / 2)]}
-                                            icon={Leaflet.divIcon({
-                                                iconAnchor: [0, 14],
-                                                labelAnchor: [-3.5, 0],
-                                                popupAnchor: [0, -21],
-                                                className: '',
-                                                iconSize: [1000, 14],
-                                                html: `<div style="background-color: white;border-left-color: ${
-                                                    colors[waypointIndex - 1]
-                                                };border-left-style: solid;width: fit-content;border-left-width: 5px;padding-left: 10px;padding-right: 10px;padding-top: 4px;padding-bottom: 4px;">
-                                                            <span style="color:${colors[waypointIndex - 1]}">
-                                                            ${duration} 
-                                                            </span>
-                                                            <br>
-                                                            <span style="color:#888888">
-                                                            ${miles}
-                                                            </span>
-                                                        </div>`,
-                                            })}
-                                        ></Marker>
-                                    ); // Draw a marker in the middle (roughly) of the path with miles and walk time
+
+                                    // Add a marker in the middle (roughly) of the path with miles and walk time
+                                    info_markers.push([
+                                        path[waypointIndex][Math.floor(path[waypointIndex].length / 2)],
+                                        colors[waypointIndex - 1],
+                                        duration,
+                                        miles,
+                                        0.0,
+                                    ]);
                                 }
                                 waypointIndex++;
                             }
                         }
-                        this.setState({ poly: poly });
+                        this.setState({ poly: poly, info_markers: info_markers, info_marker: null });
                     });
                 });
             }
         } else {
-            this.setState({ poly: [] });
+            this.setState({ poly: [], info_marker: null });
         }
     };
 
@@ -313,9 +344,11 @@ export default class UCIMap extends PureComponent {
                         zoomOffset={-1}
                     />
 
-                    {this.createMarkers()}
-
                     {this.state.poly}
+
+                    {this.state.info_marker}
+
+                    {this.createMarkers()}
 
                     {this.state.selected ? (
                         <MapMarkerPopup
