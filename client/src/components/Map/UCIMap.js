@@ -144,7 +144,7 @@ export default class UCIMap extends PureComponent {
                                                         popupAnchor: [0, -21],
                                                         className: '',
                                                         iconSize: [1000, 14],
-                                                        html: `<div style="position:relative; top:-200%; left:5px; pointer-events: none; background-color: white; border-left-color: ${color}; border-left-style: solid; width: fit-content; border-left-width: 5px; padding-left: 10px; padding-right: 10px; padding-top: 4px; padding-bottom: 4px;">
+                                                        html: `<div style="position:relative; top:-200%; left:2px; pointer-events: none; background-color: white; border-left-color: ${color}; border-left-style: solid; width: fit-content; border-left-width: 5px; padding-left: 10px; padding-right: 10px; padding-top: 4px; padding-bottom: 4px;">
                                                             <span style="color:${color}">
                                                             ${duration} 
                                                             </span>
