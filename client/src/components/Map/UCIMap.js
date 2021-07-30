@@ -83,13 +83,12 @@ export default class UCIMap extends PureComponent {
 
                     colors.push(event.color);
 
-                    if (day) {
-                        if (coords) {
-                            coords += ';';
-                        }
-                        coords += locationData.lng + ',' + locationData.lat;
-                        coords_array.push([locationData.lat, locationData.lng]);
+                    if (coords) {
+                        coords += ';';
                     }
+                    coords += locationData.lng + ',' + locationData.lat;
+                    coords_array.push([locationData.lat, locationData.lng]);
+
                     index++;
                 });
             if (index > 1) {
