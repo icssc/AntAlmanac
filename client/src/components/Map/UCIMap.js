@@ -129,7 +129,7 @@ export default class UCIMap extends PureComponent {
                                 path.push([[lng, lat]]);
                                 if (waypointIndex !== 0) {
                                     function setInfoMarker(event) {
-                                        let [position, color, duration, miles] = this.options.map.state.info_markers[
+                                        let [color, duration, miles] = this.options.map.state.info_markers[
                                             this.options.index - 1
                                         ];
                                         this.options.map.setState({
@@ -195,13 +195,7 @@ export default class UCIMap extends PureComponent {
                                             ) / 100
                                         ).toString() + ' mi';
                                     // Add a marker in the middle (roughly) of the path with miles and walk time
-                                    info_markers.push([
-                                        path[waypointIndex][Math.floor(path[waypointIndex].length / 2)],
-                                        colors[waypointIndex - 1],
-                                        duration,
-                                        miles,
-                                        0.0,
-                                    ]);
+                                    info_markers.push([colors[waypointIndex - 1], duration, miles, 0.0]);
                                 }
                                 waypointIndex++;
                             }
