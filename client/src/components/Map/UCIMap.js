@@ -194,7 +194,7 @@ export default class UCIMap extends PureComponent {
                                                 obj['routes'][0]['legs'][waypointIndex - 1]['distance'] / 1.609 / 10
                                             ) / 100
                                         ).toString() + ' mi';
-                                    // Add a marker in the middle (roughly) of the path with miles and walk time
+                                    // Add marker info (colors, duration, mile)
                                     info_markers.push([colors[waypointIndex - 1], duration, miles]);
                                 }
                                 waypointIndex++;
