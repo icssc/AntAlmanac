@@ -283,7 +283,7 @@ export default class UCIMap extends PureComponent {
                             <hr />
                             Class: {`${event.title} ${event.sectionType}`}
                             <br />
-                            Room: {event.bldg.split(' ')[1]}
+                            Room: {event.bldg.split(' ').slice(-1)}
                         </Fragment>
                     </MapMarkerPopup>
                 );
