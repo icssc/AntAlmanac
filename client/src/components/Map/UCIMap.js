@@ -55,7 +55,7 @@ export default class UCIMap extends PureComponent {
     getRoute = (day) => {
         // Clear any existing route on the map
         this.setState({ poly: [], info_marker: null });
-        
+
         if (day) {
             let index = 0;
             let coords = ''; // lat and lng of markers to be passed to api
@@ -129,6 +129,35 @@ export default class UCIMap extends PureComponent {
                             ) {
                                 path.push([[lng, lat]]);
                                 if (waypointIndex !== 0) {
+                                    function setInfoMarker(event) {
+                                        let [position, color, duration, miles] = this.options.map.state.info_markers[
+                                            this.options.index - 1
+                                        ];
+                                        this.options.map.setState({
+                                            info_marker: (
+                                                <Marker
+                                                    position={event.latlng}
+                                                    opacity={1.0}
+                                                    icon={Leaflet.divIcon({
+                                                        iconAnchor: [0, 14],
+                                                        labelAnchor: [-3.5, 0],
+                                                        popupAnchor: [0, -21],
+                                                        className: '',
+                                                        iconSize: [1000, 14],
+                                                        html: `<div style="position:relative; top:-200%; left:5px; pointer-events: none; background-color: white; border-left-color: ${color}; border-left-style: solid; width: fit-content; border-left-width: 5px; padding-left: 10px; padding-right: 10px; padding-top: 4px; padding-bottom: 4px;">
+                                                            <span style="color:${color}">
+                                                            ${duration} 
+                                                            </span>
+                                                            <br>
+                                                            <span style="color:#888888">
+                                                            ${miles}
+                                                            </span>
+                                                        </div>`,
+                                                    })}
+                                                ></Marker>
+                                            ),
+                                        });
+                                    }
                                     poly.push(
                                         <Polyline
                                             zIndexOffset={100}
@@ -136,41 +165,11 @@ export default class UCIMap extends PureComponent {
                                             positions={path[waypointIndex]}
                                             index={waypointIndex}
                                             map={this}
-                                            onmouseover={function () {
-                                                let [
-                                                    position,
-                                                    color,
-                                                    duration,
-                                                    miles,
-                                                ] = this.options.map.state.info_markers[this.options.index - 1];
-                                                this.options.map.setState({
-                                                    info_marker: (
-                                                        <Marker
-                                                            position={position}
-                                                            opacity={1.0}
-                                                            icon={Leaflet.divIcon({
-                                                                iconAnchor: [0, 14],
-                                                                labelAnchor: [-3.5, 0],
-                                                                popupAnchor: [0, -21],
-                                                                className: '',
-                                                                iconSize: [1000, 14],
-                                                                html: `<div style="background-color: white;border-left-color: ${color};border-left-style: solid;width: fit-content;border-left-width: 5px;padding-left: 10px;padding-right: 10px;padding-top: 4px;padding-bottom: 4px;">
-                                                                    <span style="color:${color}">
-                                                                    ${duration} 
-                                                                    </span>
-                                                                    <br>
-                                                                    <span style="color:#888888">
-                                                                    ${miles}
-                                                                    </span>
-                                                                </div>`,
-                                                            })}
-                                                        ></Marker>
-                                                    ),
-                                                });
-                                            }}
+                                            onmouseover={setInfoMarker}
                                             onmouseout={function () {
                                                 this.options.map.setState({ info_marker: null });
                                             }}
+                                            onmousemove={setInfoMarker}
                                         />
                                     ); // Draw path from last waypoint to next waypoint
 
