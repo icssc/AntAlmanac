@@ -52,7 +52,7 @@ export default class UCIMap extends PureComponent {
         info_marker: null,
     };
 
-    getRoute = (day) => {
+    generateRoute = (day) => {
         // Clear any existing route on the map
         this.setState({ poly: [], info_marker: null });
 
@@ -323,7 +323,7 @@ export default class UCIMap extends PureComponent {
                         day={this.state.day}
                         setDay={(day) => {
                             this.setState({ day: day });
-                            this.getRoute(day);
+                            this.generateRoute(day);
                         }}
                         handleSearch={this.handleSearch}
                     />
