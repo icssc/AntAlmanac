@@ -6,7 +6,7 @@
         "client-install": "cd ./client && npm install",
         "server-install": "cd ./antalmanac-backend && npm install",
         "dependency-install": "concurrently \"npm run client-install\" \"npm run server-install\"",
-        "server": "node antalmanac-backend/server.js",
+        "server": "cd antalmanac-backend && sls offline --stage development --noPrependStageInUrl",
         "client": "npm run start --prefix ./client",
         "dev": "concurrently \"npm run server\" \"npm run client\""
     },
