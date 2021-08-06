@@ -8,9 +8,6 @@ router.get('/courses/:deptCode/:courseNumber', async (req, res) => {
   const options = {
     hostname: 'api.peterportal.org',
     path: `/rest/v0/courses/${courseID}`,
-    headers: {
-      'x-api-key': process.env.PETERPORTAL_API_KEY
-    }
   }
 
   http.get(options, (resp) => {
