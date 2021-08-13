@@ -55,6 +55,7 @@ export default [
     { deptLabel: 'FIN: Finance', deptValue: 'FIN' },
     { deptLabel: 'FLM&MDA: Film and Media Studies', deptValue: 'FLM&MDA' },
     { deptLabel: 'FRENCH: French', deptValue: 'FRENCH' },
+    { deptLabel: 'GDIM: Game Design and Interactive Media', deptValue: 'GDIM' },
     { deptLabel: 'GEN&SEX: Gender and Sexuality Studies', deptValue: 'GEN&SEX' },
     { deptLabel: 'GERMAN: German', deptValue: 'GERMAN' },
     { deptLabel: 'GLBL ME: Global Middle East Studies', deptValue: 'GLBL ME' },
