@@ -10,7 +10,7 @@
 `npm run dependency-install`
 
 3. Start the development server  
-`npm run dev`
+`npm start`
 
 4. The site should load on http://localhost:3000  
 As you make changes to the React application in `client/src`, those changes will be automatically reflected on the site.
