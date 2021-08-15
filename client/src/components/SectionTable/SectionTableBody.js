@@ -2,18 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
 import locations from './static/locations';
 import restrictionsMapping from './static/restrictionsMapping';
-import {
-    TableRow,
-    IconButton,
-    Menu,
-    Button,
-    ButtonGroup,
-    MenuItem,
-    Popover,
-    Tooltip,
-    Typography,
-    TableCell,
-} from '@material-ui/core';
+import { TableRow, IconButton, Menu, MenuItem, Popover, Tooltip, Typography, TableCell } from '@material-ui/core';
 import { bindHover, bindMenu, bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { withStyles } from '@material-ui/core/styles';
 import { Add, ArrowDropDown } from '@material-ui/icons';
@@ -34,6 +23,7 @@ const styles = (theme) => ({
         cursor: 'pointer',
         '&:hover': {
             color: 'blueviolet',
+            cursor: 'pointer',
         },
     },
     row: {
@@ -66,11 +56,6 @@ const styles = (theme) => ({
     },
     full: {
         color: '#e53935',
-    },
-    sectionCode: {
-        '&:hover': {
-            cursor: 'pointer',
-        },
     },
     Act: { color: '#c87137' },
     Col: { color: '#ff40b5' },
@@ -171,60 +156,27 @@ const SectionDetailsCell = withStyles(styles)((props) => {
 const InstructorsCell = withStyles(styles)((props) => {
     const { classes, instructors } = props;
 
-    const CustomTooltip = withStyles((theme) => ({
-        tooltip: {
-            backgroundColor: theme.palette.background.paper,
-            color: theme.palette.text.primary,
-        },
-    }))(Tooltip);
-
-    const handleClick = (isRMP, profName) => {
-        const lastName = profName.substring(0, profName.indexOf(','));
-
-        if (!isRMP) {
-            window.open(`https://eaterevals.eee.uci.edu/browse/instructor#${lastName}`);
-            ReactGA.event({
-                category: 'antalmanac-rewrite',
-                action: `Click instructor name`,
-                label: `EaterEvals`,
-            });
-        } else {
-            window.open(
-                `https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=university+of+california+irvine&queryoption=HEADER&query=${lastName}&facetSearch=true`
-            );
-            ReactGA.event({
-                category: 'antalmanac-rewrite',
-                action: `Click instructor name`,
-                label: `RateMyProfessors`,
-            });
-        }
-    };
-
-    const DualButton = (props) => {
-        return (
-            <ButtonGroup size="small">
-                <Button key={1} value="left" onClick={() => handleClick(false, props.profName)}>
-                    EaterEvals
-                </Button>
-                <Button key={2} value="right" onClick={() => handleClick(true, props.profName)}>
-                    RMP
-                </Button>
-            </ButtonGroup>
-        );
-    };
-
     const getLinks = (professorNames) => {
         return professorNames.map((profName) => {
             if (profName !== 'STAFF') {
+                const lastName = profName.substring(0, profName.indexOf(','));
                 return (
-                    <CustomTooltip
-                        key={profName}
-                        interactive
-                        placement="left"
-                        title={<DualButton profName={profName} />}
-                    >
-                        <div className={classes.link}>{profName}</div>
-                    </CustomTooltip>
+                    <div>
+                        <a
+                            href={`https://www.ratemyprofessors.com/search/teachers?sid=U2Nob29sLTEwNzQ=&query=${lastName}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => {
+                                ReactGA.event({
+                                    category: 'antalmanac-rewrite',
+                                    action: `Click instructor name`,
+                                    label: `RateMyProfessors`,
+                                });
+                            }}
+                        >
+                            {profName}
+                        </a>
+                    </div>
                 );
             } else {
                 return profName;
@@ -366,13 +318,17 @@ const SectionTableBody = withStyles(styles)((props) => {
     const { classes, section, courseDetails, term, colorAndDelete } = props;
     const [addedCourse, setAddedCourse] = useState(false);
 
-    const toggleHighlight = () => {
-        if (AppStore.getAddedSectionCodes()[AppStore.getCurrentScheduleIndex()].has(`${section.sectionCode} ${term}`))
-            setAddedCourse(true);
-        else setAddedCourse(false);
-    };
-
     useEffect(() => {
+        const toggleHighlight = () => {
+            if (
+                AppStore.getAddedSectionCodes()[AppStore.getCurrentScheduleIndex()].has(
+                    `${section.sectionCode} ${term}`
+                )
+            )
+                setAddedCourse(true);
+            else setAddedCourse(false);
+        };
+
         toggleHighlight();
         AppStore.on('addedCoursesChange', toggleHighlight);
         AppStore.on('currentScheduleIndexChange', toggleHighlight);
