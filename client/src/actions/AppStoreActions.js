@@ -291,11 +291,6 @@ export const addCustomEvent = (customEvent) => {
 export const undoDelete = (event) => {
     const deletedCourses = AppStore.getDeletedCourses();
 
-    ReactGA.event({
-        category: 'antalmanac-rewrite',
-        action: 'Click Undo button',
-    });
-
     if (deletedCourses.length > 0 && (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))) {
         const lastDeleted = deletedCourses[deletedCourses.length - 1];
 
@@ -314,6 +309,11 @@ export const undoDelete = (event) => {
                 }.`
             );
         }
+
+        ReactGA.event({
+            category: 'antalmanac-rewrite',
+            action: 'Click Undo button',
+        });
     }
 };
 
