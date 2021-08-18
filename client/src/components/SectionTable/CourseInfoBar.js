@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { Button, Popover } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { MoreVert } from '@material-ui/icons';
-import { PETERPORTAL_DATA_ENDPOINT } from '../../api/endpoints';
+import { PETERPORTAL_REST_ENDPOINT } from '../../api/endpoints';
 
 const styles = () => ({
     rightSpace: {
@@ -44,7 +44,8 @@ class CourseInfoBar extends PureComponent {
             if (this.state.loading === true) {
                 const { courseNumber, deptCode } = this.props;
                 try {
-                    const response = await fetch(`${PETERPORTAL_DATA_ENDPOINT}/courses/${deptCode}/${courseNumber}`);
+                    const courseId = `${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`;
+                    const response = await fetch(`${PETERPORTAL_REST_ENDPOINT}/courses/${courseId}`);
 
                     if (response.ok) {
                         const jsonResp = await response.json();
