@@ -18,7 +18,7 @@ const styles = {
         overflow: 'auto',
         marginBottom: '4px',
         alignItems: 'center',
-        height: '48px',
+        height: '50px',
 
         '& button': {
             marginRight: '4px',
