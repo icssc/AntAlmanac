@@ -8,7 +8,7 @@
         "dependency-install": "concurrently \"npm run client-install\" \"npm run server-install\"",
         "server": "cd antalmanac-backend && sls offline --stage development --noPrependStageInUrl",
         "client": "npm run start --prefix ./client",
-        "dev": "concurrently \"npm run server\" \"npm run client\""
+        "start": "concurrently \"npm run server\" \"npm run client\""
     },
     "devDependencies": {
         "concurrently": "^5.3.0",
