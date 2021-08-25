@@ -23,7 +23,6 @@
         "react": "^16.13.1",
         "react-big-calendar": "^0.24.6",
         "react-color": "^2.18.1",
-        "react-device-detect": "^1.13.1",
         "react-dom": "^16.13.1",
         "react-ga": "^2.7.0",
         "react-input-mask": "^2.0.4",
@@ -38,9 +37,6 @@
         "nodemon": "^1.14.6",
         "test": "react-scripts test --env=jsdom",
         "eject": "react-scripts eject"
-    },
-    "devDependencies": {
-        "@welldone-software/why-did-you-render": "^4.2.5"
     },
     "browserslist": [
         ">0.2%",
