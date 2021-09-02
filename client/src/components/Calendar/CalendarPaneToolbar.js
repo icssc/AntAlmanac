@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { IconButton, Tooltip, Paper, Button } from '@material-ui/core';
-import { Delete, Undo } from '@material-ui/icons';
+import { IconButton, Tooltip, Paper, Button, useMediaQuery, Menu } from '@material-ui/core';
+import { Delete, Undo, MoreHoriz } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import { clearSchedules, undoDelete } from '../../actions/AppStoreActions';
 import CustomEventsDialog from '../CustomEvents/CustomEventDialog';
@@ -21,9 +21,12 @@ const styles = {
         height: '50px',
 
         '& button': {
-            marginRight: '4px',
+            margin: '0 2px 0 2px',
         },
-        padding: '4px',
+        '& #finalButton': {
+            marginLeft: '12px',
+        },
+        padding: '2px',
     },
     inline: {
         display: 'inline',
@@ -31,74 +34,118 @@ const styles = {
     spacer: {
         flexGrow: '1',
     },
+    scheduleSelector: {
+        marginLeft: '10px',
+    },
 };
 
-class CalendarPaneToolbar extends PureComponent {
-    handleScheduleChange(event) {
+const ConditionalWrapper = ({ condition, wrapper, children }) => {
+    return condition ? wrapper(children) : children;
+};
+
+const CalendarPaneToolbar = (props) => {
+    const { classes } = props;
+
+    const handleScheduleChange = (event) => {
         changeCurrentSchedule(event.target.value);
-    }
+    };
 
-    render() {
-        const { classes } = this.props;
+    const isMobileScreen = useMediaQuery('(max-width:630px)');
 
-        return (
-            <Paper elevation={0} variant="outlined" square className={classes.toolbar}>
-                <Select value={this.props.currentScheduleIndex} onChange={this.handleScheduleChange}>
-                    <MenuItem value={0}>Schedule 1</MenuItem>
-                    <MenuItem value={1}>Schedule 2</MenuItem>
-                    <MenuItem value={2}>Schedule 3</MenuItem>
-                    <MenuItem value={3}>Schedule 4</MenuItem>
-                </Select>
+    const [anchorEl, setAnchorEl] = React.useState(null);
 
-                <div className={classes.spacer} />
+    const handleMenuClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
 
-                <Tooltip title="Undo last deleted course">
-                    <IconButton onClick={() => undoDelete(null)}>
-                        <Undo fontSize="small" />
-                    </IconButton>
-                </Tooltip>
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
 
-                <Tooltip title="Clear schedule">
-                    <IconButton
-                        onClick={() => {
-                            if (
-                                window.confirm(
-                                    'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
-                                )
-                            ) {
-                                clearSchedules([this.props.currentScheduleIndex]);
-                                ReactGA.event({
-                                    category: 'antalmanac-rewrite',
-                                    action: 'Click Clear button',
-                                    label: 'Calendar Pane Toolbar',
-                                });
-                            }
-                        }}
+    return (
+        <Paper elevation={0} variant="outlined" square className={classes.toolbar}>
+            <Select
+                className={classes.scheduleSelector}
+                value={props.currentScheduleIndex}
+                onChange={handleScheduleChange}
+            >
+                <MenuItem value={0}>Schedule 1</MenuItem>
+                <MenuItem value={1}>Schedule 2</MenuItem>
+                <MenuItem value={2}>Schedule 3</MenuItem>
+                <MenuItem value={3}>Schedule 4</MenuItem>
+            </Select>
+
+            <Tooltip title="Toggle showing finals schedule">
+                <Button
+                    id="finalButton"
+                    variant={props.showFinalsSchedule ? 'contained' : 'outlined'}
+                    onClick={props.toggleDisplayFinalsSchedule}
+                    size="small"
+                    color={props.showFinalsSchedule ? 'primary' : 'default'}
+                >
+                    Finals
+                </Button>
+            </Tooltip>
+
+            <div className={classes.spacer} />
+
+            <Tooltip title="Undo last deleted course">
+                <IconButton onClick={() => undoDelete(null)}>
+                    <Undo fontSize="small" />
+                </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Clear schedule">
+                <IconButton
+                    onClick={() => {
+                        if (
+                            window.confirm(
+                                'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
+                            )
+                        ) {
+                            clearSchedules([props.currentScheduleIndex]);
+                            ReactGA.event({
+                                category: 'antalmanac-rewrite',
+                                action: 'Click Clear button',
+                                label: 'Calendar Pane Toolbar',
+                            });
+                        }
+                    }}
+                >
+                    <Delete fontSize="small" />
+                </IconButton>
+            </Tooltip>
+
+            <ConditionalWrapper
+                condition={isMobileScreen}
+                wrapper={(children) => (
+                    <div>
+                        <IconButton onClick={handleMenuClick}>
+                            <MoreHoriz />
+                        </IconButton>
+
+                        <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleMenuClose}>
+                            {children}
+                        </Menu>
+                    </div>
+                )}
+            >
+                {[
+                    <ExportCalendar />,
+                    <ScreenshotButton onTakeScreenshot={props.onTakeScreenshot} />,
+                    <CustomEventsDialog editMode={false} />,
+                ].map((element) => (
+                    <ConditionalWrapper
+                        condition={isMobileScreen}
+                        wrapper={(children) => <MenuItem onClick={handleMenuClose}>{children}</MenuItem>}
                     >
-                        <Delete fontSize="small" />
-                    </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Toggle showing finals schedule">
-                    <Button
-                        variant={this.props.showFinalsSchedule ? 'contained' : 'outlined'}
-                        onClick={this.props.toggleDisplayFinalsSchedule}
-                        size="small"
-                        color={this.props.showFinalsSchedule ? 'primary' : 'default'}
-                    >
-                        Finals
-                    </Button>
-                </Tooltip>
-
-                <ExportCalendar />
-
-                <ScreenshotButton onTakeScreenshot={this.props.onTakeScreenshot} />
-
-                <CustomEventsDialog editMode={false} />
-            </Paper>
-        );
-    }
-}
+                        {element}
+                    </ConditionalWrapper>
+                ))}
+            </ConditionalWrapper>
+        </Paper>
+    );
+};
 
 CalendarPaneToolbar.propTypes = {
     showFinalsSchedule: PropTypes.bool.isRequired,
