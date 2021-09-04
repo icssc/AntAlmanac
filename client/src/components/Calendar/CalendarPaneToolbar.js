@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { IconButton, Tooltip, Paper, Button, useMediaQuery, Menu } from '@material-ui/core';
 import { Delete, Undo, MoreHoriz } from '@material-ui/icons';
