@@ -3,6 +3,7 @@ import { AppBar, Button, Toolbar, Tooltip, Menu, useMediaQuery } from '@material
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { Assignment } from '@material-ui/icons';
 import MenuIcon from '@material-ui/icons/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import NotificationHub from './NotificationHub';
 import SettingsMenu from './SettingsMenu';
@@ -60,23 +61,29 @@ const CustomAppBar = (props) => {
                         </div>
                     )}
                 >
-                    <SettingsMenu />
-
-                    <NotificationHub />
-
-                    <Tooltip title="Give Us Feedback!">
-                        <Button
-                            onClick={() => {
-                                window.open('https://goo.gl/forms/eIHy4kp56pZKP9fK2', '_blank');
-                            }}
-                            color="inherit"
-                            startIcon={<Assignment />}
+                    {[
+                        <SettingsMenu />,
+                        <NotificationHub />,
+                        <Tooltip title="Give Us Feedback!">
+                            <Button
+                                onClick={() => {
+                                    window.open('https://goo.gl/forms/eIHy4kp56pZKP9fK2', '_blank');
+                                }}
+                                color="inherit"
+                                startIcon={<Assignment />}
+                            >
+                                Feedback
+                            </Button>
+                        </Tooltip>,
+                        <News />,
+                    ].map((element) => (
+                        <ConditionalWrapper
+                            condition={isMobileScreen}
+                            wrapper={(children) => <MenuItem>{children}</MenuItem>}
                         >
-                            Feedback
-                        </Button>
-                    </Tooltip>
-
-                    <News />
+                            {element}
+                        </ConditionalWrapper>
+                    ))}
                 </ConditionalWrapper>
             </Toolbar>
         </AppBar>
