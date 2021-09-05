@@ -9,9 +9,10 @@ import RightPaneStore from '../../stores/RightPaneStore';
 import loadingGif from '../SearchForm/Gifs/loading.gif';
 import darkModeLoadingGif from '../SearchForm/Gifs/dark-loading.gif';
 import AdBanner from '../AdBanner/AdBanner';
-import { RANDOM_AD_ENDPOINT, WEBSOC_ENDPOINT } from '../../api/endpoints';
+import { RANDOM_AD_ENDPOINT } from '../../api/endpoints';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import LazyLoad from 'react-lazyload';
+import { queryWebsoc } from '../../helpers';
 
 const styles = (theme) => ({
     course: {
@@ -142,11 +143,7 @@ class CourseRenderPane extends PureComponent {
             };
 
             try {
-                const response = await fetch(WEBSOC_ENDPOINT, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(params),
-                });
+                const response = await queryWebsoc(params);
 
                 if (response.ok) {
                     const jsonResp = await response.json();

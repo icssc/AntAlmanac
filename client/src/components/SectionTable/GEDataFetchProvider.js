@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import SectionTable from './SectionTable';
 import RightPaneStore from '../../stores/RightPaneStore';
-import { WEBSOC_ENDPOINT } from '../../api/endpoints';
+import { queryWebsoc } from '../../helpers';
 
 class GeDataFetchProvider extends PureComponent {
     state = {
@@ -20,11 +20,7 @@ class GeDataFetchProvider extends PureComponent {
             courseTitle: this.props.courseDetails.courseTitle,
         };
 
-        const response = await fetch(WEBSOC_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(params),
-        });
+        const response = await queryWebsoc(params);
 
         const jsonResp = await response.json();
 

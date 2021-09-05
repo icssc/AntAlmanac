@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { FormControl, InputLabel, MenuItem, Paper, Select, Typography } from '@material-ui/core';
 import GraphRenderPane from './GraphRenderPane';
-import { WEBSOC_ENDPOINT } from '../../api/endpoints';
+import { queryWebsoc } from '../../helpers';
 
 const styles = {
     paper: {
@@ -43,11 +43,7 @@ class GraphModalContent extends PureComponent {
             courseNumber: this.props.courseDetails.courseNumber,
         };
 
-        const response = await fetch(WEBSOC_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(params),
-        });
+        const response = await queryWebsoc(params);
 
         const jsonResp = await response.json();
 
