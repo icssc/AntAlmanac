@@ -7,7 +7,6 @@
 2. Navigate to the root directory and install the dependencies  
 `cd AntAlmanac`  
 `npm install`  
-`npm run dependency-install`
 
 3. Start the development server  
 `npm start`

@@ -5,10 +5,11 @@
     "scripts": {
         "client-install": "cd ./client && npm install",
         "server-install": "cd ./antalmanac-backend && npm install",
-        "dependency-install": "concurrently \"npm run client-install\" \"npm run server-install\"",
+        "dependency-install": "concurrently -n \"BACKEND,FRONTEND\" \"npm run server-install\" \"npm run client-install\"",
+        "postinstall": "npm run dependency-install",
         "server": "cd antalmanac-backend && sls offline --stage development --noPrependStageInUrl",
         "client": "npm run start --prefix ./client",
-        "start": "concurrently \"npm run server\" \"npm run client\""
+        "start": "concurrently -n \"BACKEND,FRONTEND\" \"npm run server\" \"npm run client\""
     },
     "devDependencies": {
         "concurrently": "^5.3.0",
