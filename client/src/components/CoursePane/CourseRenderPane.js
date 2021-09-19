@@ -151,15 +151,24 @@ class CourseRenderPane extends PureComponent {
                     const adBannerInfo = await fetch(
                         `${RANDOM_AD_ENDPOINT}?deptCode=${encodeURIComponent(formData.deptValue)}`
                     );
-                    const jsonAdInfo = await adBannerInfo.json();
 
-                    this.setState({
-                        loading: false,
-                        error: false,
-                        courseData: flattenSOCObject(jsonResp),
-                        bannerName: jsonAdInfo.bannerName,
-                        bannerLink: jsonAdInfo.bannerLink,
-                    });
+                    if (adBannerInfo.ok) {
+                        const jsonAdInfo = await adBannerInfo.json();
+
+                        this.setState({
+                            loading: false,
+                            error: false,
+                            courseData: flattenSOCObject(jsonResp),
+                            bannerName: jsonAdInfo.bannerName,
+                            bannerLink: jsonAdInfo.bannerLink,
+                        });
+                    } else {
+                        this.setState({
+                            loading: false,
+                            error: false,
+                            courseData: flattenSOCObject(jsonResp),
+                        });
+                    }
                 } else {
                     this.setState({
                         loading: false,
