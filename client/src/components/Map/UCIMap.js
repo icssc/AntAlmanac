@@ -46,7 +46,6 @@ export default class UCIMap extends PureComponent {
         selected_img: '',
         selected_acronym: '',
         eventsInCalendar: AppStore.getEventsInCalendar(),
-        currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
         poly: [],
         info_markers: [],
         info_marker: null,
@@ -68,7 +67,7 @@ export default class UCIMap extends PureComponent {
                     (event) =>
                         !(
                             event.isCustomEvent ||
-                            !event.scheduleIndices.includes(this.state.currentScheduleIndex) ||
+                            !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
                             !event.start.toString().includes(DAYS[day])
                         )
                 )
@@ -208,13 +207,14 @@ export default class UCIMap extends PureComponent {
     };
 
     updateCurrentScheduleIndex = () => {
-        this.setState({ currentScheduleIndex: AppStore.getCurrentScheduleIndex() });
+        this.generateRoute(this.state.day);
     };
 
     updateEventsInCalendar = () => {
         this.setState({
             eventsInCalendar: AppStore.getEventsInCalendar(),
         });
+        this.generateRoute(this.state.day);
     };
 
     componentDidMount = () => {
@@ -240,7 +240,7 @@ export default class UCIMap extends PureComponent {
                 (event) =>
                     !(
                         event.isCustomEvent ||
-                        !event.scheduleIndices.includes(this.state.currentScheduleIndex) ||
+                        !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
                         !event.start.toString().includes(DAYS[this.state.day])
                     )
             )
