@@ -256,25 +256,15 @@ export const clearSchedules = (scheduleIndicesToClear) => {
     const addedCourses = AppStore.getAddedCourses();
     const customEvents = AppStore.getCustomEvents();
     const addedCoursesAfterClear = addedCourses.filter((course) => {
-        if (course.scheduleIndices.length === 1) {
-            return false;
-        } else {
-            course.scheduleIndices = course.scheduleIndices.filter((index) => !scheduleIndicesToClear.includes(index));
-
-            return course.scheduleIndices.length !== 0;
-        }
+        course.scheduleIndices = course.scheduleIndices.filter((index) => !scheduleIndicesToClear.includes(index));
+        return course.scheduleIndices.length !== 0;
     });
 
     const customEventsAfterClear = customEvents.filter((customEvent) => {
-        if (customEvent.scheduleIndices.length === 1) {
-            return false;
-        } else {
-            customEvent.scheduleIndices = customEvent.scheduleIndices.filter(
-                (index) => !scheduleIndicesToClear.includes(index)
-            );
-
-            return customEvent.scheduleIndices.length !== 0;
-        }
+        customEvent.scheduleIndices = customEvent.scheduleIndices.filter(
+            (index) => !scheduleIndicesToClear.includes(index)
+        );
+        return customEvent.scheduleIndices.length !== 0;
     });
 
     dispatcher.dispatch({
