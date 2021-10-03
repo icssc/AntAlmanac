@@ -37,7 +37,7 @@ const getByDays = (days) => {
 //  Ex: ("2021 Spring", 'Tu') -> [2021, 3, 30]
 const getClassStartDate = (term, bydays) => {
     // Get the start date of the quarter (Monday)
-    const quarterStartDate = new Date(quarterStartDates[term]);
+    const quarterStartDate = new Date(...quarterStartDates[term]);
 
     // dayOffset represents the number of days since the start of the quarter
     var dayOffset;
