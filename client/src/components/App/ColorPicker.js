@@ -70,16 +70,6 @@ class ColorPicker extends PureComponent {
             </span>
         );
     }
-    componentDidMount = () => {
-        if (this.state.color !== this.props.color) {
-            this.handleColorChange({ hex: this.state.color });
-        }
-    };
-    componentDidUpdate = () => {
-        if (this.state.color !== this.props.color) {
-            this.handleColorChange({ hex: this.state.color });
-        }
-    };
 }
 
 ColorPicker.propTypes = {
