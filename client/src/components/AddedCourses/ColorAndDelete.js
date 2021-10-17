@@ -22,7 +22,13 @@ const ColorAndDelete = (props) => {
     return (
         <td className={classes.td}>
             <div className={classes.container}>
-                <ColorPicker color={color} isCustomEvent={false} sectionCode={sectionCode} term={term} />
+                <ColorPicker
+                    color={color}
+                    isCustomEvent={false}
+                    sectionCode={sectionCode}
+                    term={term}
+                    isInAdded={true}
+                />
                 <IconButton
                     onClick={() => {
                         deleteCourse(sectionCode, AppStore.getCurrentScheduleIndex(), term);

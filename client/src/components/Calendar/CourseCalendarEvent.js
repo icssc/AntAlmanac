@@ -10,6 +10,7 @@ import CustomEventDialog from '../CustomEvents/CustomEventDialog';
 import AppStore from '../../stores/AppStore';
 import { clickToCopy } from '../../helpers';
 import ReactGA from 'react-ga';
+import dispatcher from '../../dispatcher';
 
 const styles = {
     courseContainer: {
@@ -78,6 +79,11 @@ const CourseCalendarEvent = (props) => {
 
     if (!courseInMoreInfo.isCustomEvent) {
         const { term, instructors, sectionCode, courseTitle, finalExam, bldg } = courseInMoreInfo;
+        dispatcher.dispatch({
+            type: 'COURSE_COLOR_UPDATE',
+            newColor: courseInMoreInfo.color,
+            sectionCode: sectionCode,
+        });
 
         return (
             <Paper className={classes.courseContainer}>
@@ -151,6 +157,11 @@ const CourseCalendarEvent = (props) => {
         );
     } else {
         const { title, customEventID } = courseInMoreInfo;
+        dispatcher.dispatch({
+            type: 'CUSTOM_EVENT_COLOR_UPDATE',
+            newColor: courseInMoreInfo.color,
+            customEventID: courseInMoreInfo.customEventID,
+        });
         return (
             <Paper className={classes.customEventContainer} onClick={(event) => event.stopPropagation()}>
                 <div className={classes.title}>{title}</div>

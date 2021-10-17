@@ -337,7 +337,7 @@ const SectionTableBody = withStyles(styles)((props) => {
             AppStore.removeListener('addedCoursesChange', toggleHighlight);
             AppStore.removeListener('currentScheduleIndexChange', toggleHighlight);
         };
-    }, []);
+    }, [section, term]);
 
     return (
         <TableRow

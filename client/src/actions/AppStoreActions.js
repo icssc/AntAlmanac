@@ -325,6 +325,8 @@ export const changeCustomEventColor = (customEventID, newColor) => {
     dispatcher.dispatch({
         type: 'CUSTOM_EVENT_COLOR_CHANGE',
         customEventsAfterColorChange,
+        newColor,
+        customEventID,
     });
 };
 
@@ -342,6 +344,8 @@ export const changeCourseColor = (sectionCode, newColor, term) => {
     dispatcher.dispatch({
         type: 'COURSE_COLOR_CHANGE',
         addedCoursesAfterColorChange,
+        newColor,
+        sectionCode,
     });
 };
 

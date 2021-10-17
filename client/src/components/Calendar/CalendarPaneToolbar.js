@@ -134,8 +134,9 @@ const CalendarPaneToolbar = (props) => {
                     <ExportCalendar />,
                     <ScreenshotButton onTakeScreenshot={props.onTakeScreenshot} />,
                     <CustomEventsDialog editMode={false} />,
-                ].map((element) => (
+                ].map((element, i) => (
                     <ConditionalWrapper
+                        key={['ExportCalendar', 'ScreenshotButton', 'CustomEventsDialog'][i]}
                         condition={isMobileScreen}
                         wrapper={(children) => <MenuItem onClick={handleMenuClose}>{children}</MenuItem>}
                     >

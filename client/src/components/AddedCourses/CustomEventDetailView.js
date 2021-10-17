@@ -72,16 +72,19 @@ const CustomEventDetailView = (props) => {
                         color={customEvent.color}
                         isCustomEvent={true}
                         customEventID={customEvent.customEventID}
+                        isInAdded={true}
                     />
                 </div>
-                <IconButton onClick={() => {
-                    deleteCustomEvent(customEvent.customEventID, props.currentScheduleIndex)
-                    ReactGA.event({
-                        category: 'antalmanac-rewrite',
-                        action: 'Click Delete Custom Event',
-                        label: 'Added Course pane'
-                    });
-                }}>
+                <IconButton
+                    onClick={() => {
+                        deleteCustomEvent(customEvent.customEventID, props.currentScheduleIndex);
+                        ReactGA.event({
+                            category: 'antalmanac-rewrite',
+                            action: 'Click Delete Custom Event',
+                            label: 'Added Course pane',
+                        });
+                    }}
+                >
                     <Delete fontSize="small" />
                 </IconButton>
                 <CustomEventDialog customEvent={customEvent} />

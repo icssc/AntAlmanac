@@ -5,12 +5,18 @@ import { SketchPicker } from 'react-color';
 import { changeCourseColor, changeCustomEventColor } from '../../actions/AppStoreActions';
 import { ColorLens } from '@material-ui/icons';
 import ReactGA from 'react-ga';
+import dispatcher from '../../dispatcher';
 
 class ColorPicker extends PureComponent {
     state = {
         anchorEl: null,
         color: this.props.color,
     };
+
+    constructor(props) {
+        super(props);
+        dispatcher.register(this.handleIconChange.bind(this));
+    }
 
     handleClick = (event) => {
         event.stopPropagation();
@@ -70,12 +76,38 @@ class ColorPicker extends PureComponent {
             </span>
         );
     }
+    handleIconChange(action) {
+        switch (action.type) {
+            case 'CUSTOM_EVENT_COLOR_UPDATE':
+            case 'COURSE_COLOR_UPDATE':
+                if (!this.props.isInAdded) {
+                    if (
+                        (action.customEventID && action.customEventID !== this.props.customEventID) ||
+                        (action.sectionCode && action.sectionCode !== this.props.sectionCode)
+                    ) {
+                        this.setState({ color: action.newColor });
+                    }
+                }
+                break;
+            case 'CUSTOM_EVENT_COLOR_CHANGE':
+            case 'COURSE_COLOR_CHANGE':
+                if (
+                    (action.customEventID && action.customEventID === this.props.customEventID) ||
+                    (action.sectionCode && action.sectionCode === this.props.sectionCode)
+                ) {
+                    this.setState({ color: action.newColor });
+                }
+                break;
+            default:
+        }
+    }
 }
 
 ColorPicker.propTypes = {
     color: PropTypes.string.isRequired,
     sectionCode: PropTypes.string,
     isCustomEvent: PropTypes.bool.isRequired,
+    isInAdded: PropTypes.bool,
     customEventID: PropTypes.number,
     term: PropTypes.string,
 };
