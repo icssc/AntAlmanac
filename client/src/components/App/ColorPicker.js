@@ -32,7 +32,9 @@ class ColorPicker extends PureComponent {
             if (this.props.isCustomEvent) changeCustomEventColor(this.props.customEventID, this.state.color);
             else changeCourseColor(this.props.sectionCode, this.state.color, this.props.term);
         });
+    };
 
+    handleColorChangeComplete = () => {
         ReactGA.event({
             category: 'antalmanac-rewrite',
             action: 'Change Course Color',
@@ -65,21 +67,15 @@ class ColorPicker extends PureComponent {
                         horizontal: 'left',
                     }}
                 >
-                    <SketchPicker color={this.state.color} onChange={this.handleColorChange} />
+                    <SketchPicker
+                        color={this.state.color}
+                        onChange={this.handleColorChange}
+                        onChangeComplete={this.handleColorChangeComplete}
+                    />
                 </Popover>
             </span>
         );
     }
-    componentDidMount = () => {
-        if (this.state.color !== this.props.color) {
-            this.handleColorChange({ hex: this.props.color });
-        }
-    };
-    componentDidUpdate = () => {
-        if (this.state.color !== this.props.color) {
-            this.handleColorChange({ hex: this.props.color });
-        }
-    };
 }
 
 ColorPicker.propTypes = {
