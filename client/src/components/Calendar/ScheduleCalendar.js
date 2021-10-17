@@ -76,6 +76,7 @@ class ScheduleCalendar extends PureComponent {
         showFinalsSchedule: false,
         moreInfoOpen: false,
         courseInMoreInfo: null,
+        calendarEventKey: null,
         eventsInCalendar: AppStore.getEventsInCalendar(),
         finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
         currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
@@ -183,8 +184,13 @@ class ScheduleCalendar extends PureComponent {
         const { currentTarget } = event;
         event.stopPropagation();
 
-        if (courseInMoreInfo.sectionType !== 'Fin')
-            this.setState({ anchorEvent: currentTarget, courseInMoreInfo: courseInMoreInfo });
+        if (courseInMoreInfo.sectionType !== 'Fin') {
+            this.setState({
+                anchorEvent: currentTarget,
+                courseInMoreInfo: courseInMoreInfo,
+                calendarEventKey: Math.random(),
+            });
+        }
     };
 
     handleClosePopover = () => {
@@ -242,6 +248,7 @@ class ScheduleCalendar extends PureComponent {
                         open={Boolean(this.state.anchorEvent)}
                     >
                         <CourseCalendarEvent
+                            key={this.state.calendarEventKey}
                             closePopover={this.handleClosePopover}
                             courseInMoreInfo={this.state.courseInMoreInfo}
                             currentScheduleIndex={this.state.currentScheduleIndex}
