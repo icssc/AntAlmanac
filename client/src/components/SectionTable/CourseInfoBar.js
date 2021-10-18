@@ -44,7 +44,9 @@ class CourseInfoBar extends PureComponent {
             if (this.state.loading === true) {
                 const { courseNumber, deptCode } = this.props;
                 try {
-                    const courseId = `${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`;
+                    const courseId = encodeURIComponent(
+                        `${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`
+                    );
                     const response = await fetch(`${PETERPORTAL_REST_ENDPOINT}/courses/${courseId}`);
 
                     if (response.ok) {
