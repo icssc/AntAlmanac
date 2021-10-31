@@ -5,7 +5,7 @@ const defaultFormValues = {
     deptValue: 'ALL',
     deptLabel: 'ALL: Include All Departments',
     ge: 'ANY',
-    term: '2021 Fall',
+    term: '2022 Winter',
     courseNumber: '',
     sectionCode: '',
     instructor: '',
