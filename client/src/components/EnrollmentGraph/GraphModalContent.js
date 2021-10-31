@@ -27,7 +27,7 @@ const styles = {
 
 class GraphModalContent extends PureComponent {
     state = {
-        pastTerm: '2021 Winter',
+        pastTerm: '2021 Fall',
         pastSections: null,
     };
 
