@@ -294,7 +294,7 @@ const DayAndTimeCell = withStyles(styles)((props) => {
 const StatusCell = withStyles(styles)((props) => {
     const { sectionCode, term, courseTitle, courseNumber, status, classes } = props;
 
-    if (term === '2021 Fall' && (status === 'NewOnly' || status === 'FULL')) {
+    if (term === '2022 Winter' && (status === 'NewOnly' || status === 'FULL')) {
         return (
             <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>
                 <OpenSpotAlertPopover
