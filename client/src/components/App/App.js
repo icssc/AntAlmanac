@@ -13,14 +13,20 @@ import DateFnsUtils from '@date-io/date-fns';
 
 class App extends PureComponent {
     state = {
-        theme: AppStore.getTheme(),
+        darkMode: this.isDarkMode(),
     };
 
     componentDidMount = () => {
         document.addEventListener('keydown', undoDelete, false);
 
         AppStore.on('themeToggle', () => {
-            this.setState({ theme: AppStore.getTheme() });
+            this.setState({ darkMode: this.isDarkMode() });
+        });
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (AppStore.getTheme() === 'auto') {
+                this.setState({ darkMode: e.matches });
+            }
         });
 
         ReactGA.initialize('UA-133683751-1');
@@ -31,19 +37,30 @@ class App extends PureComponent {
         document.removeEventListener('keydown', undoDelete, false);
     }
 
+    isDarkMode() {
+        switch (AppStore.getTheme()) {
+            case 'light':
+                return false;
+            case 'dark':
+                return true;
+            default:
+                return window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+    }
+
     render() {
         const theme = createMuiTheme({
             overrides: {
                 MuiCssBaseline: {
                     '@global': {
                         a: {
-                            color: this.state.theme === 'dark' ? 'dodgerblue' : 'blue',
+                            color: this.state.darkMode ? 'dodgerblue' : 'blue',
                         },
                     },
                 },
             },
             palette: {
-                type: this.state.theme === 'dark' ? 'dark' : 'light',
+                type: this.state.darkMode ? 'dark' : 'light',
                 primary: {
                     main: '#305db7',
                 },
