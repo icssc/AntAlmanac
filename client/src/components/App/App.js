@@ -13,14 +13,14 @@ import DateFnsUtils from '@date-io/date-fns';
 
 class App extends PureComponent {
     state = {
-        darkMode: AppStore.getDarkMode(),
+        theme: AppStore.getTheme(),
     };
 
     componentDidMount = () => {
         document.addEventListener('keydown', undoDelete, false);
 
-        AppStore.on('darkModeToggle', () => {
-            this.setState({ darkMode: AppStore.getDarkMode() });
+        AppStore.on('themeToggle', () => {
+            this.setState({ theme: AppStore.getTheme() });
         });
 
         ReactGA.initialize('UA-133683751-1');
@@ -37,13 +37,13 @@ class App extends PureComponent {
                 MuiCssBaseline: {
                     '@global': {
                         a: {
-                            color: this.state.darkMode ? 'dodgerblue' : 'blue',
+                            color: this.state.theme === 'dark' ? 'dodgerblue' : 'blue',
                         },
                     },
                 },
             },
             palette: {
-                type: this.state.darkMode ? 'dark' : 'light',
+                type: this.state.theme === 'dark' ? 'dark' : 'light',
                 primary: {
                     main: '#305db7',
                 },
