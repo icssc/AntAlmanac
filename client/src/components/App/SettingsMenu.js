@@ -1,15 +1,5 @@
 import React, { Fragment, PureComponent } from 'react';
-import {
-    Button,
-    FormControl,
-    FormControlLabel,
-    FormLabel,
-    Popover,
-    RadioGroup,
-    Radio,
-    Switch,
-    Paper,
-} from '@material-ui/core';
+import { Button, FormControl, FormControlLabel, FormLabel, Popover, RadioGroup, Radio, Paper } from '@material-ui/core';
 import { Settings } from '@material-ui/icons';
 import AppStore from '../../stores/AppStore';
 import { toggleTheme } from '../../actions/AppStoreActions';
@@ -72,12 +62,7 @@ class SettingsMenu extends PureComponent {
                     <Paper className={classes.container}>
                         <FormControl>
                             <FormLabel>Theme</FormLabel>
-                            <RadioGroup
-                                aria-label="theme"
-                                name="theme"
-                                defaultValue={this.state.theme}
-                                onChange={toggleTheme}
-                            >
+                            <RadioGroup aria-label="theme" name="theme" value={this.state.theme} onChange={toggleTheme}>
                                 <FormControlLabel value="light" control={<Radio color="primary" />} label="Light" />
                                 <FormControlLabel value="dark" control={<Radio color="primary" />} label="Dark" />
                                 <FormControlLabel value="auto" control={<Radio color="primary" />} label="Automatic" />
