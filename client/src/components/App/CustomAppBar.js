@@ -10,6 +10,7 @@ import SettingsMenu from './SettingsMenu';
 import { ReactComponent as Logo } from './logo.svg';
 import { ReactComponent as MobileLogo } from './mobile-logo.svg';
 import News from './News';
+import AboutPage from './AboutPage';
 
 const styles = {
     appBar: {
@@ -76,6 +77,7 @@ const CustomAppBar = (props) => {
                             </Button>
                         </Tooltip>,
                         <News />,
+                        <AboutPage />,
                     ].map((element) => (
                         <ConditionalWrapper
                             condition={isMobileScreen}
