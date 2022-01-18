@@ -13,14 +13,20 @@ import DateFnsUtils from '@date-io/date-fns';
 
 class App extends PureComponent {
     state = {
-        darkMode: AppStore.getDarkMode(),
+        darkMode: this.isDarkMode(),
     };
 
     componentDidMount = () => {
         document.addEventListener('keydown', undoDelete, false);
 
-        AppStore.on('darkModeToggle', () => {
-            this.setState({ darkMode: AppStore.getDarkMode() });
+        AppStore.on('themeToggle', () => {
+            this.setState({ darkMode: this.isDarkMode() });
+        });
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (AppStore.getTheme() === 'auto') {
+                this.setState({ darkMode: e.matches });
+            }
         });
 
         ReactGA.initialize('UA-133683751-1');
@@ -29,6 +35,17 @@ class App extends PureComponent {
 
     componentWillUnmount() {
         document.removeEventListener('keydown', undoDelete, false);
+    }
+
+    isDarkMode() {
+        switch (AppStore.getTheme()) {
+            case 'light':
+                return false;
+            case 'dark':
+                return true;
+            default:
+                return window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
     }
 
     render() {

@@ -1,8 +1,8 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Button, FormControl, FormControlLabel, Popover, Switch, Paper } from '@material-ui/core';
+import { Button, FormControl, FormControlLabel, FormLabel, Popover, RadioGroup, Radio, Paper } from '@material-ui/core';
 import { Settings } from '@material-ui/icons';
 import AppStore from '../../stores/AppStore';
-import { toggleDarkMode } from '../../actions/AppStoreActions';
+import { toggleTheme } from '../../actions/AppStoreActions';
 import { withStyles } from '@material-ui/core/styles';
 import ReactGA from 'react-ga';
 
@@ -17,12 +17,12 @@ const styles = {
 class SettingsMenu extends PureComponent {
     state = {
         anchorEl: null,
-        darkMode: AppStore.getDarkMode(),
+        theme: AppStore.getTheme(),
     };
 
     componentDidMount = () => {
-        AppStore.on('darkModeToggle', () => {
-            this.setState({ darkMode: AppStore.getDarkMode() });
+        AppStore.on('themeToggle', () => {
+            this.setState({ theme: AppStore.getTheme() });
         });
     };
 
@@ -61,17 +61,12 @@ class SettingsMenu extends PureComponent {
                 >
                     <Paper className={classes.container}>
                         <FormControl>
-                            <FormControlLabel
-                                control={
-                                    <Switch
-                                        checked={this.state.darkMode}
-                                        onChange={toggleDarkMode}
-                                        value="darkMode"
-                                        color="primary"
-                                    />
-                                }
-                                label={'Dark Mode'}
-                            />
+                            <FormLabel>Theme</FormLabel>
+                            <RadioGroup aria-label="theme" name="theme" value={this.state.theme} onChange={toggleTheme}>
+                                <FormControlLabel value="light" control={<Radio color="primary" />} label="Light" />
+                                <FormControlLabel value="dark" control={<Radio color="primary" />} label="Dark" />
+                                <FormControlLabel value="auto" control={<Radio color="primary" />} label="Automatic" />
+                            </RadioGroup>
                         </FormControl>
                     </Paper>
                 </Popover>

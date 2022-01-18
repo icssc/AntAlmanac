@@ -387,13 +387,13 @@ export const copySchedule = (from, to) => {
     });
 };
 
-export const toggleDarkMode = (switchEvent) => {
+export const toggleTheme = (radioGroupEvent) => {
     dispatcher.dispatch({
-        type: 'TOGGLE_DARK_MODE',
-        darkMode: switchEvent.target.checked,
+        type: 'TOGGLE_THEME',
+        theme: radioGroupEvent.target.value,
     });
     ReactGA.event({
         category: 'antalmanac-rewrite',
-        action: 'toggle dark mode',
+        action: 'toggle theme',
     });
 };
