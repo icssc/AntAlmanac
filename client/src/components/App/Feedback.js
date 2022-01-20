@@ -2,7 +2,7 @@ import { PureComponent } from 'react';
 
 class Feedback extends PureComponent {
     constructor() {
-        window.location = 'https://forms.gle/k81f2aNdpdQYeKK8A';
+        window.location.replace('https://forms.gle/k81f2aNdpdQYeKK8A');
     }
 }
 
