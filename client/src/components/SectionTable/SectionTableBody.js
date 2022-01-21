@@ -12,7 +12,7 @@ import { addCourse, openSnackbar } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
 import ColorAndDelete from '../AddedCourses/ColorAndDelete';
 import classNames from 'classnames';
-import { clickToCopy } from '../../helpers';
+import { clickToCopy, isDarkMode } from '../../helpers';
 
 const styles = (theme) => ({
     popover: {
@@ -33,7 +33,7 @@ const styles = (theme) => ({
     },
     tr: {
         '&.addedCourse': {
-            backgroundColor: AppStore.getDarkMode() ? '#b0b04f' : '#fcfc97',
+            backgroundColor: isDarkMode() ? '#b0b04f' : '#fcfc97',
         },
     },
     cell: {
@@ -41,7 +41,7 @@ const styles = (theme) => ({
     },
     link: {
         textDecoration: 'underline',
-        color: AppStore.getDarkMode() ? 'dodgerblue' : 'blue',
+        color: isDarkMode() ? 'dodgerblue' : 'blue',
         cursor: 'pointer',
     },
     paper: {
