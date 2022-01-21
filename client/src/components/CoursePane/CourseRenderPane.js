@@ -12,7 +12,7 @@ import AdBanner from '../AdBanner/AdBanner';
 import { RANDOM_AD_ENDPOINT } from '../../api/endpoints';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import LazyLoad from 'react-lazyload';
-import { queryWebsoc } from '../../helpers';
+import { queryWebsoc, isDarkMode } from '../../helpers';
 
 const styles = (theme) => ({
     course: {
@@ -191,7 +191,7 @@ class CourseRenderPane extends PureComponent {
         if (this.state.loading) {
             currentView = (
                 <div className={classes.loadingGifStyle}>
-                    <img src={AppStore.getDarkMode() ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
+                    <img src={isDarkMode() ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
                 </div>
             );
         } else if (!this.state.error) {
@@ -205,7 +205,7 @@ class CourseRenderPane extends PureComponent {
                 <div className={classes.root}>
                     {this.state.courseData.length === 0 ? (
                         <div className={classes.noResultsDiv}>
-                            <img src={AppStore.getDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
+                            <img src={isDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
                         </div>
                     ) : (
                         this.state.courseData.map((_, index) => {
@@ -226,7 +226,7 @@ class CourseRenderPane extends PureComponent {
             currentView = (
                 <div className={classes.root}>
                     <div className={classes.noResultsDiv}>
-                        <img src={AppStore.getDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
+                        <img src={isDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
                     </div>
                 </div>
             );
