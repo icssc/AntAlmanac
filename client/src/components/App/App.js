@@ -10,17 +10,18 @@ import DesktopTabs from '../CoursePane/DesktopTabs';
 import AppStore from '../../stores/AppStore';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import { isDarkMode } from '../../helpers';
 
 class App extends PureComponent {
     state = {
-        darkMode: this.isDarkMode(),
+        darkMode: isDarkMode(),
     };
 
     componentDidMount = () => {
         document.addEventListener('keydown', undoDelete, false);
 
         AppStore.on('themeToggle', () => {
-            this.setState({ darkMode: this.isDarkMode() });
+            this.setState({ darkMode: isDarkMode() });
         });
 
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
@@ -35,17 +36,6 @@ class App extends PureComponent {
 
     componentWillUnmount() {
         document.removeEventListener('keydown', undoDelete, false);
-    }
-
-    isDarkMode() {
-        switch (AppStore.getTheme()) {
-            case 'light':
-                return false;
-            case 'dark':
-                return true;
-            default:
-                return window.matchMedia('(prefers-color-scheme: dark)').matches;
-        }
     }
 
     render() {
