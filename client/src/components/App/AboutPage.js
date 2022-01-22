@@ -26,15 +26,28 @@ class AboutPage extends PureComponent {
                 <Dialog open={this.state.isOpen}>
                     <DialogTitle>About</DialogTitle>
                     <DialogContent>
-                        <DialogContentText>This is the about page.</DialogContentText>
-
-                        <Link
-                            href="#"
-                            onClick={() => window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank')}
-                            color="primary"
-                        >
-                            Check out the ICSSC Website!
-                        </Link>
+                        <DialogContentText>
+                            AntAlmanac is a schedule planning tool for UCI students.
+                            <br />
+                            <br />
+                            The website is maintained by the{' '}
+                            <Link target="_blank" href="https://studentcouncil.ics.uci.edu/">
+                                ICS Student Council
+                            </Link>{' '}
+                            Projects Committee.
+                            <br />
+                            <br />
+                            Interested in helping out? Join our{' '}
+                            <Link target="_blank" href="https://discord.gg/GzF76D7UhY">
+                                Discord
+                            </Link>{' '}
+                            or checkout the{' '}
+                            <Link target="_blank" href="https://github.com/icssc-projects/AntAlmanac">
+                                code on GitHub
+                            </Link>
+                            .<br />
+                            <br />
+                        </DialogContentText>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => this.setState({ isOpen: false })} color="primary">
