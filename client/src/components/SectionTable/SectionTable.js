@@ -78,7 +78,8 @@ class SectionTable extends PureComponent {
                         courseNumber={courseDetails.courseNumber}
                     />
 
-                    <AlmanacGraph courseDetails={courseDetails} />
+                    {/* Temporarily remove "Past Enrollment" until data on PeterPortal API */}
+                    {/* <AlmanacGraph courseDetails={courseDetails} />  */}
 
                     {courseDetails.prerequisiteLink ? (
                         <Typography variant="h6" style={{ flexGrow: '2', marginTop: 9 }}>

@@ -19,17 +19,17 @@ class AppStore extends EventEmitter {
         this.eventsInCalendar = [];
         this.finalsEventsInCalendar = [];
         this.unsavedChanges = false;
-
-        let darkMode = null;
-        if (typeof Storage !== 'undefined') darkMode = window.localStorage.getItem('DarkMode');
+        this.theme = (() => {
+            // either 'light', 'dark', or 'auto'
+            const theme = typeof Storage === 'undefined' ? 'auto' : window.localStorage.getItem('theme');
+            return theme === null ? 'auto' : theme;
+        })();
 
         window.addEventListener('beforeunload', (event) => {
             if (this.unsavedChanges) {
                 event.returnValue = `Are you sure you want to leave? You have unsaved changes!`;
             }
         });
-
-        this.darkMode = darkMode === null ? false : darkMode === 'true';
     }
 
     getCurrentScheduleIndex() {
@@ -76,8 +76,8 @@ class AppStore extends EventEmitter {
         return this.snackbarStyle;
     }
 
-    getDarkMode() {
-        return this.darkMode;
+    getTheme() {
+        return this.theme;
     }
 
     getAddedSectionCodes() {
@@ -212,10 +212,10 @@ class AppStore extends EventEmitter {
                 this.emit('addedCoursesChange');
                 this.emit('customEventsChange');
                 break;
-            case 'TOGGLE_DARK_MODE':
-                this.darkMode = action.darkMode;
-                this.emit('darkModeToggle');
-                window.localStorage.setItem('DarkMode', action.darkMode);
+            case 'TOGGLE_THEME':
+                this.theme = action.theme;
+                this.emit('themeToggle');
+                window.localStorage.setItem('theme', action.theme);
                 break;
             default:
                 console.log(`[Warning] AppStore invalid action type: ${action.type}`);

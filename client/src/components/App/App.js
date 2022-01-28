@@ -12,17 +12,24 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Feedback from './Feedback';
+import { isDarkMode } from '../../helpers';
 
 class App extends PureComponent {
     state = {
-        darkMode: AppStore.getDarkMode(),
+        darkMode: isDarkMode(),
     };
 
     componentDidMount = () => {
         document.addEventListener('keydown', undoDelete, false);
 
-        AppStore.on('darkModeToggle', () => {
-            this.setState({ darkMode: AppStore.getDarkMode() });
+        AppStore.on('themeToggle', () => {
+            this.setState({ darkMode: isDarkMode() });
+        });
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (AppStore.getTheme() === 'auto') {
+                this.setState({ darkMode: e.matches });
+            }
         });
 
         ReactGA.initialize('UA-133683751-1');

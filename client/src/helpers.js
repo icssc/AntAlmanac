@@ -1,5 +1,6 @@
 import { openSnackbar } from './actions/AppStoreActions';
 import { PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from './api/endpoints';
+import AppStore from './stores/AppStore';
 
 export async function getCoursesData(userData) {
     const dataToSend = {};
@@ -95,4 +96,15 @@ export function clickToCopy(event, sectionCode) {
     document.execCommand('copy');
     document.body.removeChild(tempEventTarget);
     openSnackbar('success', 'Section code copied to clipboard');
+}
+
+export function isDarkMode() {
+    switch (AppStore.getTheme()) {
+        case 'light':
+            return false;
+        case 'dark':
+            return true;
+        default:
+            return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
 }
