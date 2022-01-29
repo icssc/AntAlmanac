@@ -18,8 +18,8 @@
         "leaflet.locatecontrol": "^0.72.0",
         "material-ui-popup-state": "^1.6.1",
         "moment": "^2.27.0",
-        "notistack": "^1.0.2",
         "moment-timezone": "^0.5.33",
+        "notistack": "^1.0.2",
         "prop-types": "^15.7.2",
         "react": "^16.13.1",
         "react-big-calendar": "^0.24.6",
@@ -29,6 +29,7 @@
         "react-input-mask": "^2.0.4",
         "react-lazyload": "^3.1.0",
         "react-leaflet": "^2.7.0",
+        "react-router-dom": "^6.2.1",
         "react-scripts": "^3.4.1",
         "recharts": "^1.8.5"
     },

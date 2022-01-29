@@ -68,7 +68,7 @@ const CustomAppBar = (props) => {
                         <Tooltip title="Give Us Feedback!">
                             <Button
                                 onClick={() => {
-                                    window.open('https://goo.gl/forms/eIHy4kp56pZKP9fK2', '_blank');
+                                    window.open('https://forms.gle/k81f2aNdpdQYeKK8A', '_blank');
                                 }}
                                 color="inherit"
                                 startIcon={<Assignment />}

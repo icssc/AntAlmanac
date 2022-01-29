@@ -10,6 +10,8 @@ import DesktopTabs from '../CoursePane/DesktopTabs';
 import AppStore from '../../stores/AppStore';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Feedback from './Feedback';
 import { isDarkMode } from '../../helpers';
 
 class App extends PureComponent {
@@ -58,37 +60,42 @@ class App extends PureComponent {
         });
 
         return (
-            <ThemeProvider theme={theme}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <CssBaseline />
-                    <Bar />
-                    <Grid container alignItems={'stretch'} style={{ flexGrow: '1' }}>
-                        <Grid item xs={12} s={6} md={6} lg={6} xl={6}>
-                            <Calendar />
+            <BrowserRouter>
+                <Routes>
+                    <Route exact path="/feedback" element={<Feedback />} />
+                </Routes>
+                <ThemeProvider theme={theme}>
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <CssBaseline />
+                        <Bar />
+                        <Grid container alignItems={'stretch'} style={{ flexGrow: '1' }}>
+                            <Grid item xs={12} s={6} md={6} lg={6} xl={6}>
+                                <Calendar />
+                            </Grid>
+
+                            <DesktopTabs />
+
+                            {/*<Hidden mdUp>*/}
+                            {/*    <Grid item xs={12}>*/}
+                            {/*        <div>*/}
+                            {/*            <Tabs*/}
+                            {/*                value={this.state.activeTab}*/}
+                            {/*                onChange={this.handleTabChange}*/}
+                            {/*                variant="fullWidth"*/}
+                            {/*                indicatorColor="primary"*/}
+                            {/*                textColor="primary"*/}
+                            {/*            >*/}
+                            {/*                <Tab icon={<CalendarToday />} />*/}
+                            {/*                <Tab icon={<Search />} />*/}
+                            {/*            </Tabs>*/}
+                            {/*        </div>*/}
+                            {/*    </Grid>*/}
+                            {/*</Hidden>*/}
                         </Grid>
-
-                        <DesktopTabs />
-
-                        {/*<Hidden mdUp>*/}
-                        {/*    <Grid item xs={12}>*/}
-                        {/*        <div>*/}
-                        {/*            <Tabs*/}
-                        {/*                value={this.state.activeTab}*/}
-                        {/*                onChange={this.handleTabChange}*/}
-                        {/*                variant="fullWidth"*/}
-                        {/*                indicatorColor="primary"*/}
-                        {/*                textColor="primary"*/}
-                        {/*            >*/}
-                        {/*                <Tab icon={<CalendarToday />} />*/}
-                        {/*                <Tab icon={<Search />} />*/}
-                        {/*            </Tabs>*/}
-                        {/*        </div>*/}
-                        {/*    </Grid>*/}
-                        {/*</Hidden>*/}
-                    </Grid>
-                    <NotificationSnackbar />
-                </MuiPickersUtilsProvider>
-            </ThemeProvider>
+                        <NotificationSnackbar />
+                    </MuiPickersUtilsProvider>
+                </ThemeProvider>
+            </BrowserRouter>
         );
     }
 }
