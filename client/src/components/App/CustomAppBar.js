@@ -11,6 +11,7 @@ import { ReactComponent as Logo } from './logo.svg';
 import { ReactComponent as MobileLogo } from './mobile-logo.svg';
 import News from './News';
 import AboutPage from './AboutPage';
+import ConditionalWrapper from './ConditionalWrapper';
 
 const styles = {
     appBar: {
@@ -21,10 +22,6 @@ const styles = {
     buttonMargin: {
         marginRight: '4px',
     },
-};
-
-const ConditionalWrapper = ({ condition, wrapper, children }) => {
-    return condition ? wrapper(children) : children;
 };
 
 const CustomAppBar = (props) => {
