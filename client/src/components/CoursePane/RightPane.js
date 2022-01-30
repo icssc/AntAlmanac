@@ -3,6 +3,8 @@ import SearchForm from '../SearchForm/SearchForm';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
 import CourseRenderPane from './CourseRenderPane';
 import { withStyles } from '@material-ui/core/styles';
+import RightPaneStore from '../../stores/RightPaneStore';
+import dispatcher from '../../dispatcher';
 
 const styles = {
     container: {
@@ -11,26 +13,25 @@ const styles = {
 };
 
 class RightPane extends PureComponent {
-    state = {
-        showSearch: true,
-    };
-
-    searchWebSoc = () => {
-        this.setState({ showSearch: false });
-    };
-
-    handleDismissSearchResults = () => {
-        this.setState({ showSearch: true });
+    toggleSearch = () => {
+        dispatcher.dispatch({
+            type: 'TOGGLE_SEARCH',
+        });
+        this.forceUpdate();
     };
 
     render() {
         return (
             <Fragment>
                 <CoursePaneButtonRow
-                    showSearch={!this.state.showSearch}
-                    onDismissSearchResults={this.handleDismissSearchResults}
+                    showSearch={!RightPaneStore.getDoDisplaySearch()}
+                    onDismissSearchResults={this.toggleSearch}
                 />
-                {this.state.showSearch ? <SearchForm searchWebSoc={this.searchWebSoc} /> : <CourseRenderPane />}
+                {RightPaneStore.getDoDisplaySearch() ? (
+                    <SearchForm toggleSearch={this.toggleSearch} />
+                ) : (
+                    <CourseRenderPane />
+                )}
             </Fragment>
         );
     }

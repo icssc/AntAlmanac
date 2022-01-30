@@ -88,7 +88,7 @@ class SearchForm extends PureComponent {
                             className={classes.searchButton}
                             color="primary"
                             variant="contained"
-                            onClick={() => this.props.searchWebSoc()}
+                            onClick={() => this.props.toggleSearch()}
                         >
                             Search
                         </Button>

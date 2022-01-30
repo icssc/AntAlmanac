@@ -12,8 +12,8 @@ class DesktopTabs extends PureComponent {
         activeTab: 0,
     };
 
-    changeTab = () => {
-        this.setState({ activeTab: RightPaneStore.getActiveTab() });
+    changeTab = (activeTab) => {
+        this.setState({ activeTab: activeTab });
     };
 
     componentDidMount() {
@@ -26,13 +26,18 @@ class DesktopTabs extends PureComponent {
 
     render() {
         let currentTab;
-
-        if (RightPaneStore.getActiveTab() === 0) {
-            currentTab = <RightPane />;
-        } else if (RightPaneStore.getActiveTab() === 1) {
-            currentTab = <AddedCoursePane />;
-        } else if (RightPaneStore.getActiveTab() === 2) {
-            currentTab = <UCIMap />;
+        switch (RightPaneStore.getActiveTab()) {
+            case 0:
+                currentTab = <RightPane />;
+                break;
+            case 1:
+                currentTab = <AddedCoursePane />;
+                break;
+            case 2:
+                currentTab = <UCIMap />;
+                break;
+            default:
+                throw RangeError('currentTab index our of range (needs to be 0,1, or 2)');
         }
 
         return (
