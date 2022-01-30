@@ -35,6 +35,7 @@ const styles = (theme) => ({
 });
 
 class News extends PureComponent {
+    isMounted = false; //necessary to fix a warning. https://stackoverflow.com/a/56537704
     state = {
         anchorEl: null,
         newsItems: null,
@@ -43,10 +44,16 @@ class News extends PureComponent {
     };
 
     componentDidMount = async () => {
+        this._isMounted = true;
+        var rawResponse;
         try {
             const data = await fetch(NEWS_ENDPOINT);
-            const json = await data.json();
+            const text = await data.text(); //not doing data.json() so we can debug log the raw response.
+            if (!this._isMounted) return;
+            rawResponse = text;
+            const json = JSON.parse(text);
             const sortedNewsItems = json.news.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? 1 : 0));
+
             this.setState({ newsItems: sortedNewsItems, loading: false });
 
             if (typeof Storage !== 'undefined' && sortedNewsItems.length !== 0) {
@@ -57,9 +64,16 @@ class News extends PureComponent {
                     this.setState({ showDot: true });
             }
         } catch (e) {
-            console.error('Error loading news items:', e);
+            if (process.env.NODE_ENV === 'development') {
+                console.error('Error loading news items:', e);
+                console.error('Raw news response is:', rawResponse);
+            }
             this.setState({ newsItems: null, loading: false });
         }
+    };
+
+    componentWillUnmount = () => {
+        this._isMounted = false;
     };
 
     getNewsItems = () => {
