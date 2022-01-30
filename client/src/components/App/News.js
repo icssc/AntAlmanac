@@ -35,7 +35,7 @@ const styles = (theme) => ({
 });
 
 class News extends PureComponent {
-    isMounted = false; //necessary to fix a warning. https://stackoverflow.com/a/56537704
+    _isMounted = false; //necessary to fix a warning. https://stackoverflow.com/a/56537704
     state = {
         anchorEl: null,
         newsItems: null,
@@ -49,7 +49,7 @@ class News extends PureComponent {
         try {
             const data = await fetch(NEWS_ENDPOINT);
             const text = await data.text(); //not doing data.json() so we can debug log the raw response.
-            if (!this._isMounted) return;
+            if (!this._isMounted) return; //prevents state update if we've unmounted in the time it took for the request to finish.
             rawResponse = text;
             const json = JSON.parse(text);
             const sortedNewsItems = json.news.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? 1 : 0));
