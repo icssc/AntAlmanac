@@ -68,10 +68,10 @@ export default class UCIMap extends PureComponent {
                     (event) =>
                         !(
                             event.isCustomEvent ||
-                            courses.has(event.sectionCode) ||
-                            !courses.add(event.sectionCode) ||
                             !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
-                            !event.start.toString().includes(DAYS[day])
+                            !event.start.toString().includes(DAYS[day]) ||
+                            courses.has(event.sectionCode) ||
+                            !courses.add(event.sectionCode)
                         )
                 )
                 .sort((event, event2) => event.start - event2.start)
@@ -249,10 +249,10 @@ export default class UCIMap extends PureComponent {
                 (event) =>
                     !(
                         event.isCustomEvent ||
-                        courses.has(event.sectionCode) ||
-                        !courses.add(event.sectionCode) ||
                         !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
-                        !event.start.toString().includes(DAYS[this.state.day])
+                        !event.start.toString().includes(DAYS[this.state.day]) ||
+                        courses.has(event.sectionCode) ||
+                        !courses.add(event.sectionCode)
                     )
             )
             .sort((event, event2) => event.start - event2.start)
