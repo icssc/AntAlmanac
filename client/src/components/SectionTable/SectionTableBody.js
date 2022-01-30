@@ -337,7 +337,7 @@ const SectionTableBody = withStyles(styles)((props) => {
             AppStore.removeListener('addedCoursesChange', toggleHighlight);
             AppStore.removeListener('currentScheduleIndexChange', toggleHighlight);
         };
-    }, []);
+    }, [section.sectionCode, term]); //should only run once on first render since these shouldn't change.
 
     return (
         <TableRow
