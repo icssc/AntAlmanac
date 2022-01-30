@@ -67,11 +67,13 @@ export default class UCIMap extends PureComponent {
                 .filter(
                     (event) =>
                         !(
-                            event.isCustomEvent ||
-                            !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
-                            !event.start.toString().includes(DAYS[day]) ||
-                            courses.has(event.sectionCode) ||
-                            !courses.add(event.sectionCode)
+                            (
+                                event.isCustomEvent ||
+                                !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
+                                !event.start.toString().includes(DAYS[day]) ||
+                                courses.has(event.sectionCode) || // Remove duplicate courses that appear in the calendar
+                                !courses.add(event.sectionCode)
+                            ) // Adds to the set and return false
                         )
                 )
                 .sort((event, event2) => event.start - event2.start)
@@ -135,7 +137,7 @@ export default class UCIMap extends PureComponent {
                                 path.push([[lng, lat]]);
                                 if (waypointIndex !== 0) {
                                     if (
-                                        waypoints[waypointIndex - 1]['location'][0] !== lat ||
+                                        waypoints[waypointIndex - 1]['location'][0] !== lat || // Skip waypoints that are on the same location
                                         waypoints[waypointIndex - 1]['location'][1] !== lng
                                     ) {
                                         function setInfoMarker(event) {
@@ -252,11 +254,13 @@ export default class UCIMap extends PureComponent {
             .filter(
                 (event) =>
                     !(
-                        event.isCustomEvent ||
-                        !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
-                        !event.start.toString().includes(DAYS[this.state.day]) ||
-                        courses.has(event.sectionCode) ||
-                        !courses.add(event.sectionCode)
+                        (
+                            event.isCustomEvent ||
+                            !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
+                            !event.start.toString().includes(DAYS[this.state.day]) ||
+                            courses.has(event.sectionCode) || // Remove duplicate courses that appear in the calendar
+                            !courses.add(event.sectionCode)
+                        ) // Adds to the set and return false
                     )
             )
             .sort((event, event2) => event.start - event2.start)
@@ -268,7 +272,7 @@ export default class UCIMap extends PureComponent {
                 } else {
                     pins[buildingCode] = [event];
                 }
-            });
+            }); // Creates a map between buildingCodes to pins to determine stacks
         for (const buildingCode in pins) {
             // Get building code, get id of building code, which will get us the building data from buildingCatalogue
             const id = locations[buildingCode];
