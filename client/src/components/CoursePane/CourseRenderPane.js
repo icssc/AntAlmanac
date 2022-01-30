@@ -4,7 +4,6 @@ import SchoolDeptCard from './SchoolDeptCard';
 import SectionTable from '../SectionTable/SectionTable';
 import noNothing from './static/no_results.png';
 import darkNoNothing from './static/dark-no_results.png';
-import AppStore from '../../stores/AppStore';
 import RightPaneStore from '../../stores/RightPaneStore';
 import loadingGif from '../SearchForm/Gifs/loading.gif';
 import darkModeLoadingGif from '../SearchForm/Gifs/dark-loading.gif';
