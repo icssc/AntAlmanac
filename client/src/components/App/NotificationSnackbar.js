@@ -23,7 +23,6 @@ const styles = (theme) => ({
     icon: {
         fontSize: 20,
         opacity: 0.9,
-        marginRight: theme.spacing(0), // the argument here is a multiplier on the default theme spacing.
     },
     iconVariant: {},
     message: {
