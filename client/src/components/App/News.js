@@ -126,7 +126,8 @@ class News extends PureComponent {
         this.setState({ anchorEl: e.currentTarget });
 
         if (typeof Storage !== 'undefined') {
-            if (this.state.newsItems.length !== 0) {
+            if (this.state.newsItems && this.state.newsItems.length != 0) {
+                //this check should also fail if length is undefined.
                 window.localStorage.setItem('idOfLatestCheckedNewsItem', this.state.newsItems[0]['_id']);
                 this.setState({ showDot: false });
             }
