@@ -118,10 +118,14 @@ export default class UCIMap extends PureComponent {
                         let poly = []; // Arrays of polyline to be added to map
                         let info_markers = [];
 
-                        poly.push(
-                            <Polyline color={colors[0]} positions={[path[0][0], coords_array[0]]} dashArray="4" />
-                        ); // Draw a dashline from waypoint 0 to start of route
-
+                        if (
+                            waypoints[0]['location'][0] !== waypoints[1]['location'][0] ||
+                            waypoints[0]['location'][1] !== waypoints[1]['location'][1]
+                        ) {
+                            poly.push(
+                                <Polyline color={colors[0]} positions={[path[0][0], coords_array[0]]} dashArray="4" />
+                            ); // Draw a dashline from waypoint 0 to start of route
+                        }
                         for (let [lat, lng] of coordinates) {
                             path[waypointIndex].push([lng, lat]); // Creates a path using lat and lng of coordinates until lat and lng matches one of the waypoint's coordinates
                             if (
