@@ -136,6 +136,7 @@ const CalendarPaneToolbar = (props) => {
                     <CustomEventsDialog editMode={false} />,
                 ].map((element) => (
                     <ConditionalWrapper
+                        key={element.type.name || element.type.Naked.name}
                         condition={isMobileScreen}
                         wrapper={(children) => <MenuItem onClick={handleMenuClose}>{children}</MenuItem>}
                     >
