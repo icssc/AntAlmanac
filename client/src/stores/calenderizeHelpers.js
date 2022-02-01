@@ -18,7 +18,6 @@ export const calendarizeCourseEvents = () => {
                 endHr = parseInt(endHr, 10);
                 endMin = parseInt(endMin, 10);
 
-                // Note: There may be Saturday (Sa) or Sunday (Su) courses
                 let dates = [
                     meeting.days.includes('Su'),
                     meeting.days.includes('M'),
@@ -114,7 +113,7 @@ export const calendarizeCustomEvents = () => {
     const customEventsInCalendar = [];
 
     for (const customEvent of customEvents) {
-        for (let dayIndex = 0; dayIndex < 5; dayIndex++) {
+        for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
             if (customEvent.days[dayIndex] === true) {
                 const startHour = parseInt(customEvent.start.slice(0, 2), 10);
                 const startMin = parseInt(customEvent.start.slice(3, 5), 10);
@@ -124,9 +123,9 @@ export const calendarizeCustomEvents = () => {
                 customEventsInCalendar.push({
                     customEventID: customEvent.customEventID,
                     color: customEvent.color,
-                    start: new Date(2018, 0, dayIndex + 1, startHour, startMin),
+                    start: new Date(2018, 0, dayIndex, startHour, startMin),
                     isCustomEvent: true,
-                    end: new Date(2018, 0, dayIndex + 1, endHour, endMin),
+                    end: new Date(2018, 0, dayIndex, endHour, endMin),
                     scheduleIndices: customEvent.scheduleIndices,
                     title: customEvent.title,
                 });
