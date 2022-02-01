@@ -262,8 +262,8 @@ class ScheduleCalendar extends PureComponent {
                                 date.getMinutes() > 0 ? '' : localizer.format(date, 'h A', culture),
                             dayFormat: 'ddd',
                         }}
-                        defaultView={Views.WORK_WEEK}
-                        views={[Views.WORK_WEEK]}
+                        defaultView={Views.WEEK}
+                        views={[Views.WEEK, Views.WORK_WEEK]}
                         step={15}
                         timeslots={2}
                         defaultDate={new Date(2018, 0, 1)}

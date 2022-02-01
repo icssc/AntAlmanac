@@ -18,12 +18,15 @@ export const calendarizeCourseEvents = () => {
                 endHr = parseInt(endHr, 10);
                 endMin = parseInt(endMin, 10);
 
+                // Note: There may be Saturday (Sa) or Sunday (Su) courses
                 let dates = [
+                    meeting.days.includes('Su'),
                     meeting.days.includes('M'),
                     meeting.days.includes('Tu'),
                     meeting.days.includes('W'),
                     meeting.days.includes('Th'),
                     meeting.days.includes('F'),
+                    meeting.days.includes('Sa'),
                 ];
 
                 if (ampm === 'p' && endHr !== 12) {
@@ -43,9 +46,9 @@ export const calendarizeCourseEvents = () => {
                             instructors: course.section.instructors,
                             sectionCode: course.section.sectionCode,
                             sectionType: course.section.sectionType,
-                            start: new Date(2018, 0, index + 1, startHr, startMin),
+                            start: new Date(2018, 0, index, startHr, startMin),
                             finalExam: course.section.finalExam,
-                            end: new Date(2018, 0, index + 1, endHr, endMin),
+                            end: new Date(2018, 0, index, endHr, endMin),
                             isCustomEvent: false,
                             scheduleIndices: course.scheduleIndices,
                         };
