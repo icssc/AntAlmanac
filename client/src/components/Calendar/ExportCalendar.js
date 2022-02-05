@@ -8,6 +8,7 @@ import { createEvents } from 'ics';
 import AppStore from '../../stores/AppStore';
 
 // Hardcoded first mondays
+// You can find the start dates here: https://www.reg.uci.edu/calendars/academic/tenyr-19-29.html
 // Note: months are 0-indexed
 // TODO(chase): support summer sessions
 const quarterStartDates = {
@@ -19,6 +20,7 @@ const quarterStartDates = {
     '2021 Spring': [2021, 2, 29],
     '2021 Fall': [2021, 8, 23],
     '2022 Winter': [2022, 0, 3],
+    '2022 Spring': [2022, 2, 28],
 };
 
 const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
