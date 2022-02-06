@@ -77,6 +77,8 @@ export const calendarizeFinals = () => {
             end = parseInt(end, 10);
             endMin = parseInt(endMin, 10);
             date = [
+                date.includes('Sat'),
+                date.includes('Sun'),
                 date.includes('Mon'),
                 date.includes('Tue'),
                 date.includes('Wed'),
@@ -98,8 +100,8 @@ export const calendarizeFinals = () => {
                         bldg: course.section.meetings[0].bldg,
                         color: course.color,
                         scheduleIndices: course.scheduleIndices,
-                        start: new Date(2018, 0, index + 1, start, startMin),
-                        end: new Date(2018, 0, index + 1, end, endMin),
+                        start: new Date(2018, 0, index - 1, start, startMin),
+                        end: new Date(2018, 0, index - 1, end, endMin),
                     });
             });
         }

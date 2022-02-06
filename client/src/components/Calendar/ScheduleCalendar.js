@@ -213,6 +213,13 @@ class ScheduleCalendar extends PureComponent {
         const events = this.getEventsForCalendar();
         const hasWeekendCourse = events.some((event) => event.start.getDay() == 0 || event.start.getDay() == 6);
 
+        // If a final is on a Saturday or Sunday, let the calendar start on Saturday
+        moment.locale('es-us', {
+            week: {
+                dow: hasWeekendCourse && this.state.showFinalsSchedule ? 6 : 0,
+            },
+        });
+
         return (
             <div className={classes.container} onClick={this.handleClosePopover}>
                 <CalendarPaneToolbar
