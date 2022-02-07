@@ -46,8 +46,7 @@ class RightPaneStore extends EventEmitter {
                 this.formData = defaultFormValues;
                 this.emit('formReset');
                 break;
-            default:
-                console.log(`[Warning] RightPaneStore invalid action type: ${action.type}`);
+            default: //do nothing
         }
     }
 }

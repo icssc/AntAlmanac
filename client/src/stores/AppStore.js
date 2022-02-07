@@ -217,8 +217,7 @@ class AppStore extends EventEmitter {
                 this.emit('themeToggle');
                 window.localStorage.setItem('theme', action.theme);
                 break;
-            default:
-                console.log(`[Warning] AppStore invalid action type: ${action.type}`);
+            default: //do nothing
         }
     }
 }
