@@ -16,12 +16,12 @@ import { queryWebsoc, isDarkMode } from '../../helpers';
 const styles = (theme) => ({
     course: {
         ...theme.mixins.gutters(),
-        paddingTop: theme.spacing.unit,
-        paddingBottom: theme.spacing.unit,
+        paddingTop: theme.spacing(),
+        paddingBottom: theme.spacing(),
         display: 'flex',
         alignItems: 'center',
         flexWrap: 'wrap',
-        minHeight: theme.spacing.unit * 6,
+        minHeight: theme.spacing(6),
         cursor: 'pointer',
     },
     text: {
@@ -36,7 +36,7 @@ const styles = (theme) => ({
     },
     icon: {
         cursor: 'pointer',
-        marginLeft: theme.spacing.unit,
+        marginLeft: theme.spacing(),
     },
     root: {
         height: 'calc(100% - 68px)',

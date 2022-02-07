@@ -45,7 +45,7 @@ const styles = (theme) => ({
         cursor: 'pointer',
     },
     paper: {
-        padding: theme.spacing.unit,
+        padding: theme.spacing(),
     },
     button: { padding: '6px' },
     open: {
