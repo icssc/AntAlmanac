@@ -161,7 +161,7 @@ const InstructorsCell = withStyles(styles)((props) => {
             if (profName !== 'STAFF') {
                 const lastName = profName.substring(0, profName.indexOf(','));
                 return (
-                    <div>
+                    <div key={profName}>
                         <a
                             href={`https://www.ratemyprofessors.com/search/teachers?sid=U2Nob29sLTEwNzQ=&query=${lastName}`}
                             target="_blank"
@@ -285,7 +285,7 @@ const DayAndTimeCell = withStyles(styles)((props) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => (
-                <div>{`${meeting.days} ${meeting.time}`}</div>
+                <div key={meeting.days + meeting.time}>{`${meeting.days} ${meeting.time}`}</div>
             ))}
         </NoPaddingTableCell>
     );

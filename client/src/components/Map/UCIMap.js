@@ -265,6 +265,7 @@ export default class UCIMap extends PureComponent {
 
                 markers.push(
                     <MapMarkerPopup
+                        key={locationData.name}
                         image={locationData.imageURLs[0]}
                         markerColor={event.color}
                         location={locationData.name}
