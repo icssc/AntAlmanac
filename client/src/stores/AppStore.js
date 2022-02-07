@@ -5,7 +5,7 @@ import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } f
 class AppStore extends EventEmitter {
     constructor() {
         super();
-
+        this.setMaxListeners(11);
         this.currentScheduleIndex = 0;
         this.customEvents = [];
         this.addedCourses = [];
