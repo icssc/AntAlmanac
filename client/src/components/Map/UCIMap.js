@@ -176,7 +176,7 @@ export default class UCIMap extends PureComponent {
                                         }
                                         poly.push(
                                             <Polyline
-                                                key={`${waypointIndex},2`}
+                                                key={poly.length}
                                                 zIndexOffset={100}
                                                 color={colors[waypointIndex - 1]}
                                                 positions={path[waypointIndex]}
@@ -192,7 +192,7 @@ export default class UCIMap extends PureComponent {
 
                                         poly.push(
                                             <Polyline
-                                                key={`${waypointIndex},2`}
+                                                key={poly.length}
                                                 color={colors[waypointIndex - 1]}
                                                 positions={[
                                                     path[waypointIndex][path[waypointIndex].length - 1],
