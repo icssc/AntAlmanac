@@ -19,11 +19,13 @@ export const calendarizeCourseEvents = () => {
                 endMin = parseInt(endMin, 10);
 
                 let dates = [
+                    meeting.days.includes('Su'),
                     meeting.days.includes('M'),
                     meeting.days.includes('Tu'),
                     meeting.days.includes('W'),
                     meeting.days.includes('Th'),
                     meeting.days.includes('F'),
+                    meeting.days.includes('Sa'),
                 ];
 
                 if (ampm === 'p' && endHr !== 12) {
@@ -43,9 +45,9 @@ export const calendarizeCourseEvents = () => {
                             instructors: course.section.instructors,
                             sectionCode: course.section.sectionCode,
                             sectionType: course.section.sectionType,
-                            start: new Date(2018, 0, index + 1, startHr, startMin),
+                            start: new Date(2018, 0, index, startHr, startMin),
                             finalExam: course.section.finalExam,
-                            end: new Date(2018, 0, index + 1, endHr, endMin),
+                            end: new Date(2018, 0, index, endHr, endMin),
                             isCustomEvent: false,
                             scheduleIndices: course.scheduleIndices,
                         };
@@ -75,6 +77,8 @@ export const calendarizeFinals = () => {
             end = parseInt(end, 10);
             endMin = parseInt(endMin, 10);
             date = [
+                date.includes('Sat'),
+                date.includes('Sun'),
                 date.includes('Mon'),
                 date.includes('Tue'),
                 date.includes('Wed'),
@@ -96,8 +100,8 @@ export const calendarizeFinals = () => {
                         bldg: course.section.meetings[0].bldg,
                         color: course.color,
                         scheduleIndices: course.scheduleIndices,
-                        start: new Date(2018, 0, index + 1, start, startMin),
-                        end: new Date(2018, 0, index + 1, end, endMin),
+                        start: new Date(2018, 0, index - 1, start, startMin),
+                        end: new Date(2018, 0, index - 1, end, endMin),
                     });
             });
         }
@@ -111,7 +115,7 @@ export const calendarizeCustomEvents = () => {
     const customEventsInCalendar = [];
 
     for (const customEvent of customEvents) {
-        for (let dayIndex = 0; dayIndex < 5; dayIndex++) {
+        for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
             if (customEvent.days[dayIndex] === true) {
                 const startHour = parseInt(customEvent.start.slice(0, 2), 10);
                 const startMin = parseInt(customEvent.start.slice(3, 5), 10);
@@ -121,9 +125,9 @@ export const calendarizeCustomEvents = () => {
                 customEventsInCalendar.push({
                     customEventID: customEvent.customEventID,
                     color: customEvent.color,
-                    start: new Date(2018, 0, dayIndex + 1, startHour, startMin),
+                    start: new Date(2018, 0, dayIndex, startHour, startMin),
                     isCustomEvent: true,
-                    end: new Date(2018, 0, dayIndex + 1, endHour, endMin),
+                    end: new Date(2018, 0, dayIndex, endHour, endMin),
                     scheduleIndices: customEvent.scheduleIndices,
                     title: customEvent.title,
                 });

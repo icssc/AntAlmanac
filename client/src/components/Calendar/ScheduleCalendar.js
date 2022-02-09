@@ -210,6 +210,16 @@ class ScheduleCalendar extends PureComponent {
 
     render() {
         const { classes } = this.props;
+        const events = this.getEventsForCalendar();
+        const hasWeekendCourse = events.some((event) => event.start.getDay() == 0 || event.start.getDay() == 6);
+
+        // If a final is on a Saturday or Sunday, let the calendar start on Saturday
+        moment.locale('es-us', {
+            week: {
+                dow: hasWeekendCourse && this.state.showFinalsSchedule ? 6 : 0,
+            },
+        });
+
         return (
             <div className={classes.container} onClick={this.handleClosePopover}>
                 <CalendarPaneToolbar
@@ -263,13 +273,14 @@ class ScheduleCalendar extends PureComponent {
                             dayFormat: 'ddd',
                         }}
                         defaultView={Views.WORK_WEEK}
-                        views={[Views.WORK_WEEK]}
+                        views={[Views.WEEK, Views.WORK_WEEK]}
+                        view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
                         step={15}
                         timeslots={2}
                         defaultDate={new Date(2018, 0, 1)}
                         min={new Date(2018, 0, 1, 7)}
                         max={new Date(2018, 0, 1, 23)}
-                        events={this.getEventsForCalendar()}
+                        events={events}
                         eventPropGetter={ScheduleCalendar.eventStyleGetter}
                         showMultiDayTimes={false}
                         components={{ event: CustomEvent({ classes }) }}

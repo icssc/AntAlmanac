@@ -60,15 +60,20 @@ export default class UCIMap extends PureComponent {
             let coords = ''; // lat and lng of markers to be passed to api
             let coords_array = []; // lat and lng of markers to be used later
             let colors = [];
+            let courses = new Set();
 
             // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
             this.state.eventsInCalendar
                 .filter(
                     (event) =>
                         !(
-                            event.isCustomEvent ||
-                            !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
-                            !event.start.toString().includes(DAYS[day])
+                            (
+                                event.isCustomEvent ||
+                                !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
+                                !event.start.toString().includes(DAYS[day]) ||
+                                courses.has(event.sectionCode) || // Remove duplicate courses that appear in the calendar
+                                !courses.add(event.sectionCode)
+                            ) // Adds to the set and return false
                         )
                 )
                 .sort((event, event2) => event.start - event2.start)
@@ -115,15 +120,19 @@ export default class UCIMap extends PureComponent {
                         let poly = []; // Arrays of polyline to be added to map
                         let info_markers = [];
 
-                        poly.push(
-                            <Polyline
-                                key="start"
-                                color={colors[0]}
-                                positions={[path[0][0], coords_array[0]]}
-                                dashArray="4"
-                            />
-                        ); // Draw a dashline from waypoint 0 to start of route
-
+                        if (
+                            waypoints[0]['location'][0] !== waypoints[1]['location'][0] ||
+                            waypoints[0]['location'][1] !== waypoints[1]['location'][1]
+                        ) {
+                            poly.push(
+                                <Polyline
+                                    key="start"
+                                    color={colors[0]}
+                                    positions={[path[0][0], coords_array[0]]}
+                                    dashArray="4"
+                                />
+                            ); // Draw a dashline from waypoint 0 to start of route
+                        }
                         for (let [lat, lng] of coordinates) {
                             path[waypointIndex].push([lng, lat]); // Creates a path using lat and lng of coordinates until lat and lng matches one of the waypoint's coordinates
                             if (
@@ -132,76 +141,81 @@ export default class UCIMap extends PureComponent {
                             ) {
                                 path.push([[lng, lat]]);
                                 if (waypointIndex !== 0) {
-                                    function setInfoMarker(event) {
-                                        let [color, duration, miles] = this.options.map.state.info_markers[
-                                            this.options.index - 1
-                                        ];
-                                        this.options.map.setState({
-                                            info_marker: (
-                                                <Marker
-                                                    position={event.latlng}
-                                                    opacity={1.0}
-                                                    icon={Leaflet.divIcon({
-                                                        iconAnchor: [0, 14],
-                                                        labelAnchor: [-3.5, 0],
-                                                        popupAnchor: [0, -21],
-                                                        className: '',
-                                                        iconSize: [1000, 14],
-                                                        html: `<div style="position:relative; top:-200%; left:2px; pointer-events: none; background-color: white; border-left-color: ${color}; border-left-style: solid; width: fit-content; border-left-width: 5px; padding-left: 10px; padding-right: 10px; padding-top: 4px; padding-bottom: 4px;">
-                                                            <span style="color:${color}">
-                                                            ${duration} 
-                                                            </span>
-                                                            <br>
-                                                            <span style="color:#888888">
-                                                            ${miles}
-                                                            </span>
-                                                        </div>`,
-                                                    })}
-                                                ></Marker>
-                                            ),
-                                        });
-                                    }
-                                    poly.push(
-                                        <Polyline
-                                            key={`${waypointIndex}1`}
-                                            zIndexOffset={100}
-                                            color={colors[waypointIndex - 1]}
-                                            positions={path[waypointIndex]}
-                                            index={waypointIndex}
-                                            map={this}
-                                            onmouseover={setInfoMarker}
-                                            onmouseout={function () {
-                                                this.options.map.setState({ info_marker: null });
-                                            }}
-                                            onmousemove={setInfoMarker}
-                                        />
-                                    ); // Draw path from last waypoint to next waypoint
+                                    if (
+                                        waypoints[waypointIndex - 1]['location'][0] !== lat || // Skip waypoints that are on the same location
+                                        waypoints[waypointIndex - 1]['location'][1] !== lng
+                                    ) {
+                                        function setInfoMarker(event) {
+                                            let [color, duration, miles] = this.options.map.state.info_markers[
+                                                this.options.index - 1
+                                            ];
+                                            this.options.map.setState({
+                                                info_marker: (
+                                                    <Marker
+                                                        position={event.latlng}
+                                                        opacity={1.0}
+                                                        icon={Leaflet.divIcon({
+                                                            iconAnchor: [0, 14],
+                                                            labelAnchor: [-3.5, 0],
+                                                            popupAnchor: [0, -21],
+                                                            className: '',
+                                                            iconSize: [1000, 14],
+                                                            html: `<div style="position:relative; top:-200%; left:2px; pointer-events: none; background-color: white; border-left-color: ${color}; border-left-style: solid; width: fit-content; border-left-width: 5px; padding-left: 10px; padding-right: 10px; padding-top: 4px; padding-bottom: 4px;">
+                                                                <span style="color:${color}">
+                                                                ${duration} 
+                                                                </span>
+                                                                <br>
+                                                                <span style="color:#888888">
+                                                                ${miles}
+                                                                </span>
+                                                            </div>`,
+                                                        })}
+                                                    ></Marker>
+                                                ),
+                                            });
+                                        }
+                                        poly.push(
+                                            <Polyline
+                                                key={`${waypointIndex},2`}
+                                                zIndexOffset={100}
+                                                color={colors[waypointIndex - 1]}
+                                                positions={path[waypointIndex]}
+                                                index={waypointIndex}
+                                                map={this}
+                                                onmouseover={setInfoMarker}
+                                                onmouseout={function () {
+                                                    this.options.map.setState({ info_marker: null });
+                                                }}
+                                                onmousemove={setInfoMarker}
+                                            />
+                                        ); // Draw path from last waypoint to next waypoint
 
-                                    poly.push(
-                                        <Polyline
-                                            key={`${waypointIndex}2`}
-                                            color={colors[waypointIndex - 1]}
-                                            positions={[
-                                                path[waypointIndex][path[waypointIndex].length - 1],
-                                                coords_array[waypointIndex],
-                                            ]}
-                                            dashArray="4"
-                                        />
-                                    ); // Draw a dashed line directly to waypoint
-                                    let duration =
-                                        obj['routes'][0]['legs'][waypointIndex - 1]['duration'] > 30
-                                            ? Math.round(
-                                                  obj['routes'][0]['legs'][waypointIndex - 1]['duration'] / 60
-                                              ).toString() + ' min'
-                                            : '<1 min';
-                                    let miles =
-                                        (
-                                            Math.floor(
-                                                obj['routes'][0]['legs'][waypointIndex - 1]['distance'] / 1.609 / 10
-                                            ) / 100
-                                        ).toString() + ' mi';
-                                    // Add marker info (colors, duration, mile)
-                                    info_markers.push([colors[waypointIndex - 1], duration, miles]);
+                                        poly.push(
+                                            <Polyline
+                                                key={`${waypointIndex},2`}
+                                                color={colors[waypointIndex - 1]}
+                                                positions={[
+                                                    path[waypointIndex][path[waypointIndex].length - 1],
+                                                    coords_array[waypointIndex],
+                                                ]}
+                                                dashArray="4"
+                                            />
+                                        ); // Draw a dashed line directly to waypoint
+                                        let duration =
+                                            obj['routes'][0]['legs'][waypointIndex - 1]['duration'] > 30
+                                                ? Math.round(
+                                                      obj['routes'][0]['legs'][waypointIndex - 1]['duration'] / 60
+                                                  ).toString() + ' min'
+                                                : '<1 min';
+                                        let miles =
+                                            (
+                                                Math.floor(
+                                                    obj['routes'][0]['legs'][waypointIndex - 1]['distance'] / 1.609 / 10
+                                                ) / 100
+                                            ).toString() + ' mi';
+                                        // Add marker info (colors, duration, mile)
+                                        info_markers.push([colors[waypointIndex - 1], duration, miles]);
+                                    }
                                 }
                                 waypointIndex++;
                             }
@@ -239,28 +253,41 @@ export default class UCIMap extends PureComponent {
 
         // Tracks courses that have already been pinned on the map, so there are no duplicates
         let pinnedCourses = new Set();
-        let index = 0;
+        let pins = {};
+        let courses = new Set();
 
         // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
         this.state.eventsInCalendar
             .filter(
                 (event) =>
                     !(
-                        event.isCustomEvent ||
-                        !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
-                        !event.start.toString().includes(DAYS[this.state.day])
+                        (
+                            event.isCustomEvent ||
+                            !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
+                            !event.start.toString().includes(DAYS[this.state.day]) ||
+                            courses.has(event.sectionCode) || // Remove duplicate courses that appear in the calendar
+                            !courses.add(event.sectionCode)
+                        ) // Adds to the set and return false
                     )
             )
             .sort((event, event2) => event.start - event2.start)
-            .forEach((event) => {
-                // Get building code, get id of building code, which will get us the building data from buildingCatalogue
+            .forEach((event, index) => {
                 const buildingCode = event.bldg.split(' ').slice(0, -1).join(' ');
-                const id = locations[buildingCode];
-                const locationData = buildingCatalogue[id];
-                const courseString = `${event.title} ${event.sectionType} @ ${event.bldg}`;
+                event.index = index + 1;
+                if (pins.hasOwnProperty(buildingCode)) {
+                    pins[buildingCode].push(event);
+                } else {
+                    pins[buildingCode] = [event];
+                }
+            }); // Creates a map between buildingCodes to pins to determine stacks
+        for (const buildingCode in pins) {
+            // Get building code, get id of building code, which will get us the building data from buildingCatalogue
+            const id = locations[buildingCode];
+            const locationData = buildingCatalogue[id];
 
-                index++; // always increment index to account for courses within the same building
-                if (locationData === undefined || pinnedCourses.has(courseString)) return;
+            pins[buildingCode].reverse().forEach((event, stackIndex, arr) => {
+                const courseString = `${event.title} ${event.sectionType} @ ${event.bldg}`;
+                if (locationData === undefined) return;
 
                 // Acronym, if it exists, is in between parentheses
                 const acronym = locationData.name.substring(
@@ -279,7 +306,8 @@ export default class UCIMap extends PureComponent {
                         lat={locationData.lat}
                         lng={locationData.lng}
                         acronym={acronym}
-                        index={this.state.day ? index.toString() : ''}
+                        index={this.state.day ? event.index.toString() : ''}
+                        stackIndex={arr.length - 1 - stackIndex}
                     >
                         <Fragment>
                             <hr />
@@ -290,6 +318,7 @@ export default class UCIMap extends PureComponent {
                     </MapMarkerPopup>
                 );
             });
+        }
         return markers;
     };
 
