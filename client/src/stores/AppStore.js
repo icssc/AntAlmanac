@@ -5,7 +5,7 @@ import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } f
 class AppStore extends EventEmitter {
     constructor() {
         super();
-        this.setMaxListeners(15);
+        this.setMaxListeners(300); //this number is big because every section on the search results page listens to two events each.
         this.currentScheduleIndex = 0;
         this.customEvents = [];
         this.addedCourses = [];
