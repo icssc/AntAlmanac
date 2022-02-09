@@ -11,9 +11,9 @@ const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId
 class MapMarkerPopup extends PureComponent {
     getMarkerIcon = (color) => {
         return Leaflet.divIcon({
-            iconAnchor: [0, 14],
+            iconAnchor: [0, 14 + 16 * this.props.stackIndex], // Adds offset for marker for stacking markers
             labelAnchor: [-3.5, 0],
-            popupAnchor: [0, -21],
+            popupAnchor: [0, -21 - 16 * this.props.stackIndex], // Adds offset for popup for stacking markers
             className: '',
             html: `<div style="position:relative;">
                         <span style="background-color: ${color};
@@ -58,7 +58,11 @@ class MapMarkerPopup extends PureComponent {
         }
 
         return (
-            <Marker position={[this.props.lat, this.props.lng]} icon={this.getMarkerIcon(this.props.markerColor)}>
+            <Marker
+                position={[this.props.lat, this.props.lng]}
+                icon={this.getMarkerIcon(this.props.markerColor)}
+                zIndexOffset={-this.props.stackIndex} // alter ZIndex so markers show above other markers in order of stack
+            >
                 <Popup>
                     {locationString}
 

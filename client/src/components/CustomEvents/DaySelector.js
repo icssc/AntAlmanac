@@ -5,7 +5,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 class DaySelector extends PureComponent {
     state = {
-        days: this.props.customEvent ? this.props.customEvent.days : [false, false, false, false, false],
+        days: this.props.customEvent ? this.props.customEvent.days : [false, false, false, false, false, false, false],
     };
 
     handleChange = (dayIndex) => (event) => {
@@ -29,6 +29,18 @@ class DaySelector extends PureComponent {
                         <Checkbox
                             checked={this.state.days[0]}
                             onChange={this.handleChange(0)}
+                            value="0"
+                            color="primary"
+                        />
+                    }
+                    label="Sunday"
+                />
+
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={this.state.days[1]}
+                            onChange={this.handleChange(1)}
                             value="1"
                             color="primary"
                         />
@@ -39,8 +51,8 @@ class DaySelector extends PureComponent {
                 <FormControlLabel
                     control={
                         <Checkbox
-                            checked={this.state.days[1]}
-                            onChange={this.handleChange(1)}
+                            checked={this.state.days[2]}
+                            onChange={this.handleChange(2)}
                             value="2"
                             color="primary"
                         />
@@ -51,8 +63,8 @@ class DaySelector extends PureComponent {
                 <FormControlLabel
                     control={
                         <Checkbox
-                            checked={this.state.days[2]}
-                            onChange={this.handleChange(2)}
+                            checked={this.state.days[3]}
+                            onChange={this.handleChange(3)}
                             value="3"
                             color="primary"
                         />
@@ -63,8 +75,8 @@ class DaySelector extends PureComponent {
                 <FormControlLabel
                     control={
                         <Checkbox
-                            checked={this.state.days[3]}
-                            onChange={this.handleChange(3)}
+                            checked={this.state.days[4]}
+                            onChange={this.handleChange(4)}
                             value="4"
                             color="primary"
                         />
@@ -75,13 +87,25 @@ class DaySelector extends PureComponent {
                 <FormControlLabel
                     control={
                         <Checkbox
-                            checked={this.state.days[4]}
-                            onChange={this.handleChange(4)}
+                            checked={this.state.days[5]}
+                            onChange={this.handleChange(5)}
                             value="5"
                             color="primary"
                         />
                     }
                     label="Friday"
+                />
+
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={this.state.days[6]}
+                            onChange={this.handleChange(6)}
+                            value="6"
+                            color="primary"
+                        />
+                    }
+                    label="Saturday"
                 />
             </FormGroup>
         );
