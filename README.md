@@ -24,4 +24,5 @@ _You should already have this if you ran `git clone --recursive`. Otherwise you 
 _Only ICSSC Project Committee Members will have access to the `.env` file necessary to run the backend locally._
 - Install Serverless on your machine: `npm install -g serverless`
 
-More information can be found in the [antalmanac-backend README](https://github.com/icssc-projects/antalmanac-backend#readme).
+More information can be found in the [antalmanac-backend README](https://github.com/icssc-projects/antalmanac-backend#readme).  
+_Note:_ The backend currently does not work with Node v16 ([Issue #209](https://github.com/icssc-projects/AntAlmanac/issues/209)). We recommend using Node v12 or v14 until that issue is resolved.
