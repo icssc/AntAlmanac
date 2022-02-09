@@ -194,7 +194,7 @@ const LocationsCell = withStyles(styles)((props) => {
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
                 return meeting.bldg !== 'TBA' ? (
-                    <Fragment key={meeting.bldg}>
+                    <Fragment key={meeting.days + meeting.time + meeting.bldg}>
                         <a
                             href={(() => {
                                 const location_id = locations[meeting.bldg.split(' ')[0]];
@@ -285,7 +285,7 @@ const DayAndTimeCell = withStyles(styles)((props) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => (
-                <div key={meeting.days + meeting.time}>{`${meeting.days} ${meeting.time}`}</div>
+                <div key={meeting.days + meeting.time + meeting.bldg}>{`${meeting.days} ${meeting.time}`}</div>
             ))}
         </NoPaddingTableCell>
     );
