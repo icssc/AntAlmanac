@@ -116,7 +116,12 @@ export default class UCIMap extends PureComponent {
                         let info_markers = [];
 
                         poly.push(
-                            <Polyline color={colors[0]} positions={[path[0][0], coords_array[0]]} dashArray="4" />
+                            <Polyline
+                                key="start"
+                                color={colors[0]}
+                                positions={[path[0][0], coords_array[0]]}
+                                dashArray="4"
+                            />
                         ); // Draw a dashline from waypoint 0 to start of route
 
                         for (let [lat, lng] of coordinates) {
@@ -158,6 +163,7 @@ export default class UCIMap extends PureComponent {
                                     }
                                     poly.push(
                                         <Polyline
+                                            key={`${waypointIndex}1`}
                                             zIndexOffset={100}
                                             color={colors[waypointIndex - 1]}
                                             positions={path[waypointIndex]}
@@ -173,6 +179,7 @@ export default class UCIMap extends PureComponent {
 
                                     poly.push(
                                         <Polyline
+                                            key={`${waypointIndex}2`}
                                             color={colors[waypointIndex - 1]}
                                             positions={[
                                                 path[waypointIndex][path[waypointIndex].length - 1],
