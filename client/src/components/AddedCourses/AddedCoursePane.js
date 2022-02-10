@@ -168,7 +168,7 @@ class AddedCoursePane extends PureComponent {
                 </div>
                 {this.state.courses.map((course) => {
                     return (
-                        <Grid item md={12} xs={12}>
+                        <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber}>
                             <SectionTable courseDetails={course} term={course.term} colorAndDelete={true} />
                         </Grid>
                     );
@@ -177,7 +177,7 @@ class AddedCoursePane extends PureComponent {
                 {this.state.customEvents.map((customEvent) => {
                     if (customEvent.scheduleIndices.includes(AppStore.getCurrentScheduleIndex())) {
                         return (
-                            <Grid item md={12} xs={12}>
+                            <Grid item md={12} xs={12} key={customEvent.title}>
                                 <CustomEventDetailView
                                     customEvent={customEvent}
                                     currentScheduleIndex={AppStore.getCurrentScheduleIndex()}

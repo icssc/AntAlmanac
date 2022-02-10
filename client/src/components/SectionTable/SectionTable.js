@@ -11,7 +11,7 @@ import {
     Tooltip,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph';
+// import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back
 import CourseInfoBar from './CourseInfoBar';
 import SectionTableBody from './SectionTableBody';
 import { Help } from '@material-ui/icons';

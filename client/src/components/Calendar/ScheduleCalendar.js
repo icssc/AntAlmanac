@@ -211,10 +211,10 @@ class ScheduleCalendar extends PureComponent {
     render() {
         const { classes } = this.props;
         const events = this.getEventsForCalendar();
-        const hasWeekendCourse = events.some((event) => event.start.getDay() == 0 || event.start.getDay() == 6);
+        const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
 
         // If a final is on a Saturday or Sunday, let the calendar start on Saturday
-        moment.locale('es-us', {
+        moment.updateLocale('es-us', {
             week: {
                 dow: hasWeekendCourse && this.state.showFinalsSchedule ? 6 : 0,
             },
@@ -275,6 +275,7 @@ class ScheduleCalendar extends PureComponent {
                         defaultView={Views.WORK_WEEK}
                         views={[Views.WEEK, Views.WORK_WEEK]}
                         view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
+                        onView={() => {}} //added to get rid of a warning. This callback is supposed to fire when view changes, but it doesn't actually ever run (possibly a bug in the dependency)
                         step={15}
                         timeslots={2}
                         defaultDate={new Date(2018, 0, 1)}

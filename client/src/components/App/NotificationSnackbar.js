@@ -23,7 +23,6 @@ const styles = (theme) => ({
     icon: {
         fontSize: 20,
         opacity: 0.9,
-        marginRight: theme.spacing,
     },
     iconVariant: {},
     message: {

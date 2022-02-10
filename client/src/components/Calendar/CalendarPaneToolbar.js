@@ -11,6 +11,7 @@ import ExportCalendar from './ExportCalendar';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import ReactGA from 'react-ga';
+import ConditionalWrapper from '../App/ConditionalWrapper';
 
 const styles = {
     toolbar: {
@@ -37,10 +38,6 @@ const styles = {
     scheduleSelector: {
         marginLeft: '10px',
     },
-};
-
-const ConditionalWrapper = ({ condition, wrapper, children }) => {
-    return condition ? wrapper(children) : children;
 };
 
 const CalendarPaneToolbar = (props) => {
@@ -136,6 +133,7 @@ const CalendarPaneToolbar = (props) => {
                     <CustomEventsDialog editMode={false} />,
                 ].map((element) => (
                     <ConditionalWrapper
+                        key={element.type.name || element.type.Naked.name}
                         condition={isMobileScreen}
                         wrapper={(children) => <MenuItem onClick={handleMenuClose}>{children}</MenuItem>}
                     >

@@ -62,39 +62,44 @@ class App extends PureComponent {
         return (
             <BrowserRouter>
                 <Routes>
+                    <Route
+                        path="/"
+                        element={
+                            <ThemeProvider theme={theme}>
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <CssBaseline />
+                                    <Bar />
+                                    <Grid container alignItems={'stretch'} style={{ flexGrow: '1' }}>
+                                        <Grid item xs={12} s={6} md={6} lg={6} xl={6}>
+                                            <Calendar />
+                                        </Grid>
+
+                                        <DesktopTabs />
+
+                                        {/*<Hidden mdUp>*/}
+                                        {/*    <Grid item xs={12}>*/}
+                                        {/*        <div>*/}
+                                        {/*            <Tabs*/}
+                                        {/*                value={this.state.activeTab}*/}
+                                        {/*                onChange={this.handleTabChange}*/}
+                                        {/*                variant="fullWidth"*/}
+                                        {/*                indicatorColor="primary"*/}
+                                        {/*                textColor="primary"*/}
+                                        {/*            >*/}
+                                        {/*                <Tab icon={<CalendarToday />} />*/}
+                                        {/*                <Tab icon={<Search />} />*/}
+                                        {/*            </Tabs>*/}
+                                        {/*        </div>*/}
+                                        {/*    </Grid>*/}
+                                        {/*</Hidden>*/}
+                                    </Grid>
+                                    <NotificationSnackbar />
+                                </MuiPickersUtilsProvider>
+                            </ThemeProvider>
+                        }
+                    />
                     <Route exact path="/feedback" element={<Feedback />} />
                 </Routes>
-                <ThemeProvider theme={theme}>
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <CssBaseline />
-                        <Bar />
-                        <Grid container alignItems={'stretch'} style={{ flexGrow: '1' }}>
-                            <Grid item xs={12} s={6} md={6} lg={6} xl={6}>
-                                <Calendar />
-                            </Grid>
-
-                            <DesktopTabs />
-
-                            {/*<Hidden mdUp>*/}
-                            {/*    <Grid item xs={12}>*/}
-                            {/*        <div>*/}
-                            {/*            <Tabs*/}
-                            {/*                value={this.state.activeTab}*/}
-                            {/*                onChange={this.handleTabChange}*/}
-                            {/*                variant="fullWidth"*/}
-                            {/*                indicatorColor="primary"*/}
-                            {/*                textColor="primary"*/}
-                            {/*            >*/}
-                            {/*                <Tab icon={<CalendarToday />} />*/}
-                            {/*                <Tab icon={<Search />} />*/}
-                            {/*            </Tabs>*/}
-                            {/*        </div>*/}
-                            {/*    </Grid>*/}
-                            {/*</Hidden>*/}
-                        </Grid>
-                        <NotificationSnackbar />
-                    </MuiPickersUtilsProvider>
-                </ThemeProvider>
             </BrowserRouter>
         );
     }
