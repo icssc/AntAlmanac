@@ -10,12 +10,12 @@ const phoneNumberRegex = RegExp(/\d{10}/);
 
 const styles = (theme) => ({
     container: {
-        padding: theme.spacing.unit,
+        padding: theme.spacing(),
     },
     buttonContainer: {
         display: 'flex',
         justifyContent: 'center',
-        marginTop: theme.spacing.unit,
+        marginTop: theme.spacing(),
     },
 });
 

@@ -125,7 +125,12 @@ export default class UCIMap extends PureComponent {
                             waypoints[0]['location'][1] !== waypoints[1]['location'][1]
                         ) {
                             poly.push(
-                                <Polyline color={colors[0]} positions={[path[0][0], coords_array[0]]} dashArray="4" />
+                                <Polyline
+                                    key="start"
+                                    color={colors[0]}
+                                    positions={[path[0][0], coords_array[0]]}
+                                    dashArray="4"
+                                />
                             ); // Draw a dashline from waypoint 0 to start of route
                         }
                         for (let [lat, lng] of coordinates) {
@@ -171,6 +176,7 @@ export default class UCIMap extends PureComponent {
                                         }
                                         poly.push(
                                             <Polyline
+                                                key={poly.length}
                                                 zIndexOffset={100}
                                                 color={colors[waypointIndex - 1]}
                                                 positions={path[waypointIndex]}
@@ -186,6 +192,7 @@ export default class UCIMap extends PureComponent {
 
                                         poly.push(
                                             <Polyline
+                                                key={poly.length}
                                                 color={colors[waypointIndex - 1]}
                                                 positions={[
                                                     path[waypointIndex][path[waypointIndex].length - 1],
@@ -292,6 +299,7 @@ export default class UCIMap extends PureComponent {
 
                 markers.push(
                     <MapMarkerPopup
+                        key={courseString}
                         image={locationData.imageURLs[0]}
                         markerColor={event.color}
                         location={locationData.name}

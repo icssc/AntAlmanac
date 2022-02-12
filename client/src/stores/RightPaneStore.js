@@ -56,8 +56,7 @@ class RightPaneStore extends EventEmitter {
                 this.doDisplaySearch = !this.doDisplaySearch;
                 // this.emit('searchToggle');
                 break;
-            default:
-                console.log(`[Warning] RightPaneStore invalid action type: ${action.type} from action`, action);
+            default: //do nothing
         }
     }
 }
