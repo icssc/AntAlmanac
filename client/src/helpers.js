@@ -35,8 +35,7 @@ export async function getCoursesData(userData) {
                 sectionCodes: sectionArray.join(','),
             };
 
-            const response = await queryWebsoc(params);
-            const jsonResp = await response.json();
+            const jsonResp = await queryWebsoc(params);
 
             for (const school of jsonResp.schools) {
                 for (const department of school.departments) {
@@ -64,24 +63,27 @@ export async function getCoursesData(userData) {
     };
 }
 
+const websocCache = {};
+
 export async function queryWebsoc(params) {
     // Construct a request to PeterPortal with the params as a query string
     const url = new URL(PETERPORTAL_WEBSOC_ENDPOINT);
-    url.search = new URLSearchParams(params).toString();
-    const response = await fetch(url);
-
-    if (response.ok || response.status === 400) {
-        // Return the PeterPortal API response if the status is ok
-        // or if the status is 400 (means the paramaters were invalid)
+    const searchString = new URLSearchParams(params).toString();
+    if (websocCache[searchString]) {
+        return websocCache[searchString];
+    }
+    url.search = searchString;
+    try {
+        const response = await fetch(url).then((r) => r.json());
+        websocCache[searchString] = response;
         return response;
-    } else {
-        // If the PeterPortal API is down,
-        // attempt to use the former AntAlamanc websoc endpoint
+    } catch {
         const backupResponse = await fetch(WEBSOC_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(params),
-        });
+        }).then((res) => res.json());
+        websocCache[searchString] = backupResponse;
         return backupResponse;
     }
 }

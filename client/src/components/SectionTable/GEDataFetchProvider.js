@@ -20,9 +20,7 @@ class GeDataFetchProvider extends PureComponent {
             courseTitle: this.props.courseDetails.courseTitle,
         };
 
-        const response = await queryWebsoc(params);
-
-        const jsonResp = await response.json();
+        const jsonResp = await queryWebsoc(params);
 
         this.setState({
             courseDetails: jsonResp.schools[0].departments[0].courses[0],

@@ -142,36 +142,27 @@ class CourseRenderPane extends PureComponent {
             };
 
             try {
-                const response = await queryWebsoc(params);
+                const jsonResp = await queryWebsoc(params);
 
-                if (response.ok) {
-                    const jsonResp = await response.json();
+                const adBannerInfo = await fetch(
+                    `${RANDOM_AD_ENDPOINT}?deptCode=${encodeURIComponent(formData.deptValue)}`
+                );
 
-                    const adBannerInfo = await fetch(
-                        `${RANDOM_AD_ENDPOINT}?deptCode=${encodeURIComponent(formData.deptValue)}`
-                    );
+                if (adBannerInfo.ok) {
+                    const jsonAdInfo = await adBannerInfo.json();
 
-                    if (adBannerInfo.ok) {
-                        const jsonAdInfo = await adBannerInfo.json();
-
-                        this.setState({
-                            loading: false,
-                            error: false,
-                            courseData: flattenSOCObject(jsonResp),
-                            bannerName: jsonAdInfo.bannerName,
-                            bannerLink: jsonAdInfo.bannerLink,
-                        });
-                    } else {
-                        this.setState({
-                            loading: false,
-                            error: false,
-                            courseData: flattenSOCObject(jsonResp),
-                        });
-                    }
+                    this.setState({
+                        loading: false,
+                        error: false,
+                        courseData: flattenSOCObject(jsonResp),
+                        bannerName: jsonAdInfo.bannerName,
+                        bannerLink: jsonAdInfo.bannerLink,
+                    });
                 } else {
                     this.setState({
                         loading: false,
-                        error: true,
+                        error: false,
+                        courseData: flattenSOCObject(jsonResp),
                     });
                 }
             } catch (error) {
