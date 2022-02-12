@@ -211,7 +211,7 @@ class ScheduleCalendar extends PureComponent {
     render() {
         const { classes } = this.props;
         const events = this.getEventsForCalendar();
-        const hasWeekendCourse = events.some((event) => event.start.getDay() == 0 || event.start.getDay() == 6);
+        const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
 
         // If a final is on a Saturday or Sunday, let the calendar start on Saturday
         moment.locale('es-us', {
