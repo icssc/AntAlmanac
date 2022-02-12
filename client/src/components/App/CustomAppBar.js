@@ -11,6 +11,7 @@ import { ReactComponent as Logo } from './logo.svg';
 import { ReactComponent as MobileLogo } from './mobile-logo.svg';
 import News from './News';
 import AboutPage from './AboutPage';
+import ConditionalWrapper from './ConditionalWrapper';
 
 const styles = {
     appBar: {
@@ -21,10 +22,6 @@ const styles = {
     buttonMargin: {
         marginRight: '4px',
     },
-};
-
-const ConditionalWrapper = ({ condition, wrapper, children }) => {
-    return condition ? wrapper(children) : children;
 };
 
 const CustomAppBar = (props) => {
@@ -80,6 +77,7 @@ const CustomAppBar = (props) => {
                         <AboutPage />,
                     ].map((element) => (
                         <ConditionalWrapper
+                            key={element.type.name || element.type.Naked.name || element.type.Naked.render.name}
                             condition={isMobileScreen}
                             wrapper={(children) => <MenuItem>{children}</MenuItem>}
                         >

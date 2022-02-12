@@ -4,7 +4,7 @@
     "description": "antalmanac.com",
     "scripts": {
         "client-install": "cd ./client && npm install",
-        "server-install": "cd ./antalmanac-backend && npm install",
+        "server-install": "cd ./antalmanac-backend && if test -f package.json; then npm install; fi",
         "dependency-install": "concurrently -n \"BACKEND,FRONTEND\" \"npm run server-install\" \"npm run client-install\"",
         "postinstall": "npm run dependency-install",
         "server": "cd antalmanac-backend && sls offline --stage development --noPrependStageInUrl",

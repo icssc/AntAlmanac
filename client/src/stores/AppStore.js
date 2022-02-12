@@ -5,7 +5,7 @@ import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } f
 class AppStore extends EventEmitter {
     constructor() {
         super();
-
+        this.setMaxListeners(300); //this number is big because every section on the search results page listens to two events each.
         this.currentScheduleIndex = 0;
         this.customEvents = [];
         this.addedCourses = [];
@@ -217,8 +217,7 @@ class AppStore extends EventEmitter {
                 this.emit('themeToggle');
                 window.localStorage.setItem('theme', action.theme);
                 break;
-            default:
-                console.log(`[Warning] AppStore invalid action type: ${action.type}`);
+            default: //do nothing
         }
     }
 }

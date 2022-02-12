@@ -4,7 +4,6 @@ import SchoolDeptCard from './SchoolDeptCard';
 import SectionTable from '../SectionTable/SectionTable';
 import noNothing from './static/no_results.png';
 import darkNoNothing from './static/dark-no_results.png';
-import AppStore from '../../stores/AppStore';
 import RightPaneStore from '../../stores/RightPaneStore';
 import loadingGif from '../SearchForm/Gifs/loading.gif';
 import darkModeLoadingGif from '../SearchForm/Gifs/dark-loading.gif';
@@ -17,12 +16,12 @@ import { queryWebsoc, isDarkMode } from '../../helpers';
 const styles = (theme) => ({
     course: {
         ...theme.mixins.gutters(),
-        paddingTop: theme.spacing.unit,
-        paddingBottom: theme.spacing.unit,
+        paddingTop: theme.spacing(),
+        paddingBottom: theme.spacing(),
         display: 'flex',
         alignItems: 'center',
         flexWrap: 'wrap',
-        minHeight: theme.spacing.unit * 6,
+        minHeight: theme.spacing(6),
         cursor: 'pointer',
     },
     text: {
@@ -37,7 +36,7 @@ const styles = (theme) => ({
     },
     icon: {
         cursor: 'pointer',
-        marginLeft: theme.spacing.unit,
+        marginLeft: theme.spacing(),
     },
     root: {
         height: 'calc(100% - 68px)',

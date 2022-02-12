@@ -45,7 +45,7 @@ const styles = (theme) => ({
         cursor: 'pointer',
     },
     paper: {
-        padding: theme.spacing.unit,
+        padding: theme.spacing(),
     },
     button: { padding: '6px' },
     open: {
@@ -161,7 +161,7 @@ const InstructorsCell = withStyles(styles)((props) => {
             if (profName !== 'STAFF') {
                 const lastName = profName.substring(0, profName.indexOf(','));
                 return (
-                    <div>
+                    <div key={profName}>
                         <a
                             href={`https://www.ratemyprofessors.com/search/teachers?sid=U2Nob29sLTEwNzQ=&query=${lastName}`}
                             target="_blank"
@@ -194,7 +194,7 @@ const LocationsCell = withStyles(styles)((props) => {
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
                 return meeting.bldg !== 'TBA' ? (
-                    <Fragment key={meeting.bldg}>
+                    <Fragment key={meeting.days + meeting.time + meeting.bldg}>
                         <a
                             href={(() => {
                                 const location_id = locations[meeting.bldg.split(' ')[0]];
@@ -285,7 +285,7 @@ const DayAndTimeCell = withStyles(styles)((props) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => (
-                <div>{`${meeting.days} ${meeting.time}`}</div>
+                <div key={meeting.days + meeting.time + meeting.bldg}>{`${meeting.days} ${meeting.time}`}</div>
             ))}
         </NoPaddingTableCell>
     );
@@ -337,7 +337,7 @@ const SectionTableBody = withStyles(styles)((props) => {
             AppStore.removeListener('addedCoursesChange', toggleHighlight);
             AppStore.removeListener('currentScheduleIndexChange', toggleHighlight);
         };
-    }, []);
+    }, [section.sectionCode, term]); //should only run once on first render since these shouldn't change.
 
     return (
         <TableRow
