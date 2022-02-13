@@ -15,9 +15,8 @@ import { withStyles } from '@material-ui/core/styles';
 import CourseInfoBar from './CourseInfoBar';
 import SectionTableBody from './SectionTableBody';
 import CourseInfoButton from './CourseInfoButton';
-import { Help, Assessment, PriorityHigh } from '@material-ui/icons';
+import { Help, Assessment, Assignment } from '@material-ui/icons';
 import PropTypes from 'prop-types';
-import { Button } from '@material-ui/core';
 
 const styles = {
     flex: {
@@ -86,7 +85,7 @@ class SectionTable extends PureComponent {
                     {courseDetails.prerequisiteLink ? (
                         <CourseInfoButton
                             text="Prerequisites"
-                            icon={<PriorityHigh />}
+                            icon={<Assignment />}
                             redirectLink={courseDetails.prerequisiteLink}
                         />
                     ) : (
