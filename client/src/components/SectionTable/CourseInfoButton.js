@@ -7,7 +7,7 @@ class CourseInfoButton extends PureComponent {
         const { text, icon, redirectLink } = this.props;
         return (
             <Button
-                endIcon={icon}
+                startIcon={icon}
                 variant="contained"
                 size="small"
                 style={{ marginRight: '4px', backgroundColor: '#385EB1', color: '#fff' }}
