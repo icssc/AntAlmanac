@@ -14,6 +14,7 @@ import { withStyles } from '@material-ui/core/styles';
 // import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back
 import CourseInfoBar from './CourseInfoBar';
 import SectionTableBody from './SectionTableBody';
+import CourseInfoButton from './CourseInfoButton';
 import { Help, Assessment, PriorityHigh } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import { Button } from '@material-ui/core';
@@ -83,33 +84,19 @@ class SectionTable extends PureComponent {
                     {/* <AlmanacGraph courseDetails={courseDetails} />  */}
 
                     {courseDetails.prerequisiteLink ? (
-                        <Button
-                            endIcon={<PriorityHigh />}
-                            variant="contained"
-                            size="small"
-                            style={{ marginRight: '4px', backgroundColor: '#385EB1', color: '#fff' }}
-                            onClick={(event) => {
-                                window.open(courseDetails.prerequisiteLink);
-                            }}
-                        >
-                            {`Prerequisites`}
-                        </Button>
+                        <CourseInfoButton
+                            text="Prerequisites"
+                            icon={<PriorityHigh />}
+                            redirectLink={courseDetails.prerequisiteLink}
+                        />
                     ) : (
                         <Fragment />
                     )}
-                    <Button
-                        endIcon={<Assessment />}
-                        variant="contained"
-                        size="small"
-                        onClick={(event) => {
-                            window.open(
-                                `https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${urlEncode}&classNum=${courseDetails.courseNumber}&code=&submit=Submit`
-                            );
-                        }}
-                        style={{ marginRight: '4px', backgroundColor: '#385EB1', color: '#fff' }}
-                    >
-                        {`Zotistics`}
-                    </Button>
+                    <CourseInfoButton
+                        text="Zotistics"
+                        icon={<Assessment />}
+                        redirectLink={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${urlEncode}&classNum=${courseDetails.courseNumber}&code=&submit=Submit`}
+                    />
                 </div>
 
                 <TableContainer
