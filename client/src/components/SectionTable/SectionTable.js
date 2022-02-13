@@ -14,8 +14,9 @@ import { withStyles } from '@material-ui/core/styles';
 // import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back
 import CourseInfoBar from './CourseInfoBar';
 import SectionTableBody from './SectionTableBody';
-import { Help } from '@material-ui/icons';
+import { Help, Assessment, PriorityHigh } from '@material-ui/icons';
 import PropTypes from 'prop-types';
+import { Button } from '@material-ui/core';
 
 const styles = {
     flex: {
@@ -82,42 +83,33 @@ class SectionTable extends PureComponent {
                     {/* <AlmanacGraph courseDetails={courseDetails} />  */}
 
                     {courseDetails.prerequisiteLink ? (
-                        <Typography variant="h6" style={{ flexGrow: '2', marginTop: 9 }}>
-                            <a
-                                target="blank"
-                                style={{
-                                    textDecoration: 'none',
-                                    color: '#72a9ed',
-                                }}
-                                href={courseDetails.prerequisiteLink}
-                                rel="noopener noreferrer"
-                            >
-                                Prerequisites
-                            </a>
-                        </Typography>
+                        <Button
+                            endIcon={<PriorityHigh />}
+                            variant="contained"
+                            size="small"
+                            style={{ marginRight: '4px', backgroundColor: '#385EB1', color: '#fff' }}
+                            onClick={(event) => {
+                                window.open(courseDetails.prerequisiteLink);
+                            }}
+                        >
+                            {`Prerequisites`}
+                        </Button>
                     ) : (
                         <Fragment />
                     )}
-                    <Typography variant="h6" style={{ flexGrow: '2', margin: 9 }}>
-                        <a
-                            target="blank"
-                            style={{
-                                marginTop: '0px',
-                                fontSize: '15px',
-                                textDecoration: 'none',
-                                color: '#72a9ed',
-                            }}
-                            href={
-                                'https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=' +
-                                urlEncode +
-                                '&classNum=' +
-                                courseDetails.courseNumber +
-                                '&code=&submit=Submit'
-                            }
-                        >
-                            Zotistics
-                        </a>
-                    </Typography>
+                    <Button
+                        endIcon={<Assessment />}
+                        variant="contained"
+                        size="small"
+                        onClick={(event) => {
+                            window.open(
+                                `https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${urlEncode}&classNum=${courseDetails.courseNumber}&code=&submit=Submit`
+                            );
+                        }}
+                        style={{ marginRight: '4px', backgroundColor: '#385EB1', color: '#fff' }}
+                    >
+                        {`Zotistics`}
+                    </Button>
                 </div>
 
                 <TableContainer
