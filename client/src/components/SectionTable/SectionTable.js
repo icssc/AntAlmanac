@@ -14,7 +14,8 @@ import { withStyles } from '@material-ui/core/styles';
 // import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back
 import CourseInfoBar from './CourseInfoBar';
 import SectionTableBody from './SectionTableBody';
-import { Help } from '@material-ui/icons';
+import CourseInfoButton from './CourseInfoButton';
+import { Help, Assessment, Assignment } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 
 const styles = {
@@ -82,42 +83,19 @@ class SectionTable extends PureComponent {
                     {/* <AlmanacGraph courseDetails={courseDetails} />  */}
 
                     {courseDetails.prerequisiteLink ? (
-                        <Typography variant="h6" style={{ flexGrow: '2', marginTop: 9 }}>
-                            <a
-                                target="blank"
-                                style={{
-                                    textDecoration: 'none',
-                                    color: '#72a9ed',
-                                }}
-                                href={courseDetails.prerequisiteLink}
-                                rel="noopener noreferrer"
-                            >
-                                Prerequisites
-                            </a>
-                        </Typography>
+                        <CourseInfoButton
+                            text="Prerequisites"
+                            icon={<Assignment />}
+                            redirectLink={courseDetails.prerequisiteLink}
+                        />
                     ) : (
                         <Fragment />
                     )}
-                    <Typography variant="h6" style={{ flexGrow: '2', margin: 9 }}>
-                        <a
-                            target="blank"
-                            style={{
-                                marginTop: '0px',
-                                fontSize: '15px',
-                                textDecoration: 'none',
-                                color: '#72a9ed',
-                            }}
-                            href={
-                                'https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=' +
-                                urlEncode +
-                                '&classNum=' +
-                                courseDetails.courseNumber +
-                                '&code=&submit=Submit'
-                            }
-                        >
-                            Zotistics
-                        </a>
-                    </Typography>
+                    <CourseInfoButton
+                        text="Zotistics"
+                        icon={<Assessment />}
+                        redirectLink={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${urlEncode}&classNum=${courseDetails.courseNumber}&code=&submit=Submit`}
+                    />
                 </div>
 
                 <TableContainer
