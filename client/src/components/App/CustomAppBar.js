@@ -18,6 +18,7 @@ const styles = {
         marginBottom: '4px',
         boxShadow: 'none',
         minHeight: 0,
+        height: '50px',
     },
     buttonMargin: {
         marginRight: '4px',
