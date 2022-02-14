@@ -1,23 +1,36 @@
 {
-  "name": "antalmanac-backend",
-  "version": "0.0.1",
-  "description": "Backend for AntAlmanac",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "devDependencies": {
-    "serverless-domain-manager": "^5.1.0",
-    "serverless-offline": "^6.8.0"
-  },
-  "dependencies": {
-    "body-parser": "^1.19.0",
-    "cors": "^2.8.5",
-    "express": "^4.16.2",
-    "mongodb": "^3.5.9",
-    "mongoose": "^5.10.13",
-    "serverless-express": "^2.0.11",
-    "serverless-http": "^2.6.0",
-    "websoc-api": "^1.0.0"
-  }
+    "name": "antalmanac-backend",
+    "version": "0.0.1",
+    "description": "Backend for AntAlmanac",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "devDependencies": {
+        "husky": "^7.0.4",
+        "prettier": "^2.5.1",
+        "serverless-domain-manager": "^5.1.0",
+        "serverless-offline": "^6.8.0"
+    },
+    "dependencies": {
+        "body-parser": "^1.19.0",
+        "cors": "^2.8.5",
+        "express": "^4.16.2",
+        "mongodb": "^3.5.9",
+        "mongoose": "^5.10.13",
+        "serverless-express": "^2.0.11",
+        "serverless-http": "^2.6.0",
+        "websoc-api": "^1.0.0"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.{js,json,css,html}": [
+            "prettier --write",
+            "git add"
+        ]
+    }
 }

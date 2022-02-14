@@ -4,38 +4,38 @@ app: antalmanac
 useDotenv: true
 
 plugins:
-  - serverless-offline
-  - serverless-domain-manager
+    - serverless-offline
+    - serverless-domain-manager
 
 custom:
-  serverless-offline:
-    httpPort: 8080
+    serverless-offline:
+        httpPort: 8080
 
-  domains:
-    development: dev-api.antalmanac.com
-    staging: staging-api.antalmanac.com
-    production: api.antalmanac.com
+    domains:
+        development: dev-api.antalmanac.com
+        staging: staging-api.antalmanac.com
+        production: api.antalmanac.com
 
-  customDomain:
-    domainName: ${self:custom.domains.${opt:stage}}
-    certificateName: '*.antalmanac.com'
-    basePath: ''
-    stage: ${opt:stage}
-    createRoute53Record: true
+    customDomain:
+        domainName: ${self:custom.domains.${opt:stage}}
+        certificateName: '*.antalmanac.com'
+        basePath: ''
+        stage: ${opt:stage}
+        createRoute53Record: true
 
 provider:
-  name: aws
-  runtime: nodejs12.x
-  region: us-east-1
-  apiGateway:
-    binaryMediaTypes:
-      - 'image/*'
+    name: aws
+    runtime: nodejs12.x
+    region: us-east-1
+    apiGateway:
+        binaryMediaTypes:
+            - 'image/*'
 
 functions:
     app:
-      handler: server.handler
-      events:
-        - http:
-            path: /{proxy+}
-            method: ANY
-            cors: true
+        handler: server.handler
+        events:
+            - http:
+                  path: /{proxy+}
+                  method: ANY
+                  cors: true
