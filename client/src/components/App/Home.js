@@ -23,7 +23,7 @@ const Home = () => {
                         <Calendar />
                     </Grid>
                     <Grid item xs={12} s={6} md={6} lg={6} xl={6}>
-                        <DesktopTabs style={{ height: 'calc(100% - 8px)' }} />
+                        <DesktopTabs style={{ height: 'calc(100vh - 58px)' }} />
                     </Grid>
                 </Grid>
             )}

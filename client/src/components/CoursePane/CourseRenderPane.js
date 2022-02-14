@@ -39,7 +39,7 @@ const styles = (theme) => ({
         marginLeft: theme.spacing(),
     },
     root: {
-        height: 'calc(100% - 68px)',
+        height: 'calc(100% - 50px)',
         overflowY: 'scroll',
         position: 'relative',
     },

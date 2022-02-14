@@ -114,7 +114,7 @@ class DesktopTabs extends PureComponent {
                 </Paper>
                 <div
                     style={{
-                        padding: RightPaneStore.getActiveTab() === 2 ? '0px' : '8px',
+                        padding: RightPaneStore.getActiveTab() === 2 ? '0px' : '8px 8px 0 8px',
                         height: `calc(100% - 54px)`,
                         overflowY: RightPaneStore.getActiveTab() === 1 ? 'auto' : 'hidden',
                     }}
