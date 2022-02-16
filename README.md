@@ -24,9 +24,6 @@ Fetch information from the WebSoC website.
 1. Add the `.env` file  
 _Only ICSSC Project Committee Members will have access to the `.env` file necessary to run the backend locally._
 
-2. Install Serverless on your machine  
-`npm install -g serverless`
-
-3. Run the backend using Serverless  
-`sls offline --stage development --noPrependStageInUrl`  
+2. Run the backend 
+`npm start`  
 _Only do this if you just want to run the backend by itself. To run the whole project with the frontend and backend, you just need to run `npm start` inside of the main [AntAlmanac repository](https://github.com/icssc-projects/AntAlmanac)._

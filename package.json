@@ -7,10 +7,9 @@
         "start": "node server.js"
     },
     "devDependencies": {
+        "dotenv": "^16.0.0",
         "husky": "^7.0.4",
-        "prettier": "^2.5.1",
-        "serverless-domain-manager": "^5.1.0",
-        "serverless-offline": "^6.8.0"
+        "prettier": "^2.5.1"
     },
     "dependencies": {
         "body-parser": "^1.19.0",
@@ -18,8 +17,6 @@
         "express": "^4.16.2",
         "mongodb": "^3.5.9",
         "mongoose": "^5.10.13",
-        "serverless-express": "^2.0.11",
-        "serverless-http": "^2.6.0",
         "websoc-api": "^1.0.0"
     },
     "husky": {

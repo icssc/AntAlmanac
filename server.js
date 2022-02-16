@@ -1,9 +1,12 @@
 const express = require('express');
-const serverless = require('serverless-http');
 const bodyParser = require('body-parser');
 const routes = require('./routes');
 const cors = require('cors');
 const app = express();
+require('dotenv').config();
+
+const port = 8080;
+
 app.use(bodyParser.json());
 app.use(
     cors({
@@ -12,4 +15,4 @@ app.use(
 );
 app.use('/api', routes);
 
-module.exports.handler = serverless(app, { binary: ['image/*'] });
+app.listen(port, () => console.log(`Running local server on port ${port}`));
