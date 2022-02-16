@@ -76,9 +76,9 @@ const CustomAppBar = (props) => {
                         </Tooltip>,
                         <News />,
                         <AboutPage />,
-                    ].map((element) => (
+                    ].map((element, index) => (
                         <ConditionalWrapper
-                            key={element.type.name || element.type.Naked.name || element.type.Naked.render.name}
+                            key={index}
                             condition={isMobileScreen}
                             wrapper={(children) => <MenuItem>{children}</MenuItem>}
                         >
