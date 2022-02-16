@@ -18,6 +18,7 @@ class DesktopTabs extends PureComponent {
 
     componentDidMount() {
         RightPaneStore.on('tabChange', this.changeTab);
+        this.setState({ activeTab: RightPaneStore.getActiveTab() });
     }
 
     componentWillUnmount() {
@@ -25,6 +26,7 @@ class DesktopTabs extends PureComponent {
     }
 
     render() {
+        const { style } = this.props;
         let currentTab;
 
         if (RightPaneStore.getActiveTab() === 0) {
@@ -36,93 +38,90 @@ class DesktopTabs extends PureComponent {
         }
 
         return (
-            <Grid item xs={12} s={6} md={6} lg={6} xl={6}>
-                <div>
-                    <Paper
-                        elevation={0}
-                        variant="outlined"
-                        square
-                        style={{
-                            overflow: 'hidden',
-                            marginBottom: '4px',
-                            marginRight: '4px',
-                        }}
+            <div style={style}>
+                <Paper
+                    elevation={0}
+                    variant="outlined"
+                    square
+                    style={{
+                        overflow: 'hidden',
+                        margin: '0 4px 4px 4px',
+                    }}
+                >
+                    <Tabs
+                        value={this.state.activeTab}
+                        onChange={handleTabChange}
+                        indicatorColor="primary"
+                        variant="fullWidth"
+                        centered
+                        style={{ height: '48px' }}
                     >
-                        <Tabs
-                            value={this.state.activeTab}
-                            onChange={handleTabChange}
-                            indicatorColor="primary"
-                            variant="fullWidth"
-                            centered
-                            style={{ height: '48px' }}
-                        >
-                            <Tab
-                                label={
-                                    <div
-                                        style={{
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        <Search style={{ height: 16 }} />
-                                        <Typography variant="body2">Class Search</Typography>
-                                    </div>
-                                }
-                                style={{
-                                    minHeight: 'auto',
-                                    height: '44px',
-                                    padding: 3,
-                                }}
-                            />
-                            <Tab
-                                label={
-                                    <div
-                                        style={{
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        <FormatListBulleted style={{ height: 16 }} />
-                                        <Typography variant="body2">Added Classes</Typography>
-                                    </div>
-                                }
-                                style={{
-                                    minHeight: 'auto',
-                                    height: '44px',
-                                    padding: 3,
-                                }}
-                            />
-                            <Tab
-                                label={
-                                    <div
-                                        style={{
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        <MyLocation style={{ height: 16 }} />
-                                        <Typography variant="body2">Map</Typography>
-                                    </div>
-                                }
-                                style={{
-                                    minHeight: 'auto',
-                                    height: '44px',
-                                    padding: 3,
-                                }}
-                            />
-                        </Tabs>
-                    </Paper>
-                    <div
-                        style={{
-                            padding: RightPaneStore.getActiveTab() === 2 ? '0px' : '8px',
-                            height: `calc(100vh - 104px)`,
-                            overflowY: RightPaneStore.getActiveTab() === 1 ? 'auto' : 'hidden',
-                        }}
-                    >
-                        {currentTab}
-                    </div>
+                        <Tab
+                            label={
+                                <div
+                                    style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <Search style={{ height: 16 }} />
+                                    <Typography variant="body2">Class Search</Typography>
+                                </div>
+                            }
+                            style={{
+                                minHeight: 'auto',
+                                height: '44px',
+                                padding: 3,
+                            }}
+                        />
+                        <Tab
+                            label={
+                                <div
+                                    style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <FormatListBulleted style={{ height: 16 }} />
+                                    <Typography variant="body2">Added Classes</Typography>
+                                </div>
+                            }
+                            style={{
+                                minHeight: 'auto',
+                                height: '44px',
+                                padding: 3,
+                            }}
+                        />
+                        <Tab
+                            label={
+                                <div
+                                    style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <MyLocation style={{ height: 16 }} />
+                                    <Typography variant="body2">Map</Typography>
+                                </div>
+                            }
+                            style={{
+                                minHeight: 'auto',
+                                height: '44px',
+                                padding: 3,
+                            }}
+                        />
+                    </Tabs>
+                </Paper>
+                <div
+                    style={{
+                        padding: RightPaneStore.getActiveTab() === 2 ? '0px' : '8px 8px 0 8px',
+                        height: `calc(100% - 54px)`,
+                        overflowY: RightPaneStore.getActiveTab() === 1 ? 'auto' : 'hidden',
+                    }}
+                >
+                    {currentTab}
                 </div>
-            </Grid>
+            </div>
         );
     }
 }
