@@ -7,8 +7,6 @@ import darkNoNothing from './static/dark-no_results.png';
 import RightPaneStore from '../../stores/RightPaneStore';
 import loadingGif from '../SearchForm/Gifs/loading.gif';
 import darkModeLoadingGif from '../SearchForm/Gifs/dark-loading.gif';
-import AdBanner from '../AdBanner/AdBanner';
-import { RANDOM_AD_ENDPOINT } from '../../api/endpoints';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import LazyLoad from 'react-lazyload';
 import { queryWebsoc, isDarkMode } from '../../helpers';
@@ -39,7 +37,7 @@ const styles = (theme) => ({
         marginLeft: theme.spacing(),
     },
     root: {
-        height: 'calc(100% - 68px)',
+        height: 'calc(100% - 50px)',
         overflowY: 'scroll',
         position: 'relative',
     },
@@ -76,7 +74,7 @@ const flattenSOCObject = (SOCObject) => {
 };
 
 const SectionTableWrapped = (index, data) => {
-    const { courseData, bannerName, bannerLink } = data;
+    const { courseData } = data;
     const formData = RightPaneStore.getFormData();
 
     let component;
@@ -105,12 +103,7 @@ const SectionTableWrapped = (index, data) => {
         component = <SectionTable term={formData.term} courseDetails={courseData[index]} colorAndDelete={false} />;
     }
 
-    return (
-        <div>
-            {index === 0 ? <AdBanner bannerName={bannerName} bannerLink={bannerLink} /> : null}
-            {component}
-        </div>
-    );
+    return <div>{component}</div>;
 };
 
 class CourseRenderPane extends PureComponent {
@@ -118,8 +111,6 @@ class CourseRenderPane extends PureComponent {
         courseData: null,
         loading: true,
         error: false,
-        bannerName: '',
-        bannerLink: '',
     };
 
     componentDidMount() {
@@ -143,28 +134,11 @@ class CourseRenderPane extends PureComponent {
 
             try {
                 const jsonResp = await queryWebsoc(params);
-
-                const adBannerInfo = await fetch(
-                    `${RANDOM_AD_ENDPOINT}?deptCode=${encodeURIComponent(formData.deptValue)}`
-                );
-
-                if (adBannerInfo.ok) {
-                    const jsonAdInfo = await adBannerInfo.json();
-
-                    this.setState({
-                        loading: false,
-                        error: false,
-                        courseData: flattenSOCObject(jsonResp),
-                        bannerName: jsonAdInfo.bannerName,
-                        bannerLink: jsonAdInfo.bannerLink,
-                    });
-                } else {
-                    this.setState({
-                        loading: false,
-                        error: false,
-                        courseData: flattenSOCObject(jsonResp),
-                    });
-                }
+                this.setState({
+                    loading: false,
+                    error: false,
+                    courseData: flattenSOCObject(jsonResp),
+                });
             } catch (error) {
                 this.setState({
                     loading: false,
@@ -187,8 +161,6 @@ class CourseRenderPane extends PureComponent {
         } else if (!this.state.error) {
             const renderData = {
                 courseData: this.state.courseData,
-                bannerName: this.state.bannerName,
-                bannerLink: this.state.bannerLink,
             };
 
             currentView = (

@@ -7,7 +7,7 @@
         "server-install": "cd ./antalmanac-backend && if test -f package.json; then npm install; fi",
         "dependency-install": "concurrently -n \"BACKEND,FRONTEND\" \"npm run server-install\" \"npm run client-install\"",
         "postinstall": "npm run dependency-install",
-        "server": "cd antalmanac-backend && sls offline --stage development --noPrependStageInUrl",
+        "server": "npm run start --prefix ./antalmanac-backend",
         "client": "npm run start --prefix ./client",
         "start": "concurrently -n \"BACKEND,FRONTEND\" \"npm run server\" \"npm run client\""
     },
