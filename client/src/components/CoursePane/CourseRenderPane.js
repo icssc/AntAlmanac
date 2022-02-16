@@ -7,7 +7,6 @@ import darkNoNothing from './static/dark-no_results.png';
 import RightPaneStore from '../../stores/RightPaneStore';
 import loadingGif from '../SearchForm/Gifs/loading.gif';
 import darkModeLoadingGif from '../SearchForm/Gifs/dark-loading.gif';
-import { RANDOM_AD_ENDPOINT } from '../../api/endpoints';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import LazyLoad from 'react-lazyload';
 import { queryWebsoc, isDarkMode } from '../../helpers';
