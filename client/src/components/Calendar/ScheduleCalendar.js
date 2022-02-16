@@ -209,9 +209,10 @@ class ScheduleCalendar extends PureComponent {
     };
 
     render() {
-        const { classes } = this.props;
+        const { classes, isMobile } = this.props;
         const events = this.getEventsForCalendar();
         const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
+        const calStyling = isMobile ? { height: `calc(100% - 55px)` } : { height: `calc(100vh - 104px)` };
 
         // If a final is on a Saturday or Sunday, let the calendar start on Saturday
         moment.updateLocale('es-us', {
@@ -221,7 +222,11 @@ class ScheduleCalendar extends PureComponent {
         });
 
         return (
-            <div className={classes.container} onClick={this.handleClosePopover}>
+            <div
+                className={classes.container}
+                style={isMobile && { height: 'calc(100% - 50px' }}
+                onClick={this.handleClosePopover}
+            >
                 <CalendarPaneToolbar
                     onTakeScreenshot={this.handleTakeScreenshot}
                     currentScheduleIndex={this.state.currentScheduleIndex}
@@ -232,7 +237,7 @@ class ScheduleCalendar extends PureComponent {
                     id="screenshot"
                     style={
                         !this.state.screenshotting
-                            ? { height: `calc(100vh - 104px)` }
+                            ? calStyling
                             : {
                                   height: '100%',
                                   width: '1000px',
