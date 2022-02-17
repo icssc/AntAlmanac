@@ -16,7 +16,7 @@ import ConditionalWrapper from '../App/ConditionalWrapper';
 const styles = {
     toolbar: {
         display: 'flex',
-        overflow: 'auto',
+        overflow: 'hidden',
         marginBottom: '4px',
         alignItems: 'center',
         height: '50px',
