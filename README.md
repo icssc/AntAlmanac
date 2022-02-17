@@ -1,6 +1,6 @@
 # AntAlmanac
 
-## Get Setup to Devlop Locally
+## Get Setup to Develop Locally
 1. Clone the AntAlmanc repository and its submodules  
 `git clone --recursive https://github.com/icssc-projects/AntAlmanac.git`
 
