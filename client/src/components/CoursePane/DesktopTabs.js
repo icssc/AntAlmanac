@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Grid, Tab, Tabs, Typography, Paper } from '@material-ui/core';
+import { Tab, Tabs, Typography, Paper } from '@material-ui/core';
 import { FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
 import AddedCoursePane from '../AddedCourses/AddedCoursePane';
 import RightPane from './RightPane';
@@ -116,7 +116,7 @@ class DesktopTabs extends PureComponent {
                     style={{
                         padding: RightPaneStore.getActiveTab() === 2 ? '0px' : '8px 8px 0 8px',
                         height: `calc(100% - 54px)`,
-                        overflowY: RightPaneStore.getActiveTab() === 1 ? 'auto' : 'hidden',
+                        overflowY: 'auto',
                     }}
                 >
                     {currentTab}
@@ -125,7 +125,5 @@ class DesktopTabs extends PureComponent {
         );
     }
 }
-
-//TODO: Mobile
 
 export default DesktopTabs;

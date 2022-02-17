@@ -9,8 +9,7 @@ const MobileHome = () => {
     const components = [<Calendar isMobile={true} />, <DesktopTabs style={{ height: 'calc(100% - 50px' }} />];
 
     return (
-        <div style={{ height: 'calc(100% - 60px' }}>
-            {components[selectedTab]}
+        <div style={{ height: 'calc(100% - 60px)' }}>
             <Paper elevation={0} variant="outlined" square style={{ margin: '4px', height: '50px' }}>
                 <Tabs
                     value={selectedTab}
@@ -28,6 +27,7 @@ const MobileHome = () => {
                     <Tab label={<div>Search</div>} />
                 </Tabs>
             </Paper>
+            {components[selectedTab]}
         </div>
     );
 };
