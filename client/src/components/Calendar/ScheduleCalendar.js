@@ -224,7 +224,7 @@ class ScheduleCalendar extends PureComponent {
         return (
             <div
                 className={classes.container}
-                style={isMobile && { height: 'calc(100% - 50px' }}
+                style={isMobile && { height: 'calc(100% - 50px)' }}
                 onClick={this.handleClosePopover}
             >
                 <CalendarPaneToolbar
