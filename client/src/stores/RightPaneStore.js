@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import dispatcher from '../dispatcher';
+import { clearCache } from '../helpers';
 
 const defaultFormValues = {
     deptValue: 'ALL',
@@ -20,8 +21,10 @@ const defaultFormValues = {
 class RightPaneStore extends EventEmitter {
     constructor() {
         super();
+        this.setMaxListeners(15);
         this.formData = defaultFormValues;
         this.activeTab = 0;
+        this.doDisplaySearch = true;
     }
 
     getFormData() {
@@ -32,6 +35,10 @@ class RightPaneStore extends EventEmitter {
         return this.activeTab;
     }
 
+    getDoDisplaySearch() {
+        return this.doDisplaySearch;
+    }
+
     handleActions(action) {
         switch (action.type) {
             case 'UPDATE_FORM_FIELD':
@@ -40,11 +47,16 @@ class RightPaneStore extends EventEmitter {
                 break;
             case 'TAB_CHANGE':
                 this.activeTab = action.activeTab;
-                this.emit('tabChange');
+                this.emit('tabChange', this.activeTab);
                 break;
             case 'RESET_FORM_FIELDS':
                 this.formData = defaultFormValues;
                 this.emit('formReset');
+                break;
+            case 'TOGGLE_SEARCH':
+                if (this.doDisplaySearch) clearCache();
+                this.doDisplaySearch = !this.doDisplaySearch;
+                // this.emit('searchToggle');
                 break;
             default: //do nothing
         }

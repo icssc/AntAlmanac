@@ -133,22 +133,12 @@ class CourseRenderPane extends PureComponent {
             };
 
             try {
-                const response = await queryWebsoc(params);
-
-                if (response.ok) {
-                    const jsonResp = await response.json();
-
-                    this.setState({
-                        loading: false,
-                        error: false,
-                        courseData: flattenSOCObject(jsonResp),
-                    });
-                } else {
-                    this.setState({
-                        loading: false,
-                        error: true,
-                    });
-                }
+                const jsonResp = await queryWebsoc(params);
+                this.setState({
+                    loading: false,
+                    error: false,
+                    courseData: flattenSOCObject(jsonResp),
+                });
             } catch (error) {
                 this.setState({
                     loading: false,
