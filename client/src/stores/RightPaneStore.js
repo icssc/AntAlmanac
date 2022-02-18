@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import dispatcher from '../dispatcher';
+import { clearCache } from '../helpers';
 
 const defaultFormValues = {
     deptValue: 'ALL',
@@ -53,6 +54,7 @@ class RightPaneStore extends EventEmitter {
                 this.emit('formReset');
                 break;
             case 'TOGGLE_SEARCH':
+                if (this.doDisplaySearch) clearCache();
                 this.doDisplaySearch = !this.doDisplaySearch;
                 // this.emit('searchToggle');
                 break;

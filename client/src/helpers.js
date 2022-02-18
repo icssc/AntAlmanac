@@ -65,6 +65,10 @@ export async function getCoursesData(userData) {
 
 const websocCache = {};
 
+export function clearCache() {
+    Object.keys(websocCache).forEach((key) => delete websocCache[key]); //https://stackoverflow.com/a/19316873/14587004
+}
+
 export async function queryWebsoc(params) {
     // Construct a request to PeterPortal with the params as a query string
     const url = new URL(PETERPORTAL_WEBSOC_ENDPOINT);
