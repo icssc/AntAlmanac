@@ -16,6 +16,7 @@ import CourseInfoBar from './CourseInfoBar';
 import SectionTableBody from './SectionTableBody';
 import CourseInfoButton from './CourseInfoButton';
 import { Help, Assessment, Assignment } from '@material-ui/icons';
+import ShowChartIcon from '@material-ui/icons/ShowChart';
 import PropTypes from 'prop-types';
 
 const styles = {
@@ -63,7 +64,7 @@ const styles = {
 class SectionTable extends PureComponent {
     render() {
         const { classes, courseDetails } = this.props;
-        const urlEncode = encodeURIComponent(courseDetails.deptCode);
+        const encodedDept = encodeURIComponent(courseDetails.deptCode);
 
         return (
             <Fragment>
@@ -94,7 +95,12 @@ class SectionTable extends PureComponent {
                     <CourseInfoButton
                         text="Zotistics"
                         icon={<Assessment />}
-                        redirectLink={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${urlEncode}&classNum=${courseDetails.courseNumber}&code=&submit=Submit`}
+                        redirectLink={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseDetails.courseNumber}&code=&submit=Submit`}
+                    />
+                    <CourseInfoButton
+                        text="Past Enrollment"
+                        icon={<ShowChartIcon />}
+                        redirectLink={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${courseDetails.courseNumber}&courseType=all`}
                     />
                 </div>
 
