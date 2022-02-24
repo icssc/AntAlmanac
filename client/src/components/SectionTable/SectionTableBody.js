@@ -2,15 +2,13 @@ import React, { Fragment, useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
 import locations from './static/locations';
 import restrictionsMapping from './static/restrictionsMapping';
-import { TableRow, IconButton, Menu, MenuItem, Popover, Tooltip, Typography, TableCell } from '@material-ui/core';
-import { bindHover, bindMenu, bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
+import { TableRow, Popover, Tooltip, Typography, TableCell } from '@material-ui/core';
+import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
 import { withStyles } from '@material-ui/core/styles';
-import { Add, ArrowDropDown } from '@material-ui/icons';
 import OpenSpotAlertPopover from './OpenSpotAlertPopover';
 import PropTypes from 'prop-types';
-import { addCourse, openSnackbar } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
-import ColorAndDelete from '../AddedCourses/ColorAndDelete';
+import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import classNames from 'classnames';
 import { clickToCopy, isDarkMode } from '../../helpers';
 
@@ -74,49 +72,6 @@ const styles = (theme) => ({
 const NoPaddingTableCell = withStyles({
     sizeSmall: { padding: '0px 0px 0px 0px' },
 })(TableCell);
-
-const ScheduleAddCell = withStyles(styles)((props) => {
-    const { classes, section, courseDetails, term } = props;
-    const popupState = usePopupState({ variant: 'popover' });
-
-    const closeAndAddCourse = (scheduleIndex) => {
-        popupState.close();
-        for (const meeting of section.meetings) {
-            if (meeting.time === 'TBA') {
-                openSnackbar('success', 'Online/TBA class added');
-                // See Added Classes."
-                break;
-            }
-        }
-
-        if (scheduleIndex !== -1) {
-            addCourse(section, courseDetails, term, scheduleIndex);
-        }
-    };
-
-    return (
-        <NoPaddingTableCell className={classes.cell}>
-            <div>
-                <IconButton
-                    onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}
-                    className={classes.button}
-                >
-                    <Add />
-                </IconButton>
-                <IconButton {...bindTrigger(popupState)} className={classes.button}>
-                    <ArrowDropDown />
-                </IconButton>
-                <Menu {...bindMenu(popupState)} onClose={() => closeAndAddCourse(-1)}>
-                    <MenuItem onClick={() => closeAndAddCourse(0)}>Add to schedule 1</MenuItem>
-                    <MenuItem onClick={() => closeAndAddCourse(1)}>Add to schedule 2</MenuItem>
-                    <MenuItem onClick={() => closeAndAddCourse(2)}>Add to schedule 3</MenuItem>
-                    <MenuItem onClick={() => closeAndAddCourse(3)}>Add to schedule 4</MenuItem>
-                    <MenuItem onClick={() => closeAndAddCourse(4)}>Add to all</MenuItem>
-                </Menu>
-            </div>
-        </NoPaddingTableCell>
-    );
-});
 
 const CourseCodeCell = withStyles(styles)((props) => {
     const { classes, sectionCode } = props;
@@ -316,8 +271,8 @@ const StatusCell = withStyles(styles)((props) => {
 //TODO: SectionNum name parity -> SectionNumber
 const SectionTableBody = withStyles(styles)((props) => {
     const { classes, section, courseDetails, term, colorAndDelete } = props;
-    const [addedCourse, setAddedCourse] = useState(false);
-
+    const [addedCourse, setAddedCourse] = useState(colorAndDelete);
+    const doHighlight = false;
     useEffect(() => {
         const toggleHighlight = () => {
             if (
@@ -342,12 +297,12 @@ const SectionTableBody = withStyles(styles)((props) => {
     return (
         <TableRow
             classes={{ root: classes.row }}
-            className={classNames(classes.tr, { addedCourse: addedCourse && !colorAndDelete })}
+            className={classNames(classes.tr, { addedCourse: addedCourse && doHighlight })}
         >
-            {!colorAndDelete ? (
+            {!addedCourse ? (
                 <ScheduleAddCell section={section} courseDetails={courseDetails} term={term} />
             ) : (
-                <ColorAndDelete color={section.color} sectionCode={section.sectionCode} term={courseDetails.term} />
+                <ColorAndDelete color={section.color} sectionCode={section.sectionCode} term={term} />
             )}
             <CourseCodeCell sectionCode={section.sectionCode} />
             <SectionDetailsCell
