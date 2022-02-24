@@ -275,13 +275,10 @@ const SectionTableBody = withStyles(styles)((props) => {
     const doHighlight = false;
     useEffect(() => {
         const toggleHighlight = () => {
-            if (
-                AppStore.getAddedSectionCodes()[AppStore.getCurrentScheduleIndex()].has(
-                    `${section.sectionCode} ${term}`
-                )
-            )
-                setAddedCourse(true);
-            else setAddedCourse(false);
+            const doAdd = AppStore.getAddedSectionCodes()[AppStore.getCurrentScheduleIndex()].has(
+                `${section.sectionCode} ${term}`
+            );
+            setAddedCourse(doAdd);
         };
 
         toggleHighlight();
