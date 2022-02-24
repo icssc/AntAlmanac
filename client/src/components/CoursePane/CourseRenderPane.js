@@ -4,6 +4,7 @@ import SchoolDeptCard from './SchoolDeptCard';
 import SectionTable from '../SectionTable/SectionTable';
 import noNothing from './static/no_results.png';
 import darkNoNothing from './static/dark-no_results.png';
+import AppStore from '../../stores/AppStore';
 import RightPaneStore from '../../stores/RightPaneStore';
 import loadingGif from '../SearchForm/Gifs/loading.gif';
 import darkModeLoadingGif from '../SearchForm/Gifs/dark-loading.gif';
@@ -58,6 +59,10 @@ const styles = (theme) => ({
 });
 
 const flattenSOCObject = (SOCObject) => {
+    const courseColors = AppStore.getAddedCourses().reduce((accumulator, { color, sectionCode }) => {
+        accumulator[sectionCode] = color;
+        return accumulator;
+    }, {});
     return SOCObject.schools.reduce((accumulator, school) => {
         accumulator.push(school);
 
@@ -65,6 +70,9 @@ const flattenSOCObject = (SOCObject) => {
             accumulator.push(dept);
 
             dept.courses.forEach((course) => {
+                for (const section of course.sections) {
+                    section.color = courseColors[section.sectionCode];
+                }
                 accumulator.push(course);
             });
         });
