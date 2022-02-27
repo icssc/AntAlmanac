@@ -132,6 +132,7 @@ class ScheduleCalendar extends PureComponent {
             eventsInCalendar: AppStore.getEventsInCalendar(),
             finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
         });
+        this.handleClosePopover();
     };
 
     componentDidMount = () => {
