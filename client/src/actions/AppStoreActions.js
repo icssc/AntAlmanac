@@ -96,6 +96,7 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
         };
         dispatcher.dispatch({ type: 'ADD_SECTION', newSection });
     }
+    return color;
 };
 
 export const openSnackbar = (variant, message, duration, position, style) => {

@@ -59,8 +59,8 @@ const styles = (theme) => ({
 });
 
 const flattenSOCObject = (SOCObject) => {
-    const courseColors = AppStore.getAddedCourses().reduce((accumulator, { color, sectionCode }) => {
-        accumulator[sectionCode] = color;
+    const courseColors = AppStore.getAddedCourses().reduce((accumulator, { color, section }) => {
+        accumulator[section.sectionCode] = color;
         return accumulator;
     }, {});
     return SOCObject.schools.reduce((accumulator, school) => {
@@ -121,8 +121,10 @@ class CourseRenderPane extends PureComponent {
         error: false,
     };
 
-    componentDidMount() {
+    loadCourses = () => {
+        console.log('loading courses');
         this.setState({ loading: true }, async () => {
+            console.log('started load');
             const formData = RightPaneStore.getFormData();
 
             const params = {
@@ -147,6 +149,7 @@ class CourseRenderPane extends PureComponent {
                     error: false,
                     courseData: flattenSOCObject(jsonResp),
                 });
+                console.log('finished load', this.state.courseData);
             } catch (error) {
                 this.setState({
                     loading: false,
@@ -154,6 +157,15 @@ class CourseRenderPane extends PureComponent {
                 });
             }
         });
+    };
+
+    componentDidMount() {
+        // AppStore.on("addedCoursesChange", this.loadCourses);
+        this.loadCourses();
+    }
+
+    componentWillUnmount() {
+        // AppStore.removeListener("addedCourseChange", this.loadCourses);
     }
 
     render() {
