@@ -122,9 +122,7 @@ class CourseRenderPane extends PureComponent {
     };
 
     loadCourses = () => {
-        console.log('loading courses');
         this.setState({ loading: true }, async () => {
-            console.log('started load');
             const formData = RightPaneStore.getFormData();
 
             const params = {
@@ -149,7 +147,6 @@ class CourseRenderPane extends PureComponent {
                     error: false,
                     courseData: flattenSOCObject(jsonResp),
                 });
-                console.log('finished load', this.state.courseData);
             } catch (error) {
                 this.setState({
                     loading: false,
@@ -160,12 +157,7 @@ class CourseRenderPane extends PureComponent {
     };
 
     componentDidMount() {
-        // AppStore.on("addedCoursesChange", this.loadCourses);
         this.loadCourses();
-    }
-
-    componentWillUnmount() {
-        // AppStore.removeListener("addedCourseChange", this.loadCourses);
     }
 
     render() {
