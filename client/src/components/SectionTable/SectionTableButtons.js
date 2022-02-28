@@ -53,7 +53,7 @@ export const ScheduleAddCell = withStyles(styles)((props) => {
         }
 
         if (scheduleIndex !== -1) {
-            addCourse(section, courseDetails, term, scheduleIndex);
+            section.color = addCourse(section, courseDetails, term, scheduleIndex);
         }
     };
 
