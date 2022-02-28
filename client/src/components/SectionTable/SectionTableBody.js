@@ -270,9 +270,8 @@ const StatusCell = withStyles(styles)((props) => {
 });
 //TODO: SectionNum name parity -> SectionNumber
 const SectionTableBody = withStyles(styles)((props) => {
-    const { classes, section, courseDetails, term, colorAndDelete } = props;
+    const { classes, section, courseDetails, term, colorAndDelete, highlightAdded } = props;
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
-    const doHighlight = false;
     useEffect(() => {
         const toggleHighlight = () => {
             const doAdd = AppStore.getAddedSectionCodes()[AppStore.getCurrentScheduleIndex()].has(
@@ -294,7 +293,7 @@ const SectionTableBody = withStyles(styles)((props) => {
     return (
         <TableRow
             classes={{ root: classes.row }}
-            className={classNames(classes.tr, { addedCourse: addedCourse && doHighlight })}
+            className={classNames(classes.tr, { addedCourse: addedCourse && highlightAdded })}
         >
             {!addedCourse ? (
                 <ScheduleAddCell section={section} courseDetails={courseDetails} term={term} />

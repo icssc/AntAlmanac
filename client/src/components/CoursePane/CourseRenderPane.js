@@ -108,7 +108,14 @@ const SectionTableWrapped = (index, data) => {
             <GeDataFetchProvider term={formData.term} courseDetails={courseData[index]} colorAndDelete={false} />
         );
     } else {
-        component = <SectionTable term={formData.term} courseDetails={courseData[index]} colorAndDelete={false} />;
+        component = (
+            <SectionTable
+                term={formData.term}
+                courseDetails={courseData[index]}
+                colorAndDelete={false}
+                highlightAdded={true}
+            />
+        );
     }
 
     return <div>{component}</div>;
