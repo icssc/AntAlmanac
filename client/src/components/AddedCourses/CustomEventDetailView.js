@@ -40,15 +40,19 @@ const CustomEventDetailView = (props) => {
         const daysString = days.reduce((accumulator, currentValue, index, array) => {
             switch (index) {
                 case 0:
-                    return array[0] ? accumulator + 'Mon ' : accumulator + '';
+                    return array[0] ? accumulator + 'Sun ' : accumulator + '';
                 case 1:
-                    return array[1] ? accumulator + 'Tue ' : accumulator + '';
+                    return array[0] ? accumulator + 'Mon ' : accumulator + '';
                 case 2:
-                    return array[2] ? accumulator + 'Wed ' : accumulator + '';
+                    return array[1] ? accumulator + 'Tue ' : accumulator + '';
                 case 3:
-                    return array[3] ? accumulator + 'Thu ' : accumulator + '';
+                    return array[2] ? accumulator + 'Wed ' : accumulator + '';
                 case 4:
+                    return array[3] ? accumulator + 'Thu ' : accumulator + '';
+                case 5:
                     return array[4] ? accumulator + 'Fri ' : accumulator + '';
+                case 6:
+                    return array[4] ? accumulator + 'Sat ' : accumulator + '';
                 default:
                     console.log(`[Warning] CustomEventDetailView invalid index: ${index}`);
                     return accumulator + '';
@@ -74,14 +78,16 @@ const CustomEventDetailView = (props) => {
                         customEventID={customEvent.customEventID}
                     />
                 </div>
-                <IconButton onClick={() => {
-                    deleteCustomEvent(customEvent.customEventID, props.currentScheduleIndex)
-                    ReactGA.event({
-                        category: 'antalmanac-rewrite',
-                        action: 'Click Delete Custom Event',
-                        label: 'Added Course pane'
-                    });
-                }}>
+                <IconButton
+                    onClick={() => {
+                        deleteCustomEvent(customEvent.customEventID, props.currentScheduleIndex);
+                        ReactGA.event({
+                            category: 'antalmanac-rewrite',
+                            action: 'Click Delete Custom Event',
+                            label: 'Added Course pane',
+                        });
+                    }}
+                >
                     <Delete fontSize="small" />
                 </IconButton>
                 <CustomEventDialog customEvent={customEvent} />
