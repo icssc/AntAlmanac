@@ -29,7 +29,7 @@
         ]
     },
     "dependencies": {
-        "antalmanac": "file:client",
-        "antalmanac-backend": "file:antalmanac-backend"
+        "antalmanac-backend": "file:antalmanac-backend",
+        "antalmanac-frontend": "file:client"
     }
 }
