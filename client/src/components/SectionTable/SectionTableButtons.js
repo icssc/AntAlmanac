@@ -18,22 +18,24 @@ const styles = {
 };
 
 export const ColorAndDelete = withStyles(styles)((props) => {
-    const { sectionCode, color, term } = props;
+    const { sectionCode, color, classes, term } = props;
     return (
         <TableCell padding="none">
-            <IconButton
-                onClick={() => {
-                    deleteCourse(sectionCode, AppStore.getCurrentScheduleIndex(), term);
-                    ReactGA.event({
-                        category: 'antalmanac-rewrite',
-                        action: 'Click Delete Course',
-                        label: 'Added Course pane',
-                    });
-                }}
-            >
-                <Delete fontSize="small" />
-            </IconButton>
-            {<ColorPicker color={color} isCustomEvent={false} sectionCode={sectionCode} term={term} />}
+            <div className={classes.container}>
+                <IconButton
+                    onClick={() => {
+                        deleteCourse(sectionCode, AppStore.getCurrentScheduleIndex(), term);
+                        ReactGA.event({
+                            category: 'antalmanac-rewrite',
+                            action: 'Click Delete Course',
+                            label: 'Added Course pane',
+                        });
+                    }}
+                >
+                    <Delete fontSize="small" />
+                </IconButton>
+                {<ColorPicker color={color} isCustomEvent={false} sectionCode={sectionCode} term={term} />}
+            </div>
         </TableCell>
     );
 });
@@ -59,22 +61,21 @@ export const ScheduleAddCell = withStyles(styles)((props) => {
 
     return (
         <TableCell padding="none">
-            <IconButton
-                onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}
-                className={classes.button}
-            >
-                <Add fontSize="small" />
-            </IconButton>
-            <IconButton {...bindTrigger(popupState)} className={classes.button}>
-                <ArrowDropDown fontSize="small" />
-            </IconButton>
-            <Menu {...bindMenu(popupState)} onClose={() => closeAndAddCourse(-1)}>
-                <MenuItem onClick={() => closeAndAddCourse(0)}>Add to schedule 1</MenuItem>
-                <MenuItem onClick={() => closeAndAddCourse(1)}>Add to schedule 2</MenuItem>
-                <MenuItem onClick={() => closeAndAddCourse(2)}>Add to schedule 3</MenuItem>
-                <MenuItem onClick={() => closeAndAddCourse(3)}>Add to schedule 4</MenuItem>
-                <MenuItem onClick={() => closeAndAddCourse(4)}>Add to all</MenuItem>
-            </Menu>
+            <div className={classes.container}>
+                <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
+                    <Add fontSize="small" />
+                </IconButton>
+                <IconButton {...bindTrigger(popupState)}>
+                    <ArrowDropDown fontSize="small" />
+                </IconButton>
+                <Menu {...bindMenu(popupState)} onClose={() => closeAndAddCourse(-1)}>
+                    <MenuItem onClick={() => closeAndAddCourse(0)}>Add to schedule 1</MenuItem>
+                    <MenuItem onClick={() => closeAndAddCourse(1)}>Add to schedule 2</MenuItem>
+                    <MenuItem onClick={() => closeAndAddCourse(2)}>Add to schedule 3</MenuItem>
+                    <MenuItem onClick={() => closeAndAddCourse(3)}>Add to schedule 4</MenuItem>
+                    <MenuItem onClick={() => closeAndAddCourse(4)}>Add to all</MenuItem>
+                </Menu>
+            </div>
         </TableCell>
     );
 });
