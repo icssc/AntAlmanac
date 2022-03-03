@@ -34,7 +34,7 @@ export const ColorAndDelete = withStyles(styles)((props) => {
                 >
                     <Delete fontSize="small" />
                 </IconButton>
-                {<ColorPicker color={color} isCustomEvent={false} sectionCode={sectionCode} term={term} />}
+                <ColorPicker color={color} isCustomEvent={false} sectionCode={sectionCode} term={term} />
             </div>
         </TableCell>
     );
