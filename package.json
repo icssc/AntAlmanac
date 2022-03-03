@@ -3,10 +3,11 @@
     "version": "1.0.0",
     "description": "antalmanac.com",
     "scripts": {
-        "client-install": "npm install ./client",
-        "server-install": "npm install ./antalmanac-backend",
+        "client-install": "cd client && npm install ./",
+        "server-install": "cd antalmanac-backend && npm install ./",
         "dependency-install": "concurrently -n \"BACKEND,FRONTEND\" \"npm run server-install\" \"npm run client-install\"",
         "postinstall": "npm run dependency-install",
+        "preinstall": "git clone https://github.com/icssc-projects/antalmanac-backend.git 2>NUL &",
         "server": "npm run start --prefix ./antalmanac-backend",
         "client": "npm run start --prefix ./client",
         "start": "concurrently -n \"BACKEND,FRONTEND\" \"npm run server\" \"npm run client\""
@@ -27,9 +28,5 @@
             "prettier --write",
             "git add"
         ]
-    },
-    "dependencies": {
-        "antalmanac-backend": "file:antalmanac-backend",
-        "antalmanac-frontend": "file:client"
     }
 }
