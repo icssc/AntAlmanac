@@ -5,7 +5,6 @@ import { SketchPicker } from 'react-color';
 import { changeCourseColor, changeCustomEventColor } from '../../actions/AppStoreActions';
 import { ColorLens } from '@material-ui/icons';
 import ReactGA from 'react-ga';
-import { Fragment } from 'react';
 
 class ColorPicker extends PureComponent {
     state = {
@@ -44,7 +43,7 @@ class ColorPicker extends PureComponent {
 
     render() {
         return (
-            <Fragment>
+            <>
                 <IconButton
                     style={{ color: this.state.color }}
                     onClick={(e) => {
@@ -74,7 +73,7 @@ class ColorPicker extends PureComponent {
                         onChangeComplete={this.handleColorChangeComplete}
                     />
                 </Popover>
-            </Fragment>
+            </>
         );
     }
 }
