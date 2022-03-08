@@ -164,6 +164,7 @@ class SectionTable extends PureComponent {
                                         courseDetails={this.props.courseDetails}
                                         term={this.props.term}
                                         colorAndDelete={this.props.colorAndDelete}
+                                        highlightAdded={this.props.highlightAdded}
                                     />
                                 );
                             })}

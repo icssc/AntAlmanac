@@ -43,9 +43,9 @@ class ColorPicker extends PureComponent {
 
     render() {
         return (
-            <span style={{ color: this.state.color }}>
+            <>
                 <IconButton
-                    color="inherit"
+                    style={{ color: this.state.color }}
                     onClick={(e) => {
                         this.handleClick(e);
                     }}
@@ -73,7 +73,7 @@ class ColorPicker extends PureComponent {
                         onChangeComplete={this.handleColorChangeComplete}
                     />
                 </Popover>
-            </span>
+            </>
         );
     }
 }

@@ -4,6 +4,7 @@ import SchoolDeptCard from './SchoolDeptCard';
 import SectionTable from '../SectionTable/SectionTable';
 import noNothing from './static/no_results.png';
 import darkNoNothing from './static/dark-no_results.png';
+import AppStore from '../../stores/AppStore';
 import RightPaneStore from '../../stores/RightPaneStore';
 import loadingGif from '../SearchForm/Gifs/loading.gif';
 import darkModeLoadingGif from '../SearchForm/Gifs/dark-loading.gif';
@@ -58,6 +59,10 @@ const styles = (theme) => ({
 });
 
 const flattenSOCObject = (SOCObject) => {
+    const courseColors = AppStore.getAddedCourses().reduce((accumulator, { color, section }) => {
+        accumulator[section.sectionCode] = color;
+        return accumulator;
+    }, {});
     return SOCObject.schools.reduce((accumulator, school) => {
         accumulator.push(school);
 
@@ -65,6 +70,9 @@ const flattenSOCObject = (SOCObject) => {
             accumulator.push(dept);
 
             dept.courses.forEach((course) => {
+                for (const section of course.sections) {
+                    section.color = courseColors[section.sectionCode];
+                }
                 accumulator.push(course);
             });
         });
@@ -100,7 +108,14 @@ const SectionTableWrapped = (index, data) => {
             <GeDataFetchProvider term={formData.term} courseDetails={courseData[index]} colorAndDelete={false} />
         );
     } else {
-        component = <SectionTable term={formData.term} courseDetails={courseData[index]} colorAndDelete={false} />;
+        component = (
+            <SectionTable
+                term={formData.term}
+                courseDetails={courseData[index]}
+                colorAndDelete={false}
+                highlightAdded={true}
+            />
+        );
     }
 
     return <div>{component}</div>;
@@ -113,7 +128,7 @@ class CourseRenderPane extends PureComponent {
         error: false,
     };
 
-    componentDidMount() {
+    loadCourses = () => {
         this.setState({ loading: true }, async () => {
             const formData = RightPaneStore.getFormData();
 
@@ -146,6 +161,10 @@ class CourseRenderPane extends PureComponent {
                 });
             }
         });
+    };
+
+    componentDidMount() {
+        this.loadCourses();
     }
 
     render() {

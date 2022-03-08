@@ -37,23 +37,8 @@ const CustomEventDetailView = (props) => {
             minutes: end.slice(3, 5),
         });
 
-        const daysString = days.reduce((accumulator, currentValue, index, array) => {
-            switch (index) {
-                case 0:
-                    return array[0] ? accumulator + 'Mon ' : accumulator + '';
-                case 1:
-                    return array[1] ? accumulator + 'Tue ' : accumulator + '';
-                case 2:
-                    return array[2] ? accumulator + 'Wed ' : accumulator + '';
-                case 3:
-                    return array[3] ? accumulator + 'Thu ' : accumulator + '';
-                case 4:
-                    return array[4] ? accumulator + 'Fri ' : accumulator + '';
-                default:
-                    console.log(`[Warning] CustomEventDetailView invalid index: ${index}`);
-                    return accumulator + '';
-            }
-        }, '');
+        const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const daysString = days.map((includeDate, index) => (includeDate ? dayAbbreviations[index] : '')).join(' ');
 
         return `${startTime.format('h:mm A')} — ${endTime.format('h:mm A')} • ${daysString}`;
     };
@@ -74,14 +59,16 @@ const CustomEventDetailView = (props) => {
                         customEventID={customEvent.customEventID}
                     />
                 </div>
-                <IconButton onClick={() => {
-                    deleteCustomEvent(customEvent.customEventID, props.currentScheduleIndex)
-                    ReactGA.event({
-                        category: 'antalmanac-rewrite',
-                        action: 'Click Delete Custom Event',
-                        label: 'Added Course pane'
-                    });
-                }}>
+                <IconButton
+                    onClick={() => {
+                        deleteCustomEvent(customEvent.customEventID, props.currentScheduleIndex);
+                        ReactGA.event({
+                            category: 'antalmanac-rewrite',
+                            action: 'Click Delete Custom Event',
+                            label: 'Added Course pane',
+                        });
+                    }}
+                >
                     <Delete fontSize="small" />
                 </IconButton>
                 <CustomEventDialog customEvent={customEvent} />
