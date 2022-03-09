@@ -1,4 +1,5 @@
 # AntAlmanac
+![](/client/public/logo.png)
 
 ## Get Setup to Develop Locally
 1. Clone the AntAlmanc repository and its submodules  
