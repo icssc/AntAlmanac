@@ -70,6 +70,49 @@ export function clearCache() {
 }
 
 export async function queryWebsoc(params) {
+    // Check if params.units exists (indicating that it is a SOC query) and contains at least one comma
+    if (params.units && params.units.includes(',')) {
+        let responses = [];
+        // If so, make one query per (tokenized) unit input
+        for (const units of params.units.trim().replace(' ', '').split(',')) {
+            let req = JSON.parse(JSON.stringify(params));
+            req.units = units;
+            responses.push(await queryWebsoc(req));
+        }
+        // Find any bad requests from the API and return if found
+        const res = responses.find((r) => r.status === 400);
+        if (res) {
+            return res;
+        }
+        // Combine all responses into a single response object
+        let combinedResponse = responses.shift();
+        for (const res of responses) {
+            for (const school of res.schools) {
+                let schoolIndex = combinedResponse.schools.findIndex((s) => s.schoolName === school.schoolName);
+                if (schoolIndex !== -1) {
+                    for (const dept of school.departments) {
+                        let deptIndex = combinedResponse.schools[schoolIndex].departments.findIndex(
+                            (d) => d.deptCode === dept.deptCode
+                        );
+                        if (deptIndex !== -1) {
+                            let courses = new Set(combinedResponse.schools[schoolIndex].departments[deptIndex].courses);
+                            for (const course of dept.courses) {
+                                courses.add(course);
+                            }
+                            courses = Array.from(courses);
+                            courses.sort((left, right) => left.courseNumber > right.courseNumber);
+                            combinedResponse.schools[schoolIndex].departments[deptIndex].courses = courses;
+                        } else {
+                            combinedResponse.schools[schoolIndex].departments.push(dept);
+                        }
+                    }
+                } else {
+                    combinedResponse.schools.push(school);
+                }
+            }
+        }
+        return combinedResponse;
+    }
     // Construct a request to PeterPortal with the params as a query string
     const url = new URL(PETERPORTAL_WEBSOC_ENDPOINT);
     const searchString = new URLSearchParams(params).toString();
