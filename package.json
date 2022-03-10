@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "description": "antalmanac.com",
     "scripts": {
-        "client-install": "cd ./client && npm install",
-        "server-install": "cd ./antalmanac-backend && if test -f package.json; then npm install; fi",
+        "client-install": "npm install --prefix ./client",
+        "server-install": "npm install --prefix ./antalmanac-backend",
         "dependency-install": "concurrently -n \"BACKEND,FRONTEND\" \"npm run server-install\" \"npm run client-install\"",
         "postinstall": "npm run dependency-install",
         "server": "npm run start --prefix ./antalmanac-backend",
