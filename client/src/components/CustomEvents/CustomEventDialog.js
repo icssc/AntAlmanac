@@ -118,7 +118,7 @@ class CustomEventDialog extends PureComponent {
                         </Button>
                     </Tooltip>
                 )}
-                <Dialog open={this.state.open}>
+                <Dialog open={this.state.open} maxWidth={'lg'}>
                     <DialogContent>
                         <FormControl>
                             <InputLabel htmlFor="EventNameInput">Event Name</InputLabel>
