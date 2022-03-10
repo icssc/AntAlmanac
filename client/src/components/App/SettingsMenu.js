@@ -61,7 +61,6 @@ class SettingsMenu extends PureComponent {
                 >
                     <Paper className={classes.container}>
                         <FormControl>
-                            <FormLabel>Theme</FormLabel>
                             <RadioGroup aria-label="theme" name="theme" value={this.state.theme} onChange={toggleTheme}>
                                 <FormControlLabel value="light" control={<Radio color="primary" />} label="Light" />
                                 <FormControlLabel value="dark" control={<Radio color="primary" />} label="Dark" />
