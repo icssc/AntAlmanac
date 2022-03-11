@@ -100,7 +100,11 @@ export async function queryWebsoc(params) {
                                 courses.add(course);
                             }
                             courses = Array.from(courses);
-                            courses.sort((left, right) => left.courseNumber > right.courseNumber);
+                            courses.sort(
+                                (left, right) =>
+                                    parseInt(left.courseNumber.replace(/\D/g, '')) >
+                                    parseInt(right.courseNumber.replace(/\D/g, ''))
+                            );
                             combinedResponse.schools[schoolIndex].departments[deptIndex].courses = courses;
                         } else {
                             combinedResponse.schools[schoolIndex].departments.push(dept);
