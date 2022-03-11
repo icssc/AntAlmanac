@@ -1,6 +1,6 @@
 import React, { Fragment, PureComponent } from 'react';
 import { Button, FormControl, FormControlLabel, FormLabel, Popover, RadioGroup, Radio, Paper } from '@material-ui/core';
-import { Settings } from '@material-ui/icons';
+import Brightness4Icon from '@material-ui/icons/Brightness4';
 import AppStore from '../../stores/AppStore';
 import { toggleTheme } from '../../actions/AppStoreActions';
 import { withStyles } from '@material-ui/core/styles';
@@ -40,9 +40,9 @@ class SettingsMenu extends PureComponent {
                         });
                     }}
                     color="inherit"
-                    startIcon={<Settings />}
+                    startIcon={<Brightness4Icon />}
                 >
-                    Settings
+                    Theme
                 </Button>
                 <Popover
                     open={Boolean(this.state.anchorEl)}
@@ -61,7 +61,6 @@ class SettingsMenu extends PureComponent {
                 >
                     <Paper className={classes.container}>
                         <FormControl>
-                            <FormLabel>Theme</FormLabel>
                             <RadioGroup aria-label="theme" name="theme" value={this.state.theme} onChange={toggleTheme}>
                                 <FormControlLabel value="light" control={<Radio color="primary" />} label="Light" />
                                 <FormControlLabel value="dark" control={<Radio color="primary" />} label="Dark" />
