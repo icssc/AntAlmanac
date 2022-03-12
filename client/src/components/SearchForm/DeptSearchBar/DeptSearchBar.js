@@ -103,7 +103,7 @@ class DeptSearchBar extends PureComponent {
                     includeInputInList={true}
                     noOptionsText="No departments match the search"
                     groupBy={(dept) => (dept.isFavorite ? 'Recent Departments' : 'Departments')}
-                    renderInput={(params) => <TextField {...params} label="Search for a department" />}
+                    renderInput={(params) => <TextField {...params} label="Department" />}
                 />
             </div>
         );
