@@ -115,7 +115,7 @@ class CourseInfoBar extends PureComponent {
                     ) : null}
                     {this.state.prerequisite_for !== '' ? (
                         <p>
-                            <span className={this.props.classes.rightSpace}>Prerequisite For:</span>
+                            <span className={this.props.classes.rightSpace}>Prerequisite for:</span>
                             {this.state.prerequisite_for}
                         </p>
                     ) : null}
