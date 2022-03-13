@@ -146,9 +146,8 @@ export default class UCIMap extends PureComponent {
                                         waypoints[waypointIndex - 1]['location'][1] !== lng
                                     ) {
                                         function setInfoMarker(event) {
-                                            let [color, duration, miles] = this.options.map.state.info_markers[
-                                                this.options.index - 1
-                                            ];
+                                            let [color, duration, miles] =
+                                                this.options.map.state.info_markers[this.options.index - 1];
                                             this.options.map.setState({
                                                 info_marker: (
                                                     <Marker
