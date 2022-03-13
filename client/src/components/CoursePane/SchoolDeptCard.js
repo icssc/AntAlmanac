@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Grid, Paper, Typography, withStyles, Collapse } from '@material-ui/core';
-import { Subject } from '@material-ui/icons';
+import { ExpandLess, ExpandMore } from '@material-ui/icons';
 
 const styles = (theme) => ({
     school: {
@@ -39,7 +39,7 @@ class SchoolDeptCard extends PureComponent {
 
     render() {
         const html = { __html: [this.props.comment] };
-
+        const ExpandIcon = this.state.commentsOpen ? ExpandLess : ExpandMore;
         return (
             <Grid item xs={12}>
                 <Paper className={this.props.classes[this.props.type]} elevation={1} square>
@@ -51,7 +51,7 @@ class SchoolDeptCard extends PureComponent {
                         {this.props.name}
                     </Typography>
                     <Fragment>
-                        <Subject
+                        <ExpandIcon
                             onClick={() =>
                                 this.setState({
                                     commentsOpen: !this.state.commentsOpen,
