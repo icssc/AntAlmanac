@@ -38,9 +38,10 @@ const styles = (theme) => ({
         marginLeft: theme.spacing(),
     },
     root: {
-        height: 'calc(100% - 50px)',
+        height: '100%',
         overflowY: 'scroll',
         position: 'relative',
+        paddingTop: '50px',
     },
     noResultsDiv: {
         height: '100%',
