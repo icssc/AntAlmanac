@@ -9,6 +9,7 @@ const styles = {
         width: '100%',
         zIndex: 3,
         marginBottom: 8,
+        position: 'absolute',
     },
     button: {
         backgroundColor: 'rgba(236, 236, 236, 1)',
