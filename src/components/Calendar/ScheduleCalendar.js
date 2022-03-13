@@ -44,30 +44,32 @@ const styles = {
     },
 };
 
-const CustomEvent = ({ classes }) => (event) => {
-    const actualEvent = event.event;
+const CustomEvent =
+    ({ classes }) =>
+    (event) => {
+        const actualEvent = event.event;
 
-    if (!actualEvent.isCustomEvent)
-        return (
-            <div>
-                <div className={classes.firstLineContainer}>
-                    <div> {actualEvent.title}</div>
-                    <div className={classes.sectionType}> {actualEvent.sectionType}</div>
+        if (!actualEvent.isCustomEvent)
+            return (
+                <div>
+                    <div className={classes.firstLineContainer}>
+                        <div> {actualEvent.title}</div>
+                        <div className={classes.sectionType}> {actualEvent.sectionType}</div>
+                    </div>
+                    <div className={classes.secondLineContainer}>
+                        <div>{actualEvent.bldg}</div>
+                        <div>{actualEvent.sectionCode}</div>
+                    </div>
                 </div>
-                <div className={classes.secondLineContainer}>
-                    <div>{actualEvent.bldg}</div>
-                    <div>{actualEvent.sectionCode}</div>
+            );
+        else {
+            return (
+                <div className={classes.customEventContainer}>
+                    <div className={classes.customEventTitle}>{event.title}</div>
                 </div>
-            </div>
-        );
-    else {
-        return (
-            <div className={classes.customEventContainer}>
-                <div className={classes.customEventTitle}>{event.title}</div>
-            </div>
-        );
-    }
-};
+            );
+        }
+    };
 
 class ScheduleCalendar extends PureComponent {
     state = {

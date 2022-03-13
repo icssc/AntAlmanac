@@ -1,5 +1,5 @@
 function endpointTransform(path) {
-    if (process.env.NODE_ENV === 'development') return path;
+    if (process.env.NODE_ENV === 'development') return `https://dev.api.antalmanac.com${path}`;
     else return `https://api.antalmanac.com${path}`;
 }
 
