@@ -115,8 +115,8 @@ class AdvancedSearchTextFields extends PureComponent {
                     label="Units"
                     value={this.state.units}
                     onChange={this.handleChange('units')}
-                    type="number"
-                    helperText="ex. 3, 4, 1.7"
+                    type="search"
+                    helperText="ex. 3, 4, or VAR"
                     className={classes.units}
                 />
 

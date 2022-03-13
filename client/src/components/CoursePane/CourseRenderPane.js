@@ -10,7 +10,7 @@ import loadingGif from '../SearchForm/Gifs/loading.gif';
 import darkModeLoadingGif from '../SearchForm/Gifs/dark-loading.gif';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import LazyLoad from 'react-lazyload';
-import { queryWebsoc, isDarkMode } from '../../helpers';
+import { queryWebsoc, queryWebsocMultiple, isDarkMode } from '../../helpers';
 
 const styles = (theme) => ({
     course: {
@@ -148,7 +148,12 @@ class CourseRenderPane extends PureComponent {
             };
 
             try {
-                const jsonResp = await queryWebsoc(params);
+                let jsonResp;
+                if (params.units.includes(',')) {
+                    jsonResp = await queryWebsocMultiple(params, 'units');
+                } else {
+                    jsonResp = await queryWebsoc(params);
+                }
                 this.setState({
                     loading: false,
                     error: false,

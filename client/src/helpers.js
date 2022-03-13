@@ -92,6 +92,54 @@ export async function queryWebsoc(params) {
     }
 }
 
+export function combineSOCObjects(SOCObjects) {
+    let combined = SOCObjects.shift();
+    for (const res of SOCObjects) {
+        for (const school of res.schools) {
+            let schoolIndex = combined.schools.findIndex((s) => s.schoolName === school.schoolName);
+            if (schoolIndex !== -1) {
+                for (const dept of school.departments) {
+                    let deptIndex = combined.schools[schoolIndex].departments.findIndex(
+                        (d) => d.deptCode === dept.deptCode
+                    );
+                    if (deptIndex !== -1) {
+                        let courses = new Set(combined.schools[schoolIndex].departments[deptIndex].courses);
+                        for (const course of dept.courses) {
+                            courses.add(course);
+                        }
+                        courses = Array.from(courses);
+                        courses.sort(
+                            (left, right) =>
+                                parseInt(left.courseNumber.replace(/\D/g, '')) >
+                                parseInt(right.courseNumber.replace(/\D/g, ''))
+                        );
+                        combined.schools[schoolIndex].departments[deptIndex].courses = courses;
+                    } else {
+                        combined.schools[schoolIndex].departments.push(dept);
+                    }
+                }
+            } else {
+                combined.schools.push(school);
+            }
+        }
+    }
+    return combined;
+}
+
+export async function queryWebsocMultiple(params, fieldName) {
+    let responses = [];
+    for (const field of params[fieldName].trim().replace(' ', '').split(',')) {
+        let req = JSON.parse(JSON.stringify(params));
+        req[fieldName] = field;
+        responses.push(await queryWebsoc(req));
+    }
+    const res = responses.find((r) => r.status === 400);
+    if (res) {
+        return res;
+    }
+    return combineSOCObjects(responses);
+}
+
 export function clickToCopy(event, sectionCode) {
     event.stopPropagation();
 
