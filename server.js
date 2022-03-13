@@ -2,17 +2,29 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const routes = require('./routes');
 const cors = require('cors');
-const app = express();
 require('dotenv').config();
 
-const port = 8080;
+const setup = (corsEnabled) => {
+    const app = express();
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(bodyParser.json());
-app.use(
-    cors({
-        origin: ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac'],
-    })
-);
-app.use('/api', routes);
+    if (corsEnabled) {
+        app.use(
+            cors({
+                origin: [
+                    'https://antalmanac.com',
+                    'https://www.antalmanac.com',
+                    'https://icssc-projects.github.io/AntAlmanac',
+                ],
+            })
+        );
+    } else {
+        app.use(cors());
+    }
 
-app.listen(port, () => console.log(`Running local server on port ${port}`));
+    app.use('/api', routes);
+    return app;
+}
+
+module.exports = setup
