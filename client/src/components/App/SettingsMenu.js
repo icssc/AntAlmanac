@@ -1,5 +1,5 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Button, FormControl, FormControlLabel, FormLabel, Popover, RadioGroup, Radio, Paper } from '@material-ui/core';
+import { Button, FormControl, FormControlLabel, Popover, RadioGroup, Radio, Paper } from '@material-ui/core';
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import AppStore from '../../stores/AppStore';
 import { toggleTheme } from '../../actions/AppStoreActions';
