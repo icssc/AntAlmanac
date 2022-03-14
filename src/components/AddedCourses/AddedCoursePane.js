@@ -101,14 +101,6 @@ class AddedCoursePane extends PureComponent {
         this.setState({ customEvents: AppStore.getCustomEvents() });
     };
 
-    custEventHeader = (props) => {
-        const hasEvents = props.hasEvents;
-        if (hasEvents) {
-            return <Typography variant="h6">Custom Events</Typography>;
-        }
-        return;
-    };
-
     getGrid = () => {
         return (
             <Fragment>
@@ -181,7 +173,7 @@ class AddedCoursePane extends PureComponent {
                         </Grid>
                     );
                 })}
-                <custEventHeader hasEvents={this.state.customEvents.length !== 0} />
+                {this.state.customEvents.length > 0 && <Typography variant="h6">Custom Events</Typography>}
                 {this.state.customEvents.map((customEvent) => {
                     if (customEvent.scheduleIndices.includes(AppStore.getCurrentScheduleIndex())) {
                         return (
