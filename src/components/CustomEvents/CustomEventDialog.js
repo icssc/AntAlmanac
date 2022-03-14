@@ -41,7 +41,7 @@ class CustomEventDialog extends PureComponent {
     };
 
     handleOpen = () => {
-        this.setState({ open: true });
+        this.setState({ open: true, scheduleIndices: [this.props.currentScheduleIndex] });
         ReactGA.event({
             category: 'antalmanac-rewrite',
             action: 'Click Custom Event button',
