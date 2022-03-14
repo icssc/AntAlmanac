@@ -123,7 +123,7 @@ export const calendarizeCustomEvents = () => {
                 const endMin = parseInt(customEvent.end.slice(3, 5), 10);
 
                 // AntAlmanac originally only had a 5-day calendar, which used a slightly
-                // different indexing system for custom events. Thus, to support old custom events,
+                // different indexing system for custom events. Therefore, to support old custom events,
                 // we use customEvent.days.length === 7 ? dayIndex : dayIndex + 1
                 customEventsInCalendar.push({
                     customEventID: customEvent.customEventID,
