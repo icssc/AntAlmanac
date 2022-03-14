@@ -113,8 +113,8 @@ const getExamTime = (exam, year) => {
     const [examStartTime, examEndTime] = parseTimes(time);
 
     return [
-        [year, months[month], day, ...examStartTime],
-        [year, months[month], day, ...examEndTime],
+        [year, months[month], parseInt(day), ...examStartTime],
+        [year, months[month], parseInt(day), ...examEndTime],
     ];
 };
 
@@ -163,7 +163,7 @@ const parseTimes = (time) => {
 // getYear returns the year of a given term
 //  Ex: "2019 Fall" -> "2019"
 const getYear = (term) => {
-    return term.split(' ')[0];
+    return parseInt(term.split(' ')[0]);
 };
 
 // getQuarter returns the quarter of a given term
