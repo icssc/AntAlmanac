@@ -36,14 +36,12 @@ class CustomEventDialog extends PureComponent {
         end: this.props.customEvent ? this.props.customEvent.end : '15:30',
         eventName: this.props.customEvent ? this.props.customEvent.title : '',
         days: this.props.customEvent ? this.props.customEvent.days : [false, false, false, false, false],
-        scheduleIndices: this.props.customEvent
-            ? this.props.customEvent.scheduleIndices
-            : [this.props.currentScheduleIndex],
+        scheduleIndices: this.props.customEvent ? this.props.customEvent.scheduleIndices : [],
         customEventID: this.props.customEvent ? this.props.customEvent.customEventID : 0,
     };
 
     handleOpen = () => {
-        this.setState({ open: true });
+        this.setState({ open: true, scheduleIndices: [this.props.currentScheduleIndex] });
         ReactGA.event({
             category: 'antalmanac-rewrite',
             action: 'Click Custom Event button',
@@ -162,7 +160,6 @@ class CustomEventDialog extends PureComponent {
                         <ScheduleSelector
                             scheduleIndices={this.state.scheduleIndices}
                             onSelectScheduleIndices={this.handleSelectScheduleIndices}
-                            currentScheduleIndex={this.props.currentScheduleIndex}
                             customEvent={this.props.customEvent}
                         />
                     </DialogContent>
