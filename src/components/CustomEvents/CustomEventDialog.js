@@ -36,7 +36,9 @@ class CustomEventDialog extends PureComponent {
         end: this.props.customEvent ? this.props.customEvent.end : '15:30',
         eventName: this.props.customEvent ? this.props.customEvent.title : '',
         days: this.props.customEvent ? this.props.customEvent.days : [false, false, false, false, false],
-        scheduleIndices: this.props.customEvent ? this.props.customEvent.scheduleIndices : [],
+        scheduleIndices: this.props.customEvent
+            ? this.props.customEvent.scheduleIndices
+            : [this.props.currentScheduleIndex],
         customEventID: this.props.customEvent ? this.props.customEvent.customEventID : 0,
     };
 
@@ -160,6 +162,7 @@ class CustomEventDialog extends PureComponent {
                         <ScheduleSelector
                             scheduleIndices={this.state.scheduleIndices}
                             onSelectScheduleIndices={this.handleSelectScheduleIndices}
+                            currentScheduleIndex={this.props.currentScheduleIndex}
                             customEvent={this.props.customEvent}
                         />
                     </DialogContent>

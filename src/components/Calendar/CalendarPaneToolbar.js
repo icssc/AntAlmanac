@@ -130,7 +130,7 @@ const CalendarPaneToolbar = (props) => {
                 {[
                     <ExportCalendar />,
                     <ScreenshotButton onTakeScreenshot={props.onTakeScreenshot} />,
-                    <CustomEventsDialog editMode={false} />,
+                    <CustomEventsDialog editMode={false} currentScheduleIndex={props.currentScheduleIndex} />,
                 ].map((element, index) => (
                     <ConditionalWrapper
                         key={index}
