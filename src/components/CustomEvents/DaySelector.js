@@ -4,8 +4,22 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
 class DaySelector extends PureComponent {
+    getDays = (customEvent) => {
+        if (!customEvent) {
+            return [false, false, false, false, false, false, false];
+        }
+
+        const days = customEvent.days;
+
+        if (days.length === 5) {
+            return [false, ...days, false];
+        }
+
+        return days;
+    };
+
     state = {
-        days: this.props.customEvent ? this.props.customEvent.days : [false, false, false, false, false, false, false],
+        days: this.getDays(this.props.customEvent),
     };
 
     handleChange = (dayIndex) => (event) => {

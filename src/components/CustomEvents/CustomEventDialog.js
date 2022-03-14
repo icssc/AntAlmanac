@@ -35,7 +35,7 @@ class CustomEventDialog extends PureComponent {
         start: this.props.customEvent ? this.props.customEvent.start : '10:30',
         end: this.props.customEvent ? this.props.customEvent.end : '15:30',
         eventName: this.props.customEvent ? this.props.customEvent.title : '',
-        days: this.props.customEvent ? this.props.customEvent.days : [false, false, false, false, false],
+        days: this.props.customEvent ? this.props.customEvent.days : [false, false, false, false, false, false, false],
         scheduleIndices: this.props.customEvent ? this.props.customEvent.scheduleIndices : [],
         customEventID: this.props.customEvent ? this.props.customEvent.customEventID : 0,
     };
@@ -54,7 +54,12 @@ class CustomEventDialog extends PureComponent {
             this.handleAddToCalendar();
         }
 
-        this.setState({ open: false, eventName: '', days: [false, false, false, false, false], scheduleIndices: [] });
+        this.setState({
+            open: false,
+            eventName: '',
+            days: [false, false, false, false, false, false, false],
+            scheduleIndices: [],
+        });
     };
 
     handleEventNameChange = (event) => {
