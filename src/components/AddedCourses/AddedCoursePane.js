@@ -173,7 +173,7 @@ class AddedCoursePane extends PureComponent {
                         </Grid>
                     );
                 })}
-                <Typography variant="h6">Custom Events</Typography>
+                {this.state.customEvents.length > 0 && <Typography variant="h6">Custom Events</Typography>}
                 {this.state.customEvents.map((customEvent) => {
                     if (customEvent.scheduleIndices.includes(AppStore.getCurrentScheduleIndex())) {
                         return (
