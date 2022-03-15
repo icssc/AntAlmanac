@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@material-ui/core';
 import { Info } from '@material-ui/icons';
 import ReactGA from 'react-ga';
@@ -9,7 +9,7 @@ class AboutPage extends PureComponent {
     };
     render() {
         return (
-            <Fragment>
+            <>
                 <Button
                     onClick={(event) => {
                         this.setState({ isOpen: true });
@@ -55,7 +55,7 @@ class AboutPage extends PureComponent {
                         </Button>
                     </DialogActions>
                 </Dialog>
-            </Fragment>
+            </>
         );
     }
 }

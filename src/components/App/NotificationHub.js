@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import {
     Button,
     Dialog,
@@ -44,7 +44,7 @@ class NotificationHub extends PureComponent {
 
     render() {
         return (
-            <Fragment>
+            <>
                 <Tooltip title="Notifications Registered">
                     <Button
                         onClick={() => {
@@ -102,7 +102,7 @@ class NotificationHub extends PureComponent {
                         </Button>
                     </DialogActions>
                 </Dialog>
-            </Fragment>
+            </>
         );
     }
 }

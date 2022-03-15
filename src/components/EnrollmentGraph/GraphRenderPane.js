@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 import PropTypes from 'prop-types';
@@ -59,7 +59,7 @@ class GraphRenderPane extends PureComponent {
         const { classes } = this.props;
 
         return (
-            <Fragment>
+            <>
                 <table className={classes.table}>
                     <tbody>
                         <tr className={classes.tr}>
@@ -107,7 +107,7 @@ Units: ${this.props.pastSection.units}`}
                     <Graph pastSectionCode={this.props.pastSection.sectionCode} pastTerm={this.props.pastTerm} />
                 ) : null}
                 <hr />
-            </Fragment>
+            </>
         );
     }
 }

@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import ReactGA from 'react-ga';
 import { withStyles } from '@material-ui/core/styles';
 import { Image } from '@material-ui/icons';
@@ -33,7 +33,7 @@ class EnrollmentGraph extends PureComponent {
 
     render() {
         return (
-            <Fragment>
+            <>
                 <Typography className={this.props.classes.flex} />
                 <Button
                     variant="contained"
@@ -47,7 +47,7 @@ class EnrollmentGraph extends PureComponent {
                 <Modal open={this.state.open} onClose={this.handleClose}>
                     <GraphModalContent courseDetails={this.props.courseDetails} />
                 </Modal>
-            </Fragment>
+            </>
         );
     }
 }

@@ -13,7 +13,6 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import WarningIcon from '@material-ui/icons/Warning';
 import { withStyles } from '@material-ui/core/styles';
 
-import { Fragment } from 'react';
 const variantIcon = {
     success: CheckCircleIcon,
     warning: WarningIcon,
@@ -102,7 +101,7 @@ class CustomizedSnackbars extends React.Component {
 
     render() {
         return (
-            <Fragment>
+            <>
                 <Snackbar
                     anchorOrigin={{
                         vertical: 'top',
@@ -118,7 +117,7 @@ class CustomizedSnackbars extends React.Component {
                         message={this.state.message}
                     />
                 </Snackbar>
-            </Fragment>
+            </>
         );
     }
 }

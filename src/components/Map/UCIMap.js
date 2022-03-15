@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { Map, TileLayer, withLeaflet, Polyline, Marker } from 'react-leaflet';
 import buildingCatalogue from './static/buildingCatalogue';
 import locations from '../SectionTable/static/locations.json';
@@ -308,12 +308,12 @@ export default class UCIMap extends PureComponent {
                         index={this.state.day ? event.index.toString() : ''}
                         stackIndex={arr.length - 1 - stackIndex}
                     >
-                        <Fragment>
+                        <>
                             <hr />
                             Class: {`${event.title} ${event.sectionType}`}
                             <br />
                             Room: {event.bldg.split(' ').slice(-1)}
-                        </Fragment>
+                        </>
                     </MapMarkerPopup>
                 );
             });
@@ -348,7 +348,7 @@ export default class UCIMap extends PureComponent {
 
     render() {
         return (
-            <Fragment>
+            <>
                 <Map
                     center={[this.state.lat, this.state.lng]}
                     zoom={this.state.zoom}
@@ -391,7 +391,7 @@ export default class UCIMap extends PureComponent {
                         />
                     ) : null}
                 </Map>
-            </Fragment>
+            </>
         );
     }
 }

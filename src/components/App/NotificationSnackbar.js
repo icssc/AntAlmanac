@@ -5,7 +5,6 @@ import IconButton from '@material-ui/core/IconButton';
 import AppStore from '../../stores/AppStore';
 import { withStyles } from '@material-ui/core/styles';
 import { withSnackbar } from 'notistack';
-import { Fragment } from 'react';
 
 const styles = (theme) => ({
     success: {
@@ -51,7 +50,7 @@ class NotificationSnackbar extends PureComponent {
     snackbarAction = (key) => {
         const { classes } = this.props;
         return (
-            <Fragment>
+            <>
                 <IconButton
                     key="close"
                     color="inherit"
@@ -61,7 +60,7 @@ class NotificationSnackbar extends PureComponent {
                 >
                     <CloseIcon className={classes.icon} />
                 </IconButton>
-            </Fragment>
+            </>
         );
     };
 

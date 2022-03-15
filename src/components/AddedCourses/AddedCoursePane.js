@@ -1,5 +1,5 @@
 import AppStore from '../../stores/AppStore';
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { Grid, Typography, Button, Menu, MenuItem } from '@material-ui/core';
 import SectionTable from '../SectionTable/SectionTable.js';
 import { withStyles } from '@material-ui/core/styles';
@@ -103,7 +103,7 @@ class AddedCoursePane extends PureComponent {
 
     getGrid = () => {
         return (
-            <Fragment>
+            <>
                 <div className={this.props.classes.titleRow}>
                     <Typography variant="h6">
                         {`Schedule ${AppStore.getCurrentScheduleIndex() + 1} (${this.state.totalUnits} Units)`}
@@ -112,7 +112,7 @@ class AddedCoursePane extends PureComponent {
                     <div>
                         <PopupState variant="popover">
                             {(popupState) => (
-                                <Fragment>
+                                <>
                                     <Button variant="outlined" {...bindTrigger(popupState)}>
                                         Copy Schedule
                                     </Button>
@@ -140,7 +140,7 @@ class AddedCoursePane extends PureComponent {
                                             Copy to All Schedules
                                         </MenuItem>
                                     </Menu>
-                                </Fragment>
+                                </>
                             )}
                         </PopupState>
                         <Button
@@ -187,7 +187,7 @@ class AddedCoursePane extends PureComponent {
                     }
                     return null;
                 })}
-            </Fragment>
+            </>
         );
     };
 

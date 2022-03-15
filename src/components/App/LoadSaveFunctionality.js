@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent, useEffect } from 'react';
+import React, { PureComponent, useEffect } from 'react';
 import { CloudDownload, Save } from '@material-ui/icons';
 import {
     Button,
@@ -67,7 +67,7 @@ class LoadSaveButtonBase extends PureComponent {
 
     render() {
         return (
-            <Fragment>
+            <>
                 <Button
                     onClick={this.handleOpen}
                     color="inherit"
@@ -111,7 +111,7 @@ class LoadSaveButtonBase extends PureComponent {
                         </Button>
                     </DialogActions>
                 </Dialog>
-            </Fragment>
+            </>
         );
     }
 }
@@ -128,10 +128,10 @@ const LoadSaveScheduleFunctionality = () => {
     }, []);
 
     return (
-        <Fragment>
+        <>
             <LoadSaveButtonBase actionName={'Save'} action={saveSchedule} />
             <LoadSaveButtonBase actionName={'Load'} action={loadSchedule} />
-        </Fragment>
+        </>
     );
 };
 
