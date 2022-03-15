@@ -3,6 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { FormControl, InputLabel, MenuItem, Paper, Select, Typography } from '@material-ui/core';
 import GraphRenderPane from './GraphRenderPane';
 import { queryWebsoc } from '../../helpers';
+import { termData, defaultTerm } from '../../termData';
 
 const styles = {
     paper: {
@@ -27,7 +28,7 @@ const styles = {
 
 class GraphModalContent extends PureComponent {
     state = {
-        pastTerm: '2022 Winter',
+        pastTerm: termData[defaultTerm + 1].shortName,
         pastSections: null,
     };
 
@@ -94,9 +95,13 @@ class GraphModalContent extends PureComponent {
                 <FormControl fullWidth>
                     <InputLabel>Term</InputLabel>
                     <Select value={this.state.pastTerm} onChange={this.handleChange}>
-                        <MenuItem value={'2021 Winter'}>2021 Winter Quarter</MenuItem>
-                        <MenuItem value={'2021 Spring'}>2021 Spring Quarter</MenuItem>
-                        <MenuItem value={'2021 Fall'}>2021 Fall Quarter</MenuItem>
+                        {termData
+                            .slice(defaultTerm + 2, defaultTerm + 8)
+                            .filter((q) => !q.shortName.includes('Summer'))
+                            .reverse()
+                            .map((q) => (
+                                <MenuItem value={q.shortName}>{q.longName}</MenuItem>
+                            ))}
                     </Select>
                 </FormControl>
                 {whatToDisplay}
