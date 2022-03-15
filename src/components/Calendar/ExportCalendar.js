@@ -9,12 +9,9 @@ import AppStore from '../../stores/AppStore';
 import { termData } from '../../termData';
 
 // TODO(chase): support summer sessions
-let quarterStartDates = {};
-for (const q of termData) {
-    if (!q.shortName.includes('Summer') && q.startDate) {
-        quarterStartDates[q.shortName] = q.startDate;
-    }
-}
+const quarterStartDates = termData
+    .filter((term) => !term.longName.includes('Summer') && term.startDate.length)
+    .reduce((prev, curr) => ({ ...prev, [curr.shortName]: curr.startDate }), {}); // https://stackoverflow.com/q/36388401
 
 const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 const daysOffset = { SU: -1, MO: 0, TU: 1, WE: 2, TH: 3, FR: 4, SA: 5 };

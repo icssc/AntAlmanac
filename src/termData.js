@@ -1,8 +1,10 @@
+// The index of the default term in termData, as per WebSOC
+const defaultTerm = 3;
+
 function Term(shortName, longName, startDate = []) {
     this.shortName = shortName;
     this.longName = longName;
     this.startDate = startDate;
-    Object.seal(this);
 }
 
 // Quarterly Academic Calendar: https://www.reg.uci.edu/calendars/quarterly/2021-2022/quarterly21-22.html
@@ -57,8 +59,5 @@ const termData = [
     new Term('2015 Winter', '2015 Winter Quarter'),
     new Term('2014 Fall', '2014 Fall Quarter'),
 ];
-
-// The index of the default term in termData, as per WebSOC
-const defaultTerm = 3;
 
 export { termData, defaultTerm };
