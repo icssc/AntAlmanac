@@ -1,12 +1,13 @@
 import { EventEmitter } from 'events';
 import dispatcher from '../dispatcher';
 import { clearCache } from '../helpers';
+import { termData, defaultTerm } from '../termData';
 
 const defaultFormValues = {
     deptValue: 'ALL',
     deptLabel: 'ALL: Include All Departments',
     ge: 'ANY',
-    term: '2022 Spring',
+    term: termData[defaultTerm].shortName,
     courseNumber: '',
     sectionCode: '',
     instructor: '',
