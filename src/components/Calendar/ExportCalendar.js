@@ -6,22 +6,15 @@ import Today from '@material-ui/icons/Today';
 import { saveAs } from 'file-saver';
 import { createEvents } from 'ics';
 import AppStore from '../../stores/AppStore';
+import { termData } from '../../termData';
 
-// Hardcoded first mondays
-// You can find the start dates here: https://www.reg.uci.edu/calendars/academic/tenyr-19-29.html
-// Note: months are 0-indexed
 // TODO(chase): support summer sessions
-const quarterStartDates = {
-    '2019 Fall': [2019, 8, 26],
-    '2020 Winter': [2020, 0, 6],
-    '2020 Spring': [2020, 2, 30],
-    '2020 Fall': [2020, 9, 1],
-    '2021 Winter': [2021, 0, 4],
-    '2021 Spring': [2021, 2, 29],
-    '2021 Fall': [2021, 8, 23],
-    '2022 Winter': [2022, 0, 3],
-    '2022 Spring': [2022, 2, 28],
-};
+let quarterStartDates = {};
+for (const q of termData) {
+    if (!q.shortName.includes('Summer') && q.startDate) {
+        quarterStartDates[q.shortName] = q.startDate;
+    }
+}
 
 const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 const daysOffset = { SU: -1, MO: 0, TU: 1, WE: 2, TH: 3, FR: 4, SA: 5 };
