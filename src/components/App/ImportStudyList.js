@@ -50,19 +50,15 @@ class ImportStudyList extends PureComponent {
                 return;
             }
             const currSchedule = AppStore.getCurrentScheduleIndex();
-            const sectionCodes = this.state.studyListText
-                .split('\n')
-                .map((line) => line.match(/\d{5}/g))
-                .filter((id) => id)
-                .flat();
+            const sectionCodes = this.state.studyListText.match(/\d{5}/g);
             let sectionsAdded = 0;
             try {
                 (
                     await Promise.all(
                         sectionCodes
                             .reduce((result, item, index) => {
-                                // WebSOC queries can have a maximum of 8 course codes in tandem
-                                const chunkIndex = Math.floor(index / 8);
+                                // WebSOC queries can have a maximum of 10 course codes in tandem
+                                const chunkIndex = Math.floor(index / 10);
                                 result[chunkIndex] ? result[chunkIndex].push(item) : (result[chunkIndex] = [item]);
                                 return result;
                             }, []) // https://stackoverflow.com/a/37826698
@@ -105,6 +101,7 @@ class ImportStudyList extends PureComponent {
 
     enterEvent = (event) => {
         const charCode = event.which ? event.which : event.keyCode;
+        // enter (13) or newline (10)
         if (charCode === 13 || charCode === 10) {
             event.preventDefault();
             this.handleClose(true);
