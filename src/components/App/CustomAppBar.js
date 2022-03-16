@@ -48,8 +48,6 @@ const CustomAppBar = (props) => {
 
                 <div style={{ flexGrow: '1' }} />
 
-                <ImportStudyList />
-
                 <LoadSaveScheduleFunctionality />
 
                 <ConditionalWrapper
@@ -66,6 +64,7 @@ const CustomAppBar = (props) => {
                     {[
                         <SettingsMenu />,
                         <NotificationHub />,
+                        <ImportStudyList />,
                         <Tooltip title="Give Us Feedback!">
                             <Button
                                 onClick={() => {
