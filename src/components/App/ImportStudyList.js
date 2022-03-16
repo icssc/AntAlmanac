@@ -38,7 +38,7 @@ class ImportStudyList extends PureComponent {
         this.setState({ isOpen: true });
     };
 
-    handleClose = (doImport) => {
+    handleClose = async (doImport) => {
         this.setState({ isOpen: false }, () => {
             document.removeEventListener('keydown', this.enterEvent, false);
             this.setState({ studyListText: '' });
@@ -49,40 +49,38 @@ class ImportStudyList extends PureComponent {
                 openSnackbar('error', 'Cannot import an empty/invalid Study List.');
                 return;
             }
-            const currIndex = AppStore.getCurrentScheduleIndex();
+            const currSchedule = AppStore.getCurrentScheduleIndex();
             try {
-                Promise.all(
-                    this.state.studyListText
-                        .split('\n')
-                        .map((line) => line.match(/\d{5}/g))
-                        .filter((id) => id)
+                (
+                    await Promise.all(
+                        this.state.studyListText
+                            .split('\n')
+                            .map((line) => line.match(/\d{5}/g))
+                            .filter((id) => id)
+                            .flat()
+                            .reduce((result, item, index) => {
+                                // WebSOC queries can have a maximum of 8 course codes in tandem
+                                const chunkIndex = Math.floor(index / 8);
+                                result[chunkIndex] ? result[chunkIndex].push(item) : (result[chunkIndex] = [item]);
+                                return result;
+                            }, []) // https://stackoverflow.com/a/37826698
+                            .map((sectionCode) =>
+                                queryWebsoc({ term: this.state.selectedTerm, sectionCodes: sectionCode.join(',') })
+                            )
+                    )
+                ).forEach((response) => {
+                    response.schools
+                        .map((school) => school.departments)
                         .flat()
-                        .reduce((result, item, index) => {
-                            // WebSOC queries can have a maximum of 8 course codes in tandem
-                            const chunkIndex = Math.floor(index / 8);
-                            result[chunkIndex] ? result[chunkIndex].push(item) : (result[chunkIndex] = [item]);
-                            return result;
-                        }, []) // https://stackoverflow.com/a/37826698
-                        .map((sectionCode) =>
-                            queryWebsoc({ term: this.state.selectedTerm, sectionCodes: sectionCode.join(',') })
-                        )
-                )
-                    .then((r) => {
-                        r.forEach((response) => {
-                            response.schools
-                                .map((school) => school.departments)
-                                .flat()
-                                .map((dept) => dept.courses)
-                                .flat()
-                                .forEach((course) => {
-                                    course.sections.forEach((section) =>
-                                        addCourse(section, course, this.state.selectedTerm, currIndex)
-                                    );
-                                });
+                        .map((dept) => dept.courses)
+                        .flat()
+                        .forEach((course) => {
+                            course.sections.forEach((section) =>
+                                addCourse(section, course, this.state.selectedTerm, currSchedule)
+                            );
                         });
-                        openSnackbar('success', 'Study List successfully imported!');
-                    })
-                    .catch((e) => this.handleError(e));
+                });
+                openSnackbar('success', 'Study List successfully imported!');
             } catch (e) {
                 this.handleError(e);
             }
