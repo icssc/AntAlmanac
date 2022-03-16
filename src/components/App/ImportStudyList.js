@@ -49,14 +49,32 @@ class ImportStudyList extends PureComponent {
                         .map((line) => line.match(/\d{5}/g))
                         .filter((id) => id)
                         .flat()
-                        .map((sectionCode) => queryWebsoc({ term: this.state.selectedTerm, sectionCodes: sectionCode }))
+                        .reduce((result, item, index) => {
+                            // WebSOC queries can have a maximum of 8 course codes in tandem
+                            const chunkIndex = Math.floor(index / 8);
+                            if (!result[chunkIndex]) {
+                                result[chunkIndex] = [];
+                            }
+                            result[chunkIndex].push(item);
+                            return result;
+                        }, []) // https://stackoverflow.com/a/37826698
+                        .map((sectionCode) =>
+                            queryWebsoc({ term: this.state.selectedTerm, sectionCodes: sectionCode.join(',') })
+                        )
                 )
                     .then((r) => {
                         r.forEach((response) => {
-                            const courseData = response.schools[0].departments[0].courses[0];
-                            addCourse(courseData.sections[0], courseData, this.state.selectedTerm, currIndex);
+                            response.schools
+                                .map((school) => school.departments)
+                                .flat()
+                                .map((dept) => dept.courses)
+                                .flat()
+                                .forEach((course) => {
+                                    course.sections.forEach((section) =>
+                                        addCourse(section, course, this.state.selectedTerm, currIndex)
+                                    );
+                                });
                         });
-
                         openSnackbar('success', 'Study List successfully imported!');
                     })
                     .catch((e) => this.handleError(e));
