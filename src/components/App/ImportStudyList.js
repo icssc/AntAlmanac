@@ -9,16 +9,24 @@ import {
     TextField,
 } from '@material-ui/core';
 import { queryWebsoc } from '../../helpers';
-import store from '../../stores/RightPaneStore';
-import { addCourse, clearSchedules, openSnackbar } from '../../actions/AppStoreActions';
+import RightPaneStore from '../../stores/RightPaneStore';
+import { addCourse, openSnackbar } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
 import { GetApp } from '@material-ui/icons';
+import { termData } from '../../termData';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
 
 class ImportStudyList extends PureComponent {
     state = {
         isOpen: false,
-        selectedTerm: null,
+        selectedTerm: RightPaneStore.getFormData().term,
         studyListText: '',
+    };
+
+    handleChange = (event) => {
+        this.setState({ selectedTerm: event.target.value });
     };
 
     handleError = (error) => {
@@ -27,7 +35,7 @@ class ImportStudyList extends PureComponent {
     };
 
     handleOpen = () => {
-        this.setState({ isOpen: true, selectedTerm: store.getFormData().term });
+        this.setState({ isOpen: true });
     };
 
     handleClose = (doImport) => {
@@ -37,7 +45,7 @@ class ImportStudyList extends PureComponent {
         });
         if (doImport) {
             document.removeEventListener('keydown', this.enterEvent, false);
-            if (!(this.state.studyListText && this.state.studyListText.match(/\d{5}/g))) {
+            if (!this.state.studyListText.match(/\d{5}/g)) {
                 openSnackbar('error', 'Cannot import an empty/invalid Study List.');
                 return;
             }
@@ -110,8 +118,17 @@ class ImportStudyList extends PureComponent {
                     <DialogTitle>Import Schedule</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Paste the contents of your Study List below to import it into AntAlmanac.
+                            Paste the contents of your Study List below to import it into AntAlmanac. Make sure you have
+                            the right term selected below.
                         </DialogContentText>
+                        <InputLabel>Term</InputLabel>
+                        <Select value={this.state.selectedTerm} onChange={this.handleChange}>
+                            {termData.map((term) => (
+                                <MenuItem value={term.shortName}>{term.longName}</MenuItem>
+                            ))}
+                        </Select>
+                        <br />
+                        <InputLabel>Study List</InputLabel>
                         <TextField
                             autoFocus
                             fullWidth
