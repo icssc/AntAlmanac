@@ -21,9 +21,9 @@ class ImportStudyList extends PureComponent {
         studyListText: '',
     };
 
-    handleError = (index) => {
-        clearSchedules([index]);
+    handleError = (error) => {
         openSnackbar('error', 'An error occurred while trying to import the Study List.');
+        console.error(error);
     };
 
     handleOpen = () => {
@@ -59,9 +59,9 @@ class ImportStudyList extends PureComponent {
 
                         openSnackbar('success', 'Study List successfully imported!');
                     })
-                    .catch(() => this.handleError(currIndex));
+                    .catch((e) => this.handleError(e));
             } catch (e) {
-                this.handleError(currIndex);
+                this.handleError(e);
             }
         }
     };
