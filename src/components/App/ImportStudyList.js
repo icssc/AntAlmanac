@@ -60,10 +60,7 @@ class ImportStudyList extends PureComponent {
                         .reduce((result, item, index) => {
                             // WebSOC queries can have a maximum of 8 course codes in tandem
                             const chunkIndex = Math.floor(index / 8);
-                            if (!result[chunkIndex]) {
-                                result[chunkIndex] = [];
-                            }
-                            result[chunkIndex].push(item);
+                            result[chunkIndex] ? result[chunkIndex].push(item) : (result[chunkIndex] = [item]);
                             return result;
                         }, []) // https://stackoverflow.com/a/37826698
                         .map((sectionCode) =>
