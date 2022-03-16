@@ -348,50 +348,48 @@ export default class UCIMap extends PureComponent {
 
     render() {
         return (
-            <>
-                <Map
-                    center={[this.state.lat, this.state.lng]}
-                    zoom={this.state.zoom}
-                    maxZoom={19}
-                    style={{ height: '100%' }}
-                >
-                    <DayTabs
-                        day={this.state.day}
-                        setDay={(day) => {
-                            this.setState({ day: day });
-                            this.generateRoute(day);
-                        }}
-                        handleSearch={this.handleSearch}
+            <Map
+                center={[this.state.lat, this.state.lng]}
+                zoom={this.state.zoom}
+                maxZoom={19}
+                style={{ height: '100%' }}
+            >
+                <DayTabs
+                    day={this.state.day}
+                    setDay={(day) => {
+                        this.setState({ day: day });
+                        this.generateRoute(day);
+                    }}
+                    handleSearch={this.handleSearch}
+                />
+
+                <LocateControl />
+
+                <TileLayer
+                    attribution={ATTRIBUTION_MARKUP}
+                    url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`}
+                    tileSize={512}
+                    zoomOffset={-1}
+                />
+
+                {this.state.poly}
+
+                {this.state.info_marker}
+
+                {this.createMarkers()}
+
+                {this.state.selected ? (
+                    <MapMarkerPopup
+                        image={this.state.selected_img}
+                        location={this.state.selected}
+                        lat={this.state.lat}
+                        lng={this.state.lng}
+                        acronym={this.state.selected_acronym}
+                        markerColor="#FF0000"
+                        index=""
                     />
-
-                    <LocateControl />
-
-                    <TileLayer
-                        attribution={ATTRIBUTION_MARKUP}
-                        url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`}
-                        tileSize={512}
-                        zoomOffset={-1}
-                    />
-
-                    {this.state.poly}
-
-                    {this.state.info_marker}
-
-                    {this.createMarkers()}
-
-                    {this.state.selected ? (
-                        <MapMarkerPopup
-                            image={this.state.selected_img}
-                            location={this.state.selected}
-                            lat={this.state.lat}
-                            lng={this.state.lng}
-                            acronym={this.state.selected_acronym}
-                            markerColor="#FF0000"
-                            index=""
-                        />
-                    ) : null}
-                </Map>
-            </>
+                ) : null}
+            </Map>
         );
     }
 }

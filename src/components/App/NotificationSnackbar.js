@@ -50,17 +50,15 @@ class NotificationSnackbar extends PureComponent {
     snackbarAction = (key) => {
         const { classes } = this.props;
         return (
-            <>
-                <IconButton
-                    key="close"
-                    color="inherit"
-                    onClick={() => {
-                        this.props.closeSnackbar(key);
-                    }}
-                >
-                    <CloseIcon className={classes.icon} />
-                </IconButton>
-            </>
+            <IconButton
+                key="close"
+                color="inherit"
+                onClick={() => {
+                    this.props.closeSnackbar(key);
+                }}
+            >
+                <CloseIcon className={classes.icon} />
+            </IconButton>
         );
     };
 
