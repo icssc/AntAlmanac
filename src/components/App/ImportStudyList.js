@@ -50,14 +50,16 @@ class ImportStudyList extends PureComponent {
                 return;
             }
             const currSchedule = AppStore.getCurrentScheduleIndex();
+            const sectionCodes = this.state.studyListText
+                .split('\n')
+                .map((line) => line.match(/\d{5}/g))
+                .filter((id) => id)
+                .flat();
+            let sectionsAdded = 0;
             try {
                 (
                     await Promise.all(
-                        this.state.studyListText
-                            .split('\n')
-                            .map((line) => line.match(/\d{5}/g))
-                            .filter((id) => id)
-                            .flat()
+                        sectionCodes
                             .reduce((result, item, index) => {
                                 // WebSOC queries can have a maximum of 8 course codes in tandem
                                 const chunkIndex = Math.floor(index / 8);
@@ -75,12 +77,26 @@ class ImportStudyList extends PureComponent {
                         .map((dept) => dept.courses)
                         .flat()
                         .forEach((course) => {
-                            course.sections.forEach((section) =>
-                                addCourse(section, course, this.state.selectedTerm, currSchedule)
-                            );
+                            course.sections.forEach((section) => {
+                                addCourse(section, course, this.state.selectedTerm, currSchedule);
+                                ++sectionsAdded;
+                            });
                         });
                 });
-                openSnackbar('success', 'Study List successfully imported!');
+                if (sectionsAdded === sectionCodes.length) {
+                    openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
+                } else if (sectionsAdded !== 0) {
+                    openSnackbar(
+                        'warning',
+                        `Successfully imported ${sectionsAdded} of ${sectionCodes.length} classes. 
+                        Please make sure that you selected the correct term and that none of your classes are missing.`
+                    );
+                } else {
+                    openSnackbar(
+                        'error',
+                        'Failed to import any classes! Please make sure that you pasted the correct Study List.'
+                    );
+                }
             } catch (e) {
                 this.handleError(e);
             }
