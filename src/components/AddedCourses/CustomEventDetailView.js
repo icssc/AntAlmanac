@@ -38,9 +38,7 @@ const CustomEventDetailView = (props) => {
         });
 
         const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        const daysString = days
-            .map((includeDate, index) => (includeDate ? dayAbbreviations[days.length === 7 ? index : index + 1] : ''))
-            .join(' ');
+        const daysString = days.map((includeDate, index) => (includeDate ? dayAbbreviations[index] : '')).join(' ');
 
         return `${startTime.format('h:mm A')} — ${endTime.format('h:mm A')} • ${daysString}`;
     };
