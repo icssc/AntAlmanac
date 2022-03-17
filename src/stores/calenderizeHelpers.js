@@ -122,21 +122,12 @@ export const calendarizeCustomEvents = () => {
                 const endHour = parseInt(customEvent.end.slice(0, 2), 10);
                 const endMin = parseInt(customEvent.end.slice(3, 5), 10);
 
-                // AntAlmanac originally only had a 5-day calendar, which used a slightly
-                // different indexing system for custom events. Therefore, to support old custom events,
-                // we use customEvent.days.length === 7 ? dayIndex : dayIndex + 1
                 customEventsInCalendar.push({
                     customEventID: customEvent.customEventID,
                     color: customEvent.color,
-                    start: new Date(
-                        2018,
-                        0,
-                        customEvent.days.length === 7 ? dayIndex : dayIndex + 1,
-                        startHour,
-                        startMin
-                    ),
+                    start: new Date(2018, 0, dayIndex, startHour, startMin),
                     isCustomEvent: true,
-                    end: new Date(2018, 0, customEvent.days.length === 7 ? dayIndex : dayIndex + 1, endHour, endMin),
+                    end: new Date(2018, 0, dayIndex, endHour, endMin),
                     scheduleIndices: customEvent.scheduleIndices,
                     title: customEvent.title,
                 });
