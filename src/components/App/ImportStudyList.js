@@ -12,7 +12,7 @@ import { queryWebsoc } from '../../helpers';
 import RightPaneStore from '../../stores/RightPaneStore';
 import { addCourse, openSnackbar } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
-import { GetApp } from '@material-ui/icons';
+import { PostAdd } from '@material-ui/icons';
 import { termData } from '../../termData';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -66,19 +66,21 @@ class ImportStudyList extends PureComponent {
                                 queryWebsoc({ term: this.state.selectedTerm, sectionCodes: sectionCode.join(',') })
                             )
                     )
-                ).forEach((response) => {
-                    response.schools
-                        .map((school) => school.departments)
-                        .flat()
-                        .map((dept) => dept.courses)
-                        .flat()
-                        .forEach((course) => {
-                            course.sections.forEach((section) => {
-                                addCourse(section, course, this.state.selectedTerm, currSchedule);
-                                ++sectionsAdded;
+                )
+                    // TODO refactor to use helper function for extracting course info from WebSOC query
+                    .forEach((response) => {
+                        response.schools
+                            .map((school) => school.departments)
+                            .flat()
+                            .map((dept) => dept.courses)
+                            .flat()
+                            .forEach((course) => {
+                                course.sections.forEach((section) => {
+                                    addCourse(section, course, this.state.selectedTerm, currSchedule);
+                                    ++sectionsAdded;
+                                });
                             });
-                        });
-                });
+                    });
                 if (sectionsAdded === sectionCodes.length) {
                     openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
                 } else if (sectionsAdded !== 0) {
@@ -119,7 +121,8 @@ class ImportStudyList extends PureComponent {
     render() {
         return (
             <>
-                <Button onClick={this.handleOpen} color="inherit" startIcon={<GetApp />}>
+                {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
+                <Button onClick={this.handleOpen} color="inherit" startIcon={<PostAdd />}>
                     Import
                 </Button>
                 <Dialog open={this.state.isOpen}>
@@ -129,10 +132,13 @@ class ImportStudyList extends PureComponent {
                             Paste the contents of your Study List below to import it into AntAlmanac. Make sure you have
                             the right term selected below.
                         </DialogContentText>
+                        {/* TODO refactor to use a modified TermSelector */}
                         <InputLabel>Term</InputLabel>
                         <Select value={this.state.selectedTerm} onChange={this.handleChange}>
-                            {termData.map((term) => (
-                                <MenuItem value={term.shortName}>{term.longName}</MenuItem>
+                            {termData.map((term, index) => (
+                                <MenuItem key={index} value={term.shortName}>
+                                    {term.longName}
+                                </MenuItem>
                             ))}
                         </Select>
                         <br />
