@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import SearchForm from '../SearchForm/SearchForm';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
 import CourseRenderPane from './CourseRenderPane';
@@ -22,7 +22,7 @@ class RightPane extends PureComponent {
 
     render() {
         return (
-            <Fragment>
+            <>
                 <CoursePaneButtonRow
                     showSearch={!RightPaneStore.getDoDisplaySearch()}
                     onDismissSearchResults={this.toggleSearch}
@@ -32,7 +32,7 @@ class RightPane extends PureComponent {
                 ) : (
                     <CourseRenderPane />
                 )}
-            </Fragment>
+            </>
         );
     }
 }

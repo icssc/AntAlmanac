@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { Button, FormControl, FormControlLabel, Popover, RadioGroup, Radio, Paper } from '@material-ui/core';
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import AppStore from '../../stores/AppStore';
@@ -30,7 +30,7 @@ class SettingsMenu extends PureComponent {
         const { classes } = this.props;
 
         return (
-            <Fragment>
+            <>
                 <Button
                     onClick={(event) => {
                         this.setState({ anchorEl: event.currentTarget });
@@ -69,7 +69,7 @@ class SettingsMenu extends PureComponent {
                         </FormControl>
                     </Paper>
                 </Popover>
-            </Fragment>
+            </>
         );
     }
 }

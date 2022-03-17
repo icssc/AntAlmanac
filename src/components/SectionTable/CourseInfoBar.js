@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Button, Popover } from '@material-ui/core';
@@ -128,7 +128,7 @@ class CourseInfoBar extends PureComponent {
         const { courseTitle, courseNumber, deptCode } = this.props;
 
         return (
-            <Fragment>
+            <>
                 <Button
                     variant="contained"
                     size="small"
@@ -156,7 +156,7 @@ class CourseInfoBar extends PureComponent {
                 >
                     {this.getPopoverContent()}
                 </Popover>
-            </Fragment>
+            </>
         );
     }
 }

@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { Tab, Tabs, Paper, TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import buildingCatalogue from './static/buildingCatalogue';
@@ -44,7 +44,7 @@ class MapTabsAndSearchBar extends PureComponent {
         const { classes } = this.props;
 
         return (
-            <Fragment>
+            <>
                 <Paper elevation={0} className={classes.tabContainer}>
                     <StyledTabs
                         value={this.props.day}
@@ -74,7 +74,7 @@ class MapTabsAndSearchBar extends PureComponent {
                         renderInput={(params) => <TextField {...params} label="Search for a place" variant="filled" />}
                     />
                 </Paper>
-            </Fragment>
+            </>
         );
     }
 }

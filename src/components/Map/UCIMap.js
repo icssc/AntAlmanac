@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { Map, TileLayer, withLeaflet, Polyline, Marker } from 'react-leaflet';
 import buildingCatalogue from './static/buildingCatalogue';
 import locations from '../SectionTable/static/locations.json';
@@ -308,12 +308,12 @@ export default class UCIMap extends PureComponent {
                         index={this.state.day ? event.index.toString() : ''}
                         stackIndex={arr.length - 1 - stackIndex}
                     >
-                        <Fragment>
+                        <>
                             <hr />
                             Class: {`${event.title} ${event.sectionType}`}
                             <br />
                             Room: {event.bldg.split(' ').slice(-1)}
-                        </Fragment>
+                        </>
                     </MapMarkerPopup>
                 );
             });
@@ -348,50 +348,48 @@ export default class UCIMap extends PureComponent {
 
     render() {
         return (
-            <Fragment>
-                <Map
-                    center={[this.state.lat, this.state.lng]}
-                    zoom={this.state.zoom}
-                    maxZoom={19}
-                    style={{ height: '100%' }}
-                >
-                    <DayTabs
-                        day={this.state.day}
-                        setDay={(day) => {
-                            this.setState({ day: day });
-                            this.generateRoute(day);
-                        }}
-                        handleSearch={this.handleSearch}
+            <Map
+                center={[this.state.lat, this.state.lng]}
+                zoom={this.state.zoom}
+                maxZoom={19}
+                style={{ height: '100%' }}
+            >
+                <DayTabs
+                    day={this.state.day}
+                    setDay={(day) => {
+                        this.setState({ day: day });
+                        this.generateRoute(day);
+                    }}
+                    handleSearch={this.handleSearch}
+                />
+
+                <LocateControl />
+
+                <TileLayer
+                    attribution={ATTRIBUTION_MARKUP}
+                    url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`}
+                    tileSize={512}
+                    zoomOffset={-1}
+                />
+
+                {this.state.poly}
+
+                {this.state.info_marker}
+
+                {this.createMarkers()}
+
+                {this.state.selected ? (
+                    <MapMarkerPopup
+                        image={this.state.selected_img}
+                        location={this.state.selected}
+                        lat={this.state.lat}
+                        lng={this.state.lng}
+                        acronym={this.state.selected_acronym}
+                        markerColor="#FF0000"
+                        index=""
                     />
-
-                    <LocateControl />
-
-                    <TileLayer
-                        attribution={ATTRIBUTION_MARKUP}
-                        url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`}
-                        tileSize={512}
-                        zoomOffset={-1}
-                    />
-
-                    {this.state.poly}
-
-                    {this.state.info_marker}
-
-                    {this.createMarkers()}
-
-                    {this.state.selected ? (
-                        <MapMarkerPopup
-                            image={this.state.selected_img}
-                            location={this.state.selected}
-                            lat={this.state.lat}
-                            lng={this.state.lng}
-                            acronym={this.state.selected_acronym}
-                            markerColor="#FF0000"
-                            index=""
-                        />
-                    ) : null}
-                </Map>
-            </Fragment>
+                ) : null}
+            </Map>
         );
     }
 }

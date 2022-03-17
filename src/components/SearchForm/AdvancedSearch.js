@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import {
     MenuItem,
     Select,
@@ -226,7 +226,7 @@ class AdvancedSearch extends PureComponent {
         const { classes } = this.props;
 
         return (
-            <Fragment>
+            <>
                 <div onClick={this.handleExpand} className={classes.container}>
                     <div>
                         <Typography noWrap variant="body1">
@@ -238,7 +238,7 @@ class AdvancedSearch extends PureComponent {
                 <Collapse in={this.state.expandAdvanced}>
                     <AdvancedSearchTextFields />
                 </Collapse>
-            </Fragment>
+            </>
         );
     }
 }
