@@ -49,6 +49,7 @@ export default class UCIMap extends PureComponent {
         poly: [],
         info_markers: [],
         info_marker: null,
+        pins: {},
     };
 
     generateRoute = (day) => {
@@ -227,6 +228,7 @@ export default class UCIMap extends PureComponent {
     };
 
     updateCurrentScheduleIndex = () => {
+        this.createMarkers();
         this.generateRoute(this.state.day);
     };
 
@@ -234,10 +236,12 @@ export default class UCIMap extends PureComponent {
         this.setState({
             eventsInCalendar: AppStore.getEventsInCalendar(),
         });
+        this.createMarkers();
         this.generateRoute(this.state.day);
     };
 
     componentDidMount = () => {
+        this.createMarkers();
         AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.on('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
     };
@@ -248,10 +252,6 @@ export default class UCIMap extends PureComponent {
     };
 
     createMarkers = () => {
-        const markers = [];
-
-        // Tracks courses that have already been pinned on the map, so there are no duplicates
-        let pinnedCourses = new Set();
         let pins = {};
         let courses = new Set();
 
@@ -279,6 +279,15 @@ export default class UCIMap extends PureComponent {
                     pins[buildingCode] = [event];
                 }
             }); // Creates a map between buildingCodes to pins to determine stacks
+        console.log(pins);
+        this.setState({ pins: pins });
+    };
+
+    drawMarkers = () => {
+        const markers = [];
+        const pins = this.state.pins;
+        // console.log(pins
+        // Tracks courses that have already been pinned on the map, so there are no duplicates
         for (const buildingCode in pins) {
             // Get building code, get id of building code, which will get us the building data from buildingCatalogue
             const id = locations[buildingCode];
@@ -293,8 +302,6 @@ export default class UCIMap extends PureComponent {
                     locationData.name.indexOf('(') + 1,
                     locationData.name.indexOf(')')
                 );
-
-                pinnedCourses.add(courseString);
 
                 markers.push(
                     <MapMarkerPopup
@@ -358,6 +365,7 @@ export default class UCIMap extends PureComponent {
                     day={this.state.day}
                     setDay={(day) => {
                         this.setState({ day: day });
+                        this.createMarkers();
                         this.generateRoute(day);
                     }}
                     handleSearch={this.handleSearch}
@@ -376,7 +384,7 @@ export default class UCIMap extends PureComponent {
 
                 {this.state.info_marker}
 
-                {this.createMarkers()}
+                {this.drawMarkers()}
 
                 {this.state.selected ? (
                     <MapMarkerPopup
@@ -386,8 +394,8 @@ export default class UCIMap extends PureComponent {
                         lng={this.state.lng}
                         acronym={this.state.selected_acronym}
                         markerColor="#FF0000"
-                        index=""
-                        stackIndex={0}
+                        index="!"
+                        stackIndex={this.state.selected_acronym in this.state.pins ? -1 : 0}
                     />
                 ) : null}
             </Map>
