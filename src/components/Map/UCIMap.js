@@ -254,6 +254,7 @@ export default class UCIMap extends PureComponent {
     createMarkers = () => {
         let pins = {};
         let courses = new Set();
+        // Tracks courses that have already been pinned on the map, so there are no duplicates
 
         // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
         this.state.eventsInCalendar
@@ -278,16 +279,13 @@ export default class UCIMap extends PureComponent {
                 } else {
                     pins[buildingCode] = [event];
                 }
-            }); // Creates a map between buildingCodes to pins to determine stacks
-        console.log(pins);
+            }); // Creates a map between buildingCodes to pins to determine stacks and store in pins
         this.setState({ pins: pins });
     };
 
     drawMarkers = () => {
         const markers = [];
         const pins = this.state.pins;
-        // console.log(pins
-        // Tracks courses that have already been pinned on the map, so there are no duplicates
         for (const buildingCode in pins) {
             // Get building code, get id of building code, which will get us the building data from buildingCatalogue
             const id = locations[buildingCode];
