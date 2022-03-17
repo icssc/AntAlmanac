@@ -45,67 +45,67 @@ class ImportStudyList extends PureComponent {
         this.setState({ isOpen: true });
     };
 
-    handleClose = async (doImport) => {
-        this.setState({ isOpen: false }, () => {
+    handleClose = (doImport) => {
+        this.setState({ isOpen: false }, async () => {
             document.removeEventListener('keydown', this.enterEvent, false);
+            if (doImport) {
+                document.removeEventListener('keydown', this.enterEvent, false);
+                if (!this.state.studyListText.match(/\d{5}/g)) {
+                    openSnackbar('error', 'Cannot import an empty/invalid Study List.');
+                    return;
+                }
+                const currSchedule = AppStore.getCurrentScheduleIndex();
+                const sectionCodes = this.state.studyListText.match(/\d{5}/g);
+                let sectionsAdded = 0;
+                try {
+                    (
+                        await Promise.all(
+                            sectionCodes
+                                .reduce((result, item, index) => {
+                                    // WebSOC queries can have a maximum of 10 course codes in tandem
+                                    const chunkIndex = Math.floor(index / 10);
+                                    result[chunkIndex] ? result[chunkIndex].push(item) : (result[chunkIndex] = [item]);
+                                    return result;
+                                }, []) // https://stackoverflow.com/a/37826698
+                                .map((sectionCode) =>
+                                    queryWebsoc({ term: this.state.selectedTerm, sectionCodes: sectionCode.join(',') })
+                                )
+                        )
+                    )
+                        // TODO refactor to use helper function for extracting course info from WebSOC query
+                        .forEach((response) => {
+                            response.schools
+                                .map((school) => school.departments)
+                                .flat()
+                                .map((dept) => dept.courses)
+                                .flat()
+                                .forEach((course) => {
+                                    course.sections.forEach((section) => {
+                                        addCourse(section, course, this.state.selectedTerm, currSchedule);
+                                        ++sectionsAdded;
+                                    });
+                                });
+                        });
+                    if (sectionsAdded === sectionCodes.length) {
+                        openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
+                    } else if (sectionsAdded !== 0) {
+                        openSnackbar(
+                            'warning',
+                            `Successfully imported ${sectionsAdded} of ${sectionCodes.length} classes. 
+                        Please make sure that you selected the correct term and that none of your classes are missing.`
+                        );
+                    } else {
+                        openSnackbar(
+                            'error',
+                            'Failed to import any classes! Please make sure that you pasted the correct Study List.'
+                        );
+                    }
+                } catch (e) {
+                    this.handleError(e);
+                }
+            }
             this.setState({ studyListText: '' });
         });
-        if (doImport) {
-            document.removeEventListener('keydown', this.enterEvent, false);
-            if (!this.state.studyListText.match(/\d{5}/g)) {
-                openSnackbar('error', 'Cannot import an empty/invalid Study List.');
-                return;
-            }
-            const currSchedule = AppStore.getCurrentScheduleIndex();
-            const sectionCodes = this.state.studyListText.match(/\d{5}/g);
-            let sectionsAdded = 0;
-            try {
-                (
-                    await Promise.all(
-                        sectionCodes
-                            .reduce((result, item, index) => {
-                                // WebSOC queries can have a maximum of 10 course codes in tandem
-                                const chunkIndex = Math.floor(index / 10);
-                                result[chunkIndex] ? result[chunkIndex].push(item) : (result[chunkIndex] = [item]);
-                                return result;
-                            }, []) // https://stackoverflow.com/a/37826698
-                            .map((sectionCode) =>
-                                queryWebsoc({ term: this.state.selectedTerm, sectionCodes: sectionCode.join(',') })
-                            )
-                    )
-                )
-                    // TODO refactor to use helper function for extracting course info from WebSOC query
-                    .forEach((response) => {
-                        response.schools
-                            .map((school) => school.departments)
-                            .flat()
-                            .map((dept) => dept.courses)
-                            .flat()
-                            .forEach((course) => {
-                                course.sections.forEach((section) => {
-                                    addCourse(section, course, this.state.selectedTerm, currSchedule);
-                                    ++sectionsAdded;
-                                });
-                            });
-                    });
-                if (sectionsAdded === sectionCodes.length) {
-                    openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
-                } else if (sectionsAdded !== 0) {
-                    openSnackbar(
-                        'warning',
-                        `Successfully imported ${sectionsAdded} of ${sectionCodes.length} classes. 
-                        Please make sure that you selected the correct term and that none of your classes are missing.`
-                    );
-                } else {
-                    openSnackbar(
-                        'error',
-                        'Failed to import any classes! Please make sure that you pasted the correct Study List.'
-                    );
-                }
-            } catch (e) {
-                this.handleError(e);
-            }
-        }
     };
 
     enterEvent = (event) => {
