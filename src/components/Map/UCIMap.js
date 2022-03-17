@@ -387,6 +387,7 @@ export default class UCIMap extends PureComponent {
                         acronym={this.state.selected_acronym}
                         markerColor="#FF0000"
                         index=""
+                        stackIndex={0}
                     />
                 ) : null}
             </Map>
