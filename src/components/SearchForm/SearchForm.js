@@ -51,12 +51,9 @@ class SearchForm extends PureComponent {
     };
 
     enterEvent = (event) => {
-        const charCode = event.which ? event.which : event.keyCode;
-        if ((charCode === 13 || charCode === 10) && document.activeElement.id === 'downshift-0-input') {
-            this.props.searchWebSoc();
+        if (event.code === 'Enter' || event.key === 'Enter') {
             event.preventDefault();
-
-            return false;
+            this.btn.click();
         }
     };
 
@@ -88,6 +85,7 @@ class SearchForm extends PureComponent {
                             color="primary"
                             variant="contained"
                             onClick={() => this.props.toggleSearch()}
+                            ref={(node) => (this.btn = node)}
                         >
                             Search
                         </Button>
