@@ -17,6 +17,13 @@ import { termData } from '../../termData';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
+import { withStyles } from '@material-ui/core/styles';
+
+const styles = {
+    input: {
+        'margin-top': '10px',
+    },
+};
 
 class ImportStudyList extends PureComponent {
     state = {
@@ -119,6 +126,7 @@ class ImportStudyList extends PureComponent {
     }
 
     render() {
+        const { classes } = this.props;
         return (
             <>
                 {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
@@ -133,26 +141,30 @@ class ImportStudyList extends PureComponent {
                             the right term selected below.
                         </DialogContentText>
                         {/* TODO refactor to use a modified TermSelector */}
-                        <InputLabel>Term</InputLabel>
-                        <Select value={this.state.selectedTerm} onChange={this.handleChange}>
-                            {termData.map((term, index) => (
-                                <MenuItem key={index} value={term.shortName}>
-                                    {term.longName}
-                                </MenuItem>
-                            ))}
-                        </Select>
+                        <div className={classes.input}>
+                            <InputLabel>Term</InputLabel>
+                            <Select value={this.state.selectedTerm} onChange={this.handleChange}>
+                                {termData.map((term, index) => (
+                                    <MenuItem key={index} value={term.shortName}>
+                                        {term.longName}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </div>
                         <br />
-                        <InputLabel>Study List</InputLabel>
-                        <TextField
-                            autoFocus
-                            fullWidth
-                            multiline
-                            margin="dense"
-                            type="text"
-                            placeholder="Paste here"
-                            value={this.state.studyListText}
-                            onChange={(event) => this.setState({ studyListText: event.target.value })}
-                        />
+                        <div className={classes.input}>
+                            <InputLabel>Study List</InputLabel>
+                            <TextField
+                                autoFocus
+                                fullWidth
+                                multiline
+                                margin="dense"
+                                type="text"
+                                placeholder="Paste here"
+                                value={this.state.studyListText}
+                                onChange={(event) => this.setState({ studyListText: event.target.value })}
+                            />
+                        </div>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => this.handleClose(false)} color="primary">
@@ -168,4 +180,4 @@ class ImportStudyList extends PureComponent {
     }
 }
 
-export default ImportStudyList;
+export default withStyles(styles)(ImportStudyList);
