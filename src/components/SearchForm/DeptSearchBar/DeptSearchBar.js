@@ -98,7 +98,7 @@ class DeptSearchBar extends PureComponent {
                     openOnFocus={true}
                     getOptionSelected={this.compareValues}
                     getOptionLabel={(option) => option.deptLabel}
-                    blurOnSelect
+                    // blurOnSelect
                     onChange={this.handleSetDept}
                     includeInputInList={true}
                     noOptionsText="No departments match the search"

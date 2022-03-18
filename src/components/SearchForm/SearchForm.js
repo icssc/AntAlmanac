@@ -42,62 +42,72 @@ const styles = {
 };
 
 class SearchForm extends PureComponent {
+    /*
     componentDidMount = () => {
-        document.addEventListener('keydown', this.enterEvent, false);
+        this.form.addEventListener('keydown', this.enterEvent);
     };
 
     componentWillUnmount = () => {
-        document.removeEventListener('keydown', this.enterEvent, false);
+        this.form.removeEventListener('keydown', this.enterEvent);
     };
 
     enterEvent = (event) => {
         if (event.code === 'Enter' || event.key === 'Enter') {
+            console.log("Enter is clicked")
             event.preventDefault();
-            this.btn.click();
+            this.props.toggleSearch();
         }
+    };
+    */
+    onFormSubmit = (event) => {
+        event.preventDefault();
+        this.props.toggleSearch();
     };
 
     render() {
         const { classes } = this.props;
 
         return (
-            <div className={classes.container}>
-                <div className={classes.margin}>
-                    <TermSelector />
-                </div>
-
-                <div className={classes.margin}>
-                    <DeptSearchBar />
-                    <CourseNumberSearchBar />
-                </div>
-
-                <div className={classes.margin}>
-                    <GESelector />
-                    <SectionCodeSearchBar />
-                </div>
-
-                <AdvancedSearch />
-
-                <div className={classes.search}>
-                    <div className={classes.buttonContainer}>
-                        <Button
-                            className={classes.searchButton}
-                            color="primary"
-                            variant="contained"
-                            onClick={() => this.props.toggleSearch()}
-                            ref={(node) => (this.btn = node)}
-                        >
-                            Search
-                        </Button>
-
-                        <Button variant="contained" onClick={resetFormValues}>
-                            Reset
-                        </Button>
+            <form onSubmit={this.onFormSubmit}>
+                {/*<div className={classes.container} ref={(node) => (this.form = node)}*/}
+                <div className={classes.container}>
+                    <div className={classes.margin}>
+                        <TermSelector />
                     </div>
-                </div>
 
-                <PrivacyPolicyBanner />
-            </div>
+                    <div className={classes.margin}>
+                        <DeptSearchBar />
+                        <CourseNumberSearchBar />
+                    </div>
+
+                    <div className={classes.margin}>
+                        <GESelector />
+                        <SectionCodeSearchBar />
+                    </div>
+
+                    <AdvancedSearch />
+
+                    <div className={classes.search}>
+                        <div className={classes.buttonContainer}>
+                            <Button
+                                className={classes.searchButton}
+                                color="primary"
+                                variant="contained"
+                                onClick={() => this.props.toggleSearch()}
+                                type="submit"
+                            >
+                                Search
+                            </Button>
+
+                            <Button variant="contained" onClick={resetFormValues}>
+                                Reset
+                            </Button>
+                        </div>
+                    </div>
+
+                    <PrivacyPolicyBanner />
+                </div>
+            </form>
         );
     }
 }
