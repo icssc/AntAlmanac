@@ -9,7 +9,7 @@ import MobileHome from './MobileHome';
 import DateFnsUtils from '@date-io/date-fns';
 
 const Home = () => {
-    const isMobileScreen = useMediaQuery('(max-width:750px)');
+    const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
