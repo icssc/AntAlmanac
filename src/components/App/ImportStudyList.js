@@ -50,12 +50,12 @@ class ImportStudyList extends PureComponent {
             document.removeEventListener('keydown', this.enterEvent, false);
             if (doImport) {
                 document.removeEventListener('keydown', this.enterEvent, false);
-                if (!this.state.studyListText.match(/\d{5}/g)) {
+                const sectionCodes = this.state.studyListText.match(/\d{5}/g);
+                if (!sectionCodes) {
                     openSnackbar('error', 'Cannot import an empty/invalid Study List.');
                     return;
                 }
                 const currSchedule = AppStore.getCurrentScheduleIndex();
-                const sectionCodes = this.state.studyListText.match(/\d{5}/g);
                 let sectionsAdded = 0;
                 try {
                     (
