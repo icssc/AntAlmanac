@@ -49,7 +49,6 @@ class ImportStudyList extends PureComponent {
         this.setState({ isOpen: false }, async () => {
             document.removeEventListener('keydown', this.enterEvent, false);
             if (doImport) {
-                document.removeEventListener('keydown', this.enterEvent, false);
                 const sectionCodes = this.state.studyListText.match(/\d{5}/g);
                 if (!sectionCodes) {
                     openSnackbar('error', 'Cannot import an empty/invalid Study List.');
