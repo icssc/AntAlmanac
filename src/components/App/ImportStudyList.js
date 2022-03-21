@@ -137,21 +137,14 @@ class ImportStudyList extends PureComponent {
                     <DialogTitle>Import Schedule</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Paste the contents of your Study List below to import it into AntAlmanac. Make sure you have
-                            the right term selected below.
+                            Paste the contents of your Study List below to import it into AntAlmanac.
+                            <br />
+                            To find your Study List, go to{' '}
+                            <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>WebReg</a> or{' '}
+                            <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>, and click on
+                            Study List once you've logged in. Copy everything below the column names (Code, Dept, etc.)
+                            under the Enrolled Classes section.
                         </DialogContentText>
-                        {/* TODO refactor to use a modified TermSelector */}
-                        <div className={classes.input}>
-                            <InputLabel>Term</InputLabel>
-                            <Select value={this.state.selectedTerm} onChange={this.handleChange}>
-                                {termData.map((term, index) => (
-                                    <MenuItem key={index} value={term.shortName}>
-                                        {term.longName}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </div>
-                        <br />
                         <div className={classes.input}>
                             <InputLabel>Study List</InputLabel>
                             <TextField
@@ -164,6 +157,19 @@ class ImportStudyList extends PureComponent {
                                 value={this.state.studyListText}
                                 onChange={(event) => this.setState({ studyListText: event.target.value })}
                             />
+                        </div>
+                        <br />
+                        <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
+                        {/* TODO refactor to use a modified TermSelector */}
+                        <div className={classes.input}>
+                            <InputLabel>Term</InputLabel>
+                            <Select value={this.state.selectedTerm} onChange={this.handleChange}>
+                                {termData.map((term, index) => (
+                                    <MenuItem key={index} value={term.shortName}>
+                                        {term.longName}
+                                    </MenuItem>
+                                ))}
+                            </Select>
                         </div>
                     </DialogContent>
                     <DialogActions>
