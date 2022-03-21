@@ -33,6 +33,7 @@ class CourseInfoBar extends PureComponent {
         prerequisite_text: null,
         prerequisite_for: null,
         description: null,
+        ge_list: null,
     };
 
     togglePopover = async (currentTarget) => {
@@ -59,6 +60,7 @@ class CourseInfoBar extends PureComponent {
                             prerequisite_text: jsonResp.prerequisite_text,
                             prerequisite_for: jsonResp.prerequisite_for.join(', '),
                             description: jsonResp.description,
+                            ge_list: jsonResp.ge_list.join(', '),
                         });
                     } else {
                         this.setState({
@@ -68,6 +70,7 @@ class CourseInfoBar extends PureComponent {
                             prerequisite_text: '',
                             prerequisite_for: '',
                             description: '',
+                            ge_list: '',
                         });
                     }
                 } catch (e) {
@@ -78,6 +81,7 @@ class CourseInfoBar extends PureComponent {
                         prerequisite_text: '',
                         prerequisite_for: '',
                         description: '',
+                        ge_list: '',
                     });
                 }
             }
@@ -117,6 +121,12 @@ class CourseInfoBar extends PureComponent {
                         <p>
                             <span className={this.props.classes.rightSpace}>Prerequisite for:</span>
                             {this.state.prerequisite_for}
+                        </p>
+                    ) : null}
+                    {this.state.ge_list !== '' ? (
+                        <p>
+                            <span className={this.props.classes.rightSpace}>General Education Categories:</span>
+                            {this.state.ge_list}
                         </p>
                     ) : null}
                 </div>
