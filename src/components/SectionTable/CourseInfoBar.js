@@ -138,7 +138,7 @@ class CourseInfoBar extends PureComponent {
                     }}
                     style={{ marginRight: '4px' }}
                 >
-                    <InfoOutlinedIcon fontSize="small" marginRight={5} />
+                    <InfoOutlinedIcon fontSize="small" style={{ marginRight: '5px' }} />
                     {`${deptCode} ${courseNumber} | ${courseTitle}`}
                 </Button>
                 <Popover
