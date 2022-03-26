@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { IconButton, Tooltip } from '@material-ui/core';
-import { ArrowBack } from '@material-ui/icons';
+import { ArrowBack, Refresh } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
@@ -30,11 +30,11 @@ class CoursePaneButtonRow extends PureComponent {
                     </IconButton>
                 </Tooltip>
 
-                {/*<Tooltip title="Refresh Search Results">*/}
-                {/*    <IconButton onClick={this.fetchSearch} className={classes.button}>*/}
-                {/*        <Refresh />*/}
-                {/*    </IconButton>*/}
-                {/*</Tooltip>*/}
+                <Tooltip title="Refresh Search Results">
+                    <IconButton onClick={this.props.onRefreshSearch} className={classes.button}>
+                        <Refresh />
+                    </IconButton>
+                </Tooltip>
             </div>
         );
     }
