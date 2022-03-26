@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import InputMask from 'react-input-mask';
@@ -67,7 +67,7 @@ class OpenSpotAlertPopover extends PureComponent {
         const { classes, status } = this.props;
 
         return (
-            <Fragment>
+            <>
                 <Button
                     variant="outlined"
                     color="inherit"
@@ -113,7 +113,7 @@ class OpenSpotAlertPopover extends PureComponent {
                         </div>
                     </div>
                 </Popover>
-            </Fragment>
+            </>
         );
     }
 }

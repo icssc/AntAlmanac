@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import DaySelector from './DaySelector';
 import {
     Button,
@@ -105,7 +105,7 @@ class CustomEventDialog extends PureComponent {
 
     render() {
         return (
-            <Fragment>
+            <>
                 {this.props.customEvent ? (
                     <IconButton onClick={() => this.setState({ open: true })}>
                         <Edit fontSize="small" />
@@ -187,7 +187,7 @@ class CustomEventDialog extends PureComponent {
                         </Tooltip>
                     </DialogActions>
                 </Dialog>
-            </Fragment>
+            </>
         );
     }
 }

@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { Grid, Paper, Typography, withStyles, Collapse } from '@material-ui/core';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 
@@ -50,7 +50,7 @@ class SchoolDeptCard extends PureComponent {
                     >
                         {this.props.name}
                     </Typography>
-                    <Fragment>
+                    <>
                         <ExpandIcon
                             onClick={() =>
                                 this.setState({
@@ -66,7 +66,7 @@ class SchoolDeptCard extends PureComponent {
                             </Typography>
                             <div dangerouslySetInnerHTML={html} className={this.props.classes.comments} />
                         </Collapse>
-                    </Fragment>
+                    </>
                 </Paper>
             </Grid>
         );

@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import {
     Paper,
     Typography,
@@ -67,7 +67,7 @@ class SectionTable extends PureComponent {
         const encodedDept = encodeURIComponent(courseDetails.deptCode);
 
         return (
-            <Fragment>
+            <>
                 <div
                     style={{
                         display: 'inline-flex',
@@ -90,7 +90,7 @@ class SectionTable extends PureComponent {
                             redirectLink={courseDetails.prerequisiteLink}
                         />
                     ) : (
-                        <Fragment />
+                        <></>
                     )}
                     <CourseInfoButton
                         text="Zotistics"
@@ -171,7 +171,7 @@ class SectionTable extends PureComponent {
                         </TableBody>
                     </Table>
                 </TableContainer>
-            </Fragment>
+            </>
         );
     }
 }

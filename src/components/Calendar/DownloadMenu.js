@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Menu, MenuItem, MenuList, Button, Typography } from '@material-ui/core';
 import { GetApp } from '@material-ui/icons';
 import ScreenshotButton from './ScreenshotButton';
@@ -22,7 +22,7 @@ class DownloadMenu extends React.Component {
         const { anchorEl } = this.state;
 
         return (
-            <Fragment>
+            <>
                 <Tooltip title="Download">
                     <Button
                         onClick={this.handleClick}
@@ -57,7 +57,7 @@ class DownloadMenu extends React.Component {
                         </div>
                     </MenuList>
                 </Menu>
-            </Fragment>
+            </>
         );
     }
 }
