@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Button, Popover } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { MoreVert } from '@material-ui/icons';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { PETERPORTAL_REST_ENDPOINT } from '../../api/endpoints';
 
 const styles = () => ({
@@ -148,8 +148,8 @@ class CourseInfoBar extends PureComponent {
                     }}
                     style={{ marginRight: '4px' }}
                 >
+                    <InfoOutlinedIcon fontSize="small" style={{ marginRight: '5px' }} />
                     {`${deptCode} ${courseNumber} | ${courseTitle}`}
-                    <MoreVert fontSize="small" />
                 </Button>
                 <Popover
                     anchorEl={this.state.anchorEl}
