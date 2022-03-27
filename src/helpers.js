@@ -37,30 +37,42 @@ export async function getCoursesData(userData) {
 
             const jsonResp = await queryWebsoc(params);
 
-            for (const school of jsonResp.schools) {
-                for (const department of school.departments) {
-                    for (const course of department.courses) {
-                        for (const section of course.sections) {
-                            addedCourses.push({
-                                ...sectionCodeToInfoMapping[section.sectionCode],
-                                deptCode: department.deptCode,
-                                courseNumber: course.courseNumber,
-                                courseTitle: course.courseTitle,
-                                courseComment: course.courseComment,
-                                prerequisiteLink: course.prerequisiteLink,
-                                section: section,
-                            });
-                        }
-                    }
-                }
+            for (const [sectionCode, courseData] of Object.entries(getCourseInfo(jsonResp))) {
+                addedCourses.push({
+                    ...sectionCodeToInfoMapping[sectionCode],
+                    ...courseData.courseDetails,
+                    section: courseData.section,
+                });
             }
         }
     }
-
     return {
         addedCourses: addedCourses,
         customEvents: userData.customEvents,
     };
+}
+
+export function getCourseInfo(SOCObject) {
+    let courseInfo = {};
+    for (const school of SOCObject.schools) {
+        for (const department of school.departments) {
+            for (const course of department.courses) {
+                for (const section of course.sections) {
+                    courseInfo[section.sectionCode] = {
+                        courseDetails: {
+                            deptCode: department.deptCode,
+                            courseNumber: course.courseNumber,
+                            courseTitle: course.courseTitle,
+                            courseComment: course.courseComment,
+                            prerequisiteLink: course.prerequisiteLink,
+                        },
+                        section: section,
+                    };
+                }
+            }
+        }
+    }
+    return courseInfo;
 }
 
 const websocCache = {};
