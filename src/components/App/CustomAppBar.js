@@ -12,6 +12,7 @@ import { ReactComponent as MobileLogo } from './mobile-logo.svg';
 import News from './News';
 import AboutPage from './AboutPage';
 import ConditionalWrapper from './ConditionalWrapper';
+import ImportStudyList from './ImportStudyList';
 
 const styles = {
     appBar: {
@@ -63,6 +64,7 @@ const CustomAppBar = (props) => {
                     {[
                         <SettingsMenu />,
                         <NotificationHub />,
+                        <ImportStudyList />,
                         <Tooltip title="Give Us Feedback!">
                             <Button
                                 onClick={() => {
