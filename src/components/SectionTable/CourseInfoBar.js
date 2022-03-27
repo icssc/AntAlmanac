@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Button, Popover } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { MoreVert } from '@material-ui/icons';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { PETERPORTAL_REST_ENDPOINT } from '../../api/endpoints';
 
 const styles = () => ({
@@ -33,6 +33,7 @@ class CourseInfoBar extends PureComponent {
         prerequisite_text: null,
         prerequisite_for: null,
         description: null,
+        ge_list: null,
     };
 
     togglePopover = async (currentTarget) => {
@@ -59,6 +60,7 @@ class CourseInfoBar extends PureComponent {
                             prerequisite_text: jsonResp.prerequisite_text,
                             prerequisite_for: jsonResp.prerequisite_for.join(', '),
                             description: jsonResp.description,
+                            ge_list: jsonResp.ge_list.join(', '),
                         });
                     } else {
                         this.setState({
@@ -68,6 +70,7 @@ class CourseInfoBar extends PureComponent {
                             prerequisite_text: '',
                             prerequisite_for: '',
                             description: '',
+                            ge_list: '',
                         });
                     }
                 } catch (e) {
@@ -78,6 +81,7 @@ class CourseInfoBar extends PureComponent {
                         prerequisite_text: '',
                         prerequisite_for: '',
                         description: '',
+                        ge_list: '',
                     });
                 }
             }
@@ -119,6 +123,12 @@ class CourseInfoBar extends PureComponent {
                             {this.state.prerequisite_for}
                         </p>
                     ) : null}
+                    {this.state.ge_list !== '' ? (
+                        <p>
+                            <span className={this.props.classes.rightSpace}>General Education Categories:</span>
+                            {this.state.ge_list}
+                        </p>
+                    ) : null}
                 </div>
             );
         }
@@ -138,8 +148,8 @@ class CourseInfoBar extends PureComponent {
                     }}
                     style={{ marginRight: '4px' }}
                 >
+                    <InfoOutlinedIcon fontSize="small" style={{ marginRight: '5px' }} />
                     {`${deptCode} ${courseNumber} | ${courseTitle}`}
-                    <MoreVert fontSize="small" />
                 </Button>
                 <Popover
                     anchorEl={this.state.anchorEl}
