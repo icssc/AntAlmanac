@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { ArrowBack, Refresh } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
+import { withThemeCreator } from '@material-ui/styles';
 
 const styles = {
     buttonRow: {
@@ -15,6 +16,10 @@ const styles = {
         backgroundColor: 'rgba(236, 236, 236, 1)',
         marginRight: 5,
         boxShadow: 2,
+        color: 'black',
+        '&:hover': {
+            backgroundColor: 'grey',
+        },
     },
 };
 

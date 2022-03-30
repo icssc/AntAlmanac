@@ -103,10 +103,10 @@ class LoadSaveButtonBase extends PureComponent {
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => this.handleClose(true)} color="primary">
+                        <Button onClick={() => this.handleClose(true)} color="white">
                             Cancel
                         </Button>
-                        <Button onClick={() => this.handleClose(false)} color="primary">
+                        <Button onClick={() => this.handleClose(false)} color="white">
                             {this.props.actionName}
                         </Button>
                     </DialogActions>
