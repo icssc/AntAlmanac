@@ -241,7 +241,7 @@ export default class UCIMap extends PureComponent {
     };
 
     componentDidMount = () => {
-        this.createMarkers();
+        this.createMarkers(this.state.day);
         AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.on('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
     };
