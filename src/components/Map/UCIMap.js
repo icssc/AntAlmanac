@@ -290,8 +290,9 @@ export default class UCIMap extends PureComponent {
             // Get building code, get id of building code, which will get us the building data from buildingCatalogue
             const id = locations[buildingCode];
             const locationData = buildingCatalogue[id];
-
-            pins[buildingCode].reverse().forEach((event, stackIndex, arr) => {
+            const courses = pins[buildingCode];
+            for (let index = courses.length - 1; index >= 0; index--) {
+                const event = courses[index];
                 const courseString = `${event.title} ${event.sectionType} @ ${event.bldg}`;
                 if (locationData === undefined) return;
 
@@ -311,7 +312,7 @@ export default class UCIMap extends PureComponent {
                         lng={locationData.lng}
                         acronym={acronym}
                         index={this.state.day ? event.index.toString() : ''}
-                        stackIndex={arr.length - 1 - stackIndex}
+                        stackIndex={courses.length - 1 - index}
                     >
                         <>
                             <hr />
@@ -321,7 +322,7 @@ export default class UCIMap extends PureComponent {
                         </>
                     </MapMarkerPopup>
                 );
-            });
+            }
         }
         return markers;
     };
