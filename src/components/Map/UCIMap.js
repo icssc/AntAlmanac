@@ -228,7 +228,7 @@ export default class UCIMap extends PureComponent {
     };
 
     updateCurrentScheduleIndex = () => {
-        this.createMarkers();
+        this.createMarkers(this.state.day);
         this.generateRoute(this.state.day);
     };
 
@@ -236,7 +236,7 @@ export default class UCIMap extends PureComponent {
         this.setState({
             eventsInCalendar: AppStore.getEventsInCalendar(),
         });
-        this.createMarkers();
+        this.createMarkers(this.state.day);
         this.generateRoute(this.state.day);
     };
 
@@ -251,7 +251,7 @@ export default class UCIMap extends PureComponent {
         AppStore.removeListener('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
     };
 
-    createMarkers = () => {
+    createMarkers = (day) => {
         let pins = {};
         let courses = new Set();
         // Tracks courses that have already been pinned on the map, so there are no duplicates
@@ -264,7 +264,7 @@ export default class UCIMap extends PureComponent {
                         (
                             event.isCustomEvent ||
                             !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
-                            !event.start.toString().includes(DAYS[this.state.day]) ||
+                            !event.start.toString().includes(DAYS[day]) ||
                             courses.has(event.sectionCode) || // Remove duplicate courses that appear in the calendar
                             !courses.add(event.sectionCode)
                         ) // Adds to the set and return false
@@ -362,9 +362,9 @@ export default class UCIMap extends PureComponent {
                 <DayTabs
                     day={this.state.day}
                     setDay={(day) => {
-                        this.setState({ day: day });
-                        this.createMarkers();
+                        this.createMarkers(day);
                         this.generateRoute(day);
+                        this.setState({ day: day });
                     }}
                     handleSearch={this.handleSearch}
                 />
