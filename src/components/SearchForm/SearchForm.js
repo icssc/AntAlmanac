@@ -42,23 +42,6 @@ const styles = {
 };
 
 class SearchForm extends PureComponent {
-    /*
-    componentDidMount = () => {
-        this.form.addEventListener('keydown', this.enterEvent);
-    };
-
-    componentWillUnmount = () => {
-        this.form.removeEventListener('keydown', this.enterEvent);
-    };
-
-    enterEvent = (event) => {
-        if (event.code === 'Enter' || event.key === 'Enter') {
-            console.log("Enter is clicked")
-            event.preventDefault();
-            this.props.toggleSearch();
-        }
-    };
-    */
     onFormSubmit = (event) => {
         event.preventDefault();
         this.props.toggleSearch();
@@ -69,7 +52,6 @@ class SearchForm extends PureComponent {
 
         return (
             <form onSubmit={this.onFormSubmit}>
-                {/*<div className={classes.container} ref={(node) => (this.form = node)}*/}
                 <div className={classes.container}>
                     <div className={classes.margin}>
                         <TermSelector />
