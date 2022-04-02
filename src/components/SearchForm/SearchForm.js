@@ -42,64 +42,54 @@ const styles = {
 };
 
 class SearchForm extends PureComponent {
-    componentDidMount = () => {
-        document.addEventListener('keydown', this.enterEvent, false);
-    };
-
-    componentWillUnmount = () => {
-        document.removeEventListener('keydown', this.enterEvent, false);
-    };
-
-    enterEvent = (event) => {
-        const charCode = event.which ? event.which : event.keyCode;
-        if ((charCode === 13 || charCode === 10) && document.activeElement.id === 'downshift-0-input') {
-            this.props.searchWebSoc();
-            event.preventDefault();
-
-            return false;
-        }
+    onFormSubmit = (event) => {
+        event.preventDefault();
+        this.props.toggleSearch();
     };
 
     render() {
         const { classes } = this.props;
 
         return (
-            <div className={classes.container}>
-                <div className={classes.margin}>
-                    <TermSelector />
-                </div>
-
-                <div className={classes.margin}>
-                    <DeptSearchBar />
-                    <CourseNumberSearchBar />
-                </div>
-
-                <div className={classes.margin}>
-                    <GESelector />
-                    <SectionCodeSearchBar />
-                </div>
-
-                <AdvancedSearch />
-
-                <div className={classes.search}>
-                    <div className={classes.buttonContainer}>
-                        <Button
-                            className={classes.searchButton}
-                            color="primary"
-                            variant="contained"
-                            onClick={() => this.props.toggleSearch()}
-                        >
-                            Search
-                        </Button>
-
-                        <Button variant="contained" onClick={resetFormValues}>
-                            Reset
-                        </Button>
+            <form onSubmit={this.onFormSubmit}>
+                <div className={classes.container}>
+                    <div className={classes.margin}>
+                        <TermSelector />
                     </div>
-                </div>
 
-                <PrivacyPolicyBanner />
-            </div>
+                    <div className={classes.margin}>
+                        <DeptSearchBar />
+                        <CourseNumberSearchBar />
+                    </div>
+
+                    <div className={classes.margin}>
+                        <GESelector />
+                        <SectionCodeSearchBar />
+                    </div>
+
+                    <AdvancedSearch />
+
+                    <div className={classes.search}>
+                        <div className={classes.buttonContainer}>
+                            <Button
+                                className={classes.searchButton}
+                                color="primary"
+                                variant="contained"
+                                onClick={() => this.props.toggleSearch()}
+                                type="submit"
+                            >
+                                Search
+                            </Button>
+
+                            <Button variant="contained" onClick={resetFormValues}>
+                                Reset
+                            </Button>
+                        </div>
+                    </div>
+
+                    <PrivacyPolicyBanner />
+                </div>
+            </form>
         );
     }
 }
