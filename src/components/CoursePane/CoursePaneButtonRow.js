@@ -15,6 +15,10 @@ const styles = {
         backgroundColor: 'rgba(236, 236, 236, 1)',
         marginRight: 5,
         boxShadow: 2,
+        color: 'black',
+        '&:hover': {
+            backgroundColor: 'grey',
+        },
     },
 };
 
