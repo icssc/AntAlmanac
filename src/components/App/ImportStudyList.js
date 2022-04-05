@@ -8,7 +8,7 @@ import {
     DialogTitle,
     TextField,
 } from '@material-ui/core';
-import { queryWebsoc } from '../../helpers';
+import { getCourseInfo, queryWebsoc } from '../../helpers';
 import RightPaneStore from '../../stores/RightPaneStore';
 import { addCourse, openSnackbar } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
@@ -70,21 +70,12 @@ class ImportStudyList extends PureComponent {
                                     queryWebsoc({ term: this.state.selectedTerm, sectionCodes: sectionCode.join(',') })
                                 )
                         )
-                    )
-                        // TODO refactor to use helper function for extracting course info from WebSOC query
-                        .forEach((response) => {
-                            response.schools
-                                .map((school) => school.departments)
-                                .flat()
-                                .map((dept) => dept.courses)
-                                .flat()
-                                .forEach((course) => {
-                                    course.sections.forEach((section) => {
-                                        addCourse(section, course, this.state.selectedTerm, currSchedule);
-                                        ++sectionsAdded;
-                                    });
-                                });
-                        });
+                    ).forEach((response) => {
+                        for (const section of Object.values(getCourseInfo(response))) {
+                            addCourse(section.section, section.courseDetails, this.state.selectedTerm, currSchedule);
+                            ++sectionsAdded;
+                        }
+                    });
                     if (sectionsAdded === sectionCodes.length) {
                         openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
                     } else if (sectionsAdded !== 0) {
