@@ -1,3 +1,4 @@
+import AppStore from '../../stores/AppStore';
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Popover, IconButton } from '@material-ui/core';
@@ -40,10 +41,26 @@ class ColorPicker extends PureComponent {
             action: 'Change Course Color',
         });
     };
+    updateColor = (color) => {
+        console.log(color);
 
-    componentDidUpdate(prevProps) {
-        if (prevProps.color !== this.props.color) this.setState({ color: this.props.color });
-    }
+        if (color !== this.props.color) {
+            this.setState({ color: color });
+        }
+    };
+
+    componentDidMount = () => {
+        AppStore.registerColorPicker(
+            this.props.isCustomEvent ? this.props.customEventID : this.props.sectionCode,
+            this.updateColor
+        );
+    };
+    componentWillUnmount = () => {
+        AppStore.unregisterColorPicker(
+            this.props.isCustomEvent ? this.props.customEventID : this.props.sectionCode,
+            this.updateColor
+        );
+    };
 
     render() {
         return (

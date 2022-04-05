@@ -10,6 +10,7 @@ class AppStore extends EventEmitter {
         this.customEvents = [];
         this.addedCourses = [];
         this.addedSectionCodes = { 0: new Set(), 1: new Set(), 2: new Set(), 3: new Set() };
+        this.colorPickers = {};
         this.deletedCourses = [];
         this.snackbarMessage = '';
         this.snackbarVariant = 'info';
@@ -41,15 +42,6 @@ class AppStore extends EventEmitter {
     }
 
     getCustomEvents() {
-        // Note: remove this forEach loop after Spring 2022 ends
-        this.customEvents.forEach((customEvent) => {
-            if (customEvent.days.length === 5) {
-                customEvent.days = [false, ...customEvent.days, false];
-            } else if (customEvent.days.length === 6) {
-                customEvent.days = [...customEvent.days, false];
-            }
-        });
-
         return this.customEvents;
     }
 
@@ -102,6 +94,23 @@ class AppStore extends EventEmitter {
         for (const course of this.addedCourses) {
             for (const scheduleIndex of course.scheduleIndices) {
                 this.addedSectionCodes[scheduleIndex].add(`${course.section.sectionCode} ${course.term}`);
+            }
+        }
+    }
+
+    registerColorPicker(id, update) {
+        if (id in this.colorPickers) {
+            this.colorPickers[id].on('colorChange', update);
+        } else {
+            this.colorPickers[id] = new EventEmitter();
+            this.colorPickers[id].on('colorChange', update);
+        }
+    }
+    unregisterColorPicker(id, update) {
+        if (id in this.colorPickers) {
+            this.colorPickers[id].removeListener('colorChange', update);
+            if (this.colorPickers[id].listenerCount('colorChange') === 0) {
+                delete this.colorPickers[id];
             }
         }
     }
@@ -174,14 +183,16 @@ class AppStore extends EventEmitter {
                 this.finalsEventsInCalendar = calendarizeFinals();
                 this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.unsavedChanges = true;
-                this.emit('addedCoursesChange');
+                this.colorPickers[action.sectionCode].emit('colorChange', action.newColor);
+                this.emit('colorChange', false);
                 break;
             case 'CUSTOM_EVENT_COLOR_CHANGE':
                 this.customEvents = action.customEventsAfterColorChange;
                 this.finalsEventsInCalendar = calendarizeFinals();
                 this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.unsavedChanges = true;
-                this.emit('customEventsChange');
+                this.colorPickers[action.customEventID].emit('colorChange', action.newColor);
+                this.emit('colorChange', false);
                 break;
             case 'LOAD_SCHEDULE':
                 this.addedCourses = action.userData.addedCourses;
