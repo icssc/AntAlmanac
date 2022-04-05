@@ -1,30 +1,38 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Button } from '@material-ui/core';
+import { useMediaQuery } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 
-class CourseInfoButton extends PureComponent {
-    render() {
-        const { text, icon, redirectLink } = this.props;
-        return (
-            <Button
-                startIcon={icon}
-                variant="contained"
-                size="small"
-                style={{ marginRight: '4px', backgroundColor: '#385EB1', color: '#fff' }}
-                onClick={(event) => {
-                    window.open(redirectLink);
-                }}
-            >
-                {text}
-            </Button>
-        );
-    }
+const styles = {
+    button: {
+        marginRight: '4px',
+        backgroundColor: '#385EB1',
+        color: '#fff',
+    },
+};
+
+function CourseInfoButton({ classes, text, icon, redirectLink }) {
+    const isMobileScreen = useMediaQuery('(max-width: 750px)');
+    return (
+        <Button
+            className={classes.button}
+            startIcon={!isMobileScreen && icon}
+            variant="contained"
+            size="small"
+            onClick={(event) => {
+                window.open(redirectLink);
+            }}
+        >
+            {text}
+        </Button>
+    );
 }
 
 CourseInfoButton.propTypes = {
-    text: PropTypes.string.isRequired,
-    icon: PropTypes.object.isRequired,
-    redirectLink: PropTypes.string.isRequired,
+    text: PropTypes.string,
+    icon: PropTypes.object,
+    redirectLink: PropTypes.string,
 };
 
-export default CourseInfoButton;
+export default withStyles(styles)(CourseInfoButton);
