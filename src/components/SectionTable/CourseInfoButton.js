@@ -13,8 +13,7 @@ const styles = {
 };
 
 function CourseInfoButton({ classes, text, icon, redirectLink }) {
-    const isMobileScreen = useMediaQuery('max-width: 750px)');
-
+    const isMobileScreen = useMediaQuery('(max-width: 750px)');
     return (
         <Button
             className={classes.button}
