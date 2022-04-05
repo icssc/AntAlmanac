@@ -7,7 +7,7 @@
     "bugs": {
         "url": "https://antalmanac.com/feedback"
     },
-    "repository": "github:icssc-projects/antalmanac",
+    "repository": "github:icssc/antalmanac",
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",

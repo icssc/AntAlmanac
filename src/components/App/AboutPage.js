@@ -42,7 +42,7 @@ class AboutPage extends PureComponent {
                                 Discord
                             </Link>{' '}
                             or checkout the{' '}
-                            <Link target="_blank" href="https://github.com/icssc-projects/AntAlmanac">
+                            <Link target="_blank" href="https://github.com/icssc/AntAlmanac">
                                 code on GitHub
                             </Link>
                             .<br />

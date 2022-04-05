@@ -18,10 +18,10 @@ As you make changes to the React application in `src`, those changes will be aut
 The backend server **isn't necessary for frontend development**. By default, your frontend will send requests to `dev.api.antalmanac.com`, which has it's own database that is seperate from production's.
 
 If you need run the backend, you must do the following:
-- Update the `endpointTransform` function in [api/endpoints.js](https://github.com/icssc-projects/AntAlmanac/blob/main/src/api/endpoints.js#L2) to `return path;`. This will point it at the backend on `localhost:8080`
+- Update the `endpointTransform` function in [api/endpoints.js](https://github.com/icssc/AntAlmanac/blob/main/src/api/endpoints.js#L2) to `return path;`. This will point it at the backend on `localhost:8080`
 - Clone the backend repository  
-`git clone git@github.com:icssc-projects/antalmanac-backend.git`
-- Follow the setup instructions in [antalmanac-backend/README.md](https://github.com/icssc-projects/antalmanac-backend#readme)
+`git clone git@github.com:icssc/antalmanac-backend.git`
+- Follow the setup instructions in [antalmanac-backend/README.md](https://github.com/icssc/antalmanac-backend#readme)
 
 ## Deploying
 We use GitHub Pages to deploy our site. Only ICSSC Project Committee members with push access will be able to deploy the website.
