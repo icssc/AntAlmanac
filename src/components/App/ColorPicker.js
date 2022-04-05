@@ -42,8 +42,6 @@ class ColorPicker extends PureComponent {
         });
     };
     updateColor = (color) => {
-        console.log(color);
-
         if (color !== this.props.color) {
             this.setState({ color: color });
         }

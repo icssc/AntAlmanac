@@ -42,6 +42,15 @@ class AppStore extends EventEmitter {
     }
 
     getCustomEvents() {
+        // Note: remove this forEach loop after Spring 2022 ends
+        this.customEvents.forEach((customEvent) => {
+            if (customEvent.days.length === 5) {
+                customEvent.days = [false, ...customEvent.days, false];
+            } else if (customEvent.days.length === 6) {
+                customEvent.days = [...customEvent.days, false];
+            }
+        });
+
         return this.customEvents;
     }
 
