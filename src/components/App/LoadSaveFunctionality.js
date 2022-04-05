@@ -12,6 +12,7 @@ import {
 import { loadSchedule, saveSchedule } from '../../actions/AppStoreActions';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import { isDarkMode } from '../../helpers';
 
 class LoadSaveButtonBase extends PureComponent {
     state = {
@@ -103,10 +104,10 @@ class LoadSaveButtonBase extends PureComponent {
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => this.handleClose(true)} color="primary">
+                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'white' : 'primary'}>
                             Cancel
                         </Button>
-                        <Button onClick={() => this.handleClose(false)} color="primary">
+                        <Button onClick={() => this.handleClose(false)} color={isDarkMode() ? 'white' : 'primary'}>
                             {this.props.actionName}
                         </Button>
                     </DialogActions>
