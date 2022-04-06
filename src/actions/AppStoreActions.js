@@ -35,7 +35,7 @@ const arrayOfColors = [
     blueGrey[500],
 ];
 
-export const addCourse = (section, courseDetails, term, scheduleIndex, color) => {
+export const addCourse = (section, courseDetails, term, scheduleIndex, color, quiet) => {
     const addedCourses = AppStore.getAddedCourses();
     const terms = termsInSchedule(addedCourses, term, scheduleIndex);
     let existingCourse;
@@ -51,7 +51,7 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
         }
     }
 
-    if (terms.size > 1) warnMultipleTerms(terms);
+    if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 
     if (color === undefined) {
         const setOfUsedColors = new Set(addedCourses.map((course) => course.color));
