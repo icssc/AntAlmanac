@@ -8,9 +8,9 @@ import {
     DialogTitle,
     TextField,
 } from '@material-ui/core';
-import { getCourseInfo, queryWebsoc } from '../../helpers';
+import { addCoursesMultiple, combineSOCObjects, getCourseInfo, queryWebsoc } from '../../helpers';
 import RightPaneStore from '../../stores/RightPaneStore';
-import { addCourse, openSnackbar } from '../../actions/AppStoreActions';
+import { openSnackbar } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
 import { PostAdd } from '@material-ui/icons';
 import { termData } from '../../termData';
@@ -55,27 +55,32 @@ class ImportStudyList extends PureComponent {
                     return;
                 }
                 const currSchedule = AppStore.getCurrentScheduleIndex();
-                let sectionsAdded = 0;
                 try {
-                    (
-                        await Promise.all(
-                            sectionCodes
-                                .reduce((result, item, index) => {
-                                    // WebSOC queries can have a maximum of 10 course codes in tandem
-                                    const chunkIndex = Math.floor(index / 10);
-                                    result[chunkIndex] ? result[chunkIndex].push(item) : (result[chunkIndex] = [item]);
-                                    return result;
-                                }, []) // https://stackoverflow.com/a/37826698
-                                .map((sectionCode) =>
-                                    queryWebsoc({ term: this.state.selectedTerm, sectionCodes: sectionCode.join(',') })
+                    const sectionsAdded = addCoursesMultiple(
+                        getCourseInfo(
+                            combineSOCObjects(
+                                await Promise.all(
+                                    sectionCodes
+                                        .reduce((result, item, index) => {
+                                            // WebSOC queries can have a maximum of 10 course codes in tandem
+                                            const chunkIndex = Math.floor(index / 10);
+                                            result[chunkIndex]
+                                                ? result[chunkIndex].push(item)
+                                                : (result[chunkIndex] = [item]);
+                                            return result;
+                                        }, []) // https://stackoverflow.com/a/37826698
+                                        .map((sectionCode) =>
+                                            queryWebsoc({
+                                                term: this.state.selectedTerm,
+                                                sectionCodes: sectionCode.join(','),
+                                            })
+                                        )
                                 )
-                        )
-                    ).forEach((response) => {
-                        for (const section of Object.values(getCourseInfo(response))) {
-                            addCourse(section.section, section.courseDetails, this.state.selectedTerm, currSchedule);
-                            ++sectionsAdded;
-                        }
-                    });
+                            )
+                        ),
+                        this.state.selectedTerm,
+                        currSchedule
+                    );
                     if (sectionsAdded === sectionCodes.length) {
                         openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
                     } else if (sectionsAdded !== 0) {
