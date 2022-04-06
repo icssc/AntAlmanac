@@ -1,4 +1,4 @@
-name: Deploy Dev
+name: CI/CD
 on: 
   workflow_dispatch:
 
@@ -8,8 +8,17 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
+  DeployDev:
+    name: Deploy to Dev stack
     runs-on: ubuntu-latest
+    environment:
+      name: Dev
+    env:
+      MONGODB_URI_DEV: ${{ secrets.MONGODB_URI_DEV }}
+      MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
+      HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
+      CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+      
     steps:
       - name: Clone Repository
         uses: actions/checkout@v3
@@ -20,7 +29,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
-          role-to-assume: arn:aws:iam::990864464737:role/GithubActionsRole
+          role-to-assume: ${{ secrets.ACTIONS_IAM_ROLE }}
           aws-region: us-east-1
 
       - uses: actions/setup-node@v2
@@ -35,3 +44,41 @@ jobs:
 
       - name: Deploy stack
         run: npx cdk deploy dev-us-east-1-Backend
+          
+  DeployProd:
+    name: Deploy to Prod stack
+    runs-on: ubuntu-latest
+    needs: [DeployDev]
+    environment:
+      name: Prod
+    env:
+      MONGODB_URI_DEV: ${{ secrets.MONGODB_URI_DEV }}
+      MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
+      HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
+      CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          submodules: true
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          role-to-assume: ${{ secrets.ACTIONS_IAM_ROLE }}
+          aws-region: us-east-1
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+
+      - name: Install Packages
+        run: npm install
+
+      - name: Synth stack
+        run: npx cdk synth
+
+      - name: Deploy stack
+        run: npx cdk deploy dev-us-west-1-Backend
