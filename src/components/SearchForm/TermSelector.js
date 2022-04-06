@@ -35,8 +35,10 @@ class TermSelector extends PureComponent {
             <FormControl fullWidth>
                 <InputLabel>Term</InputLabel>
                 <Select value={this.state.term} onChange={this.handleChange}>
-                    {termData.map((term) => (
-                        <MenuItem value={term.shortName}>{term.longName}</MenuItem>
+                    {termData.map((term, index) => (
+                        <MenuItem key={index} value={term.shortName}>
+                            {term.longName}
+                        </MenuItem>
                     ))}
                 </Select>
             </FormControl>
