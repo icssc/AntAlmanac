@@ -1,4 +1,4 @@
-import { openSnackbar } from './actions/AppStoreActions';
+import { addCourse, openSnackbar } from './actions/AppStoreActions';
 import { PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from './api/endpoints';
 import AppStore from './stores/AppStore';
 
@@ -151,6 +151,22 @@ export async function queryWebsocMultiple(params, fieldName) {
     }
     return combineSOCObjects(responses);
 }
+
+export const termsInSchedule = (courses, term, scheduleIndex) =>
+    new Set([
+        term,
+        ...courses.filter((course) => course.scheduleIndices.includes(scheduleIndex)).map((course) => course.term),
+    ]);
+
+export const warnMultipleTerms = (terms) => {
+    openSnackbar(
+        'warning',
+        `Course added from different term.\nSchedule now contains courses from ${[...terms].sort().join(', ')}.`,
+        null,
+        null,
+        { whiteSpace: 'pre-line' }
+    );
+};
 
 export function clickToCopy(event, sectionCode) {
     event.stopPropagation();
