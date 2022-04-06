@@ -152,6 +152,17 @@ export async function queryWebsocMultiple(params, fieldName) {
     return combineSOCObjects(responses);
 }
 
+export const addCoursesMultiple = (courseInfo, term, scheduleIndex) => {
+    let sectionsAdded = 0;
+    for (const section of Object.values(courseInfo)) {
+        addCourse(section.section, section.courseDetails, term, scheduleIndex, undefined, true);
+        ++sectionsAdded;
+    }
+    const terms = termsInSchedule(AppStore.getAddedCourses(), term, scheduleIndex);
+    if (terms.size > 1) warnMultipleTerms(terms);
+    return sectionsAdded;
+};
+
 export const termsInSchedule = (courses, term, scheduleIndex) =>
     new Set([
         term,
