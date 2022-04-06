@@ -42,7 +42,7 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
     let multipleTerms = new Set([term]);
 
     for (const course of addedCourses) {
-        multipleTerms.add(course.term);
+        if (course.scheduleIndices.includes(scheduleIndex)) multipleTerms.add(course.term);
 
         if (course.section.sectionCode === section.sectionCode && term === course.term) {
             existingCourse = course;
