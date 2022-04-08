@@ -1,4 +1,4 @@
-import React, { PureComponent, useEffect } from 'react';
+import React, { PureComponent } from 'react';
 import { CloudDownload, Save } from '@material-ui/icons';
 import {
     Button,
@@ -118,16 +118,6 @@ class LoadSaveButtonBase extends PureComponent {
 }
 
 const LoadSaveScheduleFunctionality = () => {
-    useEffect(() => {
-        if (typeof Storage !== 'undefined') {
-            const savedUserID = window.localStorage.getItem('userID');
-
-            if (savedUserID != null) {
-                loadSchedule(savedUserID, true);
-            }
-        }
-    }, []);
-
     return (
         <>
             <LoadSaveButtonBase actionName={'Save'} action={saveSchedule} />

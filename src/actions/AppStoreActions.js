@@ -17,7 +17,7 @@ import {
     teal,
 } from '@material-ui/core/colors';
 import { getCoursesData } from '../helpers';
-import { LOAD_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '../api/endpoints';
+import { LOAD_DATA_ENDPOINT, SAVE_DATA_ENDPOINT, AUTH_ENDPOINT } from '../api/endpoints';
 
 const arrayOfColors = [
     red[500],
@@ -108,6 +108,93 @@ export const openSnackbar = (variant, message, duration, position, style) => {
         position: position,
         style: style,
     });
+};
+
+export const login = async () => {
+    window.location.href = AUTH_ENDPOINT + '/google';
+};
+
+export const logout = async () => {
+    window.location.href = AUTH_ENDPOINT + '/logout';
+};
+
+export const checkUser = async () => {
+    try {
+        const resp = await fetch(AUTH_ENDPOINT, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+        });
+        const json = await resp.json();
+        return json && 'passport' in json && json;
+    } catch (e) {
+        return false;
+    }
+};
+export const saveUser = async (user) => {
+    const addedCourses = AppStore.getAddedCourses();
+    const customEvents = AppStore.getCustomEvents();
+
+    const userData = { addedCourses: [], customEvents: customEvents };
+
+    userData.addedCourses = addedCourses.map((course) => {
+        return {
+            color: course.color,
+            term: course.term,
+            sectionCode: course.section.sectionCode,
+            scheduleIndices: course.scheduleIndices,
+        };
+    });
+
+    try {
+        await fetch(AUTH_ENDPOINT + '/saveUserData', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ userData }),
+        });
+
+        openSnackbar(
+            'success',
+            `Schedule saved under username "${user.passport.user.id}". Don't forget to sign up for classes on WebReg!`
+        );
+
+        dispatcher.dispatch({
+            type: 'SAVE_SCHEDULE',
+        });
+    } catch (e) {
+        openSnackbar('error', `Schedule could not be saved under username "${user.passport.user.id}`);
+    }
+};
+export const loadUser = async (user) => {
+    if (
+        !AppStore.hasUnsavedChanges() ||
+        window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`)
+    ) {
+        try {
+            const data = await fetch(AUTH_ENDPOINT + '/loadUserData', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+            });
+
+            const json = await data.json();
+
+            dispatcher.dispatch({
+                type: 'LOAD_SCHEDULE',
+                userData: await getCoursesData(json.userData),
+            });
+            openSnackbar('success', `Schedule for username "${user.passport.user.id}" loaded.`);
+            return true;
+        } catch (e) {
+            openSnackbar('error', `Couldn't find schedules for username "${user.passport.user.id}".`);
+            return false;
+        }
+    }
 };
 
 export const saveSchedule = async (userID, rememberMe) => {

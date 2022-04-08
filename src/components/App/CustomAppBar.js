@@ -1,6 +1,7 @@
 import React from 'react';
 import { AppBar, Button, Toolbar, Tooltip, Menu, useMediaQuery } from '@material-ui/core';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
+import AccountBase from './AccountBase';
 import { Assignment } from '@material-ui/icons';
 import MenuIcon from '@material-ui/icons/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -48,6 +49,7 @@ const CustomAppBar = (props) => {
 
                 <div style={{ flexGrow: '1' }} />
 
+                <AccountBase />
                 <LoadSaveScheduleFunctionality />
 
                 <ConditionalWrapper

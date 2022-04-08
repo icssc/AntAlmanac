@@ -1,8 +1,13 @@
 function endpointTransform(path) {
-    if (process.env.NODE_ENV === 'development') return `https://dev.api.antalmanac.com${path}`;
+    console.log(process.env.ENDPOINT_URL);
+    if (process.env.NODE_ENV === 'development')
+        return process.env.REACT_APP_ENDPOINT_URL
+            ? process.env.REACT_APP_ENDPOINT_URL + path
+            : `https://dev.api.antalmanac.com${path}`;
     else return `https://api.antalmanac.com${path}`;
 }
 
+export const AUTH_ENDPOINT = endpointTransform('/api/auth');
 export const WEBSOC_ENDPOINT = endpointTransform('/api/websocapi');
 export const LOOKUP_NOTIFICATIONS_ENDPOINT = endpointTransform('/api/notifications/lookupNotifications');
 export const REGISTER_NOTIFICATIONS_ENDPOINT = endpointTransform('/api/notifications/registerNotifications');
