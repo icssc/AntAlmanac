@@ -12,6 +12,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import ReactGA from 'react-ga';
 import ConditionalWrapper from '../App/ConditionalWrapper';
+import AddScheduleDialog from './AddScheduleDialog';
 
 const styles = {
     toolbar: {
@@ -37,6 +38,7 @@ const styles = {
     },
     scheduleSelector: {
         marginLeft: '10px',
+        maxWidth: '9rem',
     },
 };
 
@@ -61,12 +63,14 @@ const CalendarPaneToolbar = (props) => {
 
     return (
         <Paper elevation={0} variant="outlined" square className={classes.toolbar}>
+            <AddScheduleDialog />
+
             <Select
                 className={classes.scheduleSelector}
                 value={props.currentScheduleIndex}
                 onChange={handleScheduleChange}
             >
-                <MenuItem value={0}>Schedule 1</MenuItem>
+                <MenuItem value={0}>Schedule 1 Schedule 1 Schedule 1 Schedule 1</MenuItem>
                 <MenuItem value={1}>Schedule 2</MenuItem>
                 <MenuItem value={2}>Schedule 3</MenuItem>
                 <MenuItem value={3}>Schedule 4</MenuItem>
