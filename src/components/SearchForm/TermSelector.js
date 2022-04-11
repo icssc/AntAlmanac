@@ -3,7 +3,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import { updateFormValue } from '../../actions/RightPaneActions';
 import RightPaneStore from '../../stores/RightPaneStore.js';
 import { termData } from '../../termData';
 
@@ -27,7 +26,7 @@ class TermSelector extends PureComponent {
 
     handleChange = (event) => {
         this.setState({ term: event.target.value });
-        updateFormValue('term', event.target.value);
+        this.props.changeState(this.props.fieldName, event.target.value);
     };
 
     render() {
@@ -35,8 +34,10 @@ class TermSelector extends PureComponent {
             <FormControl fullWidth>
                 <InputLabel>Term</InputLabel>
                 <Select value={this.state.term} onChange={this.handleChange}>
-                    {termData.map((term) => (
-                        <MenuItem value={term.shortName}>{term.longName}</MenuItem>
+                    {termData.map((term, index) => (
+                        <MenuItem key={index} value={term.shortName}>
+                            {term.longName}
+                        </MenuItem>
                     ))}
                 </Select>
             </FormControl>

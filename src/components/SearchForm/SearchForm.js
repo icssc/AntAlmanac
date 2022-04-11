@@ -8,7 +8,7 @@ import { Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AdvancedSearch from './AdvancedSearch';
 import PrivacyPolicyBanner from '../App/PrivacyPolicyBanner';
-import { resetFormValues } from '../../actions/RightPaneActions';
+import { updateFormValue, resetFormValues } from '../../actions/RightPaneActions';
 
 const styles = {
     container: {
@@ -54,7 +54,7 @@ class SearchForm extends PureComponent {
             <form onSubmit={this.onFormSubmit}>
                 <div className={classes.container}>
                     <div className={classes.margin}>
-                        <TermSelector />
+                        <TermSelector changeState={updateFormValue} fieldName={'term'} />
                     </div>
 
                     <div className={classes.margin}>

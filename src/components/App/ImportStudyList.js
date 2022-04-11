@@ -13,15 +13,13 @@ import RightPaneStore from '../../stores/RightPaneStore';
 import { addCourse, openSnackbar } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
 import { PostAdd } from '@material-ui/icons';
-import { termData } from '../../termData';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import { withStyles } from '@material-ui/core/styles';
+import TermSelector from '../SearchForm/TermSelector';
 
 const styles = {
-    input: {
-        'margin-top': '10px',
+    inputLabel: {
+        'font-size': '9px',
     },
 };
 
@@ -30,6 +28,10 @@ class ImportStudyList extends PureComponent {
         isOpen: false,
         selectedTerm: RightPaneStore.getFormData().term,
         studyListText: '',
+    };
+
+    onTermSelectorChange = (field, value) => {
+        this.setState({ [field]: value });
     };
 
     handleChange = (event) => {
@@ -135,32 +137,20 @@ class ImportStudyList extends PureComponent {
                             Study List once you've logged in. Copy everything below the column names (Code, Dept, etc.)
                             under the Enrolled Classes section.
                         </DialogContentText>
-                        <div className={classes.input}>
-                            <InputLabel>Study List</InputLabel>
-                            <TextField
-                                autoFocus
-                                fullWidth
-                                multiline
-                                margin="dense"
-                                type="text"
-                                placeholder="Paste here"
-                                value={this.state.studyListText}
-                                onChange={(event) => this.setState({ studyListText: event.target.value })}
-                            />
-                        </div>
+                        <InputLabel className={classes.inputLabel}>Study List</InputLabel>
+                        <TextField
+                            autoFocus
+                            fullWidth
+                            multiline
+                            margin="dense"
+                            type="text"
+                            placeholder="Paste here"
+                            value={this.state.studyListText}
+                            onChange={(event) => this.setState({ studyListText: event.target.value })}
+                        />
                         <br />
                         <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
-                        {/* TODO refactor to use a modified TermSelector */}
-                        <div className={classes.input}>
-                            <InputLabel>Term</InputLabel>
-                            <Select value={this.state.selectedTerm} onChange={this.handleChange}>
-                                {termData.map((term, index) => (
-                                    <MenuItem key={index} value={term.shortName}>
-                                        {term.longName}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </div>
+                        <TermSelector changeState={this.onTermSelectorChange} fieldName={'selectedTerm'} />
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => this.handleClose(false)} color="primary">
