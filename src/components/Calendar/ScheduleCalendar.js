@@ -148,14 +148,14 @@ class ScheduleCalendar extends PureComponent {
         AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.on('customEventsChange', this.updateEventsInCalendar);
         AppStore.on('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
-        AppStore.on('addedSchedule', this.updateScheduleNames);
+        AppStore.on('scheduleNamesChange', this.updateScheduleNames);
     };
 
     componentWillUnmount = () => {
         AppStore.removeListener('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.removeListener('customEventsChange', this.updateEventsInCalendar);
         AppStore.removeListener('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
-        AppStore.removeListener('addedSchedule', this.updateScheduleNames);
+        AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
     };
 
     handleTakeScreenshot = async (html2CanvasScreenshot) => {

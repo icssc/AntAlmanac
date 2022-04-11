@@ -85,14 +85,14 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
             courseTitle: courseDetails.courseTitle,
             courseComment: courseDetails.courseComment,
             prerequisiteLink: courseDetails.prerequisiteLink,
-            scheduleIndices: scheduleIndex === 4 ? [0, 1, 2, 3] : [scheduleIndex],
+            scheduleIndices: [scheduleIndex],
             section: section,
         };
         dispatcher.dispatch({ type: 'ADD_COURSE', newCourse });
     } else {
         const newSection = {
             ...existingCourse,
-            scheduleIndices: scheduleIndex === 4 ? [0, 1, 2, 3] : existingCourse.scheduleIndices.concat(scheduleIndex),
+            scheduleIndices: existingCourse.scheduleIndices.concat(scheduleIndex),
         };
         dispatcher.dispatch({ type: 'ADD_SECTION', newSection });
     }
