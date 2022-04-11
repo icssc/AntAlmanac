@@ -398,3 +398,10 @@ export const toggleTheme = (radioGroupEvent) => {
         action: 'toggle theme',
     });
 };
+
+export const addSchedule = (scheduleName) => {
+    dispatcher.dispatch({
+        type: 'ADD_SCHEDULE',
+        scheduleName,
+    });
+};

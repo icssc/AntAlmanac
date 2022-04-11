@@ -26,6 +26,7 @@ const styles = () => ({
 class AddScheduleDialog extends PureComponent {
     state = {
         isOpen: false,
+        scheduleName: '',
     };
 
     handleOpen = () => {
@@ -36,7 +37,14 @@ class AddScheduleDialog extends PureComponent {
         this.setState({ isOpen: false });
     };
 
-    handleAdd = () => {};
+    handleNameChange = (event) => {
+        this.setState({ scheduleName: event.target.value });
+    };
+
+    handleAdd = () => {
+        this.props.onNameChange(this.state.scheduleName);
+        this.setState({ isOpen: false });
+    };
 
     render() {
         return (
@@ -49,11 +57,12 @@ class AddScheduleDialog extends PureComponent {
                 <Dialog open={this.state.isOpen} fullWidth>
                     <DialogTitle>Add a New Schedule</DialogTitle>
                     <DialogContent>
-                        <FormControl className={this.props.classes.formContainer} fullWidth>
+                        <FormControl fullWidth>
                             <TextField
                                 className={this.props.classes.textField}
                                 label="Name"
                                 placeholder="Schedule 2"
+                                onChange={this.handleNameChange}
                                 required
                             />
                             <TextField

@@ -19,6 +19,7 @@ class AppStore extends EventEmitter {
         this.eventsInCalendar = [];
         this.finalsEventsInCalendar = [];
         this.unsavedChanges = false;
+        this.scheduleNames = ['Schedule 1', 'Schedule 2', 'Schedule 3', 'Schedule 4'];
         this.theme = (() => {
             // either 'light', 'dark', or 'auto'
             const theme = typeof Storage === 'undefined' ? 'auto' : window.localStorage.getItem('theme');
@@ -35,6 +36,34 @@ class AppStore extends EventEmitter {
     getCurrentScheduleIndex() {
         return this.currentScheduleIndex;
     }
+
+    getScheduleNames() {
+        return this.scheduleNames;
+    }
+
+    // getScheduleNames() {
+    //     let indices = new Set();
+
+    //     this.eventsInCalendar.forEach((event) => {
+    //         event.scheduleIndices.forEach((index) => {
+    //             indices.add(index);
+    //         });
+    //     });
+
+    //     this.eventsInCalendar.forEach((event) => {
+
+    //     });
+
+    //     if (indices.size === 0) {
+    //         return ["Schedule 1"];
+    //     }
+
+    //     let names = [];
+    //     for (let i = 1; i <= indices.size; i++) {
+    //         names.push(`Schedule ${i}`);
+    //     }
+    //     return names;
+    // }
 
     getAddedCourses() {
         return this.addedCourses;
@@ -225,6 +254,9 @@ class AppStore extends EventEmitter {
                 this.theme = action.theme;
                 this.emit('themeToggle');
                 window.localStorage.setItem('theme', action.theme);
+                break;
+            case 'ADD_SCHEDULE':
+                this.scheduleNames.push(action.scheduleName);
                 break;
             default: //do nothing
         }

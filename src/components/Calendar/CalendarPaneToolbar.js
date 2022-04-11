@@ -13,6 +13,8 @@ import Select from '@material-ui/core/Select';
 import ReactGA from 'react-ga';
 import ConditionalWrapper from '../App/ConditionalWrapper';
 import AddScheduleDialog from './AddScheduleDialog';
+import AppStore from '../../stores/AppStore';
+import { addSchedule } from '../../actions/AppStoreActions';
 
 const styles = {
     toolbar: {
@@ -61,19 +63,29 @@ const CalendarPaneToolbar = (props) => {
         setAnchorEl(null);
     };
 
+    const [scheduleNames, setScheduleNames] = React.useState(AppStore.getScheduleNames());
+
+    const handleScheduleNameChange = (scheduleName) => {
+        setScheduleNames((prev) => [...prev, scheduleName]);
+        addSchedule(scheduleName);
+    };
+
     return (
         <Paper elevation={0} variant="outlined" square className={classes.toolbar}>
-            <AddScheduleDialog />
+            <AddScheduleDialog onNameChange={handleScheduleNameChange} />
 
             <Select
                 className={classes.scheduleSelector}
                 value={props.currentScheduleIndex}
                 onChange={handleScheduleChange}
             >
-                <MenuItem value={0}>Schedule 1 Schedule 1 Schedule 1 Schedule 1</MenuItem>
+                {/* <MenuItem value={0}>Schedule 1</MenuItem>
                 <MenuItem value={1}>Schedule 2</MenuItem>
                 <MenuItem value={2}>Schedule 3</MenuItem>
-                <MenuItem value={3}>Schedule 4</MenuItem>
+                <MenuItem value={3}>Schedule 4</MenuItem> */}
+                {scheduleNames.map((name, index) => (
+                    <MenuItem value={index}>{name}</MenuItem>
+                ))}
             </Select>
 
             <Tooltip title="Toggle showing finals schedule">
