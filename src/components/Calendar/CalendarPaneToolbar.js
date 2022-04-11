@@ -13,8 +13,6 @@ import Select from '@material-ui/core/Select';
 import ReactGA from 'react-ga';
 import ConditionalWrapper from '../App/ConditionalWrapper';
 import AddScheduleDialog from './AddScheduleDialog';
-import AppStore from '../../stores/AppStore';
-import { addSchedule } from '../../actions/AppStoreActions';
 
 const styles = {
     toolbar: {
@@ -63,16 +61,9 @@ const CalendarPaneToolbar = (props) => {
         setAnchorEl(null);
     };
 
-    const [scheduleNames, setScheduleNames] = React.useState(AppStore.getScheduleNames());
-
-    const handleScheduleNameChange = (scheduleName) => {
-        setScheduleNames((prev) => [...prev, scheduleName]);
-        addSchedule(scheduleName);
-    };
-
     return (
         <Paper elevation={0} variant="outlined" square className={classes.toolbar}>
-            <AddScheduleDialog onNameChange={handleScheduleNameChange} />
+            <AddScheduleDialog />
 
             <Select
                 className={classes.scheduleSelector}
@@ -83,7 +74,7 @@ const CalendarPaneToolbar = (props) => {
                 <MenuItem value={1}>Schedule 2</MenuItem>
                 <MenuItem value={2}>Schedule 3</MenuItem>
                 <MenuItem value={3}>Schedule 4</MenuItem> */}
-                {scheduleNames.map((name, index) => (
+                {props.scheduleNames.map((name, index) => (
                     <MenuItem value={index}>{name}</MenuItem>
                 ))}
             </Select>

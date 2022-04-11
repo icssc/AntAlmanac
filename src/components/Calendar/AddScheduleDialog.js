@@ -11,6 +11,7 @@ import {
 } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
+import { addSchedule } from '../../actions/AppStoreActions';
 
 const styles = () => ({
     addButton: {
@@ -42,7 +43,7 @@ class AddScheduleDialog extends PureComponent {
     };
 
     handleAdd = () => {
-        this.props.onNameChange(this.state.scheduleName);
+        addSchedule(this.state.scheduleName);
         this.setState({ isOpen: false });
     };
 

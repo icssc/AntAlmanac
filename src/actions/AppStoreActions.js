@@ -400,8 +400,10 @@ export const toggleTheme = (radioGroupEvent) => {
 };
 
 export const addSchedule = (scheduleName) => {
+    const newScheduleNames = [...AppStore.getScheduleNames(), scheduleName];
+
     dispatcher.dispatch({
         type: 'ADD_SCHEDULE',
-        scheduleName,
+        newScheduleNames,
     });
 };

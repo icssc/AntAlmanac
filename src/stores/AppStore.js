@@ -256,7 +256,8 @@ class AppStore extends EventEmitter {
                 window.localStorage.setItem('theme', action.theme);
                 break;
             case 'ADD_SCHEDULE':
-                this.scheduleNames.push(action.scheduleName);
+                this.scheduleNames = action.newScheduleNames;
+                this.emit('addedSchedule');
                 break;
             default: //do nothing
         }
