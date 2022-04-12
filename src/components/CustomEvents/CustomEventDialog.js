@@ -166,6 +166,7 @@ class CustomEventDialog extends PureComponent {
                             scheduleIndices={this.state.scheduleIndices}
                             onSelectScheduleIndices={this.handleSelectScheduleIndices}
                             customEvent={this.props.customEvent}
+                            scheduleNames={this.props.scheduleNames}
                         />
                     </DialogContent>
 

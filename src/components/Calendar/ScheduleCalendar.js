@@ -280,6 +280,7 @@ class ScheduleCalendar extends PureComponent {
                             closePopover={this.handleClosePopover}
                             courseInMoreInfo={this.state.courseInMoreInfo}
                             currentScheduleIndex={this.state.currentScheduleIndex}
+                            scheduleNames={this.state.scheduleNames}
                         />
                     </Popper>
                     <Calendar
