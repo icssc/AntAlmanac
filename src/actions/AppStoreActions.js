@@ -16,7 +16,7 @@ import {
     red,
     teal,
 } from '@material-ui/core/colors';
-import { getCoursesData } from '../helpers';
+import { getCoursesData, termsInSchedule, warnMultipleTerms } from '../helpers';
 import { LOAD_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '../api/endpoints';
 
 const arrayOfColors = [
@@ -35,15 +35,12 @@ const arrayOfColors = [
     blueGrey[500],
 ];
 
-export const addCourse = (section, courseDetails, term, scheduleIndex, color) => {
+export const addCourse = (section, courseDetails, term, scheduleIndex, color, quiet) => {
     const addedCourses = AppStore.getAddedCourses();
-
+    const terms = termsInSchedule(addedCourses, term, scheduleIndex);
     let existingCourse;
-    let multipleTerms = new Set([term]);
 
     for (const course of addedCourses) {
-        multipleTerms.add(course.term);
-
         if (course.section.sectionCode === section.sectionCode && term === course.term) {
             existingCourse = course;
             if (course.scheduleIndices.includes(scheduleIndex)) {
@@ -54,16 +51,7 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
         }
     }
 
-    if (multipleTerms.size > 1)
-        openSnackbar(
-            'warning',
-            `Course added from different term.\nSchedule now contains courses from ${[...multipleTerms]
-                .sort()
-                .join(', ')}.`,
-            null,
-            null,
-            { whiteSpace: 'pre-line' }
-        );
+    if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 
     if (color === undefined) {
         const setOfUsedColors = new Set(addedCourses.map((course) => course.color));
