@@ -9,6 +9,7 @@ import { withStyles } from '@material-ui/core/styles';
 import AdvancedSearch from './AdvancedSearch';
 import PrivacyPolicyBanner from '../App/PrivacyPolicyBanner';
 import { updateFormValue, resetFormValues } from '../../actions/RightPaneActions';
+import FuzzySearch from './FuzzySearch';
 
 const styles = {
     container: {
@@ -51,45 +52,48 @@ class SearchForm extends PureComponent {
         const { classes } = this.props;
 
         return (
-            <form onSubmit={this.onFormSubmit}>
-                <div className={classes.container}>
-                    <div className={classes.margin}>
-                        <TermSelector changeState={updateFormValue} fieldName={'term'} />
-                    </div>
-
-                    <div className={classes.margin}>
-                        <DeptSearchBar />
-                        <CourseNumberSearchBar />
-                    </div>
-
-                    <div className={classes.margin}>
-                        <GESelector />
-                        <SectionCodeSearchBar />
-                    </div>
-
-                    <AdvancedSearch />
-
-                    <div className={classes.search}>
-                        <div className={classes.buttonContainer}>
-                            <Button
-                                className={classes.searchButton}
-                                color="primary"
-                                variant="contained"
-                                onClick={() => this.props.toggleSearch()}
-                                type="submit"
-                            >
-                                Search
-                            </Button>
-
-                            <Button variant="contained" onClick={resetFormValues}>
-                                Reset
-                            </Button>
+            <>
+                <FuzzySearch toggleSearch={this.props.toggleSearch} />
+                <form onSubmit={this.onFormSubmit}>
+                    <div className={classes.container}>
+                        <div className={classes.margin}>
+                            <TermSelector changeState={updateFormValue} fieldName={'term'} />
                         </div>
-                    </div>
 
-                    <PrivacyPolicyBanner />
-                </div>
-            </form>
+                        <div className={classes.margin}>
+                            <DeptSearchBar />
+                            <CourseNumberSearchBar />
+                        </div>
+
+                        <div className={classes.margin}>
+                            <GESelector />
+                            <SectionCodeSearchBar />
+                        </div>
+
+                        <AdvancedSearch />
+
+                        <div className={classes.search}>
+                            <div className={classes.buttonContainer}>
+                                <Button
+                                    className={classes.searchButton}
+                                    color="primary"
+                                    variant="contained"
+                                    onClick={() => this.props.toggleSearch()}
+                                    type="submit"
+                                >
+                                    Search
+                                </Button>
+
+                                <Button variant="contained" onClick={resetFormValues}>
+                                    Reset
+                                </Button>
+                            </div>
+                        </div>
+
+                        <PrivacyPolicyBanner />
+                    </div>
+                </form>
+            </>
         );
     }
 }
