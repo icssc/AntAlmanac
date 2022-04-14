@@ -66,6 +66,7 @@ class FuzzySearch extends PureComponent {
             });
         } else if (reason === 'reset') {
             this.setState({ open: false, value: '' }, () => {
+                if (!value) return;
                 const emoji = value.slice(0, 2);
                 const ident = emoji === emojiMap.INSTRUCTOR ? value.slice(3) : value.slice(3).split(':')[0];
                 resetFormValues();
