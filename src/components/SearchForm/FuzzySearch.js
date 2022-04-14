@@ -26,18 +26,21 @@ class FuzzySearch extends PureComponent {
     getOptionLabel = (option) => {
         const object = this.state.results[option];
         if (!object) return option;
-        if (object.type === 'GE_CATEGORY') {
-            const cat = option.split('-')[1].toLowerCase();
-            const num = parseInt(cat);
-            return `${emojiMap.GE_CATEGORY} GE ${cat.replace(num.toString(), romanArr[num - 1])} (${cat}): ${
-                object.name
-            }`;
-        } else if (object.type === 'DEPARTMENT') {
-            return `${emojiMap.DEPARTMENT} ${option}: ${object.name}`;
-        } else if (object.type === 'COURSE') {
-            return `${emojiMap.COURSE} ${object.metadata.department} ${object.metadata.number}: ${object.name}`;
-        } else if (object.type === 'INSTRUCTOR') {
-            return `${emojiMap.INSTRUCTOR} ${object.name}`;
+        switch (object.type) {
+            case 'GE_CATEGORY':
+                const cat = option.split('-')[1].toLowerCase();
+                const num = parseInt(cat);
+                return `${emojiMap.GE_CATEGORY} GE ${cat.replace(num.toString(), romanArr[num - 1])} (${cat}): ${
+                    object.name
+                }`;
+            case 'DEPARTMENT':
+                return `${emojiMap.DEPARTMENT} ${option}: ${object.name}`;
+            case 'COURSE':
+                return `${emojiMap.COURSE} ${object.metadata.department} ${object.metadata.number}: ${object.name}`;
+            case 'INSTRUCTOR':
+                return `${emojiMap.INSTRUCTOR} ${object.name}`;
+            default:
+                break;
         }
     };
 
@@ -70,23 +73,48 @@ class FuzzySearch extends PureComponent {
                 const emoji = value.slice(0, 2);
                 const ident = emoji === emojiMap.INSTRUCTOR ? value.slice(3) : value.slice(3).split(':');
                 resetFormValues();
-                if (emoji === emojiMap.GE_CATEGORY) {
-                    updateFormValue(
-                        'ge',
-                        `GE-${ident[0].split(' ')[2].replace('(', '').replace(')', '').toUpperCase()}`
-                    );
-                } else if (emoji === emojiMap.DEPARTMENT) {
-                    updateFormValue('deptValue', ident[0]);
-                    updateFormValue('deptLabel', ident.join(':'));
-                } else if (emoji === emojiMap.COURSE) {
-                    updateFormValue('deptValue', ident[0].split(' ').slice(0, -1).join(' '));
-                    updateFormValue('deptLabel', ident.join(':'));
-                    updateFormValue('courseNumber', ident[0].split(' ').slice(-1)[0]);
-                } else if (emoji === emojiMap.INSTRUCTOR) {
-                    updateFormValue(
-                        'instructor',
-                        Object.keys(this.state.results).filter((x) => this.state.results[x].name === ident)
-                    );
+                switch (emoji) {
+                    case emojiMap.GE_CATEGORY:
+                        updateFormValue(
+                            'ge',
+                            `GE-${ident[0].split(' ')[2].replace('(', '').replace(')', '').toUpperCase()}`
+                        );
+                        break;
+                    case emojiMap.DEPARTMENT:
+                        updateFormValue('deptValue', ident[0]);
+                        updateFormValue('deptLabel', ident.join(':'));
+                        break;
+                    case emojiMap.COURSE:
+                        const deptValue = ident[0].split(' ').slice(0, -1).join(' ');
+                        let deptLabel;
+                        for (const [key, value] of Object.entries(this.state.cache)) {
+                            if (Object.keys(value).includes(deptValue)) {
+                                deptLabel = this.state.cache[key][deptValue].name;
+                                break;
+                            }
+                        }
+                        if (!deptLabel) {
+                            const deptSearch = search(deptValue.toLowerCase());
+                            deptLabel = deptSearch[deptValue].name;
+                            this.setState({
+                                cache: {
+                                    ...this.state.cache,
+                                    [deptValue.toLowerCase()]: deptSearch,
+                                },
+                            });
+                        }
+                        updateFormValue('deptValue', deptValue);
+                        updateFormValue('deptLabel', `${deptValue}: ${deptLabel}`);
+                        updateFormValue('courseNumber', ident[0].split(' ').slice(-1)[0]);
+                        break;
+                    case emojiMap.INSTRUCTOR:
+                        updateFormValue(
+                            'instructor',
+                            Object.keys(this.state.results).filter((x) => this.state.results[x].name === ident)[0]
+                        );
+                        break;
+                    default:
+                        break;
                 }
                 this.props.toggleSearch();
             });
