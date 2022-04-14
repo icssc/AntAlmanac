@@ -8,7 +8,7 @@ const emojiMap = {
     GE_CATEGORY: '🏫', // U+1F3EB :school:
     DEPARTMENT: '🏢', // U+1F3E2 :office:
     COURSE: '📚', // U+1F4DA :books:
-    INSTRUCTOR: '🧑', // U+1F9D1 :adult:
+    INSTRUCTOR: '🍎', // U+1F34E :apple:
 };
 
 const romanArr = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
@@ -49,7 +49,7 @@ class FuzzySearch extends PureComponent {
     onInputChange = (event, value, reason) => {
         if (reason === 'input') {
             this.setState(
-                { open: value.length >= 2, value: value.slice(-1) === ' ' ? value.slice(0, value.length - 1) : value },
+                { open: value.length >= 2, value: value.slice(-1) === ' ' ? value.slice(0, -1) : value },
                 () => {
                     if (this.state.cache[this.state.value]) {
                         this.setState({ results: this.state.cache[this.state.value] });
