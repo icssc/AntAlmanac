@@ -27,7 +27,7 @@ class FuzzySearch extends PureComponent {
         const object = this.state.results[option];
         if (!object) return option;
         if (object.type === 'GE_CATEGORY') {
-            const cat = option.split('-')[1];
+            const cat = option.split('-')[1].toLowerCase();
             const num = parseInt(cat);
             return `${emojiMap.GE_CATEGORY} GE ${cat.replace(num.toString(), romanArr[num - 1])} (${cat}): ${
                 object.name
@@ -68,15 +68,20 @@ class FuzzySearch extends PureComponent {
             this.setState({ open: false, value: '' }, () => {
                 if (!value) return;
                 const emoji = value.slice(0, 2);
-                const ident = emoji === emojiMap.INSTRUCTOR ? value.slice(3) : value.slice(3).split(':')[0];
+                const ident = emoji === emojiMap.INSTRUCTOR ? value.slice(3) : value.slice(3).split(':');
                 resetFormValues();
                 if (emoji === emojiMap.GE_CATEGORY) {
-                    updateFormValue('ge', `GE-${ident.split(' ')[2].replace('(', '').replace(')', '')}`);
+                    updateFormValue(
+                        'ge',
+                        `GE-${ident[0].split(' ')[2].replace('(', '').replace(')', '').toUpperCase()}`
+                    );
                 } else if (emoji === emojiMap.DEPARTMENT) {
-                    updateFormValue('deptValue', ident);
+                    updateFormValue('deptValue', ident[0]);
+                    updateFormValue('deptLabel', ident.join(':'));
                 } else if (emoji === emojiMap.COURSE) {
-                    updateFormValue('deptValue', ident.split(' ').slice(0, -1).join(' '));
-                    updateFormValue('courseNumber', ident.split(' ').slice(-1)[0]);
+                    updateFormValue('deptValue', ident[0].split(' ').slice(0, -1).join(' '));
+                    updateFormValue('deptLabel', ident.join(':'));
+                    updateFormValue('courseNumber', ident[0].split(' ').slice(-1)[0]);
                 } else if (emoji === emojiMap.INSTRUCTOR) {
                     updateFormValue(
                         'instructor',
