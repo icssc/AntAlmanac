@@ -48,10 +48,9 @@ class FuzzySearch extends PureComponent {
 
     onInputChange = (event, value, reason) => {
         if (reason === 'input') {
-            this.setState({ open: value.length >= 2, value: value }, () => {
-                if (this.state.value.split(' ').some((x) => x.length < 2)) {
-                    this.setState({ results: {} });
-                } else {
+            this.setState(
+                { open: value.length >= 2, value: value.slice(-1) === ' ' ? value.slice(0, value.length - 1) : value },
+                () => {
                     if (this.state.cache[this.state.value]) {
                         this.setState({ results: this.state.cache[this.state.value] });
                     } else {
@@ -62,11 +61,12 @@ class FuzzySearch extends PureComponent {
                                 results: result,
                             });
                         } catch (e) {
-                            console.error(e);
+                            this.setState({ results: {} });
+                            if (!(e instanceof TypeError)) console.error(e);
                         }
                     }
                 }
-            });
+            );
         } else if (reason === 'reset') {
             this.setState({ open: false, value: '' }, () => {
                 if (!value) return;
