@@ -5,7 +5,8 @@ import { withStyles } from '@material-ui/core';
 const styles = {
     container: {
         padding: 12,
-        marginTop: '10%',
+        marginBottom: '10px',
+        marginRight: '5px',
     },
 };
 
