@@ -1,6 +1,6 @@
 function endpointTransform(path) {
-    console.log(`PR_NUM is ${process.env.PR_NUM}`);
-    if (process.env.NODE_ENV === 'development' || process.env.PR_NUM) return `https://dev.api.antalmanac.com${path}`;
+    if (process.env.NODE_ENV === 'development' || process.env.SKIP_PREFLIGHT_CHECK)
+        return `https://dev.api.antalmanac.com${path}`;
     else return `https://api.antalmanac.com${path}`;
 }
 
