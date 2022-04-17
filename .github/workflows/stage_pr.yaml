@@ -68,7 +68,7 @@ jobs:
           aws-region: us-east-1
       
       - name: build frontend
-        run: npm run build-client
+        run: SKIP_PREFLIGHT_CHECK=true npm run build-client
 
       - name: build CDK
         run: npm run build
