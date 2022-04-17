@@ -1,0 +1,77 @@
+name: "Deploy Pull Request"
+
+on: 
+  pull_request:
+    types: [labeled, opened, synchronize]
+
+jobs:
+  deploy:
+    if: |
+      (github.event.action == 'labeled' && github.event.label.name == ':rocket: deploy') ||
+      (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, ':rocket: deploy'))
+    runs-on: ubuntu-latest
+    env: # env variables for Node.js
+      HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
+      CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+      PR_NUM: ${{ github.event.issue.number }}
+      NODE_ENV: development # to change endpoint to dev
+
+    steps: 
+      - name: set STAGE variable in environment for next steps
+        run: echo "STAGE=pr-${{ github.event.issue.number }}-${{ env.GITHUB_HEAD_REF_SLUG }}" >> $GITHUB_ENV
+
+      - name: create a github deployment
+        uses: bobheadxi/deployments@v1
+        id: deployment
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: ${{ env.STAGE }}
+          ref: ${{ github.head_ref }}
+          no_override: false
+          transient: true
+      
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          
+      - name: checkout antalmanac-cdk
+        uses: actions/checkout@v3
+        with:
+          repository: icssc/antalmanc-cdk
+          ref: dev # CHANGE TO MAIN WHEN CDK REPO IS UPDATED
+        
+      - name: checkout antalmanac
+        uses: actions/checkout@v3
+        with:
+          path: functions
+      
+      - name: install node dependencies cdk
+        uses: bahmutov/npm-install@v1
+
+      - name: install node dependencies frontend
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: functions/AntAlmanac
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          role-to-assume: ${{ secrets.ACTIONS_IAM_ROLE }}
+          aws-region: us-east-1
+      
+      - name: build CDK
+        run: npm run build
+
+      - name: deploy the stack to AWS
+        run: npx cdk deploy github-actions-stack-${{ github.event.issue.number }}
+
+      - name: update the github deployment status
+        uses: bobheadxi/deployments@v0.5.2
+        if: always()
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          env_url: https://${{ github.event.issue.number }}.staging.antalmanac.com
