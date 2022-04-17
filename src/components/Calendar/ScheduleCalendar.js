@@ -129,23 +129,25 @@ class ScheduleCalendar extends PureComponent {
         });
     };
 
-    updateEventsInCalendar = () => {
+    updateEventsInCalendar = (close = true) => {
         this.setState({
             eventsInCalendar: AppStore.getEventsInCalendar(),
             finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
         });
-        this.handleClosePopover();
+        if (close) this.handleClosePopover();
     };
 
     componentDidMount = () => {
         AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.on('customEventsChange', this.updateEventsInCalendar);
+        AppStore.on('colorChange', this.updateEventsInCalendar);
         AppStore.on('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
     };
 
     componentWillUnmount = () => {
         AppStore.removeListener('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.removeListener('customEventsChange', this.updateEventsInCalendar);
+        AppStore.removeListener('colorChange', this.updateEventsInCalendar);
         AppStore.removeListener('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
     };
 
