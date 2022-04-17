@@ -16,6 +16,11 @@ jobs:
       (github.event.action == 'unlabeled' && github.event.label.name == 'deploy') ||
       (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'deploy'))
     runs-on: ubuntu-latest
+    env: # env variables for Node.js
+      HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
+      CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+      PR_NUM: ${{ github.event.pull_request.number }}
+
     steps:
       - name: inject slug/short variables
         uses: rlespinasse/github-slug-action@v3.x
@@ -41,10 +46,10 @@ jobs:
       - name: install node dependencies cdk
         uses: bahmutov/npm-install@v1
 
-      - name: install node dependencies frontend
-        uses: bahmutov/npm-install@v1
-        with:
-          working-directory: functions/AntAlmanac
+      # - name: install node dependencies frontend
+      #   uses: bahmutov/npm-install@v1
+      #   with:
+      #     working-directory: functions/AntAlmanac
       
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@master
@@ -52,11 +57,11 @@ jobs:
           role-to-assume: ${{ secrets.ACTIONS_IAM_ROLE }}
           aws-region: us-east-1
       
-      - name: build frontend
-        run: REACT_APP_STAGING=true SKIP_PREFLIGHT_CHECK=true npm run build-client
+      # - name: build frontend
+      #   run: REACT_APP_STAGING=true SKIP_PREFLIGHT_CHECK=true npm run build-client
 
-      - name: build CDK
-        run: npm run build
+      # - name: build CDK
+      #   run: npm run build
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@master
