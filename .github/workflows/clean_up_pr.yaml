@@ -39,7 +39,7 @@ jobs:
           aws-region: us-east-1
 
       - name: destroy the stack on AWS
-        run: cdk destroy github-actions-stack-${{ github.event.pull_request.number }}
+        run: cdk destroy github-actions-stack-${{ github.event.pull_request.number }} --force
 
       - name: delete the github deployments and the corresponding environment
         uses: strumwolf/delete-deployment-environment@v1.1.0
