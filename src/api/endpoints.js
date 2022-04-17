@@ -1,7 +1,7 @@
 function endpointTransform(path) {
-    if (process.env.NODE_ENV === 'development' || process.env.SKIP_PREFLIGHT_CHECK)
+    if (process.env.NODE_ENV === 'development' || process.env.REACT_APP_STAGING === 'true')
         return `https://dev.api.antalmanac.com${path}`;
-    else return `https://api.antalmanac.com${path}`;
+    else return `https://dev.api.antalmanac.com${path}`;
 }
 
 export const WEBSOC_ENDPOINT = endpointTransform('/api/websocapi');
