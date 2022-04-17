@@ -6,6 +6,10 @@ on:
     branches: main
     types: [labeled, opened, synchronize]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   print:
     runs-on: ubuntu-latest
