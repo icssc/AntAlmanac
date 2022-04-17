@@ -64,14 +64,6 @@ class AddScheduleDialog extends PureComponent {
                                 label="Name"
                                 placeholder="Schedule 2"
                                 onChange={this.handleNameChange}
-                                required
-                            />
-                            <TextField
-                                className={this.props.classes.textField}
-                                label="Notes"
-                                placeholder="An optional space to record thoughts about this schedule"
-                                maxRows={5}
-                                multiline
                             />
                         </FormControl>
                     </DialogContent>

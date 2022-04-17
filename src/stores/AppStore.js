@@ -41,30 +41,6 @@ class AppStore extends EventEmitter {
         return this.scheduleNames;
     }
 
-    // getScheduleNames() {
-    //     let indices = new Set();
-
-    //     this.eventsInCalendar.forEach((event) => {
-    //         event.scheduleIndices.forEach((index) => {
-    //             indices.add(index);
-    //         });
-    //     });
-
-    //     this.eventsInCalendar.forEach((event) => {
-
-    //     });
-
-    //     if (indices.size === 0) {
-    //         return ["Schedule 1"];
-    //     }
-
-    //     let names = [];
-    //     for (let i = 1; i <= indices.size; i++) {
-    //         names.push(`Schedule ${i}`);
-    //     }
-    //     return names;
-    // }
-
     getAddedCourses() {
         return this.addedCourses;
     }
@@ -264,8 +240,10 @@ class AppStore extends EventEmitter {
                 break;
             case 'ADD_SCHEDULE':
                 this.scheduleNames = action.newScheduleNames;
-                this.addedSectionCodes[this.scheduleNames.length - 1] = new Set();
+                this.addedSectionCodes[action.newScheduleNames.length - 1] = new Set();
+                this.currentScheduleIndex = action.newScheduleNames.length - 1;
                 this.emit('scheduleNamesChange');
+                this.emit('currentScheduleIndexChange');
                 break;
             default: //do nothing
         }

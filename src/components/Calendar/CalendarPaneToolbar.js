@@ -70,10 +70,6 @@ const CalendarPaneToolbar = (props) => {
                 value={props.currentScheduleIndex}
                 onChange={handleScheduleChange}
             >
-                {/* <MenuItem value={0}>Schedule 1</MenuItem>
-                <MenuItem value={1}>Schedule 2</MenuItem>
-                <MenuItem value={2}>Schedule 3</MenuItem>
-                <MenuItem value={3}>Schedule 4</MenuItem> */}
                 {props.scheduleNames.map((name, index) => (
                     <MenuItem value={index}>{name}</MenuItem>
                 ))}
