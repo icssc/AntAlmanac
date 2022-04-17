@@ -51,7 +51,7 @@ jobs:
       - name: checkout antalmanac
         uses: actions/checkout@v3
         with:
-          path: functions/AntAlmanac
+          path: functions
       
       - name: install node dependencies cdk
         uses: bahmutov/npm-install@v1
