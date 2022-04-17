@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
 import GESelector from './GESelector';
 import SectionCodeSearchBar from './SectionCodeSearchBar';
 import CourseNumberSearchBar from './CourseNumberSearchBar';
-import { Button, Collapse, Typography } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AdvancedSearch from './AdvancedSearch';
-import { ExpandLess, ExpandMore } from '@material-ui/icons';
 
 const styles = {
     container: {
@@ -47,51 +46,37 @@ const styles = {
 };
 
 function LegacySearch({ classes, onSubmit, onReset }) {
-    const [expandLegacy, setExpandLegacy] = useState(false);
-
-    const handleExpand = () => {
-        setExpandLegacy(!expandLegacy);
-    };
-
     return (
         <>
-            <div onClick={handleExpand} className={classes.collapse}>
-                <Typography noWrap variant="body1">
-                    Legacy Search
-                </Typography>
-                {expandLegacy ? <ExpandLess /> : <ExpandMore />}
+            <div className={classes.margin}>
+                <DeptSearchBar />
+                <CourseNumberSearchBar />
             </div>
-            <Collapse in={expandLegacy}>
-                <div className={classes.margin}>
-                    <DeptSearchBar />
-                    <CourseNumberSearchBar />
+
+            <div className={classes.margin}>
+                <GESelector />
+                <SectionCodeSearchBar />
+            </div>
+
+            <AdvancedSearch />
+
+            <div className={classes.search}>
+                <div className={classes.buttonContainer}>
+                    <Button
+                        className={classes.searchButton}
+                        color="primary"
+                        variant="contained"
+                        onClick={onSubmit}
+                        type="submit"
+                    >
+                        Search
+                    </Button>
+
+                    <Button variant="contained" onClick={onReset}>
+                        Reset
+                    </Button>
                 </div>
-
-                <div className={classes.margin}>
-                    <GESelector />
-                    <SectionCodeSearchBar />
-                </div>
-
-                <AdvancedSearch />
-
-                <div className={classes.search}>
-                    <div className={classes.buttonContainer}>
-                        <Button
-                            className={classes.searchButton}
-                            color="primary"
-                            variant="contained"
-                            onClick={onSubmit}
-                            type="submit"
-                        >
-                            Search
-                        </Button>
-
-                        <Button variant="contained" onClick={onReset}>
-                            Reset
-                        </Button>
-                    </div>
-                </div>
-            </Collapse>
+            </div>
         </>
     );
 }
