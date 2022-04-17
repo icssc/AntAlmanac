@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: print variables
-        run: echo ${{ github.event.label.name }}
+        run: echo ${{ github.event.pull_request.number }}
   deploy:
     if: |
       (github.event.action == 'labeled' && github.event.label.name == 'deploy') ||
@@ -29,8 +29,11 @@ jobs:
       NODE_ENV: development # to change endpoint to dev
 
     steps: 
+      - name: inject slug/short variables
+        uses: rlespinasse/github-slug-action@v3.x
+
       - name: set STAGE variable in environment for next steps
-        run: echo "STAGE=pr-${{ github.event.issue.number }}-${{ env.GITHUB_HEAD_REF_SLUG }}" >> $GITHUB_ENV
+        run: echo "STAGE=pr-${{ github.event.pull_request.number }}-${{ env.GITHUB_HEAD_REF_SLUG }}" >> $GITHUB_ENV
 
       - name: create a github deployment
         uses: bobheadxi/deployments@v1
@@ -77,7 +80,7 @@ jobs:
         run: npm run build-client
 
       - name: deploy the stack to AWS
-        run: npx cdk deploy github-actions-stack-${{ github.event.issue.number }}
+        run: npx cdk deploy github-actions-stack-${{ github.event.pull_request.number }}
 
       - name: update the github deployment status
         uses: bobheadxi/deployments@v0.5.2
