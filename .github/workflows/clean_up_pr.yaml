@@ -46,16 +46,12 @@ jobs:
       - name: install node dependencies cdk
         uses: bahmutov/npm-install@v1
 
+      - name: make empty folder
+        run: mkdir functions/AntAlmanac/build
       # - name: install node dependencies frontend
       #   uses: bahmutov/npm-install@v1
       #   with:
       #     working-directory: functions/AntAlmanac
-      
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@master
-        with:
-          role-to-assume: ${{ secrets.ACTIONS_IAM_ROLE }}
-          aws-region: us-east-1
       
       # - name: build frontend
       #   run: REACT_APP_STAGING=true SKIP_PREFLIGHT_CHECK=true npm run build-client
