@@ -45,7 +45,7 @@ jobs:
       - name: checkout antalmanac-cdk
         uses: actions/checkout@v3
         with:
-          repository: icssc/antalmanc-cdk
+          repository: icssc/antalmanac-cdk
           ref: dev # CHANGE TO MAIN WHEN CDK REPO IS UPDATED
         
       - name: checkout antalmanac
