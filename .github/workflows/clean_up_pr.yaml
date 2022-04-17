@@ -1,7 +1,6 @@
 name: "Pull Request Clean Up"
 
 on:
-  workflow_dispatch:
   pull_request:
     branches: main
     types: [unlabeled, closed]
@@ -22,7 +21,7 @@ jobs:
         uses: rlespinasse/github-slug-action@v3.x
 
       - name: set STAGE variable in environment for next steps
-        run: echo "STAGE=pr-${{ github.event.number }}-${{ env.GITHUB_HEAD_REF_SLUG }}" >> $GITHUB_ENV
+        run: echo "STAGE=pr-${{ github.event.pull_request.number }}-${{ env.GITHUB_HEAD_REF_SLUG }}" >> $GITHUB_ENV
 
       - name: checkout antalmanac-cdk
         uses: actions/checkout@v3
@@ -40,7 +39,7 @@ jobs:
           aws-region: us-east-1
 
       - name: destroy the stack on AWS
-        run: cdk destroy github-actions-stack-${{ github.event.issue.number }}
+        run: cdk destroy github-actions-stack-${{ github.event.pull_request.number }}
 
       - name: delete the github deployments and the corresponding environment
         uses: strumwolf/delete-deployment-environment@v1.1.0
