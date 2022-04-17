@@ -7,6 +7,11 @@ on:
     types: [labeled, opened, synchronize]
 
 jobs:
+  print:
+    runs-on: ubuntu-latest
+    steps:
+      - name: print variables
+        run: echo ${{ github.event.label.name }}
   deploy:
     if: |
       (github.event.action == 'labeled' && github.event.label.name == ':rocket: deploy') ||
