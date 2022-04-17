@@ -14,8 +14,8 @@ jobs:
         run: echo ${{ github.event.label.name }}
   deploy:
     if: |
-      (github.event.action == 'labeled' && github.event.label.name == ':rocket: deploy') ||
-      (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, ':rocket: deploy'))
+      (github.event.action == 'labeled' && github.event.label.name == 'deploy') ||
+      (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, 'deploy'))
     runs-on: ubuntu-latest
     env: # env variables for Node.js
       HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}

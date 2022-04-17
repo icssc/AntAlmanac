@@ -9,8 +9,8 @@ on:
 jobs:
   clean-up:
     if: |
-      (github.event.action == 'unlabeled' && github.event.label.name == ':rocket: deploy') ||
-      (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, ':rocket: deploy'))
+      (github.event.action == 'unlabeled' && github.event.label.name == 'deploy') ||
+      (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'deploy'))
     runs-on: ubuntu-latest
     steps:
       - name: inject slug/short variables
