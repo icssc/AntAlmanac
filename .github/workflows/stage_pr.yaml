@@ -62,6 +62,9 @@ jobs:
       
       - name: build CDK
         run: npm run build
+        
+      - name: build frontend
+        run: npm run build-client
 
       - name: deploy the stack to AWS
         run: npx cdk deploy github-actions-stack-${{ github.event.issue.number }}
