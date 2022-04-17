@@ -1,6 +1,7 @@
 name: "Deploy Pull Request"
 
 on: 
+  workflow_dispatch:
   pull_request:
     types: [labeled, opened, synchronize]
 

@@ -1,6 +1,7 @@
 name: "Pull Request Clean Up"
 
 on:
+  workflow_dispatch:
   pull_request:
     types: [unlabeled, closed]
 
