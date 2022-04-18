@@ -10,6 +10,7 @@ class AppStore extends EventEmitter {
         this.customEvents = [];
         this.addedCourses = [];
         this.addedSectionCodes = { 0: new Set() };
+        this.colorPickers = {};
         this.deletedCourses = [];
         this.snackbarMessage = '';
         this.snackbarVariant = 'info';
