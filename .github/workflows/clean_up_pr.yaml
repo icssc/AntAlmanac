@@ -59,7 +59,7 @@ jobs:
         run: npx cdk destroy github-actions-stack-${{ github.event.pull_request.number }} --force
 
       - name: delete the github deployments and the corresponding environment
-        uses: strumwolf/delete-deployment-environment@v1.1.0
+        uses: strumwolf/delete-deployment-environment@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: ${{ env.STAGE }}
