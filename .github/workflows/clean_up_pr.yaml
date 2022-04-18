@@ -9,6 +9,7 @@ permissions:
   id-token: write
   contents: read
   deployments: write
+  repository-projects: write
 
 jobs:
   clean-up:
