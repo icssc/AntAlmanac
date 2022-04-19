@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { createMuiTheme } from '@material-ui/core';
+import { createTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import ReactGA from 'react-ga';
 import { undoDelete } from '../../actions/AppStoreActions';
@@ -36,7 +36,7 @@ class App extends PureComponent {
     }
 
     render() {
-        const theme = createMuiTheme({
+        const theme = createTheme({
             overrides: {
                 MuiCssBaseline: {
                     '@global': {

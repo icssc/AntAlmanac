@@ -142,7 +142,7 @@ class News extends PureComponent {
                 <Tooltip title="See latest updates">
                     <Badge
                         variant="dot"
-                        overlap="circle"
+                        overlap="circular"
                         color="error"
                         invisible={!this.state.showDot}
                         classes={{
