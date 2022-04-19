@@ -6,6 +6,7 @@ import Today from '@material-ui/icons/Today';
 import { saveAs } from 'file-saver';
 import { createEvents } from 'ics';
 import AppStore from '../../stores/AppStore';
+import { openSnackbar } from '../../actions/AppStoreActions';
 import { termData } from '../../termData';
 
 // TODO(chase): support summer sessions
@@ -250,7 +251,9 @@ class ExportCalendarButton extends PureComponent {
                 // Download the .ics file
                 var blob = new Blob([val], { type: 'text/plain;charset=utf-8' });
                 saveAs(blob, 'schedule.ics');
+                openSnackbar('success', 'Schedule downloaded! Make sure your calendar is in PST.', 5);
             } else {
+                openSnackbar('error', 'Something went wrong! Unable to download schedule.', 5);
                 console.log(err);
             }
         });
