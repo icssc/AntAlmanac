@@ -1,14 +1,5 @@
 import React, { PureComponent } from 'react';
-import {
-    Tooltip,
-    Button,
-    Dialog,
-    DialogTitle,
-    DialogActions,
-    DialogContent,
-    TextField,
-    FormControl,
-} from '@material-ui/core';
+import { Tooltip, Button, Dialog, DialogTitle, DialogActions, DialogContent, TextField } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import { addSchedule } from '../../actions/AppStoreActions';
@@ -58,14 +49,13 @@ class AddScheduleDialog extends PureComponent {
                 <Dialog open={this.state.isOpen} fullWidth>
                     <DialogTitle>Add a New Schedule</DialogTitle>
                     <DialogContent>
-                        <FormControl fullWidth>
-                            <TextField
-                                className={this.props.classes.textField}
-                                label="Name"
-                                placeholder="Schedule 2"
-                                onChange={this.handleNameChange}
-                            />
-                        </FormControl>
+                        <TextField
+                            className={this.props.classes.textField}
+                            label="Name"
+                            placeholder="Schedule 2"
+                            onChange={this.handleNameChange}
+                            fullWidth
+                        />
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={this.handleClose} color="primary">

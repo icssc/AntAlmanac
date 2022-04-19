@@ -126,7 +126,7 @@ class AddedCoursePane extends PureComponent {
                                         Copy Schedule
                                     </Button>
                                     <Menu {...bindMenu(popupState)}>
-                                        {[0, 1, 2, 3].map((index) => {
+                                        {this.state.scheduleNames.map((name, index) => {
                                             return (
                                                 <MenuItem
                                                     key={index}
@@ -136,13 +136,16 @@ class AddedCoursePane extends PureComponent {
                                                         popupState.close();
                                                     }}
                                                 >
-                                                    Copy to Schedule {index + 1}
+                                                    Copy to {name}
                                                 </MenuItem>
                                             );
                                         })}
                                         <MenuItem
                                             onClick={() => {
-                                                copySchedule(AppStore.getCurrentScheduleIndex(), 4);
+                                                copySchedule(
+                                                    AppStore.getCurrentScheduleIndex(),
+                                                    this.state.scheduleNames.length
+                                                );
                                                 popupState.close();
                                             }}
                                         >

@@ -26,8 +26,6 @@ class ScheduleSelector extends PureComponent {
     };
 
     render() {
-        console.log(this.props);
-
         return (
             <FormGroup row>
                 {this.props.scheduleNames.map((name, index) => {
@@ -37,7 +35,7 @@ class ScheduleSelector extends PureComponent {
                                 <Checkbox
                                     checked={this.state.scheduleIndices.includes(index)}
                                     onChange={this.handleChange(index)}
-                                    value={(index + 1).toString()}
+                                    value={index + 1}
                                     color="primary"
                                 />
                             }

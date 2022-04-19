@@ -195,6 +195,7 @@ class AppStore extends EventEmitter {
                 this.emit('customEventsChange');
                 break;
             case 'LOAD_SCHEDULE':
+                // If the user already had schedules, load up four schedules
                 this.scheduleNames = ['Schedule 1', 'Schedule 2', 'Schedule 3', 'Schedule 4'];
                 this.addedCourses = action.userData.addedCourses;
                 this.updateAddedSectionCodes();
@@ -240,6 +241,9 @@ class AppStore extends EventEmitter {
                 window.localStorage.setItem('theme', action.theme);
                 break;
             case 'ADD_SCHEDULE':
+                // If the user adds a schedule, update the array of schedule names, add
+                // another key/value pair to keep track of the section codes for that schedule,
+                // and redirect the user to the new schedule
                 this.scheduleNames = action.newScheduleNames;
                 this.addedSectionCodes[action.newScheduleNames.length - 1] = new Set();
                 this.currentScheduleIndex = action.newScheduleNames.length - 1;

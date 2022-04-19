@@ -349,10 +349,12 @@ export const changeCourseColor = (sectionCode, newColor, term) => {
 export const copySchedule = (from, to) => {
     const addedCourses = AppStore.getAddedCourses();
     const customEvents = AppStore.getCustomEvents();
+    const scheduleNames = AppStore.getScheduleNames();
 
     const addedCoursesAfterCopy = addedCourses.map((addedCourse) => {
         if (addedCourse.scheduleIndices.includes(from) && !addedCourse.scheduleIndices.includes(to)) {
-            if (to === 4) return { ...addedCourse, scheduleIndices: [0, 1, 2, 3] };
+            if (to === scheduleNames.length)
+                return { ...addedCourse, scheduleIndices: scheduleNames.map((_, index) => index) };
             else
                 return {
                     ...addedCourse,
@@ -365,7 +367,8 @@ export const copySchedule = (from, to) => {
 
     const customEventsAfterCopy = customEvents.map((customEvent) => {
         if (customEvent.scheduleIndices.includes(from) && !customEvent.scheduleIndices.includes(to)) {
-            if (to === 4) return { ...customEvent, scheduleIndices: [0, 1, 2, 3] };
+            if (to === scheduleNames.length)
+                return { ...customEvent, scheduleIndices: scheduleNames.map((_, index) => index) };
             else
                 return {
                     ...customEvent,
