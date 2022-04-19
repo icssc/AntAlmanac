@@ -253,6 +253,7 @@ class ExportCalendarButton extends PureComponent {
                 saveAs(blob, 'schedule.ics');
                 openSnackbar('success', 'Schedule downloaded! Make sure your calendar is in PST.', 5);
             } else {
+                openSnackbar('error', 'Something went wrong! Unable to download schedule.', 5);
                 console.log(err);
             }
         });
