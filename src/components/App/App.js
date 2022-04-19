@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { createTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import ReactGA from 'react-ga';
+import ReactGA4 from 'react-ga4';
 import { undoDelete } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -29,6 +30,8 @@ class App extends PureComponent {
 
         ReactGA.initialize('UA-133683751-1');
         ReactGA.pageview('/homepage');
+        ReactGA4.initialize('G-30HVJXC2Y4');
+        ReactGA4.send('pageview');
     };
 
     componentWillUnmount() {
