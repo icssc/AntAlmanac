@@ -98,7 +98,11 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
     }
     return color;
 };
-
+/**
+ * @param variant usually 'info', 'error', 'warning', or 'success'
+ * @param message any string to display
+ * @param duration in seconds and is optional.
+ */
 export const openSnackbar = (variant, message, duration, position, style) => {
     dispatcher.dispatch({
         type: 'OPEN_SNACKBAR',
