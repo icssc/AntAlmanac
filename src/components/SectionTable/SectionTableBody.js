@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
 import locations from './static/locations';
 import restrictionsMapping from './static/restrictionsMapping';
-import { TableRow, Popover, Tooltip, Typography, TableCell } from '@material-ui/core';
+import { TableRow, Popover, Tooltip, Typography, TableCell, useMediaQuery } from '@material-ui/core';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
 import { withStyles } from '@material-ui/core/styles';
 import OpenSpotAlertPopover from './OpenSpotAlertPopover';
@@ -98,12 +98,19 @@ const CourseCodeCell = withStyles(styles)((props) => {
 
 const SectionDetailsCell = withStyles(styles)((props) => {
     const { classes, sectionType, sectionNum, units } = props;
+    const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
     return (
-        <NoPaddingTableCell className={classes.cell}>
+        <NoPaddingTableCell className={classes.cell} style={isMobileScreen ? { textAlign: 'center' } : {}}>
             <div className={classes[sectionType]}>{sectionType}</div>
-            <div>Sec: {sectionNum}</div>
-            <div>Units: {units}</div>
+            <div>
+                {!isMobileScreen && <>Sec: </>}
+                {sectionNum}
+            </div>
+            <div>
+                {!isMobileScreen && <>Units: </>}
+                {units}
+            </div>
         </NoPaddingTableCell>
     );
 });
@@ -182,8 +189,8 @@ const SectionEnrollmentCell = withStyles(styles)((props) => {
                         {numCurrentlyEnrolled.totalEnrolled} / {maxCapacity}
                     </strong>
                 </div>
-                <div>WL: {numOnWaitlist}</div>
-                <div>NOR: {numNewOnlyReserved}</div>
+                {numOnWaitlist && <div>WL: {numOnWaitlist}</div>}
+                {numNewOnlyReserved && <div>NOR: {numNewOnlyReserved}</div>}
             </div>
         </NoPaddingTableCell>
     );
