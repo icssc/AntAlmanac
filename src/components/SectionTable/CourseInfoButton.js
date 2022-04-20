@@ -6,7 +6,6 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
     button: {
-        marginRight: '4px',
         backgroundColor: '#385EB1',
         color: '#fff',
     },
