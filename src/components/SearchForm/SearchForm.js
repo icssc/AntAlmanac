@@ -1,14 +1,12 @@
-import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
-import GESelector from './GESelector';
+import React, { useState } from 'react';
 import TermSelector from './TermSelector';
-import SectionCodeSearchBar from './SectionCodeSearchBar';
-import CourseNumberSearchBar from './CourseNumberSearchBar';
-import React, { PureComponent } from 'react';
-import { Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import AdvancedSearch from './AdvancedSearch';
 import PrivacyPolicyBanner from '../App/PrivacyPolicyBanner';
 import { updateFormValue, resetFormValues } from '../../actions/RightPaneActions';
+import FuzzySearch from './FuzzySearch';
+import LegacySearch from './LegacySearch';
+import { IconButton, Tooltip } from '@material-ui/core';
+import { Tune } from '@material-ui/icons';
 
 const styles = {
     container: {
@@ -16,82 +14,60 @@ const styles = {
         flexDirection: 'column',
         position: 'relative',
     },
-    search: {
+    searchBar: {
         display: 'flex',
-        justifyContent: 'center',
-        borderTop: 'solid 8px transparent',
+        flexDirection: 'row',
+        marginTop: '1rem',
     },
     margin: {
         borderTop: 'solid 8px transparent',
         display: 'inline-flex',
     },
-    new: {
-        width: '55%',
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-    },
-    searchButton: {
-        width: '50%',
-    },
-    buttonContainer: {
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'space-evenly',
+    form: {
+        minHeight: 'calc(100% - 120px)',
+        marginBottom: '20px',
     },
 };
 
-class SearchForm extends PureComponent {
-    onFormSubmit = (event) => {
-        event.preventDefault();
-        this.props.toggleSearch();
+const SearchForm = (props) => {
+    const { classes, toggleSearch } = props;
+
+    const [showLegacySearch, setShowLegacySearch] = useState(false);
+
+    const toggleShowLegacySearch = () => {
+        setShowLegacySearch(!showLegacySearch);
     };
 
-    render() {
-        const { classes } = this.props;
+    const onFormSubmit = (event) => {
+        event.preventDefault();
+        toggleSearch();
+    };
 
-        return (
-            <form onSubmit={this.onFormSubmit}>
+    return (
+        <>
+            <form onSubmit={onFormSubmit} className={classes.form}>
                 <div className={classes.container}>
                     <div className={classes.margin}>
                         <TermSelector changeState={updateFormValue} fieldName={'term'} />
                     </div>
 
-                    <div className={classes.margin}>
-                        <DeptSearchBar />
-                        <CourseNumberSearchBar />
-                    </div>
-
-                    <div className={classes.margin}>
-                        <GESelector />
-                        <SectionCodeSearchBar />
-                    </div>
-
-                    <AdvancedSearch />
-
-                    <div className={classes.search}>
-                        <div className={classes.buttonContainer}>
-                            <Button
-                                className={classes.searchButton}
-                                color="primary"
-                                variant="contained"
-                                onClick={() => this.props.toggleSearch()}
-                                type="submit"
-                            >
-                                Search
-                            </Button>
-
-                            <Button variant="contained" onClick={resetFormValues}>
-                                Reset
-                            </Button>
+                    <div className={classes.container}>
+                        <div className={classes.searchBar}>
+                            <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleShowLegacySearch} />
+                            <Tooltip title="Manual Search">
+                                <IconButton onClick={toggleShowLegacySearch}>
+                                    <Tune />
+                                </IconButton>
+                            </Tooltip>
                         </div>
                     </div>
 
-                    <PrivacyPolicyBanner />
+                    {showLegacySearch && <LegacySearch onSubmit={() => toggleSearch()} onReset={resetFormValues} />}
                 </div>
             </form>
-        );
-    }
-}
+            <PrivacyPolicyBanner />
+        </>
+    );
+};
 
 export default withStyles(styles)(SearchForm);
