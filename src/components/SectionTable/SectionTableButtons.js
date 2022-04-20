@@ -45,6 +45,7 @@ export const ColorAndDelete = withStyles(styles)((props) => {
 export const ScheduleAddCell = withStyles(styles)((props) => {
     const { classes, section, courseDetails, term } = props;
     const popupState = usePopupState({ variant: 'popover' });
+    const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
     const closeAndAddCourse = (scheduleIndex) => {
         popupState.close();
@@ -63,7 +64,7 @@ export const ScheduleAddCell = withStyles(styles)((props) => {
 
     return (
         <TableCell padding="none">
-            <div className={classes.container}>
+            <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
                 <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
                     <Add fontSize="small" />
                 </IconButton>
