@@ -30,6 +30,13 @@ class AboutPage extends PureComponent {
                             AntAlmanac is a schedule planning tool for UCI students.
                             <br />
                             <br />
+                            The website is maintained by the{' '}
+                            <Link target="_blank" href="https://studentcouncil.ics.uci.edu/">
+                                ICS Student Council
+                            </Link>{' '}
+                            Projects Committee.
+                            <br />
+                            <br />
                             Interested in helping out? Join our{' '}
                             <Link target="_blank" href="https://discord.gg/GzF76D7UhY">
                                 Discord
@@ -38,23 +45,8 @@ class AboutPage extends PureComponent {
                             <Link target="_blank" href="https://github.com/icssc/AntAlmanac">
                                 code on GitHub
                             </Link>
-                            .
+                            .<br />
                             <br />
-                            <br />
-                            This website is maintained by the{' '}
-                            <Link target="_blank" href="https://studentcouncil.ics.uci.edu/">
-                                ICS Student Council
-                            </Link>{' '}
-                            Projects Committee and built by students from the UCI community.
-                            <br />
-                            <br />
-                            <Link target="_blank" href="https://github.com/icssc/AntAlmanac/contributors">
-                                <img
-                                    src="https://contrib.rocks/image?repo=icssc/antalmanac"
-                                    width={'100%'}
-                                    alt="AntAlmanac Contributors"
-                                />
-                            </Link>
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>

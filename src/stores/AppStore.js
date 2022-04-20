@@ -10,7 +10,6 @@ class AppStore extends EventEmitter {
         this.customEvents = [];
         this.addedCourses = [];
         this.addedSectionCodes = { 0: new Set(), 1: new Set(), 2: new Set(), 3: new Set() };
-        this.colorPickers = {};
         this.deletedCourses = [];
         this.snackbarMessage = '';
         this.snackbarVariant = 'info';
@@ -107,23 +106,6 @@ class AppStore extends EventEmitter {
         }
     }
 
-    registerColorPicker(id, update) {
-        if (id in this.colorPickers) {
-            this.colorPickers[id].on('colorChange', update);
-        } else {
-            this.colorPickers[id] = new EventEmitter();
-            this.colorPickers[id].on('colorChange', update);
-        }
-    }
-    unregisterColorPicker(id, update) {
-        if (id in this.colorPickers) {
-            this.colorPickers[id].removeListener('colorChange', update);
-            if (this.colorPickers[id].listenerCount('colorChange') === 0) {
-                delete this.colorPickers[id];
-            }
-        }
-    }
-
     handleActions(action) {
         switch (action.type) {
             case 'ADD_COURSE':
@@ -192,16 +174,14 @@ class AppStore extends EventEmitter {
                 this.finalsEventsInCalendar = calendarizeFinals();
                 this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.unsavedChanges = true;
-                this.colorPickers[action.sectionCode].emit('colorChange', action.newColor);
-                this.emit('colorChange', false);
+                this.emit('addedCoursesChange');
                 break;
             case 'CUSTOM_EVENT_COLOR_CHANGE':
                 this.customEvents = action.customEventsAfterColorChange;
                 this.finalsEventsInCalendar = calendarizeFinals();
                 this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.unsavedChanges = true;
-                this.colorPickers[action.customEventID].emit('colorChange', action.newColor);
-                this.emit('colorChange', false);
+                this.emit('customEventsChange');
                 break;
             case 'LOAD_SCHEDULE':
                 this.addedCourses = action.userData.addedCourses;
