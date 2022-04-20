@@ -16,7 +16,7 @@ const styles = () => ({
     },
     courseInfoPane: {
         margin: 10,
-        width: 500,
+        maxWidth: 500,
     },
     skeleton: {
         margin: 10,
