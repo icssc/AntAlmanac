@@ -127,19 +127,21 @@ const SectionTable = (props) => {
                             <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
                                 <div className={classes.flex}>
                                     <span className={classes.iconMargin}>Enrollment</span>
-                                    <Tooltip
-                                        title={
-                                            <Typography>
-                                                Enrolled/Capacity
-                                                <br />
-                                                Waitlist
-                                                <br />
-                                                New-Only Reserved
-                                            </Typography>
-                                        }
-                                    >
-                                        <Help fontSize="small" />
-                                    </Tooltip>
+                                    {!isMobileScreen && (
+                                        <Tooltip
+                                            title={
+                                                <Typography>
+                                                    Enrolled/Capacity
+                                                    <br />
+                                                    Waitlist
+                                                    <br />
+                                                    New-Only Reserved
+                                                </Typography>
+                                            }
+                                        >
+                                            <Help fontSize="small" />
+                                        </Tooltip>
+                                    )}
                                 </div>
                             </TableCell>
                             <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
