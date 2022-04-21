@@ -3,6 +3,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import search from 'websoc-fuzzy-search';
 import { updateFormValue, resetFormValues } from '../../actions/RightPaneActions';
+import RightPaneStore from '../../stores/RightPaneStore';
 
 const emojiMap = {
     GE_CATEGORY: '🏫', // U+1F3EB :school:
@@ -72,7 +73,9 @@ class FuzzySearch extends PureComponent {
                 if (!value) return;
                 const emoji = value.slice(0, 2);
                 const ident = emoji === emojiMap.INSTRUCTOR ? value.slice(3) : value.slice(3).split(':');
+                const term = RightPaneStore.getFormData().term;
                 resetFormValues();
+                updateFormValue('term', term);
                 switch (emoji) {
                     case emojiMap.GE_CATEGORY:
                         updateFormValue(
