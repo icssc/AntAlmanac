@@ -189,6 +189,8 @@ const getRRule = (bydays, quarter) => {
         case 'Summer10wk':
             if (bydays.includes('FR')) count -= 1; // instruction ends Thursday of Week 10
             break;
+        default:
+            break;
     }
     return `FREQ=WEEKLY;BYDAY=${bydays};INTERVAL=1;COUNT=${count}`;
 };
