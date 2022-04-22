@@ -95,7 +95,7 @@ const getFirstClass = (date, time) => {
 
 // getExamTime returns the start and end datetime of an exam
 //  Ex: ("Mon Jun 7 10:30-12:30pm", "2019") -> [[2019, 6, 7, 10, 30], [2019, 6, 7, 12, 30]]
-const months = { Mar: 3, Jun: 6, Aug: 8, Sep: 9, Dec: 12 };
+const months = { Mar: 3, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Dec: 12 };
 const getExamTime = (exam, year) => {
     const [, month, day, time] = exam.split(' ');
     const [examStartTime, examEndTime] = parseTimes(time);
@@ -202,7 +202,7 @@ const exportCalendar = () => {
     });
 
     // Construct an array of VEvents for each event
-    let events = [];
+    const events = [];
     for (const course of courses) {
         const {
             term,
