@@ -168,22 +168,28 @@ const getTermLength = (quarter) => (quarter.startsWith('Summer') && quarter !== 
 // getRRule returns a string representing the recurring rule for the VEvent
 //  Ex: ["TU", "TH"] -> "FREQ=WEEKLY;BYDAY=TU,TH;INTERVAL=1;COUNT=20"
 const getRRule = (bydays, quarter) => {
-    let count = getTermLength(quarter) * bydays.length; // Number of occurances in the quarter
-
-    if (quarter === 'Fall') {
-        for (const byday of bydays) {
-            switch (byday) {
-                case 'TH':
-                case 'FR':
-                case 'SA':
-                    count += 1;
-                    break;
-                default:
-                    break;
+    let count = getTermLength(quarter) * bydays.length; // Number of occurences in the quarter
+    switch (quarter) {
+        case 'Fall':
+            for (const byday of bydays) {
+                switch (byday) {
+                    case 'TH':
+                    case 'FR':
+                    case 'SA':
+                        count += 1; // account for Week 0 course meetings
+                        break;
+                    default:
+                        break;
+                }
             }
-        }
+            break;
+        case 'Summer1':
+            if (bydays.includes('MO')) count += 1; // instruction ends Monday of Week 6
+            break;
+        case 'Summer10wk':
+            if (bydays.includes('FR')) count -= 1; // instruction ends Thursday of Week 10
+            break;
     }
-
     return `FREQ=WEEKLY;BYDAY=${bydays};INTERVAL=1;COUNT=${count}`;
 };
 
@@ -251,6 +257,7 @@ const exportCalendar = () => {
         if (!err) {
             // Download the .ics file
             saveAs(
+                // inject the VTIMEZONE section into the .ics file
                 new Blob([val.replace('BEGIN:VEVENT', vTimeZoneSection)], { type: 'text/plain;charset=utf-8' }),
                 'schedule.ics'
             );
