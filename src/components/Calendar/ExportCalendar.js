@@ -10,7 +10,7 @@ import { openSnackbar } from '../../actions/AppStoreActions';
 import { termData } from '../../termData';
 
 const quarterStartDates = termData
-    .filter((term) => term.startDate.length)
+    .filter((term) => term.startDate !== undefined)
     .reduce((prev, curr) => ({ ...prev, [curr.shortName]: curr.startDate }), {});
 const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 const daysOffset = { SU: -1, MO: 0, TU: 1, WE: 2, TH: 3, FR: 4, SA: 5 };

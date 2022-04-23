@@ -1,7 +1,7 @@
 // The index of the default term in termData, as per WebSOC
 const defaultTerm = 3;
 
-function Term(shortName, longName, startDate = []) {
+function Term(shortName, longName, startDate) {
     this.shortName = shortName;
     this.longName = longName;
     this.startDate = startDate;
