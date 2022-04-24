@@ -2,7 +2,7 @@ name: "Deploy Pull Request"
 
 on: 
   pull_request:
-      types: [labeled, synchronize]
+      types: [opened, labeled, synchronize]
 
 permissions:
   id-token: write
@@ -74,12 +74,12 @@ jobs:
       - name: deploy the stack to AWS
         run: npx cdk deploy github-actions-stack-${{ github.event.pull_request.number }} --require-approval never
 
-      - name: update the github deployment status
-        uses: bobheadxi/deployments@v0.5.2
-        if: always()
-        with:
-          step: finish
-          token: ${{ secrets.GITHUB_TOKEN }}
-          status: ${{ job.status }}
-          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-          env_url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
+      # - name: update the github deployment status
+      #   uses: bobheadxi/deployments@v0.5.2
+      #   if: always()
+      #   with:
+      #     step: finish
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     status: ${{ job.status }}
+      #     deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+      #     env_url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
