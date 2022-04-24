@@ -37,7 +37,7 @@ const arrayOfColors = [
 
 export const addCourse = (section, courseDetails, term, scheduleIndex, color) => {
     const addedCourses = AppStore.getAddedCourses();
-    const terms = termsInSchedule(addedCourses, term, scheduleIndex);
+
     let existingCourse;
     let multipleTerms = new Set([term]);
 
