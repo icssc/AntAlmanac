@@ -1,6 +1,7 @@
 import dispatcher from '../dispatcher';
 import AppStore from '../stores/AppStore';
 import ReactGA from 'react-ga';
+import ReactGA4 from 'react-ga4';
 import {
     amber,
     blue,
@@ -392,5 +393,10 @@ export const toggleTheme = (radioGroupEvent) => {
     ReactGA.event({
         category: 'antalmanac-rewrite',
         action: 'toggle theme',
+    });
+    ReactGA4.event({
+        category: 'Navbar',
+        action: 'Toggle Theme',
+        label: radioGroupEvent.target.value,
     });
 };
