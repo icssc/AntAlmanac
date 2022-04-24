@@ -37,8 +37,7 @@ const arrayOfColors = [
 
 export const addCourse = (section, courseDetails, term, scheduleIndex, color) => {
     const addedCourses = AppStore.getAddedCourses();
-    const scheduleNames = AppStore.getScheduleNames();
-
+    const terms = termsInSchedule(addedCourses, term, scheduleIndex);
     let existingCourse;
     let multipleTerms = new Set([term]);
 
@@ -77,6 +76,7 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
         if (color === undefined) color = '#5ec8e0';
     }
 
+    const scheduleNames = AppStore.getScheduleNames();
     if (existingCourse === undefined) {
         const newCourse = {
             color: color,
