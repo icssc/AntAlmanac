@@ -151,7 +151,9 @@ class FuzzySearch extends PureComponent {
             <Autocomplete
                 style={{ width: '100%' }}
                 options={Object.keys(this.state.results)}
-                renderInput={(params) => <TextField {...params} fullWidth label={'Search'} />}
+                renderInput={(params) => (
+                    <TextField {...params} inputRef={(input) => input && input.focus()} fullWidth label={'Search'} />
+                )}
                 filterOptions={this.filterOptions}
                 getOptionLabel={this.getOptionLabel}
                 getOptionSelected={this.getOptionSelected}
