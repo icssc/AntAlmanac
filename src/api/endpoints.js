@@ -1,5 +1,4 @@
 function endpointTransform(path) {
-    console.log(process.env.ENDPOINT_URL);
     if (process.env.NODE_ENV === 'development')
         return process.env.REACT_APP_ENDPOINT_URL
             ? process.env.REACT_APP_ENDPOINT_URL + path

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { AssignmentReturn, AssignmentReturned, SaveAlt } from '@material-ui/icons';
-import { Button } from '@material-ui/core';
+import { Button, Avatar, Box } from '@material-ui/core';
 import { login, logout, checkUser, loadUser, saveUser, loadSchedule } from '../../actions/AppStoreActions';
 
 import { AUTH_ENDPOINT } from '../../api/endpoints';
@@ -16,7 +16,6 @@ class AccountBase extends PureComponent {
     async componentDidMount() {
         const user = await checkUser();
         this.setState({ user: user });
-        console.log(user);
         if (!user || !(await loadUser(user))) {
             if (typeof Storage !== 'undefined') {
                 const savedUserID = window.localStorage.getItem('userID');
@@ -32,6 +31,14 @@ class AccountBase extends PureComponent {
             <>
                 {this.state.user ? (
                     <>
+                        <Avatar
+                            alt={this.state.user.passport.user.name}
+                            src={this.state.user.passport.user.picture}
+                            style={{ marginRight: 5, width: 25, height: 25 }}
+                        ></Avatar>
+                        <Box style={{ fontSize: '0.9rem', fontWeight: 500, marginRight: 5 }}>
+                            {this.state.user.passport.user.name.toLocaleUpperCase()}
+                        </Box>
                         <Button onClick={logout} color="inherit" startIcon={<AssignmentReturn />}>
                             Logout
                         </Button>

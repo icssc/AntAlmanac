@@ -188,10 +188,10 @@ export const loadUser = async (user) => {
                 type: 'LOAD_SCHEDULE',
                 userData: await getCoursesData(json.userData),
             });
-            openSnackbar('success', `Schedule for username "${user.passport.user.id}" loaded.`);
+            openSnackbar('success', `Schedule for email "${user.passport.user.email}" loaded.`);
             return true;
         } catch (e) {
-            openSnackbar('error', `Couldn't find schedules for username "${user.passport.user.id}".`);
+            openSnackbar('error', `Couldn't find schedules for email "${user.passport.user.email}".`);
             return false;
         }
     }
