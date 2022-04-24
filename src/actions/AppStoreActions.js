@@ -37,6 +37,7 @@ const arrayOfColors = [
 
 export const addCourse = (section, courseDetails, term, scheduleIndex, color) => {
     const addedCourses = AppStore.getAddedCourses();
+    const scheduleNames = AppStore.getScheduleNames();
 
     let existingCourse;
     let multipleTerms = new Set([term]);
@@ -85,14 +86,18 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
             courseTitle: courseDetails.courseTitle,
             courseComment: courseDetails.courseComment,
             prerequisiteLink: courseDetails.prerequisiteLink,
-            scheduleIndices: [scheduleIndex],
+            scheduleIndices:
+                scheduleIndex === scheduleNames.length ? scheduleNames.map((_, index) => index) : [scheduleIndex],
             section: section,
         };
         dispatcher.dispatch({ type: 'ADD_COURSE', newCourse });
     } else {
         const newSection = {
             ...existingCourse,
-            scheduleIndices: existingCourse.scheduleIndices.concat(scheduleIndex),
+            scheduleIndices:
+                scheduleIndex === scheduleNames.length
+                    ? scheduleNames.map((_, index) => index)
+                    : existingCourse.scheduleIndices.concat(scheduleIndex),
         };
         dispatcher.dispatch({ type: 'ADD_SECTION', newSection });
     }
@@ -353,6 +358,9 @@ export const copySchedule = (from, to) => {
 
     const addedCoursesAfterCopy = addedCourses.map((addedCourse) => {
         if (addedCourse.scheduleIndices.includes(from) && !addedCourse.scheduleIndices.includes(to)) {
+            // If to is equal to the length of scheduleNames, then the user wanted to copy to
+            // all schedules; otherwise, if to is less than the length of scheduleNames, then
+            // only one schedule should be altered
             if (to === scheduleNames.length)
                 return { ...addedCourse, scheduleIndices: scheduleNames.map((_, index) => index) };
             else

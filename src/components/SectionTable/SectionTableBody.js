@@ -270,7 +270,7 @@ const StatusCell = withStyles(styles)((props) => {
 });
 //TODO: SectionNum name parity -> SectionNumber
 const SectionTableBody = withStyles(styles)((props) => {
-    const { classes, section, courseDetails, term, colorAndDelete, highlightAdded } = props;
+    const { classes, section, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames } = props;
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
     useEffect(() => {
         const toggleHighlight = () => {
@@ -296,7 +296,12 @@ const SectionTableBody = withStyles(styles)((props) => {
             className={classNames(classes.tr, { addedCourse: addedCourse && highlightAdded })}
         >
             {!addedCourse ? (
-                <ScheduleAddCell section={section} courseDetails={courseDetails} term={term} />
+                <ScheduleAddCell
+                    section={section}
+                    courseDetails={courseDetails}
+                    term={term}
+                    scheduleNames={scheduleNames}
+                />
             ) : (
                 <ColorAndDelete color={section.color} sectionCode={section.sectionCode} term={term} />
             )}

@@ -1,8 +1,9 @@
-import React, { PureComponent } from 'react';
+import React, { useState } from 'react';
 import { Tooltip, Button, Dialog, DialogTitle, DialogActions, DialogContent, TextField } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import { addSchedule } from '../../actions/AppStoreActions';
+import { isDarkMode } from '../../helpers';
 
 const styles = () => ({
     addButton: {
@@ -15,60 +16,63 @@ const styles = () => ({
     },
 });
 
-class AddScheduleDialog extends PureComponent {
-    state = {
-        isOpen: false,
-        scheduleName: '',
+const AddScheduleDialog = (props) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [scheduleName, setScheduleName] = useState('');
+
+    const handleOpen = () => {
+        setIsOpen(true);
     };
 
-    handleOpen = () => {
-        this.setState({ isOpen: true });
+    const handleClose = () => {
+        setIsOpen(false);
+        setScheduleName('');
     };
 
-    handleClose = () => {
-        this.setState({ isOpen: false });
+    const handleNameChange = (event) => {
+        setScheduleName(event.target.value);
     };
 
-    handleNameChange = (event) => {
-        this.setState({ scheduleName: event.target.value });
+    const handleAdd = () => {
+        addSchedule(scheduleName);
+        setIsOpen(false);
+        setScheduleName('');
     };
 
-    handleAdd = () => {
-        addSchedule(this.state.scheduleName);
-        this.setState({ isOpen: false });
-    };
-
-    render() {
-        return (
-            <>
-                <Tooltip title="Add a Schedule">
-                    <Button className={this.props.classes.addButton} variant="outlined" onClick={this.handleOpen}>
-                        <Add />
+    return (
+        <>
+            <Tooltip title="Add a Schedule">
+                <Button className={props.classes.addButton} variant="outlined" onClick={handleOpen}>
+                    <Add />
+                </Button>
+            </Tooltip>
+            <Dialog open={isOpen} fullWidth>
+                <DialogTitle>Add a New Schedule</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        className={props.classes.textField}
+                        label="Name"
+                        placeholder="Schedule 2"
+                        onChange={handleNameChange}
+                        fullWidth
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color={isDarkMode() ? 'white' : 'primary'}>
+                        Cancel
                     </Button>
-                </Tooltip>
-                <Dialog open={this.state.isOpen} fullWidth>
-                    <DialogTitle>Add a New Schedule</DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            className={this.props.classes.textField}
-                            label="Name"
-                            placeholder="Schedule 2"
-                            onChange={this.handleNameChange}
-                            fullWidth
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.handleClose} color="primary">
-                            Cancel
-                        </Button>
-                        <Button onClick={this.handleAdd} variant="contained" color="primary">
-                            Add Schedule
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </>
-        );
-    }
-}
+                    <Button
+                        onClick={handleAdd}
+                        variant="contained"
+                        color="primary"
+                        disabled={scheduleName.trim() === ''}
+                    >
+                        Add Schedule
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>
+    );
+};
 
 export default withStyles(styles)(AddScheduleDialog);

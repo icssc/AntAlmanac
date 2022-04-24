@@ -82,7 +82,7 @@ const flattenSOCObject = (SOCObject) => {
     }, []);
 };
 
-const SectionTableWrapped = (index, data) => {
+const SectionTableWrapped = (index, data, scheduleNames) => {
     const { courseData } = data;
     const formData = RightPaneStore.getFormData();
 
@@ -115,6 +115,7 @@ const SectionTableWrapped = (index, data) => {
                 courseDetails={courseData[index]}
                 colorAndDelete={false}
                 highlightAdded={true}
+                scheduleNames={scheduleNames}
             />
         );
     }
@@ -127,6 +128,7 @@ class CourseRenderPane extends PureComponent {
         courseData: null,
         loading: true,
         error: false,
+        scheduleNames: AppStore.getScheduleNames(),
     };
 
     loadCourses = () => {
@@ -171,7 +173,16 @@ class CourseRenderPane extends PureComponent {
 
     componentDidMount() {
         this.loadCourses();
+        AppStore.on('scheduleNamesChange', this.updateScheduleNames);
     }
+
+    componentWillUnmount() {
+        AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
+    }
+
+    updateScheduleNames = () => {
+        this.setState({ scheduleNames: AppStore.getScheduleNames() });
+    };
 
     render() {
         const { classes } = this.props;
@@ -202,7 +213,7 @@ class CourseRenderPane extends PureComponent {
 
                             return (
                                 <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
-                                    {SectionTableWrapped(index, renderData)}
+                                    {SectionTableWrapped(index, renderData, this.state.scheduleNames)}
                                 </LazyLoad>
                             );
                         })

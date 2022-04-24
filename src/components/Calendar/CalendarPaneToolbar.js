@@ -40,6 +40,9 @@ const styles = {
         marginLeft: '10px',
         maxWidth: '9rem',
     },
+    rootScheduleSelector: {
+        paddingLeft: '5px',
+    },
 };
 
 const CalendarPaneToolbar = (props) => {
@@ -66,6 +69,7 @@ const CalendarPaneToolbar = (props) => {
             <AddScheduleDialog />
 
             <Select
+                classes={{ root: classes.rootScheduleSelector }}
                 className={classes.scheduleSelector}
                 value={props.currentScheduleIndex}
                 onChange={handleScheduleChange}
