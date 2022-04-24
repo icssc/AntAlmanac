@@ -22,6 +22,73 @@ class FuzzySearch extends PureComponent {
         value: '',
     };
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (!prevState.open && this.state.open) {
+            document.addEventListener('keydown', this.enterEvent, false);
+        } else if (prevState.open && !this.state.open) {
+            document.removeEventListener('keydown', this.enterEvent, false);
+        }
+    }
+
+    doSearch = (value) => {
+        console.log(value);
+        if (!value) return;
+        const emoji = value.slice(0, 2);
+        const ident = emoji === emojiMap.INSTRUCTOR ? value.slice(3) : value.slice(3).split(':');
+        const term = RightPaneStore.getFormData().term;
+        resetFormValues();
+        updateFormValue('term', term);
+        switch (emoji) {
+            case emojiMap.GE_CATEGORY:
+                updateFormValue('ge', `GE-${ident[0].split(' ')[2].replace('(', '').replace(')', '').toUpperCase()}`);
+                break;
+            case emojiMap.DEPARTMENT:
+                updateFormValue('deptValue', ident[0]);
+                updateFormValue('deptLabel', ident.join(':'));
+                break;
+            case emojiMap.COURSE:
+                const deptValue = ident[0].split(' ').slice(0, -1).join(' ');
+                let deptLabel;
+                for (const [key, value] of Object.entries(this.state.cache)) {
+                    if (Object.keys(value).includes(deptValue)) {
+                        deptLabel = this.state.cache[key][deptValue].name;
+                        break;
+                    }
+                }
+                if (!deptLabel) {
+                    const deptSearch = search(deptValue.toLowerCase());
+                    deptLabel = deptSearch[deptValue].name;
+                    this.setState({
+                        cache: {
+                            ...this.state.cache,
+                            [deptValue.toLowerCase()]: deptSearch,
+                        },
+                    });
+                }
+                updateFormValue('deptValue', deptValue);
+                updateFormValue('deptLabel', `${deptValue}: ${deptLabel}`);
+                updateFormValue('courseNumber', ident[0].split(' ').slice(-1)[0]);
+                break;
+            case emojiMap.INSTRUCTOR:
+                updateFormValue(
+                    'instructor',
+                    Object.keys(this.state.results).filter((x) => this.state.results[x].name === ident)[0]
+                );
+                break;
+            default:
+                break;
+        }
+        this.props.toggleSearch();
+    };
+
+    enterEvent = (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            this.onClose();
+            this.doSearch(this.getOptionLabel(Object.keys(this.state.results)[0]));
+        }
+    };
+
     filterOptions = (options) => options;
 
     getOptionLabel = (option) => {
@@ -70,56 +137,7 @@ class FuzzySearch extends PureComponent {
             );
         } else if (reason === 'reset') {
             this.setState({ open: false, value: '' }, () => {
-                if (!value) return;
-                const emoji = value.slice(0, 2);
-                const ident = emoji === emojiMap.INSTRUCTOR ? value.slice(3) : value.slice(3).split(':');
-                const term = RightPaneStore.getFormData().term;
-                resetFormValues();
-                updateFormValue('term', term);
-                switch (emoji) {
-                    case emojiMap.GE_CATEGORY:
-                        updateFormValue(
-                            'ge',
-                            `GE-${ident[0].split(' ')[2].replace('(', '').replace(')', '').toUpperCase()}`
-                        );
-                        break;
-                    case emojiMap.DEPARTMENT:
-                        updateFormValue('deptValue', ident[0]);
-                        updateFormValue('deptLabel', ident.join(':'));
-                        break;
-                    case emojiMap.COURSE:
-                        const deptValue = ident[0].split(' ').slice(0, -1).join(' ');
-                        let deptLabel;
-                        for (const [key, value] of Object.entries(this.state.cache)) {
-                            if (Object.keys(value).includes(deptValue)) {
-                                deptLabel = this.state.cache[key][deptValue].name;
-                                break;
-                            }
-                        }
-                        if (!deptLabel) {
-                            const deptSearch = search(deptValue.toLowerCase());
-                            deptLabel = deptSearch[deptValue].name;
-                            this.setState({
-                                cache: {
-                                    ...this.state.cache,
-                                    [deptValue.toLowerCase()]: deptSearch,
-                                },
-                            });
-                        }
-                        updateFormValue('deptValue', deptValue);
-                        updateFormValue('deptLabel', `${deptValue}: ${deptLabel}`);
-                        updateFormValue('courseNumber', ident[0].split(' ').slice(-1)[0]);
-                        break;
-                    case emojiMap.INSTRUCTOR:
-                        updateFormValue(
-                            'instructor',
-                            Object.keys(this.state.results).filter((x) => this.state.results[x].name === ident)[0]
-                        );
-                        break;
-                    default:
-                        break;
-                }
-                this.props.toggleSearch();
+                this.doSearch(value);
             });
         }
     };
@@ -133,7 +151,9 @@ class FuzzySearch extends PureComponent {
             <Autocomplete
                 style={{ width: '100%' }}
                 options={Object.keys(this.state.results)}
-                renderInput={(params) => <TextField {...params} fullWidth label={'Search'} />}
+                renderInput={(params) => (
+                    <TextField {...params} inputRef={(input) => input && input.focus()} fullWidth label={'Search'} />
+                )}
                 filterOptions={this.filterOptions}
                 getOptionLabel={this.getOptionLabel}
                 getOptionSelected={this.getOptionSelected}
