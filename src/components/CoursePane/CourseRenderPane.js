@@ -82,8 +82,8 @@ const flattenSOCObject = (SOCObject) => {
     }, []);
 };
 
-const SectionTableWrapped = (index, data, scheduleNames) => {
-    const { courseData } = data;
+const SectionTableWrapped = (index, data) => {
+    const { courseData, scheduleNames } = data;
     const formData = RightPaneStore.getFormData();
 
     let component;
@@ -197,6 +197,7 @@ class CourseRenderPane extends PureComponent {
         } else if (!this.state.error) {
             const renderData = {
                 courseData: this.state.courseData,
+                scheduleNames: this.state.scheduleNames,
             };
 
             currentView = (
@@ -213,7 +214,7 @@ class CourseRenderPane extends PureComponent {
 
                             return (
                                 <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
-                                    {SectionTableWrapped(index, renderData, this.state.scheduleNames)}
+                                    {SectionTableWrapped(index, renderData)}
                                 </LazyLoad>
                             );
                         })
