@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import {
     Paper,
     Typography,
@@ -9,6 +9,7 @@ import {
     TableHead,
     TableRow,
     Tooltip,
+    useMediaQuery,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 // import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back
@@ -61,77 +62,72 @@ const styles = {
     },
 };
 
-class SectionTable extends PureComponent {
-    render() {
-        const { classes, courseDetails } = this.props;
-        const encodedDept = encodeURIComponent(courseDetails.deptCode);
+const SectionTable = (props) => {
+    const { classes, courseDetails, term, colorAndDelete, highlightAdded } = props;
+    const encodedDept = encodeURIComponent(courseDetails.deptCode);
+    const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
-        return (
-            <>
-                <div
-                    style={{
-                        display: 'inline-flex',
-                        marginTop: '4px',
-                    }}
-                >
-                    <CourseInfoBar
-                        deptCode={courseDetails.deptCode}
-                        courseTitle={courseDetails.courseTitle}
-                        courseNumber={courseDetails.courseNumber}
-                    />
+    return (
+        <>
+            <div
+                style={{
+                    display: 'inline-flex',
+                    gap: '4px',
+                    marginTop: '4px',
+                }}
+            >
+                <CourseInfoBar
+                    deptCode={courseDetails.deptCode}
+                    courseTitle={courseDetails.courseTitle}
+                    courseNumber={courseDetails.courseNumber}
+                />
 
-                    {/* Temporarily remove "Past Enrollment" until data on PeterPortal API */}
-                    {/* <AlmanacGraph courseDetails={courseDetails} />  */}
+                {/* Temporarily remove "Past Enrollment" until data on PeterPortal API */}
+                {/* <AlmanacGraph courseDetails={courseDetails} />  */}
 
-                    {courseDetails.prerequisiteLink ? (
-                        <CourseInfoButton
-                            text="Prerequisites"
-                            icon={<Assignment />}
-                            redirectLink={courseDetails.prerequisiteLink}
-                        />
-                    ) : (
-                        <></>
-                    )}
+                {courseDetails.prerequisiteLink && (
                     <CourseInfoButton
-                        text="Zotistics"
-                        icon={<Assessment />}
-                        redirectLink={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseDetails.courseNumber}&code=&submit=Submit`}
+                        text={isMobileScreen ? 'Prereqs' : 'Prerequisites'}
+                        icon={<Assignment />}
+                        redirectLink={courseDetails.prerequisiteLink}
                     />
-                    <CourseInfoButton
-                        text="Past Enrollment"
-                        icon={<ShowChartIcon />}
-                        redirectLink={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${courseDetails.courseNumber}&courseType=all`}
-                    />
-                </div>
+                )}
+                <CourseInfoButton
+                    text="Zotistics"
+                    icon={<Assessment />}
+                    redirectLink={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseDetails.courseNumber}&code=&submit=Submit`}
+                />
+                <CourseInfoButton
+                    text="Past Enrollment"
+                    icon={<ShowChartIcon />}
+                    redirectLink={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${courseDetails.courseNumber}&courseType=all`}
+                />
+            </div>
 
-                <TableContainer
-                    component={Paper}
-                    style={{ margin: '8px 0px 8px 0px' }}
-                    elevation={0}
-                    variant="outlined"
-                >
-                    <Table className={classes.table} size="small">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row} />
-                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
-                                    Code
-                                </TableCell>
-                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
-                                    Type
-                                </TableCell>
-                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
-                                    Instructors
-                                </TableCell>
-                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
-                                    Times
-                                </TableCell>
-                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
-                                    Places
-                                </TableCell>
-                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
-                                    <div className={classes.flex}>
-                                        <span className={classes.iconMargin}>Enrollment</span>
+            <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
+                <Table className={classes.table} size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row} />
+                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                                Code
+                            </TableCell>
+                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                                Type
+                            </TableCell>
+                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                                Instructors
+                            </TableCell>
+                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                                Times
+                            </TableCell>
+                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                                Places
+                            </TableCell>
+                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                                <div className={classes.flex}>
+                                    <span className={classes.iconMargin}>Enrollment</span>
+                                    {!isMobileScreen && (
                                         <Tooltip
                                             title={
                                                 <Typography>
@@ -145,36 +141,36 @@ class SectionTable extends PureComponent {
                                         >
                                             <Help fontSize="small" />
                                         </Tooltip>
-                                    </div>
-                                </TableCell>
-                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
-                                    Rstr
-                                </TableCell>
-                                <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
-                                    Status
-                                </TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {this.props.courseDetails.sections.map((section) => {
-                                return (
-                                    <SectionTableBody
-                                        key={section.sectionCode}
-                                        section={section}
-                                        courseDetails={this.props.courseDetails}
-                                        term={this.props.term}
-                                        colorAndDelete={this.props.colorAndDelete}
-                                        highlightAdded={this.props.highlightAdded}
-                                    />
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </>
-        );
-    }
-}
+                                    )}
+                                </div>
+                            </TableCell>
+                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                                Rstr
+                            </TableCell>
+                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                                Status
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {courseDetails.sections.map((section) => {
+                            return (
+                                <SectionTableBody
+                                    key={section.sectionCode}
+                                    section={section}
+                                    courseDetails={courseDetails}
+                                    term={term}
+                                    colorAndDelete={colorAndDelete}
+                                    highlightAdded={highlightAdded}
+                                />
+                            );
+                        })}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </>
+    );
+};
 
 SectionTable.propTypes = {
     courseDetails: PropTypes.object.isRequired,

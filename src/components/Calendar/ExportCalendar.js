@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import ReactGA from 'react-ga';
 import Button from '@material-ui/core/Button';
 import { Tooltip } from '@material-ui/core';
@@ -10,15 +10,33 @@ import { openSnackbar } from '../../actions/AppStoreActions';
 import { termData } from '../../termData';
 import ReactGA4 from 'react-ga4';
 
-// TODO(chase): support summer sessions
 const quarterStartDates = termData
-    .filter((term) => !term.longName.includes('Summer') && term.startDate.length)
-    .reduce((prev, curr) => ({ ...prev, [curr.shortName]: curr.startDate }), {}); // https://stackoverflow.com/q/36388401
-
+    .filter((term) => term.startDate !== undefined)
+    .reduce((prev, curr) => ({ ...prev, [curr.shortName]: curr.startDate }), {});
 const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 const daysOffset = { SU: -1, MO: 0, TU: 1, WE: 2, TH: 3, FR: 4, SA: 5 };
 const fallDaysOffset = { TH: 0, FR: 1, SA: 2, SU: 3, MO: 4, TU: 5, WE: 6 };
 const translateDaysForIcs = { Su: 'SU', M: 'MO', Tu: 'TU', W: 'WE', Th: 'TH', F: 'FR', Sa: 'SA' };
+const vTimeZoneSection =
+    'BEGIN:VTIMEZONE\n' +
+    'TZID:America/Los_Angeles\n' +
+    'X-LIC-LOCATION:America/Los_Angeles\n' +
+    'BEGIN:DAYLIGHT\n' +
+    'TZOFFSETFROM:-0800\n' +
+    'TZOFFSETTO:-0700\n' +
+    'TZNAME:PDT\n' +
+    'DTSTART:19700308T020000\n' +
+    'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU\n' +
+    'END:DAYLIGHT\n' +
+    'BEGIN:STANDARD\n' +
+    'TZOFFSETFROM:-0700\n' +
+    'TZOFFSETTO:-0800\n' +
+    'TZNAME:PST\n' +
+    'DTSTART:19701101T020000\n' +
+    'RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU\n' +
+    'END:STANDARD\n' +
+    'END:VTIMEZONE\n' +
+    'BEGIN:VEVENT';
 
 // getByDays returns the days that a class occurs
 //  Given a string of days, convert it to a list of days in ics format
@@ -36,7 +54,7 @@ const getClassStartDate = (term, bydays) => {
     const quarterStartDate = new Date(...quarterStartDates[term]);
 
     // dayOffset represents the number of days since the start of the quarter
-    var dayOffset;
+    let dayOffset;
     if (getQuarter(term) === 'Fall') {
         // Since Fall quarter starts on a Thursday the first byday and offset
         // will be different from other quarters
@@ -66,27 +84,6 @@ const dateToIcs = (date) => {
     ];
 };
 
-// toUTC converts a list of times to UTC
-//  offsetHours is the time difference to UTC
-//
-// Note(chase): We currently don't use this function because timezones are too annoying.
-//  If you want to use this function, you also need to set the VEvent's
-//  startInputType/endInputType to 'utc'
-// eslint-disable-next-line
-const toUTC = (times, offsetHours) => {
-    return times.map((time) => {
-        // Construct a Date object
-        // Subtract the month by one, since it should be 0-indexed
-        const dateTime = new Date(time[0], time[1] - 1, time[2], time[3], time[4]);
-
-        // Add the offsetHours to the Date object
-        dateTime.setHours(dateTime.getHours() + offsetHours);
-
-        // Return formatted for ics
-        return [...dateToIcs(dateTime), dateTime.getHours(), dateTime.getMinutes()];
-    });
-};
-
 // getFirstClass returns the start and end datetime of the first class
 //  Ex: ([2021, 3, 30], " 4:00-4:50p") -> [[2021, 3, 30, 16, 0], [2021, 3, 30, 16, 50]]
 const getFirstClass = (date, time) => {
@@ -99,7 +96,7 @@ const getFirstClass = (date, time) => {
 
 // getExamTime returns the start and end datetime of an exam
 //  Ex: ("Mon Jun 7 10:30-12:30pm", "2019") -> [[2019, 6, 7, 10, 30], [2019, 6, 7, 12, 30]]
-const months = { Mar: 3, Apr: 4, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Nov: 11, Dec: 12 };
+const months = { Mar: 3, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Dec: 12 };
 const getExamTime = (exam, year) => {
     const [, month, day, time] = exam.split(' ');
     const [examStartTime, examEndTime] = parseTimes(time);
@@ -115,7 +112,7 @@ const getExamTime = (exam, year) => {
 //  Ex: " 4:00-4:50p" -> [[16, 0], [16, 50]]
 const parseTimes = (time) => {
     // Determine whether the time is in the afternoon (PM)
-    var pm = false;
+    let pm = false;
     if (time.slice(-1) === 'p') {
         // Course time strings would end with a 'p'
         time = time.substring(0, time.length - 1); // Remove 'p' from the end
@@ -164,125 +161,132 @@ const getQuarter = (term) => {
     return term.split(' ')[1];
 };
 
+// getTermLength returns the number of weeks in a given term,
+// which is 10 for quarters and Summer Session 10wk,
+// and 5 for Summer Sessions I and II
+const getTermLength = (quarter) => (quarter.startsWith('Summer') && quarter !== 'Summer10wk' ? 5 : 10);
+
 // getRRule returns a string representing the recurring rule for the VEvent
 //  Ex: ["TU", "TH"] -> "FREQ=WEEKLY;BYDAY=TU,TH;INTERVAL=1;COUNT=20"
 const getRRule = (bydays, quarter) => {
-    var count = 10 * bydays.length; // Number of occurances in the quarter
-
-    if (quarter === 'Fall') {
-        for (const byday of bydays) {
-            switch (byday) {
-                case 'TH':
-                case 'FR':
-                case 'SA':
-                    count += 1;
-                    break;
-                default:
-                    break;
+    let count = getTermLength(quarter) * bydays.length; // Number of occurences in the quarter
+    switch (quarter) {
+        case 'Fall':
+            for (const byday of bydays) {
+                switch (byday) {
+                    case 'TH':
+                    case 'FR':
+                    case 'SA':
+                        count += 1; // account for Week 0 course meetings
+                        break;
+                    default:
+                        break;
+                }
             }
-        }
+            break;
+        case 'Summer1':
+            if (bydays.includes('MO')) count += 1; // instruction ends Monday of Week 6
+            break;
+        case 'Summer10wk':
+            if (bydays.includes('FR')) count -= 1; // instruction ends Thursday of Week 10
+            break;
+        default:
+            break;
     }
-
     return `FREQ=WEEKLY;BYDAY=${bydays};INTERVAL=1;COUNT=${count}`;
 };
 
-class ExportCalendarButton extends PureComponent {
-    handleClick = () => {
-        // Fetch courses for the current schedule
-        const courses = AppStore.getAddedCourses().filter((course) => {
-            return course.scheduleIndices.includes(AppStore.getCurrentScheduleIndex());
-        });
+const exportCalendar = () => {
+    // Fetch courses for the current schedule
+    const courses = AppStore.getAddedCourses().filter((course) => {
+        return course.scheduleIndices.includes(AppStore.getCurrentScheduleIndex());
+    });
 
-        // Construct an array of VEvents for each event
-        var events = [];
-        for (const course of courses) {
-            const {
-                term,
-                deptCode,
-                courseNumber,
-                courseTitle,
-                section: { sectionType, instructors, meetings, finalExam },
-            } = course;
+    // Construct an array of VEvents for each event
+    const events = [];
+    for (const course of courses) {
+        const {
+            term,
+            deptCode,
+            courseNumber,
+            courseTitle,
+            section: { sectionType, instructors, meetings, finalExam },
+        } = course;
 
-            // Create a VEvent for each meeting
-            for (const meeting of meetings) {
-                if (meeting.time === 'TBA') {
-                    // Skip this meeting if there is no meeting time
-                    continue;
-                }
-
-                const bydays = getByDays(meeting.days);
-                const classStartDate = getClassStartDate(term, bydays);
-                const [firstClassStart, firstClassEnd] = getFirstClass(classStartDate, meeting.time);
-                const rrule = getRRule(bydays, getQuarter(term));
-
-                // Add VEvent to events array
-                events.push({
-                    productId: 'antalmanac/ics',
-                    startOutputType: 'local',
-                    endOutputType: 'local',
-                    title: `${deptCode} ${courseNumber} ${sectionType}`,
-                    description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
-                    location: `${meeting.bldg}`,
-                    start: firstClassStart,
-                    end: firstClassEnd,
-                    recurrenceRule: rrule,
-                });
+        // Create a VEvent for each meeting
+        for (const meeting of meetings) {
+            if (meeting.time === 'TBA') {
+                // Skip this meeting if there is no meeting time
+                continue;
             }
 
-            // Add Final to events
-            if (finalExam && finalExam !== 'TBA') {
-                const [examStart, examEnd] = getExamTime(finalExam, getYear(term));
-                events.push({
-                    productId: 'antalmanac/ics',
-                    startOutputType: 'local',
-                    endOutputType: 'local',
-                    title: `${deptCode} ${courseNumber} Final Exam`,
-                    description: `Final Exam for ${courseTitle}`,
-                    start: examStart,
-                    end: examEnd,
-                });
-            }
+            const bydays = getByDays(meeting.days);
+            const classStartDate = getClassStartDate(term, bydays);
+            const [firstClassStart, firstClassEnd] = getFirstClass(classStartDate, meeting.time);
+            const rrule = getRRule(bydays, getQuarter(term));
+
+            // Add VEvent to events array
+            events.push({
+                productId: 'antalmanac/ics',
+                startOutputType: 'local',
+                endOutputType: 'local',
+                title: `${deptCode} ${courseNumber} ${sectionType}`,
+                description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
+                location: `${meeting.bldg}`,
+                start: firstClassStart,
+                end: firstClassEnd,
+                recurrenceRule: rrule,
+            });
         }
 
-        // Convert the events into a vcalendar
-        // Callback function triggers a download of the .ics file
-        createEvents(events, (err, val) => {
-            ReactGA4.event({
-                category: 'Calendar Pane',
-                action: 'Download Schedule',
+        // Add Final to events
+        if (finalExam && finalExam !== 'TBA') {
+            const [examStart, examEnd] = getExamTime(finalExam, getYear(term));
+            events.push({
+                productId: 'antalmanac/ics',
+                startOutputType: 'local',
+                endOutputType: 'local',
+                title: `${deptCode} ${courseNumber} Final Exam`,
+                description: `Final Exam for ${courseTitle}`,
+                start: examStart,
+                end: examEnd,
             });
-            if (!err) {
-                // Download the .ics file
-                var blob = new Blob([val], { type: 'text/plain;charset=utf-8' });
-                saveAs(blob, 'schedule.ics');
-                openSnackbar('success', 'Schedule downloaded! Make sure your calendar is in PST.', 5);
-            } else {
-                openSnackbar('error', 'Something went wrong! Unable to download schedule.', 5);
-                console.log(err);
-            }
-        });
-
-        ReactGA.event({
-            category: 'antalmanac-rewrite',
-            action: 'Download .ics file',
-        });
-    };
-
-    render() {
-        return (
-            <Tooltip title="Download Calendar as an .ics file">
-                <Button
-                    onClick={this.handleClick}
-                    variant="outlined"
-                    size="small"
-                    startIcon={<Today fontSize="small" />}
-                >
-                    Download
-                </Button>
-            </Tooltip>
-        );
+        }
     }
-}
+
+    // Convert the events into a vcalendar
+    // Callback function triggers a download of the .ics file
+    createEvents(events, (err, val) => {
+        ReactGA4.event({
+            category: 'Calendar Pane',
+            action: 'Download Schedule',
+        });
+        if (!err) {
+            // Download the .ics file
+            saveAs(
+                // inject the VTIMEZONE section into the .ics file
+                new Blob([val.replace('BEGIN:VEVENT', vTimeZoneSection)], { type: 'text/plain;charset=utf-8' }),
+                'schedule.ics'
+            );
+            openSnackbar('success', 'Schedule downloaded!', 5);
+        } else {
+            openSnackbar('error', 'Something went wrong! Unable to download schedule.', 5);
+            console.log(err);
+        }
+    });
+
+    ReactGA.event({
+        category: 'antalmanac-rewrite',
+        action: 'Download .ics file',
+    });
+};
+
+const ExportCalendarButton = () => (
+    <Tooltip title="Download Calendar as an .ics file">
+        <Button onClick={exportCalendar} variant="outlined" size="small" startIcon={<Today fontSize="small" />}>
+            Download
+        </Button>
+    </Tooltip>
+);
 
 export default ExportCalendarButton;

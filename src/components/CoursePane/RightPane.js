@@ -23,20 +23,41 @@ class RightPane extends PureComponent {
         refresh: 0,
     };
 
+    returnToSearchBarEvent = (event) => {
+        if (event.key === 'Backspace' || event.key === 'Escape') {
+            event.preventDefault();
+            dispatcher.dispatch({
+                type: 'TOGGLE_SEARCH',
+            });
+            this.forceUpdate();
+        }
+    };
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        (RightPaneStore.getDoDisplaySearch() ? document.removeEventListener : document.addEventListener)(
+            'keydown',
+            this.returnToSearchBarEvent,
+            false
+        );
+    }
+
     refreshSearch = () => {
         clearCache();
         this.setState({ refresh: this.state.refresh + 1 });
     };
 
     toggleSearch = () => {
-        if(RightPaneStore.getFormData().ge !== 'ANY' || RightPaneStore.getFormData().deptValue !== 'ALL' || 
-            RightPaneStore.getFormData().sectionCode !== "" || RightPaneStore.getFormData().instructor !== ""){
+        if (
+            RightPaneStore.getFormData().ge !== 'ANY' ||
+            RightPaneStore.getFormData().deptValue !== 'ALL' ||
+            RightPaneStore.getFormData().sectionCode !== '' ||
+            RightPaneStore.getFormData().instructor !== ''
+        ) {
             dispatcher.dispatch({
                 type: 'TOGGLE_SEARCH',
             });
             this.forceUpdate();
-        }
-        else{
+        } else {
             openSnackbar(
                 'error',
                 `Please provide one of the following: Department, GE, Course Code/Range, or Instructor`

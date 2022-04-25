@@ -1,7 +1,7 @@
-import React, { PureComponent } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, Popover } from '@material-ui/core';
+import { Button, Popover, useMediaQuery } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { PETERPORTAL_REST_ENDPOINT } from '../../api/endpoints';
@@ -16,7 +16,7 @@ const styles = () => ({
     },
     courseInfoPane: {
         margin: 10,
-        width: 500,
+        maxWidth: 500,
     },
     skeleton: {
         margin: 10,
@@ -25,25 +25,27 @@ const styles = () => ({
     },
 });
 
-class CourseInfoBar extends PureComponent {
-    state = {
-        loading: true,
-        anchorEl: null,
-        title: null,
-        prerequisite_text: null,
-        prerequisite_for: null,
-        description: null,
-        ge_list: null,
-    };
+const noCourseInfo = {
+    title: 'No description available',
+    prerequisite_text: '',
+    prerequisite_for: '',
+    description: '',
+    ge_list: '',
+};
 
-    togglePopover = async (currentTarget) => {
-        if (Boolean(this.state.anchorEl)) {
-            this.setState({ anchorEl: false });
+const CourseInfoBar = (props) => {
+    const { courseTitle, courseNumber, deptCode, classes } = props;
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [courseInfo, setCourseInfo] = useState(null);
+
+    const togglePopover = async (currentTarget) => {
+        if (Boolean(anchorEl)) {
+            setAnchorEl(false);
         } else {
-            this.setState({ anchorEl: currentTarget });
+            setAnchorEl(currentTarget);
 
-            if (this.state.loading === true) {
-                const { courseNumber, deptCode } = this.props;
+            if (courseInfo === null) {
                 try {
                     const courseId = encodeURIComponent(
                         `${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`
@@ -53,9 +55,7 @@ class CourseInfoBar extends PureComponent {
                     if (response.ok) {
                         const jsonResp = await response.json();
 
-                        this.setState({
-                            anchorEl: currentTarget,
-                            loading: false,
+                        setCourseInfo({
                             title: jsonResp.title,
                             prerequisite_text: jsonResp.prerequisite_text,
                             prerequisite_for: jsonResp.prerequisite_for.join(', '),
@@ -63,35 +63,19 @@ class CourseInfoBar extends PureComponent {
                             ge_list: jsonResp.ge_list.join(', '),
                         });
                     } else {
-                        this.setState({
-                            anchorEl: currentTarget,
-                            loading: false,
-                            title: 'No description available',
-                            prerequisite_text: '',
-                            prerequisite_for: '',
-                            description: '',
-                            ge_list: '',
-                        });
+                        setCourseInfo(noCourseInfo);
                     }
                 } catch (e) {
-                    this.setState({
-                        anchorEl: currentTarget,
-                        loading: false,
-                        title: 'No description available',
-                        prerequisite_text: '',
-                        prerequisite_for: '',
-                        description: '',
-                        ge_list: '',
-                    });
+                    setCourseInfo(noCourseInfo);
                 }
             }
         }
     };
 
-    getPopoverContent = () => {
-        if (this.state.loading) {
+    const getPopoverContent = () => {
+        if (courseInfo === null) {
             return (
-                <div className={this.props.classes.skeleton}>
+                <div className={classes.skeleton}>
                     <p>
                         <Skeleton variant="text" animation="wave" height={30} width="50%" />
                     </p>
@@ -105,71 +89,70 @@ class CourseInfoBar extends PureComponent {
                 </div>
             );
         } else {
+            const { title, description, prerequisite_text, prerequisite_for, ge_list } = courseInfo;
+
             return (
-                <div className={this.props.classes.courseInfoPane}>
+                <div className={classes.courseInfoPane}>
                     <p>
-                        <strong>{this.state.title}</strong>
+                        <strong>{title}</strong>
                     </p>
-                    <p>{this.state.description}</p>
-                    {this.state.prerequisite_text !== '' ? (
+                    <p>{description}</p>
+                    {prerequisite_text !== '' && (
                         <p>
-                            <span className={this.props.classes.rightSpace}>Prerequisites:</span>
-                            {this.state.prerequisite_text}
+                            <span className={classes.rightSpace}>Prerequisites:</span>
+                            {prerequisite_text}
                         </p>
-                    ) : null}
-                    {this.state.prerequisite_for !== '' ? (
+                    )}
+                    {prerequisite_for !== '' && (
                         <p>
-                            <span className={this.props.classes.rightSpace}>Prerequisite for:</span>
-                            {this.state.prerequisite_for}
+                            <span className={classes.rightSpace}>Prerequisite for:</span>
+                            {prerequisite_for}
                         </p>
-                    ) : null}
-                    {this.state.ge_list !== '' ? (
+                    )}
+                    {ge_list !== '' && (
                         <p>
-                            <span className={this.props.classes.rightSpace}>General Education Categories:</span>
-                            {this.state.ge_list}
+                            <span className={classes.rightSpace}>General Education Categories:</span>
+                            {ge_list}
                         </p>
-                    ) : null}
+                    )}
                 </div>
             );
         }
     };
 
-    render() {
-        const { courseTitle, courseNumber, deptCode } = this.props;
+    const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
-        return (
-            <>
-                <Button
-                    variant="contained"
-                    size="small"
-                    onClick={(event) => {
-                        const currentTarget = event.currentTarget;
-                        this.togglePopover(currentTarget);
-                    }}
-                    style={{ marginRight: '4px' }}
-                >
-                    <InfoOutlinedIcon fontSize="small" style={{ marginRight: '5px' }} />
-                    {`${deptCode} ${courseNumber} | ${courseTitle}`}
-                </Button>
-                <Popover
-                    anchorEl={this.state.anchorEl}
-                    open={Boolean(this.state.anchorEl)}
-                    onClose={() => this.togglePopover(null)}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'center',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'center',
-                    }}
-                >
-                    {this.getPopoverContent()}
-                </Popover>
-            </>
-        );
-    }
-}
+    return (
+        <>
+            <Button
+                variant="contained"
+                startIcon={!isMobileScreen && <InfoOutlinedIcon />}
+                size="small"
+                onClick={(event) => {
+                    const currentTarget = event.currentTarget;
+                    togglePopover(currentTarget);
+                }}
+            >
+                {`${deptCode} ${courseNumber} | ${courseTitle}`}
+            </Button>
+            <Popover
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={() => togglePopover(null)}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+            >
+                {getPopoverContent()}
+            </Popover>
+        </>
+    );
+};
 
 CourseInfoBar.propTypes = {
     classes: PropTypes.object.isRequired,

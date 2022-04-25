@@ -1,6 +1,6 @@
 import React from 'react';
 import ColorPicker from '../App/ColorPicker';
-import { IconButton, Menu, MenuItem, TableCell } from '@material-ui/core';
+import { IconButton, Menu, MenuItem, TableCell, useMediaQuery } from '@material-ui/core';
 import { deleteCourse } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
 import { Delete, Add, ArrowDropDown } from '@material-ui/icons';
@@ -19,9 +19,11 @@ const styles = {
 
 export const ColorAndDelete = withStyles(styles)((props) => {
     const { sectionCode, color, classes, term } = props;
+    const isMobileScreen = useMediaQuery('(max-width: 750px)');
+
     return (
         <TableCell padding="none">
-            <div className={classes.container}>
+            <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
                 <IconButton
                     onClick={() => {
                         deleteCourse(sectionCode, AppStore.getCurrentScheduleIndex(), term);
@@ -43,6 +45,7 @@ export const ColorAndDelete = withStyles(styles)((props) => {
 export const ScheduleAddCell = withStyles(styles)((props) => {
     const { classes, section, courseDetails, term } = props;
     const popupState = usePopupState({ variant: 'popover' });
+    const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
     const closeAndAddCourse = (scheduleIndex) => {
         popupState.close();
@@ -61,7 +64,7 @@ export const ScheduleAddCell = withStyles(styles)((props) => {
 
     return (
         <TableCell padding="none">
-            <div className={classes.container}>
+            <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
                 <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
                     <Add fontSize="small" />
                 </IconButton>
