@@ -2,7 +2,7 @@ name: "Deploy Pull Request"
 
 on: 
   pull_request:
-      types: [opened, labeled, synchronize]
+      types: [opened, synchronize]
 
 permissions:
   id-token: write
@@ -11,9 +11,6 @@ permissions:
 
 jobs:
   deploy:
-    if: |
-      (github.event.action == 'labeled' && github.event.label.name == 'deploy') ||
-      (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, 'deploy'))
     runs-on: ubuntu-latest
     env: # env variables for Node.js
       HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
@@ -36,37 +33,37 @@ jobs:
           env: ${{ env.STAGE }}
           ref: ${{ github.head_ref }}
       
-      # - uses: actions/setup-node@v2
-      #   with:
-      #     node-version: "16"
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
         
-      # - name: checkout antalmanac
-      #   uses: actions/checkout@v3
+      - name: checkout antalmanac
+        uses: actions/checkout@v3
       
-      # - name: install node dependencies frontend
-      #   uses: bahmutov/npm-install@v1
+      - name: install node dependencies frontend
+        uses: bahmutov/npm-install@v1
 
-      # - name: install node dependencies cdk
-      #   uses: bahmutov/npm-install@v1
-      #   with:
-      #     working-directory: .github/workflows/actions_stack
+      - name: install node dependencies cdk
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: .github/workflows/actions_stack
 
-      # - name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@master
-      #   with:
-      #     role-to-assume: ${{ secrets.ACTIONS_IAM_ROLE }}
-      #     aws-region: us-east-1
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          role-to-assume: ${{ secrets.ACTIONS_IAM_ROLE }}
+          aws-region: us-east-1
       
-      # - name: build frontend
-      #   run: npm run build
+      - name: build frontend
+        run: npm run build
 
-      # - name: build CDK
-      #   working-directory: ./.github/workflows/actions_stack
-      #   run: npm run build
+      - name: build CDK
+        working-directory: ./.github/workflows/actions_stack
+        run: npm run build
 
-      # - name: deploy the stack to AWS
-      #   working-directory: ./.github/workflows/actions_stack
-      #   run: npx aws-cdk deploy github-actions-stack-${{ github.event.pull_request.number }} --require-approval never
+      - name: deploy the stack to AWS
+        working-directory: ./.github/workflows/actions_stack
+        run: npx aws-cdk deploy github-actions-stack-${{ github.event.pull_request.number }} --require-approval never
 
       - name: update the github deployment status
         uses: bobheadxi/deployments@v0.5.2
