@@ -104,6 +104,12 @@ export const openSnackbar = (variant, message, duration, position, style) => {
 };
 
 export const saveSchedule = async (userID, rememberMe) => {
+    ReactGA4.event({
+        category: 'Navbar',
+        action: 'Save Schedule',
+        label: userID,
+        value: rememberMe,
+    });
     if (userID != null) {
         userID = userID.replace(/\s+/g, '');
 
@@ -153,6 +159,12 @@ export const saveSchedule = async (userID, rememberMe) => {
 };
 
 export const loadSchedule = async (userID, rememberMe) => {
+    ReactGA4.event({
+        category: 'Navbar',
+        action: 'Load Schedule',
+        label: userID,
+        value: rememberMe,
+    });
     if (
         userID != null &&
         (!AppStore.hasUnsavedChanges() ||

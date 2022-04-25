@@ -10,6 +10,7 @@ import {
 } from '@material-ui/core';
 import { Notifications } from '@material-ui/icons';
 import ReactGA from 'react-ga';
+import ReactGA4 from 'react-ga4';
 import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '../../api/endpoints';
 
 class NotificationHub extends PureComponent {
@@ -52,6 +53,10 @@ class NotificationHub extends PureComponent {
                             this.getNotificationLists();
                             ReactGA.event({
                                 category: 'antalmanac-rewrite',
+                                action: 'Click "Notifications"',
+                            });
+                            ReactGA4.event({
+                                category: 'Navbar',
                                 action: 'Click "Notifications"',
                             });
                         }}

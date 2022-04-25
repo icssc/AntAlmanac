@@ -15,6 +15,7 @@ import { RssFeed } from '@material-ui/icons';
 import { NEWS_ENDPOINT } from '../../api/endpoints';
 import { Skeleton } from '@material-ui/lab';
 import moment from 'moment-timezone';
+import ReactGA4 from 'react-ga4';
 
 const styles = (theme) => ({
     list: {
@@ -123,6 +124,10 @@ class News extends PureComponent {
     };
 
     openPopup = (e) => {
+        ReactGA4.event({
+            category: 'Navbar',
+            action: 'Click "News"',
+        });
         this.setState({ anchorEl: e.currentTarget });
 
         if (typeof Storage !== 'undefined') {
