@@ -87,7 +87,7 @@ class ImportStudyList extends PureComponent {
                     ReactGA4.event({
                         category: 'Navbar',
                         action: 'Import Study List',
-                        value: sectionsAdded,
+                        value: sectionsAdded / (sectionCodes.length || 1),
                     });
                     if (sectionsAdded === sectionCodes.length) {
                         openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
