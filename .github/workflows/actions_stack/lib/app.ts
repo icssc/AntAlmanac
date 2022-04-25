@@ -7,8 +7,6 @@ import 'dotenv/config'
 const app = new App({ autoSynth: true })
 const account = process.env['ACCOUNT_ID']
 
-process.env.PR_NUM = '100'
-
 if (process.env.PR_NUM){ // check if called from AntAlmanac Github action
     new ActionsStack(app, `github-actions-stack-${process.env.PR_NUM}`, {pr_num: process.env.PR_NUM, env: {region: 'us-east-1', account: account}})
 }
