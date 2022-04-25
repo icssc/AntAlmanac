@@ -39,26 +39,18 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
-          
-      - name: checkout antalmanac-cdk
-        uses: actions/checkout@v3
-        with:
-          repository: icssc/antalmanac-cdk
-          ref: dev # CHANGE TO MAIN WHEN CDK REPO IS UPDATED
         
       - name: checkout antalmanac
         uses: actions/checkout@v3
-        with:
-          path: functions/AntAlmanac
       
-      - name: install node dependencies cdk
-        uses: bahmutov/npm-install@v1
-
       - name: install node dependencies frontend
         uses: bahmutov/npm-install@v1
+
+      - name: install node dependencies cdk
+        uses: bahmutov/npm-install@v1
         with:
-          working-directory: functions/AntAlmanac
-      
+          working-directory: .github/workflows/actions_stack
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
@@ -66,7 +58,10 @@ jobs:
           aws-region: us-east-1
       
       - name: build frontend
-        run: REACT_APP_STAGING=true SKIP_PREFLIGHT_CHECK=true npm run build-client
+        run: npm run build
+        
+      - name: change to CDK directory
+        run: cd .github/workflows/actions_stack
 
       - name: build CDK
         run: npm run build
@@ -74,12 +69,12 @@ jobs:
       - name: deploy the stack to AWS
         run: npx cdk deploy github-actions-stack-${{ github.event.pull_request.number }} --require-approval never
 
-      # - name: update the github deployment status
-      #   uses: bobheadxi/deployments@v0.5.2
-      #   if: always()
-      #   with:
-      #     step: finish
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     status: ${{ job.status }}
-      #     deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-      #     env_url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
+      - name: update the github deployment status
+        uses: bobheadxi/deployments@v0.5.2
+        if: always()
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          env_url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
