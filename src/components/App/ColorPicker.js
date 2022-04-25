@@ -6,6 +6,7 @@ import { SketchPicker } from 'react-color';
 import { changeCourseColor, changeCustomEventColor } from '../../actions/AppStoreActions';
 import { ColorLens } from '@material-ui/icons';
 import ReactGA from 'react-ga';
+import ReactGA4 from 'react-ga4';
 
 class ColorPicker extends PureComponent {
     state = {
@@ -38,6 +39,10 @@ class ColorPicker extends PureComponent {
     handleColorChangeComplete = () => {
         ReactGA.event({
             category: 'antalmanac-rewrite',
+            action: 'Change Course Color',
+        });
+        ReactGA4.event({
+            category: this.props.analyticsCategory || 'Right Pane',
             action: 'Change Course Color',
         });
     };

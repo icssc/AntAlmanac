@@ -8,6 +8,7 @@ import { createEvents } from 'ics';
 import AppStore from '../../stores/AppStore';
 import { openSnackbar } from '../../actions/AppStoreActions';
 import { termData } from '../../termData';
+import ReactGA4 from 'react-ga4';
 
 // TODO(chase): support summer sessions
 const quarterStartDates = termData
@@ -247,6 +248,10 @@ class ExportCalendarButton extends PureComponent {
         // Convert the events into a vcalendar
         // Callback function triggers a download of the .ics file
         createEvents(events, (err, val) => {
+            ReactGA4.event({
+                category: 'Calendar Pane',
+                action: 'Download Schedule',
+            });
             if (!err) {
                 // Download the .ics file
                 var blob = new Blob([val], { type: 'text/plain;charset=utf-8' });

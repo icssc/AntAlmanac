@@ -11,6 +11,7 @@ import ExportCalendar from './ExportCalendar';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import ReactGA from 'react-ga';
+import ReactGA4 from 'react-ga4';
 import ConditionalWrapper from '../App/ConditionalWrapper';
 
 const styles = {
@@ -44,6 +45,10 @@ const CalendarPaneToolbar = (props) => {
     const { classes } = props;
 
     const handleScheduleChange = (event) => {
+        ReactGA4.event({
+            category: 'Calendar Pane',
+            action: 'Change Schedule',
+        });
         changeCurrentSchedule(event.target.value);
     };
 
@@ -76,7 +81,13 @@ const CalendarPaneToolbar = (props) => {
                 <Button
                     id="finalButton"
                     variant={props.showFinalsSchedule ? 'contained' : 'outlined'}
-                    onClick={props.toggleDisplayFinalsSchedule}
+                    onClick={() => {
+                        ReactGA4.event({
+                            category: 'Calendar Pane',
+                            action: 'Display Finals',
+                        });
+                        props.toggleDisplayFinalsSchedule();
+                    }}
                     size="small"
                     color={props.showFinalsSchedule ? 'primary' : 'default'}
                 >
@@ -87,7 +98,15 @@ const CalendarPaneToolbar = (props) => {
             <div className={classes.spacer} />
 
             <Tooltip title="Undo last deleted course">
-                <IconButton onClick={() => undoDelete(null)}>
+                <IconButton
+                    onClick={() => {
+                        ReactGA4.event({
+                            category: 'Calendar Pane',
+                            label: 'Click Undo Button',
+                        });
+                        undoDelete(null);
+                    }}
+                >
                     <Undo fontSize="small" />
                 </IconButton>
             </Tooltip>
@@ -105,6 +124,10 @@ const CalendarPaneToolbar = (props) => {
                                 category: 'antalmanac-rewrite',
                                 action: 'Click Clear button',
                                 label: 'Calendar Pane Toolbar',
+                            });
+                            ReactGA4.event({
+                                category: 'Calendar Pane',
+                                action: 'Click Clear Button',
                             });
                         }
                     }}
@@ -129,7 +152,15 @@ const CalendarPaneToolbar = (props) => {
             >
                 {[
                     <ExportCalendar />,
-                    <ScreenshotButton onTakeScreenshot={props.onTakeScreenshot} />,
+                    <ScreenshotButton
+                        onTakeScreenshot={() => {
+                            ReactGA4.event({
+                                category: 'Calendar Pane',
+                                action: 'Screenshot',
+                            });
+                            props.onTakeScreenshot();
+                        }}
+                    />,
                     <CustomEventsDialog editMode={false} currentScheduleIndex={props.currentScheduleIndex} />,
                 ].map((element, index) => (
                     <ConditionalWrapper

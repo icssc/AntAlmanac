@@ -18,6 +18,7 @@ import PropTypes from 'prop-types';
 import { addCustomEvent, editCustomEvent } from '../../actions/AppStoreActions';
 import ScheduleSelector from './ScheduleSelector';
 import ReactGA from 'react-ga';
+import ReactGA4 from 'react-ga4';
 
 const styles = () => ({
     container: {
@@ -46,10 +47,18 @@ class CustomEventDialog extends PureComponent {
             category: 'antalmanac-rewrite',
             action: 'Click Custom Event button',
         });
+        ReactGA4.event({
+            category: 'Calendar Pane',
+            action: 'Click Custom Event Button',
+        });
     };
 
     handleClose = (cancel) => {
         if (!cancel) {
+            ReactGA4.event({
+                category: 'Calendar Pane',
+                action: 'Add Custom Event',
+            });
             if (this.props.onDialogClose) this.props.onDialogClose();
             this.handleAddToCalendar();
         }

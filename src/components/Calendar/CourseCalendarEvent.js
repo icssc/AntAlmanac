@@ -10,6 +10,7 @@ import CustomEventDialog from '../CustomEvents/CustomEventDialog';
 import AppStore from '../../stores/AppStore';
 import { clickToCopy } from '../../helpers';
 import ReactGA from 'react-ga';
+import ReactGA4 from 'react-ga4';
 
 const styles = {
     courseContainer: {
@@ -93,6 +94,10 @@ const CourseCalendarEvent = (props) => {
                                     action: 'Click Delete Course',
                                     label: 'Course Calendar Event',
                                 });
+                                ReactGA4.event({
+                                    category: 'Calendar Pane',
+                                    action: 'Delete Course',
+                                });
                             }}
                         >
                             <Delete fontSize="inherit" />
@@ -104,7 +109,16 @@ const CourseCalendarEvent = (props) => {
                         <tr>
                             <td className={classes.alignToTop}>Section code</td>
                             <Tooltip title="Click to copy course code" placement="right">
-                                <td onClick={(e) => clickToCopy(e, sectionCode)} className={classes.rightCells}>
+                                <td
+                                    onClick={(e) => {
+                                        ReactGA4.event({
+                                            category: 'Calendar Pane',
+                                            action: 'Copy Course Code',
+                                        });
+                                        clickToCopy(e, sectionCode);
+                                    }}
+                                    className={classes.rightCells}
+                                >
                                     <u>{sectionCode}</u>
                                 </td>
                             </Tooltip>
@@ -142,6 +156,7 @@ const CourseCalendarEvent = (props) => {
                                     customEventID={courseInMoreInfo.customEventID}
                                     sectionCode={courseInMoreInfo.sectionCode}
                                     term={courseInMoreInfo.term}
+                                    analyticsCategory="Calendar Pane"
                                 />
                             </td>
                         </tr>
@@ -160,6 +175,7 @@ const CourseCalendarEvent = (props) => {
                             color={courseInMoreInfo.color}
                             isCustomEvent={true}
                             customEventID={courseInMoreInfo.customEventID}
+                            analyticsCategory="Calendar Pane"
                         />
                     </div>
                     <CustomEventDialog
@@ -178,6 +194,10 @@ const CourseCalendarEvent = (props) => {
                                     category: 'antalmanac-rewrite',
                                     action: 'Click Delete Custom Event',
                                     label: 'Course Calendar Event',
+                                });
+                                ReactGA4.event({
+                                    category: 'Calendar Pane',
+                                    action: 'Click Delete Custom Event',
                                 });
                             }}
                         >
