@@ -67,7 +67,7 @@ jobs:
         run: npm run build
 
       - name: deploy the stack to AWS
-        run: npx cdk deploy github-actions-stack-${{ github.event.pull_request.number }} --require-approval never
+        run: npx aws-cdk deploy github-actions-stack-${{ github.event.pull_request.number }} --require-approval never
 
       - name: update the github deployment status
         uses: bobheadxi/deployments@v0.5.2
