@@ -15,6 +15,7 @@
     "dependencies": {
         "aws-cdk-lib": "2.20.0",
         "constructs": "^10.0.0",
+        "dotenv": "^16.0.0",
         "source-map-support": "^0.5.16"
     }
 }
