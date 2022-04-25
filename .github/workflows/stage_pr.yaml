@@ -46,6 +46,11 @@ jobs:
       - name: install node dependencies frontend
         uses: bahmutov/npm-install@v1
 
+      - name: install node dependencies cdk
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: .github/workflows/actions_stack
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
@@ -54,17 +59,13 @@ jobs:
       
       - name: build frontend
         run: npm run build
-        
-      - name: change to CDK directory
-        run: cd .github/workflows/actions_stack
-
-      - name: install node dependencies cdk
-        run: npm i
 
       - name: build CDK
+        working-directory: ./.github/workflows/actions_stack
         run: npm run build
 
       - name: deploy the stack to AWS
+        working-directory: ./.github/workflows/actions_stack
         run: npx aws-cdk deploy github-actions-stack-${{ github.event.pull_request.number }} --require-approval never
 
       - name: update the github deployment status

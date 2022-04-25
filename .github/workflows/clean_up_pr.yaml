@@ -52,13 +52,12 @@ jobs:
       - name: make empty folder # so cdk doesn't complain
         run: mkdir build
 
-      - name: change to CDK directory
-        run: cd .github/workflows/actions_stack
-
       - name: build CDK
+        working-directory: ./.github/workflows/actions_stack
         run: npm run build
 
       - name: destroy the stack on AWS
+        working-directory: ./.github/workflows/actions_stack
         run: npx cdk destroy github-actions-stack-${{ github.event.pull_request.number }} --force
 
       # add back in the future if we change to personal access Github token
