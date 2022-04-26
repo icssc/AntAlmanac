@@ -126,4 +126,7 @@ const LoadSaveScheduleFunctionality = () => {
     );
 };
 
+export const SaveSchedule = () => <LoadSaveButtonBase actionName={'Save'} action={saveSchedule} />;
+export const LoadSchedule = () => <LoadSaveButtonBase actionName={'Load'} action={loadSchedule} />;
+
 export default LoadSaveScheduleFunctionality;
