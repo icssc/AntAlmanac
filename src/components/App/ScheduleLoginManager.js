@@ -22,16 +22,14 @@ class ScheduleLoginManager extends PureComponent {
     render() {
         return (
             <>
-                {' '}
-                <AccountBase user={this.state.user}></AccountBase>{' '}
+                <AccountBase user={this.state.user}></AccountBase>
                 {this.state.user ? (
                     <LoadSchedule></LoadSchedule>
                 ) : (
                     <>
-                        {' '}
-                        <SaveSchedule></SaveSchedule> <LoadSchedule></LoadSchedule>{' '}
+                        <SaveSchedule></SaveSchedule> <LoadSchedule></LoadSchedule>
                     </>
-                )}{' '}
+                )}
             </>
         );
     }
