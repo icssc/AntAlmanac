@@ -14,6 +14,7 @@ permissions:
 
 jobs:
   clean-up:
+    if: (!contains(github.event.pull_request.labels.*.name, 'no deploy'))
     runs-on: ubuntu-latest
     env: # env variables for Node.js
       HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
