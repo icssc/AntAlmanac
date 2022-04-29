@@ -13,6 +13,7 @@ import Select from '@material-ui/core/Select';
 import ReactGA from 'react-ga';
 import ReactGA4 from 'react-ga4';
 import ConditionalWrapper from '../App/ConditionalWrapper';
+import analyticsEnum from '../../analyticsEnum';
 
 const styles = {
     toolbar: {
@@ -46,8 +47,8 @@ const CalendarPaneToolbar = (props) => {
 
     const handleScheduleChange = (event) => {
         ReactGA4.event({
-            category: 'Calendar Pane',
-            action: 'Change Schedule',
+            category: analyticsEnum.calendar.title,
+            action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
         });
         changeCurrentSchedule(event.target.value);
     };
@@ -83,8 +84,8 @@ const CalendarPaneToolbar = (props) => {
                     variant={props.showFinalsSchedule ? 'contained' : 'outlined'}
                     onClick={() => {
                         ReactGA4.event({
-                            category: 'Calendar Pane',
-                            action: 'Display Finals',
+                            category: analyticsEnum.calendar.title,
+                            action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
                         });
                         props.toggleDisplayFinalsSchedule();
                     }}
@@ -101,8 +102,8 @@ const CalendarPaneToolbar = (props) => {
                 <IconButton
                     onClick={() => {
                         ReactGA4.event({
-                            category: 'Calendar Pane',
-                            label: 'Click Undo Button',
+                            category: analyticsEnum.calendar.title,
+                            label: analyticsEnum.calendar.actions.UNDO,
                         });
                         undoDelete(null);
                     }}
@@ -126,8 +127,8 @@ const CalendarPaneToolbar = (props) => {
                                 label: 'Calendar Pane Toolbar',
                             });
                             ReactGA4.event({
-                                category: 'Calendar Pane',
-                                action: 'Click Clear Button',
+                                category: analyticsEnum.calendar.title,
+                                action: analyticsEnum.calendar.actions.CLEAR_SCHEDULE,
                             });
                         }
                     }}
@@ -155,8 +156,8 @@ const CalendarPaneToolbar = (props) => {
                     <ScreenshotButton
                         onTakeScreenshot={() => {
                             ReactGA4.event({
-                                category: 'Calendar Pane',
-                                action: 'Screenshot',
+                                category: analyticsEnum.calendar.title,
+                                action: analyticsEnum.calendar.actions.SCREENSHOT,
                             });
                             props.onTakeScreenshot();
                         }}

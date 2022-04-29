@@ -2,6 +2,7 @@ import dispatcher from '../dispatcher';
 import AppStore from '../stores/AppStore';
 import ReactGA from 'react-ga';
 import ReactGA4 from 'react-ga4';
+import analyticsEnum from '../analyticsEnum';
 import {
     amber,
     blue,
@@ -105,8 +106,8 @@ export const openSnackbar = (variant, message, duration, position, style) => {
 
 export const saveSchedule = async (userID, rememberMe) => {
     ReactGA4.event({
-        category: 'Navbar',
-        action: 'Save Schedule',
+        category: analyticsEnum.nav.title,
+        action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
         label: userID,
         value: rememberMe,
     });
@@ -160,8 +161,8 @@ export const saveSchedule = async (userID, rememberMe) => {
 
 export const loadSchedule = async (userID, rememberMe) => {
     ReactGA4.event({
-        category: 'Navbar',
-        action: 'Load Schedule',
+        category: analyticsEnum.nav.title,
+        action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
         label: userID,
         value: rememberMe,
     });
@@ -407,8 +408,8 @@ export const toggleTheme = (radioGroupEvent) => {
         action: 'toggle theme',
     });
     ReactGA4.event({
-        category: 'Navbar',
-        action: 'Toggle Theme',
+        category: analyticsEnum.nav.title,
+        action: analyticsEnum.nav.actions.CHANGE_THEME,
         label: radioGroupEvent.target.value,
     });
 };

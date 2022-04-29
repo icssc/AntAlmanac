@@ -7,6 +7,7 @@ import { changeCourseColor, changeCustomEventColor } from '../../actions/AppStor
 import { ColorLens } from '@material-ui/icons';
 import ReactGA from 'react-ga';
 import ReactGA4 from 'react-ga4';
+import analyticsEnum from '../../analyticsEnum';
 
 class ColorPicker extends PureComponent {
     state = {
@@ -43,7 +44,7 @@ class ColorPicker extends PureComponent {
         });
         ReactGA4.event({
             category: this.props.analyticsCategory || 'Right Pane',
-            action: 'Change Course Color',
+            action: analyticsEnum.calendar.actions.CHANGE_COURSE_COLOR,
         });
     };
     updateColor = (color) => {

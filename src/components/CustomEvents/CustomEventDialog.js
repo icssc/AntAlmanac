@@ -19,6 +19,7 @@ import { addCustomEvent, editCustomEvent } from '../../actions/AppStoreActions';
 import ScheduleSelector from './ScheduleSelector';
 import ReactGA from 'react-ga';
 import ReactGA4 from 'react-ga4';
+import analyticsEnum from '../../analyticsEnum';
 
 const styles = () => ({
     container: {
@@ -48,16 +49,16 @@ class CustomEventDialog extends PureComponent {
             action: 'Click Custom Event button',
         });
         ReactGA4.event({
-            category: 'Calendar Pane',
-            action: 'Click Custom Event Button',
+            category: analyticsEnum.calendar.title,
+            action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
         });
     };
 
     handleClose = (cancel) => {
         if (!cancel) {
             ReactGA4.event({
-                category: 'Calendar Pane',
-                action: 'Add Custom Event',
+                category: analyticsEnum.calendar.title,
+                action: analyticsEnum.calendar.actions.ADD_CUSTOM_EVENT,
             });
             if (this.props.onDialogClose) this.props.onDialogClose();
             this.handleAddToCalendar();

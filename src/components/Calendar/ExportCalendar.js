@@ -9,6 +9,7 @@ import AppStore from '../../stores/AppStore';
 import { openSnackbar } from '../../actions/AppStoreActions';
 import { termData } from '../../termData';
 import ReactGA4 from 'react-ga4';
+import analyticsEnum from '../../analyticsEnum';
 
 const quarterStartDates = termData
     .filter((term) => term.startDate !== undefined)
@@ -259,7 +260,7 @@ const exportCalendar = () => {
     createEvents(events, (err, val) => {
         ReactGA4.event({
             category: 'Calendar Pane',
-            action: 'Download Schedule',
+            action: analyticsEnum.calendar.actions.DOWNLOAD,
         });
         if (!err) {
             // Download the .ics file

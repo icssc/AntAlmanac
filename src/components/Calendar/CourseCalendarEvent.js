@@ -11,6 +11,7 @@ import AppStore from '../../stores/AppStore';
 import { clickToCopy } from '../../helpers';
 import ReactGA from 'react-ga';
 import ReactGA4 from 'react-ga4';
+import analyticsEnum from '../../analyticsEnum.js';
 
 const styles = {
     courseContainer: {
@@ -95,8 +96,8 @@ const CourseCalendarEvent = (props) => {
                                     label: 'Course Calendar Event',
                                 });
                                 ReactGA4.event({
-                                    category: 'Calendar Pane',
-                                    action: 'Delete Course',
+                                    category: analyticsEnum.calendar.title,
+                                    action: analyticsEnum.calendar.actions.DELETE_COURSE,
                                 });
                             }}
                         >
@@ -112,8 +113,8 @@ const CourseCalendarEvent = (props) => {
                                 <td
                                     onClick={(e) => {
                                         ReactGA4.event({
-                                            category: 'Calendar Pane',
-                                            action: 'Copy Course Code',
+                                            category: analyticsEnum.calendar.title,
+                                            action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
                                         });
                                         clickToCopy(e, sectionCode);
                                     }}
@@ -156,7 +157,7 @@ const CourseCalendarEvent = (props) => {
                                     customEventID={courseInMoreInfo.customEventID}
                                     sectionCode={courseInMoreInfo.sectionCode}
                                     term={courseInMoreInfo.term}
-                                    analyticsCategory="Calendar Pane"
+                                    analyticsCategory={analyticsEnum.calendar.title}
                                 />
                             </td>
                         </tr>
@@ -175,7 +176,7 @@ const CourseCalendarEvent = (props) => {
                             color={courseInMoreInfo.color}
                             isCustomEvent={true}
                             customEventID={courseInMoreInfo.customEventID}
-                            analyticsCategory="Calendar Pane"
+                            analyticsCategory={analyticsEnum.calendar.title}
                         />
                     </div>
                     <CustomEventDialog
@@ -196,8 +197,8 @@ const CourseCalendarEvent = (props) => {
                                     label: 'Course Calendar Event',
                                 });
                                 ReactGA4.event({
-                                    category: 'Calendar Pane',
-                                    action: 'Click Delete Custom Event',
+                                    category: analyticsEnum.calendar.title,
+                                    action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
                                 });
                             }}
                         >

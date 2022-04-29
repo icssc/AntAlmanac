@@ -16,6 +16,7 @@ import { NEWS_ENDPOINT } from '../../api/endpoints';
 import { Skeleton } from '@material-ui/lab';
 import moment from 'moment-timezone';
 import ReactGA4 from 'react-ga4';
+import analyticsEnum from '../../analyticsEnum';
 
 const styles = (theme) => ({
     list: {
@@ -125,8 +126,8 @@ class News extends PureComponent {
 
     openPopup = (e) => {
         ReactGA4.event({
-            category: 'Navbar',
-            action: 'Click "News"',
+            category: analyticsEnum.nav.title,
+            action: analyticsEnum.nav.actions.CLICK_NEWS,
         });
         this.setState({ anchorEl: e.currentTarget });
 

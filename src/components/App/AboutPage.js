@@ -3,6 +3,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import { Info } from '@material-ui/icons';
 import ReactGA from 'react-ga';
 import ReactGA4 from 'react-ga4';
+import analyticsEnum from '../../analyticsEnum';
 
 class AboutPage extends PureComponent {
     state = {
@@ -19,8 +20,8 @@ class AboutPage extends PureComponent {
                             action: 'Click "About"',
                         });
                         ReactGA4.event({
-                            category: 'Navbar',
-                            action: 'Click "About"',
+                            category: analyticsEnum.nav.title,
+                            action: analyticsEnum.nav.actions.CLICK_ABOUT,
                         });
                     }}
                     color="inherit"

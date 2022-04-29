@@ -3,7 +3,7 @@
  * possible category names and associated actions
  * for Google Analytics
  */
-export default {
+const analyticsEnum = {
     calendar: {
         title: 'Calendar Pane',
         actions: {
@@ -18,13 +18,14 @@ export default {
             DISPLAY_FINALS: 'Display Finals',
             CHANGE_SCHEDULE: 'Change Schedule',
             UNDO: 'Undo',
+            DOWNLOAD: 'Download Schedule',
         },
     },
     nav: {
         title: 'Navbar',
         actions: {
             CLICK_NOTIFICATIONS: 'Click Notifications',
-            VIEW_ABOUT: 'View About Page',
+            CLICK_ABOUT: 'Click About Page',
             CHANGE_THEME: 'Change Theme', // Label is the theme changed to
             IMPORT_STUDY_LIST: 'Import Study List', // Value is percentage course imported
             LOAD_SCHEDULE: 'Load Schedule',
@@ -33,3 +34,5 @@ export default {
         },
     },
 };
+
+export default analyticsEnum;
