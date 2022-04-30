@@ -28,7 +28,7 @@ const analyticsEnum = {
             CLICK_NOTIFICATIONS: 'Click Notifications',
             CLICK_ABOUT: 'Click About Page',
             CHANGE_THEME: 'Change Theme', // Label is the theme changed to
-            IMPORT_STUDY_LIST: 'Import Study List', // Value is percentage course imported
+            IMPORT_STUDY_LIST: 'Import Study List', // Value is the percentage of courses successfully imported (decimal value)
             LOAD_SCHEDULE: 'Load Schedule',
             SAVE_SCHEDULE: 'Save Schedule',
             CLICK_NEWS: 'Click News',
