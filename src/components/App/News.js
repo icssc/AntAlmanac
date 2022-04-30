@@ -15,8 +15,7 @@ import { RssFeed } from '@material-ui/icons';
 import { NEWS_ENDPOINT } from '../../api/endpoints';
 import { Skeleton } from '@material-ui/lab';
 import moment from 'moment-timezone';
-import ReactGA4 from 'react-ga4';
-import analyticsEnum from '../../analyticsEnum';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const styles = (theme) => ({
     list: {
@@ -125,7 +124,7 @@ class News extends PureComponent {
     };
 
     openPopup = (e) => {
-        ReactGA4.event({
+        logAnalytics({
             category: analyticsEnum.nav.title,
             action: analyticsEnum.nav.actions.CLICK_NEWS,
         });

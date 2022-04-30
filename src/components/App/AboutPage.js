@@ -2,8 +2,7 @@ import React, { PureComponent } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@material-ui/core';
 import { Info } from '@material-ui/icons';
 import ReactGA from 'react-ga';
-import ReactGA4 from 'react-ga4';
-import analyticsEnum from '../../analyticsEnum';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 class AboutPage extends PureComponent {
     state = {
@@ -19,7 +18,7 @@ class AboutPage extends PureComponent {
                             category: 'antalmanac-rewrite',
                             action: 'Click "About"',
                         });
-                        ReactGA4.event({
+                        logAnalytics({
                             category: analyticsEnum.nav.title,
                             action: analyticsEnum.nav.actions.CLICK_ABOUT,
                         });

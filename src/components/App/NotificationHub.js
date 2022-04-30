@@ -10,9 +10,8 @@ import {
 } from '@material-ui/core';
 import { Notifications } from '@material-ui/icons';
 import ReactGA from 'react-ga';
-import ReactGA4 from 'react-ga4';
 import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '../../api/endpoints';
-import analyticsEnum from '../../analyticsEnum';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 class NotificationHub extends PureComponent {
     state = {
@@ -56,7 +55,7 @@ class NotificationHub extends PureComponent {
                                 category: 'antalmanac-rewrite',
                                 action: 'Click "Notifications"',
                             });
-                            ReactGA4.event({
+                            logAnalytics({
                                 category: analyticsEnum.nav.title,
                                 action: analyticsEnum.nav.actions.CLICK_NOTIFICATIONS,
                             });

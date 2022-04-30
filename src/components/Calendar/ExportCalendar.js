@@ -8,8 +8,7 @@ import { createEvents } from 'ics';
 import AppStore from '../../stores/AppStore';
 import { openSnackbar } from '../../actions/AppStoreActions';
 import { termData } from '../../termData';
-import ReactGA4 from 'react-ga4';
-import analyticsEnum from '../../analyticsEnum';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const quarterStartDates = termData
     .filter((term) => term.startDate !== undefined)
@@ -258,7 +257,7 @@ const exportCalendar = () => {
     // Convert the events into a vcalendar
     // Callback function triggers a download of the .ics file
     createEvents(events, (err, val) => {
-        ReactGA4.event({
+        logAnalytics({
             category: 'Calendar Pane',
             action: analyticsEnum.calendar.actions.DOWNLOAD,
         });

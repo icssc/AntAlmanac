@@ -10,8 +10,7 @@ import CustomEventDialog from '../CustomEvents/CustomEventDialog';
 import AppStore from '../../stores/AppStore';
 import { clickToCopy } from '../../helpers';
 import ReactGA from 'react-ga';
-import ReactGA4 from 'react-ga4';
-import analyticsEnum from '../../analyticsEnum.js';
+import analyticsEnum, { logAnalytics } from '../../analytics.js';
 
 const styles = {
     courseContainer: {
@@ -95,7 +94,7 @@ const CourseCalendarEvent = (props) => {
                                     action: 'Click Delete Course',
                                     label: 'Course Calendar Event',
                                 });
-                                ReactGA4.event({
+                                logAnalytics({
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_COURSE,
                                 });
@@ -112,7 +111,7 @@ const CourseCalendarEvent = (props) => {
                             <Tooltip title="Click to copy course code" placement="right">
                                 <td
                                     onClick={(e) => {
-                                        ReactGA4.event({
+                                        logAnalytics({
                                             category: analyticsEnum.calendar.title,
                                             action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
                                         });
@@ -196,7 +195,7 @@ const CourseCalendarEvent = (props) => {
                                     action: 'Click Delete Custom Event',
                                     label: 'Course Calendar Event',
                                 });
-                                ReactGA4.event({
+                                logAnalytics({
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
                                 });

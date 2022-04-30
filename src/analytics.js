@@ -1,3 +1,4 @@
+import ReactGA4 from 'react-ga4';
 /**
  * This is an enum that stores all the
  * possible category names and associated actions
@@ -36,3 +37,14 @@ const analyticsEnum = {
 };
 
 export default analyticsEnum;
+
+/**
+ * This is just a wrapper around ReactGA4.event so we don't have to import it everywhere
+ * @param {string} category required
+ * @param {string} action required
+ * @param {string} label optional
+ * @param {number} value optional
+ */
+export function logAnalytics({ category, action, label, value }) {
+    ReactGA4.event({ category, action, label, value });
+}

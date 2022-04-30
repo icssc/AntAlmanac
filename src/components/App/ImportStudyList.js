@@ -16,8 +16,7 @@ import { PostAdd } from '@material-ui/icons';
 import InputLabel from '@material-ui/core/InputLabel';
 import { withStyles } from '@material-ui/core/styles';
 import TermSelector from '../SearchForm/TermSelector';
-import ReactGA4 from 'react-ga4';
-import analyticsEnum from '../../analyticsEnum';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const styles = {
     inputLabel: {
@@ -85,7 +84,7 @@ class ImportStudyList extends PureComponent {
                         this.state.selectedTerm,
                         currSchedule
                     );
-                    ReactGA4.event({
+                    logAnalytics({
                         category: analyticsEnum.nav.title,
                         action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
                         value: sectionsAdded / (sectionCodes.length || 1),

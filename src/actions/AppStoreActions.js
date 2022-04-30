@@ -1,8 +1,7 @@
 import dispatcher from '../dispatcher';
 import AppStore from '../stores/AppStore';
 import ReactGA from 'react-ga';
-import ReactGA4 from 'react-ga4';
-import analyticsEnum from '../analyticsEnum';
+import analyticsEnum, { logAnalytics } from '../analytics';
 import {
     amber,
     blue,
@@ -105,7 +104,7 @@ export const openSnackbar = (variant, message, duration, position, style) => {
 };
 
 export const saveSchedule = async (userID, rememberMe) => {
-    ReactGA4.event({
+    logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
         label: userID,
@@ -160,7 +159,7 @@ export const saveSchedule = async (userID, rememberMe) => {
 };
 
 export const loadSchedule = async (userID, rememberMe) => {
-    ReactGA4.event({
+    logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
         label: userID,
@@ -407,7 +406,7 @@ export const toggleTheme = (radioGroupEvent) => {
         category: 'antalmanac-rewrite',
         action: 'toggle theme',
     });
-    ReactGA4.event({
+    logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.CHANGE_THEME,
         label: radioGroupEvent.target.value,

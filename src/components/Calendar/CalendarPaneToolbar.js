@@ -11,9 +11,8 @@ import ExportCalendar from './ExportCalendar';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import ReactGA from 'react-ga';
-import ReactGA4 from 'react-ga4';
 import ConditionalWrapper from '../App/ConditionalWrapper';
-import analyticsEnum from '../../analyticsEnum';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const styles = {
     toolbar: {
@@ -46,7 +45,7 @@ const CalendarPaneToolbar = (props) => {
     const { classes } = props;
 
     const handleScheduleChange = (event) => {
-        ReactGA4.event({
+        logAnalytics({
             category: analyticsEnum.calendar.title,
             action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
         });
@@ -83,7 +82,7 @@ const CalendarPaneToolbar = (props) => {
                     id="finalButton"
                     variant={props.showFinalsSchedule ? 'contained' : 'outlined'}
                     onClick={() => {
-                        ReactGA4.event({
+                        logAnalytics({
                             category: analyticsEnum.calendar.title,
                             action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
                         });
@@ -101,7 +100,7 @@ const CalendarPaneToolbar = (props) => {
             <Tooltip title="Undo last deleted course">
                 <IconButton
                     onClick={() => {
-                        ReactGA4.event({
+                        logAnalytics({
                             category: analyticsEnum.calendar.title,
                             label: analyticsEnum.calendar.actions.UNDO,
                         });
@@ -126,7 +125,7 @@ const CalendarPaneToolbar = (props) => {
                                 action: 'Click Clear button',
                                 label: 'Calendar Pane Toolbar',
                             });
-                            ReactGA4.event({
+                            logAnalytics({
                                 category: analyticsEnum.calendar.title,
                                 action: analyticsEnum.calendar.actions.CLEAR_SCHEDULE,
                             });
@@ -155,7 +154,7 @@ const CalendarPaneToolbar = (props) => {
                     <ExportCalendar />,
                     <ScreenshotButton
                         onTakeScreenshot={() => {
-                            ReactGA4.event({
+                            logAnalytics({
                                 category: analyticsEnum.calendar.title,
                                 action: analyticsEnum.calendar.actions.SCREENSHOT,
                             });
