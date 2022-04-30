@@ -9,7 +9,8 @@ class AppStore extends EventEmitter {
         this.currentScheduleIndex = 0;
         this.customEvents = [];
         this.addedCourses = [];
-        this.addedSectionCodes = { 0: new Set(), 1: new Set(), 2: new Set(), 3: new Set() };
+        this.addedSectionCodes = { 0: new Set() };
+        this.colorPickers = {};
         this.deletedCourses = [];
         this.snackbarMessage = '';
         this.snackbarVariant = 'info';
@@ -19,6 +20,7 @@ class AppStore extends EventEmitter {
         this.eventsInCalendar = [];
         this.finalsEventsInCalendar = [];
         this.unsavedChanges = false;
+        this.scheduleNames = ['Schedule 1'];
         this.theme = (() => {
             // either 'light', 'dark', or 'auto'
             const theme = typeof Storage === 'undefined' ? 'auto' : window.localStorage.getItem('theme');
@@ -34,6 +36,10 @@ class AppStore extends EventEmitter {
 
     getCurrentScheduleIndex() {
         return this.currentScheduleIndex;
+    }
+
+    getScheduleNames() {
+        return this.scheduleNames;
     }
 
     getAddedCourses() {
@@ -98,7 +104,12 @@ class AppStore extends EventEmitter {
     }
 
     updateAddedSectionCodes() {
-        this.addedSectionCodes = { 0: new Set(), 1: new Set(), 2: new Set(), 3: new Set() };
+        this.addedSectionCodes = {};
+
+        for (let i = 0; i < this.scheduleNames.length; i++) {
+            this.addedSectionCodes[i] = new Set();
+        }
+
         for (const course of this.addedCourses) {
             for (const scheduleIndex of course.scheduleIndices) {
                 this.addedSectionCodes[scheduleIndex].add(`${course.section.sectionCode} ${course.term}`);
@@ -184,6 +195,8 @@ class AppStore extends EventEmitter {
                 this.emit('customEventsChange');
                 break;
             case 'LOAD_SCHEDULE':
+                // If the user already had schedules, load up four schedules
+                this.scheduleNames = ['Schedule 1', 'Schedule 2', 'Schedule 3', 'Schedule 4'];
                 this.addedCourses = action.userData.addedCourses;
                 this.updateAddedSectionCodes();
                 this.customEvents = action.userData.customEvents;
@@ -192,6 +205,7 @@ class AppStore extends EventEmitter {
                 this.unsavedChanges = false;
                 this.emit('addedCoursesChange');
                 this.emit('customEventsChange');
+                this.emit('scheduleNamesChange');
                 break;
             case 'SAVE_SCHEDULE':
                 this.unsavedChanges = false;
@@ -225,6 +239,16 @@ class AppStore extends EventEmitter {
                 this.theme = action.theme;
                 this.emit('themeToggle');
                 window.localStorage.setItem('theme', action.theme);
+                break;
+            case 'ADD_SCHEDULE':
+                // If the user adds a schedule, update the array of schedule names, add
+                // another key/value pair to keep track of the section codes for that schedule,
+                // and redirect the user to the new schedule
+                this.scheduleNames = action.newScheduleNames;
+                this.addedSectionCodes[action.newScheduleNames.length - 1] = new Set();
+                this.currentScheduleIndex = action.newScheduleNames.length - 1;
+                this.emit('scheduleNamesChange');
+                this.emit('currentScheduleIndexChange');
                 break;
             default: //do nothing
         }

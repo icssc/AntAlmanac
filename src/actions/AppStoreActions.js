@@ -76,6 +76,7 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
         if (color === undefined) color = '#5ec8e0';
     }
 
+    const scheduleNames = AppStore.getScheduleNames();
     if (existingCourse === undefined) {
         const newCourse = {
             color: color,
@@ -85,14 +86,18 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color) =>
             courseTitle: courseDetails.courseTitle,
             courseComment: courseDetails.courseComment,
             prerequisiteLink: courseDetails.prerequisiteLink,
-            scheduleIndices: scheduleIndex === 4 ? [0, 1, 2, 3] : [scheduleIndex],
+            scheduleIndices:
+                scheduleIndex === scheduleNames.length ? scheduleNames.map((_, index) => index) : [scheduleIndex],
             section: section,
         };
         dispatcher.dispatch({ type: 'ADD_COURSE', newCourse });
     } else {
         const newSection = {
             ...existingCourse,
-            scheduleIndices: scheduleIndex === 4 ? [0, 1, 2, 3] : existingCourse.scheduleIndices.concat(scheduleIndex),
+            scheduleIndices:
+                scheduleIndex === scheduleNames.length
+                    ? scheduleNames.map((_, index) => index)
+                    : existingCourse.scheduleIndices.concat(scheduleIndex),
         };
         dispatcher.dispatch({ type: 'ADD_SECTION', newSection });
     }
@@ -349,10 +354,15 @@ export const changeCourseColor = (sectionCode, newColor, term) => {
 export const copySchedule = (from, to) => {
     const addedCourses = AppStore.getAddedCourses();
     const customEvents = AppStore.getCustomEvents();
+    const scheduleNames = AppStore.getScheduleNames();
 
     const addedCoursesAfterCopy = addedCourses.map((addedCourse) => {
         if (addedCourse.scheduleIndices.includes(from) && !addedCourse.scheduleIndices.includes(to)) {
-            if (to === 4) return { ...addedCourse, scheduleIndices: [0, 1, 2, 3] };
+            // If to is equal to the length of scheduleNames, then the user wanted to copy to
+            // all schedules; otherwise, if to is less than the length of scheduleNames, then
+            // only one schedule should be altered
+            if (to === scheduleNames.length)
+                return { ...addedCourse, scheduleIndices: scheduleNames.map((_, index) => index) };
             else
                 return {
                     ...addedCourse,
@@ -365,7 +375,8 @@ export const copySchedule = (from, to) => {
 
     const customEventsAfterCopy = customEvents.map((customEvent) => {
         if (customEvent.scheduleIndices.includes(from) && !customEvent.scheduleIndices.includes(to)) {
-            if (to === 4) return { ...customEvent, scheduleIndices: [0, 1, 2, 3] };
+            if (to === scheduleNames.length)
+                return { ...customEvent, scheduleIndices: scheduleNames.map((_, index) => index) };
             else
                 return {
                     ...customEvent,
@@ -396,5 +407,14 @@ export const toggleTheme = (radioGroupEvent) => {
     ReactGA.event({
         category: 'antalmanac-rewrite',
         action: 'toggle theme',
+    });
+};
+
+export const addSchedule = (scheduleName) => {
+    const newScheduleNames = [...AppStore.getScheduleNames(), scheduleName];
+
+    dispatcher.dispatch({
+        type: 'ADD_SCHEDULE',
+        newScheduleNames,
     });
 };

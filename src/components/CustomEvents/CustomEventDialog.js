@@ -18,6 +18,7 @@ import PropTypes from 'prop-types';
 import { addCustomEvent, editCustomEvent } from '../../actions/AppStoreActions';
 import ScheduleSelector from './ScheduleSelector';
 import ReactGA from 'react-ga';
+import { isDarkMode } from '../../helpers';
 
 const styles = () => ({
     container: {
@@ -166,11 +167,12 @@ class CustomEventDialog extends PureComponent {
                             scheduleIndices={this.state.scheduleIndices}
                             onSelectScheduleIndices={this.handleSelectScheduleIndices}
                             customEvent={this.props.customEvent}
+                            scheduleNames={this.props.scheduleNames}
                         />
                     </DialogContent>
 
                     <DialogActions>
-                        <Button onClick={() => this.handleClose(true)} color="primary">
+                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'white' : 'primary'}>
                             Cancel
                         </Button>
                         <Tooltip title="Schedule and day must be checked" disableHoverListener={!this.isAddDisabled()}>
