@@ -30,7 +30,7 @@ class App extends PureComponent {
 
         ReactGA.initialize('UA-133683751-1');
         ReactGA.pageview('/homepage');
-        ReactGA4.initialize('G-TLR7V1NYRD');
+        ReactGA4.initialize('G-30HVJXC2Y4');
         ReactGA4.send('pageview');
     };
 
