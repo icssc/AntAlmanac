@@ -12,7 +12,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import ReactGA from 'react-ga';
 import ConditionalWrapper from '../App/ConditionalWrapper';
-import AddScheduleDialog from './AddScheduleDialog';
+import ScheduleNameDialog from './ScheduleNameDialog';
+import EditSchedule from './EditSchedule';
 
 const styles = {
     toolbar: {
@@ -55,6 +56,7 @@ const CalendarPaneToolbar = (props) => {
     const isMobileScreen = useMediaQuery('(max-width:630px)');
 
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const [openSchedules, setOpenSchedules] = React.useState(false);
 
     const handleMenuClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -64,19 +66,30 @@ const CalendarPaneToolbar = (props) => {
         setAnchorEl(null);
     };
 
+    const handleScheduleClick = () => {
+        setOpenSchedules((prev) => !prev);
+    };
+
+    const handleScheduleClose = () => {
+        setOpenSchedules(false);
+    };
+
     return (
         <Paper elevation={0} variant="outlined" square className={classes.toolbar}>
-            <AddScheduleDialog />
+            <EditSchedule scheduleNames={props.scheduleNames} scheduleIndex={props.currentScheduleIndex} />
 
             <Select
                 classes={{ root: classes.rootScheduleSelector }}
                 className={classes.scheduleSelector}
                 value={props.currentScheduleIndex}
                 onChange={handleScheduleChange}
+                open={openSchedules}
+                onClick={handleScheduleClick}
             >
                 {props.scheduleNames.map((name, index) => (
                     <MenuItem value={index}>{name}</MenuItem>
                 ))}
+                <ScheduleNameDialog onOpen={() => setOpenSchedules(true)} onClose={handleScheduleClose} />
             </Select>
 
             <Tooltip title="Toggle showing finals schedule">

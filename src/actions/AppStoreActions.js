@@ -418,3 +418,61 @@ export const addSchedule = (scheduleName) => {
         newScheduleNames,
     });
 };
+
+export const renameSchedule = (scheduleName, scheduleIndex) => {
+    let newScheduleNames = [...AppStore.getScheduleNames()];
+    newScheduleNames[scheduleIndex] = scheduleName;
+
+    dispatcher.dispatch({
+        type: 'RENAME_SCHEDULE',
+        newScheduleNames,
+    });
+};
+
+// After a schedule is deleted, we need to update every course and
+// custom event in every schedule. In this case, we want to update the
+// scheduleIndices array so that each event appears in the correct schedule
+const getEventsAfterDeleteSchedule = (events) => {
+    let newEvents = [];
+    const currentScheduleIndex = AppStore.getCurrentScheduleIndex();
+
+    events.forEach((event) => {
+        let newScheduleIndices = [];
+
+        event.scheduleIndices.forEach((index) => {
+            if (index !== currentScheduleIndex) {
+                // If a schedule gets deleted, all schedules after it are shifted back,
+                // which means we sometimes need to subtract an index by 1
+                newScheduleIndices.push(index > currentScheduleIndex ? index - 1 : index);
+            }
+        });
+
+        if (newScheduleIndices.length > 0) {
+            event.scheduleIndices = newScheduleIndices;
+            newEvents.push(event);
+        }
+    });
+
+    return newEvents;
+};
+
+export const deleteSchedule = (scheduleIndex) => {
+    let newScheduleNames = [...AppStore.getScheduleNames()];
+    newScheduleNames.splice(scheduleIndex, 1);
+
+    let newScheduleIndex = AppStore.getCurrentScheduleIndex();
+    if (newScheduleIndex === newScheduleNames.length) {
+        newScheduleIndex--;
+    }
+
+    const newAddedCourses = getEventsAfterDeleteSchedule(AppStore.getAddedCourses());
+    const newCustomEvents = getEventsAfterDeleteSchedule(AppStore.getCustomEvents());
+
+    dispatcher.dispatch({
+        type: 'DELETE_SCHEDULE',
+        newScheduleNames,
+        newScheduleIndex,
+        newAddedCourses,
+        newCustomEvents,
+    });
+};
