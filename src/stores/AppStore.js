@@ -250,6 +250,23 @@ class AppStore extends EventEmitter {
                 this.emit('scheduleNamesChange');
                 this.emit('currentScheduleIndexChange');
                 break;
+            case 'RENAME_SCHEDULE':
+                this.scheduleNames = action.newScheduleNames;
+                this.emit('scheduleNamesChange');
+                break;
+            case 'DELETE_SCHEDULE':
+                this.scheduleNames = action.newScheduleNames;
+                this.addedCourses = action.newAddedCourses;
+                this.updateAddedSectionCodes();
+                this.customEvents = action.newCustomEvents;
+                this.currentScheduleIndex = action.newScheduleIndex;
+                this.finalsEventsInCalendar = calendarizeFinals();
+                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+                this.emit('scheduleNamesChange');
+                this.emit('currentScheduleIndexChange');
+                this.emit('addedCoursesChange');
+                this.emit('customEventsChange');
+                break;
             default: //do nothing
         }
     }
