@@ -26,12 +26,24 @@ const EditSchedule = (props) => {
 
     return (
         <>
-            <Tooltip title="Edit Schedule">
+            <Tooltip title="Edit schedule">
                 <Button className={props.classes.editButton} variant="outlined" onClick={handleClick}>
                     <Edit />
                 </Button>
             </Tooltip>
-            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+            <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+            >
                 <ScheduleNameDialog
                     rename={true}
                     scheduleNames={props.scheduleNames}

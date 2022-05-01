@@ -70,10 +70,6 @@ const CalendarPaneToolbar = (props) => {
         setOpenSchedules((prev) => !prev);
     };
 
-    const handleScheduleClose = () => {
-        setOpenSchedules(false);
-    };
-
     return (
         <Paper elevation={0} variant="outlined" square className={classes.toolbar}>
             <EditSchedule scheduleNames={props.scheduleNames} scheduleIndex={props.currentScheduleIndex} />
@@ -89,7 +85,7 @@ const CalendarPaneToolbar = (props) => {
                 {props.scheduleNames.map((name, index) => (
                     <MenuItem value={index}>{name}</MenuItem>
                 ))}
-                <ScheduleNameDialog onOpen={() => setOpenSchedules(true)} onClose={handleScheduleClose} />
+                <ScheduleNameDialog onOpen={() => setOpenSchedules(true)} onClose={() => setOpenSchedules(false)} />
             </Select>
 
             <Tooltip title="Toggle showing finals schedule">

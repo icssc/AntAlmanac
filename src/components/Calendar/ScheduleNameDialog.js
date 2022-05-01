@@ -10,13 +10,14 @@ const styles = () => ({
     },
 });
 
-const AddScheduleDialog = (props) => {
+const ScheduleNameDialog = (props) => {
     const [isOpen, setIsOpen] = useState(false);
     const [scheduleName, setScheduleName] = useState(
         props.scheduleIndex !== undefined ? props.scheduleNames[props.scheduleIndex] : ''
     );
 
     const handleOpen = (event) => {
+        // We need to stop propagation so that the select menu won't close
         event.stopPropagation();
         setIsOpen(true);
         if (props.onOpen) {
@@ -27,7 +28,7 @@ const AddScheduleDialog = (props) => {
     const handleClose = () => {
         setIsOpen(false);
         // If the user cancelled renaming the schedule, the schedule name is changed to its original value;
-        // if the user cancelled adding a new schedule, the schedule name is changed to the empty string
+        // if the user cancelled adding a new schedule, the schedule name is changed to an empty string
         setScheduleName(props.scheduleIndex !== undefined ? props.scheduleNames[props.scheduleIndex] : '');
     };
 
@@ -49,6 +50,10 @@ const AddScheduleDialog = (props) => {
         setScheduleName('');
     };
 
+    // For the dialog, we need to stop the propagation when a key is pressed because
+    // MUI Select components support "select by typing", which can remove focus from the dialog.
+    // We also need to stop the propagation when the dialog is clicked because if we don't,
+    // both the select menu and dialog will close.
     return (
         <>
             <MenuItem onClick={handleOpen}>{props.rename ? 'Rename Schedule' : 'Add Schedule'}</MenuItem>
@@ -87,4 +92,4 @@ const AddScheduleDialog = (props) => {
     );
 };
 
-export default withStyles(styles)(AddScheduleDialog);
+export default withStyles(styles)(ScheduleNameDialog);
