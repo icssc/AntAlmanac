@@ -1,6 +1,7 @@
 import dispatcher from '../dispatcher';
 import AppStore from '../stores/AppStore';
 import ReactGA from 'react-ga';
+import analyticsEnum, { logAnalytics } from '../analytics';
 import {
     amber,
     blue,
@@ -103,6 +104,12 @@ export const openSnackbar = (variant, message, duration, position, style) => {
 };
 
 export const saveSchedule = async (userID, rememberMe) => {
+    logAnalytics({
+        category: analyticsEnum.nav.title,
+        action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
+        label: userID,
+        value: rememberMe,
+    });
     if (userID != null) {
         userID = userID.replace(/\s+/g, '');
 
@@ -152,6 +159,12 @@ export const saveSchedule = async (userID, rememberMe) => {
 };
 
 export const loadSchedule = async (userID, rememberMe) => {
+    logAnalytics({
+        category: analyticsEnum.nav.title,
+        action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
+        label: userID,
+        value: rememberMe,
+    });
     if (
         userID != null &&
         (!AppStore.hasUnsavedChanges() ||
@@ -392,5 +405,10 @@ export const toggleTheme = (radioGroupEvent) => {
     ReactGA.event({
         category: 'antalmanac-rewrite',
         action: 'toggle theme',
+    });
+    logAnalytics({
+        category: analyticsEnum.nav.title,
+        action: analyticsEnum.nav.actions.CHANGE_THEME,
+        label: radioGroupEvent.target.value,
     });
 };

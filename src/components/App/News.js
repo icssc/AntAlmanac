@@ -15,6 +15,7 @@ import { RssFeed } from '@material-ui/icons';
 import { NEWS_ENDPOINT } from '../../api/endpoints';
 import { Skeleton } from '@material-ui/lab';
 import moment from 'moment-timezone';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const styles = (theme) => ({
     list: {
@@ -123,6 +124,10 @@ class News extends PureComponent {
     };
 
     openPopup = (e) => {
+        logAnalytics({
+            category: analyticsEnum.nav.title,
+            action: analyticsEnum.nav.actions.CLICK_NEWS,
+        });
         this.setState({ anchorEl: e.currentTarget });
 
         if (typeof Storage !== 'undefined') {
@@ -142,7 +147,7 @@ class News extends PureComponent {
                 <Tooltip title="See latest updates">
                     <Badge
                         variant="dot"
-                        overlap="circle"
+                        overlap="circular"
                         color="error"
                         invisible={!this.state.showDot}
                         classes={{

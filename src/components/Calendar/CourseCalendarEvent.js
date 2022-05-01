@@ -10,6 +10,7 @@ import CustomEventDialog from '../CustomEvents/CustomEventDialog';
 import AppStore from '../../stores/AppStore';
 import { clickToCopy } from '../../helpers';
 import ReactGA from 'react-ga';
+import analyticsEnum, { logAnalytics } from '../../analytics.js';
 
 const styles = {
     courseContainer: {
@@ -93,6 +94,10 @@ const CourseCalendarEvent = (props) => {
                                     action: 'Click Delete Course',
                                     label: 'Course Calendar Event',
                                 });
+                                logAnalytics({
+                                    category: analyticsEnum.calendar.title,
+                                    action: analyticsEnum.calendar.actions.DELETE_COURSE,
+                                });
                             }}
                         >
                             <Delete fontSize="inherit" />
@@ -104,7 +109,16 @@ const CourseCalendarEvent = (props) => {
                         <tr>
                             <td className={classes.alignToTop}>Section code</td>
                             <Tooltip title="Click to copy course code" placement="right">
-                                <td onClick={(e) => clickToCopy(e, sectionCode)} className={classes.rightCells}>
+                                <td
+                                    onClick={(e) => {
+                                        logAnalytics({
+                                            category: analyticsEnum.calendar.title,
+                                            action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
+                                        });
+                                        clickToCopy(e, sectionCode);
+                                    }}
+                                    className={classes.rightCells}
+                                >
                                     <u>{sectionCode}</u>
                                 </td>
                             </Tooltip>
@@ -142,6 +156,7 @@ const CourseCalendarEvent = (props) => {
                                     customEventID={courseInMoreInfo.customEventID}
                                     sectionCode={courseInMoreInfo.sectionCode}
                                     term={courseInMoreInfo.term}
+                                    analyticsCategory={analyticsEnum.calendar.title}
                                 />
                             </td>
                         </tr>
@@ -160,6 +175,7 @@ const CourseCalendarEvent = (props) => {
                             color={courseInMoreInfo.color}
                             isCustomEvent={true}
                             customEventID={courseInMoreInfo.customEventID}
+                            analyticsCategory={analyticsEnum.calendar.title}
                         />
                     </div>
                     <CustomEventDialog
@@ -178,6 +194,10 @@ const CourseCalendarEvent = (props) => {
                                     category: 'antalmanac-rewrite',
                                     action: 'Click Delete Custom Event',
                                     label: 'Course Calendar Event',
+                                });
+                                logAnalytics({
+                                    category: analyticsEnum.calendar.title,
+                                    action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
                                 });
                             }}
                         >

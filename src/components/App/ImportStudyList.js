@@ -16,6 +16,7 @@ import { PostAdd } from '@material-ui/icons';
 import InputLabel from '@material-ui/core/InputLabel';
 import { withStyles } from '@material-ui/core/styles';
 import TermSelector from '../SearchForm/TermSelector';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const styles = {
     inputLabel: {
@@ -83,6 +84,11 @@ class ImportStudyList extends PureComponent {
                         this.state.selectedTerm,
                         currSchedule
                     );
+                    logAnalytics({
+                        category: analyticsEnum.nav.title,
+                        action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
+                        value: sectionsAdded / (sectionCodes.length || 1),
+                    });
                     if (sectionsAdded === sectionCodes.length) {
                         openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
                     } else if (sectionsAdded !== 0) {

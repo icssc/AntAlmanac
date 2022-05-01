@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import App from './components/App/App';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
 import { unregister } from './registerServiceWorker';
 import { SnackbarProvider } from 'notistack';
 // import whyDidYouRender from '@welldone-software/why-did-you-render';
@@ -11,7 +11,7 @@ import { SnackbarProvider } from 'notistack';
 //         trackAllPureComponents: true,
 //     });
 // // }
-const theme = createMuiTheme({
+const theme = createTheme({
     typography: {
         htmlFontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10),
         fontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,

@@ -12,6 +12,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import ReactGA from 'react-ga';
 import ConditionalWrapper from '../App/ConditionalWrapper';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const styles = {
     toolbar: {
@@ -44,6 +45,10 @@ const CalendarPaneToolbar = (props) => {
     const { classes } = props;
 
     const handleScheduleChange = (event) => {
+        logAnalytics({
+            category: analyticsEnum.calendar.title,
+            action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
+        });
         changeCurrentSchedule(event.target.value);
     };
 
@@ -76,7 +81,13 @@ const CalendarPaneToolbar = (props) => {
                 <Button
                     id="finalButton"
                     variant={props.showFinalsSchedule ? 'contained' : 'outlined'}
-                    onClick={props.toggleDisplayFinalsSchedule}
+                    onClick={() => {
+                        logAnalytics({
+                            category: analyticsEnum.calendar.title,
+                            action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
+                        });
+                        props.toggleDisplayFinalsSchedule();
+                    }}
                     size="small"
                     color={props.showFinalsSchedule ? 'primary' : 'default'}
                 >
@@ -87,7 +98,15 @@ const CalendarPaneToolbar = (props) => {
             <div className={classes.spacer} />
 
             <Tooltip title="Undo last deleted course">
-                <IconButton onClick={() => undoDelete(null)}>
+                <IconButton
+                    onClick={() => {
+                        logAnalytics({
+                            category: analyticsEnum.calendar.title,
+                            label: analyticsEnum.calendar.actions.UNDO,
+                        });
+                        undoDelete(null);
+                    }}
+                >
                     <Undo fontSize="small" />
                 </IconButton>
             </Tooltip>
@@ -105,6 +124,10 @@ const CalendarPaneToolbar = (props) => {
                                 category: 'antalmanac-rewrite',
                                 action: 'Click Clear button',
                                 label: 'Calendar Pane Toolbar',
+                            });
+                            logAnalytics({
+                                category: analyticsEnum.calendar.title,
+                                action: analyticsEnum.calendar.actions.CLEAR_SCHEDULE,
                             });
                         }
                     }}
@@ -129,7 +152,15 @@ const CalendarPaneToolbar = (props) => {
             >
                 {[
                     <ExportCalendar />,
-                    <ScreenshotButton onTakeScreenshot={props.onTakeScreenshot} />,
+                    <ScreenshotButton
+                        onTakeScreenshot={() => {
+                            logAnalytics({
+                                category: analyticsEnum.calendar.title,
+                                action: analyticsEnum.calendar.actions.SCREENSHOT,
+                            });
+                            props.onTakeScreenshot();
+                        }}
+                    />,
                     <CustomEventsDialog editMode={false} currentScheduleIndex={props.currentScheduleIndex} />,
                 ].map((element, index) => (
                     <ConditionalWrapper

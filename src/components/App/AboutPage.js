@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@material-ui/core';
 import { Info } from '@material-ui/icons';
 import ReactGA from 'react-ga';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 class AboutPage extends PureComponent {
     state = {
@@ -16,6 +17,10 @@ class AboutPage extends PureComponent {
                         ReactGA.event({
                             category: 'antalmanac-rewrite',
                             action: 'Click "About"',
+                        });
+                        logAnalytics({
+                            category: analyticsEnum.nav.title,
+                            action: analyticsEnum.nav.actions.CLICK_ABOUT,
                         });
                     }}
                     color="inherit"

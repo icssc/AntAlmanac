@@ -18,6 +18,7 @@ import PropTypes from 'prop-types';
 import { addCustomEvent, editCustomEvent } from '../../actions/AppStoreActions';
 import ScheduleSelector from './ScheduleSelector';
 import ReactGA from 'react-ga';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const styles = () => ({
     container: {
@@ -46,10 +47,18 @@ class CustomEventDialog extends PureComponent {
             category: 'antalmanac-rewrite',
             action: 'Click Custom Event button',
         });
+        logAnalytics({
+            category: analyticsEnum.calendar.title,
+            action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
+        });
     };
 
     handleClose = (cancel) => {
         if (!cancel) {
+            logAnalytics({
+                category: analyticsEnum.calendar.title,
+                action: analyticsEnum.calendar.actions.ADD_CUSTOM_EVENT,
+            });
             if (this.props.onDialogClose) this.props.onDialogClose();
             this.handleAddToCalendar();
         }
