@@ -2,19 +2,19 @@ name: "Pull Request Clean Up"
 
 on:
   pull_request:
-    branches: main
-    types: [unlabeled, closed]
+    types: [closed]
+    branches:
+      - main
 
 permissions:
   id-token: write
   contents: read
   deployments: write
+  repository-projects: write
 
 jobs:
   clean-up:
-    if: |
-      (github.event.action == 'unlabeled' && github.event.label.name == 'deploy') ||
-      (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'deploy'))
+    if: (!contains(github.event.pull_request.labels.*.name, 'no deploy'))
     runs-on: ubuntu-latest
     env: # env variables for Node.js
       HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
@@ -31,23 +31,14 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
-          
-      - name: checkout antalmanac-cdk
-        uses: actions/checkout@v3
-        with:
-          repository: icssc/antalmanac-cdk
-          ref: dev # CHANGE TO MAIN WHEN CDK REPO IS UPDATED
         
       - name: checkout antalmanac
         uses: actions/checkout@v3
-        with:
-          path: functions/AntAlmanac
       
       - name: install node dependencies cdk
         uses: bahmutov/npm-install@v1
-
-      - name: make empty folder # so cdk doesn't complain
-        run: mkdir functions/AntAlmanac/build
+        with:
+          working-directory: .github/workflows/actions_stack
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@master
@@ -55,12 +46,28 @@ jobs:
           role-to-assume: ${{ secrets.ACTIONS_IAM_ROLE }}
           aws-region: us-east-1
 
+      - name: make empty folder # so cdk doesn't complain
+        run: mkdir build
+
+      - name: build CDK
+        working-directory: ./.github/workflows/actions_stack
+        run: npm run build
+
       - name: destroy the stack on AWS
+        working-directory: ./.github/workflows/actions_stack
         run: npx cdk destroy github-actions-stack-${{ github.event.pull_request.number }} --force
 
-      - name: delete the github deployments and the corresponding environment
-        uses: strumwolf/delete-deployment-environment@v1.1.0
+      - name: update the github deployment status
+        uses: bobheadxi/deployments@v0.5.2
         with:
+          step: deactivate-env
           token: ${{ secrets.GITHUB_TOKEN }}
-          environment: ${{ env.STAGE }}
+          env: ${{ env.STAGE }}
+
+      # add back in the future if we change to personal access Github token
+      # - name: delete the github deployments and the corresponding environment
+      #   uses: strumwolf/delete-deployment-environment@v2
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     environment: ${{ env.STAGE }}
       
