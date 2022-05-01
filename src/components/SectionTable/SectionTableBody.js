@@ -246,9 +246,10 @@ const DayAndTimeCell = withStyles(styles)((props) => {
 
     return (
         <NoPaddingTableCell className={classes.cell}>
-            {meetings.map((meeting) => (
-                <div key={meeting.days + meeting.time + meeting.bldg}>{`${meeting.days} ${meeting.time}`}</div>
-            ))}
+            {meetings.map((meeting) => {
+                const timeString = meeting.time.replace(/\s/g, '').split('-').join(' - ');
+                return <div key={meeting.days + meeting.time + meeting.bldg}>{`${meeting.days} ${timeString}`}</div>;
+            })}
         </NoPaddingTableCell>
     );
 });
