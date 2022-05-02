@@ -153,12 +153,12 @@ const CalendarPaneToolbar = (props) => {
                 {[
                     <ExportCalendar />,
                     <ScreenshotButton
-                        onTakeScreenshot={() => {
+                        onTakeScreenshot={(handleClick) => {
                             logAnalytics({
                                 category: analyticsEnum.calendar.title,
                                 action: analyticsEnum.calendar.actions.SCREENSHOT,
                             });
-                            props.onTakeScreenshot();
+                            props.onTakeScreenshot(handleClick);
                         }}
                     />,
                     <CustomEventsDialog editMode={false} currentScheduleIndex={props.currentScheduleIndex} />,
