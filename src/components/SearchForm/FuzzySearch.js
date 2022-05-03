@@ -162,6 +162,7 @@ class FuzzySearch extends PureComponent {
                 onInputChange={this.onInputChange}
                 open={this.state.open}
                 popupIcon={''}
+                autoHighlight={true}
             />
         );
     }
