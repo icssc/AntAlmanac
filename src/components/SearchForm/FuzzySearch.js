@@ -22,14 +22,6 @@ class FuzzySearch extends PureComponent {
         value: '',
     };
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (!prevState.open && this.state.open) {
-            document.addEventListener('keydown', this.enterEvent, false);
-        } else if (prevState.open && !this.state.open) {
-            document.removeEventListener('keydown', this.enterEvent, false);
-        }
-    }
-
     doSearch = (value) => {
         if (!value) return;
         const emoji = value.slice(0, 2);
@@ -78,14 +70,6 @@ class FuzzySearch extends PureComponent {
                 break;
         }
         this.props.toggleSearch();
-    };
-
-    enterEvent = (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            this.onClose();
-            this.doSearch(this.getOptionLabel(Object.keys(this.state.results)[0]));
-        }
     };
 
     filterOptions = (options) => options;
@@ -153,6 +137,7 @@ class FuzzySearch extends PureComponent {
                 renderInput={(params) => (
                     <TextField {...params} inputRef={(input) => input} fullWidth label={'Search'} />
                 )}
+                autoHighlight={true}
                 filterOptions={this.filterOptions}
                 getOptionLabel={this.getOptionLabel}
                 getOptionSelected={this.getOptionSelected}
