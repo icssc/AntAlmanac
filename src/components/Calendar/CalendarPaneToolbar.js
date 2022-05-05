@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { IconButton, Tooltip, Paper, Button, useMediaQuery, Menu } from '@material-ui/core';
 import { Delete, Undo, MoreHoriz } from '@material-ui/icons';
@@ -47,7 +47,14 @@ const styles = {
 };
 
 const CalendarPaneToolbar = (props) => {
-    const { classes } = props;
+    const {
+        classes,
+        scheduleNames,
+        currentScheduleIndex,
+        showFinalsSchedule,
+        toggleDisplayFinalsSchedule,
+        onTakeScreenshot,
+    } = props;
 
     const handleScheduleChange = (event) => {
         changeCurrentSchedule(event.target.value);
@@ -55,8 +62,8 @@ const CalendarPaneToolbar = (props) => {
 
     const isMobileScreen = useMediaQuery('(max-width:630px)');
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [openSchedules, setOpenSchedules] = React.useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [openSchedules, setOpenSchedules] = useState(false);
 
     const handleMenuClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -72,17 +79,17 @@ const CalendarPaneToolbar = (props) => {
 
     return (
         <Paper elevation={0} variant="outlined" square className={classes.toolbar}>
-            <EditSchedule scheduleNames={props.scheduleNames} scheduleIndex={props.currentScheduleIndex} />
+            <EditSchedule scheduleNames={scheduleNames} scheduleIndex={currentScheduleIndex} />
 
             <Select
                 classes={{ root: classes.rootScheduleSelector }}
                 className={classes.scheduleSelector}
-                value={props.currentScheduleIndex}
+                value={currentScheduleIndex}
                 onChange={handleScheduleChange}
                 open={openSchedules}
                 onClick={handleScheduleClick}
             >
-                {props.scheduleNames.map((name, index) => (
+                {scheduleNames.map((name, index) => (
                     <MenuItem value={index}>{name}</MenuItem>
                 ))}
                 <ScheduleNameDialog onOpen={() => setOpenSchedules(true)} onClose={() => setOpenSchedules(false)} />
@@ -91,10 +98,10 @@ const CalendarPaneToolbar = (props) => {
             <Tooltip title="Toggle showing finals schedule">
                 <Button
                     id="finalButton"
-                    variant={props.showFinalsSchedule ? 'contained' : 'outlined'}
-                    onClick={props.toggleDisplayFinalsSchedule}
+                    variant={showFinalsSchedule ? 'contained' : 'outlined'}
+                    onClick={toggleDisplayFinalsSchedule}
                     size="small"
-                    color={props.showFinalsSchedule ? 'primary' : 'default'}
+                    color={showFinalsSchedule ? 'primary' : 'default'}
                 >
                     Finals
                 </Button>
@@ -116,7 +123,7 @@ const CalendarPaneToolbar = (props) => {
                                 'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
                             )
                         ) {
-                            clearSchedules([props.currentScheduleIndex]);
+                            clearSchedules([currentScheduleIndex]);
                             ReactGA.event({
                                 category: 'antalmanac-rewrite',
                                 action: 'Click Clear button',
@@ -145,11 +152,11 @@ const CalendarPaneToolbar = (props) => {
             >
                 {[
                     <ExportCalendar />,
-                    <ScreenshotButton onTakeScreenshot={props.onTakeScreenshot} />,
+                    <ScreenshotButton onTakeScreenshot={onTakeScreenshot} />,
                     <CustomEventsDialog
                         editMode={false}
-                        currentScheduleIndex={props.currentScheduleIndex}
-                        scheduleNames={props.scheduleNames}
+                        currentScheduleIndex={currentScheduleIndex}
+                        scheduleNames={scheduleNames}
                     />,
                 ].map((element, index) => (
                     <ConditionalWrapper

@@ -14,6 +14,7 @@ const styles = () => ({
 });
 
 const EditSchedule = (props) => {
+    const { classes, scheduleNames, scheduleIndex } = props;
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handleClick = (event) => {
@@ -27,7 +28,7 @@ const EditSchedule = (props) => {
     return (
         <>
             <Tooltip title="Edit schedule">
-                <Button className={props.classes.editButton} variant="outlined" onClick={handleClick}>
+                <Button className={classes.editButton} variant="outlined" onClick={handleClick}>
                     <Edit />
                 </Button>
             </Tooltip>
@@ -46,13 +47,13 @@ const EditSchedule = (props) => {
             >
                 <ScheduleNameDialog
                     rename={true}
-                    scheduleNames={props.scheduleNames}
-                    scheduleIndex={props.scheduleIndex}
+                    scheduleNames={scheduleNames}
+                    scheduleIndex={scheduleIndex}
                     onClose={handleClose}
                 />
                 <DeleteScheduleDialog
-                    scheduleNames={props.scheduleNames}
-                    scheduleIndex={props.scheduleIndex}
+                    scheduleNames={scheduleNames}
+                    scheduleIndex={scheduleIndex}
                     onClose={handleClose}
                 />
             </Menu>

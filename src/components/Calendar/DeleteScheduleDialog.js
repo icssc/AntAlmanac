@@ -37,8 +37,10 @@ const DeleteScheduleDialog = (props) => {
                 <DialogTitle>Delete Schedule</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Are you sure you want to delete {`"${props.scheduleNames[props.scheduleIndex]}"`}? You cannot
-                        undo this action.
+                        Are you sure you want to delete {`"${props.scheduleNames[props.scheduleIndex]}"`}?
+                        <br />
+                        <br />
+                        You cannot undo this action.
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
