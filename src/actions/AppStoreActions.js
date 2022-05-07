@@ -128,8 +128,9 @@ export const saveSchedule = async (userID, rememberMe) => {
 
             const addedCourses = AppStore.getAddedCourses();
             const customEvents = AppStore.getCustomEvents();
+            const scheduleNames = AppStore.getScheduleNames();
 
-            const userData = { addedCourses: [], customEvents: customEvents };
+            const userData = { addedCourses: [], scheduleNames: scheduleNames, customEvents: customEvents };
 
             userData.addedCourses = addedCourses.map((course) => {
                 return {
