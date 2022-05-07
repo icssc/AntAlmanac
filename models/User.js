@@ -11,6 +11,7 @@ const User = mongoose.Schema({
                 scheduleIndices: [Number],
             },
         ],
+        scheduleNames: {type: [String], default: ['Schedule 1', 'Schedule 2', 'Schedule 3', 'Schedule 4']},
         customEvents: [
             {
                 customEventID: String,
