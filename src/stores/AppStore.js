@@ -196,8 +196,8 @@ class AppStore extends EventEmitter {
                 break;
             case 'LOAD_SCHEDULE':
                 // If the user already had schedules, load up four schedules
-                this.scheduleNames = ['Schedule 1', 'Schedule 2', 'Schedule 3', 'Schedule 4'];
                 this.addedCourses = action.userData.addedCourses;
+                this.scheduleNames = action.userData.scheduleNames;
                 this.updateAddedSectionCodes();
                 this.customEvents = action.userData.customEvents;
                 this.finalsEventsInCalendar = calendarizeFinals();
