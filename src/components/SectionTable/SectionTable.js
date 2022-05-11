@@ -14,6 +14,7 @@ import {
 import { withStyles } from '@material-ui/core/styles';
 // import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back
 import CourseInfoBar from './CourseInfoBar';
+import GradeInfoBar from './GradeInfoBar';
 import SectionTableBody from './SectionTableBody';
 import CourseInfoButton from './CourseInfoButton';
 import { Help, Assessment, Assignment } from '@material-ui/icons';
@@ -96,6 +97,11 @@ const SectionTable = (props) => {
                     text="Zotistics"
                     icon={<Assessment />}
                     redirectLink={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseDetails.courseNumber}&code=&submit=Submit`}
+                />
+                <GradeInfoBar
+                    text="Grades"
+                    deptCode={courseDetails.deptCode}
+                    courseNumber={courseDetails.courseNumber}
                 />
                 <CourseInfoButton
                     text="Past Enrollment"
