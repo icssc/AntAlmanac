@@ -28,53 +28,21 @@ class ScheduleSelector extends PureComponent {
     render() {
         return (
             <FormGroup row>
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={this.state.scheduleIndices.includes(0)}
-                            onChange={this.handleChange(0)}
-                            value="1"
-                            color="primary"
+                {this.props.scheduleNames.map((name, index) => {
+                    return (
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={this.state.scheduleIndices.includes(index)}
+                                    onChange={this.handleChange(index)}
+                                    value={index + 1}
+                                    color="primary"
+                                />
+                            }
+                            label={name}
                         />
-                    }
-                    label="Schedule 1"
-                />
-
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={this.state.scheduleIndices.includes(1)}
-                            onChange={this.handleChange(1)}
-                            value="2"
-                            color="primary"
-                        />
-                    }
-                    label="Schedule 2"
-                />
-
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={this.state.scheduleIndices.includes(2)}
-                            onChange={this.handleChange(2)}
-                            value="3"
-                            color="primary"
-                        />
-                    }
-                    label="Schedule 3"
-                />
-
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={this.state.scheduleIndices.includes(3)}
-                            onChange={this.handleChange(3)}
-                            value="4"
-                            color="primary"
-                        />
-                    }
-                    label="Schedule 4"
-                />
+                    );
+                })}
             </FormGroup>
         );
     }

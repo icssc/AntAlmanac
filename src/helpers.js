@@ -48,6 +48,7 @@ export async function getCoursesData(userData) {
     }
     return {
         addedCourses: addedCourses,
+        scheduleNames: userData.scheduleNames,
         customEvents: userData.customEvents,
     };
 }

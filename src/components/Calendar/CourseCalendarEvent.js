@@ -183,6 +183,7 @@ const CourseCalendarEvent = (props) => {
                         customEvent={AppStore.getCustomEvents().find(
                             (customEvent) => customEvent.customEventID === customEventID
                         )}
+                        scheduleNames={props.scheduleNames}
                     />
 
                     <Tooltip title="Delete">
