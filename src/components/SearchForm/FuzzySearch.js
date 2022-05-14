@@ -4,6 +4,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import search from 'websoc-fuzzy-search';
 import { updateFormValue, resetFormValues } from '../../actions/RightPaneActions';
 import RightPaneStore from '../../stores/RightPaneStore';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const emojiMap = {
     GE_CATEGORY: '🏫', // U+1F3EB :school:
@@ -70,6 +71,10 @@ class FuzzySearch extends PureComponent {
                 break;
         }
         this.props.toggleSearch();
+        logAnalytics({
+            category: analyticsEnum.classSearch.title,
+            action: analyticsEnum.classSearch.actions.FUZZY_SEARCH,
+        });
     };
 
     filterOptions = (options) => options;

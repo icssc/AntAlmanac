@@ -21,7 +21,7 @@ class ColorPicker extends PureComponent {
             anchorEl: event.currentTarget,
         });
         logAnalytics({
-            category: this.props.analyticsCategory || 'Right Pane',
+            category: this.props.analyticsCategory,
             action: analyticsEnum.calendar.actions.CHANGE_COURSE_COLOR,
         });
     };

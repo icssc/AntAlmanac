@@ -7,6 +7,7 @@ import FuzzySearch from './FuzzySearch';
 import LegacySearch from './LegacySearch';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { Tune } from '@material-ui/icons';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const styles = {
     container: {
@@ -62,7 +63,18 @@ const SearchForm = (props) => {
                         </div>
                     </div>
 
-                    {showLegacySearch && <LegacySearch onSubmit={() => toggleSearch()} onReset={resetFormValues} />}
+                    {showLegacySearch && (
+                        <LegacySearch
+                            onSubmit={() => {
+                                logAnalytics({
+                                    category: analyticsEnum.classSearch.title,
+                                    action: analyticsEnum.classSearch.actions.MANUAL_SEARCH,
+                                });
+                                toggleSearch();
+                            }}
+                            onReset={resetFormValues}
+                        />
+                    )}
                 </div>
             </form>
             <PrivacyPolicyBanner />

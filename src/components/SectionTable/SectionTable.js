@@ -19,6 +19,7 @@ import CourseInfoButton from './CourseInfoButton';
 import { Help, Assessment, Assignment } from '@material-ui/icons';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import PropTypes from 'prop-types';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const styles = {
     flex: {
@@ -87,17 +88,20 @@ const SectionTable = (props) => {
 
                 {courseDetails.prerequisiteLink && (
                     <CourseInfoButton
+                        anlyticsAction={analyticsEnum.classSearch.actions.CLICK_PREREQUISITES}
                         text={isMobileScreen ? 'Prereqs' : 'Prerequisites'}
                         icon={<Assignment />}
                         redirectLink={courseDetails.prerequisiteLink}
                     />
                 )}
                 <CourseInfoButton
+                    anlyticsAction={analyticsEnum.classSearch.actions.CLICK_ZOTISTICS}
                     text="Zotistics"
                     icon={<Assessment />}
                     redirectLink={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseDetails.courseNumber}&code=&submit=Submit`}
                 />
                 <CourseInfoButton
+                    anlyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_ENROLLMENT}
                     text="Past Enrollment"
                     icon={<ShowChartIcon />}
                     redirectLink={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${courseDetails.courseNumber}&courseType=all`}

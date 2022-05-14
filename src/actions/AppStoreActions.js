@@ -37,6 +37,12 @@ const arrayOfColors = [
 ];
 
 export const addCourse = (section, courseDetails, term, scheduleIndex, color, quiet) => {
+    logAnalytics({
+        category: analyticsEnum.classSearch.title,
+        action: analyticsEnum.classSearch.actions.ADD_COURSE,
+        label: courseDetails.deptCode,
+        value: parseInt(courseDetails.courseNumber),
+    });
     const addedCourses = AppStore.getAddedCourses();
     const terms = termsInSchedule(addedCourses, term, scheduleIndex);
     let existingCourse;

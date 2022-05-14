@@ -5,6 +5,7 @@ import { Button, Popover, useMediaQuery } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { PETERPORTAL_REST_ENDPOINT } from '../../api/endpoints';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const styles = () => ({
     rightSpace: {
@@ -129,6 +130,10 @@ const CourseInfoBar = (props) => {
                 startIcon={!isMobileScreen && <InfoOutlinedIcon />}
                 size="small"
                 onClick={(event) => {
+                    logAnalytics({
+                        category: analyticsEnum.classSearch.title,
+                        action: analyticsEnum.classSearch.actions.CLICK_INFO,
+                    });
                     const currentTarget = event.currentTarget;
                     togglePopover(currentTarget);
                 }}
