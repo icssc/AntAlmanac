@@ -58,6 +58,13 @@ const analyticsEnum = {
             CLEAR_SCHEDULE: 'Clear Schedule',
         },
     },
+    map: {
+        title: 'Map',
+        actions: {
+            OPEN: 'Open Map',
+            CLICK_PIN: 'Click on Pin',
+        },
+    },
 };
 
 export default analyticsEnum;
