@@ -64,7 +64,7 @@ const styles = {
 };
 
 const SectionTable = (props) => {
-    const { classes, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames } = props;
+    const { classes, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames, analyticsCategory } = props;
     const encodedDept = encodeURIComponent(courseDetails.deptCode);
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
@@ -81,6 +81,7 @@ const SectionTable = (props) => {
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
                     courseNumber={courseDetails.courseNumber}
+                    analyticsCategory={analyticsCategory}
                 />
 
                 {/* Temporarily remove "Past Enrollment" until data on PeterPortal API */}
@@ -88,6 +89,7 @@ const SectionTable = (props) => {
 
                 {courseDetails.prerequisiteLink && (
                     <CourseInfoButton
+                        analyticsCategory={analyticsCategory}
                         anlyticsAction={analyticsEnum.classSearch.actions.CLICK_PREREQUISITES}
                         text={isMobileScreen ? 'Prereqs' : 'Prerequisites'}
                         icon={<Assignment />}
@@ -95,12 +97,14 @@ const SectionTable = (props) => {
                     />
                 )}
                 <CourseInfoButton
+                    analyticsCategory={analyticsCategory}
                     anlyticsAction={analyticsEnum.classSearch.actions.CLICK_ZOTISTICS}
                     text="Zotistics"
                     icon={<Assessment />}
                     redirectLink={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseDetails.courseNumber}&code=&submit=Submit`}
                 />
                 <CourseInfoButton
+                    analyticsCategory={analyticsCategory}
                     anlyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_ENROLLMENT}
                     text="Past Enrollment"
                     icon={<ShowChartIcon />}

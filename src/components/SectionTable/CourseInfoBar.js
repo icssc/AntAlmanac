@@ -35,7 +35,7 @@ const noCourseInfo = {
 };
 
 const CourseInfoBar = (props) => {
-    const { courseTitle, courseNumber, deptCode, classes } = props;
+    const { courseTitle, courseNumber, deptCode, classes, analyticsCategory } = props;
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [courseInfo, setCourseInfo] = useState(null);
@@ -131,7 +131,7 @@ const CourseInfoBar = (props) => {
                 size="small"
                 onClick={(event) => {
                     logAnalytics({
-                        category: analyticsEnum.classSearch.title,
+                        category: analyticsCategory,
                         action: analyticsEnum.classSearch.actions.CLICK_INFO,
                     });
                     const currentTarget = event.currentTarget;

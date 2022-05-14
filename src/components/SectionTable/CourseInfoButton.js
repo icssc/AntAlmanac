@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button } from '@material-ui/core';
 import { useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import analyticsEnum, { logAnalytics } from '../../analytics';
+import { logAnalytics } from '../../analytics';
 
 const styles = {
     button: {
@@ -12,7 +12,7 @@ const styles = {
     },
 };
 
-function CourseInfoButton({ classes, text, icon, redirectLink, anlyticsAction }) {
+function CourseInfoButton({ classes, text, icon, redirectLink, anlyticsAction, analyticsCategory }) {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
     return (
         <Button
@@ -22,7 +22,7 @@ function CourseInfoButton({ classes, text, icon, redirectLink, anlyticsAction })
             size="small"
             onClick={(event) => {
                 logAnalytics({
-                    category: analyticsEnum.classSearch.title,
+                    category: analyticsCategory,
                     action: anlyticsAction,
                 });
                 window.open(redirectLink);

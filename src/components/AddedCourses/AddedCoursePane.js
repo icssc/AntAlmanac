@@ -7,6 +7,7 @@ import CustomEventDetailView from './CustomEventDetailView';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import { clearSchedules, copySchedule } from '../../actions/AppStoreActions';
 import ReactGA from 'react-ga';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const styles = {
     container: {
@@ -43,6 +44,10 @@ class AddedCoursePane extends PureComponent {
         AppStore.on('currentScheduleIndexChange', this.loadCourses);
         AppStore.on('currentScheduleIndexChange', this.loadCustomEvents);
         AppStore.on('scheduleNamesChange', this.loadScheduleNames);
+        logAnalytics({
+            category: analyticsEnum.addedClasses.title,
+            action: analyticsEnum.addedClasses.actions.OPEN,
+        });
     };
 
     componentWillUnmount() {
@@ -170,6 +175,10 @@ class AddedCoursePane extends PureComponent {
                                         action: 'Click Clear button',
                                         label: 'Added Course pane',
                                     });
+                                    logAnalytics({
+                                        category: analyticsEnum.addedClasses.title,
+                                        action: analyticsEnum.addedClasses.actions.CLEAR_SCHEDULE,
+                                    });
                                 }
                             }}
                         >
@@ -180,7 +189,12 @@ class AddedCoursePane extends PureComponent {
                 {this.state.courses.map((course) => {
                     return (
                         <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber}>
-                            <SectionTable courseDetails={course} term={course.term} colorAndDelete={true} />
+                            <SectionTable
+                                courseDetails={course}
+                                term={course.term}
+                                colorAndDelete={true}
+                                analyticsCategory={analyticsEnum.addedClasses.title}
+                            />
                         </Grid>
                     );
                 })}

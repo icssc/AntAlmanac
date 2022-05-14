@@ -408,6 +408,11 @@ export const copySchedule = (from, to) => {
         action: 'Click Copy Schedule',
     });
 
+    logAnalytics({
+        category: analyticsEnum.addedClasses.title,
+        action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
+    });
+
     dispatcher.dispatch({
         type: 'COPY_SCHEDULE',
         addedCoursesAfterCopy,
