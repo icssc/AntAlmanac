@@ -43,7 +43,7 @@ export const ColorAndDelete = withStyles(styles)((props) => {
 });
 
 export const ScheduleAddCell = withStyles(styles)((props) => {
-    const { classes, section, courseDetails, term } = props;
+    const { classes, section, courseDetails, term, scheduleNames } = props;
     const popupState = usePopupState({ variant: 'popover' });
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
@@ -72,11 +72,10 @@ export const ScheduleAddCell = withStyles(styles)((props) => {
                     <ArrowDropDown fontSize="small" />
                 </IconButton>
                 <Menu {...bindMenu(popupState)} onClose={() => closeAndAddCourse(-1)}>
-                    <MenuItem onClick={() => closeAndAddCourse(0)}>Add to schedule 1</MenuItem>
-                    <MenuItem onClick={() => closeAndAddCourse(1)}>Add to schedule 2</MenuItem>
-                    <MenuItem onClick={() => closeAndAddCourse(2)}>Add to schedule 3</MenuItem>
-                    <MenuItem onClick={() => closeAndAddCourse(3)}>Add to schedule 4</MenuItem>
-                    <MenuItem onClick={() => closeAndAddCourse(4)}>Add to all</MenuItem>
+                    {scheduleNames.map((name, index) => (
+                        <MenuItem onClick={() => closeAndAddCourse(index)}>Add to {name}</MenuItem>
+                    ))}
+                    <MenuItem onClick={() => closeAndAddCourse(scheduleNames.length)}>Add to All Schedules</MenuItem>
                 </Menu>
             </div>
         </TableCell>
