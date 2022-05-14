@@ -7,6 +7,7 @@ import RightPaneStore from '../../stores/RightPaneStore';
 import dispatcher from '../../dispatcher';
 import { clearCache } from '../../helpers';
 import { openSnackbar } from '../../actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const styles = {
     container: {
@@ -42,6 +43,10 @@ class RightPane extends PureComponent {
     }
 
     refreshSearch = () => {
+        logAnalytics({
+            category: analyticsEnum.classSearch.title,
+            action: analyticsEnum.classSearch.actions.REFRESH,
+        });
         clearCache();
         this.setState({ refresh: this.state.refresh + 1 });
     };
