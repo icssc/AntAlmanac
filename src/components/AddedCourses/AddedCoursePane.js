@@ -32,6 +32,7 @@ class AddedCoursePane extends PureComponent {
         courses: [],
         customEvents: [],
         totalUnits: 0,
+        scheduleNames: AppStore.getScheduleNames(),
     };
 
     componentDidMount = () => {
@@ -41,6 +42,7 @@ class AddedCoursePane extends PureComponent {
         AppStore.on('customEventsChange', this.loadCustomEvents);
         AppStore.on('currentScheduleIndexChange', this.loadCourses);
         AppStore.on('currentScheduleIndexChange', this.loadCustomEvents);
+        AppStore.on('scheduleNamesChange', this.loadScheduleNames);
     };
 
     componentWillUnmount() {
@@ -48,6 +50,7 @@ class AddedCoursePane extends PureComponent {
         AppStore.removeListener('customEventsChange', this.loadCustomEvents);
         AppStore.removeListener('currentScheduleIndexChange', this.loadCourses);
         AppStore.removeListener('currentScheduleIndexChange', this.loadCustomEvents);
+        AppStore.removeListener('scheduleNamesChange', this.loadScheduleNames);
     }
 
     loadCourses = () => {
@@ -101,13 +104,18 @@ class AddedCoursePane extends PureComponent {
         this.setState({ customEvents: AppStore.getCustomEvents() });
     };
 
+    loadScheduleNames = () => {
+        this.setState({ scheduleNames: AppStore.getScheduleNames() });
+    };
+
     getGrid = () => {
+        const scheduleName = this.state.scheduleNames[AppStore.getCurrentScheduleIndex()];
+        const scheduleUnits = this.state.totalUnits;
+
         return (
             <>
                 <div className={this.props.classes.titleRow}>
-                    <Typography variant="h6">
-                        {`Schedule ${AppStore.getCurrentScheduleIndex() + 1} (${this.state.totalUnits} Units)`}
-                    </Typography>
+                    <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
 
                     <div>
                         <PopupState variant="popover">
@@ -117,7 +125,7 @@ class AddedCoursePane extends PureComponent {
                                         Copy Schedule
                                     </Button>
                                     <Menu {...bindMenu(popupState)}>
-                                        {[0, 1, 2, 3].map((index) => {
+                                        {this.state.scheduleNames.map((name, index) => {
                                             return (
                                                 <MenuItem
                                                     key={index}
@@ -127,13 +135,16 @@ class AddedCoursePane extends PureComponent {
                                                         popupState.close();
                                                     }}
                                                 >
-                                                    Copy to Schedule {index + 1}
+                                                    Copy to {name}
                                                 </MenuItem>
                                             );
                                         })}
                                         <MenuItem
                                             onClick={() => {
-                                                copySchedule(AppStore.getCurrentScheduleIndex(), 4);
+                                                copySchedule(
+                                                    AppStore.getCurrentScheduleIndex(),
+                                                    this.state.scheduleNames.length
+                                                );
                                                 popupState.close();
                                             }}
                                         >
@@ -181,6 +192,7 @@ class AddedCoursePane extends PureComponent {
                                 <CustomEventDetailView
                                     customEvent={customEvent}
                                     currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
+                                    scheduleNames={this.state.scheduleNames}
                                 />
                             </Grid>
                         );

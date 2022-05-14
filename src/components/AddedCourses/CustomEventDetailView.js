@@ -71,7 +71,7 @@ const CustomEventDetailView = (props) => {
                 >
                     <Delete fontSize="small" />
                 </IconButton>
-                <CustomEventDialog customEvent={customEvent} />
+                <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
             </CardActions>
         </Card>
     );

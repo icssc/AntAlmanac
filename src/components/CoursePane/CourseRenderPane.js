@@ -83,7 +83,7 @@ const flattenSOCObject = (SOCObject) => {
 };
 
 const SectionTableWrapped = (index, data) => {
-    const { courseData } = data;
+    const { courseData, scheduleNames } = data;
     const formData = RightPaneStore.getFormData();
 
     let component;
@@ -115,6 +115,7 @@ const SectionTableWrapped = (index, data) => {
                 courseDetails={courseData[index]}
                 colorAndDelete={false}
                 highlightAdded={true}
+                scheduleNames={scheduleNames}
             />
         );
     }
@@ -127,6 +128,7 @@ class CourseRenderPane extends PureComponent {
         courseData: null,
         loading: true,
         error: false,
+        scheduleNames: AppStore.getScheduleNames(),
     };
 
     loadCourses = () => {
@@ -171,7 +173,16 @@ class CourseRenderPane extends PureComponent {
 
     componentDidMount() {
         this.loadCourses();
+        AppStore.on('scheduleNamesChange', this.updateScheduleNames);
     }
+
+    componentWillUnmount() {
+        AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
+    }
+
+    updateScheduleNames = () => {
+        this.setState({ scheduleNames: AppStore.getScheduleNames() });
+    };
 
     render() {
         const { classes } = this.props;
@@ -186,6 +197,7 @@ class CourseRenderPane extends PureComponent {
         } else if (!this.state.error) {
             const renderData = {
                 courseData: this.state.courseData,
+                scheduleNames: this.state.scheduleNames,
             };
 
             currentView = (

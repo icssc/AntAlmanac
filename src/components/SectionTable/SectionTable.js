@@ -63,7 +63,7 @@ const styles = {
 };
 
 const SectionTable = (props) => {
-    const { classes, courseDetails, term, colorAndDelete, highlightAdded } = props;
+    const { classes, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames } = props;
     const encodedDept = encodeURIComponent(courseDetails.deptCode);
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
@@ -162,6 +162,7 @@ const SectionTable = (props) => {
                                     term={term}
                                     colorAndDelete={colorAndDelete}
                                     highlightAdded={highlightAdded}
+                                    scheduleNames={scheduleNames}
                                 />
                             );
                         })}

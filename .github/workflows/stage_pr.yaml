@@ -2,8 +2,7 @@ name: "Deploy Pull Request"
 
 on: 
   pull_request:
-    branches: main
-    types: [labeled, opened, synchronize]
+      types: [opened, synchronize]
 
 permissions:
   id-token: write
@@ -12,9 +11,7 @@ permissions:
 
 jobs:
   deploy:
-    if: |
-      (github.event.action == 'labeled' && github.event.label.name == 'deploy') ||
-      (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, 'deploy'))
+    if: (!contains(github.event.pull_request.labels.*.name, 'no deploy'))
     runs-on: ubuntu-latest
     env: # env variables for Node.js
       HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
@@ -40,26 +37,18 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
-          
-      - name: checkout antalmanac-cdk
-        uses: actions/checkout@v3
-        with:
-          repository: icssc/antalmanac-cdk
-          ref: dev # CHANGE TO MAIN WHEN CDK REPO IS UPDATED
         
       - name: checkout antalmanac
         uses: actions/checkout@v3
-        with:
-          path: functions/AntAlmanac
       
-      - name: install node dependencies cdk
-        uses: bahmutov/npm-install@v1
-
       - name: install node dependencies frontend
         uses: bahmutov/npm-install@v1
+
+      - name: install node dependencies cdk
+        uses: bahmutov/npm-install@v1
         with:
-          working-directory: functions/AntAlmanac
-      
+          working-directory: .github/workflows/actions_stack
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
@@ -67,13 +56,15 @@ jobs:
           aws-region: us-east-1
       
       - name: build frontend
-        run: REACT_APP_STAGING=true SKIP_PREFLIGHT_CHECK=true npm run build-client
+        run: npm run build
 
       - name: build CDK
+        working-directory: ./.github/workflows/actions_stack
         run: npm run build
 
       - name: deploy the stack to AWS
-        run: npx cdk deploy github-actions-stack-${{ github.event.pull_request.number }} --require-approval never
+        working-directory: ./.github/workflows/actions_stack
+        run: npx aws-cdk deploy github-actions-stack-${{ github.event.pull_request.number }} --require-approval never
 
       - name: update the github deployment status
         uses: bobheadxi/deployments@v0.5.2

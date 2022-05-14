@@ -1,5 +1,5 @@
 // The index of the default term in termData, as per WebSOC
-const defaultTerm = 3;
+const defaultTerm = 0;
 
 function Term(shortName, longName, startDate) {
     this.shortName = shortName;
@@ -7,9 +7,10 @@ function Term(shortName, longName, startDate) {
     this.startDate = startDate;
 }
 
-// Quarterly Academic Calendar: https://www.reg.uci.edu/calendars/quarterly/2021-2022/quarterly21-22.html
+// Quarterly Academic Calendar: https://www.reg.uci.edu/calendars/quarterly/2022-2023/quarterly22-23.html
 // Note: months are 0-indexed
 const termData = [
+    new Term('2022 Fall', '2022 Fall Quarter', [2022, 8, 22]),
     new Term('2022 Summer2', '2022 Summer Session 2', [2022, 7, 1]),
     new Term('2022 Summer10wk', '2022 10-wk Summer', [2022, 5, 20]), // nominal start date for SS1 and SS10wk
     new Term('2022 Summer1', '2022 Summer Session 1', [2022, 5, 20]), // since Juneteenth is observed 6/20/22
