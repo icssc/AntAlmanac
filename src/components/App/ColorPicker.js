@@ -20,6 +20,10 @@ class ColorPicker extends PureComponent {
         this.setState({
             anchorEl: event.currentTarget,
         });
+        logAnalytics({
+            category: this.props.analyticsCategory || 'Right Pane',
+            action: analyticsEnum.calendar.actions.CHANGE_COURSE_COLOR,
+        });
     };
 
     handleClose = (event) => {
@@ -40,10 +44,6 @@ class ColorPicker extends PureComponent {
         ReactGA.event({
             category: 'antalmanac-rewrite',
             action: 'Change Course Color',
-        });
-        logAnalytics({
-            category: this.props.analyticsCategory || 'Right Pane',
-            action: analyticsEnum.calendar.actions.CHANGE_COURSE_COLOR,
         });
     };
     updateColor = (color) => {
