@@ -19,7 +19,7 @@ import CourseInfoButton from './CourseInfoButton';
 import { Help, Assessment, Assignment } from '@material-ui/icons';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import PropTypes from 'prop-types';
-import analyticsEnum, { logAnalytics } from '../../analytics';
+import analyticsEnum from '../../analytics';
 
 const styles = {
     flex: {

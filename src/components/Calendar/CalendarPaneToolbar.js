@@ -95,7 +95,9 @@ const CalendarPaneToolbar = (props) => {
                 onClick={handleScheduleClick}
             >
                 {scheduleNames.map((name, index) => (
-                    <MenuItem value={index}>{name}</MenuItem>
+                    <MenuItem key={index} value={index}>
+                        {name}
+                    </MenuItem>
                 ))}
                 <ScheduleNameDialog
                     onOpen={() => setOpenSchedules(true)}
