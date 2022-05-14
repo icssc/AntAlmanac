@@ -18,7 +18,10 @@ const ScheduleNameDialog = (props) => {
     const { classes, onOpen, onClose, scheduleNames, scheduleIndex, rename } = props;
 
     const [isOpen, setIsOpen] = useState(false);
-    const [scheduleName, setScheduleName] = useState(scheduleIndex !== undefined ? scheduleNames[scheduleIndex] : '');
+    const [scheduleName, setScheduleName] = useState(
+        rename ? scheduleNames[scheduleIndex] : `Schedule ${scheduleNames.length + 1}`
+    );
+    const [clickedText, setClickedText] = useState(false);
 
     const handleOpen = (event) => {
         // We need to stop propagation so that the select menu won't close
@@ -32,8 +35,9 @@ const ScheduleNameDialog = (props) => {
     const handleClose = () => {
         setIsOpen(false);
         // If the user cancelled renaming the schedule, the schedule name is changed to its original value;
-        // if the user cancelled adding a new schedule, the schedule name is changed to an empty string
-        setScheduleName(scheduleIndex !== undefined ? scheduleNames[scheduleIndex] : '');
+        // if the user cancelled adding a new schedule, the schedule name is changed to the default schedule name
+        setScheduleName(rename ? scheduleNames[scheduleIndex] : `Schedule ${scheduleNames.length + 1}`);
+        setClickedText(false);
     };
 
     const handleNameChange = (event) => {
@@ -52,6 +56,15 @@ const ScheduleNameDialog = (props) => {
         renameSchedule(scheduleName, scheduleIndex);
         setIsOpen(false);
         setScheduleName('');
+    };
+
+    const handleTextClick = () => {
+        // When the user first clicks on the text field when they are adding a
+        // new schedule, erase the default schedule name and make the text field empty
+        if (!rename && !clickedText) {
+            setScheduleName('');
+            setClickedText(true);
+        }
     };
 
     // For the dialog, we need to stop the propagation when a key is pressed because
@@ -79,9 +92,10 @@ const ScheduleNameDialog = (props) => {
                     <TextField
                         className={classes.textField}
                         label="Name"
-                        placeholder="Schedule 2"
+                        placeholder={`Schedule ${scheduleNames.length + 1}`}
                         onChange={handleNameChange}
                         value={scheduleName}
+                        onClick={handleTextClick}
                         fullWidth
                     />
                 </DialogContent>

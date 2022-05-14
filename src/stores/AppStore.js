@@ -214,7 +214,6 @@ class AppStore extends EventEmitter {
                 this.emit('colorChange', false);
                 break;
             case 'LOAD_SCHEDULE':
-                // If the user already had schedules, load up four schedules
                 this.addedCourses = action.userData.addedCourses;
                 this.scheduleNames = action.userData.scheduleNames;
                 this.updateAddedSectionCodes();

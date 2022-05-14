@@ -97,7 +97,11 @@ const CalendarPaneToolbar = (props) => {
                 {scheduleNames.map((name, index) => (
                     <MenuItem value={index}>{name}</MenuItem>
                 ))}
-                <ScheduleNameDialog onOpen={() => setOpenSchedules(true)} onClose={() => setOpenSchedules(false)} />
+                <ScheduleNameDialog
+                    onOpen={() => setOpenSchedules(true)}
+                    onClose={() => setOpenSchedules(false)}
+                    scheduleNames={scheduleNames}
+                />
             </Select>
 
             <Tooltip title="Toggle showing finals schedule">
