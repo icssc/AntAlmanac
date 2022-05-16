@@ -106,7 +106,13 @@ const SectionTableWrapped = (index, data) => {
         );
     } else if (formData.ge !== 'ANY') {
         component = (
-            <GeDataFetchProvider term={formData.term} courseDetails={courseData[index]} colorAndDelete={false} />
+            <GeDataFetchProvider
+                term={formData.term}
+                courseDetails={courseData[index]}
+                colorAndDelete={false}
+                highlightAdded={true}
+                scheduleNames={scheduleNames}
+            />
         );
     } else {
         component = (
