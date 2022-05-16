@@ -24,7 +24,10 @@ class RightPane extends PureComponent {
     };
 
     returnToSearchBarEvent = (event) => {
-        if (event.key === 'Backspace' || event.key === 'Escape') {
+        if (
+            !(RightPaneStore.getDoDisplaySearch() || RightPaneStore.getOpenSpotAlertPopoverActive()) &&
+            (event.key === 'Backspace' || event.key === 'Escape')
+        ) {
             event.preventDefault();
             dispatcher.dispatch({
                 type: 'TOGGLE_SEARCH',
@@ -33,12 +36,12 @@ class RightPane extends PureComponent {
         }
     };
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        (RightPaneStore.getDoDisplaySearch() ? document.removeEventListener : document.addEventListener)(
-            'keydown',
-            this.returnToSearchBarEvent,
-            false
-        );
+    componentDidMount() {
+        document.addEventListener('keydown', this.returnToSearchBarEvent, false);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.returnToSearchBarEvent, false);
     }
 
     refreshSearch = () => {
