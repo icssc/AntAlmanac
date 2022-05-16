@@ -11,6 +11,7 @@ import AppStore from '../../stores/AppStore';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import classNames from 'classnames';
 import { clickToCopy, isDarkMode } from '../../helpers';
+import { defaultTerm, termData } from '../../termData';
 
 const styles = (theme) => ({
     popover: {
@@ -257,7 +258,7 @@ const DayAndTimeCell = withStyles(styles)((props) => {
 const StatusCell = withStyles(styles)((props) => {
     const { sectionCode, term, courseTitle, courseNumber, status, classes } = props;
 
-    if (term === '2022 Spring' && (status === 'NewOnly' || status === 'FULL')) {
+    if (term === termData[defaultTerm].shortName && (status === 'NewOnly' || status === 'FULL')) {
         return (
             <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>
                 <OpenSpotAlertPopover
