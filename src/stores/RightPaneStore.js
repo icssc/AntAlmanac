@@ -25,6 +25,7 @@ class RightPaneStore extends EventEmitter {
         this.formData = defaultFormValues;
         this.activeTab = 0;
         this.doDisplaySearch = true;
+        this.openSpotAlertPopoverActive = false;
     }
 
     getFormData() {
@@ -37,6 +38,10 @@ class RightPaneStore extends EventEmitter {
 
     getDoDisplaySearch() {
         return this.doDisplaySearch;
+    }
+
+    getOpenSpotAlertPopoverActive() {
+        return this.openSpotAlertPopoverActive;
     }
 
     handleActions(action) {
@@ -56,6 +61,9 @@ class RightPaneStore extends EventEmitter {
             case 'TOGGLE_SEARCH':
                 this.doDisplaySearch = !this.doDisplaySearch;
                 // this.emit('searchToggle');
+                break;
+            case 'TOGGLE_OPEN_SPOT_ALERT':
+                this.openSpotAlertPopoverActive = !this.openSpotAlertPopoverActive;
                 break;
             default: //do nothing
         }

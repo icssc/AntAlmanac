@@ -5,6 +5,7 @@ import InputMask from 'react-input-mask';
 import { Button, Popover, TextField, Typography } from '@material-ui/core';
 import { openSnackbar } from '../../actions/AppStoreActions';
 import { REGISTER_NOTIFICATIONS_ENDPOINT } from '../../api/endpoints';
+import dispatcher from '../../dispatcher';
 
 const phoneNumberRegex = RegExp(/\d{10}/);
 
@@ -26,6 +27,17 @@ class OpenSpotAlertPopover extends PureComponent {
         invalidInput: false,
         invalidInputMessage: '',
     };
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (
+            (!prevState.anchorElement && this.state.anchorElement) ||
+            (prevState.anchorElement && !this.state.anchorElement)
+        ) {
+            dispatcher.dispatch({
+                type: 'TOGGLE_OPEN_SPOT_ALERT',
+            });
+        }
+    }
 
     handlePhoneNumberChange = (event) => {
         this.setState({ phoneNumber: event.target.value });
