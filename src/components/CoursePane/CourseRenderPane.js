@@ -11,6 +11,7 @@ import darkModeLoadingGif from '../SearchForm/Gifs/dark-loading.gif';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import LazyLoad from 'react-lazyload';
 import { queryWebsoc, queryWebsocMultiple, isDarkMode } from '../../helpers';
+import analyticsEnum from '../../analytics';
 
 const styles = (theme) => ({
     course: {
@@ -122,6 +123,7 @@ const SectionTableWrapped = (index, data) => {
                 colorAndDelete={false}
                 highlightAdded={true}
                 scheduleNames={scheduleNames}
+                analyticsCategory={analyticsEnum.classSearch.title}
             />
         );
     }

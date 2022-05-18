@@ -7,6 +7,7 @@ import DayTabs from './MapTabsAndSearchBar';
 import MapMarkerPopup from './MapMarkerPopup';
 import Locate from 'leaflet.locatecontrol';
 import Leaflet from 'leaflet';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 class LocateControl extends PureComponent {
     componentDidMount() {
@@ -241,6 +242,10 @@ export default class UCIMap extends PureComponent {
     };
 
     componentDidMount = () => {
+        logAnalytics({
+            category: analyticsEnum.map.title,
+            action: analyticsEnum.map.actions.OPEN,
+        });
         this.createMarkers(this.state.day);
         AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.on('currentScheduleIndexChange', this.updateCurrentScheduleIndex);

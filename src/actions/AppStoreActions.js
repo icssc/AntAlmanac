@@ -37,6 +37,12 @@ const arrayOfColors = [
 ];
 
 export const addCourse = (section, courseDetails, term, scheduleIndex, color, quiet) => {
+    logAnalytics({
+        category: analyticsEnum.classSearch.title,
+        action: analyticsEnum.classSearch.actions.ADD_COURSE,
+        label: courseDetails.deptCode,
+        value: parseInt(courseDetails.courseNumber),
+    });
     const addedCourses = AppStore.getAddedCourses();
     const terms = termsInSchedule(addedCourses, term, scheduleIndex);
     let existingCourse;
@@ -400,6 +406,11 @@ export const copySchedule = (from, to) => {
     ReactGA.event({
         category: 'antalmanac-rewrite',
         action: 'Click Copy Schedule',
+    });
+
+    logAnalytics({
+        category: analyticsEnum.addedClasses.title,
+        action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
     });
 
     dispatcher.dispatch({

@@ -11,6 +11,7 @@ import AppStore from '../../stores/AppStore';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import classNames from 'classnames';
 import { clickToCopy, isDarkMode } from '../../helpers';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 import { defaultTerm, termData } from '../../termData';
 
 const styles = (theme) => ({
@@ -86,6 +87,10 @@ const CourseCodeCell = withStyles(styles)((props) => {
                         ReactGA.event({
                             category: 'antalmanac-rewrite',
                             action: `Click section code`,
+                        });
+                        logAnalytics({
+                            category: analyticsEnum.classSearch.title,
+                            action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
                         });
                     }}
                     className={classes.sectionCode}

@@ -9,6 +9,7 @@ import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/ho
 
 import { withStyles } from '@material-ui/core/styles';
 import ReactGA from 'react-ga';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const styles = {
     container: {
@@ -32,11 +33,21 @@ export const ColorAndDelete = withStyles(styles)((props) => {
                             action: 'Click Delete Course',
                             label: 'Added Course pane',
                         });
+                        logAnalytics({
+                            category: analyticsEnum.addedClasses.title,
+                            action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
+                        });
                     }}
                 >
                     <Delete fontSize="small" />
                 </IconButton>
-                <ColorPicker color={color} isCustomEvent={false} sectionCode={sectionCode} term={term} />
+                <ColorPicker
+                    color={color}
+                    isCustomEvent={false}
+                    sectionCode={sectionCode}
+                    term={term}
+                    analyticsCategory={analyticsEnum.addedClasses.title}
+                />
             </div>
         </TableCell>
     );
@@ -47,7 +58,7 @@ export const ScheduleAddCell = withStyles(styles)((props) => {
     const popupState = usePopupState({ variant: 'popover' });
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
-    const closeAndAddCourse = (scheduleIndex) => {
+    const closeAndAddCourse = (scheduleIndex, specificSchedule) => {
         popupState.close();
         for (const meeting of section.meetings) {
             if (meeting.time === 'TBA') {
@@ -58,6 +69,12 @@ export const ScheduleAddCell = withStyles(styles)((props) => {
         }
 
         if (scheduleIndex !== -1) {
+            if (specificSchedule) {
+                logAnalytics({
+                    category: analyticsEnum.classSearch.title,
+                    action: analyticsEnum.classSearch.actions.ADD_SPECIFIC,
+                });
+            }
             section.color = addCourse(section, courseDetails, term, scheduleIndex);
         }
     };
@@ -73,9 +90,11 @@ export const ScheduleAddCell = withStyles(styles)((props) => {
                 </IconButton>
                 <Menu {...bindMenu(popupState)} onClose={() => closeAndAddCourse(-1)}>
                     {scheduleNames.map((name, index) => (
-                        <MenuItem onClick={() => closeAndAddCourse(index)}>Add to {name}</MenuItem>
+                        <MenuItem onClick={() => closeAndAddCourse(index, true)}>Add to {name}</MenuItem>
                     ))}
-                    <MenuItem onClick={() => closeAndAddCourse(scheduleNames.length)}>Add to All Schedules</MenuItem>
+                    <MenuItem onClick={() => closeAndAddCourse(scheduleNames.length, true)}>
+                        Add to All Schedules
+                    </MenuItem>
                 </Menu>
             </div>
         </TableCell>
