@@ -48,7 +48,7 @@ class FuzzySearch extends PureComponent {
                     }
                 }
                 if (!deptLabel) {
-                    const deptSearch = search(deptValue.toLowerCase());
+                    const deptSearch = search({ query: deptValue.toLowerCase(), numResults: 1 });
                     deptLabel = deptSearch[deptValue].name;
                     this.setState({
                         cache: {
@@ -107,18 +107,19 @@ class FuzzySearch extends PureComponent {
             this.setState(
                 { open: value.length >= 2, value: value.slice(-1) === ' ' ? value.slice(0, -1) : value },
                 () => {
+                    if (value.length < 2) return;
                     if (this.state.cache[this.state.value]) {
                         this.setState({ results: this.state.cache[this.state.value] });
                     } else {
                         try {
-                            const result = search(this.state.value);
+                            const result = search({ query: this.state.value, numResults: 10 });
                             this.setState({
                                 cache: { ...this.state.cache, [this.state.value]: result },
                                 results: result,
                             });
                         } catch (e) {
                             this.setState({ results: {} });
-                            if (!(e instanceof TypeError)) console.error(e);
+                            console.error(e);
                         }
                     }
                 }
