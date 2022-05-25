@@ -43,6 +43,7 @@ const analyticsEnum = {
             CLICK_INFO: 'Click "Info"',
             CLICK_PREREQUISITES: 'Click "Prerequisites"',
             CLICK_ZOTISTICS: 'Click "Zotistics"',
+            CLICK_REVIEWS: 'Click "Reviews"',
             CLICK_PAST_ENROLLMENT: 'Click "Past Enrollment"',
             ADD_SPECIFIC: 'Add Course to Specific Schedule',
             COPY_COURSE_CODE: 'Copy Course Code',
