@@ -93,15 +93,13 @@ const SectionTable = (props) => {
                         redirectLink={courseDetails.prerequisiteLink}
                     />
                 )}
-                <CourseInfoButton
-                    text="Zotistics"
-                    icon={<Assessment />}
-                    redirectLink={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseDetails.courseNumber}&code=&submit=Submit`}
-                />
+
                 <GradeInfoBar
                     text="Grades"
+                    icon={<Assessment />}
                     deptCode={courseDetails.deptCode}
                     courseNumber={courseDetails.courseNumber}
+                    isMobileScreen={isMobileScreen}
                 />
                 <CourseInfoButton
                     text="Past Enrollment"

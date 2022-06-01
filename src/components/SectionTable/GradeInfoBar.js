@@ -3,12 +3,11 @@ import { Button, Popover } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { withStyles } from '@material-ui/core/styles';
 import { PETERPORTAL_GRAPHQL_ENDPOINT } from '../../api/endpoints';
-import { ResponsiveContainer, XAxis, YAxis, CartesianGrid, BarChart, Bar, Legend, Tooltip } from 'recharts';
-import { exception } from 'react-ga';
+import { XAxis, YAxis, CartesianGrid, BarChart, Bar, ResponsiveContainer } from 'recharts';
+import CourseInfoButton from './CourseInfoButton';
 
 const styles = {
     button: {
-        marginRight: '4px',
         backgroundColor: '#385EB1',
         color: '#fff',
     },
@@ -17,11 +16,15 @@ const styles = {
         textAlign: 'center',
         fontWeight: 500,
         fontSize: '1.2rem',
+        marginRight: '4rem',
+        marginLeft: '4rem',
+    },
+    skeleton: {
+        padding: '4px',
     },
 };
 
 class GradeInfoBar extends PureComponent {
-    // const isMobileScreen = useMediaQuery('(max-width: 750px)');
     state = {
         loading: true,
         anchorEl: null,
@@ -41,24 +44,22 @@ class GradeInfoBar extends PureComponent {
         }
         const { deptCode, courseNumber } = this.props;
         try {
-            // const courseId = encodeURIComponent(
-            //     `${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`
-            //     );
-            let query = JSON.stringify({
-                query: `
-                { grades(department: "${deptCode}", number: "${courseNumber}") {
-                        aggregate{
-                            sum_grade_a_count
-                            sum_grade_b_count
-                            sum_grade_c_count
-                            sum_grade_d_count
-                            sum_grade_f_count
-                            sum_grade_p_count
-                            sum_grade_np_count
-                            average_gpa
-                        }
+            let querystring = `
+            {   allgrades: grades(department: "${deptCode}", number: "${courseNumber}", ) {
+                    aggregate {
+                        sum_grade_a_count
+                        sum_grade_b_count
+                        sum_grade_c_count
+                        sum_grade_d_count
+                        sum_grade_f_count
+                        sum_grade_p_count
+                        sum_grade_np_count
+                        average_gpa
                     }
-                }`,
+                },
+            }`;
+            let query = JSON.stringify({
+                query: querystring,
             });
             const response = await fetch(`${PETERPORTAL_GRAPHQL_ENDPOINT}`, {
                 method: 'POST',
@@ -70,22 +71,19 @@ class GradeInfoBar extends PureComponent {
             });
 
             if (response.ok) {
-                console.log('hello');
                 const jsonResp = await response.json();
-                console.log(jsonResp);
-                let aggGrades = jsonResp.data.grades.aggregate;
-                if (aggGrades.average_gpa === null) {
-                    throw 'Grades not available for this class.';
+                let courseGrades = jsonResp.data.allgrades.aggregate;
+                if (courseGrades.average_gpa === null) {
+                    throw new Error('Grades not available for this class.');
                 }
-                this.setState({ graphTitle: `Average GPA: ${aggGrades.average_gpa.toFixed(2)}` });
-                delete aggGrades.average_gpa;
+                this.setState({ graphTitle: `Average GPA: ${courseGrades.average_gpa.toFixed(2)}` });
+                delete courseGrades.average_gpa;
                 let data = [];
-                for (const [key, value] of Object.entries(aggGrades)) {
+                for (const [key, value] of Object.entries(courseGrades)) {
                     // format data for display in chart
-                    // key: sum_grade_a_count -> A
-                    data.push({ name: key.split('_')[2].toUpperCase(), value: value });
+                    // key formatting: sum_grade_a_count -> A
+                    data.push({ name: key.split('_')[2].toUpperCase(), all: value });
                 }
-                console.log(data);
                 this.setState({ loading: false, gradeData: data });
             }
         } catch (e) {
@@ -99,18 +97,14 @@ class GradeInfoBar extends PureComponent {
     };
 
     render() {
-        const { text } = this.props;
+        const { text, icon, classes, isMobileScreen } = this.props;
         return (
             <>
                 <Button
-                    // startIcon={!isMobileScreen && icon}
+                    className={classes.button}
+                    startIcon={!isMobileScreen && icon}
                     variant="contained"
                     size="small"
-                    style={{
-                        marginRight: '4px',
-                        backgroundColor: '#385EB1',
-                        color: '#fff',
-                    }}
                     onClick={(event) => {
                         const currentTarget = event.currentTarget;
                         this.togglePopover(currentTarget);
@@ -138,7 +132,7 @@ class GradeInfoBar extends PureComponent {
     }
 
     getPopoverContent = () => {
-        const { classes } = this.props;
+        const { classes, isMobileScreen } = this.props;
         if (this.state.loading) {
             return (
                 <div className={this.props.classes.skeleton}>
@@ -148,17 +142,28 @@ class GradeInfoBar extends PureComponent {
                 </div>
             );
         } else {
+            const { deptCode, courseNumber } = this.props;
+            const encodedDept = encodeURIComponent(deptCode);
+
             return (
-                <div style={{ margin: '5px' }}>
+                <div style={{ marginTop: '5px' }}>
                     <div className={classes.gpaTitle}>Grade Distribution | {this.state.graphTitle}</div>
                     {this.state.gradeData && (
-                        <BarChart width={550} height={300} data={this.state.gradeData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                            <YAxis tick={{ fontSize: 12 }} />
-                            <Bar dataKey="value" fill="#5182ed" />
-                        </BarChart>
+                        <ResponsiveContainer width={isMobileScreen ? 300 : 500} height={isMobileScreen ? 200 : 300}>
+                            <BarChart data={this.state.gradeData}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                                <YAxis tick={{ fontSize: 12 }} width={40} />
+                                <Bar dataKey="all" fill="#5182ed" />
+                            </BarChart>
+                        </ResponsiveContainer>
                     )}
+                    <div style={{ marginBottom: '5px', textAlign: 'center' }}>
+                        <CourseInfoButton
+                            text="Zotistics"
+                            redirectLink={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
+                        />
+                    </div>
                 </div>
             );
         }
