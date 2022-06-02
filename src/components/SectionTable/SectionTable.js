@@ -20,6 +20,7 @@ import CourseInfoButton from './CourseInfoButton';
 import { Help, Assessment, Assignment } from '@material-ui/icons';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import PropTypes from 'prop-types';
+import analyticsEnum from '../../analytics';
 
 const styles = {
     flex: {
@@ -64,7 +65,7 @@ const styles = {
 };
 
 const SectionTable = (props) => {
-    const { classes, courseDetails, term, colorAndDelete, highlightAdded } = props;
+    const { classes, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames, analyticsCategory } = props;
     const encodedDept = encodeURIComponent(courseDetails.deptCode);
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
@@ -81,6 +82,7 @@ const SectionTable = (props) => {
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
                     courseNumber={courseDetails.courseNumber}
+                    analyticsCategory={analyticsCategory}
                 />
 
                 {/* Temporarily remove "Past Enrollment" until data on PeterPortal API */}
@@ -88,6 +90,8 @@ const SectionTable = (props) => {
 
                 {courseDetails.prerequisiteLink && (
                     <CourseInfoButton
+                        analyticsCategory={analyticsCategory}
+                        anlyticsAction={analyticsEnum.classSearch.actions.CLICK_PREREQUISITES}
                         text={isMobileScreen ? 'Prereqs' : 'Prerequisites'}
                         icon={<Assignment />}
                         redirectLink={courseDetails.prerequisiteLink}
@@ -102,6 +106,8 @@ const SectionTable = (props) => {
                     isMobileScreen={isMobileScreen}
                 />
                 <CourseInfoButton
+                    analyticsCategory={analyticsCategory}
+                    anlyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_ENROLLMENT}
                     text="Past Enrollment"
                     icon={<ShowChartIcon />}
                     redirectLink={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${courseDetails.courseNumber}&courseType=all`}
@@ -166,6 +172,7 @@ const SectionTable = (props) => {
                                     term={term}
                                     colorAndDelete={colorAndDelete}
                                     highlightAdded={highlightAdded}
+                                    scheduleNames={scheduleNames}
                                 />
                             );
                         })}

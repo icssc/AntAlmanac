@@ -11,6 +11,7 @@ import darkModeLoadingGif from '../SearchForm/Gifs/dark-loading.gif';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import LazyLoad from 'react-lazyload';
 import { queryWebsoc, queryWebsocMultiple, isDarkMode } from '../../helpers';
+import analyticsEnum from '../../analytics';
 
 const styles = (theme) => ({
     course: {
@@ -83,7 +84,7 @@ const flattenSOCObject = (SOCObject) => {
 };
 
 const SectionTableWrapped = (index, data) => {
-    const { courseData } = data;
+    const { courseData, scheduleNames } = data;
     const formData = RightPaneStore.getFormData();
 
     let component;
@@ -106,7 +107,13 @@ const SectionTableWrapped = (index, data) => {
         );
     } else if (formData.ge !== 'ANY') {
         component = (
-            <GeDataFetchProvider term={formData.term} courseDetails={courseData[index]} colorAndDelete={false} />
+            <GeDataFetchProvider
+                term={formData.term}
+                courseDetails={courseData[index]}
+                colorAndDelete={false}
+                highlightAdded={true}
+                scheduleNames={scheduleNames}
+            />
         );
     } else {
         component = (
@@ -115,6 +122,8 @@ const SectionTableWrapped = (index, data) => {
                 courseDetails={courseData[index]}
                 colorAndDelete={false}
                 highlightAdded={true}
+                scheduleNames={scheduleNames}
+                analyticsCategory={analyticsEnum.classSearch.title}
             />
         );
     }
@@ -127,6 +136,7 @@ class CourseRenderPane extends PureComponent {
         courseData: null,
         loading: true,
         error: false,
+        scheduleNames: AppStore.getScheduleNames(),
     };
 
     loadCourses = () => {
@@ -171,7 +181,16 @@ class CourseRenderPane extends PureComponent {
 
     componentDidMount() {
         this.loadCourses();
+        AppStore.on('scheduleNamesChange', this.updateScheduleNames);
     }
+
+    componentWillUnmount() {
+        AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
+    }
+
+    updateScheduleNames = () => {
+        this.setState({ scheduleNames: AppStore.getScheduleNames() });
+    };
 
     render() {
         const { classes } = this.props;
@@ -186,6 +205,7 @@ class CourseRenderPane extends PureComponent {
         } else if (!this.state.error) {
             const renderData = {
                 courseData: this.state.courseData,
+                scheduleNames: this.state.scheduleNames,
             };
 
             currentView = (

@@ -34,6 +34,38 @@ const analyticsEnum = {
             CLICK_NEWS: 'Click News',
         },
     },
+    classSearch: {
+        title: 'Class Search',
+        actions: {
+            MANUAL_SEARCH: 'Manual Search',
+            FUZZY_SEARCH: 'Fuzzy Search',
+            ADD_COURSE: 'Add Course', //Label is department, value is 1 if lower div, else 0
+            CLICK_INFO: 'Click "Info"',
+            CLICK_PREREQUISITES: 'Click "Prerequisites"',
+            CLICK_ZOTISTICS: 'Click "Zotistics"',
+            CLICK_REVIEWS: 'Click "Reviews"',
+            CLICK_PAST_ENROLLMENT: 'Click "Past Enrollment"',
+            ADD_SPECIFIC: 'Add Course to Specific Schedule',
+            COPY_COURSE_CODE: 'Copy Course Code',
+            REFRESH: 'Refresh Results',
+        },
+    },
+    addedClasses: {
+        title: 'Added Classes',
+        actions: {
+            DELETE_COURSE: 'Delete Course',
+            OPEN: 'Open Added Classes',
+            COPY_SCHEDULE: 'Copy Schedule',
+            CLEAR_SCHEDULE: 'Clear Schedule',
+        },
+    },
+    map: {
+        title: 'Map',
+        actions: {
+            OPEN: 'Open Map',
+            CLICK_PIN: 'Click on Pin',
+        },
+    },
 };
 
 export default analyticsEnum;

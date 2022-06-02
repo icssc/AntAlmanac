@@ -11,6 +11,8 @@ import AppStore from '../../stores/AppStore';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import classNames from 'classnames';
 import { clickToCopy, isDarkMode } from '../../helpers';
+import analyticsEnum, { logAnalytics } from '../../analytics';
+import { defaultTerm, termData } from '../../termData';
 
 const styles = (theme) => ({
     popover: {
@@ -85,6 +87,10 @@ const CourseCodeCell = withStyles(styles)((props) => {
                         ReactGA.event({
                             category: 'antalmanac-rewrite',
                             action: `Click section code`,
+                        });
+                        logAnalytics({
+                            category: analyticsEnum.classSearch.title,
+                            action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
                         });
                     }}
                     className={classes.sectionCode}
@@ -257,7 +263,7 @@ const DayAndTimeCell = withStyles(styles)((props) => {
 const StatusCell = withStyles(styles)((props) => {
     const { sectionCode, term, courseTitle, courseNumber, status, classes } = props;
 
-    if (term === '2022 Spring' && (status === 'NewOnly' || status === 'FULL')) {
+    if (term === termData[defaultTerm].shortName && (status === 'NewOnly' || status === 'FULL')) {
         return (
             <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>
                 <OpenSpotAlertPopover
@@ -278,7 +284,7 @@ const StatusCell = withStyles(styles)((props) => {
 });
 //TODO: SectionNum name parity -> SectionNumber
 const SectionTableBody = withStyles(styles)((props) => {
-    const { classes, section, courseDetails, term, colorAndDelete, highlightAdded } = props;
+    const { classes, section, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames } = props;
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
     useEffect(() => {
         const toggleHighlight = () => {
@@ -304,7 +310,12 @@ const SectionTableBody = withStyles(styles)((props) => {
             className={classNames(classes.tr, { addedCourse: addedCourse && highlightAdded })}
         >
             {!addedCourse ? (
-                <ScheduleAddCell section={section} courseDetails={courseDetails} term={term} />
+                <ScheduleAddCell
+                    section={section}
+                    courseDetails={courseDetails}
+                    term={term}
+                    scheduleNames={scheduleNames}
+                />
             ) : (
                 <ColorAndDelete color={section.color} sectionCode={section.sectionCode} term={term} />
             )}

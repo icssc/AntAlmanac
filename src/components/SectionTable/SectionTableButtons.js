@@ -9,6 +9,7 @@ import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/ho
 
 import { withStyles } from '@material-ui/core/styles';
 import ReactGA from 'react-ga';
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const styles = {
     container: {
@@ -32,22 +33,32 @@ export const ColorAndDelete = withStyles(styles)((props) => {
                             action: 'Click Delete Course',
                             label: 'Added Course pane',
                         });
+                        logAnalytics({
+                            category: analyticsEnum.addedClasses.title,
+                            action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
+                        });
                     }}
                 >
                     <Delete fontSize="small" />
                 </IconButton>
-                <ColorPicker color={color} isCustomEvent={false} sectionCode={sectionCode} term={term} />
+                <ColorPicker
+                    color={color}
+                    isCustomEvent={false}
+                    sectionCode={sectionCode}
+                    term={term}
+                    analyticsCategory={analyticsEnum.addedClasses.title}
+                />
             </div>
         </TableCell>
     );
 });
 
 export const ScheduleAddCell = withStyles(styles)((props) => {
-    const { classes, section, courseDetails, term } = props;
+    const { classes, section, courseDetails, term, scheduleNames } = props;
     const popupState = usePopupState({ variant: 'popover' });
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
-    const closeAndAddCourse = (scheduleIndex) => {
+    const closeAndAddCourse = (scheduleIndex, specificSchedule) => {
         popupState.close();
         for (const meeting of section.meetings) {
             if (meeting.time === 'TBA') {
@@ -58,6 +69,12 @@ export const ScheduleAddCell = withStyles(styles)((props) => {
         }
 
         if (scheduleIndex !== -1) {
+            if (specificSchedule) {
+                logAnalytics({
+                    category: analyticsEnum.classSearch.title,
+                    action: analyticsEnum.classSearch.actions.ADD_SPECIFIC,
+                });
+            }
             section.color = addCourse(section, courseDetails, term, scheduleIndex);
         }
     };
@@ -72,11 +89,12 @@ export const ScheduleAddCell = withStyles(styles)((props) => {
                     <ArrowDropDown fontSize="small" />
                 </IconButton>
                 <Menu {...bindMenu(popupState)} onClose={() => closeAndAddCourse(-1)}>
-                    <MenuItem onClick={() => closeAndAddCourse(0)}>Add to schedule 1</MenuItem>
-                    <MenuItem onClick={() => closeAndAddCourse(1)}>Add to schedule 2</MenuItem>
-                    <MenuItem onClick={() => closeAndAddCourse(2)}>Add to schedule 3</MenuItem>
-                    <MenuItem onClick={() => closeAndAddCourse(3)}>Add to schedule 4</MenuItem>
-                    <MenuItem onClick={() => closeAndAddCourse(4)}>Add to all</MenuItem>
+                    {scheduleNames.map((name, index) => (
+                        <MenuItem onClick={() => closeAndAddCourse(index, true)}>Add to {name}</MenuItem>
+                    ))}
+                    <MenuItem onClick={() => closeAndAddCourse(scheduleNames.length, true)}>
+                        Add to All Schedules
+                    </MenuItem>
                 </Menu>
             </div>
         </TableCell>

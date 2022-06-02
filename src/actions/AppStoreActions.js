@@ -37,6 +37,12 @@ const arrayOfColors = [
 ];
 
 export const addCourse = (section, courseDetails, term, scheduleIndex, color, quiet) => {
+    logAnalytics({
+        category: analyticsEnum.classSearch.title,
+        action: analyticsEnum.classSearch.actions.ADD_COURSE,
+        label: courseDetails.deptCode,
+        value: parseInt(courseDetails.courseNumber),
+    });
     const addedCourses = AppStore.getAddedCourses();
     const terms = termsInSchedule(addedCourses, term, scheduleIndex);
     let existingCourse;
@@ -65,6 +71,7 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color, qu
         if (color === undefined) color = '#5ec8e0';
     }
 
+    const scheduleNames = AppStore.getScheduleNames();
     if (existingCourse === undefined) {
         const newCourse = {
             color: color,
@@ -74,14 +81,18 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color, qu
             courseTitle: courseDetails.courseTitle,
             courseComment: courseDetails.courseComment,
             prerequisiteLink: courseDetails.prerequisiteLink,
-            scheduleIndices: scheduleIndex === 4 ? [0, 1, 2, 3] : [scheduleIndex],
+            scheduleIndices:
+                scheduleIndex === scheduleNames.length ? scheduleNames.map((_, index) => index) : [scheduleIndex],
             section: section,
         };
         dispatcher.dispatch({ type: 'ADD_COURSE', newCourse });
     } else {
         const newSection = {
             ...existingCourse,
-            scheduleIndices: scheduleIndex === 4 ? [0, 1, 2, 3] : existingCourse.scheduleIndices.concat(scheduleIndex),
+            scheduleIndices:
+                scheduleIndex === scheduleNames.length
+                    ? scheduleNames.map((_, index) => index)
+                    : existingCourse.scheduleIndices.concat(scheduleIndex),
         };
         dispatcher.dispatch({ type: 'ADD_SECTION', newSection });
     }
@@ -122,8 +133,9 @@ export const saveSchedule = async (userID, rememberMe) => {
 
             const addedCourses = AppStore.getAddedCourses();
             const customEvents = AppStore.getCustomEvents();
+            const scheduleNames = AppStore.getScheduleNames();
 
-            const userData = { addedCourses: [], customEvents: customEvents };
+            const userData = { addedCourses: [], scheduleNames: scheduleNames, customEvents: customEvents };
 
             userData.addedCourses = addedCourses.map((course) => {
                 return {
@@ -358,10 +370,15 @@ export const changeCourseColor = (sectionCode, newColor, term) => {
 export const copySchedule = (from, to) => {
     const addedCourses = AppStore.getAddedCourses();
     const customEvents = AppStore.getCustomEvents();
+    const scheduleNames = AppStore.getScheduleNames();
 
     const addedCoursesAfterCopy = addedCourses.map((addedCourse) => {
         if (addedCourse.scheduleIndices.includes(from) && !addedCourse.scheduleIndices.includes(to)) {
-            if (to === 4) return { ...addedCourse, scheduleIndices: [0, 1, 2, 3] };
+            // If to is equal to the length of scheduleNames, then the user wanted to copy to
+            // all schedules; otherwise, if to is less than the length of scheduleNames, then
+            // only one schedule should be altered
+            if (to === scheduleNames.length)
+                return { ...addedCourse, scheduleIndices: scheduleNames.map((_, index) => index) };
             else
                 return {
                     ...addedCourse,
@@ -374,7 +391,8 @@ export const copySchedule = (from, to) => {
 
     const customEventsAfterCopy = customEvents.map((customEvent) => {
         if (customEvent.scheduleIndices.includes(from) && !customEvent.scheduleIndices.includes(to)) {
-            if (to === 4) return { ...customEvent, scheduleIndices: [0, 1, 2, 3] };
+            if (to === scheduleNames.length)
+                return { ...customEvent, scheduleIndices: scheduleNames.map((_, index) => index) };
             else
                 return {
                     ...customEvent,
@@ -388,6 +406,11 @@ export const copySchedule = (from, to) => {
     ReactGA.event({
         category: 'antalmanac-rewrite',
         action: 'Click Copy Schedule',
+    });
+
+    logAnalytics({
+        category: analyticsEnum.addedClasses.title,
+        action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
     });
 
     dispatcher.dispatch({
@@ -410,5 +433,72 @@ export const toggleTheme = (radioGroupEvent) => {
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.CHANGE_THEME,
         label: radioGroupEvent.target.value,
+    });
+};
+
+export const addSchedule = (scheduleName) => {
+    const newScheduleNames = [...AppStore.getScheduleNames(), scheduleName];
+
+    dispatcher.dispatch({
+        type: 'ADD_SCHEDULE',
+        newScheduleNames,
+    });
+};
+
+export const renameSchedule = (scheduleName, scheduleIndex) => {
+    let newScheduleNames = [...AppStore.getScheduleNames()];
+    newScheduleNames[scheduleIndex] = scheduleName;
+
+    dispatcher.dispatch({
+        type: 'RENAME_SCHEDULE',
+        newScheduleNames,
+    });
+};
+
+// After a schedule is deleted, we need to update every course and
+// custom event in every schedule. In this case, we want to update the
+// scheduleIndices array so that each event appears in the correct schedule
+const getEventsAfterDeleteSchedule = (events) => {
+    let newEvents = [];
+    const currentScheduleIndex = AppStore.getCurrentScheduleIndex();
+
+    events.forEach((event) => {
+        let newScheduleIndices = [];
+
+        event.scheduleIndices.forEach((index) => {
+            if (index !== currentScheduleIndex) {
+                // If a schedule gets deleted, all schedules after it are shifted back,
+                // which means we sometimes need to subtract an index by 1
+                newScheduleIndices.push(index > currentScheduleIndex ? index - 1 : index);
+            }
+        });
+
+        if (newScheduleIndices.length > 0) {
+            event.scheduleIndices = newScheduleIndices;
+            newEvents.push(event);
+        }
+    });
+
+    return newEvents;
+};
+
+export const deleteSchedule = (scheduleIndex) => {
+    let newScheduleNames = [...AppStore.getScheduleNames()];
+    newScheduleNames.splice(scheduleIndex, 1);
+
+    let newScheduleIndex = AppStore.getCurrentScheduleIndex();
+    if (newScheduleIndex === newScheduleNames.length) {
+        newScheduleIndex--;
+    }
+
+    const newAddedCourses = getEventsAfterDeleteSchedule(AppStore.getAddedCourses());
+    const newCustomEvents = getEventsAfterDeleteSchedule(AppStore.getCustomEvents());
+
+    dispatcher.dispatch({
+        type: 'DELETE_SCHEDULE',
+        newScheduleNames,
+        newScheduleIndex,
+        newAddedCourses,
+        newCustomEvents,
     });
 };

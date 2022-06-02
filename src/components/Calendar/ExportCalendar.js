@@ -262,10 +262,14 @@ const exportCalendar = () => {
             action: analyticsEnum.calendar.actions.DOWNLOAD,
         });
         if (!err) {
+            // Add timezone information to start and end times for events
+            const icsString = val
+                .replaceAll('DTSTART', 'DTSTART;TZID=America/Los_Angeles')
+                .replaceAll('DTEND', 'DTEND;TZID=America/Los_Angeles');
             // Download the .ics file
             saveAs(
                 // inject the VTIMEZONE section into the .ics file
-                new Blob([val.replace('BEGIN:VEVENT', vTimeZoneSection)], { type: 'text/plain;charset=utf-8' }),
+                new Blob([icsString.replace('BEGIN:VEVENT', vTimeZoneSection)], { type: 'text/plain;charset=utf-8' }),
                 'schedule.ics'
             );
             openSnackbar('success', 'Schedule downloaded!', 5);
