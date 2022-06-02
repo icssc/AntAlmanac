@@ -74,9 +74,11 @@ class GradeInfoBar extends PureComponent {
                 const jsonResp = await response.json();
                 let courseGrades = jsonResp.data.allgrades.aggregate;
                 if (courseGrades.average_gpa === null) {
-                    throw new Error('Grades not available for this class.');
+                    throw new Error('Grades are not available for this class.');
                 }
-                this.setState({ graphTitle: `Average GPA: ${courseGrades.average_gpa.toFixed(2)}` });
+                this.setState({
+                    graphTitle: `Grade Distribution | Average GPA: ${courseGrades.average_gpa.toFixed(2)}`,
+                });
                 delete courseGrades.average_gpa;
                 let data = [];
                 for (const [key, value] of Object.entries(courseGrades)) {
@@ -91,7 +93,7 @@ class GradeInfoBar extends PureComponent {
                 anchorEl: currentTarget,
                 gradeData: null,
                 loading: false,
-                graphTitle: 'Grades not available for this class.',
+                graphTitle: 'Grades are not available for this class.',
             });
         }
     };
@@ -147,7 +149,7 @@ class GradeInfoBar extends PureComponent {
 
             return (
                 <div style={{ marginTop: '5px' }}>
-                    <div className={classes.gpaTitle}>Grade Distribution | {this.state.graphTitle}</div>
+                    <div className={classes.gpaTitle}>{this.state.graphTitle}</div>
                     {this.state.gradeData && (
                         <ResponsiveContainer width={isMobileScreen ? 300 : 500} height={isMobileScreen ? 200 : 300}>
                             <BarChart data={this.state.gradeData}>
