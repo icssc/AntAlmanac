@@ -12,7 +12,7 @@ const styles = {
     },
 };
 
-function CourseInfoButton({ classes, text, icon, redirectLink, anlyticsAction, analyticsCategory }) {
+function CourseInfoButton({ classes, text, icon, redirectLink, analyticsAction, analyticsCategory }) {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
     return (
         <Button
@@ -23,7 +23,7 @@ function CourseInfoButton({ classes, text, icon, redirectLink, anlyticsAction, a
             onClick={(event) => {
                 logAnalytics({
                     category: analyticsCategory,
-                    action: anlyticsAction,
+                    action: analyticsAction,
                 });
                 window.open(redirectLink);
             }}
@@ -37,6 +37,8 @@ CourseInfoButton.propTypes = {
     text: PropTypes.string,
     icon: PropTypes.object,
     redirectLink: PropTypes.string,
+    analyticsAction: PropTypes.string,
+    analyticsCategory: PropTypes.string,
 };
 
 export default withStyles(styles)(CourseInfoButton);
