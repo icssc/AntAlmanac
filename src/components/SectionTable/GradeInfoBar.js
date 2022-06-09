@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { useState } from 'react';
 import { Button, Popover } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { withStyles } from '@material-ui/core/styles';
@@ -24,25 +24,25 @@ const styles = {
     },
 };
 
-class GradeInfoBar extends PureComponent {
-    state = {
-        loading: true,
-        anchorEl: null,
-        graphTitle: null,
-        gradeData: null,
-    };
+const GradeInfoBar = (props) => {
+    const { deptCode, courseNumber, text, icon, classes, isMobileScreen } = props;
 
-    togglePopover = async (currentTarget) => {
-        if (Boolean(this.state.anchorEl)) {
-            this.setState({ anchorEl: false });
+    const [loading, setLoading] = useState(true);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [graphTitle, setGraphTitle] = useState(null);
+    const [gradeData, setGradeData] = useState(null);
+
+    const togglePopover = async (currentTarget) => {
+        if (Boolean(anchorEl)) {
+            setAnchorEl(false);
             return;
         }
-        this.setState({ anchorEl: currentTarget });
+        setAnchorEl(currentTarget);
 
-        if (this.state.loading === false) {
+        if (loading === false) {
             return;
         }
-        const { deptCode, courseNumber } = this.props;
+
         try {
             let querystring = `
             {   allgrades: grades(department: "${deptCode}", number: "${courseNumber}", ) {
@@ -76,9 +76,7 @@ class GradeInfoBar extends PureComponent {
                 if (courseGrades.average_gpa === null) {
                     throw new Error('Grades are not available for this class.');
                 }
-                this.setState({
-                    graphTitle: `Grade Distribution | Average GPA: ${courseGrades.average_gpa.toFixed(2)}`,
-                });
+                setGraphTitle(`Grade Distribution | Average GPA: ${courseGrades.average_gpa.toFixed(2)}`);
                 delete courseGrades.average_gpa;
                 let data = [];
                 for (const [key, value] of Object.entries(courseGrades)) {
@@ -86,73 +84,34 @@ class GradeInfoBar extends PureComponent {
                     // key formatting: sum_grade_a_count -> A
                     data.push({ name: key.split('_')[2].toUpperCase(), all: value });
                 }
-                this.setState({ loading: false, gradeData: data });
+                setLoading(false);
+                setGradeData(data);
             }
         } catch (e) {
-            this.setState({
-                anchorEl: currentTarget,
-                gradeData: null,
-                loading: false,
-                graphTitle: 'Grades are not available for this class.',
-            });
+            setLoading(false);
+            setAnchorEl(currentTarget);
+            setGraphTitle('Grades are not available for this class.');
         }
     };
 
-    render() {
-        const { text, icon, classes, isMobileScreen } = this.props;
-        return (
-            <>
-                <Button
-                    className={classes.button}
-                    startIcon={!isMobileScreen && icon}
-                    variant="contained"
-                    size="small"
-                    onClick={(event) => {
-                        const currentTarget = event.currentTarget;
-                        this.togglePopover(currentTarget);
-                    }}
-                >
-                    {text}
-                </Button>
-                <Popover
-                    anchorEl={this.state.anchorEl}
-                    open={Boolean(this.state.anchorEl)}
-                    onClose={() => this.togglePopover(null)}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'center',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'center',
-                    }}
-                >
-                    {this.getPopoverContent()}
-                </Popover>
-            </>
-        );
-    }
-
-    getPopoverContent = () => {
-        const { classes, isMobileScreen } = this.props;
-        if (this.state.loading) {
+    const getPopoverContent = () => {
+        if (loading) {
             return (
-                <div className={this.props.classes.skeleton}>
+                <div className={classes.skeleton}>
                     <p>
                         <Skeleton variant="text" animation="wave" height={30} width={100} />
                     </p>
                 </div>
             );
         } else {
-            const { deptCode, courseNumber } = this.props;
             const encodedDept = encodeURIComponent(deptCode);
 
             return (
                 <div style={{ marginTop: '5px' }}>
-                    <div className={classes.gpaTitle}>{this.state.graphTitle}</div>
-                    {this.state.gradeData && (
+                    <div className={classes.gpaTitle}>{graphTitle}</div>
+                    {gradeData && (
                         <ResponsiveContainer width={isMobileScreen ? 300 : 500} height={isMobileScreen ? 200 : 300}>
-                            <BarChart data={this.state.gradeData}>
+                            <BarChart data={gradeData}>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                                 <YAxis tick={{ fontSize: 12 }} width={40} />
@@ -170,6 +129,38 @@ class GradeInfoBar extends PureComponent {
             );
         }
     };
-}
+
+    return (
+        <>
+            <Button
+                className={classes.button}
+                startIcon={!isMobileScreen && icon}
+                variant="contained"
+                size="small"
+                onClick={(event) => {
+                    const currentTarget = event.currentTarget;
+                    togglePopover(currentTarget);
+                }}
+            >
+                {text}
+            </Button>
+            <Popover
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={() => togglePopover(null)}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+            >
+                {getPopoverContent()}
+            </Popover>
+        </>
+    );
+};
 
 export default withStyles(styles)(GradeInfoBar);
