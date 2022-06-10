@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Skeleton } from '@material-ui/lab';
 import { withStyles } from '@material-ui/core/styles';
 import { XAxis, YAxis, CartesianGrid, BarChart, Bar, ResponsiveContainer } from 'recharts';
-import CourseInfoButton from './CourseInfoButton';
 import { queryGrades } from '../../helpers';
 
 const styles = {
@@ -84,11 +83,14 @@ const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }) => {
                         </BarChart>
                     </ResponsiveContainer>
                 )}
-                <div style={{ marginBottom: '5px', textAlign: 'center' }}>
-                    <CourseInfoButton
-                        text="Zotistics"
-                        redirectLink={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
-                    />
+                <div style={{ margin: '5px', textAlign: 'center' }}>
+                    <a
+                        href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        View on Zotistics
+                    </a>
                 </div>
             </div>
         );
