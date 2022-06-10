@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button } from '@material-ui/core';
+import { Button, Popover } from '@material-ui/core';
 import { useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { logAnalytics } from '../../analytics';
@@ -12,24 +12,52 @@ const styles = {
     },
 };
 
-function CourseInfoButton({ classes, text, icon, redirectLink, anlyticsAction, analyticsCategory }) {
+function CourseInfoButton({ classes, text, icon, redirectLink, popupContent, anlyticsAction, analyticsCategory }) {
+    const [popupAnchor, setPopupAnchor] = useState(null);
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
     return (
-        <Button
-            className={classes.button}
-            startIcon={!isMobileScreen && icon}
-            variant="contained"
-            size="small"
-            onClick={(event) => {
-                logAnalytics({
-                    category: analyticsCategory,
-                    action: anlyticsAction,
-                });
-                window.open(redirectLink);
-            }}
-        >
-            {text}
-        </Button>
+        <>
+            <Button
+                className={classes.button}
+                startIcon={!isMobileScreen && icon}
+                variant="contained"
+                size="small"
+                onClick={(event) => {
+                    logAnalytics({
+                        category: analyticsCategory,
+                        action: anlyticsAction,
+                    });
+
+                    if (redirectLink) {
+                        window.open(redirectLink);
+                    }
+
+                    if (popupContent) {
+                        setPopupAnchor(event.currentTarget);
+                    }
+                }}
+            >
+                {text}
+            </Button>
+
+            {popupContent && (
+                <Popover
+                    anchorEl={popupAnchor}
+                    open={Boolean(popupAnchor)}
+                    onClose={() => setPopupAnchor(null)}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
+                    }}
+                >
+                    {popupContent}
+                </Popover>
+            )}
+        </>
     );
 }
 
