@@ -12,7 +12,7 @@ import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import classNames from 'classnames';
 import { clickToCopy, isDarkMode } from '../../helpers';
 import analyticsEnum, { logAnalytics } from '../../analytics';
-import { defaultTerm, termData, getDefaultTerm } from '../../termData';
+import { getDefaultTerm } from '../../termData';
 
 const styles = (theme) => ({
     popover: {
