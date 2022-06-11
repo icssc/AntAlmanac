@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import dispatcher from '../dispatcher';
-import { termData, defaultTerm, getDefaultTerm } from '../termData';
+import { getDefaultTerm } from '../termData';
 
 const defaultFormValues = {
     deptValue: 'ALL',
