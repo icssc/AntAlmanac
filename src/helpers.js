@@ -205,3 +205,51 @@ export function isDarkMode() {
             return window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
 }
+
+/**
+ * @param {string} courseNumber A string that represents the course number of a course (eg. '122A', '121')
+ * @returns {number} This function returns a number with a decimal representation of the passed in string (eg. courseNumAsDecimal('122A') returns 122.1, courseNumAsDecimal('121') returns 121)
+ */
+export function courseNumAsDecimal(courseNumber) {
+    // I wanted to split the course detail number into letters and digits
+    const courseNumArr = courseNumber.split(/(\d+)/);
+    // Gets rid of empty strings in courseNumArr
+    const filtered = courseNumArr.filter((value) => value !== '');
+
+    // Return 0 if array is empty
+    if (filtered.length === 0) {
+        console.error(`No characters were found, returning 0, Input: ${courseNumber}`);
+        return 0;
+    }
+
+    const lastElement = filtered[filtered.length - 1].toUpperCase(); // .toUpperCase() won't affect numeric characters
+    const lastElementCharCode = lastElement.charCodeAt(0); // Just checks the first character of the last element in the array
+    // Return the last element of the filtered array as an integer if it represents an integer
+    if (47 < lastElementCharCode && lastElementCharCode < 58) {
+        return parseInt(lastElement);
+    }
+
+    // If the string does not have any numeric characters
+    if (filtered.length === 1) {
+        console.error(`The string did not have numbers, returning 0, Input: ${courseNumber}`);
+        return 0;
+    }
+
+    // This element is the second to last element of the array, supposedly a string of letters
+    const secondToLastElement = filtered[filtered.length - 2];
+    // The character codes for [A-J] or [a-j] will turn into the character codes for 0-9, respectively
+    const charCode = lastElement.toUpperCase().charCodeAt(0) - 'A'.charCodeAt(0) + '0'.charCodeAt(0);
+    // Character codes 48 - 57 are the numbers 0 - 9
+    if ('0'.charCodeAt(0) - 1 < charCode && charCode < '9'.charCodeAt(0)) {
+        // Add 1 to the end because A will originally represent 0, so now it represents 1. Same applies to the rest.
+        //
+        return parseFloat(`${secondToLastElement}.${String.fromCharCode(charCode + 1)}`);
+    } else {
+        console.error(
+            `The first character type at the end of the string was not within [A-J] or [a-j], returning last numbers found in string, Input: ${courseNumber}`
+        );
+        // This will represent an integer at this point because the split in the beginning split the array into strings of digits and strings of other characters
+        // If the last element in the array does not represent an integer, then the second to last element must represent an integer
+        return parseInt(secondToLastElement);
+    }
+}
