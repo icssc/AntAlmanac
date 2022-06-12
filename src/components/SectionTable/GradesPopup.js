@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Skeleton } from '@material-ui/lab';
 import { withStyles } from '@material-ui/core/styles';
 import { XAxis, YAxis, CartesianGrid, BarChart, Bar, ResponsiveContainer } from 'recharts';
-import { queryGrades } from '../../helpers';
+import { queryGrades, isDarkMode } from '../../helpers';
 
 const styles = {
     button: {
@@ -69,6 +69,7 @@ const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }) => {
         );
     } else {
         const encodedDept = encodeURIComponent(deptCode);
+        const axisColor = isDarkMode() ? '#fff' : '#111';
 
         return (
             <div style={{ marginTop: '5px' }}>
@@ -77,8 +78,8 @@ const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }) => {
                     <ResponsiveContainer width={width} height={height}>
                         <BarChart data={gradeData}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                            <YAxis tick={{ fontSize: 12 }} width={40} />
+                            <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
+                            <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} />
                             <Bar dataKey="all" fill="#5182ed" />
                         </BarChart>
                     </ResponsiveContainer>
