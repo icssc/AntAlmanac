@@ -225,7 +225,7 @@ export function courseNumAsDecimal(courseNumber) {
     const lastElement = filtered[filtered.length - 1].toUpperCase(); // .toUpperCase() won't affect numeric characters
     const lastElementCharCode = lastElement.charCodeAt(0); // Just checks the first character of the last element in the array
     // Return the last element of the filtered array as an integer if it represents an integer
-    if ('0'.charCodeAt(0) < lastElementCharCode && lastElementCharCode <= '9'.charCodeAt(0)) {
+    if ('0'.charCodeAt(0) <= lastElementCharCode && lastElementCharCode <= '9'.charCodeAt(0)) {
         return parseInt(lastElement);
     }
 
@@ -235,16 +235,15 @@ export function courseNumAsDecimal(courseNumber) {
         return 0;
     }
 
-    // This element is the second to last element of the array, supposedly a string of letters
+    // This element is the second to last element of the array, supposedly a string of numeric characters
     const secondToLastElement = filtered[filtered.length - 2];
-    // The character codes for [A-J] or [a-j] will turn into 0-9, respectively
-    const charCode = lastElement.toUpperCase().charCodeAt(0) - 'A'.charCodeAt(0);
-    if (0 <= charCode && charCode <= 9) {
-        // Add 1 to the end because A will originally represent 0, so now it represents 1. Same applies to the rest.
-        return parseFloat(`${secondToLastElement}.${charCode + 1}`);
+    // The characters within [A-I] or [a-i] will be converted to 1-9, respectively
+    const letterAsNumber = lastElement.toUpperCase().charCodeAt(0) - 'A'.charCodeAt(0) + 1;
+    if (1 <= letterAsNumber && letterAsNumber <= 9) {
+        return parseFloat(`${secondToLastElement}.${letterAsNumber}`);
     } else {
         console.error(
-            `The first character type at the end of the string was not within [A-J] or [a-j], returning last numbers found in string, Violating Character: ${
+            `The first character type at the end of the string was not within [A-I] or [a-i], returning last numbers found in string, Violating Character: ${
                 filtered[filtered.length - 1][0]
             }, Input: ${courseNumber}`
         );
