@@ -12,7 +12,7 @@ import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import classNames from 'classnames';
 import { clickToCopy, isDarkMode } from '../../helpers';
 import analyticsEnum, { logAnalytics } from '../../analytics';
-import { defaultTerm, termData } from '../../termData';
+import { getDefaultTerm } from '../../termData';
 
 const styles = (theme) => ({
     popover: {
@@ -263,7 +263,7 @@ const DayAndTimeCell = withStyles(styles)((props) => {
 const StatusCell = withStyles(styles)((props) => {
     const { sectionCode, term, courseTitle, courseNumber, status, classes } = props;
 
-    if (term === termData[defaultTerm].shortName && (status === 'NewOnly' || status === 'FULL')) {
+    if (term === getDefaultTerm().shortName && (status === 'NewOnly' || status === 'FULL')) {
         return (
             <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>
                 <OpenSpotAlertPopover
