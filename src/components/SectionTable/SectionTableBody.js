@@ -22,7 +22,7 @@ const styles = (theme) => ({
         display: 'inline-block',
         cursor: 'pointer',
         '&:hover': {
-            color: 'blueviolet',
+            color: isDarkMode() ? 'gold' : 'blueviolet',
             cursor: 'pointer',
         },
     },
