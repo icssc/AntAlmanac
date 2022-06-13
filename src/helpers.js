@@ -1,6 +1,21 @@
 import { addCourse, openSnackbar } from './actions/AppStoreActions';
-import { PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from './api/endpoints';
+import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from './api/endpoints';
 import AppStore from './stores/AppStore';
+
+export async function queryGraphQL(queryString) {
+    let query = JSON.stringify({
+        query: queryString,
+    });
+
+    return await fetch(`${PETERPORTAL_GRAPHQL_ENDPOINT}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        },
+        body: query,
+    });
+}
 
 export async function getCoursesData(userData) {
     const dataToSend = {};
@@ -106,6 +121,36 @@ export async function queryWebsoc(params) {
     } finally {
         websocCache[searchString].timestamp = Date.now();
     }
+}
+
+const gradesCache = {};
+
+export async function queryGrades(deptCode, courseNumber) {
+    if (gradesCache[deptCode + courseNumber]) {
+        return gradesCache[deptCode + courseNumber];
+    }
+
+    const queryString = `
+      { courseGrades: grades(department: "${deptCode}", number: "${courseNumber}", ) {
+          aggregate {
+            sum_grade_a_count
+            sum_grade_b_count
+            sum_grade_c_count
+            sum_grade_d_count
+            sum_grade_f_count
+            sum_grade_p_count
+            sum_grade_np_count
+            average_gpa
+          }
+      },
+    }`;
+
+    const resp = await queryGraphQL(queryString).then((r) => r.json());
+    const grades = resp.data.courseGrades.aggregate;
+
+    gradesCache[deptCode + courseNumber] = grades;
+
+    return grades;
 }
 
 export function combineSOCObjects(SOCObjects) {

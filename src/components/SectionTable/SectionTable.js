@@ -20,6 +20,7 @@ import { Help, Assessment, Assignment } from '@material-ui/icons';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import PropTypes from 'prop-types';
 import analyticsEnum from '../../analytics';
+import GradesPopup from './GradesPopup';
 
 const styles = {
     flex: {
@@ -98,11 +99,18 @@ const SectionTable = (props) => {
                 )}
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
-                    anlyticsAction={analyticsEnum.classSearch.actions.CLICK_ZOTISTICS}
-                    text="Zotistics"
+                    anlyticsAction={analyticsEnum.classSearch.actions.CLICK_GRADES}
+                    text="Grades"
                     icon={<Assessment />}
-                    redirectLink={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseDetails.courseNumber}&code=&submit=Submit`}
+                    popupContent={
+                        <GradesPopup
+                            deptCode={courseDetails.deptCode}
+                            courseNumber={courseDetails.courseNumber}
+                            isMobileScreen={isMobileScreen}
+                        />
+                    }
                 />
+
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
                     anlyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_ENROLLMENT}
