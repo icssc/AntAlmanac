@@ -44,8 +44,10 @@ If you need run the backend, you must do the following:
 `git clone git@github.com:icssc/antalmanac-backend.git`
 - Follow the setup instructions in [antalmanac-backend/README.md](https://github.com/icssc/antalmanac-backend#readme)
 
-## Deploying
-We use GitHub Pages to deploy our site. Only ICSSC Project Committee members with push access will be able to deploy the website.
+## Manual Deployment
+(For ICSSC Projects Committee members with write access to the repo only)
+
+We use GitHub Pages to deploy our site. Usually deployments are done automatically through GitHub Actions, but if we need to deploy manually the instructions are below.
 
 Make sure you are on the latest version of `main` before running the deploy command.
 ```bash
