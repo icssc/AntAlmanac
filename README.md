@@ -14,7 +14,7 @@ Our site is a React single page application bootstrapped with create-react-app a
 AntAlmanac was created in 2018 by a small group of students under the leadership of @the-rango.  
 They formed an AntAlmanac club to recruit other students and work on new features, so that the website would live on even after its makers graduated.  
 In 2019, @devsdevsdevs took over as AntAlmanac Project Lead and oversaw a massive rewrite of the codebase, laying the foundation for the AntAlmanac that we know and love today.  
-In 2020, AntAlmanac was adopted by the ICSSC Projects Committee.
+In 2020, AntAlmanac was adopted by the ICSSC Projects Committee.  
 ICSSC continues to provide funding, marketing, and engineering to support the growing number of users and open-source developers that make up our AntAlmanac Community.
 Since then, the project has continued to evolve and grow with successive generations of projects committee members!
 
