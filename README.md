@@ -11,7 +11,19 @@ AntAlmanac is a schedule planner website for classes at UC Irvine. Here are some
 ### Tech Stack
 Our site is a React single page application bootstrapped with create-react-app and hosted on Github Pages. We use the Material UI component library for most of our styling. The site gets its course data from the [PeterPortal API](https://api.peterportal.org/), which is also maintained by ICSSC.
 ### History
-This project started as a side project by two UCI students in 2018 and soon was transferred to the ICS Student Council Projects Committee. Since then, the project has continued to evolve and grow with successive generations of projects committee members. Right now the most tenured members of the AntAlmanac team started in 2021.
+AntAlmanac was created in 2018 by a small group of students under the leadership of @the-rango.  
+They formed an AntAlmanac club to recruit other students and work on new features, so that the website would live on even after its makers graduated.  
+In 2019, @devsdevsdevs took over as AntAlmanac Project Lead and oversaw a massive rewrite of the codebase, laying the foundation for the AntAlmanac that we know and love today.  
+In 2020, AntAlmanac was adopted by the ICSSC Projects Committee.
+ICSSC continues to provide funding, marketing, and engineering to support the growing number of users and open-source developers that make up our AntAlmanac Community.
+Since then, the project has continued to evolve and grow with successive generations of projects committee members!
+
+| Year | Project Lead |
+| --- | --- |
+| 2018 - 2019 | @the-rango (founder) |
+| 2019 - 2021 | @devsdevsdevs |
+| 2021 - 2022 | @ChaseC99 |
+| 2022 - | @EricPedley |
 ## Contributing
 We welcome open-source contributions 🤗 Here is a rough guide on how to contribute:
 1. Look through the [issue tracker](https://github.com/icssc/AntAlmanac/issues) to find an open issue (nobody else is assigned) or create your own that describes the problem you want to fix
