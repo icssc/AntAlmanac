@@ -2,9 +2,9 @@ import React, { PureComponent } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import search from 'websoc-fuzzy-search';
-import { updateFormValue, resetFormValues } from '../../actions/RightPaneActions';
-import RightPaneStore from '../../stores/RightPaneStore';
-import analyticsEnum, { logAnalytics } from '../../analytics';
+import { updateFormValue, resetFormValues } from '../../../actions/RightPaneActions';
+import RightPaneStore from '../../../stores/RightPaneStore';
+import analyticsEnum, { logAnalytics } from '../../../analytics';
 
 const emojiMap = {
     GE_CATEGORY: '🏫', // U+1F3EB :school:

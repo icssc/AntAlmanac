@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import SearchForm from '../SearchForm/SearchForm';
+import SearchForm from '../RightPane/SearchForm/SearchForm';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
 import CourseRenderPane from './CourseRenderPane';
 import { withStyles } from '@material-ui/core/styles';

@@ -11,9 +11,9 @@ import {
     Collapse,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import RightPaneStore from '../../stores/RightPaneStore';
+import RightPaneStore from '../../../stores/RightPaneStore';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import { updateFormValue } from '../../actions/RightPaneActions';
+import { updateFormValue } from '../../../actions/RightPaneActions';
 
 const styles = {
     units: {

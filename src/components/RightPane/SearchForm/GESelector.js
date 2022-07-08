@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { InputLabel, MenuItem, FormControl, Select } from '@material-ui/core';
-import RightPaneStore from '../../stores/RightPaneStore';
-import { updateFormValue } from '../../actions/RightPaneActions';
+import RightPaneStore from '../../../stores/RightPaneStore';
+import { updateFormValue } from '../../../actions/RightPaneActions';
 import { withStyles } from '@material-ui/core/styles';
 
 const geList = [

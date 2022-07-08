@@ -3,8 +3,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import RightPaneStore from '../../stores/RightPaneStore.js';
-import { termData } from '../../termData';
+import RightPaneStore from '../../../stores/RightPaneStore.js';
+import { termData } from '../../../termData';
 
 class TermSelector extends PureComponent {
     state = {

@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
 import depts from './depts';
-import { updateFormValue } from '../../../actions/RightPaneActions';
+import { updateFormValue } from '../../../../actions/RightPaneActions';
 import { withStyles } from '@material-ui/core/styles';
 import { TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-import RightPaneStore from '../../../stores/RightPaneStore';
+import RightPaneStore from '../../../../stores/RightPaneStore';
 
 const style = {
     formControl: {

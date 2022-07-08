@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import TermSelector from './TermSelector';
 import { withStyles } from '@material-ui/core/styles';
-import PrivacyPolicyBanner from '../PrivacyPolicyBanner';
-import { updateFormValue, resetFormValues } from '../../actions/RightPaneActions';
+import PrivacyPolicyBanner from '../../PrivacyPolicyBanner';
+import { updateFormValue, resetFormValues } from '../../../actions/RightPaneActions';
 import FuzzySearch from './FuzzySearch';
 import LegacySearch from './LegacySearch';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { Tune } from '@material-ui/icons';
-import analyticsEnum, { logAnalytics } from '../../analytics';
+import analyticsEnum, { logAnalytics } from '../../../analytics';
 
 const styles = {
     container: {
