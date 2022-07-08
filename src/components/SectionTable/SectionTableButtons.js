@@ -1,5 +1,5 @@
 import React from 'react';
-import ColorPicker from '../App/ColorPicker';
+import ColorPicker from '../ColorPicker';
 import { IconButton, Menu, MenuItem, TableCell, useMediaQuery } from '@material-ui/core';
 import { deleteCourse } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';

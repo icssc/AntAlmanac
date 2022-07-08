@@ -2,7 +2,7 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Card, CardActions, CardHeader, IconButton } from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
-import ColorPicker from '../App/ColorPicker';
+import ColorPicker from '../ColorPicker';
 import moment from 'moment';
 import { deleteCustomEvent } from '../../actions/AppStoreActions';
 import CustomEventDialog from '../CustomEvents/CustomEventDialog';

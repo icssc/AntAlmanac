@@ -2,7 +2,7 @@ import React from 'react';
 import { IconButton, Paper, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import ColorPicker from '../App/ColorPicker.js';
+import ColorPicker from '../ColorPicker.js';
 import { Delete } from '@material-ui/icons';
 import locations from '../SectionTable/static/locations.json';
 import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';

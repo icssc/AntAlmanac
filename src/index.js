@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
-import App from './components/App/App';
+import App from './components/App';
 import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
 import { unregister } from './registerServiceWorker';
 import { SnackbarProvider } from 'notistack';

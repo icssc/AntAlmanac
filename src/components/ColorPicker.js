@@ -1,12 +1,12 @@
-import AppStore from '../../stores/AppStore';
+import AppStore from '../stores/AppStore';
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Popover, IconButton } from '@material-ui/core';
 import { SketchPicker } from 'react-color';
-import { changeCourseColor, changeCustomEventColor } from '../../actions/AppStoreActions';
+import { changeCourseColor, changeCustomEventColor } from '../actions/AppStoreActions';
 import { ColorLens } from '@material-ui/icons';
 import ReactGA from 'react-ga';
-import analyticsEnum, { logAnalytics } from '../../analytics';
+import analyticsEnum, { logAnalytics } from '../analytics';
 
 class ColorPicker extends PureComponent {
     state = {

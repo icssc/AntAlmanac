@@ -11,7 +11,7 @@ import ExportCalendar from './ExportCalendar';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import ReactGA from 'react-ga';
-import ConditionalWrapper from '../App/ConditionalWrapper';
+import ConditionalWrapper from '../ConditionalWrapper';
 import analyticsEnum, { logAnalytics } from '../../analytics';
 import ScheduleNameDialog from './ScheduleNameDialog';
 import EditSchedule from './EditSchedule';
