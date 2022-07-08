@@ -4,7 +4,7 @@ import { IconButton, Tooltip, Paper, Button, useMediaQuery, Menu } from '@materi
 import { Delete, Undo, MoreHoriz } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import { clearSchedules, undoDelete } from '../../actions/AppStoreActions';
-import CustomEventsDialog from '../CustomEvents/CustomEventDialog';
+import CustomEventsDialog from './CustomEvents/CustomEventDialog';
 import { changeCurrentSchedule } from '../../actions/AppStoreActions';
 import ScreenshotButton from './ScreenshotButton';
 import ExportCalendar from './ExportCalendar';

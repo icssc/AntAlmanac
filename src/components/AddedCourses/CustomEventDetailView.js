@@ -5,7 +5,7 @@ import { Delete } from '@material-ui/icons';
 import ColorPicker from '../ColorPicker';
 import moment from 'moment';
 import { deleteCustomEvent } from '../../actions/AppStoreActions';
-import CustomEventDialog from '../CustomEvents/CustomEventDialog';
+import CustomEventDialog from '../Calendar/CustomEvents/CustomEventDialog';
 import ReactGA from 'react-ga';
 
 const styles = {
