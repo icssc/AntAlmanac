@@ -15,7 +15,7 @@ import AppStore from '../../stores/AppStore';
 import { PostAdd } from '@material-ui/icons';
 import InputLabel from '@material-ui/core/InputLabel';
 import { withStyles } from '@material-ui/core/styles';
-import TermSelector from '../RightPane/SearchForm/TermSelector';
+import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '../../analytics';
 
 const styles = {
