@@ -1,13 +1,13 @@
 import React, { PureComponent } from 'react';
 import { Map, TileLayer, withLeaflet, Polyline, Marker } from 'react-leaflet';
 import buildingCatalogue from './static/buildingCatalogue';
-import locations from '../SectionTable/static/locations.json';
-import AppStore from '../../stores/AppStore';
+import locations from '../../SectionTable/static/locations.json';
+import AppStore from '../../../stores/AppStore';
 import DayTabs from './MapTabsAndSearchBar';
 import MapMarkerPopup from './MapMarkerPopup';
 import Locate from 'leaflet.locatecontrol';
 import Leaflet from 'leaflet';
-import analyticsEnum, { logAnalytics } from '../../analytics';
+import analyticsEnum, { logAnalytics } from '../../../analytics';
 
 class LocateControl extends PureComponent {
     componentDidMount() {

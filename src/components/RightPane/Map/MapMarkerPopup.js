@@ -4,7 +4,7 @@ import { Marker, Popup } from 'react-leaflet';
 import PropTypes from 'prop-types';
 import { Button } from '@material-ui/core';
 import Leaflet from 'leaflet';
-import analyticsEnum, { logAnalytics } from '../../analytics';
+import analyticsEnum, { logAnalytics } from '../../../analytics';
 
 const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';
 const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId=463&image=';

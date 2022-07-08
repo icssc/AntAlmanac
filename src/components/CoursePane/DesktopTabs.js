@@ -5,7 +5,7 @@ import AddedCoursePane from '../RightPane/AddedCourses/AddedCoursePane';
 import RightPane from './RightPane';
 import RightPaneStore from '../../stores/RightPaneStore';
 import { handleTabChange } from '../../actions/RightPaneActions';
-import UCIMap from '../Map/UCIMap';
+import UCIMap from '../RightPane/Map/UCIMap';
 
 class DesktopTabs extends PureComponent {
     state = {
