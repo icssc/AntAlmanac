@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Tab, Tabs, Typography, Paper } from '@material-ui/core';
 import { FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
 import AddedCoursePane from './AddedCourses/AddedCoursePane';
-import RightPane from './CoursePane/CoursePaneRoot';
+import CoursePane from './CoursePane/CoursePaneRoot';
 import RightPaneStore from '../../stores/RightPaneStore';
 import { handleTabChange } from '../../actions/RightPaneActions';
 import UCIMap from './Map/UCIMap';
@@ -30,7 +30,7 @@ class DesktopTabs extends PureComponent {
         let currentTab;
         switch (RightPaneStore.getActiveTab()) {
             case 0:
-                currentTab = <RightPane />;
+                currentTab = <CoursePane />;
                 break;
             case 1:
                 currentTab = <AddedCoursePane />;
