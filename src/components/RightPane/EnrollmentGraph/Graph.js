@@ -3,7 +3,7 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis, Tool
 import quarterDayRanges from './static/quarter_day_ranges';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { ENROLLMENT_DATA_ENDPOINT } from '../../api/endpoints';
+import { ENROLLMENT_DATA_ENDPOINT } from '../....//api/endpoints';
 
 const timeFormatter = (unixTime) => {
     return moment(unixTime).format('MM/DD/YY');

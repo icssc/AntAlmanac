@@ -2,8 +2,8 @@ import React, { PureComponent } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { FormControl, InputLabel, MenuItem, Paper, Select, Typography } from '@material-ui/core';
 import GraphRenderPane from './GraphRenderPane';
-import { queryWebsoc } from '../../helpers';
-import { termData, defaultTerm } from '../../termData';
+import { queryWebsoc } from '../../../helpers';
+import { termData, defaultTerm } from '../../../termData';
 
 const styles = {
     paper: {
