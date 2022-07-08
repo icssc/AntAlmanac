@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import TermSelector from './TermSelector';
 import { withStyles } from '@material-ui/core/styles';
-import PrivacyPolicyBanner from '../../../PrivacyPolicyBanner';
+import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import { updateFormValue, resetFormValues } from '../../../../actions/RightPaneActions';
 import FuzzySearch from './FuzzySearch';
 import LegacySearch from './LegacySearch';
