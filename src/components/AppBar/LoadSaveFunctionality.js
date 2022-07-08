@@ -9,10 +9,10 @@ import {
     DialogTitle,
     TextField,
 } from '@material-ui/core';
-import { loadSchedule, saveSchedule } from '../actions/AppStoreActions';
+import { loadSchedule, saveSchedule } from '../../actions/AppStoreActions';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import { isDarkMode } from '../helpers';
+import { isDarkMode } from '../../helpers';
 
 class LoadSaveButtonBase extends PureComponent {
     state = {

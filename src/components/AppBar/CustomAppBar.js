@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppBar, Button, Toolbar, Tooltip, Menu, useMediaQuery } from '@material-ui/core';
-import LoadSaveScheduleFunctionality from '../LoadSaveFunctionality';
+import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { Assignment } from '@material-ui/icons';
 import MenuIcon from '@material-ui/icons/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
