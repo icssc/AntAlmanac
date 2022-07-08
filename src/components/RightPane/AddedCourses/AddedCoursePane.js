@@ -1,13 +1,13 @@
-import AppStore from '../../stores/AppStore';
+import AppStore from '../../../stores/AppStore';
 import React, { PureComponent } from 'react';
 import { Grid, Typography, Button, Menu, MenuItem } from '@material-ui/core';
-import SectionTable from '../SectionTable/SectionTable.js';
+import SectionTable from '../../SectionTable/SectionTable.js';
 import { withStyles } from '@material-ui/core/styles';
 import CustomEventDetailView from './CustomEventDetailView';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
-import { clearSchedules, copySchedule } from '../../actions/AppStoreActions';
+import { clearSchedules, copySchedule } from '../../../actions/AppStoreActions';
 import ReactGA from 'react-ga';
-import analyticsEnum, { logAnalytics } from '../../analytics';
+import analyticsEnum, { logAnalytics } from '../../../analytics';
 
 const styles = {
     container: {
