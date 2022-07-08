@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import ColorPicker from '../ColorPicker.js';
 import { Delete } from '@material-ui/icons';
-import locations from '../SectionTable/static/locations.json';
+import locations from '../RightPane/SectionTable/static/locations.json';
 import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
 import CustomEventDialog from './CustomEvents/CustomEventDialog';
 import AppStore from '../../stores/AppStore';

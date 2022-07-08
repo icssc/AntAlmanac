@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Map, TileLayer, withLeaflet, Polyline, Marker } from 'react-leaflet';
 import buildingCatalogue from './static/buildingCatalogue';
-import locations from '../../SectionTable/static/locations.json';
+import locations from '../SectionTable/static/locations.json';
 import AppStore from '../../../stores/AppStore';
 import DayTabs from './MapTabsAndSearchBar';
 import MapMarkerPopup from './MapMarkerPopup';

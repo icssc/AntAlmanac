@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Skeleton } from '@material-ui/lab';
 import { withStyles } from '@material-ui/core/styles';
 import { XAxis, YAxis, CartesianGrid, BarChart, Bar, ResponsiveContainer } from 'recharts';
-import { queryGrades, isDarkMode } from '../../helpers';
+import { queryGrades, isDarkMode } from '../../../helpers';
 
 const styles = {
     button: {

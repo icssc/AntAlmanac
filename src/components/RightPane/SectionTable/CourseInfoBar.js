@@ -4,8 +4,8 @@ import { withStyles } from '@material-ui/core/styles';
 import { Button, Popover, useMediaQuery } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-import { PETERPORTAL_REST_ENDPOINT } from '../../api/endpoints';
-import analyticsEnum, { logAnalytics } from '../../analytics';
+import { PETERPORTAL_REST_ENDPOINT } from '../../../api/endpoints';
+import analyticsEnum, { logAnalytics } from '../../../analytics';
 
 const styles = () => ({
     rightSpace: {

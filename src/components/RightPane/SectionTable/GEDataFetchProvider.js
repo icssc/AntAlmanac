@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import SectionTable from './SectionTable';
-import RightPaneStore from '../../stores/RightPaneStore';
-import { queryWebsoc } from '../../helpers';
+import RightPaneStore from '../../../stores/RightPaneStore';
+import { queryWebsoc } from '../../../helpers';
 
 class GeDataFetchProvider extends PureComponent {
     state = {

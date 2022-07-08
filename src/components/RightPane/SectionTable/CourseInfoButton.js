@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button, Popover } from '@material-ui/core';
 import { useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { logAnalytics } from '../../analytics';
+import { logAnalytics } from '../../../analytics';
 
 const styles = {
     button: {

@@ -1,7 +1,7 @@
 import AppStore from '../../../stores/AppStore';
 import React, { PureComponent } from 'react';
 import { Grid, Typography, Button, Menu, MenuItem } from '@material-ui/core';
-import SectionTable from '../../SectionTable/SectionTable.js';
+import SectionTable from '../../RightPane/SectionTable/SectionTable.js';
 import { withStyles } from '@material-ui/core/styles';
 import CustomEventDetailView from './CustomEventDetailView';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';

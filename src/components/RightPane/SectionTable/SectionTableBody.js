@@ -7,12 +7,12 @@ import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/h
 import { withStyles } from '@material-ui/core/styles';
 import OpenSpotAlertPopover from './OpenSpotAlertPopover';
 import PropTypes from 'prop-types';
-import AppStore from '../../stores/AppStore';
+import AppStore from '../../../stores/AppStore';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import classNames from 'classnames';
-import { clickToCopy, isDarkMode } from '../../helpers';
-import analyticsEnum, { logAnalytics } from '../../analytics';
-import { getDefaultTerm } from '../../termData';
+import { clickToCopy, isDarkMode } from '../../../helpers';
+import analyticsEnum, { logAnalytics } from '../../../analytics';
+import { getDefaultTerm } from '../../../termData';
 
 const styles = (theme) => ({
     popover: {

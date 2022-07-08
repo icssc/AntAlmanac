@@ -1,15 +1,14 @@
 import React from 'react';
-import ColorPicker from '../ColorPicker';
+import ColorPicker from '../../ColorPicker';
 import { IconButton, Menu, MenuItem, TableCell, useMediaQuery } from '@material-ui/core';
-import { deleteCourse } from '../../actions/AppStoreActions';
-import AppStore from '../../stores/AppStore';
+import { deleteCourse, addCourse, openSnackbar } from '../../../actions/AppStoreActions';
+import AppStore from '../../../stores/AppStore';
 import { Delete, Add, ArrowDropDown } from '@material-ui/icons';
-import { addCourse, openSnackbar } from '../../actions/AppStoreActions';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 
 import { withStyles } from '@material-ui/core/styles';
 import ReactGA from 'react-ga';
-import analyticsEnum, { logAnalytics } from '../../analytics';
+import analyticsEnum, { logAnalytics } from '../../../analytics';
 
 const styles = {
     container: {
