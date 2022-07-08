@@ -1,17 +1,17 @@
 import { withStyles } from '@material-ui/core/styles';
 import React, { PureComponent } from 'react';
 import SchoolDeptCard from './SchoolDeptCard';
-import SectionTable from '../RightPane/SectionTable/SectionTable';
+import SectionTable from '../SectionTable/SectionTable';
 import noNothing from './static/no_results.png';
 import darkNoNothing from './static/dark-no_results.png';
-import AppStore from '../../stores/AppStore';
-import RightPaneStore from '../../stores/RightPaneStore';
-import loadingGif from '../RightPane/SearchForm/Gifs/loading.gif';
-import darkModeLoadingGif from '../RightPane/SearchForm/Gifs/dark-loading.gif';
-import GeDataFetchProvider from '../RightPane/SectionTable/GEDataFetchProvider';
+import AppStore from '../../../stores/AppStore';
+import RightPaneStore from '../../../stores/RightPaneStore';
+import loadingGif from '../SearchForm/Gifs/loading.gif';
+import darkModeLoadingGif from '../SearchForm/Gifs/dark-loading.gif';
+import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import LazyLoad from 'react-lazyload';
-import { queryWebsoc, queryWebsocMultiple, isDarkMode } from '../../helpers';
-import analyticsEnum from '../../analytics';
+import { queryWebsoc, queryWebsocMultiple, isDarkMode } from '../../../helpers';
+import analyticsEnum from '../../../analytics';
 
 const styles = (theme) => ({
     course: {

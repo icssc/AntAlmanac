@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Tab, Tabs, Paper } from '@material-ui/core';
-import DesktopTabs from './CoursePane/DesktopTabs';
+import DesktopTabs from './RightPane/DesktopTabs';
 import Calendar from './Calendar/ScheduleCalendar';
 
 const MobileHome = () => {

@@ -1,11 +1,11 @@
 import React, { PureComponent } from 'react';
 import { Tab, Tabs, Typography, Paper } from '@material-ui/core';
 import { FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
-import AddedCoursePane from '../RightPane/AddedCourses/AddedCoursePane';
-import RightPane from './RightPane';
+import AddedCoursePane from './AddedCourses/AddedCoursePane';
+import RightPane from './CoursePane/RightPane';
 import RightPaneStore from '../../stores/RightPaneStore';
 import { handleTabChange } from '../../actions/RightPaneActions';
-import UCIMap from '../RightPane/Map/UCIMap';
+import UCIMap from './Map/UCIMap';
 
 class DesktopTabs extends PureComponent {
     state = {

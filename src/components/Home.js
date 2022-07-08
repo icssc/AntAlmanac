@@ -2,7 +2,7 @@ import React from 'react';
 import { Grid, CssBaseline, useMediaQuery } from '@material-ui/core';
 import Calendar from './Calendar/ScheduleCalendar';
 import Bar from './AppBar/CustomAppBar';
-import DesktopTabs from './CoursePane/DesktopTabs';
+import DesktopTabs from './RightPane/DesktopTabs';
 import NotificationSnackbar from './AppBar/NotificationSnackbar';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import MobileHome from './MobileHome';

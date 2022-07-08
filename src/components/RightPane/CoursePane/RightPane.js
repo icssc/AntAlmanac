@@ -1,13 +1,13 @@
 import React, { PureComponent } from 'react';
-import SearchForm from '../RightPane/SearchForm/SearchForm';
+import SearchForm from '../SearchForm/SearchForm';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
 import CourseRenderPane from './CourseRenderPane';
 import { withStyles } from '@material-ui/core/styles';
-import RightPaneStore from '../../stores/RightPaneStore';
-import dispatcher from '../../dispatcher';
-import { clearCache } from '../../helpers';
-import { openSnackbar } from '../../actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '../../analytics';
+import RightPaneStore from '../../../stores/RightPaneStore';
+import dispatcher from '../../../dispatcher';
+import { clearCache } from '../../../helpers';
+import { openSnackbar } from '../../../actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '../../../analytics';
 
 const styles = {
     container: {
