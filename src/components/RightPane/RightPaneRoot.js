@@ -5,7 +5,7 @@ import AddedCoursePane from './AddedCourses/AddedCoursePane';
 import CoursePane from './CoursePane/CoursePaneRoot';
 import RightPaneStore from '../../stores/RightPaneStore';
 import { handleTabChange } from '../../actions/RightPaneActions';
-import UCIMap from './Map/UCIMap';
+import LazyUCIMap from './Map/LazyUCIMap';
 
 class DesktopTabs extends PureComponent {
     state = {
@@ -36,10 +36,10 @@ class DesktopTabs extends PureComponent {
                 currentTab = <AddedCoursePane />;
                 break;
             case 2:
-                currentTab = <UCIMap />;
+                currentTab = <LazyUCIMap />;
                 break;
             default:
-                throw RangeError('currentTab index our of range (needs to be 0,1, or 2)');
+                throw RangeError('currentTab index out of range (needs to be 0, 1, or 2)');
         }
 
         return (
