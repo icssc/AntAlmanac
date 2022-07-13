@@ -1,10 +1,24 @@
 import React, { Suspense } from 'react';
 
 const LazyMobileLogo = () => {
-    const Svg = React.lazy(() => import('./MobileLogo'));
+    const MobileLogo = React.lazy(() => import('./MobileLogo'));
     return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <Svg height={32} />
+        <Suspense
+            fallback={
+                <div
+                    style={{
+                        height: '100%',
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    Loading...
+                </div>
+            }
+        >
+            <MobileLogo height={32} />
         </Suspense>
     );
 };
