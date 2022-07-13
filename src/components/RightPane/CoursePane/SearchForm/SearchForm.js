@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import TermSelector from './TermSelector';
 import { withStyles } from '@material-ui/core/styles';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import { updateFormValue, resetFormValues } from '../../../../actions/RightPaneActions';
 import FuzzySearch from './FuzzySearch';
-import LegacySearch from './LegacySearch';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { Tune } from '@material-ui/icons';
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
+import { isDarkMode } from '../../../../helpers';
+import darkModeLoadingGif from './Gifs/dark-loading.gif';
+import loadingGif from './Gifs/loading.gif';
+
+const LegacySearch = React.lazy(() => import('./LegacySearch'));
 
 const styles = {
     container: {
@@ -27,6 +31,13 @@ const styles = {
     form: {
         minHeight: 'calc(100% - 120px)',
         marginBottom: '20px',
+    },
+    fallback: {
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 };
 
@@ -64,16 +75,27 @@ const SearchForm = (props) => {
                     </div>
 
                     {showLegacySearch && (
-                        <LegacySearch
-                            onSubmit={() => {
-                                logAnalytics({
-                                    category: analyticsEnum.classSearch.title,
-                                    action: analyticsEnum.classSearch.actions.MANUAL_SEARCH,
-                                });
-                                toggleSearch();
-                            }}
-                            onReset={resetFormValues}
-                        />
+                        <Suspense
+                            fallback={
+                                <div className={classes.fallback}>
+                                    <img
+                                        src={isDarkMode() ? darkModeLoadingGif : loadingGif}
+                                        alt="Loading legacy search"
+                                    />
+                                </div>
+                            }
+                        >
+                            <LegacySearch
+                                onSubmit={() => {
+                                    logAnalytics({
+                                        category: analyticsEnum.classSearch.title,
+                                        action: analyticsEnum.classSearch.actions.MANUAL_SEARCH,
+                                    });
+                                    toggleSearch();
+                                }}
+                                onReset={resetFormValues}
+                            />
+                        </Suspense>
                     )}
                 </div>
             </form>
