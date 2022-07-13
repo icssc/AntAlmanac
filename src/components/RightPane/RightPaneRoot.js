@@ -1,11 +1,14 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Suspense } from 'react';
 import { Tab, Tabs, Typography, Paper } from '@material-ui/core';
 import { FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
 import AddedCoursePane from './AddedCourses/AddedCoursePane';
 import CoursePane from './CoursePane/CoursePaneRoot';
 import RightPaneStore from '../../stores/RightPaneStore';
 import { handleTabChange } from '../../actions/RightPaneActions';
-import LazyUCIMap from './Map/LazyUCIMap';
+import { isDarkMode } from '../../helpers';
+import darkModeLoadingGif from './CoursePane/SearchForm/Gifs/dark-loading.gif';
+import loadingGif from './CoursePane/SearchForm/Gifs/loading.gif';
+const UCIMap = React.lazy(() => import('./Map/UCIMap'));
 
 class DesktopTabs extends PureComponent {
     state = {
@@ -36,7 +39,25 @@ class DesktopTabs extends PureComponent {
                 currentTab = <AddedCoursePane />;
                 break;
             case 2:
-                currentTab = <LazyUCIMap />;
+                currentTab = (
+                    <Suspense
+                        fallback={
+                            <div
+                                style={{
+                                    height: '100%',
+                                    width: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <img src={isDarkMode() ? darkModeLoadingGif : loadingGif} alt="Loading map" />
+                            </div>
+                        }
+                    >
+                        <UCIMap />
+                    </Suspense>
+                );
                 break;
             default:
                 throw RangeError('currentTab index out of range (needs to be 0, 1, or 2)');

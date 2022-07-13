@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { AppBar, Button, Toolbar, Tooltip, Menu, useMediaQuery } from '@material-ui/core';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { Assignment } from '@material-ui/icons';
@@ -7,12 +7,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import NotificationHub from './NotificationHub';
 import SettingsMenu from './SettingsMenu';
-import LazyLogo from './LazyLogo';
-import LazyMobileLogo from './LazyMobileLogo';
 import News from './News';
 import AboutPage from './AboutPage';
 import ConditionalWrapper from '../ConditionalWrapper';
 import ImportStudyList from './ImportStudyList';
+
+const Logo = React.lazy(() => import('./Logo'));
+const MobileLogo = React.lazy(() => import('./MobileLogo'));
 
 const styles = {
     appBar: {
@@ -44,7 +45,23 @@ const CustomAppBar = (props) => {
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar variant="dense">
-                {isMobileScreen ? <LazyMobileLogo height={32} /> : <LazyLogo height={32} />}
+                <Suspense
+                    fallback={
+                        <div
+                            style={{
+                                height: '100%',
+                                width: '100%',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            Loading...
+                        </div>
+                    }
+                >
+                    {isMobileScreen ? <MobileLogo height={32} /> : <Logo height={32} />}
+                </Suspense>
 
                 <div style={{ flexGrow: '1' }} />
 
