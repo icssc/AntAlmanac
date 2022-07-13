@@ -1,5 +1,6 @@
 import React, { PureComponent, Suspense } from 'react';
 import { Tab, Tabs, Typography, Paper } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 import { FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
 import AddedCoursePane from './AddedCourses/AddedCoursePane';
 import CoursePane from './CoursePane/CoursePaneRoot';
@@ -9,6 +10,16 @@ import { isDarkMode } from '../../helpers';
 import darkModeLoadingGif from './CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './CoursePane/SearchForm/Gifs/loading.gif';
 const UCIMap = React.lazy(() => import('./Map/UCIMap'));
+
+const styles = {
+    fallback: {
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+};
 
 class DesktopTabs extends PureComponent {
     state = {
@@ -42,15 +53,7 @@ class DesktopTabs extends PureComponent {
                 currentTab = (
                     <Suspense
                         fallback={
-                            <div
-                                style={{
-                                    height: '100%',
-                                    width: '100%',
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                }}
-                            >
+                            <div style={style.fallback}>
                                 <img src={isDarkMode() ? darkModeLoadingGif : loadingGif} alt="Loading map" />
                             </div>
                         }
@@ -152,4 +155,4 @@ class DesktopTabs extends PureComponent {
     }
 }
 
-export default DesktopTabs;
+export default withStyles(styles)(DesktopTabs);

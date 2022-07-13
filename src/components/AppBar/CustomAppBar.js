@@ -25,6 +25,13 @@ const styles = {
     buttonMargin: {
         marginRight: '4px',
     },
+    fallback: {
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 };
 
 const CustomAppBar = (props) => {
@@ -45,21 +52,7 @@ const CustomAppBar = (props) => {
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar variant="dense">
-                <Suspense
-                    fallback={
-                        <div
-                            style={{
-                                height: '100%',
-                                width: '100%',
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                            }}
-                        >
-                            Loading...
-                        </div>
-                    }
-                >
+                <Suspense fallback={<div style={classes.fallback}>Loading...</div>}>
                     {isMobileScreen ? <MobileLogo height={32} /> : <Logo height={32} />}
                 </Suspense>
 
