@@ -89,7 +89,9 @@ export const ScheduleAddCell = withStyles(styles)((props) => {
                 </IconButton>
                 <Menu {...bindMenu(popupState)} onClose={() => closeAndAddCourse(-1)}>
                     {scheduleNames.map((name, index) => (
-                        <MenuItem onClick={() => closeAndAddCourse(index, true)}>Add to {name}</MenuItem>
+                        <MenuItem key={index} onClick={() => closeAndAddCourse(index, true)}>
+                            Add to {name}
+                        </MenuItem>
                     ))}
                     <MenuItem onClick={() => closeAndAddCourse(scheduleNames.length, true)}>
                         Add to All Schedules
