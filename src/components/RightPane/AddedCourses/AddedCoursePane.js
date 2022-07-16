@@ -1,7 +1,7 @@
 import AppStore from '../../../stores/AppStore';
 import React, { PureComponent } from 'react';
 import { Grid, Typography, Button, Menu, MenuItem } from '@material-ui/core';
-import SectionTable from '../../RightPane/SectionTable/SectionTable.js';
+import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import { withStyles } from '@material-ui/core/styles';
 import CustomEventDetailView from './CustomEventDetailView';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
@@ -189,7 +189,7 @@ class AddedCoursePane extends PureComponent {
                 {this.state.courses.map((course) => {
                     return (
                         <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber}>
-                            <SectionTable
+                            <SectionTableLazyWrapper
                                 courseDetails={course}
                                 term={course.term}
                                 colorAndDelete={true}

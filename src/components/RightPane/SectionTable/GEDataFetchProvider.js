@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import SectionTable from './SectionTable';
+import SectionTableLazyWrapper from './SectionTableLazyWrapper';
 import RightPaneStore from '../../../stores/RightPaneStore';
 import { queryWebsoc } from '../../../helpers';
 
@@ -28,7 +28,7 @@ class GeDataFetchProvider extends PureComponent {
     }
 
     render() {
-        return <SectionTable {...this.props} courseDetails={this.state.courseDetails} />;
+        return <SectionTableLazyWrapper {...this.props} courseDetails={this.state.courseDetails} />;
     }
 }
 
