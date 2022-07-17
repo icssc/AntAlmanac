@@ -91,7 +91,7 @@ const SectionTable = (props) => {
                 {courseDetails.prerequisiteLink && (
                     <CourseInfoButton
                         analyticsCategory={analyticsCategory}
-                        anlyticsAction={analyticsEnum.classSearch.actions.CLICK_PREREQUISITES}
+                        analyticsAction={analyticsEnum.classSearch.actions.CLICK_PREREQUISITES}
                         text={isMobileScreen ? 'Prereqs' : 'Prerequisites'}
                         icon={<Assignment />}
                         redirectLink={courseDetails.prerequisiteLink}
@@ -99,7 +99,7 @@ const SectionTable = (props) => {
                 )}
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
-                    anlyticsAction={analyticsEnum.classSearch.actions.CLICK_GRADES}
+                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_GRADES}
                     text="Grades"
                     icon={<Assessment />}
                     popupContent={
@@ -113,7 +113,7 @@ const SectionTable = (props) => {
 
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
-                    anlyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_ENROLLMENT}
+                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_ENROLLMENT}
                     text="Past Enrollment"
                     icon={<ShowChartIcon />}
                     redirectLink={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${courseDetails.courseNumber}&courseType=all`}
