@@ -1,5 +1,4 @@
 import { EventEmitter } from 'events';
-import dispatcher from '../dispatcher';
 import { getDefaultTerm } from '../termData';
 import ReactGA from 'react-ga';
 
@@ -77,22 +76,14 @@ class RightPaneStore extends EventEmitter {
         }
     };
 
-    handleActions(action) {
-        switch (action.type) {
-            case 'TAB_CHANGE':
-                break;
-            case 'TOGGLE_SEARCH':
-                this.doDisplaySearch = !this.doDisplaySearch;
-                // this.emit('searchToggle');
-                break;
-            case 'TOGGLE_OPEN_SPOT_ALERT':
-                this.openSpotAlertPopoverActive = !this.openSpotAlertPopoverActive;
-                break;
-            default: //do nothing
-        }
+    toggleSearch() {
+        this.doDisplaySearch = !this.doDisplaySearch;
+    }
+
+    toggleOpenSpotAlert() {
+        this.openSpotAlertPopoverActive = !this.openSpotAlertPopoverActive;
     }
 }
 
 const store = new RightPaneStore();
-dispatcher.register(store.handleActions.bind(store));
 export default store;
