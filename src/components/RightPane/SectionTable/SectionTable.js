@@ -16,7 +16,7 @@ import { withStyles } from '@material-ui/core/styles';
 import CourseInfoBar from './CourseInfoBar';
 import SectionTableBody from './SectionTableBody';
 import CourseInfoButton from './CourseInfoButton';
-import { Help, Assessment, Assignment } from '@material-ui/icons';
+import { Help, Assessment, Assignment, RateReview } from '@material-ui/icons';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import PropTypes from 'prop-types';
 import analyticsEnum from '../../../analytics';
@@ -99,8 +99,15 @@ const SectionTable = (props) => {
                 )}
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
-                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_GRADES}
-                    text="Grades"
+                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
+                    text="Reviews"
+                    icon={<RateReview />}
+                    redirectLink={`https://peterportal.org/course/${encodedDept}${courseDetails.courseNumber}`}
+                />
+                <CourseInfoButton
+                    analyticsCategory={analyticsCategory}
+                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_ZOTISTICS}
+                    text="Zotistics"
                     icon={<Assessment />}
                     popupContent={
                         <GradesPopup
