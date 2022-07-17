@@ -24,6 +24,13 @@ const styles = {
     buttonMargin: {
         marginRight: '4px',
     },
+    fallback: {
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 };
 
 const CustomAppBar = (props) => {

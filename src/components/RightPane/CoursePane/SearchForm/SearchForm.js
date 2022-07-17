@@ -28,6 +28,13 @@ const styles = {
         minHeight: 'calc(100% - 120px)',
         marginBottom: '20px',
     },
+    fallback: {
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 };
 
 const SearchForm = (props) => {

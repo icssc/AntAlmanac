@@ -1,7 +1,7 @@
 import { withStyles } from '@material-ui/core/styles';
 import React, { PureComponent } from 'react';
 import SchoolDeptCard from './SchoolDeptCard';
-import SectionTable from '../SectionTable/SectionTable';
+import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import noNothing from './static/no_results.png';
 import darkNoNothing from './static/dark-no_results.png';
 import AppStore from '../../../stores/AppStore';
@@ -117,7 +117,7 @@ const SectionTableWrapped = (index, data) => {
         );
     } else {
         component = (
-            <SectionTable
+            <SectionTableLazyWrapper
                 term={formData.term}
                 courseDetails={courseData[index]}
                 colorAndDelete={false}
