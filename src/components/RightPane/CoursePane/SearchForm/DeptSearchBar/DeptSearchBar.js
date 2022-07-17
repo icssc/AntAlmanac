@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import depts from './depts';
-import { updateFormValue } from '../../../../../actions/RightPaneActions';
 import { withStyles } from '@material-ui/core/styles';
 import { TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
@@ -66,8 +65,8 @@ class DeptSearchBar extends PureComponent {
         let setDeptValue = newDept === null ? options[0] : newDept;
 
         this.setState({ value: setDeptValue });
-        updateFormValue('deptValue', setDeptValue.deptValue);
-        updateFormValue('deptLabel', setDeptValue.deptLabel);
+        RightPaneStore.updateFormValue('deptValue', setDeptValue.deptValue);
+        RightPaneStore.updateFormValue('deptLabel', setDeptValue.deptLabel);
 
         if (newDept === null || newDept.deptValue === 'ALL') return;
 

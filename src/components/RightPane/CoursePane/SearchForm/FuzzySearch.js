@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import search from 'websoc-fuzzy-search';
-import { updateFormValue, resetFormValues } from '../../../../actions/RightPaneActions';
+import { resetFormValues } from '../../../../actions/RightPaneActions';
 import RightPaneStore from '../../../../stores/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
 
@@ -29,14 +29,17 @@ class FuzzySearch extends PureComponent {
         const ident = emoji === emojiMap.INSTRUCTOR ? value.slice(3) : value.slice(3).split(':');
         const term = RightPaneStore.getFormData().term;
         resetFormValues();
-        updateFormValue('term', term);
+        RightPaneStore.updateFormValue('term', term);
         switch (emoji) {
             case emojiMap.GE_CATEGORY:
-                updateFormValue('ge', `GE-${ident[0].split(' ')[2].replace('(', '').replace(')', '').toUpperCase()}`);
+                RightPaneStore.updateFormValue(
+                    'ge',
+                    `GE-${ident[0].split(' ')[2].replace('(', '').replace(')', '').toUpperCase()}`
+                );
                 break;
             case emojiMap.DEPARTMENT:
-                updateFormValue('deptValue', ident[0]);
-                updateFormValue('deptLabel', ident.join(':'));
+                RightPaneStore.updateFormValue('deptValue', ident[0]);
+                RightPaneStore.updateFormValue('deptLabel', ident.join(':'));
                 break;
             case emojiMap.COURSE:
                 const deptValue = ident[0].split(' ').slice(0, -1).join(' ');
@@ -57,12 +60,12 @@ class FuzzySearch extends PureComponent {
                         },
                     });
                 }
-                updateFormValue('deptValue', deptValue);
-                updateFormValue('deptLabel', `${deptValue}: ${deptLabel}`);
-                updateFormValue('courseNumber', ident[0].split(' ').slice(-1)[0]);
+                RightPaneStore.updateFormValue('deptValue', deptValue);
+                RightPaneStore.updateFormValue('deptLabel', `${deptValue}: ${deptLabel}`);
+                RightPaneStore.updateFormValue('courseNumber', ident[0].split(' ').slice(-1)[0]);
                 break;
             case emojiMap.INSTRUCTOR:
-                updateFormValue(
+                RightPaneStore.updateFormValue(
                     'instructor',
                     Object.keys(this.state.results).filter((x) => this.state.results[x].name === ident)[0]
                 );

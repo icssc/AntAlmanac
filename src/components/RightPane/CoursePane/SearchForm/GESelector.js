@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import { InputLabel, MenuItem, FormControl, Select } from '@material-ui/core';
 import RightPaneStore from '../../../../stores/RightPaneStore';
-import { updateFormValue } from '../../../../actions/RightPaneActions';
 import { withStyles } from '@material-ui/core/styles';
 
 const geList = [
@@ -33,7 +32,7 @@ class GESelector extends PureComponent {
 
     handleChange = (event) => {
         this.setState({ ge: event.target.value });
-        updateFormValue('ge', event.target.value);
+        RightPaneStore.updateFormValue('ge', event.target.value);
     };
 
     componentDidMount() {

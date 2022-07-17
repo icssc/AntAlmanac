@@ -44,12 +44,13 @@ class RightPaneStore extends EventEmitter {
         return this.openSpotAlertPopoverActive;
     }
 
+    updateFormValue(field, value) {
+        this.formData[field] = value;
+        this.emit('formDataChange');
+    }
+
     handleActions(action) {
         switch (action.type) {
-            case 'UPDATE_FORM_FIELD':
-                this.formData = action.formData;
-                this.emit('formDataChange');
-                break;
             case 'TAB_CHANGE':
                 this.activeTab = action.activeTab;
                 this.emit('tabChange', this.activeTab);
