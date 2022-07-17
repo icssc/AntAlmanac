@@ -4,7 +4,6 @@ import { FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
 import AddedCoursePane from './AddedCourses/AddedCoursePane';
 import CoursePane from './CoursePane/CoursePaneRoot';
 import RightPaneStore from '../../stores/RightPaneStore';
-import { handleTabChange } from '../../actions/RightPaneActions';
 import { isDarkMode } from '../../helpers';
 import darkModeLoadingGif from './CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './CoursePane/SearchForm/Gifs/loading.gif';
@@ -79,7 +78,7 @@ class DesktopTabs extends PureComponent {
                 >
                     <Tabs
                         value={this.state.activeTab}
-                        onChange={handleTabChange}
+                        onChange={RightPaneStore.handleTabChange}
                         indicatorColor="primary"
                         variant="fullWidth"
                         centered

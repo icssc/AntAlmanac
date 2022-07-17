@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import dispatcher from '../dispatcher';
 import { getDefaultTerm } from '../termData';
+import ReactGA from 'react-ga';
 
 const defaultFormValues = {
     deptValue: 'ALL',
@@ -54,11 +55,31 @@ class RightPaneStore extends EventEmitter {
         this.emit('formReset');
     }
 
+    handleTabChange = (event, value) => {
+        this.activeTab = value;
+        this.emit('tabChange', value);
+        switch (
+            value // 0 is Class Search Tab, 1 is Added Classes Tab, 2 is Map Tab
+        ) {
+            case 1:
+                ReactGA.event({
+                    category: 'antalmanac-rewrite',
+                    action: `Switch tab to Added Classes`,
+                });
+                break;
+            case 2:
+                ReactGA.event({
+                    category: 'antalmanac-rewrite',
+                    action: `Switch tab to Map`,
+                });
+                break;
+            default: // do nothing
+        }
+    };
+
     handleActions(action) {
         switch (action.type) {
             case 'TAB_CHANGE':
-                this.activeTab = action.activeTab;
-                this.emit('tabChange', this.activeTab);
                 break;
             case 'TOGGLE_SEARCH':
                 this.doDisplaySearch = !this.doDisplaySearch;
