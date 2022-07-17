@@ -12,7 +12,7 @@ const styles = {
     },
 };
 
-function CourseInfoButton({ classes, text, icon, redirectLink, popupContent, anlyticsAction, analyticsCategory }) {
+function CourseInfoButton({ classes, text, icon, redirectLink, popupContent, analyticsAction, analyticsCategory }) {
     const [popupAnchor, setPopupAnchor] = useState(null);
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
     return (
@@ -25,7 +25,7 @@ function CourseInfoButton({ classes, text, icon, redirectLink, popupContent, anl
                 onClick={(event) => {
                     logAnalytics({
                         category: analyticsCategory,
-                        action: anlyticsAction,
+                        action: analyticsAction,
                     });
 
                     if (redirectLink) {
@@ -65,6 +65,8 @@ CourseInfoButton.propTypes = {
     text: PropTypes.string,
     icon: PropTypes.object,
     redirectLink: PropTypes.string,
+    analyticsAction: PropTypes.string,
+    analyticsCategory: PropTypes.string,
 };
 
 export default withStyles(styles)(CourseInfoButton);
