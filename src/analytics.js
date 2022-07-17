@@ -42,6 +42,7 @@ const analyticsEnum = {
             ADD_COURSE: 'Add Course', //Label is department, value is 1 if lower div, else 0
             CLICK_INFO: 'Click "Info"',
             CLICK_PREREQUISITES: 'Click "Prerequisites"',
+            CLICK_GRADES: 'Click "Grades"',
             CLICK_ZOTISTICS: 'Click "Zotistics"',
             CLICK_REVIEWS: 'Click "Reviews"',
             CLICK_PAST_ENROLLMENT: 'Click "Past Enrollment"',

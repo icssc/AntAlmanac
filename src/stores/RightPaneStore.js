@@ -1,12 +1,12 @@
 import { EventEmitter } from 'events';
 import dispatcher from '../dispatcher';
-import { termData, defaultTerm } from '../termData';
+import { getDefaultTerm } from '../termData';
 
 const defaultFormValues = {
     deptValue: 'ALL',
     deptLabel: 'ALL: Include All Departments',
     ge: 'ANY',
-    term: termData[defaultTerm].shortName,
+    term: getDefaultTerm().shortName,
     courseNumber: '',
     sectionCode: '',
     instructor: '',

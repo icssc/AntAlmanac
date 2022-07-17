@@ -4,14 +4,14 @@ import { IconButton, Tooltip, Paper, Button, useMediaQuery, Menu } from '@materi
 import { Delete, Undo, MoreHoriz } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import { clearSchedules, undoDelete } from '../../actions/AppStoreActions';
-import CustomEventsDialog from '../CustomEvents/CustomEventDialog';
+import CustomEventsDialog from './CustomEvents/CustomEventDialog';
 import { changeCurrentSchedule } from '../../actions/AppStoreActions';
 import ScreenshotButton from './ScreenshotButton';
 import ExportCalendar from './ExportCalendar';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import ReactGA from 'react-ga';
-import ConditionalWrapper from '../App/ConditionalWrapper';
+import ConditionalWrapper from '../ConditionalWrapper';
 import analyticsEnum, { logAnalytics } from '../../analytics';
 import ScheduleNameDialog from './ScheduleNameDialog';
 import EditSchedule from './EditSchedule';
