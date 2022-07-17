@@ -49,15 +49,16 @@ class RightPaneStore extends EventEmitter {
         this.emit('formDataChange');
     }
 
+    resetFormValues() {
+        this.formData = defaultFormValues;
+        this.emit('formReset');
+    }
+
     handleActions(action) {
         switch (action.type) {
             case 'TAB_CHANGE':
                 this.activeTab = action.activeTab;
                 this.emit('tabChange', this.activeTab);
-                break;
-            case 'RESET_FORM_FIELDS':
-                this.formData = defaultFormValues;
-                this.emit('formReset');
                 break;
             case 'TOGGLE_SEARCH':
                 this.doDisplaySearch = !this.doDisplaySearch;

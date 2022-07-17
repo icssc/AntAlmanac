@@ -3,7 +3,6 @@ import TermSelector from './TermSelector';
 import { withStyles } from '@material-ui/core/styles';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import RightPaneStore from '../../../../stores/RightPaneStore';
-import { resetFormValues } from '../../../../actions/RightPaneActions';
 import FuzzySearch from './FuzzySearch';
 import LegacySearch from './LegacySearch';
 import { IconButton, Tooltip } from '@material-ui/core';
@@ -80,7 +79,7 @@ const SearchForm = (props) => {
                                 });
                                 toggleSearch();
                             }}
-                            onReset={resetFormValues}
+                            onReset={RightPaneStore.resetFormValues}
                         />
                     )}
                 </div>

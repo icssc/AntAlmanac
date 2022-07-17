@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import search from 'websoc-fuzzy-search';
-import { resetFormValues } from '../../../../actions/RightPaneActions';
 import RightPaneStore from '../../../../stores/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
 
@@ -28,7 +27,7 @@ class FuzzySearch extends PureComponent {
         const emoji = value.slice(0, 2);
         const ident = emoji === emojiMap.INSTRUCTOR ? value.slice(3) : value.slice(3).split(':');
         const term = RightPaneStore.getFormData().term;
-        resetFormValues();
+        RightPaneStore.resetFormValues();
         RightPaneStore.updateFormValue('term', term);
         switch (emoji) {
             case emojiMap.GE_CATEGORY:
