@@ -2,6 +2,7 @@ import dispatcher from '../dispatcher';
 import AppStore from '../stores/AppStore';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../analytics';
+import { courseNumAsDecimal } from '../helpers';
 import {
     amber,
     blue,
@@ -41,7 +42,7 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color, qu
         category: analyticsEnum.classSearch.title,
         action: analyticsEnum.classSearch.actions.ADD_COURSE,
         label: courseDetails.deptCode,
-        value: parseInt(courseDetails.courseNumber),
+        value: courseNumAsDecimal(courseDetails.courseNumber),
     });
     const addedCourses = AppStore.getAddedCourses();
     const terms = termsInSchedule(addedCourses, term, scheduleIndex);

@@ -61,4 +61,9 @@ const termData = [
     new Term('2014 Fall', '2014 Fall Quarter'),
 ];
 
-export { termData, defaultTerm };
+//returns the default term
+function getDefaultTerm() {
+    return termData[defaultTerm];
+}
+
+export { termData, defaultTerm, getDefaultTerm };
