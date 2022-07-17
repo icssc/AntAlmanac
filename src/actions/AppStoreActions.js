@@ -86,7 +86,7 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color, qu
                 scheduleIndex === scheduleNames.length ? scheduleNames.map((_, index) => index) : [scheduleIndex],
             section: section,
         };
-        dispatcher.dispatch({ type: 'ADD_COURSE', newCourse });
+        AppStore.addCourse(newCourse);
     } else {
         const newSection = {
             ...existingCourse,
@@ -95,7 +95,7 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color, qu
                     ? scheduleNames.map((_, index) => index)
                     : existingCourse.scheduleIndices.concat(scheduleIndex),
         };
-        dispatcher.dispatch({ type: 'ADD_SECTION', newSection });
+        AppStore.addSection(newSection);
     }
     return color;
 };

@@ -46,6 +46,27 @@ class AppStore extends EventEmitter {
         return this.addedCourses;
     }
 
+    addCourse(newCourse) {
+        this.addedCourses = this.addedCourses.concat(newCourse);
+        this.updateAddedSectionCodes();
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.emit('addedCoursesChange');
+    }
+
+    addSection(newSection) {
+        this.addedCourses = this.addedCourses.map((course) => {
+            if (course.section.sectionCode === newSection.section.sectionCode) return newSection;
+            else return course;
+        });
+        this.updateAddedSectionCodes();
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.emit('addedCoursesChange');
+    }
+
     getCustomEvents() {
         // Note: remove this forEach loop after Spring 2022 ends
         this.customEvents.forEach((customEvent) => {
@@ -136,25 +157,6 @@ class AppStore extends EventEmitter {
 
     handleActions(action) {
         switch (action.type) {
-            case 'ADD_COURSE':
-                this.addedCourses = this.addedCourses.concat(action.newCourse);
-                this.updateAddedSectionCodes();
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.emit('addedCoursesChange');
-                break;
-            case 'ADD_SECTION':
-                this.addedCourses = this.addedCourses.map((course) => {
-                    if (course.section.sectionCode === action.newSection.section.sectionCode) return action.newSection;
-                    else return course;
-                });
-                this.updateAddedSectionCodes();
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.emit('addedCoursesChange');
-                break;
             case 'DELETE_COURSE':
                 this.addedCourses = action.addedCoursesAfterDelete;
                 this.updateAddedSectionCodes();
