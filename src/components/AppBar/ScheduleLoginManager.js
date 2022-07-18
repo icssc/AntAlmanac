@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { checkUser, loadUser, loadSchedule } from '../../actions/AppStoreActions';
+import { checkUser, saveGoogleUser, loadGoogleUser, loadSchedule, login } from '../../actions/AppStoreActions';
 import { LoadSchedule, SaveSchedule } from './LoadSaveFunctionality';
-import AccountBase from './AccountBase';
+import GoogleAccountBase from './AccountBase';
+import { Button } from '@material-ui/core';
+import { AssignmentReturned, Save } from '@material-ui/icons';
+import { saveSchedule } from '../../actions/AppStoreActions';
 
 const ScheduleLoginManager = () => {
     const [user, setUser] = useState(null);
@@ -10,7 +13,7 @@ const ScheduleLoginManager = () => {
         const setupUser = async () => {
             const user = await checkUser();
             setUser(user);
-            if (!user || !(await loadUser(user))) {
+            if (!user || !(await loadGoogleUser(user))) {
                 if (typeof Storage !== 'undefined') {
                     const savedUserID = window.localStorage.getItem('userID');
                     if (savedUserID != null) {
@@ -25,12 +28,19 @@ const ScheduleLoginManager = () => {
 
     return (
         <>
-            <AccountBase user={user} />
             {user ? (
-                <LoadSchedule />
+                <>
+                    <GoogleAccountBase user={user} />
+                    <Button onClick={() => saveGoogleUser(user)} color="inherit" startIcon={<Save />}>
+                        Save
+                    </Button>
+                </>
             ) : (
                 <>
-                    <SaveSchedule />
+                    <Button onClick={login} color="inherit" startIcon={<AssignmentReturned />}>
+                        Login
+                    </Button>
+                    <SaveSchedule saveFunction={saveSchedule} />
                     <LoadSchedule />
                 </>
             )}

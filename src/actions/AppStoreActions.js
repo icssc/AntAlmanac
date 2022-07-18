@@ -138,7 +138,7 @@ export const checkUser = async () => {
         return false;
     }
 };
-export const saveUser = async (user) => {
+export const saveGoogleUser = async (user) => {
     const addedCourses = AppStore.getAddedCourses();
     const customEvents = AppStore.getCustomEvents();
 
@@ -175,7 +175,7 @@ export const saveUser = async (user) => {
         openSnackbar('error', `Schedule could not be saved under username "${user.passport.user.id}`);
     }
 };
-export const loadUser = async (user) => {
+export const loadGoogleUser = async (user) => {
     if (
         !AppStore.hasUnsavedChanges() ||
         window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`)
