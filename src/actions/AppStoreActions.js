@@ -160,10 +160,7 @@ export const saveSchedule = async (userID, rememberMe) => {
                     'success',
                     `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
                 );
-
-                dispatcher.dispatch({
-                    type: 'SAVE_SCHEDULE',
-                });
+                AppStore.saveSchedule();
             } catch (e) {
                 openSnackbar('error', `Schedule could not be saved under username "${userID}`);
             }
@@ -201,10 +198,8 @@ export const loadSchedule = async (userID, rememberMe) => {
 
                 const json = await data.json();
 
-                dispatcher.dispatch({
-                    type: 'LOAD_SCHEDULE',
-                    userData: await getCoursesData(json.userData),
-                });
+                AppStore.loadSchedule(await getCoursesData(json.userData));
+
                 openSnackbar('success', `Schedule for username "${userID}" loaded.`);
             } catch (e) {
                 openSnackbar('error', `Couldn't find schedules for username "${userID}".`);
@@ -279,11 +274,7 @@ export const clearSchedules = (scheduleIndicesToClear) => {
         return customEvent.scheduleIndices.length !== 0;
     });
 
-    dispatcher.dispatch({
-        type: 'CLEAR_SCHEDULE',
-        addedCoursesAfterClear,
-        customEventsAfterClear,
-    });
+    AppStore.clearSchedule(addedCoursesAfterClear, customEventsAfterClear);
 };
 
 export const addCustomEvent = (customEvent) => {
@@ -317,7 +308,7 @@ export const undoDelete = (event) => {
 };
 
 export const changeCurrentSchedule = (newScheduleIndex) => {
-    dispatcher.dispatch({ type: 'CHANGE_CURRENT_SCHEDULE', newScheduleIndex });
+    AppStore.changeCurrentSchedule(newScheduleIndex);
 };
 
 export const changeCustomEventColor = (customEventID, newColor) => {
@@ -399,11 +390,7 @@ export const copySchedule = (from, to) => {
         action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
     });
 
-    dispatcher.dispatch({
-        type: 'COPY_SCHEDULE',
-        addedCoursesAfterCopy,
-        customEventsAfterCopy,
-    });
+    AppStore.copySchedule(addedCoursesAfterCopy, customEventsAfterCopy);
 };
 
 export const toggleTheme = (radioGroupEvent) => {
@@ -425,20 +412,14 @@ export const toggleTheme = (radioGroupEvent) => {
 export const addSchedule = (scheduleName) => {
     const newScheduleNames = [...AppStore.getScheduleNames(), scheduleName];
 
-    dispatcher.dispatch({
-        type: 'ADD_SCHEDULE',
-        newScheduleNames,
-    });
+    AppStore.addSchedule(newScheduleNames);
 };
 
 export const renameSchedule = (scheduleName, scheduleIndex) => {
     let newScheduleNames = [...AppStore.getScheduleNames()];
     newScheduleNames[scheduleIndex] = scheduleName;
 
-    dispatcher.dispatch({
-        type: 'RENAME_SCHEDULE',
-        newScheduleNames,
-    });
+    AppStore.renameSchedule(newScheduleNames);
 };
 
 // After a schedule is deleted, we need to update every course and
@@ -480,11 +461,5 @@ export const deleteSchedule = (scheduleIndex) => {
     const newAddedCourses = getEventsAfterDeleteSchedule(AppStore.getAddedCourses());
     const newCustomEvents = getEventsAfterDeleteSchedule(AppStore.getCustomEvents());
 
-    dispatcher.dispatch({
-        type: 'DELETE_SCHEDULE',
-        newScheduleNames,
-        newScheduleIndex,
-        newAddedCourses,
-        newCustomEvents,
-    });
+    AppStore.deleteSchedule(newScheduleNames, newAddedCourses, newCustomEvents, newScheduleIndex);
 };
