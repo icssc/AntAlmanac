@@ -165,14 +165,14 @@ export const saveGoogleUser = async (user) => {
 
         openSnackbar(
             'success',
-            `Schedule saved under username "${user.passport.user.id}". Don't forget to sign up for classes on WebReg!`
+            `Schedule saved for email "${user.passport.user.email}". Don't forget to sign up for classes on WebReg!`
         );
 
         dispatcher.dispatch({
             type: 'SAVE_SCHEDULE',
         });
     } catch (e) {
-        openSnackbar('error', `Schedule could not be saved under username "${user.passport.user.id}`);
+        openSnackbar('error', `Schedule could not be saved for email "${user.passport.user.email}`);
     }
 };
 export const loadGoogleUser = async (user) => {
