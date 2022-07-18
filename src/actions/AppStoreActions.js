@@ -253,10 +253,7 @@ export const deleteCustomEvent = (customEventID, scheduleIndex) => {
         return true;
     });
 
-    dispatcher.dispatch({
-        type: 'DELETE_CUSTOM_EVENT',
-        customEventsAfterDelete,
-    });
+    AppStore.deleteCustomEvent(customEventsAfterDelete);
 };
 
 export const editCustomEvent = (newCustomEvent) => {
@@ -264,7 +261,7 @@ export const editCustomEvent = (newCustomEvent) => {
         if (newCustomEvent.customEventID !== customEvent.customEventID) return customEvent;
         else return newCustomEvent;
     });
-    dispatcher.dispatch({ type: 'EDIT_CUSTOM_EVENTS', customEventsAfterEdit });
+    AppStore.editCustomEvent(customEventsAfterEdit);
 };
 
 export const clearSchedules = (scheduleIndicesToClear) => {
@@ -290,7 +287,7 @@ export const clearSchedules = (scheduleIndicesToClear) => {
 };
 
 export const addCustomEvent = (customEvent) => {
-    dispatcher.dispatch({ type: 'ADD_CUSTOM_EVENT', customEvent });
+    AppStore.addCustomEvent(customEvent);
 };
 
 export const undoDelete = (event) => {
@@ -334,12 +331,7 @@ export const changeCustomEventColor = (customEventID, newColor) => {
         }
     });
 
-    dispatcher.dispatch({
-        type: 'CUSTOM_EVENT_COLOR_CHANGE',
-        customEventsAfterColorChange,
-        customEventID,
-        newColor,
-    });
+    AppStore.changeCustomEventColor(customEventsAfterColorChange, customEventID, newColor);
 };
 
 export const changeCourseColor = (sectionCode, newColor, term) => {

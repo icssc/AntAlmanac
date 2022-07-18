@@ -170,6 +170,39 @@ class AppStore extends EventEmitter {
         this.unsavedChanges = true;
     }
 
+    addCustomEvent(customEvent) {
+        this.customEvents = this.customEvents.concat(customEvent);
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.emit('customEventsChange');
+    }
+
+    editCustomEvent(customEventsAfterEdit) {
+        this.customEvents = customEventsAfterEdit;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.emit('customEventsChange');
+    }
+
+    deleteCustomEvent(customEventsAfterDelete) {
+        this.customEvents = customEventsAfterDelete;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.emit('customEventsChange');
+    }
+
+    changeCustomEventColor(customEventsAfterColorChange, customEventID, newColor) {
+        this.customEvents = customEventsAfterColorChange;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.colorPickers[customEventID].emit('colorChange', newColor);
+        this.emit('colorChange', false);
+    }
+
     handleActions(action) {
         switch (action.type) {
             case 'CHANGE_CURRENT_SCHEDULE': //used in CalendarPaneToolbar
@@ -186,20 +219,6 @@ class AppStore extends EventEmitter {
                 this.emit('addedCoursesChange');
                 this.emit('customEventsChange');
                 break;
-            case 'ADD_CUSTOM_EVENT':
-                this.customEvents = this.customEvents.concat(action.customEvent);
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.emit('customEventsChange');
-                break;
-            case 'DELETE_CUSTOM_EVENT':
-                this.customEvents = action.customEventsAfterDelete;
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.emit('customEventsChange');
-                break;
             case 'COURSE_COLOR_CHANGE':
                 this.addedCourses = action.addedCoursesAfterColorChange;
                 this.updateAddedSectionCodes();
@@ -207,14 +226,6 @@ class AppStore extends EventEmitter {
                 this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
                 this.unsavedChanges = true;
                 this.colorPickers[action.sectionCode].emit('colorChange', action.newColor);
-                this.emit('colorChange', false);
-                break;
-            case 'CUSTOM_EVENT_COLOR_CHANGE':
-                this.customEvents = action.customEventsAfterColorChange;
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.colorPickers[action.customEventID].emit('colorChange', action.newColor);
                 this.emit('colorChange', false);
                 break;
             case 'LOAD_SCHEDULE':
@@ -239,13 +250,6 @@ class AppStore extends EventEmitter {
                 this.snackbarPosition = action.position ? action.position : this.snackbarPosition;
                 this.snackbarStyle = action.style ? action.style : this.snackbarStyle;
                 this.emit('openSnackbar');
-                break;
-            case 'EDIT_CUSTOM_EVENTS':
-                this.customEvents = action.customEventsAfterEdit;
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.emit('customEventsChange');
                 break;
             case 'COPY_SCHEDULE':
                 this.addedCourses = action.addedCoursesAfterCopy;
