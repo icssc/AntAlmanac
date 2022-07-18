@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import { TextField } from '@material-ui/core';
-import { updateFormValue } from '../../../../actions/RightPaneActions';
-import RightPaneStore from '../../../../stores/RightPaneStore';
+import RightPaneStore from '../../RightPaneStore';
 
 class SectionCodeSearchBar extends PureComponent {
     state = {
@@ -10,7 +9,7 @@ class SectionCodeSearchBar extends PureComponent {
 
     handleChange = (event) => {
         this.setState({ sectionCode: event.target.value });
-        updateFormValue('sectionCode', event.target.value);
+        RightPaneStore.updateFormValue('sectionCode', event.target.value);
     };
 
     componentDidMount() {

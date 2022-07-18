@@ -5,7 +5,7 @@ import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import noNothing from './static/no_results.png';
 import darkNoNothing from './static/dark-no_results.png';
 import AppStore from '../../../stores/AppStore';
-import RightPaneStore from '../../../stores/RightPaneStore';
+import RightPaneStore from '../RightPaneStore';
 import loadingGif from './SearchForm/Gifs/loading.gif';
 import darkModeLoadingGif from './SearchForm/Gifs/dark-loading.gif';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';

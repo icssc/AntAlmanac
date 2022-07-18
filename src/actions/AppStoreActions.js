@@ -1,4 +1,3 @@
-import dispatcher from '../dispatcher';
 import AppStore from '../stores/AppStore';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../analytics';
@@ -86,7 +85,7 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color, qu
                 scheduleIndex === scheduleNames.length ? scheduleNames.map((_, index) => index) : [scheduleIndex],
             section: section,
         };
-        dispatcher.dispatch({ type: 'ADD_COURSE', newCourse });
+        AppStore.addCourse(newCourse);
     } else {
         const newSection = {
             ...existingCourse,
@@ -95,7 +94,7 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color, qu
                     ? scheduleNames.map((_, index) => index)
                     : existingCourse.scheduleIndices.concat(scheduleIndex),
         };
-        dispatcher.dispatch({ type: 'ADD_SECTION', newSection });
+        AppStore.addSection(newSection);
     }
     return color;
 };
@@ -105,14 +104,7 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color, qu
  * @param duration in seconds and is optional.
  */
 export const openSnackbar = (variant, message, duration, position, style) => {
-    dispatcher.dispatch({
-        type: 'OPEN_SNACKBAR',
-        variant: variant,
-        message: message,
-        duration: duration,
-        position: position,
-        style: style,
-    });
+    AppStore.openSnackbar(variant, message, duration, position, style);
 };
 
 export const saveSchedule = async (userID, rememberMe) => {
@@ -160,10 +152,7 @@ export const saveSchedule = async (userID, rememberMe) => {
                     'success',
                     `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
                 );
-
-                dispatcher.dispatch({
-                    type: 'SAVE_SCHEDULE',
-                });
+                AppStore.saveSchedule();
             } catch (e) {
                 openSnackbar('error', `Schedule could not be saved under username "${userID}`);
             }
@@ -201,10 +190,8 @@ export const loadSchedule = async (userID, rememberMe) => {
 
                 const json = await data.json();
 
-                dispatcher.dispatch({
-                    type: 'LOAD_SCHEDULE',
-                    userData: await getCoursesData(json.userData),
-                });
+                AppStore.loadSchedule(await getCoursesData(json.userData));
+
                 openSnackbar('success', `Schedule for username "${userID}" loaded.`);
             } catch (e) {
                 openSnackbar('error', `Couldn't find schedules for username "${userID}".`);
@@ -234,11 +221,7 @@ export const deleteCourse = (sectionCode, scheduleIndex, term) => {
         return true;
     });
 
-    dispatcher.dispatch({
-        type: 'DELETE_COURSE',
-        addedCoursesAfterDelete,
-        deletedCourses,
-    });
+    AppStore.deleteCourse(addedCoursesAfterDelete, deletedCourses);
 };
 
 export const deleteCustomEvent = (customEventID, scheduleIndex) => {
@@ -257,10 +240,7 @@ export const deleteCustomEvent = (customEventID, scheduleIndex) => {
         return true;
     });
 
-    dispatcher.dispatch({
-        type: 'DELETE_CUSTOM_EVENT',
-        customEventsAfterDelete,
-    });
+    AppStore.deleteCustomEvent(customEventsAfterDelete);
 };
 
 export const editCustomEvent = (newCustomEvent) => {
@@ -268,7 +248,7 @@ export const editCustomEvent = (newCustomEvent) => {
         if (newCustomEvent.customEventID !== customEvent.customEventID) return customEvent;
         else return newCustomEvent;
     });
-    dispatcher.dispatch({ type: 'EDIT_CUSTOM_EVENTS', customEventsAfterEdit });
+    AppStore.editCustomEvent(customEventsAfterEdit);
 };
 
 export const clearSchedules = (scheduleIndicesToClear) => {
@@ -286,15 +266,11 @@ export const clearSchedules = (scheduleIndicesToClear) => {
         return customEvent.scheduleIndices.length !== 0;
     });
 
-    dispatcher.dispatch({
-        type: 'CLEAR_SCHEDULE',
-        addedCoursesAfterClear,
-        customEventsAfterClear,
-    });
+    AppStore.clearSchedule(addedCoursesAfterClear, customEventsAfterClear);
 };
 
 export const addCustomEvent = (customEvent) => {
-    dispatcher.dispatch({ type: 'ADD_CUSTOM_EVENT', customEvent });
+    AppStore.addCustomEvent(customEvent);
 };
 
 export const undoDelete = (event) => {
@@ -306,10 +282,7 @@ export const undoDelete = (event) => {
         if (lastDeleted !== undefined) {
             addCourse(lastDeleted.section, lastDeleted, lastDeleted.term, lastDeleted.scheduleIndex, lastDeleted.color);
 
-            dispatcher.dispatch({
-                type: 'UNDO_DELETE',
-                deletedCourses: deletedCourses.slice(0, deletedCourses.length - 1),
-            });
+            AppStore.undoDelete(deletedCourses.slice(0, deletedCourses.length - 1));
 
             openSnackbar(
                 'success',
@@ -327,7 +300,7 @@ export const undoDelete = (event) => {
 };
 
 export const changeCurrentSchedule = (newScheduleIndex) => {
-    dispatcher.dispatch({ type: 'CHANGE_CURRENT_SCHEDULE', newScheduleIndex });
+    AppStore.changeCurrentSchedule(newScheduleIndex);
 };
 
 export const changeCustomEventColor = (customEventID, newColor) => {
@@ -341,12 +314,7 @@ export const changeCustomEventColor = (customEventID, newColor) => {
         }
     });
 
-    dispatcher.dispatch({
-        type: 'CUSTOM_EVENT_COLOR_CHANGE',
-        customEventsAfterColorChange,
-        customEventID,
-        newColor,
-    });
+    AppStore.changeCustomEventColor(customEventsAfterColorChange, customEventID, newColor);
 };
 
 export const changeCourseColor = (sectionCode, newColor, term) => {
@@ -360,12 +328,7 @@ export const changeCourseColor = (sectionCode, newColor, term) => {
         }
     });
 
-    dispatcher.dispatch({
-        type: 'COURSE_COLOR_CHANGE',
-        addedCoursesAfterColorChange,
-        sectionCode,
-        newColor,
-    });
+    AppStore.changeCourseColor(addedCoursesAfterColorChange, sectionCode, newColor);
 };
 
 export const copySchedule = (from, to) => {
@@ -414,18 +377,11 @@ export const copySchedule = (from, to) => {
         action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
     });
 
-    dispatcher.dispatch({
-        type: 'COPY_SCHEDULE',
-        addedCoursesAfterCopy,
-        customEventsAfterCopy,
-    });
+    AppStore.copySchedule(addedCoursesAfterCopy, customEventsAfterCopy);
 };
 
 export const toggleTheme = (radioGroupEvent) => {
-    dispatcher.dispatch({
-        type: 'TOGGLE_THEME',
-        theme: radioGroupEvent.target.value,
-    });
+    AppStore.toggleTheme(radioGroupEvent.target.value);
     ReactGA.event({
         category: 'antalmanac-rewrite',
         action: 'toggle theme',
@@ -440,20 +396,14 @@ export const toggleTheme = (radioGroupEvent) => {
 export const addSchedule = (scheduleName) => {
     const newScheduleNames = [...AppStore.getScheduleNames(), scheduleName];
 
-    dispatcher.dispatch({
-        type: 'ADD_SCHEDULE',
-        newScheduleNames,
-    });
+    AppStore.addSchedule(newScheduleNames);
 };
 
 export const renameSchedule = (scheduleName, scheduleIndex) => {
     let newScheduleNames = [...AppStore.getScheduleNames()];
     newScheduleNames[scheduleIndex] = scheduleName;
 
-    dispatcher.dispatch({
-        type: 'RENAME_SCHEDULE',
-        newScheduleNames,
-    });
+    AppStore.renameSchedule(newScheduleNames);
 };
 
 // After a schedule is deleted, we need to update every course and
@@ -495,11 +445,5 @@ export const deleteSchedule = (scheduleIndex) => {
     const newAddedCourses = getEventsAfterDeleteSchedule(AppStore.getAddedCourses());
     const newCustomEvents = getEventsAfterDeleteSchedule(AppStore.getCustomEvents());
 
-    dispatcher.dispatch({
-        type: 'DELETE_SCHEDULE',
-        newScheduleNames,
-        newScheduleIndex,
-        newAddedCourses,
-        newCustomEvents,
-    });
+    AppStore.deleteSchedule(newScheduleNames, newAddedCourses, newCustomEvents, newScheduleIndex);
 };

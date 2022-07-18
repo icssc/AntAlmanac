@@ -3,8 +3,7 @@ import SearchForm from './SearchForm/SearchForm';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
 import CourseRenderPane from './CourseRenderPane';
 import { withStyles } from '@material-ui/core/styles';
-import RightPaneStore from '../../../stores/RightPaneStore';
-import dispatcher from '../../../dispatcher';
+import RightPaneStore from '../RightPaneStore';
 import { clearCache } from '../../../helpers';
 import { openSnackbar } from '../../../actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
@@ -30,9 +29,7 @@ class RightPane extends PureComponent {
             (event.key === 'Backspace' || event.key === 'Escape')
         ) {
             event.preventDefault();
-            dispatcher.dispatch({
-                type: 'TOGGLE_SEARCH',
-            });
+            RightPaneStore.toggleSearch();
             this.forceUpdate();
         }
     };
@@ -61,9 +58,7 @@ class RightPane extends PureComponent {
             RightPaneStore.getFormData().sectionCode !== '' ||
             RightPaneStore.getFormData().instructor !== ''
         ) {
-            dispatcher.dispatch({
-                type: 'TOGGLE_SEARCH',
-            });
+            RightPaneStore.toggleSearch();
             this.forceUpdate();
         } else {
             openSnackbar(

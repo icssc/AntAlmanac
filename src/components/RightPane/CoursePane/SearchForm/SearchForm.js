@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import TermSelector from './TermSelector';
 import { withStyles } from '@material-ui/core/styles';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
-import { updateFormValue, resetFormValues } from '../../../../actions/RightPaneActions';
+import RightPaneStore from '../../RightPaneStore';
 import FuzzySearch from './FuzzySearch';
 import LegacySearch from './LegacySearch';
 import { IconButton, Tooltip } from '@material-ui/core';
@@ -56,7 +56,7 @@ const SearchForm = (props) => {
             <form onSubmit={onFormSubmit} className={classes.form}>
                 <div className={classes.container}>
                     <div className={classes.margin}>
-                        <TermSelector changeState={updateFormValue} fieldName={'term'} />
+                        <TermSelector changeState={RightPaneStore.updateFormValue} fieldName={'term'} />
                     </div>
 
                     <div className={classes.container}>
@@ -79,7 +79,7 @@ const SearchForm = (props) => {
                                 });
                                 toggleSearch();
                             }}
-                            onReset={resetFormValues}
+                            onReset={RightPaneStore.resetFormValues}
                         />
                     )}
                 </div>

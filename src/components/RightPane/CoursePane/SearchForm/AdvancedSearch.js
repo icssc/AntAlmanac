@@ -11,9 +11,8 @@ import {
     Collapse,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import RightPaneStore from '../../../../stores/RightPaneStore';
+import RightPaneStore from '../../RightPaneStore';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import { updateFormValue } from '../../../../actions/RightPaneActions';
 
 const styles = {
     units: {
@@ -64,16 +63,16 @@ class AdvancedSearchTextFields extends PureComponent {
         if (name === 'online') {
             if (event.target.checked) {
                 this.setState({ building: 'ON', room: 'LINE' });
-                updateFormValue('building', 'ON');
-                updateFormValue('room', 'LINE');
+                RightPaneStore.updateFormValue('building', 'ON');
+                RightPaneStore.updateFormValue('room', 'LINE');
             } else {
                 this.setState({ building: '', room: '' });
-                updateFormValue('building', '');
-                updateFormValue('room', '');
+                RightPaneStore.updateFormValue('building', '');
+                RightPaneStore.updateFormValue('room', '');
             }
         } else {
             this.setState({ [name]: event.target.value });
-            updateFormValue(name, event.target.value);
+            RightPaneStore.updateFormValue(name, event.target.value);
         }
     };
 

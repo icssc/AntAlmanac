@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import SectionTableLazyWrapper from './SectionTableLazyWrapper';
-import RightPaneStore from '../../../stores/RightPaneStore';
+import RightPaneStore from '../RightPaneStore';
 import { queryWebsoc } from '../../../helpers';
 
 class GeDataFetchProvider extends PureComponent {

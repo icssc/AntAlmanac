@@ -1,5 +1,4 @@
 import { EventEmitter } from 'events';
-import dispatcher from '../dispatcher';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calenderizeHelpers';
 
 class AppStore extends EventEmitter {
@@ -44,6 +43,27 @@ class AppStore extends EventEmitter {
 
     getAddedCourses() {
         return this.addedCourses;
+    }
+
+    addCourse(newCourse) {
+        this.addedCourses = this.addedCourses.concat(newCourse);
+        this.updateAddedSectionCodes();
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.emit('addedCoursesChange');
+    }
+
+    addSection(newSection) {
+        this.addedCourses = this.addedCourses.map((course) => {
+            if (course.section.sectionCode === newSection.section.sectionCode) return newSection;
+            else return course;
+        });
+        this.updateAddedSectionCodes();
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.emit('addedCoursesChange');
     }
 
     getCustomEvents() {
@@ -134,162 +154,153 @@ class AppStore extends EventEmitter {
         }
     }
 
-    handleActions(action) {
-        switch (action.type) {
-            case 'ADD_COURSE':
-                this.addedCourses = this.addedCourses.concat(action.newCourse);
-                this.updateAddedSectionCodes();
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.emit('addedCoursesChange');
-                break;
-            case 'ADD_SECTION':
-                this.addedCourses = this.addedCourses.map((course) => {
-                    if (course.section.sectionCode === action.newSection.section.sectionCode) return action.newSection;
-                    else return course;
-                });
-                this.updateAddedSectionCodes();
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.emit('addedCoursesChange');
-                break;
-            case 'DELETE_COURSE':
-                this.addedCourses = action.addedCoursesAfterDelete;
-                this.updateAddedSectionCodes();
-                this.deletedCourses = action.deletedCourses;
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.emit('addedCoursesChange');
-                break;
-            case 'CHANGE_CURRENT_SCHEDULE':
-                this.currentScheduleIndex = action.newScheduleIndex;
-                this.emit('currentScheduleIndexChange');
-                break;
-            case 'UNDO_DELETE':
-                this.deletedCourses = action.deletedCourses;
-                this.unsavedChanges = true;
-                break;
-            case 'CLEAR_SCHEDULE':
-                this.addedCourses = action.addedCoursesAfterClear;
-                this.updateAddedSectionCodes();
-                this.customEvents = action.customEventsAfterClear;
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.emit('addedCoursesChange');
-                this.emit('customEventsChange');
-                break;
-            case 'ADD_CUSTOM_EVENT':
-                this.customEvents = this.customEvents.concat(action.customEvent);
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.emit('customEventsChange');
-                break;
-            case 'DELETE_CUSTOM_EVENT':
-                this.customEvents = action.customEventsAfterDelete;
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.emit('customEventsChange');
-                break;
-            case 'COURSE_COLOR_CHANGE':
-                this.addedCourses = action.addedCoursesAfterColorChange;
-                this.updateAddedSectionCodes();
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.colorPickers[action.sectionCode].emit('colorChange', action.newColor);
-                this.emit('colorChange', false);
-                break;
-            case 'CUSTOM_EVENT_COLOR_CHANGE':
-                this.customEvents = action.customEventsAfterColorChange;
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.colorPickers[action.customEventID].emit('colorChange', action.newColor);
-                this.emit('colorChange', false);
-                break;
-            case 'LOAD_SCHEDULE':
-                this.addedCourses = action.userData.addedCourses;
-                this.scheduleNames = action.userData.scheduleNames;
-                this.updateAddedSectionCodes();
-                this.customEvents = action.userData.customEvents;
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = false;
-                this.emit('addedCoursesChange');
-                this.emit('customEventsChange');
-                this.emit('scheduleNamesChange');
-                break;
-            case 'SAVE_SCHEDULE':
-                this.unsavedChanges = false;
-                break;
-            case 'OPEN_SNACKBAR':
-                this.snackbarVariant = action.variant;
-                this.snackbarMessage = action.message;
-                this.snackbarDuration = action.duration ? action.duration : this.snackbarDuration;
-                this.snackbarPosition = action.position ? action.position : this.snackbarPosition;
-                this.snackbarStyle = action.style ? action.style : this.snackbarStyle;
-                this.emit('openSnackbar');
-                break;
-            case 'EDIT_CUSTOM_EVENTS':
-                this.customEvents = action.customEventsAfterEdit;
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.emit('customEventsChange');
-                break;
-            case 'COPY_SCHEDULE':
-                this.addedCourses = action.addedCoursesAfterCopy;
-                this.updateAddedSectionCodes();
-                this.customEvents = action.customEventsAfterCopy;
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.emit('addedCoursesChange');
-                this.emit('customEventsChange');
-                break;
-            case 'TOGGLE_THEME':
-                this.theme = action.theme;
-                this.emit('themeToggle');
-                window.localStorage.setItem('theme', action.theme);
-                break;
-            case 'ADD_SCHEDULE':
-                // If the user adds a schedule, update the array of schedule names, add
-                // another key/value pair to keep track of the section codes for that schedule,
-                // and redirect the user to the new schedule
-                this.scheduleNames = action.newScheduleNames;
-                this.addedSectionCodes[action.newScheduleNames.length - 1] = new Set();
-                this.currentScheduleIndex = action.newScheduleNames.length - 1;
-                this.emit('scheduleNamesChange');
-                this.emit('currentScheduleIndexChange');
-                break;
-            case 'RENAME_SCHEDULE':
-                this.scheduleNames = action.newScheduleNames;
-                this.emit('scheduleNamesChange');
-                break;
-            case 'DELETE_SCHEDULE':
-                this.scheduleNames = action.newScheduleNames;
-                this.addedCourses = action.newAddedCourses;
-                this.updateAddedSectionCodes();
-                this.customEvents = action.newCustomEvents;
-                this.currentScheduleIndex = action.newScheduleIndex;
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.emit('scheduleNamesChange');
-                this.emit('currentScheduleIndexChange');
-                this.emit('addedCoursesChange');
-                this.emit('customEventsChange');
-                break;
-            default: //do nothing
-        }
+    deleteCourse(addedCoursesAfterDelete, deletedCourses) {
+        this.addedCourses = addedCoursesAfterDelete;
+        this.updateAddedSectionCodes();
+        this.deletedCourses = deletedCourses;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.emit('addedCoursesChange');
+    }
+
+    undoDelete(deletedCourses) {
+        this.deletedCourses = deletedCourses;
+        this.unsavedChanges = true;
+    }
+
+    addCustomEvent(customEvent) {
+        this.customEvents = this.customEvents.concat(customEvent);
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.emit('customEventsChange');
+    }
+
+    editCustomEvent(customEventsAfterEdit) {
+        this.customEvents = customEventsAfterEdit;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.emit('customEventsChange');
+    }
+
+    deleteCustomEvent(customEventsAfterDelete) {
+        this.customEvents = customEventsAfterDelete;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.emit('customEventsChange');
+    }
+
+    changeCustomEventColor(customEventsAfterColorChange, customEventID, newColor) {
+        this.customEvents = customEventsAfterColorChange;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.colorPickers[customEventID].emit('colorChange', newColor);
+        this.emit('colorChange', false);
+    }
+
+    addSchedule(newScheduleNames) {
+        // If the user adds a schedule, update the array of schedule names, add
+        // another key/value pair to keep track of the section codes for that schedule,
+        // and redirect the user to the new schedule
+        this.scheduleNames = newScheduleNames;
+        this.addedSectionCodes[newScheduleNames.length - 1] = new Set();
+        this.currentScheduleIndex = newScheduleNames.length - 1;
+        this.emit('scheduleNamesChange');
+        this.emit('currentScheduleIndexChange');
+    }
+
+    renameSchedule(newScheduleNames) {
+        this.scheduleNames = newScheduleNames;
+        this.emit('scheduleNamesChange');
+    }
+
+    saveSchedule() {
+        this.unsavedChanges = false;
+    }
+
+    copySchedule(addedCoursesAfterCopy, customEventsAfterCopy) {
+        this.addedCourses = addedCoursesAfterCopy;
+        this.updateAddedSectionCodes();
+        this.customEvents = customEventsAfterCopy;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.emit('addedCoursesChange');
+        this.emit('customEventsChange');
+    }
+
+    loadSchedule(userData) {
+        this.addedCourses = userData.addedCourses;
+        this.scheduleNames = userData.scheduleNames;
+        this.updateAddedSectionCodes();
+        this.customEvents = userData.customEvents;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = false;
+        this.emit('addedCoursesChange');
+        this.emit('customEventsChange');
+        this.emit('scheduleNamesChange');
+    }
+
+    changeCurrentSchedule(newScheduleIndex) {
+        this.currentScheduleIndex = newScheduleIndex;
+        this.emit('currentScheduleIndexChange');
+    }
+
+    clearSchedule(addedCoursesAfterClear, customEventsAfterClear) {
+        this.addedCourses = addedCoursesAfterClear;
+        this.updateAddedSectionCodes();
+        this.customEvents = customEventsAfterClear;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.emit('addedCoursesChange');
+        this.emit('customEventsChange');
+    }
+
+    deleteSchedule(newScheduleNames, newAddedCourses, newCustomEvents, newScheduleIndex) {
+        this.scheduleNames = newScheduleNames;
+        this.addedCourses = newAddedCourses;
+        this.updateAddedSectionCodes();
+        this.customEvents = newCustomEvents;
+        this.currentScheduleIndex = newScheduleIndex;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.emit('scheduleNamesChange');
+        this.emit('currentScheduleIndexChange');
+        this.emit('addedCoursesChange');
+        this.emit('customEventsChange');
+    }
+
+    changeCourseColor(addedCoursesAfterColorChange, sectionCode, newColor) {
+        this.addedCourses = addedCoursesAfterColorChange;
+        this.updateAddedSectionCodes();
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.colorPickers[sectionCode].emit('colorChange', newColor);
+        this.emit('colorChange', false);
+    }
+
+    openSnackbar(variant, message, duration, position, style) {
+        this.snackbarVariant = variant;
+        this.snackbarMessage = message;
+        this.snackbarDuration = duration ? duration : this.snackbarDuration;
+        this.snackbarPosition = position ? position : this.snackbarPosition;
+        this.snackbarStyle = style ? style : this.snackbarStyle;
+        this.emit('openSnackbar');
+    }
+
+    toggleTheme(theme) {
+        this.theme = theme;
+        this.emit('themeToggle');
+        window.localStorage.setItem('theme', theme);
     }
 }
 
 const store = new AppStore();
-dispatcher.register(store.handleActions.bind(store));
 export default store;

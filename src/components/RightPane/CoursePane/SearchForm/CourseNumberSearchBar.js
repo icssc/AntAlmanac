@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import { TextField } from '@material-ui/core';
-import { updateFormValue } from '../../../../actions/RightPaneActions';
-import RightPaneStore from '../../../../stores/RightPaneStore';
+import RightPaneStore from '../../RightPaneStore';
 
 class CourseNumberSearchBar extends PureComponent {
     state = {
@@ -10,7 +9,7 @@ class CourseNumberSearchBar extends PureComponent {
 
     handleChange = (event) => {
         this.setState({ courseNumber: event.target.value });
-        updateFormValue('courseNumber', event.target.value);
+        RightPaneStore.updateFormValue('courseNumber', event.target.value);
     };
 
     componentDidMount() {

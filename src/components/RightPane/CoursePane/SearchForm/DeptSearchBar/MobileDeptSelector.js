@@ -4,8 +4,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import depts from './depts';
-import { updateFormValue } from '../../../actions/RightPaneActions';
-import RightPaneStore from '../../../stores/RightPaneStore.js';
+import { updateFormValue } from '../../../../stores/RightPaneStore';
+import RightPaneStore from '../../../RightPaneStore';
 import { withStyles } from '@material-ui/core/styles';
 
 const style = {
