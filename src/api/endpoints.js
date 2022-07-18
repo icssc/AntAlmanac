@@ -1,8 +1,6 @@
 function endpointTransform(path) {
-    if (process.env.NODE_ENV === 'development')
-        return process.env.REACT_APP_ENDPOINT_URL
-            ? process.env.REACT_APP_ENDPOINT_URL + path
-            : `https://dev.api.antalmanac.com${path}`;
+    if (process.env.NODE_ENV === 'development' || process.env.REACT_APP_STAGING === 'true')
+        return `https://dev.api.antalmanac.com${path}`;
     else return `https://api.antalmanac.com${path}`;
 }
 

@@ -1,13 +1,12 @@
 import { EventEmitter } from 'events';
 import dispatcher from '../dispatcher';
-import { clearCache } from '../helpers';
-import { termData, defaultTerm } from '../termData';
+import { getDefaultTerm } from '../termData';
 
 const defaultFormValues = {
     deptValue: 'ALL',
     deptLabel: 'ALL: Include All Departments',
     ge: 'ANY',
-    term: termData[defaultTerm].shortName,
+    term: getDefaultTerm().shortName,
     courseNumber: '',
     sectionCode: '',
     instructor: '',
@@ -26,6 +25,7 @@ class RightPaneStore extends EventEmitter {
         this.formData = defaultFormValues;
         this.activeTab = 0;
         this.doDisplaySearch = true;
+        this.openSpotAlertPopoverActive = false;
     }
 
     getFormData() {
@@ -38,6 +38,10 @@ class RightPaneStore extends EventEmitter {
 
     getDoDisplaySearch() {
         return this.doDisplaySearch;
+    }
+
+    getOpenSpotAlertPopoverActive() {
+        return this.openSpotAlertPopoverActive;
     }
 
     handleActions(action) {
@@ -55,9 +59,11 @@ class RightPaneStore extends EventEmitter {
                 this.emit('formReset');
                 break;
             case 'TOGGLE_SEARCH':
-                if (this.doDisplaySearch) clearCache();
                 this.doDisplaySearch = !this.doDisplaySearch;
                 // this.emit('searchToggle');
+                break;
+            case 'TOGGLE_OPEN_SPOT_ALERT':
+                this.openSpotAlertPopoverActive = !this.openSpotAlertPopoverActive;
                 break;
             default: //do nothing
         }

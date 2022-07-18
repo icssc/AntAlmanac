@@ -82,6 +82,7 @@ class ScheduleCalendar extends PureComponent {
         eventsInCalendar: AppStore.getEventsInCalendar(),
         finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
         currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
+        scheduleNames: AppStore.getScheduleNames(),
     };
 
     static eventStyleGetter = (event) => {
@@ -129,24 +130,34 @@ class ScheduleCalendar extends PureComponent {
         });
     };
 
-    updateEventsInCalendar = () => {
+    updateEventsInCalendar = (close = true) => {
         this.setState({
             eventsInCalendar: AppStore.getEventsInCalendar(),
             finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
         });
-        this.handleClosePopover();
+        if (close) this.handleClosePopover();
+    };
+
+    updateScheduleNames = () => {
+        this.setState({
+            scheduleNames: AppStore.getScheduleNames(),
+        });
     };
 
     componentDidMount = () => {
         AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.on('customEventsChange', this.updateEventsInCalendar);
+        AppStore.on('colorChange', this.updateEventsInCalendar);
         AppStore.on('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
+        AppStore.on('scheduleNamesChange', this.updateScheduleNames);
     };
 
     componentWillUnmount = () => {
         AppStore.removeListener('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.removeListener('customEventsChange', this.updateEventsInCalendar);
+        AppStore.removeListener('colorChange', this.updateEventsInCalendar);
         AppStore.removeListener('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
+        AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
     };
 
     handleTakeScreenshot = async (html2CanvasScreenshot) => {
@@ -235,6 +246,7 @@ class ScheduleCalendar extends PureComponent {
                     currentScheduleIndex={this.state.currentScheduleIndex}
                     toggleDisplayFinalsSchedule={this.toggleDisplayFinalsSchedule}
                     showFinalsSchedule={this.state.showFinalsSchedule}
+                    scheduleNames={this.state.scheduleNames}
                 />
                 <div
                     id="screenshot"
@@ -270,6 +282,7 @@ class ScheduleCalendar extends PureComponent {
                             closePopover={this.handleClosePopover}
                             courseInMoreInfo={this.state.courseInMoreInfo}
                             currentScheduleIndex={this.state.currentScheduleIndex}
+                            scheduleNames={this.state.scheduleNames}
                         />
                     </Popper>
                     <Calendar
