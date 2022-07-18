@@ -1,5 +1,4 @@
 import { EventEmitter } from 'events';
-import dispatcher from '../dispatcher';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calenderizeHelpers';
 
 class AppStore extends EventEmitter {
@@ -296,18 +295,12 @@ class AppStore extends EventEmitter {
         this.emit('openSnackbar');
     }
 
-    handleActions(action) {
-        switch (action.type) {
-            case 'TOGGLE_THEME':
-                this.theme = action.theme;
-                this.emit('themeToggle');
-                window.localStorage.setItem('theme', action.theme);
-                break;
-            default: //do nothing
-        }
+    toggleTheme(theme) {
+        this.theme = theme;
+        this.emit('themeToggle');
+        window.localStorage.setItem('theme', theme);
     }
 }
 
 const store = new AppStore();
-dispatcher.register(store.handleActions.bind(store));
 export default store;

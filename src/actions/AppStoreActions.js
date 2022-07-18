@@ -1,4 +1,3 @@
-import dispatcher from '../dispatcher';
 import AppStore from '../stores/AppStore';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../analytics';
@@ -382,10 +381,7 @@ export const copySchedule = (from, to) => {
 };
 
 export const toggleTheme = (radioGroupEvent) => {
-    dispatcher.dispatch({
-        type: 'TOGGLE_THEME',
-        theme: radioGroupEvent.target.value,
-    });
+    AppStore.toggleTheme(radioGroupEvent.target.value);
     ReactGA.event({
         category: 'antalmanac-rewrite',
         action: 'toggle theme',
