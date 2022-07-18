@@ -336,12 +336,7 @@ export const changeCourseColor = (sectionCode, newColor, term) => {
         }
     });
 
-    dispatcher.dispatch({
-        type: 'COURSE_COLOR_CHANGE',
-        addedCoursesAfterColorChange,
-        sectionCode,
-        newColor,
-    });
+    AppStore.changeCourseColor(addedCoursesAfterColorChange, sectionCode, newColor);
 };
 
 export const copySchedule = (from, to) => {

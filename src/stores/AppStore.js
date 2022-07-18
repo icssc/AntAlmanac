@@ -277,17 +277,18 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
+    changeCourseColor(addedCoursesAfterColorChange, sectionCode, newColor) {
+        this.addedCourses = addedCoursesAfterColorChange;
+        this.updateAddedSectionCodes();
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.colorPickers[sectionCode].emit('colorChange', newColor);
+        this.emit('colorChange', false);
+    }
+
     handleActions(action) {
         switch (action.type) {
-            case 'COURSE_COLOR_CHANGE':
-                this.addedCourses = action.addedCoursesAfterColorChange;
-                this.updateAddedSectionCodes();
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.colorPickers[action.sectionCode].emit('colorChange', action.newColor);
-                this.emit('colorChange', false);
-                break;
             case 'OPEN_SNACKBAR':
                 this.snackbarVariant = action.variant;
                 this.snackbarMessage = action.message;
