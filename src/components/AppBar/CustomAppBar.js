@@ -55,7 +55,7 @@ const CustomAppBar = (props) => {
 
                 <div style={{ flexGrow: '1' }} />
 
-                <ScheduleLoginManager></ScheduleLoginManager>
+                <ScheduleLoginManager />
 
                 <ConditionalWrapper
                     condition={isMobileScreen}
