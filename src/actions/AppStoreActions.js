@@ -105,14 +105,7 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color, qu
  * @param duration in seconds and is optional.
  */
 export const openSnackbar = (variant, message, duration, position, style) => {
-    dispatcher.dispatch({
-        type: 'OPEN_SNACKBAR',
-        variant: variant,
-        message: message,
-        duration: duration,
-        position: position,
-        style: style,
-    });
+    AppStore.openSnackbar(variant, message, duration, position, style);
 };
 
 export const saveSchedule = async (userID, rememberMe) => {

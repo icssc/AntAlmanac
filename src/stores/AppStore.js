@@ -287,16 +287,17 @@ class AppStore extends EventEmitter {
         this.emit('colorChange', false);
     }
 
+    openSnackbar(variant, message, duration, position, style) {
+        this.snackbarVariant = variant;
+        this.snackbarMessage = message;
+        this.snackbarDuration = duration ? duration : this.snackbarDuration;
+        this.snackbarPosition = position ? position : this.snackbarPosition;
+        this.snackbarStyle = style ? style : this.snackbarStyle;
+        this.emit('openSnackbar');
+    }
+
     handleActions(action) {
         switch (action.type) {
-            case 'OPEN_SNACKBAR':
-                this.snackbarVariant = action.variant;
-                this.snackbarMessage = action.message;
-                this.snackbarDuration = action.duration ? action.duration : this.snackbarDuration;
-                this.snackbarPosition = action.position ? action.position : this.snackbarPosition;
-                this.snackbarStyle = action.style ? action.style : this.snackbarStyle;
-                this.emit('openSnackbar');
-                break;
             case 'TOGGLE_THEME':
                 this.theme = action.theme;
                 this.emit('themeToggle');
