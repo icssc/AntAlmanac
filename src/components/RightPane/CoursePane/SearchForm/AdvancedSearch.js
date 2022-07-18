@@ -11,7 +11,7 @@ import {
     Collapse,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import RightPaneStore from '../../../../stores/RightPaneStore';
+import RightPaneStore from '../../RightPaneStore';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 
 const styles = {

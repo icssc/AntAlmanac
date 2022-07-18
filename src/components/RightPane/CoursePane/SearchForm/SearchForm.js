@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import TermSelector from './TermSelector';
 import { withStyles } from '@material-ui/core/styles';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
-import RightPaneStore from '../../../../stores/RightPaneStore';
+import RightPaneStore from '../../RightPaneStore';
 import FuzzySearch from './FuzzySearch';
 import LegacySearch from './LegacySearch';
 import { IconButton, Tooltip } from '@material-ui/core';

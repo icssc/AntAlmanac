@@ -3,7 +3,7 @@ import depts from './depts';
 import { withStyles } from '@material-ui/core/styles';
 import { TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-import RightPaneStore from '../../../../../stores/RightPaneStore';
+import RightPaneStore from '../../../RightPaneStore';
 
 const style = {
     formControl: {

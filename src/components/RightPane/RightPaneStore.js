@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { getDefaultTerm } from '../termData';
+import { getDefaultTerm } from '../../termData';
 import ReactGA from 'react-ga';
 
 const defaultFormValues = {

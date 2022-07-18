@@ -5,7 +5,7 @@ import InputMask from 'react-input-mask';
 import { Button, Popover, TextField, Typography } from '@material-ui/core';
 import { openSnackbar } from '../../../actions/AppStoreActions';
 import { REGISTER_NOTIFICATIONS_ENDPOINT } from '../../../api/endpoints';
-import RightPaneStore from '../../../stores/RightPaneStore';
+import RightPaneStore from '../RightPaneStore';
 
 const phoneNumberRegex = RegExp(/\d{10}/);
 

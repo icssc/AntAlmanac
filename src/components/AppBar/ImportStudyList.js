@@ -9,7 +9,7 @@ import {
     TextField,
 } from '@material-ui/core';
 import { addCoursesMultiple, combineSOCObjects, getCourseInfo, queryWebsoc } from '../../helpers';
-import RightPaneStore from '../../stores/RightPaneStore';
+import RightPaneStore from '../RightPane/RightPaneStore';
 import { openSnackbar } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
 import { PostAdd } from '@material-ui/icons';

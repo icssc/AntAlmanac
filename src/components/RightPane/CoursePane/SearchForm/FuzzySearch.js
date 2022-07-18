@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import search from 'websoc-fuzzy-search';
-import RightPaneStore from '../../../../stores/RightPaneStore';
+import RightPaneStore from '../../RightPaneStore';
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
 
 const emojiMap = {

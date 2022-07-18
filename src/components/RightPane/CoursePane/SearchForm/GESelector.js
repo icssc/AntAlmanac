@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { InputLabel, MenuItem, FormControl, Select } from '@material-ui/core';
-import RightPaneStore from '../../../../stores/RightPaneStore';
+import RightPaneStore from '../../RightPaneStore';
 import { withStyles } from '@material-ui/core/styles';
 
 const geList = [

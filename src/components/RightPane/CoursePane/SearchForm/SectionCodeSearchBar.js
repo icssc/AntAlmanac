@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { TextField } from '@material-ui/core';
-import RightPaneStore from '../../../../stores/RightPaneStore';
+import RightPaneStore from '../../RightPaneStore';
 
 class SectionCodeSearchBar extends PureComponent {
     state = {
