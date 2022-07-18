@@ -234,11 +234,7 @@ export const deleteCourse = (sectionCode, scheduleIndex, term) => {
         return true;
     });
 
-    dispatcher.dispatch({
-        type: 'DELETE_COURSE',
-        addedCoursesAfterDelete,
-        deletedCourses,
-    });
+    AppStore.deleteCourse(addedCoursesAfterDelete, deletedCourses);
 };
 
 export const deleteCustomEvent = (customEventID, scheduleIndex) => {
@@ -306,10 +302,7 @@ export const undoDelete = (event) => {
         if (lastDeleted !== undefined) {
             addCourse(lastDeleted.section, lastDeleted, lastDeleted.term, lastDeleted.scheduleIndex, lastDeleted.color);
 
-            dispatcher.dispatch({
-                type: 'UNDO_DELETE',
-                deletedCourses: deletedCourses.slice(0, deletedCourses.length - 1),
-            });
+            AppStore.undoDelete(deletedCourses.slice(0, deletedCourses.length - 1));
 
             openSnackbar(
                 'success',

@@ -155,24 +155,26 @@ class AppStore extends EventEmitter {
         }
     }
 
+    deleteCourse(addedCoursesAfterDelete, deletedCourses) {
+        this.addedCourses = addedCoursesAfterDelete;
+        this.updateAddedSectionCodes();
+        this.deletedCourses = deletedCourses;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.unsavedChanges = true;
+        this.emit('addedCoursesChange');
+    }
+
+    undoDelete(deletedCourses) {
+        this.deletedCourses = deletedCourses;
+        this.unsavedChanges = true;
+    }
+
     handleActions(action) {
         switch (action.type) {
-            case 'DELETE_COURSE':
-                this.addedCourses = action.addedCoursesAfterDelete;
-                this.updateAddedSectionCodes();
-                this.deletedCourses = action.deletedCourses;
-                this.finalsEventsInCalendar = calendarizeFinals();
-                this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
-                this.unsavedChanges = true;
-                this.emit('addedCoursesChange');
-                break;
-            case 'CHANGE_CURRENT_SCHEDULE':
+            case 'CHANGE_CURRENT_SCHEDULE': //used in CalendarPaneToolbar
                 this.currentScheduleIndex = action.newScheduleIndex;
                 this.emit('currentScheduleIndexChange');
-                break;
-            case 'UNDO_DELETE':
-                this.deletedCourses = action.deletedCourses;
-                this.unsavedChanges = true;
                 break;
             case 'CLEAR_SCHEDULE':
                 this.addedCourses = action.addedCoursesAfterClear;
