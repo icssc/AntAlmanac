@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { AssignmentReturn, AssignmentReturned, SaveAlt } from '@material-ui/icons';
-import { Button, Avatar, Box, withStyles, Menu, MenuItem, Popover } from '@material-ui/core';
-import { login, logout, saveGoogleUser } from '../../actions/AppStoreActions';
+import { AssignmentReturn, AssignmentReturned } from '@material-ui/icons';
+import { Button, Avatar, Box, withStyles, MenuItem, Popover } from '@material-ui/core';
+import { login, logout } from '../../actions/AppStoreActions';
 import { LoadSchedule } from './LoadSaveFunctionality';
 
 const styles = {
