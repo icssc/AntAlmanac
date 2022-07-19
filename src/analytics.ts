@@ -71,13 +71,17 @@ const analyticsEnum = {
 
 export default analyticsEnum;
 
+
+interface AnalyticsProps {
+    category: string,
+    action: string,
+    label?: string,
+    value?: number
+};
+
 /**
  * This is just a wrapper around ReactGA4.event so we don't have to import it everywhere
- * @param {string} category required
- * @param {string} action required
- * @param {string} label optional
- * @param {number} value optional
  */
-export function logAnalytics({ category, action, label, value }) {
+export function logAnalytics({ category, action, label, value }: AnalyticsProps) {
     ReactGA4.event({ category, action, label, value });
 }
