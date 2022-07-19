@@ -5,7 +5,7 @@ import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../../analytics';
 
 class AboutPage extends PureComponent {
-    state = {
+    state: {isOpen: boolean} = {
         isOpen: false,
     };
     render() {
