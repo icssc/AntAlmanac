@@ -47,7 +47,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 4. The site should load on http://localhost:3000  
 As you make changes to the React application in `src`, those changes will be automatically reflected on the site.
 
-### Running the Backend
+### Running the [Backend](https://github.com/icssc/antalmanac-backend)
 The backend server **isn't necessary for frontend development**. By default, your frontend will send requests to `dev.api.antalmanac.com`, which has it's own database that is seperate from production's.
 
 If you need run the backend, you must do the following:
