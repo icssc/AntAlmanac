@@ -3,10 +3,11 @@ import CloseIcon from '@material-ui/icons/Close';
 import { amber, green } from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
 import AppStore from '../../stores/AppStore';
-import { withStyles } from '@material-ui/core/styles';
+import { Theme, withStyles } from '@material-ui/core/styles';
+import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { withSnackbar } from 'notistack';
 
-const styles = (theme) => ({
+const styles: Styles<Theme, object> = (theme) => ({
     success: {
         backgroundColor: green[600],
     },
@@ -30,7 +31,13 @@ const styles = (theme) => ({
     },
 });
 
-class NotificationSnackbar extends PureComponent {
+interface NotificationSnackbarProps {
+    classes: ClassNameMap,
+    enqueueSnackbar: any, // these come from AppStoreActions. leaving untyped because we're hopefully gonna refactor. see #401
+    closeSnackbar: any
+}
+
+class NotificationSnackbar extends PureComponent<NotificationSnackbarProps> {
     state = {
         message: '',
         variant: 'info',
@@ -47,7 +54,7 @@ class NotificationSnackbar extends PureComponent {
         });
     };
 
-    snackbarAction = (key) => {
+    snackbarAction = (key: string|number) => {
         const { classes } = this.props;
         return (
             <IconButton
