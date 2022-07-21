@@ -36,19 +36,21 @@ const GoogleAccountBase = ({ user, classes }) => {
         <>
             {user ? (
                 <>
-                    <Button onClick={handleClick} className={classes.profile}>
+                    <Button onClick={handleClick} className={classes.profile} color="inherit">
                         <Avatar
                             alt={user.passport.user.name}
                             src={user.passport.user.picture}
                             className={classes.avatar}
                         />
-                        <Box className={classes.username}>{user.passport.user.name.toLocaleUpperCase()}</Box>
+                        <Box className={classes.username} color="inherit">
+                            {user.passport.user.name.toLocaleUpperCase()}
+                        </Box>
                     </Button>
 
                     <Popover
                         anchorEl={anchorEl}
-                        anchorOrigin={{ vertical: 'bottom' }}
-                        transformOrigin={{ vertical: 'top' }}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
                         keepMounted
                         open={Boolean(anchorEl)}
                         onClose={handleClose}
