@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent, Fragment, MouseEventHandler } from 'react';
 import {
     Badge,
     Button,
@@ -17,7 +17,7 @@ import { NEWS_ENDPOINT } from '../../api/endpoints';
 import { Skeleton } from '@material-ui/lab';
 import moment from 'moment-timezone';
 import analyticsEnum, { logAnalytics } from '../../analytics';
-import { Styles } from '@material-ui/core/styles/withStyles';
+import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 
 const styles: Styles<Theme, object> = (theme) => ({ 
     list: {
@@ -49,12 +49,7 @@ interface NewsResponse {
 }
 
 interface NewsProps {
-    classes: { // as in, CSS classes. possibly to pass down to child components?
-        dot: string,
-        list: string,
-        listItem: string,
-        skeleton: string,
-    }
+    classes: ClassNameMap<string>
 }
 
 interface NewsState {
@@ -66,7 +61,7 @@ interface NewsState {
 
 class News extends PureComponent<NewsProps, NewsState> {
     _isMounted = false; //necessary to fix a warning. https://stackoverflow.com/a/56537704
-    state = {
+    state: NewsState = {
         anchorEl: undefined,
         newsItems: undefined,
         loading: true,
@@ -106,7 +101,8 @@ class News extends PureComponent<NewsProps, NewsState> {
 
     getNewsItems = () => {
         const { classes } = this.props;
-        if (this.state.loading === false && this.state.newsItems && this.state.newsItems.length !== 0) {
+        if (this.state.loading === false && this.state.newsItems && this.state.newsItems.length > 0) {
+            const newsItemsLastIndex = this.state.newsItems.length - 1;
             return this.state.newsItems.map((newsItem, index) => {
                 return (
                     <Fragment key={newsItem['_id']}>
@@ -121,7 +117,7 @@ class News extends PureComponent<NewsProps, NewsState> {
                                 {moment(newsItem.date).tz('America/Los_Angeles').format('MMMM Do YYYY')}
                             </Typography>
                         </ListItem>
-                        {index !== this.state.newsItems.length - 1 ? <Divider /> : null}
+                        {index < newsItemsLastIndex ? <Divider /> : null}
                     </Fragment>
                 );
             });
@@ -150,7 +146,7 @@ class News extends PureComponent<NewsProps, NewsState> {
         }
     };
 
-    openPopup = (e) => {
+    openPopup: MouseEventHandler<HTMLElement> = (e) => {
         logAnalytics({
             category: analyticsEnum.nav.title,
             action: analyticsEnum.nav.actions.CLICK_NEWS,
