@@ -1,4 +1,4 @@
-import React, { PureComponent, useEffect } from 'react';
+import React, { PureComponent, useEffect, ChangeEvent } from 'react';
 import { CloudDownload, Save } from '@material-ui/icons';
 import {
     Button,
@@ -14,8 +14,19 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { isDarkMode } from '../../helpers';
 
-class LoadSaveButtonBase extends PureComponent {
-    state = {
+interface LoadSaveButtonBaseProps {
+    action: any,
+    actionName: string
+}
+
+interface LoadSaveButtonBaseState {
+    isOpen: boolean,
+    userID: string,
+    rememberMe: boolean
+}
+
+class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSaveButtonBaseState> {
+    state: LoadSaveButtonBaseState = {
         isOpen: false,
         userID: '',
         rememberMe: true,
@@ -31,7 +42,7 @@ class LoadSaveButtonBase extends PureComponent {
         }
     };
 
-    handleClose = (wasCancelled) => {
+    handleClose = (wasCancelled: boolean) => {
         if (wasCancelled)
             this.setState({ isOpen: false }, () => {
                 document.removeEventListener('keydown', this.enterEvent, false);
@@ -45,17 +56,17 @@ class LoadSaveButtonBase extends PureComponent {
             });
     };
 
-    handleToggleRememberMe = (event) => {
+    handleToggleRememberMe = (event: ChangeEvent<HTMLInputElement>) => {
         this.setState({ rememberMe: event.target.checked });
     };
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    componentDidUpdate(prevProps: any, prevState: LoadSaveButtonBaseState,) {
         if (!prevState.isOpen && this.state.isOpen) document.addEventListener('keydown', this.enterEvent, false);
         else if (prevState.isOpen && !this.state.isOpen)
             document.removeEventListener('keydown', this.enterEvent, false);
     }
 
-    enterEvent = (event) => {
+    enterEvent = (event: KeyboardEvent) => {
         const charCode = event.which ? event.which : event.keyCode;
 
         if (charCode === 13 || charCode === 10) {
@@ -104,10 +115,10 @@ class LoadSaveButtonBase extends PureComponent {
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'white' : 'primary'}>
-                            Cancel
+                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'secondary' : 'primary'}>
+                            {"Cancel"}
                         </Button>
-                        <Button onClick={() => this.handleClose(false)} color={isDarkMode() ? 'white' : 'primary'}>
+                        <Button onClick={() => this.handleClose(false)} color={isDarkMode() ? 'secondary' : 'primary'}>
                             {this.props.actionName}
                         </Button>
                     </DialogActions>

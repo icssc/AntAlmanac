@@ -53,6 +53,9 @@ class App extends PureComponent {
                 primary: {
                     main: '#305db7',
                 },
+                secondary: {
+                    main: '#ffffff',
+                },
             },
         });
 
