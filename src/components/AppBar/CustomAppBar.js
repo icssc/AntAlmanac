@@ -1,4 +1,4 @@
-import React, {MouseEventHandler, ReactElement} from 'react';
+import React from 'react';
 import { AppBar, Toolbar, Menu, useMediaQuery } from '@material-ui/core';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -13,8 +13,6 @@ import AboutPage from './AboutPage';
 import ConditionalWrapper from '../ConditionalWrapper';
 import ImportStudyList from './ImportStudyList';
 import Feedback from './Feedback';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-
 
 const styles = {
     appBar: {
@@ -35,17 +33,14 @@ const styles = {
     },
 };
 
-interface CustomAppBarProps {
-    classes: ClassNameMap
-}
-
-const CustomAppBar = ({classes}: CustomAppBarProps) => {
+const CustomAppBar = (props) => {
+    const { classes } = props;
 
     const isMobileScreen = useMediaQuery('(max-width:750px)');
 
-    const [anchorEl, setAnchorEl] = React.useState<Element|null>(null);
+    const [anchorEl, setAnchorEl] = React.useState(null);
 
-    const handleClick: MouseEventHandler<SVGSVGElement> = (event) => {
+    const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -73,17 +68,21 @@ const CustomAppBar = ({classes}: CustomAppBarProps) => {
                         </div>
                     )}
                 >
-                    {/* @ts-ignore It thinks that this list is Element[], not ReactElement[], despite all of these extending PureComponent*/}
-                    {
-                    [
+                    {[
                         <SettingsMenu />,
                         <NotificationHub />,
                         <ImportStudyList />,
                         <Feedback />,
                         <News />,
-                        <AboutPage />
+                        <AboutPage />,
                     ].map((element, index) => (
-                        {element}
+                        <ConditionalWrapper
+                            key={index}
+                            condition={isMobileScreen}
+                            wrapper={(children) => <MenuItem>{children}</MenuItem>}
+                        >
+                            {element}
+                        </ConditionalWrapper>
                     ))}
                 </ConditionalWrapper>
             </Toolbar>
