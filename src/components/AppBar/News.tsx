@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent, Fragment, MouseEventHandler } from 'react';
 import {
     Badge,
     Button,
@@ -7,6 +7,7 @@ import {
     ListItem,
     Paper,
     Popover,
+    Theme,
     Tooltip,
     Typography,
     withStyles,
@@ -16,8 +17,9 @@ import { NEWS_ENDPOINT } from '../../api/endpoints';
 import { Skeleton } from '@material-ui/lab';
 import moment from 'moment-timezone';
 import analyticsEnum, { logAnalytics } from '../../analytics';
+import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 
-const styles = (theme) => ({
+const styles: Styles<Theme, object> = (theme) => ({ 
     list: {
         width: theme.spacing(40),
         maxHeight: theme.spacing(40),
@@ -35,11 +37,33 @@ const styles = (theme) => ({
     },
 });
 
-class News extends PureComponent {
+interface NewsItem {
+    title: string,
+    body: string,
+    date: string, // TODO: what format is this in?
+    _id: string // mongoose object id
+}
+
+interface NewsResponse {
+    news: Array<NewsItem>
+}
+
+interface NewsProps {
+    classes: ClassNameMap<string>
+}
+
+interface NewsState {
+    anchorEl?: Element,
+    newsItems?: Array<NewsItem>,
+    loading: boolean,
+    showDot: boolean
+}
+
+class News extends PureComponent<NewsProps, NewsState> {
     _isMounted = false; //necessary to fix a warning. https://stackoverflow.com/a/56537704
-    state = {
-        anchorEl: null,
-        newsItems: null,
+    state: NewsState = {
+        anchorEl: undefined,
+        newsItems: undefined,
         loading: true,
         showDot: false,
     };
@@ -49,10 +73,8 @@ class News extends PureComponent {
         var rawResponse;
         try {
             const data = await fetch(NEWS_ENDPOINT);
-            const text = await data.text(); //not doing data.json() so we can debug log the raw response.
+            const json: NewsResponse = await data.json();
             if (!this._isMounted) return; //prevents state update if we've unmounted in the time it took for the request to finish.
-            rawResponse = text;
-            const json = JSON.parse(text);
             const sortedNewsItems = json.news.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? 1 : 0));
 
             this.setState({ newsItems: sortedNewsItems, loading: false });
@@ -69,7 +91,7 @@ class News extends PureComponent {
                 console.error('Error loading news items:', e);
                 console.error('Raw news response is:', rawResponse);
             }
-            this.setState({ newsItems: null, loading: false });
+            this.setState({ newsItems: undefined, loading: false });
         }
     };
 
@@ -79,7 +101,8 @@ class News extends PureComponent {
 
     getNewsItems = () => {
         const { classes } = this.props;
-        if (this.state.loading === false && this.state.newsItems !== null && this.state.newsItems.length !== 0) {
+        if (this.state.loading === false && this.state.newsItems && this.state.newsItems.length > 0) {
+            const newsItemsLastIndex = this.state.newsItems.length - 1;
             return this.state.newsItems.map((newsItem, index) => {
                 return (
                     <Fragment key={newsItem['_id']}>
@@ -94,7 +117,7 @@ class News extends PureComponent {
                                 {moment(newsItem.date).tz('America/Los_Angeles').format('MMMM Do YYYY')}
                             </Typography>
                         </ListItem>
-                        {index !== this.state.newsItems.length - 1 ? <Divider /> : null}
+                        {index < newsItemsLastIndex ? <Divider /> : null}
                     </Fragment>
                 );
             });
@@ -123,7 +146,7 @@ class News extends PureComponent {
         }
     };
 
-    openPopup = (e) => {
+    openPopup: MouseEventHandler<HTMLElement> = (e) => {
         logAnalytics({
             category: analyticsEnum.nav.title,
             action: analyticsEnum.nav.actions.CLICK_NEWS,
@@ -141,7 +164,6 @@ class News extends PureComponent {
 
     render() {
         const { classes } = this.props;
-
         return (
             <div>
                 <Tooltip title="See latest updates">
@@ -160,10 +182,9 @@ class News extends PureComponent {
                     </Badge>
                 </Tooltip>
                 <Popover
-                    placement="bottom-end"
                     open={Boolean(this.state.anchorEl)}
                     anchorEl={this.state.anchorEl}
-                    onClose={() => this.setState({ anchorEl: null })}
+                    onClose={() => this.setState({ anchorEl: undefined })}
                     anchorOrigin={{
                         vertical: 'bottom',
                         horizontal: 'center',

@@ -5,6 +5,7 @@ import AppStore from '../../stores/AppStore';
 import { toggleTheme } from '../../actions/AppStoreActions';
 import { withStyles } from '@material-ui/core/styles';
 import ReactGA from 'react-ga';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 const styles = {
     container: {
@@ -14,9 +15,14 @@ const styles = {
     betaBadge: { transform: 'scale(1) translate(95%, -50%)' },
 };
 
-class SettingsMenu extends PureComponent {
-    state = {
-        anchorEl: null,
+interface SettingsState {
+    anchorEl?: HTMLElement,
+    theme: string
+}
+
+class SettingsMenu extends PureComponent<{classes: ClassNameMap}, SettingsState> {
+    state: SettingsState = {
+        anchorEl: undefined,
         theme: AppStore.getTheme(),
     };
 
@@ -48,7 +54,7 @@ class SettingsMenu extends PureComponent {
                     open={Boolean(this.state.anchorEl)}
                     anchorEl={this.state.anchorEl}
                     onClose={() => {
-                        this.setState({ anchorEl: null });
+                        this.setState({ anchorEl: undefined });
                     }}
                     anchorOrigin={{
                         vertical: 'bottom',

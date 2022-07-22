@@ -13,8 +13,19 @@ import ReactGA from 'react-ga';
 import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '../../api/endpoints';
 import analyticsEnum, { logAnalytics } from '../../analytics';
 
+interface NotificationItem {
+    courseTitle: string,
+    sectionCode: string
+}
+
+interface NotificationHubState {
+    open: boolean,
+    phoneNumber: string,
+    smsNotificationList: Array<NotificationItem>
+}
+
 class NotificationHub extends PureComponent {
-    state = {
+    state: NotificationHubState = {
         open: false,
         phoneNumber: '',
         smsNotificationList: [],
@@ -84,7 +95,7 @@ class NotificationHub extends PureComponent {
                                     <ul>
                                         {this.state.smsNotificationList.map((section, index) => {
                                             return (
-                                                <li id={index}>
+                                                <li key={index}>
                                                     {section.courseTitle}: {section.sectionCode}
                                                 </li>
                                             );

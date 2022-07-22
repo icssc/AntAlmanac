@@ -1,7 +1,6 @@
-import React from 'react';
-import { AppBar, Button, Toolbar, Tooltip, Menu, useMediaQuery } from '@material-ui/core';
+import React, {MouseEventHandler, ReactElement} from 'react';
+import { AppBar, Toolbar, Menu, useMediaQuery } from '@material-ui/core';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
-import { Assignment } from '@material-ui/icons';
 import MenuIcon from '@material-ui/icons/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
@@ -13,6 +12,9 @@ import News from './News';
 import AboutPage from './AboutPage';
 import ConditionalWrapper from '../ConditionalWrapper';
 import ImportStudyList from './ImportStudyList';
+import Feedback from './Feedback';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+
 
 const styles = {
     appBar: {
@@ -33,14 +35,17 @@ const styles = {
     },
 };
 
-const CustomAppBar = (props) => {
-    const { classes } = props;
+interface CustomAppBarProps {
+    classes: ClassNameMap
+}
+
+const CustomAppBar = ({classes}: CustomAppBarProps) => {
 
     const isMobileScreen = useMediaQuery('(max-width:750px)');
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = React.useState<Element|null>(null);
 
-    const handleClick = (event) => {
+    const handleClick: MouseEventHandler<SVGSVGElement> = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -68,21 +73,11 @@ const CustomAppBar = (props) => {
                         </div>
                     )}
                 >
-                    {[
+                    <>{[
                         <SettingsMenu />,
                         <NotificationHub />,
                         <ImportStudyList />,
-                        <Tooltip title="Give Us Feedback!">
-                            <Button
-                                onClick={() => {
-                                    window.open('https://forms.gle/k81f2aNdpdQYeKK8A', '_blank');
-                                }}
-                                color="inherit"
-                                startIcon={<Assignment />}
-                            >
-                                Feedback
-                            </Button>
-                        </Tooltip>,
+                        <Feedback />,
                         <News />,
                         <AboutPage />,
                     ].map((element, index) => (
@@ -93,7 +88,7 @@ const CustomAppBar = (props) => {
                         >
                             {element}
                         </ConditionalWrapper>
-                    ))}
+                    ))}</>
                 </ConditionalWrapper>
             </Toolbar>
         </AppBar>
