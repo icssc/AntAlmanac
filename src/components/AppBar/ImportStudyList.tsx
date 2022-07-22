@@ -6,7 +6,7 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-    TextField,
+    TextField
 } from '@material-ui/core';
 import { addCoursesMultiple, combineSOCObjects, getCourseInfo, queryWebsoc } from '../../helpers';
 import RightPaneStore from '../RightPane/RightPaneStore';
@@ -17,6 +17,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { withStyles } from '@material-ui/core/styles';
 import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '../../analytics';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 const styles = {
     inputLabel: {
@@ -24,22 +25,33 @@ const styles = {
     },
 };
 
-class ImportStudyList extends PureComponent {
-    state = {
+interface ImportStudyListProps {
+    classes: ClassNameMap
+}
+
+interface ImportStudyListState {
+    isOpen: boolean,
+    selectedTerm: string,
+    studyListText: string
+}
+
+class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyListState> {
+    state: ImportStudyListState = {
         isOpen: false,
         selectedTerm: RightPaneStore.getFormData().term,
         studyListText: '',
     };
 
-    onTermSelectorChange = (field, value) => {
+    onTermSelectorChange = (field: 'selectedTerm', value: any) => {
         this.setState({ [field]: value });
     };
 
-    handleChange = (event) => {
-        this.setState({ selectedTerm: event.target.value });
-    };
+    // handleChange = (event) => {
+    //     this.setState({ selectedTerm: event.target.value });
+    // };
 
-    handleError = (error) => {
+    handleError = (error: Error) => {
+        // @ts-ignore this should be fine once we refactor this function's definition in TS
         openSnackbar('error', 'An error occurred while trying to import the Study List.');
         console.error(error);
     };
@@ -48,12 +60,13 @@ class ImportStudyList extends PureComponent {
         this.setState({ isOpen: true });
     };
 
-    handleClose = (doImport) => {
+    handleClose = (doImport: boolean) => {
         this.setState({ isOpen: false }, async () => {
             document.removeEventListener('keydown', this.enterEvent, false);
             if (doImport) {
                 const sectionCodes = this.state.studyListText.match(/\d{5}/g);
                 if (!sectionCodes) {
+                    // @ts-ignore
                     openSnackbar('error', 'Cannot import an empty/invalid Study List.');
                     return;
                 }
@@ -64,7 +77,7 @@ class ImportStudyList extends PureComponent {
                             combineSOCObjects(
                                 await Promise.all(
                                     sectionCodes
-                                        .reduce((result, item, index) => {
+                                        .reduce((result: string[][], item, index) => {
                                             // WebSOC queries can have a maximum of 10 course codes in tandem
                                             const chunkIndex = Math.floor(index / 10);
                                             result[chunkIndex]
@@ -72,7 +85,7 @@ class ImportStudyList extends PureComponent {
                                                 : (result[chunkIndex] = [item]);
                                             return result;
                                         }, []) // https://stackoverflow.com/a/37826698
-                                        .map((sectionCode) =>
+                                        .map((sectionCode: string[]) =>
                                             queryWebsoc({
                                                 term: this.state.selectedTerm,
                                                 sectionCodes: sectionCode.join(','),
@@ -90,28 +103,32 @@ class ImportStudyList extends PureComponent {
                         value: sectionsAdded / (sectionCodes.length || 1),
                     });
                     if (sectionsAdded === sectionCodes.length) {
+                        // @ts-ignore
                         openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
                     } else if (sectionsAdded !== 0) {
+                        // @ts-ignore
                         openSnackbar(
                             'warning',
                             `Successfully imported ${sectionsAdded} of ${sectionCodes.length} classes. 
                         Please make sure that you selected the correct term and that none of your classes are missing.`
                         );
                     } else {
+                        // @ts-ignore
                         openSnackbar(
                             'error',
                             'Failed to import any classes! Please make sure that you pasted the correct Study List.'
                         );
                     }
                 } catch (e) {
-                    this.handleError(e);
+                    if(e instanceof Error)
+                        this.handleError(e);
                 }
             }
             this.setState({ studyListText: '' });
         });
     };
 
-    enterEvent = (event) => {
+    enterEvent = (event: KeyboardEvent) => {
         const charCode = event.which ? event.which : event.keyCode;
         // enter (13) or newline (10)
         if (charCode === 13 || charCode === 10) {
@@ -120,7 +137,7 @@ class ImportStudyList extends PureComponent {
         }
     };
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    componentDidUpdate(prevProps: ImportStudyListProps, prevState: ImportStudyListState) {
         if (!prevState.isOpen && this.state.isOpen) {
             document.addEventListener('keydown', this.enterEvent, false);
         } else if (prevState.isOpen && !this.state.isOpen) {
