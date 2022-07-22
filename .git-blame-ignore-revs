@@ -1,0 +1,9 @@
+# this file makes your git blame ignore certain commits.
+# it works with IDE features built on top of git blame like VSCode's GitLens extension (highly recommended)
+# to activate it: git config --global blame.ignoreRevsFile .git-blame-ignore-revs
+
+# move /client folder to root
+d84844586d7789e8fe95f98eb9c7a8eccdf0b53b
+
+# run linter on entire project
+ca961ea5639dc3bdf9a9b9880c94ee6bb3ba7f01
