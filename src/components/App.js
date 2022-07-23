@@ -6,7 +6,6 @@ import ReactGA4 from 'react-ga4';
 import { undoDelete } from '../actions/AppStoreActions';
 import AppStore from '../stores/AppStore';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Feedback from './AppBar/Feedback';
 import Home from './Home';
 import { isDarkMode } from '../helpers';
 
@@ -54,6 +53,9 @@ class App extends PureComponent {
                 primary: {
                     main: '#305db7',
                 },
+                secondary: {
+                    main: '#ffffff',
+                },
             },
         });
 
@@ -68,7 +70,11 @@ class App extends PureComponent {
                             </ThemeProvider>
                         }
                     />
-                    <Route exact path="/feedback" element={<Feedback />} />
+                    <Route
+                        exact
+                        path="/feedback"
+                        element={() => window.location.replace('https://forms.gle/k81f2aNdpdQYeKK8A')}
+                    />
                 </Routes>
             </BrowserRouter>
         );
