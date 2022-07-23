@@ -10,7 +10,7 @@ router.post('/loadUserData', async (req, res) => {
         const userID = req.body.userID;
         const data = await User.findById(userID);
 
-        if (data === null) res.status(500).send({ error: `User data for ${userID} not found` });
+        if (data === null) res.status(404).send({ error: `User data for ${userID} not found` });
         else res.status(200).send({ userID: data._id, userData: data.userData });
     } catch (err) {
         res.status(500).json({ error: err.message });
