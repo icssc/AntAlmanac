@@ -56,12 +56,7 @@ const SearchForm = (props) => {
             <form onSubmit={onFormSubmit} className={classes.form}>
                 <div className={classes.container}>
                     <div className={classes.margin}>
-                        <TermSelector
-                            changeState={function () {
-                                RightPaneStore.updateFormValue();
-                            }}
-                            fieldName={'term'}
-                        />
+                        <TermSelector changeState={RightPaneStore.updateFormValue} fieldName={'term'} />
                     </div>
 
                     <div className={classes.container}>
