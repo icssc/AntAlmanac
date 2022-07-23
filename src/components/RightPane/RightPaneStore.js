@@ -22,41 +22,41 @@ class RightPaneStore extends EventEmitter {
     constructor() {
         super();
         this.setMaxListeners(15);
-        this.formData = defaultFormValues;
-        this.activeTab = 0;
-        this.doDisplaySearch = true;
-        this.openSpotAlertPopoverActive = false;
     }
+    static formData = defaultFormValues;
+    static activeTab = 0;
+    static doDisplaySearch = true;
+    static openSpotAlertPopoverActive = false;
 
     getFormData() {
-        return this.formData;
+        return RightPaneStore.formData;
     }
 
     getActiveTab() {
-        return this.activeTab;
+        return RightPaneStore.activeTab;
     }
 
     getDoDisplaySearch() {
-        return this.doDisplaySearch;
+        return RightPaneStore.doDisplaySearch;
     }
 
     getOpenSpotAlertPopoverActive() {
-        return this.openSpotAlertPopoverActive;
+        return RightPaneStore.openSpotAlertPopoverActive;
     }
 
     updateFormValue(field, value) {
-        this.formData[field] = value;
-        this.emit('formDataChange');
+        RightPaneStore.formData[field] = value;
+        store.emit('formDataChange');
     }
 
     resetFormValues() {
-        this.formData = defaultFormValues;
-        this.emit('formReset');
+        RightPaneStore.formData = defaultFormValues;
+        store.emit('formReset');
     }
 
     handleTabChange = (event, value) => {
-        this.activeTab = value;
-        this.emit('tabChange', value);
+        RightPaneStore.activeTab = value;
+        store.emit('tabChange', value);
         switch (
             value // 0 is Class Search Tab, 1 is Added Classes Tab, 2 is Map Tab
         ) {
@@ -77,11 +77,11 @@ class RightPaneStore extends EventEmitter {
     };
 
     toggleSearch() {
-        this.doDisplaySearch = !this.doDisplaySearch;
+        RightPaneStore.doDisplaySearch = !RightPaneStore.doDisplaySearch;
     }
 
     toggleOpenSpotAlert() {
-        this.openSpotAlertPopoverActive = !this.openSpotAlertPopoverActive;
+        RightPaneStore.openSpotAlertPopoverActive = !RightPaneStore.openSpotAlertPopoverActive;
     }
 }
 
