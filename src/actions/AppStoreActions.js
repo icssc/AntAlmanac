@@ -115,6 +115,25 @@ export const openSnackbar = (variant, message, duration, position, style) => {
     });
 };
 
+export const compileUserData = () => {
+    const addedCourses = AppStore.getAddedCourses();
+    const customEvents = AppStore.getCustomEvents();
+    const scheduleNames = AppStore.getScheduleNames();
+
+    const userData = { addedCourses: [], scheduleNames: scheduleNames, customEvents: customEvents };
+
+    userData.addedCourses = addedCourses.map((course) => {
+        return {
+            color: course.color,
+            term: course.term,
+            sectionCode: course.section.sectionCode,
+            scheduleIndices: course.scheduleIndices,
+        };
+    });
+
+    return userData;
+};
+
 export const login = async () => {
     window.location.href = AUTH_ENDPOINT + '/google';
 };
@@ -139,19 +158,7 @@ export const checkUser = async () => {
     }
 };
 export const saveGoogleUser = async (user) => {
-    const addedCourses = AppStore.getAddedCourses();
-    const customEvents = AppStore.getCustomEvents();
-
-    const userData = { addedCourses: [], customEvents: customEvents };
-
-    userData.addedCourses = addedCourses.map((course) => {
-        return {
-            color: course.color,
-            term: course.term,
-            sectionCode: course.section.sectionCode,
-            scheduleIndices: course.scheduleIndices,
-        };
-    });
+    const userData = compileUserData();
 
     try {
         await fetch(AUTH_ENDPOINT + '/saveUserData', {
@@ -298,6 +305,13 @@ export const loadSchedule = async (userID, rememberMe) => {
             }
         }
     }
+};
+
+export const loadLocalSchedule = async (data) => {
+    dispatcher.dispatch({
+        type: 'LOAD_SCHEDULE',
+        userData: await getCoursesData(data),
+    });
 };
 
 export const deleteCourse = (sectionCode, scheduleIndex, term) => {

@@ -228,6 +228,9 @@ class AppStore extends EventEmitter {
             case 'SAVE_SCHEDULE':
                 this.unsavedChanges = false;
                 break;
+            case 'CACHE_SCHEDULE':
+                this.unsavedChanges = false;
+                break;
             case 'OPEN_SNACKBAR':
                 this.snackbarVariant = action.variant;
                 this.snackbarMessage = action.message;
