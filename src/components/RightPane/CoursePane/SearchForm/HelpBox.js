@@ -22,7 +22,7 @@ const HelpBox = (props) => {
             <ol className={classes.list}>
                 <li>
                     Go to the{' '}
-                    <a href="https://catalogue.uci.edu/undergraduatedegrees/" target="_blank">
+                    <a href="https://catalogue.uci.edu/undergraduatedegrees/" target="_blank" rel="noopener noreferrer">
                         UCI Catolouge
                     </a>
                 </li>
