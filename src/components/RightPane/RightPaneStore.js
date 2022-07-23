@@ -28,21 +28,21 @@ class RightPaneStore extends EventEmitter {
         this.openSpotAlertPopoverActive = false;
     }
 
-    getFormData() {
+    getFormData = () => {
         return this.formData;
-    }
+    };
 
-    getActiveTab() {
+    getActiveTab = () => {
         return this.activeTab;
-    }
+    };
 
-    getDoDisplaySearch() {
+    getDoDisplaySearch = () => {
         return this.doDisplaySearch;
-    }
+    };
 
-    getOpenSpotAlertPopoverActive() {
+    getOpenSpotAlertPopoverActive = () => {
         return this.openSpotAlertPopoverActive;
-    }
+    };
 
     updateFormValue = (field, value) => {
         this.formData[field] = value;
@@ -50,7 +50,7 @@ class RightPaneStore extends EventEmitter {
     };
 
     resetFormValues = () => {
-        this.formData = defaultFormValues;
+        this.formData = { ...defaultFormValues }; // shallow copy again
         this.emit('formReset');
     };
 
@@ -76,13 +76,13 @@ class RightPaneStore extends EventEmitter {
         }
     };
 
-    toggleSearch() {
+    toggleSearch = () => {
         this.doDisplaySearch = !this.doDisplaySearch;
-    }
+    };
 
-    toggleOpenSpotAlert() {
+    toggleOpenSpotAlert = () => {
         this.openSpotAlertPopoverActive = !this.openSpotAlertPopoverActive;
-    }
+    };
 }
 
 const store = new RightPaneStore();
