@@ -22,7 +22,7 @@ class RightPaneStore extends EventEmitter {
     constructor() {
         super();
         this.setMaxListeners(15);
-        this.formData = defaultFormValues;
+        this.formData = { ...defaultFormValues }; // creates shallow copy
         this.activeTab = 0;
         this.doDisplaySearch = true;
         this.openSpotAlertPopoverActive = false;
@@ -44,15 +44,15 @@ class RightPaneStore extends EventEmitter {
         return this.openSpotAlertPopoverActive;
     }
 
-    updateFormValue(field, value) {
+    updateFormValue = (field, value) => {
         this.formData[field] = value;
         this.emit('formDataChange');
-    }
+    };
 
-    resetFormValues() {
+    resetFormValues = () => {
         this.formData = defaultFormValues;
         this.emit('formReset');
-    }
+    };
 
     handleTabChange = (event, value) => {
         this.activeTab = value;

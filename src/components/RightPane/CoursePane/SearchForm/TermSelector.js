@@ -26,6 +26,7 @@ class TermSelector extends PureComponent {
 
     handleChange = (event) => {
         this.setState({ term: event.target.value });
+        console.log(this.props.changeState);
         this.props.changeState(this.props.fieldName, event.target.value);
     };
 
