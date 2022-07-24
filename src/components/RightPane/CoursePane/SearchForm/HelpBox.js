@@ -23,7 +23,7 @@ const HelpBox = (props) => {
                 <li>
                     Go to the{' '}
                     <a href="https://catalogue.uci.edu/undergraduatedegrees/" target="_blank" rel="noopener noreferrer">
-                        UCI Catolouge
+                        UCI Catalogue
                     </a>
                 </li>
                 <li>Select your major</li>
