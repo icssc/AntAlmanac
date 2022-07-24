@@ -14,32 +14,58 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { Add, Edit } from '@material-ui/icons';
-import PropTypes from 'prop-types';
 import { addCustomEvent, editCustomEvent } from '../../../actions/AppStoreActions';
 import ScheduleSelector from './ScheduleSelector';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { isDarkMode } from '../../../helpers';
 
-const styles = () => ({
-    container: {
-        display: 'flex',
-        flexWrap: 'wrap',
-    },
+const styles = {
     textField: {
         minWidth: 120,
     },
-});
+};
 
-class CustomEventDialog extends PureComponent {
-    state = {
+interface CustomEvent {
+    title: string,
+    start: string,
+    end: string,
+    days: boolean[],
+    scheduleIndices: number[],
+    customEventID: number,
+    color?: string
+}
+
+interface CustomEventDialogProps {
+    customEvent: CustomEvent,
+    onDialogClose: Function,
+    currentScheduleIndex: number,
+    scheduleNames: any[] // TODO: statically type this.
+};
+
+interface CustomEventDialogState {
+    open: boolean,// the properties under this are copies of CustomEvent properties.
+    title: string,
+    start: string,
+    end: string,
+    days: boolean[],
+    scheduleIndices: number[],
+    customEventID: number
+}
+
+const defaultCustomEvent: CustomEvent = {
+    start: '10:30',
+    end: '15:30',
+    title: '',
+    days: [false, false, false, false, false, false, false],
+    scheduleIndices: [],
+    customEventID: 0
+}
+
+class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEventDialogState> {
+    state: CustomEventDialogState = {
         open: false,
-        start: this.props.customEvent ? this.props.customEvent.start : '10:30',
-        end: this.props.customEvent ? this.props.customEvent.end : '15:30',
-        eventName: this.props.customEvent ? this.props.customEvent.title : '',
-        days: this.props.customEvent ? this.props.customEvent.days : [false, false, false, false, false, false, false],
-        scheduleIndices: this.props.customEvent ? this.props.customEvent.scheduleIndices : [],
-        customEventID: this.props.customEvent ? this.props.customEvent.customEventID : 0,
+        ...(this.props.customEvent || defaultCustomEvent)
     };
 
     handleOpen = () => {
@@ -54,7 +80,7 @@ class CustomEventDialog extends PureComponent {
         });
     };
 
-    handleClose = (cancel) => {
+    handleClose = (cancel: boolean) => {
         if (!cancel) {
             logAnalytics({
                 category: analyticsEnum.calendar.title,
@@ -65,26 +91,24 @@ class CustomEventDialog extends PureComponent {
         }
 
         this.setState({
-            open: false,
-            eventName: '',
-            days: [false, false, false, false, false, false, false],
-            scheduleIndices: [],
+            ...this.state,
+            open: false
         });
     };
 
-    handleEventNameChange = (event) => {
-        this.setState({ eventName: event.target.value });
+    handleEventNameChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
+        this.setState({ title: event.target.value });
     };
 
-    handleEndTimeChange = (event) => {
+    handleEndTimeChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
         this.setState({ end: event.target.value });
     };
 
-    handleStartTimeChange = (event) => {
+    handleStartTimeChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
         this.setState({ start: event.target.value });
     };
 
-    handleDayChange = (days) => {
+    handleDayChange = (days: boolean[]) => {
         this.setState({ days: days });
     };
 
@@ -93,7 +117,7 @@ class CustomEventDialog extends PureComponent {
 
         const newCustomEvent = {
             color: this.props.customEvent ? this.props.customEvent.color : '#551a8b',
-            title: this.state.eventName,
+            title: this.state.title,
             days: this.state.days,
             scheduleIndices: this.state.scheduleIndices,
             start: this.state.start,
@@ -105,7 +129,7 @@ class CustomEventDialog extends PureComponent {
         else addCustomEvent(newCustomEvent);
     };
 
-    handleSelectScheduleIndices = (scheduleIndices) => {
+    handleSelectScheduleIndices = (scheduleIndices: number[]) => {
         this.setState({ scheduleIndices: scheduleIndices });
     };
 
@@ -137,7 +161,7 @@ class CustomEventDialog extends PureComponent {
                     <DialogContent>
                         <FormControl>
                             <InputLabel htmlFor="EventNameInput">Event Name</InputLabel>
-                            <Input required={true} value={this.state.eventName} onChange={this.handleEventNameChange} />
+                            <Input required={true} value={this.state.title} onChange={this.handleEventNameChange} />
                         </FormControl>
                         <form noValidate>
                             <TextField
@@ -181,7 +205,7 @@ class CustomEventDialog extends PureComponent {
                     </DialogContent>
 
                     <DialogActions>
-                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'white' : 'primary'}>
+                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'secondary' : 'primary'}>
                             Cancel
                         </Button>
                         <Tooltip title="Schedule and day must be checked" disableHoverListener={!this.isAddDisabled()}>
@@ -202,10 +226,5 @@ class CustomEventDialog extends PureComponent {
         );
     }
 }
-
-CustomEventDialog.propTypes = {
-    customEvent: PropTypes.object,
-    onDialogClose: PropTypes.func,
-};
 
 export default withStyles(styles)(CustomEventDialog);
