@@ -11,6 +11,14 @@ const styles = {
     list: {
         paddingLeft: '1.5em',
     },
+    images: {
+        display: 'flex',
+        gap: 10,
+        overflow: 'auto',
+    },
+    image: {
+        height: 250,
+    },
 };
 
 const HelpBox = (props) => {
@@ -28,6 +36,19 @@ const HelpBox = (props) => {
                 <li>Select your major</li>
                 <li>Click on the tabs for "REQUIREMENTS" and "SAMPLE PROGRAM" to see what classes you should take</li>
             </ol>
+            <div className={classes.images}>
+                <img
+                    className={classes.image}
+                    src="/helpbox1.png"
+                    alt='UCI General Catalogue with "Explore Undergraduate Programs" button highlighted'
+                />
+                <img className={classes.image} src="/helpbox2.png" alt="Undergraduate Majors and Minors page" />
+                <img
+                    className={classes.image}
+                    src="/helpbox3.png"
+                    alt='Electrical Engineering page with "REQUIREMENTS" and "SAMPLE PROGRAM" tabs highlighted'
+                />
+            </div>
         </Paper>
     );
 };
