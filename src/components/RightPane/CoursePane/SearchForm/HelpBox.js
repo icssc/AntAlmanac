@@ -10,7 +10,6 @@ const styles = {
     },
     list: {
         paddingLeft: '1.5em',
-        fontSize: '1.5em',
     },
 };
 
