@@ -8,8 +8,14 @@ import LegacySearch from './LegacySearch';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { Tune } from '@material-ui/icons';
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
+import HelpBox from './HelpBox';
 
 const styles = {
+    rightPane: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
     container: {
         display: 'flex',
         flexDirection: 'column',
@@ -25,8 +31,8 @@ const styles = {
         display: 'inline-flex',
     },
     form: {
-        minHeight: 'calc(100% - 120px)',
         marginBottom: '20px',
+        flexGrow: 2,
     },
     fallback: {
         height: '100%',
@@ -52,7 +58,7 @@ const SearchForm = (props) => {
     };
 
     return (
-        <>
+        <div className={classes.rightPane}>
             <form onSubmit={onFormSubmit} className={classes.form}>
                 <div className={classes.container}>
                     <div className={classes.margin}>
@@ -84,8 +90,10 @@ const SearchForm = (props) => {
                     )}
                 </div>
             </form>
+
+            <HelpBox />
             <PrivacyPolicyBanner />
-        </>
+        </div>
     );
 };
 
