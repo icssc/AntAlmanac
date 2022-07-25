@@ -8,6 +8,9 @@ const styles = {
         marginBottom: '10px',
         marginRight: '5px',
     },
+    heading: {
+        marginTop: 2,
+    },
     list: {
         paddingLeft: '1.5em',
     },
@@ -25,7 +28,7 @@ const HelpBox = (props) => {
     const { classes } = props;
     return (
         <Paper variant="outlined" className={classes.container}>
-            <h2>Need help planning your schedule?</h2>
+            <h2 className={classes.heading}>Need help planning your schedule?</h2>
             <ol className={classes.list}>
                 <li>
                     Browse undergraduate majors on the{' '}
