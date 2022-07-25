@@ -28,13 +28,14 @@ const HelpBox = (props) => {
             <h2>Need help planning your schedule?</h2>
             <ol className={classes.list}>
                 <li>
-                    Go to the{' '}
+                    Browse undergraduate majors on the{' '}
                     <a href="https://catalogue.uci.edu/undergraduatedegrees/" target="_blank" rel="noopener noreferrer">
                         UCI Catalogue
                     </a>
+                    .
                 </li>
-                <li>Select your major</li>
-                <li>Click on the tabs for "REQUIREMENTS" and "SAMPLE PROGRAM" to see what classes you should take</li>
+                <li>Select your major.</li>
+                <li>View the "REQUIREMENTS" and "SAMPLE PROGRAM" tabs to see what classes you should take.</li>
             </ol>
             <div className={classes.images}>
                 <img
