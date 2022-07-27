@@ -192,7 +192,6 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
                             />
                         </form>
                         <DaySelector
-                            days={this.state.days}
                             onSelectDay={this.handleDayChange}
                             customEvent={this.props.customEvent}
                         />
