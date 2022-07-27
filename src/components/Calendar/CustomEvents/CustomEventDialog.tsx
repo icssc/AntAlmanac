@@ -37,8 +37,8 @@ export interface CustomEvent {
 }
 
 interface CustomEventDialogProps {
-    customEvent: CustomEvent,
-    onDialogClose: Function,
+    customEvent?: CustomEvent,
+    onDialogClose?: ()=>void,
     currentScheduleIndex: number,
     scheduleNames: any[] // TODO: statically type this.
 };
@@ -193,7 +193,7 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
                         </form>
                         <DaySelector
                             onSelectDay={this.handleDayChange}
-                            customEvent={this.props.customEvent}
+                            days={this.props.customEvent?.days}
                         />
                         <ScheduleSelector
                             scheduleIndices={this.state.scheduleIndices}
