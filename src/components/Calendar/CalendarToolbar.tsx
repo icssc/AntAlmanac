@@ -52,7 +52,7 @@ interface CalendarPaneToolbarProps {
     currentScheduleIndex: number
     showFinalsSchedule: boolean
     toggleDisplayFinalsSchedule: ()=>void
-    onTakeScreenshot: (handleClick: Function)=>void
+    onTakeScreenshot: (html2CanvasScreenshot:  ()=>void)=>void // the function in an ancestor component that wraps ScreenshotButton.handleClick to perform canvas transformations before and after downloading the screenshot.
 }
 
 const CalendarPaneToolbar = ({

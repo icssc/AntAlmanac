@@ -7,7 +7,7 @@ import { saveAs } from 'file-saver';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 
 interface ScreenshotButtonProps {
-    onTakeScreenshot: (html2CanvasScreenshot: Function)=>void // passes 
+    onTakeScreenshot: (html2CanvasScreenshot: ()=>void)=>void // the function in an ancestor component that wraps ScreenshotButton.handleClick to perform canvas transformations before and after downloading the screenshot.
 }
 
 class ScreenshotButton extends PureComponent<ScreenshotButtonProps> {
