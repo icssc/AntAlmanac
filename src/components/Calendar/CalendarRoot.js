@@ -13,6 +13,26 @@ import ReactGA from 'react-ga';
 
 const localizer = momentLocalizer(moment);
 
+/*
+This is the composition structure of everything in components/Calendar, updated as of PR #411
+I did the file restructure for the folder based on this tree, so thought I 
+might as well include it since I made it. The file structure is close but doesn't
+match exactly.
+
+CalendarRoot
+    CourseCalendarEvent
+    CalendarToolbar
+        CustomEventDialog
+            DaySelector
+            ScheduleSelector
+        ScreenshotButton
+        ExportCalendar
+        ScheduleNameDialog (reused below)
+        EditSchedule
+            ScheduleNameDialog (reused above)
+            DeleteScheduleDialog
+*/
+
 const styles = {
     container: {
         margin: '0px 4px 4px 4px',
