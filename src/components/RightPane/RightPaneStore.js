@@ -22,41 +22,41 @@ class RightPaneStore extends EventEmitter {
     constructor() {
         super();
         this.setMaxListeners(15);
-    }
-    static formData = defaultFormValues;
-    static activeTab = 0;
-    static doDisplaySearch = true;
-    static openSpotAlertPopoverActive = false;
-
-    getFormData() {
-        return RightPaneStore.formData;
+        this.formData = { ...defaultFormValues }; // creates shallow copy
+        this.activeTab = 0;
+        this.doDisplaySearch = true;
+        this.openSpotAlertPopoverActive = false;
     }
 
-    getActiveTab() {
-        return RightPaneStore.activeTab;
-    }
+    getFormData = () => {
+        return this.formData;
+    };
 
-    getDoDisplaySearch() {
-        return RightPaneStore.doDisplaySearch;
-    }
+    getActiveTab = () => {
+        return this.activeTab;
+    };
 
-    getOpenSpotAlertPopoverActive() {
-        return RightPaneStore.openSpotAlertPopoverActive;
-    }
+    getDoDisplaySearch = () => {
+        return this.doDisplaySearch;
+    };
 
-    updateFormValue(field, value) {
-        RightPaneStore.formData[field] = value;
-        store.emit('formDataChange');
-    }
+    getOpenSpotAlertPopoverActive = () => {
+        return this.openSpotAlertPopoverActive;
+    };
 
-    resetFormValues() {
-        RightPaneStore.formData = defaultFormValues;
-        store.emit('formReset');
-    }
+    updateFormValue = (field, value) => {
+        this.formData[field] = value;
+        this.emit('formDataChange');
+    };
+
+    resetFormValues = () => {
+        this.formData = { ...defaultFormValues }; // shallow copy again
+        this.emit('formReset');
+    };
 
     handleTabChange = (event, value) => {
-        RightPaneStore.activeTab = value;
-        store.emit('tabChange', value);
+        this.activeTab = value;
+        this.emit('tabChange', value);
         switch (
             value // 0 is Class Search Tab, 1 is Added Classes Tab, 2 is Map Tab
         ) {
@@ -76,13 +76,13 @@ class RightPaneStore extends EventEmitter {
         }
     };
 
-    toggleSearch() {
-        RightPaneStore.doDisplaySearch = !RightPaneStore.doDisplaySearch;
-    }
+    toggleSearch = () => {
+        this.doDisplaySearch = !this.doDisplaySearch;
+    };
 
-    toggleOpenSpotAlert() {
-        RightPaneStore.openSpotAlertPopoverActive = !RightPaneStore.openSpotAlertPopoverActive;
-    }
+    toggleOpenSpotAlert = () => {
+        this.openSpotAlertPopoverActive = !this.openSpotAlertPopoverActive;
+    };
 }
 
 const store = new RightPaneStore();
