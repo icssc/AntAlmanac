@@ -139,7 +139,14 @@ export const login = async () => {
 };
 
 export const logout = async () => {
-    window.location.href = AUTH_ENDPOINT + '/logout';
+    await fetch(AUTH_ENDPOINT + '/logout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    });
+    window.location.reload();
 };
 
 export const checkUser = async () => {

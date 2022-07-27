@@ -41,6 +41,7 @@ const GoogleAccountBase = ({ user, classes }) => {
                             alt={user.passport.user.name}
                             src={user.passport.user.picture}
                             className={classes.avatar}
+                            imgProps={{ referrerPolicy: 'no-referrer' }}
                         />
                         <Box className={classes.username} color="inherit">
                             {user.passport.user.name.toLocaleUpperCase()}
