@@ -17,7 +17,7 @@ const styles = () => ({
 
 interface ScheduleNameDialogProps {
     classes: ClassNameMap
-    onOpen: ()=>void
+    onOpen?: ()=>void
     onClose: ()=>void
     scheduleNames: string[]
     scheduleRenameIndex?: number
