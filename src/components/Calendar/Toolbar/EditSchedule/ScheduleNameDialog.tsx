@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { addSchedule, renameSchedule } from '../../../../actions/AppStoreActions';
 import { isDarkMode } from '../../../../helpers';
 import { Add } from '@material-ui/icons';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 const styles = () => ({
     addButton: {
@@ -14,16 +15,25 @@ const styles = () => ({
     },
 });
 
-const ScheduleNameDialog = (props) => {
-    const { classes, onOpen, onClose, scheduleNames, scheduleIndex, rename } = props;
+interface ScheduleNameDialogProps {
+    classes: ClassNameMap
+    onOpen: ()=>void
+    onClose: ()=>void
+    scheduleNames: string[]
+    scheduleRenameIndex?: number
+}
 
+const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
+    const { classes, onOpen, onClose, scheduleNames, scheduleRenameIndex } = props;
+    const rename = scheduleRenameIndex !== undefined;
+    
     const [isOpen, setIsOpen] = useState(false);
     const [scheduleName, setScheduleName] = useState(
-        rename ? scheduleNames[scheduleIndex] : `Schedule ${scheduleNames.length + 1}`
+        scheduleRenameIndex !== undefined ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`
     );
     const [clickedText, setClickedText] = useState(false);
 
-    const handleOpen = (event) => {
+    const handleOpen: React.MouseEventHandler<HTMLLIElement> = (event) => {
         // We need to stop propagation so that the select menu won't close
         event.stopPropagation();
         setIsOpen(true);
@@ -36,11 +46,11 @@ const ScheduleNameDialog = (props) => {
         setIsOpen(false);
         // If the user cancelled renaming the schedule, the schedule name is changed to its original value;
         // if the user cancelled adding a new schedule, the schedule name is changed to the default schedule name
-        setScheduleName(rename ? scheduleNames[scheduleIndex] : `Schedule ${scheduleNames.length + 1}`);
+        setScheduleName(rename ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`);
         setClickedText(false);
     };
 
-    const handleNameChange = (event) => {
+    const handleNameChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setScheduleName(event.target.value);
     };
 
@@ -53,7 +63,7 @@ const ScheduleNameDialog = (props) => {
 
     const handleRename = () => {
         onClose();
-        renameSchedule(scheduleName, scheduleIndex);
+        renameSchedule(scheduleName, scheduleRenameIndex);
         setIsOpen(false);
         setScheduleName('');
     };
@@ -100,7 +110,7 @@ const ScheduleNameDialog = (props) => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDarkMode() ? 'white' : 'primary'}>
+                    <Button onClick={handleClose} color={isDarkMode() ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>
                     <Button
