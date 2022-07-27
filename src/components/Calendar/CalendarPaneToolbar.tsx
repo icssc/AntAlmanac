@@ -53,7 +53,7 @@ interface CalendarPaneToolbarProps {
     currentScheduleIndex: number
     showFinalsSchedule: boolean
     toggleDisplayFinalsSchedule: ()=>void
-    onTakeScreenshot: any
+    onTakeScreenshot: (handleClick: Function)=>void
 }
 
 const CalendarPaneToolbar = ({
@@ -190,7 +190,7 @@ const CalendarPaneToolbar = ({
                 <>{[
                     <ExportCalendar />,
                     <ScreenshotButton
-                        onTakeScreenshot
+                        onTakeScreenshot={onTakeScreenshot}
                     />,
                     <CustomEventsDialog
                         currentScheduleIndex={currentScheduleIndex}
