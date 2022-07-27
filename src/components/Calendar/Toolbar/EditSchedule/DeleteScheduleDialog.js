@@ -8,8 +8,8 @@ import {
     DialogContentText,
     MenuItem,
 } from '@material-ui/core';
-import { isDarkMode } from '../../helpers';
-import { deleteSchedule } from '../../actions/AppStoreActions';
+import { isDarkMode } from '../../../../helpers';
+import { deleteSchedule } from '../../../../actions/AppStoreActions';
 
 const DeleteScheduleDialog = (props) => {
     const [isOpen, setIsOpen] = useState(false);

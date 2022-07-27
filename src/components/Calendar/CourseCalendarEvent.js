@@ -6,7 +6,7 @@ import ColorPicker from '../ColorPicker';
 import { Delete } from '@material-ui/icons';
 import locations from '../RightPane/SectionTable/static/locations.json';
 import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
-import CustomEventDialog from './CustomEvents/CustomEventDialog';
+import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import AppStore from '../../stores/AppStore';
 import { clickToCopy } from '../../helpers';
 import ReactGA from 'react-ga';

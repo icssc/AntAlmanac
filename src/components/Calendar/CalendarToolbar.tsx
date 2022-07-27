@@ -2,18 +2,17 @@ import React, { useState } from 'react';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { IconButton, Tooltip, Paper, Button, useMediaQuery, Menu } from '@material-ui/core';
 import { Delete, Undo, MoreHoriz } from '@material-ui/icons';
-import { clearSchedules, undoDelete } from '../../actions/AppStoreActions';
-import CustomEventsDialog from './CustomEvents/CustomEventDialog';
-import { changeCurrentSchedule } from '../../actions/AppStoreActions';
-import ScreenshotButton from './ScreenshotButton';
-import ExportCalendar from './ExportCalendar';
+import CustomEventsDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
+import { changeCurrentSchedule, clearSchedules, undoDelete  } from '../../actions/AppStoreActions';
+import ScreenshotButton from './Toolbar/ScreenshotButton';
+import ExportCalendar from './Toolbar/ExportCalendar';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import ReactGA from 'react-ga';
 import ConditionalWrapper from '../ConditionalWrapper';
 import analyticsEnum, { logAnalytics } from '../../analytics';
-import ScheduleNameDialog from './ScheduleNameDialog';
-import EditSchedule from './EditSchedule';
+import ScheduleNameDialog from './Toolbar/EditSchedule/ScheduleNameDialog';
+import EditSchedule from './Toolbar/EditSchedule/EditSchedule';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 
 const styles: Styles<Theme, object> = {

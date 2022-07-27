@@ -14,11 +14,11 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { Add, Edit } from '@material-ui/icons';
-import { addCustomEvent, editCustomEvent } from '../../../actions/AppStoreActions';
+import { addCustomEvent, editCustomEvent } from '../../../../actions/AppStoreActions';
 import ScheduleSelector from './ScheduleSelector';
 import ReactGA from 'react-ga';
-import analyticsEnum, { logAnalytics } from '../../../analytics';
-import { isDarkMode } from '../../../helpers';
+import analyticsEnum, { logAnalytics } from '../../../../analytics';
+import { isDarkMode } from '../../../../helpers';
 
 const styles = {
     textField: {

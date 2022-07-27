@@ -6,7 +6,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
 import { Popper } from '@material-ui/core';
 import './calendar.css';
-import CalendarPaneToolbar from './CalendarPaneToolbar';
+import CalendarPaneToolbar from './CalendarToolbar';
 import CourseCalendarEvent from './CourseCalendarEvent';
 import AppStore from '../../stores/AppStore';
 import ReactGA from 'react-ga';

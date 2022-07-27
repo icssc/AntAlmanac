@@ -4,7 +4,7 @@ import html2canvas from 'html2canvas';
 import { Panorama } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import { Tooltip } from '@material-ui/core';
-import analyticsEnum, { logAnalytics } from '../../analytics';
+import analyticsEnum, { logAnalytics } from '../../../analytics';
 
 class ScreenshotButton extends PureComponent {
     handleClick = () => {

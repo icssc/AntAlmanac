@@ -5,10 +5,10 @@ import { Tooltip } from '@material-ui/core';
 import Today from '@material-ui/icons/Today';
 import { saveAs } from 'file-saver';
 import { createEvents } from 'ics';
-import AppStore from '../../stores/AppStore';
-import { openSnackbar } from '../../actions/AppStoreActions';
-import { termData } from '../../termData';
-import analyticsEnum, { logAnalytics } from '../../analytics';
+import AppStore from '../../../stores/AppStore';
+import { openSnackbar } from '../../../actions/AppStoreActions';
+import { termData } from '../../../termData';
+import analyticsEnum, { logAnalytics } from '../../../analytics';
 
 const quarterStartDates = termData
     .filter((term) => term.startDate !== undefined)

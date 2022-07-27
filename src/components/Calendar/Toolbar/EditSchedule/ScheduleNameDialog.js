@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Button, Dialog, DialogTitle, DialogActions, DialogContent, TextField, MenuItem } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { addSchedule, renameSchedule } from '../../actions/AppStoreActions';
-import { isDarkMode } from '../../helpers';
+import { addSchedule, renameSchedule } from '../../../../actions/AppStoreActions';
+import { isDarkMode } from '../../../../helpers';
 import { Add } from '@material-ui/icons';
 
 const styles = () => ({
