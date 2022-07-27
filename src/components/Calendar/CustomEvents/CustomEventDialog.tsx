@@ -26,7 +26,7 @@ const styles = {
     },
 };
 
-interface CustomEvent {
+export interface CustomEvent {
     title: string,
     start: string,
     end: string,
