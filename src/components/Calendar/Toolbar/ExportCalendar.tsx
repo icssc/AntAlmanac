@@ -10,12 +10,12 @@ import { openSnackbar } from '../../../actions/AppStoreActions';
 import { termData } from '../../../termData';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 
-const quarterStartDates = termData
-    .filter((term) => term.startDate !== undefined)
-    .reduce((prev, curr) => ({ ...prev, [curr.shortName]: curr.startDate }), {});
-const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
-const daysOffset = { SU: -1, MO: 0, TU: 1, WE: 2, TH: 3, FR: 4, SA: 5 };
-const fallDaysOffset = { TH: 0, FR: 1, SA: 2, SU: 3, MO: 4, TU: 5, WE: 6 };
+const quarterStartDates = Object.fromEntries(termData
+    .filter(term => term.startDate !== undefined)
+    .map(term=> [term.shortName, term.startDate as [number,number,number]]));
+const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
+const daysOffset: Record<string, number> = { SU: -1, MO: 0, TU: 1, WE: 2, TH: 3, FR: 4, SA: 5 };
+const fallDaysOffset: Record<string, number> = { TH: 0, FR: 1, SA: 2, SU: 3, MO: 4, TU: 5, WE: 6 };
 const translateDaysForIcs = { Su: 'SU', M: 'MO', Tu: 'TU', W: 'WE', Th: 'TH', F: 'FR', Sa: 'SA' };
 const vTimeZoneSection =
     'BEGIN:VTIMEZONE\n' +
@@ -38,18 +38,17 @@ const vTimeZoneSection =
     'END:VTIMEZONE\n' +
     'BEGIN:VEVENT';
 
-// getByDays returns the days that a class occurs
-//  Given a string of days, convert it to a list of days in ics format
-//  Ex: ("TuThF") -> ["TU", "TH", "FR"]
-const getByDays = (days) => {
+/** getByDays returns the days that a class occurs
+    Given a string of days, convert it to a list of days in ics format
+    Ex: ("TuThF") -> ["TU", "TH", "FR"] */
+const getByDays = (days: typeof daysOfWeek) => {
     return daysOfWeek.filter((day) => days.includes(day)).map((day) => translateDaysForIcs[day]);
 };
 
-// getClassStartDate returns the start date of a class
-//  Given the term and bydays, this computes the start date of the class
-//
-//  Ex: ("2021 Spring", 'Tu') -> [2021, 3, 30]
-const getClassStartDate = (term, bydays) => {
+/** getClassStartDate returns the start date of a class
+    Given the term and bydays, this computes the start date of the class
+    Ex: ("2021 Spring", 'Tu') -> [2021, 3, 30] */
+const getClassStartDate = (term: `${string} ${string}`, bydays: ReturnType<typeof getByDays>) => {
     // Get the start date of the quarter (Monday)
     const quarterStartDate = new Date(...quarterStartDates[term]);
 
@@ -75,18 +74,18 @@ const getClassStartDate = (term, bydays) => {
     return dateToIcs(quarterStartDate);
 };
 
-// dateToIcs takes a Date object and returns it in ics format [YYYY, MM, DD]
-const dateToIcs = (date) => {
+/** dateToIcs takes a Date object and returns it in ics format [YYYY, MM, DD] */
+const dateToIcs = (date: Date) => {
     return [
         date.getFullYear(),
         date.getMonth() + 1, // Add 1 month since it is 0-indexed
         date.getDate(),
-    ];
+    ] as const;
 };
 
-// getFirstClass returns the start and end datetime of the first class
-//  Ex: ([2021, 3, 30], " 4:00-4:50p") -> [[2021, 3, 30, 16, 0], [2021, 3, 30, 16, 50]]
-const getFirstClass = (date, time) => {
+/** getFirstClass returns the start and end datetime of the first class
+    Ex: ([2021, 3, 30], " 4:00-4:50p") -> [[2021, 3, 30, 16, 0], [2021, 3, 30, 16, 50]] */
+const getFirstClass = (date: readonly [number, number, number], time: string) => {
     const [classStartTime, classEndTime] = parseTimes(time);
     return [
         [...date, ...classStartTime],
@@ -94,10 +93,10 @@ const getFirstClass = (date, time) => {
     ];
 };
 
-// getExamTime returns the start and end datetime of an exam
-//  Ex: ("Mon Jun 7 10:30-12:30pm", "2019") -> [[2019, 6, 7, 10, 30], [2019, 6, 7, 12, 30]]
-const months = { Mar: 3, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Dec: 12 };
-const getExamTime = (exam, year) => {
+/** getExamTime returns the start and end datetime of an exam
+    Ex: ("Mon Jun 7 10:30-12:30pm", "2019") -> [[2019, 6, 7, 10, 30], [2019, 6, 7, 12, 30]] */
+const months: Record<string, number> = { Mar: 3, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Dec: 12 };
+const getExamTime = (exam: string, year: number) => {
     const [, month, day, time] = exam.split(' ');
     const [examStartTime, examEndTime] = parseTimes(time);
 
@@ -107,10 +106,10 @@ const getExamTime = (exam, year) => {
     ];
 };
 
-// parseTimes converts a time string to a
-//  This is a helper function used by getFirstClass
-//  Ex: " 4:00-4:50p" -> [[16, 0], [16, 50]]
-const parseTimes = (time) => {
+/** parseTimes converts a time string to a
+    This is a helper function used by getFirstClass
+    Ex: " 4:00-4:50p" -> [[16, 0], [16, 50]] */ 
+const parseTimes = (time: string) => {
     // Determine whether the time is in the afternoon (PM)
     let pm = false;
     if (time.slice(-1) === 'p') {
@@ -149,26 +148,26 @@ const parseTimes = (time) => {
     return [start, end];
 };
 
-// getYear returns the year of a given term
-//  Ex: "2019 Fall" -> "2019"
-const getYear = (term) => {
+/** getYear returns the year of a given term
+    Ex: "2019 Fall" -> "2019" */
+const getYear = (term:`${string} ${string}`) => {
     return parseInt(term.split(' ')[0]);
 };
 
-// getQuarter returns the quarter of a given term
-//  Ex: "2019 Fall" -> "Fall"
-const getQuarter = (term) => {
+/** getQuarter returns the quarter of a given term
+    Ex: "2019 Fall" -> "Fall" */
+const getQuarter = (term:`${string} ${string}`) => {
     return term.split(' ')[1];
 };
 
 // getTermLength returns the number of weeks in a given term,
 // which is 10 for quarters and Summer Session 10wk,
 // and 5 for Summer Sessions I and II
-const getTermLength = (quarter) => (quarter.startsWith('Summer') && quarter !== 'Summer10wk' ? 5 : 10);
+const getTermLength = (quarter: string) => (quarter.startsWith('Summer') && quarter !== 'Summer10wk' ? 5 : 10);
 
 // getRRule returns a string representing the recurring rule for the VEvent
 //  Ex: ["TU", "TH"] -> "FREQ=WEEKLY;BYDAY=TU,TH;INTERVAL=1;COUNT=20"
-const getRRule = (bydays, quarter) => {
+const getRRule = (bydays: ReturnType<typeof getByDays>, quarter: string) => {
     let count = getTermLength(quarter) * bydays.length; // Number of occurences in the quarter
     switch (quarter) {
         case 'Fall':
@@ -228,13 +227,13 @@ const exportCalendar = () => {
             // Add VEvent to events array
             events.push({
                 productId: 'antalmanac/ics',
-                startOutputType: 'local',
-                endOutputType: 'local',
+                startOutputType: 'local' as const,
+                endOutputType: 'local' as const,
                 title: `${deptCode} ${courseNumber} ${sectionType}`,
                 description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
                 location: `${meeting.bldg}`,
-                start: firstClassStart,
-                end: firstClassEnd,
+                start: firstClassStart as [number,number,number,number,number],
+                end: firstClassEnd as [number,number,number,number,number],
                 recurrenceRule: rrule,
             });
         }
@@ -244,12 +243,12 @@ const exportCalendar = () => {
             const [examStart, examEnd] = getExamTime(finalExam, getYear(term));
             events.push({
                 productId: 'antalmanac/ics',
-                startOutputType: 'local',
-                endOutputType: 'local',
+                startOutputType: 'local' as const,
+                endOutputType: 'local' as const,
                 title: `${deptCode} ${courseNumber} Final Exam`,
                 description: `Final Exam for ${courseTitle}`,
-                start: examStart,
-                end: examEnd,
+                start: examStart as [number,number,number,number,number],
+                end: examEnd as [number,number,number,number,number],
             });
         }
     }
@@ -272,8 +271,10 @@ const exportCalendar = () => {
                 new Blob([icsString.replace('BEGIN:VEVENT', vTimeZoneSection)], { type: 'text/plain;charset=utf-8' }),
                 'schedule.ics'
             );
+            //@ts-ignore
             openSnackbar('success', 'Schedule downloaded!', 5);
         } else {
+            //@ts-ignore
             openSnackbar('error', 'Something went wrong! Unable to download schedule.', 5);
             console.log(err);
         }
