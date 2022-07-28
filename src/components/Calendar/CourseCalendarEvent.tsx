@@ -11,6 +11,7 @@ import { clickToCopy } from '../../helpers';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../../analytics';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { Event } from 'react-big-calendar';
 const locations: Record<string, string>  = require('../RightPane/SectionTable/static/locations.json');
 
 const styles: Styles<Theme, object> = {
@@ -75,16 +76,16 @@ const genMapLink = (location: string) => {
     }
 };
 
-interface CalendarEvent {
+export interface CalendarEvent extends Event {
     color: string 
     start: Date
     end: Date
     scheduleIndices: number[]
+    title: string
 }
 
-interface CourseEvent extends CalendarEvent {
+export interface CourseEvent extends CalendarEvent {
     bldg: string
-    courseTitle: string
     finalExam: string
     instructors: string[]
     isCustomEvent: false
@@ -93,11 +94,9 @@ interface CourseEvent extends CalendarEvent {
     term: string
 }
 
-interface CustomEvent extends CalendarEvent {
+export interface CustomEvent extends CalendarEvent {
     customEventID: number
     isCustomEvent: true
-    title: string
-
 }
 
 interface CourseCalendarEventProps {
@@ -111,12 +110,12 @@ interface CourseCalendarEventProps {
 const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     const { classes, courseInMoreInfo, currentScheduleIndex } = props;
     if (!courseInMoreInfo.isCustomEvent) {
-        const { term, instructors, sectionCode, courseTitle, finalExam, bldg } = courseInMoreInfo;
+        const { term, instructors, sectionCode, title, finalExam, bldg } = courseInMoreInfo;
 
         return (
             <Paper className={classes.courseContainer}>
                 <div className={classes.titleBar}>
-                    <span className={classes.title}>{courseTitle}</span>
+                    <span className={classes.title}>{title}</span>
                     <Tooltip title="Delete">
                         <IconButton
                             size="small"
