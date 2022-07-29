@@ -1,10 +1,15 @@
 // The index of the default term in termData, as per WebSOC
 const defaultTerm = 0;
 
-function Term(shortName, longName, startDate) {
-    this.shortName = shortName;
-    this.longName = longName;
-    this.startDate = startDate;
+class Term {
+    shortName: `${string} ${string}`;
+    longName: string;
+    startDate?: [number,number,number];
+    constructor(shortName: `${string} ${string}`, longName: string, startDate?: [number,number,number]) {
+        this.shortName=shortName
+        this.longName=longName
+        this.startDate=startDate
+    };
 }
 
 // Quarterly Academic Calendar: https://www.reg.uci.edu/calendars/quarterly/2022-2023/quarterly22-23.html

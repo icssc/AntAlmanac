@@ -1,18 +1,20 @@
 import React from 'react';
 import { IconButton, Paper, Tooltip } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { Theme, withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import ColorPicker from '../ColorPicker';
 import { Delete } from '@material-ui/icons';
-import locations from '../RightPane/SectionTable/static/locations.json';
 import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
-import CustomEventDialog from './CustomEvents/CustomEventDialog';
+import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import AppStore from '../../stores/AppStore';
 import { clickToCopy } from '../../helpers';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../../analytics';
+import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { Event } from 'react-big-calendar';
+const locations: Record<string, string>  = require('../RightPane/SectionTable/static/locations.json');
 
-const styles = {
+const styles: Styles<Theme, object> = {
     courseContainer: {
         padding: '0.5rem',
         minWidth: '15rem',
@@ -65,7 +67,7 @@ const styles = {
     },
 };
 
-const genMapLink = (location) => {
+const genMapLink = (location: string) => {
     try {
         const location_id = locations[location.split(' ')[0]];
         return 'https://map.uci.edu/?id=463#!m/' + location_id;
@@ -74,16 +76,46 @@ const genMapLink = (location) => {
     }
 };
 
-const CourseCalendarEvent = (props) => {
-    const { classes, courseInMoreInfo, currentScheduleIndex } = props;
+export interface CalendarEvent extends Event {
+    color: string 
+    start: Date
+    end: Date
+    scheduleIndices: number[]
+    title: string
+}
 
+export interface CourseEvent extends CalendarEvent {
+    bldg: string
+    finalExam: string
+    instructors: string[]
+    isCustomEvent: false
+    sectionCode: string
+    sectionType: string 
+    term: string
+}
+
+export interface CustomEvent extends CalendarEvent {
+    customEventID: number
+    isCustomEvent: true
+}
+
+interface CourseCalendarEventProps {
+    classes: ClassNameMap
+    courseInMoreInfo: CourseEvent|CustomEvent
+    currentScheduleIndex: number
+    scheduleNames: string[]
+    closePopover: ()=>void
+}
+
+const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
+    const { classes, courseInMoreInfo, currentScheduleIndex } = props;
     if (!courseInMoreInfo.isCustomEvent) {
-        const { term, instructors, sectionCode, courseTitle, finalExam, bldg } = courseInMoreInfo;
+        const { term, instructors, sectionCode, title, finalExam, bldg } = courseInMoreInfo;
 
         return (
             <Paper className={classes.courseContainer}>
                 <div className={classes.titleBar}>
-                    <span className={classes.title}>{courseTitle}</span>
+                    <span className={classes.title}>{title}</span>
                     <Tooltip title="Delete">
                         <IconButton
                             size="small"
@@ -153,7 +185,6 @@ const CourseCalendarEvent = (props) => {
                                 <ColorPicker
                                     color={courseInMoreInfo.color}
                                     isCustomEvent={courseInMoreInfo.isCustomEvent}
-                                    customEventID={courseInMoreInfo.customEventID}
                                     sectionCode={courseInMoreInfo.sectionCode}
                                     term={courseInMoreInfo.term}
                                     analyticsCategory={analyticsEnum.calendar.title}
@@ -184,6 +215,7 @@ const CourseCalendarEvent = (props) => {
                             (customEvent) => customEvent.customEventID === customEventID
                         )}
                         scheduleNames={props.scheduleNames}
+                        currentScheduleIndex={currentScheduleIndex}
                     />
 
                     <Tooltip title="Delete">
@@ -209,12 +241,6 @@ const CourseCalendarEvent = (props) => {
             </Paper>
         );
     }
-};
-
-CourseCalendarEvent.propTypes = {
-    courseInMoreInfo: PropTypes.object.isRequired,
-    closePopover: PropTypes.func.isRequired,
-    currentScheduleIndex: PropTypes.number.isRequired,
 };
 
 export default withStyles(styles)(CourseCalendarEvent);

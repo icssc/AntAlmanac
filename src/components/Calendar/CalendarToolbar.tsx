@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import { Theme, withStyles } from '@material-ui/core/styles';
 import { IconButton, Tooltip, Paper, Button, useMediaQuery, Menu } from '@material-ui/core';
 import { Delete, Undo, MoreHoriz } from '@material-ui/icons';
-import PropTypes from 'prop-types';
-import { clearSchedules, undoDelete } from '../../actions/AppStoreActions';
-import CustomEventsDialog from './CustomEvents/CustomEventDialog';
-import { changeCurrentSchedule } from '../../actions/AppStoreActions';
-import ScreenshotButton from './ScreenshotButton';
-import ExportCalendar from './ExportCalendar';
+import CustomEventsDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
+import { changeCurrentSchedule, clearSchedules, undoDelete  } from '../../actions/AppStoreActions';
+import ScreenshotButton from './Toolbar/ScreenshotButton';
+import ExportCalendar from './Toolbar/ExportCalendar';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import ReactGA from 'react-ga';
 import ConditionalWrapper from '../ConditionalWrapper';
 import analyticsEnum, { logAnalytics } from '../../analytics';
-import ScheduleNameDialog from './ScheduleNameDialog';
-import EditSchedule from './EditSchedule';
+import ScheduleNameDialog from './Toolbar/EditSchedule/ScheduleNameDialog';
+import EditSchedule from './Toolbar/EditSchedule/EditSchedule';
+import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 
-const styles = {
+const styles: Styles<Theme, object> = {
     toolbar: {
         display: 'flex',
         overflow: 'hidden',
@@ -36,7 +35,7 @@ const styles = {
         display: 'inline',
     },
     spacer: {
-        flexGrow: '1',
+        flexGrow: 1
     },
     scheduleSelector: {
         marginLeft: '10px',
@@ -47,17 +46,25 @@ const styles = {
     },
 };
 
-const CalendarPaneToolbar = (props) => {
-    const {
-        classes,
-        scheduleNames,
-        currentScheduleIndex,
-        showFinalsSchedule,
-        toggleDisplayFinalsSchedule,
-        onTakeScreenshot,
-    } = props;
+interface CalendarPaneToolbarProps {
+    classes: ClassNameMap
+    scheduleNames: string[]
+    currentScheduleIndex: number
+    showFinalsSchedule: boolean
+    toggleDisplayFinalsSchedule: ()=>void
+    onTakeScreenshot: (html2CanvasScreenshot:  ()=>void)=>void // the function in an ancestor component that wraps ScreenshotButton.handleClick to perform canvas transformations before and after downloading the screenshot.
+}
 
-    const handleScheduleChange = (event) => {
+const CalendarPaneToolbar = ({
+    classes,
+    scheduleNames,
+    currentScheduleIndex,
+    showFinalsSchedule,
+    toggleDisplayFinalsSchedule,
+    onTakeScreenshot,
+}: CalendarPaneToolbarProps) => {
+
+    const handleScheduleChange = (event: React.ChangeEvent<{ name?: string; value: unknown; }>) => {
         logAnalytics({
             category: analyticsEnum.calendar.title,
             action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
@@ -67,15 +74,15 @@ const CalendarPaneToolbar = (props) => {
 
     const isMobileScreen = useMediaQuery('(max-width:630px)');
 
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [openSchedules, setOpenSchedules] = useState(false);
+    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
+    const [openSchedules, setOpenSchedules] = useState<boolean>(false);
 
-    const handleMenuClick = (event) => {
+    const handleMenuClick: React.MouseEventHandler<HTMLElement> = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleMenuClose = () => {
-        setAnchorEl(null);
+    const handleMenuClose: React.MouseEventHandler<HTMLElement> = () => {
+        setAnchorEl(undefined);
     };
 
     const handleScheduleClick = () => {
@@ -131,7 +138,7 @@ const CalendarPaneToolbar = (props) => {
                     onClick={() => {
                         logAnalytics({
                             category: analyticsEnum.calendar.title,
-                            label: analyticsEnum.calendar.actions.UNDO,
+                            action: analyticsEnum.calendar.actions.UNDO,
                         });
                         undoDelete(null);
                     }}
@@ -179,19 +186,12 @@ const CalendarPaneToolbar = (props) => {
                     </div>
                 )}
             >
-                {[
+                <>{[
                     <ExportCalendar />,
                     <ScreenshotButton
-                        onTakeScreenshot={(handleClick) => {
-                            logAnalytics({
-                                category: analyticsEnum.calendar.title,
-                                action: analyticsEnum.calendar.actions.SCREENSHOT,
-                            });
-                            onTakeScreenshot(handleClick);
-                        }}
+                        onTakeScreenshot={onTakeScreenshot}
                     />,
                     <CustomEventsDialog
-                        editMode={false}
                         currentScheduleIndex={currentScheduleIndex}
                         scheduleNames={scheduleNames}
                     />,
@@ -203,15 +203,10 @@ const CalendarPaneToolbar = (props) => {
                     >
                         {element}
                     </ConditionalWrapper>
-                ))}
+                ))}</>
             </ConditionalWrapper>
         </Paper>
     );
-};
-
-CalendarPaneToolbar.propTypes = {
-    showFinalsSchedule: PropTypes.bool.isRequired,
-    currentScheduleIndex: PropTypes.number.isRequired,
 };
 
 export default withStyles(styles)(CalendarPaneToolbar);

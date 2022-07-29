@@ -2,13 +2,25 @@ import React, { PureComponent } from 'react';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import {CustomEvent} from './CustomEventDialog';
 
-class ScheduleSelector extends PureComponent {
+interface ScheduleSelectorProps {
+    customEvent?: CustomEvent
+    scheduleIndices: number[]
+    onSelectScheduleIndices: (scheduleIndices: number[]) => void
+    scheduleNames: string[]
+}
+
+interface ScheduleSelectorState {
+    scheduleIndices: number[]
+}
+
+class ScheduleSelector extends PureComponent<ScheduleSelectorProps, ScheduleSelectorState> {
     state = {
-        scheduleIndices: this.props.customEvent ? this.props.customEvent.scheduleIndices : this.props.scheduleIndices,
+        scheduleIndices: this.props.customEvent?.scheduleIndices || this.props.scheduleIndices,
     };
 
-    handleChange = (dayIndex) => (event) => {
+    handleChange = (dayIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
         const checked = event.target.checked;
 
         this.setState(

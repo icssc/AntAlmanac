@@ -2,26 +2,25 @@ import React, { PureComponent } from 'react';
 import Button from '@material-ui/core/Button';
 import html2canvas from 'html2canvas';
 import { Panorama } from '@material-ui/icons';
-import PropTypes from 'prop-types';
 import { Tooltip } from '@material-ui/core';
+import { saveAs } from 'file-saver';
+import analyticsEnum, { logAnalytics } from '../../../analytics';
 
-class ScreenshotButton extends PureComponent {
+interface ScreenshotButtonProps {
+    onTakeScreenshot: (html2CanvasScreenshot: ()=>void)=>void // the function in an ancestor component that wraps ScreenshotButton.handleClick to perform canvas transformations before and after downloading the screenshot.
+}
+
+class ScreenshotButton extends PureComponent<ScreenshotButtonProps> {
     handleClick = () => {
-        html2canvas(document.getElementById('screenshot'), {
+        logAnalytics({
+            category: analyticsEnum.calendar.title,
+            action: analyticsEnum.calendar.actions.SCREENSHOT,
+        });
+        html2canvas(document.getElementById('screenshot') as HTMLElement, {
             scale: 2.5,
         }).then((canvas) => {
-            const img = canvas.toDataURL('image/png');
-            const lnk = document.createElement('a');
-            lnk.download = 'Schedule.png';
-            lnk.href = img;
-
-            if (document.createEvent) {
-                const e = document.createEvent('MouseEvents');
-                e.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-                lnk.dispatchEvent(e);
-            } else if (lnk.fireEvent) {
-                lnk.fireEvent('onclick');
-            }
+            const imgRaw = canvas.toDataURL('image/png');
+            saveAs(imgRaw,'Schedule.png')
         });
     };
 
@@ -40,9 +39,5 @@ class ScreenshotButton extends PureComponent {
         );
     }
 }
-
-ScreenshotButton.propTypes = {
-    onTakeScreenshot: PropTypes.func.isRequired,
-};
 
 export default ScreenshotButton;

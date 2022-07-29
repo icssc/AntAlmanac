@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { Edit } from '@material-ui/icons';
 import ScheduleNameDialog from './ScheduleNameDialog';
 import DeleteScheduleDialog from './DeleteScheduleDialog';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 const styles = () => ({
     editButton: {
@@ -13,11 +14,17 @@ const styles = () => ({
     },
 });
 
-const EditSchedule = (props) => {
-    const { classes, scheduleNames, scheduleIndex } = props;
-    const [anchorEl, setAnchorEl] = useState(null);
+interface EditScheduleProps {
+    classes: ClassNameMap
+    scheduleNames: string[]
+    scheduleIndex: number
+}
 
-    const handleClick = (event) => {
+const EditSchedule = (props: EditScheduleProps) => {
+    const { classes, scheduleNames, scheduleIndex } = props;
+    const [anchorEl, setAnchorEl] = useState<HTMLElement|null>(null);
+
+    const handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -46,9 +53,8 @@ const EditSchedule = (props) => {
                 }}
             >
                 <ScheduleNameDialog
-                    rename={true}
                     scheduleNames={scheduleNames}
-                    scheduleIndex={scheduleIndex}
+                    scheduleRenameIndex={scheduleIndex}
                     onClose={handleClose}
                 />
                 <DeleteScheduleDialog

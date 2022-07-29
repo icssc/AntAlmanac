@@ -3,12 +3,20 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
-class DaySelector extends PureComponent {
-    state = {
-        days: this.props.customEvent ? this.props.customEvent.days : [false, false, false, false, false, false, false],
+interface DaySelectorProps {
+    days?: boolean[]
+    onSelectDay: (days: boolean[]) => void
+}
+
+interface DaySelectorState {
+    days: boolean[]
+}
+class DaySelector extends PureComponent<DaySelectorProps,DaySelectorState> {
+    state: DaySelectorState = {
+        days: this.props.days || [false, false, false, false, false, false, false],
     };
 
-    handleChange = (dayIndex) => (event) => {
+    handleChange = (dayIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
         const checked = event.target.checked;
 
         this.setState(
