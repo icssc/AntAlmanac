@@ -43,14 +43,8 @@ interface CustomEventDialogProps {
     scheduleNames: string[]
 };
 
-interface CustomEventDialogState {
+interface CustomEventDialogState extends CustomEvent{
     open: boolean// the properties under this are copies of CustomEvent properties.
-    title: string
-    start: string
-    end: string
-    days: boolean[]
-    scheduleIndices: number[]
-    customEventID: number
 }
 
 const defaultCustomEvent: CustomEvent = {

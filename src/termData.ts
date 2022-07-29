@@ -72,5 +72,3 @@ function getDefaultTerm() {
 }
 
 export { termData, defaultTerm, getDefaultTerm };
-
-//https://tenor.com/view/leonardo-dicaprio-rick-dalton-point-finger-pointing-hand-right-there-gif-20349799
