@@ -4,7 +4,7 @@ import buildingCatalogue from './static/buildingCatalogue';
 import locations from '../SectionTable/static/locations.json';
 import AppStore from '../../../stores/AppStore';
 import DayTabs from './MapTabsAndSearchBar';
-import MapMarkerPopup from './MapMarkerPopup';
+import MapMarker from './MapMarker';
 import Locate from 'leaflet.locatecontrol';
 import Leaflet from 'leaflet';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
@@ -308,7 +308,7 @@ export default class UCIMap extends PureComponent {
                 );
 
                 markers.push(
-                    <MapMarkerPopup
+                    <MapMarker
                         key={courseString}
                         image={locationData.imageURLs[0]}
                         markerColor={event.color}
@@ -325,7 +325,7 @@ export default class UCIMap extends PureComponent {
                             <br />
                             Room: {event.bldg.split(' ').slice(-1)}
                         </>
-                    </MapMarkerPopup>
+                    </MapMarker>
                 );
             }
         }
@@ -391,7 +391,7 @@ export default class UCIMap extends PureComponent {
                 {this.drawMarkers()}
 
                 {this.state.selected ? (
-                    <MapMarkerPopup
+                    <MapMarker
                         image={this.state.selected_img}
                         location={this.state.selected}
                         lat={this.state.lat}

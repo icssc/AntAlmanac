@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import WalkIcon from '@material-ui/icons/DirectionsWalk';
 import { Marker, Popup } from 'react-leaflet';
-import PropTypes from 'prop-types';
 import { Button } from '@material-ui/core';
 import Leaflet from 'leaflet';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
@@ -9,11 +8,22 @@ import analyticsEnum, { logAnalytics } from '../../../analytics';
 const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';
 const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId=463&image=';
 
-class MapMarkerPopup extends PureComponent {
-    getMarkerIcon = (color) => {
+interface MapMarkerProps {
+    index: number
+    stackIndex: number
+    acronym: string
+    location: string
+    lat: number
+    lng: number
+    markerColor: string
+    image?: string
+}
+
+class MapMarker extends PureComponent<MapMarkerProps> {
+    /**@param color rgb hex color string */
+    getMarkerIcon = (color: string) => {
         return Leaflet.divIcon({
             iconAnchor: [0, 14 + 16 * this.props.stackIndex], // Adds offset for marker for stacking markers
-            labelAnchor: [-3.5, 0],
             popupAnchor: [0, -21 - 16 * this.props.stackIndex], // Adds offset for popup for stacking markers
             className: '',
             html: `<div style="position:relative;">
@@ -93,7 +103,6 @@ class MapMarkerPopup extends PureComponent {
                         startIcon={<WalkIcon />}
                         href={`${GOOGLE_MAPS_URL}${this.props.lat},${this.props.lng}`}
                         target="_blank"
-                        format="centered"
                     >
                         Directions
                     </Button>
@@ -103,13 +112,5 @@ class MapMarkerPopup extends PureComponent {
     }
 }
 
-MapMarkerPopup.propTypes = {
-    markerColor: PropTypes.string.isRequired,
-    image: PropTypes.string,
-    location: PropTypes.string.isRequired,
-    lat: PropTypes.number.isRequired,
-    lng: PropTypes.number.isRequired,
-    acronym: PropTypes.string.isRequired,
-};
 
-export default MapMarkerPopup;
+export default MapMarker;
