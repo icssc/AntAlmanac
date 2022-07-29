@@ -48,9 +48,11 @@
     },
     "devDependencies": {
         "@types/file-saver": "^2.0.5",
+        "@types/leaflet": "^1.7.11",
         "@types/node": "^18.0.6",
         "@types/react": "^17.0.47",
         "@types/react-dom": "^18.0.6",
+        "@types/react-leaflet": "^2.8.2",
         "gh-pages": "^3.2.3",
         "husky": "^4.3.6",
         "lint-staged": "^10.5.3",
