@@ -3,7 +3,7 @@ import { Map, TileLayer, withLeaflet, Polyline, Marker } from 'react-leaflet';
 import buildingCatalogue from './static/buildingCatalogue';
 import locations from '../SectionTable/static/locations.json';
 import AppStore from '../../../stores/AppStore';
-import DayTabs from './MapTabsAndSearchBar';
+import MapMenu from './MapMenu';
 import MapMarker from './MapMarker';
 import Locate from 'leaflet.locatecontrol';
 import Leaflet from 'leaflet';
@@ -365,7 +365,7 @@ export default class UCIMap extends PureComponent {
                 maxZoom={19}
                 style={{ height: '100%' }}
             >
-                <DayTabs
+                <MapMenu
                     day={this.state.day}
                     setDay={(day) => {
                         this.createMarkers(day);
