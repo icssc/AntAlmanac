@@ -44,7 +44,7 @@ interface CustomEventDialogProps {
 };
 
 interface CustomEventDialogState extends CustomEvent{
-    open: boolean// the properties under this are copies of CustomEvent properties.
+    open: boolean
 }
 
 const defaultCustomEvent: CustomEvent = {
