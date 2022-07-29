@@ -27,29 +27,29 @@ const styles = {
 };
 
 export interface CustomEvent {
-    title: string,
-    start: string,
-    end: string,
-    days: boolean[],
-    scheduleIndices: number[],
-    customEventID: number,
+    title: string
+    start: string
+    end: string
+    days: boolean[]
+    scheduleIndices: number[]
+    customEventID: number
     color?: string
 }
 
 interface CustomEventDialogProps {
-    customEvent?: CustomEvent,
-    onDialogClose?: ()=>void,
-    currentScheduleIndex: number,
-    scheduleNames: any[] // TODO: statically type this.
+    customEvent?: CustomEvent
+    onDialogClose?: ()=>void
+    currentScheduleIndex: number
+    scheduleNames: string[]
 };
 
 interface CustomEventDialogState {
-    open: boolean,// the properties under this are copies of CustomEvent properties.
-    title: string,
-    start: string,
-    end: string,
-    days: boolean[],
-    scheduleIndices: number[],
+    open: boolean// the properties under this are copies of CustomEvent properties.
+    title: string
+    start: string
+    end: string
+    days: boolean[]
+    scheduleIndices: number[]
     customEventID: number
 }
 
