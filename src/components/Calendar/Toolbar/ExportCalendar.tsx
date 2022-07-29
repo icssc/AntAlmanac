@@ -38,6 +38,13 @@ const vTimeZoneSection =
     'END:VTIMEZONE\n' +
     'BEGIN:VEVENT';
 
+/** [YEAR, MONTH, DAY, HOUR, MINUTE]*/
+type DateTimeArray = [number,number,number,number,number];
+/** [YEAR, MONTH, DAY]*/
+type YearMonthDay = [number, number, number];
+/** [HOUR, MINUTE]*/
+type HourMinute = [number,number];
+
 /** getByDays returns the days that a class occurs
     Given a string of days, convert it to a list of days in ics format
     Ex: ("TuThF") -> ["TU", "TH", "FR"] */
@@ -80,12 +87,12 @@ const dateToIcs = (date: Date) => {
         date.getFullYear(),
         date.getMonth() + 1, // Add 1 month since it is 0-indexed
         date.getDate(),
-    ] as const;
+    ] as YearMonthDay;
 };
 
 /** getFirstClass returns the start and end datetime of the first class
     Ex: ([2021, 3, 30], " 4:00-4:50p") -> [[2021, 3, 30, 16, 0], [2021, 3, 30, 16, 50]] */
-const getFirstClass = (date: readonly [number, number, number], time: string) => {
+const getFirstClass = (date: YearMonthDay, time: string): [DateTimeArray, DateTimeArray] => {
     const [classStartTime, classEndTime] = parseTimes(time);
     return [
         [...date, ...classStartTime],
@@ -129,7 +136,7 @@ const parseTimes = (time: string) => {
             (timeString) =>
                 timeString
                     .split(':') // Ex: [[" 4", "00"], ["4", "50"]]
-                    .map((val) => parseInt(val)) // Ex: [[4, 0], [4, 50]]
+                    .map((val) => parseInt(val)) as HourMinute// Ex: [[4, 0], [4, 50]]
         );
 
     // Add 12 hours if the time is PM
@@ -145,7 +152,7 @@ const parseTimes = (time: string) => {
         end[0] += 12;
     }
 
-    return [start, end];
+    return [start, end] as const;
 };
 
 /** getYear returns the year of a given term
@@ -232,8 +239,8 @@ const exportCalendar = () => {
                 title: `${deptCode} ${courseNumber} ${sectionType}`,
                 description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
                 location: `${meeting.bldg}`,
-                start: firstClassStart as [number,number,number,number,number],
-                end: firstClassEnd as [number,number,number,number,number],
+                start: firstClassStart as DateTimeArray,
+                end: firstClassEnd as DateTimeArray,
                 recurrenceRule: rrule,
             });
         }
@@ -247,8 +254,8 @@ const exportCalendar = () => {
                 endOutputType: 'local' as const,
                 title: `${deptCode} ${courseNumber} Final Exam`,
                 description: `Final Exam for ${courseTitle}`,
-                start: examStart as [number,number,number,number,number],
-                end: examEnd as [number,number,number,number,number],
+                start: examStart as DateTimeArray,
+                end: examEnd as DateTimeArray,
             });
         }
     }
