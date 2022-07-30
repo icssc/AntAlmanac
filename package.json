@@ -49,6 +49,7 @@
     "devDependencies": {
         "@types/file-saver": "^2.0.5",
         "@types/leaflet": "^1.7.11",
+        "@types/leaflet.locatecontrol": "^0.74.0",
         "@types/node": "^18.0.6",
         "@types/react": "^17.0.47",
         "@types/react-dom": "^18.0.6",
