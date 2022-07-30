@@ -12,7 +12,7 @@ import AppStore from '../../stores/AppStore';
 import ReactGA from 'react-ga';
 import { Styles } from '@material-ui/core/styles/withStyles';
 import { ClassNameMap } from 'notistack';
-import { CourseEvent, CustomEvent} from './CourseCalendarEvent';
+import { CalendarEvent } from './CourseCalendarEvent';
 
 const localizer = momentLocalizer(moment);
 
@@ -69,7 +69,7 @@ const styles: Styles<Theme, object> = {
 
 const AntAlmanacEvent =
     ({ classes }: {classes: ClassNameMap}) =>
-    ({event}: {event: CourseEvent|CustomEvent}) => {
+    ({event}: {event: CalendarEvent}) => {
         if (!event.isCustomEvent)
             return (
                 <div>
@@ -101,10 +101,10 @@ interface ScheduleCalendarState {
     anchorEl: HTMLElement|null
     showFinalsSchedule: boolean
     moreInfoOpen: false
-    courseInMoreInfo: CourseEvent|CustomEvent|null
+    courseInMoreInfo: CalendarEvent|null
     calendarEventKey: number|null
-    eventsInCalendar: (CourseEvent|CustomEvent)[]
-    finalsEventsInCalendar: (CourseEvent|CustomEvent)[]
+    eventsInCalendar: CalendarEvent[]
+    finalsEventsInCalendar: CalendarEvent[]
     currentScheduleIndex: number
     scheduleNames: string[]
 }
@@ -122,7 +122,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         scheduleNames: AppStore.getScheduleNames(),
     };
 
-    static eventStyleGetter = (event: CourseEvent|CustomEvent) => {
+    static eventStyleGetter = (event: CalendarEvent) => {
         return {
             style: {
                 backgroundColor: event.color,
@@ -232,7 +232,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         });
     };
 
-    handleEventClick = (event: CourseEvent|CustomEvent, e: SyntheticEvent<HTMLElement, Event>) => {
+    handleEventClick = (event: CalendarEvent, e: SyntheticEvent<HTMLElement, Event>) => {
         const { currentTarget } = e;
         e.stopPropagation();
 
@@ -318,12 +318,12 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                         <CourseCalendarEvent
                             key={this.state.calendarEventKey}
                             closePopover={this.handleClosePopover}
-                            courseInMoreInfo={this.state.courseInMoreInfo as CourseEvent|CustomEvent}
+                            courseInMoreInfo={this.state.courseInMoreInfo as CalendarEvent}
                             currentScheduleIndex={this.state.currentScheduleIndex}
                             scheduleNames={this.state.scheduleNames}
                         />
                     </Popper>
-                    <Calendar<CourseEvent|CustomEvent, object>
+                    <Calendar<CalendarEvent, object>
                         localizer={localizer}
                         toolbar={false}
                         formats={{
