@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Tab, Tabs, Paper, TextField } from '@material-ui/core';
 import { Theme, withStyles, styled } from '@material-ui/core/styles';
 import buildingCatalogue from './static/buildingCatalogue';
+import { Building } from './static/building'
 import { Autocomplete } from '@material-ui/lab';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 
@@ -34,17 +35,10 @@ const StyledTab = styled(Tab)({
     padding: 0,
 });
 
-interface Building {
-    imageURLs: string[]
-    lat: number
-    lng: number
-    name: string
-}
-
 interface MapMenuProps {
     classes: ClassNameMap
-    day: string
-    setDay: (newDay: string)=>void
+    day: number
+    setDay: (newDay: number)=>void
     handleSearch: (event: React.ChangeEvent<{}>, value: Building|null)=>void
 }
 

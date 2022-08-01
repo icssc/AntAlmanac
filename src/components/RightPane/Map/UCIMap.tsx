@@ -1,18 +1,21 @@
 import React, { PureComponent } from 'react';
-import { Map, TileLayer, withLeaflet, Polyline, Marker } from 'react-leaflet';
+import { Map, TileLayer, withLeaflet, Polyline, Marker, LeafletContext } from 'react-leaflet';
+import { Building } from './static/building';
 import buildingCatalogue from './static/buildingCatalogue';
 import locations from '../SectionTable/static/locations.json';
 import AppStore from '../../../stores/AppStore';
 import MapMenu from './MapMenu';
 import MapMarker from './MapMarker';
 import Locate from 'leaflet.locatecontrol';
-import Leaflet from 'leaflet';
+import Leaflet, { LeafletMouseEvent } from 'leaflet';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
+import { CalendarEvent, CourseEvent } from '../../Calendar/CourseCalendarEvent';
 
-class LocateControl extends PureComponent {
+class LocateControl extends PureComponent<{leaflet: LeafletContext}> {
     componentDidMount() {
         const { map } = this.props.leaflet;
 
+        //@ts-ignore - Locate's package doesn't have type declarations as of summer 2022
         const lc = new Locate({
             position: 'topleft',
             strings: {
@@ -28,7 +31,7 @@ class LocateControl extends PureComponent {
     }
 }
 
-LocateControl = withLeaflet(LocateControl);
+const LocateControlLeaflet = withLeaflet(LocateControl);
 
 const DAYS = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
@@ -36,12 +39,26 @@ const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
 const DIRECTIONS_ENDPOINT = 'https://api.mapbox.com/directions/v5/mapbox/walking/';
 
+type Coord = [number,number];
+interface UCIMapState {
+    lat: number
+    lng: number
+    zoom: number
+    day: number
+    selected: string|null
+    selected_img: string
+    selected_acronym: string
+    eventsInCalendar: CalendarEvent[]
+    poly: any[]
+    info_markers: any[]
+    info_marker: Marker|null
+    pins: Record<string, CourseEvent[]>
+}
 export default class UCIMap extends PureComponent {
-    state = {
+    state: UCIMapState = {
         lat: 33.6459,
         lng: -117.842717,
         zoom: 16,
-        markers: [],
         day: 0,
         selected: null,
         selected_img: '',
@@ -53,15 +70,15 @@ export default class UCIMap extends PureComponent {
         pins: {},
     };
 
-    generateRoute = (day) => {
+    generateRoute = (day: number) => {
         // Clear any existing route on the map
         this.setState({ poly: [], info_marker: null });
 
         if (day) {
             let index = 0;
             let coords = ''; // lat and lng of markers to be passed to api
-            let coords_array = []; // lat and lng of markers to be used later
-            let colors = [];
+            let coords_array: Coord[] = []; // lat and lng of markers to be used later
+            let colors: string[] = [];
             let courses = new Set();
 
             // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
@@ -78,11 +95,12 @@ export default class UCIMap extends PureComponent {
                             ) // Adds to the set and return false
                         )
                 )
-                .sort((event, event2) => event.start - event2.start)
+                .sort((event, event2) => event.start.getTime() - event2.start.getTime())
                 .forEach((event) => {
+                    if(event.isCustomEvent) return;
                     // Get building code, get id of building code, which will get us the building data from buildingCatalogue
-                    const buildingCode = event.bldg.split(' ').slice(0, -1).join(' ');
-                    const id = locations[buildingCode];
+                    const buildingCode = event.bldg.split(' ').slice(0, -1).join(' ') as keyof typeof locations;
+                    const id = locations[buildingCode] as keyof typeof buildingCatalogue;
                     const locationData = buildingCatalogue[id];
 
                     if (locationData === undefined) return;
@@ -101,9 +119,9 @@ export default class UCIMap extends PureComponent {
                 var url = new URL(DIRECTIONS_ENDPOINT + encodeURIComponent(coords));
 
                 url.search = new URLSearchParams({
-                    alternatives: false,
+                    alternatives: "false",
                     geometries: 'geojson',
-                    steps: false,
+                    steps: "false",
                     access_token: ACCESS_TOKEN,
                 }).toString();
 
@@ -112,9 +130,9 @@ export default class UCIMap extends PureComponent {
                     headers: { 'Content-Type': 'application/json' },
                 }).then((response) => {
                     response.json().then((obj) => {
-                        let coordinates = obj['routes'][0]['geometry']['coordinates']; // The coordinates for the lines of the routes
+                        let coordinates: Coord[] = obj['routes'][0]['geometry']['coordinates']; // The coordinates for the lines of the routes
                         let waypoints = obj['waypoints']; // The waypoints we specified in the request
-                        let waypointIndex = 0; // The current waypoint we are building a path from
+                        let waypointIndex=0;
                         let path = [
                             [[waypoints[waypointIndex]['location'][1], waypoints[waypointIndex]['location'][0]]],
                         ]; // Path is a list of paths for each waypoint. For example, path[0] is the path to waypoint 0, path[1] is the path from 0 to 1... etc.
@@ -135,7 +153,7 @@ export default class UCIMap extends PureComponent {
                                 />
                             ); // Draw a dashline from waypoint 0 to start of route
                         }
-                        for (let [lat, lng] of coordinates) {
+                        for (const [lat, lng] of coordinates) {
                             path[waypointIndex].push([lng, lat]); // Creates a path using lat and lng of coordinates until lat and lng matches one of the waypoint's coordinates
                             if (
                                 lat === waypoints[waypointIndex]['location'][0] &&
@@ -147,9 +165,12 @@ export default class UCIMap extends PureComponent {
                                         waypoints[waypointIndex - 1]['location'][0] !== lat || // Skip waypoints that are on the same location
                                         waypoints[waypointIndex - 1]['location'][1] !== lng
                                     ) {
-                                        function setInfoMarker(event) {
-                                            let [color, duration, miles] =
-                                                this.options.map.state.info_markers[this.options.index - 1];
+                                        // TODO: If anyone wants to fix this ts-ignore in the future go ahead
+                                        // the `this` parameter actually refers to the Polyline object this function is being passed to.
+                                        // the `options property of this comes from the props of that Polyline, specifically `map` and `index`
+                                        // @ts-ignore needs to be ignored because function definitions are not allowed in strict mode. This fix has to involve converting this function to an arrow function and not relying on accessing the index from the specific Polyline that it's being called from with the `this` parameter. 
+                                        function setInfoMarker(this: {options: {map: UCIMap, index: typeof waypointIndex}}, event: LeafletMouseEvent) {
+                                            let [color, duration, miles] = this.options.map.state.info_markers[this.options.index - 1];
                                             this.options.map.setState({
                                                 info_marker: (
                                                     <Marker
@@ -157,7 +178,6 @@ export default class UCIMap extends PureComponent {
                                                         opacity={1.0}
                                                         icon={Leaflet.divIcon({
                                                             iconAnchor: [0, 14],
-                                                            labelAnchor: [-3.5, 0],
                                                             popupAnchor: [0, -21],
                                                             className: '',
                                                             iconSize: [1000, 14],
@@ -184,8 +204,8 @@ export default class UCIMap extends PureComponent {
                                                 index={waypointIndex}
                                                 map={this}
                                                 onmouseover={setInfoMarker}
-                                                onmouseout={function () {
-                                                    this.options.map.setState({ info_marker: null });
+                                                onmouseout={() => {
+                                                    this.setState({ info_marker: null });
                                                 }}
                                                 onmousemove={setInfoMarker}
                                             />
@@ -256,9 +276,9 @@ export default class UCIMap extends PureComponent {
         AppStore.removeListener('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
     };
 
-    createMarkers = (day) => {
-        let pins = {};
-        let courses = new Set();
+    createMarkers = (day: number) => {
+        const pins: typeof this.state.pins = {};
+        const courses = new Set();
         // Tracks courses that have already been pinned on the map, so there are no duplicates
 
         // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
@@ -275,8 +295,9 @@ export default class UCIMap extends PureComponent {
                         ) // Adds to the set and return false
                     )
             )
-            .sort((event, event2) => event.start - event2.start)
+            .sort((event, event2) => event.start.getTime() - event2.start.getTime())
             .forEach((event, index) => {
+                if(event.isCustomEvent) return;
                 const buildingCode = event.bldg.split(' ').slice(0, -1).join(' ');
                 event.index = index + 1;
                 if (pins.hasOwnProperty(buildingCode)) {
@@ -293,7 +314,7 @@ export default class UCIMap extends PureComponent {
         const pins = this.state.pins;
         for (const buildingCode in pins) {
             // Get building code, get id of building code, which will get us the building data from buildingCatalogue
-            const id = locations[buildingCode];
+            const id = locations[buildingCode as keyof typeof locations] as keyof typeof buildingCatalogue;
             const locationData = buildingCatalogue[id];
             const courses = pins[buildingCode];
             for (let index = courses.length - 1; index >= 0; index--) {
@@ -332,7 +353,7 @@ export default class UCIMap extends PureComponent {
         return markers;
     };
 
-    handleSearch = (event, searchValue) => {
+    handleSearch = (event: React.ChangeEvent<{}>, searchValue: Building|null) => {
         if (searchValue) {
             // Acronym, if it exists, is in between parentheses
             const acronym = searchValue.name.substring(
@@ -375,7 +396,7 @@ export default class UCIMap extends PureComponent {
                     handleSearch={this.handleSearch}
                 />
 
-                <LocateControl />
+                <LocateControlLeaflet />
 
                 <TileLayer
                     attribution={ATTRIBUTION_MARKUP}

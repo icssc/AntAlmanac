@@ -9,7 +9,7 @@ const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walki
 const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId=463&image=';
 
 interface MapMarkerProps {
-    index: number
+    index: string
     stackIndex: number
     acronym: string
     location: string
