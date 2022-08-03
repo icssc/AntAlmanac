@@ -10,6 +10,7 @@ import Locate from 'leaflet.locatecontrol';
 import Leaflet, { LeafletMouseEvent } from 'leaflet';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { CalendarEvent, CourseEvent } from '../../Calendar/CourseCalendarEvent';
+import { Coord, MapBoxResponse } from './static/mapbox'
 
 class LocateControl extends PureComponent<{leaflet: LeafletContext}> {
     componentDidMount() {
@@ -39,7 +40,6 @@ const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
 const DIRECTIONS_ENDPOINT = 'https://api.mapbox.com/directions/v5/mapbox/walking/';
 
-type Coord = [number,number];
 interface UCIMapState {
     lat: number
     lng: number
@@ -70,7 +70,7 @@ export default class UCIMap extends PureComponent {
         pins: {},
     };
 
-    generateRoute = (day: number) => {
+    generateRoute = async (day: number) => {
         // Clear any existing route on the map
         this.setState({ poly: [], info_marker: null });
 
@@ -125,125 +125,123 @@ export default class UCIMap extends PureComponent {
                     access_token: ACCESS_TOKEN,
                 }).toString();
 
-                fetch(url, {
+                const response = await fetch(url, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
-                }).then((response) => {
-                    response.json().then((obj) => {
-                        let coordinates: Coord[] = obj['routes'][0]['geometry']['coordinates']; // The coordinates for the lines of the routes
-                        let waypoints = obj['waypoints']; // The waypoints we specified in the request
-                        let waypointIndex=0;
-                        let path = [
-                            [[waypoints[waypointIndex]['location'][1], waypoints[waypointIndex]['location'][0]]],
-                        ]; // Path is a list of paths for each waypoint. For example, path[0] is the path to waypoint 0, path[1] is the path from 0 to 1... etc.
+                });
+                const obj: MapBoxResponse = await response.json();
+                const coordinates = obj['routes'][0]['geometry']['coordinates']; // The coordinates for the lines of the routes
+                const waypoints = obj['waypoints']; // The waypoints we specified in the request
+                let waypointIndex=0;
+                const path: Coord[][] = [
+                    [[waypoints[waypointIndex]['location'][1], waypoints[waypointIndex]['location'][0]]],
+                ]; // Path is a list of paths for each waypoint. For example, path[0] is the path to waypoint 0, path[1] is the path from 0 to 1... etc.
 
-                        let poly = []; // Arrays of polyline to be added to map
-                        let info_markers = [];
+                const poly = []; // Arrays of polyline to be added to map
+                const info_markers = [];
 
-                        if (
-                            waypoints[0]['location'][0] !== waypoints[1]['location'][0] ||
-                            waypoints[0]['location'][1] !== waypoints[1]['location'][1]
-                        ) {
-                            poly.push(
-                                <Polyline
-                                    key="start"
-                                    color={colors[0]}
-                                    positions={[path[0][0], coords_array[0]]}
-                                    dashArray="4"
-                                />
-                            ); // Draw a dashline from waypoint 0 to start of route
-                        }
-                        for (const [lat, lng] of coordinates) {
-                            path[waypointIndex].push([lng, lat]); // Creates a path using lat and lng of coordinates until lat and lng matches one of the waypoint's coordinates
+                if (
+                    waypoints[0]['location'][0] !== waypoints[1]['location'][0] ||
+                    waypoints[0]['location'][1] !== waypoints[1]['location'][1]
+                ) {
+                    poly.push(
+                        <Polyline
+                            key="start"
+                            color={colors[0]}
+                            positions={[path[0][0], coords_array[0]]}
+                            dashArray="4"
+                        />
+                    ); // Draw a dashline from waypoint 0 to start of route
+                }
+                for (const [lat, lng] of coordinates) {
+                    path[waypointIndex].push([lng, lat]); // Creates a path using lat and lng of coordinates until lat and lng matches one of the waypoint's coordinates
+                    if (
+                        lat === waypoints[waypointIndex]['location'][0] &&
+                        lng === waypoints[waypointIndex]['location'][1]
+                    ) {
+                        path.push([[lng, lat]]);
+                        if (waypointIndex !== 0) {
                             if (
-                                lat === waypoints[waypointIndex]['location'][0] &&
-                                lng === waypoints[waypointIndex]['location'][1]
+                                waypoints[waypointIndex - 1]['location'][0] !== lat || // Skip waypoints that are on the same location
+                                waypoints[waypointIndex - 1]['location'][1] !== lng
                             ) {
-                                path.push([[lng, lat]]);
-                                if (waypointIndex !== 0) {
-                                    if (
-                                        waypoints[waypointIndex - 1]['location'][0] !== lat || // Skip waypoints that are on the same location
-                                        waypoints[waypointIndex - 1]['location'][1] !== lng
-                                    ) {
-                                        // TODO: If anyone wants to fix this ts-ignore in the future go ahead
-                                        // the `this` parameter actually refers to the Polyline object this function is being passed to.
-                                        // the `options property of this comes from the props of that Polyline, specifically `map` and `index`
-                                        // @ts-ignore needs to be ignored because function definitions are not allowed in strict mode. This fix has to involve converting this function to an arrow function and not relying on accessing the index from the specific Polyline that it's being called from with the `this` parameter. 
-                                        function setInfoMarker(this: {options: {map: UCIMap, index: typeof waypointIndex}}, event: LeafletMouseEvent) {
-                                            let [color, duration, miles] = this.options.map.state.info_markers[this.options.index - 1];
-                                            this.options.map.setState({
-                                                info_marker: (
-                                                    <Marker
-                                                        position={event.latlng}
-                                                        opacity={1.0}
-                                                        icon={Leaflet.divIcon({
-                                                            iconAnchor: [0, 14],
-                                                            popupAnchor: [0, -21],
-                                                            className: '',
-                                                            iconSize: [1000, 14],
-                                                            html: `<div style="position:relative; top:-200%; left:2px; pointer-events: none; background-color: white; border-left-color: ${color}; border-left-style: solid; width: fit-content; border-left-width: 5px; padding-left: 10px; padding-right: 10px; padding-top: 4px; padding-bottom: 4px;">
-                                                                <span style="color:${color}">
-                                                                ${duration} 
-                                                                </span>
-                                                                <br>
-                                                                <span style="color:#888888">
-                                                                ${miles}
-                                                                </span>
-                                                            </div>`,
-                                                        })}
-                                                    ></Marker>
-                                                ),
-                                            });
-                                        }
-                                        poly.push(
-                                            <Polyline
-                                                key={poly.length}
-                                                zIndexOffset={100}
-                                                color={colors[waypointIndex - 1]}
-                                                positions={path[waypointIndex]}
-                                                index={waypointIndex}
-                                                map={this}
-                                                onmouseover={setInfoMarker}
-                                                onmouseout={() => {
-                                                    this.setState({ info_marker: null });
-                                                }}
-                                                onmousemove={setInfoMarker}
-                                            />
-                                        ); // Draw path from last waypoint to next waypoint
-
-                                        poly.push(
-                                            <Polyline
-                                                key={poly.length}
-                                                color={colors[waypointIndex - 1]}
-                                                positions={[
-                                                    path[waypointIndex][path[waypointIndex].length - 1],
-                                                    coords_array[waypointIndex],
-                                                ]}
-                                                dashArray="4"
-                                            />
-                                        ); // Draw a dashed line directly to waypoint
-                                        let duration =
-                                            obj['routes'][0]['legs'][waypointIndex - 1]['duration'] > 30
-                                                ? Math.round(
-                                                      obj['routes'][0]['legs'][waypointIndex - 1]['duration'] / 60
-                                                  ).toString() + ' min'
-                                                : '<1 min';
-                                        let miles =
-                                            (
-                                                Math.floor(
-                                                    obj['routes'][0]['legs'][waypointIndex - 1]['distance'] / 1.609 / 10
-                                                ) / 100
-                                            ).toString() + ' mi';
-                                        // Add marker info (colors, duration, mile)
-                                        info_markers.push([colors[waypointIndex - 1], duration, miles]);
-                                    }
+                                // TODO: If anyone wants to fix this ts-ignore in the future go ahead
+                                // the `this` parameter actually refers to the Polyline object this function is being passed to.
+                                // the `options property of this comes from the props of that Polyline, specifically `map` and `index`
+                                // @ts-ignore needs to be ignored because function definitions are not allowed in strict mode. This fix has to involve converting this function to an arrow function and not relying on accessing the index from the specific Polyline that it's being called from with the `this` parameter. 
+                                function setInfoMarker(this: {options: {map: UCIMap, index: typeof waypointIndex}}, event: LeafletMouseEvent) {
+                                    let [color, duration, miles] = this.options.map.state.info_markers[this.options.index - 1];
+                                    this.options.map.setState({
+                                        info_marker: (
+                                            <Marker
+                                                position={event.latlng}
+                                                opacity={1.0}
+                                                icon={Leaflet.divIcon({
+                                                    iconAnchor: [0, 14],
+                                                    popupAnchor: [0, -21],
+                                                    className: '',
+                                                    iconSize: [1000, 14],
+                                                    html: `<div style="position:relative; top:-200%; left:2px; pointer-events: none; background-color: white; border-left-color: ${color}; border-left-style: solid; width: fit-content; border-left-width: 5px; padding-left: 10px; padding-right: 10px; padding-top: 4px; padding-bottom: 4px;">
+                                                        <span style="color:${color}">
+                                                        ${duration} 
+                                                        </span>
+                                                        <br>
+                                                        <span style="color:#888888">
+                                                        ${miles}
+                                                        </span>
+                                                    </div>`,
+                                                })}
+                                            ></Marker>
+                                        ),
+                                    });
                                 }
-                                waypointIndex++;
+                                poly.push(
+                                    <Polyline
+                                        key={poly.length}
+                                        zIndexOffset={100}
+                                        color={colors[waypointIndex - 1]}
+                                        positions={path[waypointIndex]}
+                                        index={waypointIndex}
+                                        map={this}
+                                        onmouseover={setInfoMarker}
+                                        onmouseout={() => {
+                                            this.setState({ info_marker: null });
+                                        }}
+                                        onmousemove={setInfoMarker}
+                                    />
+                                ); // Draw path from last waypoint to next waypoint
+
+                                poly.push(
+                                    <Polyline
+                                        key={poly.length}
+                                        color={colors[waypointIndex - 1]}
+                                        positions={[
+                                            path[waypointIndex][path[waypointIndex].length - 1],
+                                            coords_array[waypointIndex],
+                                        ]}
+                                        dashArray="4"
+                                    />
+                                ); // Draw a dashed line directly to waypoint
+                                let duration =
+                                    obj['routes'][0]['legs'][waypointIndex - 1]['duration'] > 30
+                                        ? Math.round(
+                                                obj['routes'][0]['legs'][waypointIndex - 1]['duration'] / 60
+                                            ).toString() + ' min'
+                                        : '<1 min';
+                                let miles =
+                                    (
+                                        Math.floor(
+                                            obj['routes'][0]['legs'][waypointIndex - 1]['distance'] / 1.609 / 10
+                                        ) / 100
+                                    ).toString() + ' mi';
+                                // Add marker info (colors, duration, mile)
+                                info_markers.push([colors[waypointIndex - 1], duration, miles]);
                             }
                         }
-                        this.setState({ poly: poly, info_markers: info_markers, info_marker: null });
-                    });
-                });
+                        waypointIndex++;
+                    }
+                }
+                this.setState({ poly: poly, info_markers: info_markers, info_marker: null });
             }
         }
     };
