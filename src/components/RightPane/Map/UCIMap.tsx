@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Map, TileLayer, withLeaflet, Polyline, Marker, LeafletContext } from 'react-leaflet';
-import { Building } from './static/building';
+import Building from './static/building';
 import buildingCatalogue from './static/buildingCatalogue';
 import locations from '../SectionTable/static/locations.json';
 import AppStore from '../../../stores/AppStore';
