@@ -24,9 +24,7 @@ class LocateControl extends PureComponent<{leaflet: LeafletContext}> {
             },
             flyTo: true,
         });
-        if (map instanceof Leaflet.Map) {
-            lc.addTo(map);
-        }
+        lc.addTo(map as Leaflet.Map);
     }
 
     render() {
