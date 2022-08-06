@@ -18,10 +18,14 @@ interface NotificationItem {
     sectionCode: string
 }
 
+interface NotificationAPIResponse {
+    smsNotificationList: NotificationItem[]
+}
+
 interface NotificationHubState {
     open: boolean,
     phoneNumber: string,
-    smsNotificationList: Array<NotificationItem>
+    smsNotificationList: NotificationItem[]
 }
 
 class NotificationHub extends PureComponent {
@@ -35,9 +39,9 @@ class NotificationHub extends PureComponent {
         let storedPhoneNumber;
 
         if (typeof Storage !== 'undefined') {
+            // grep the project for `window\.localStorage\.setItem\('phoneNumber'` to find the source of this
             storedPhoneNumber = window.localStorage.getItem('phoneNumber');
         }
-
         if (storedPhoneNumber) {
             const response = await fetch(LOOKUP_NOTIFICATIONS_ENDPOINT, {
                 method: 'POST',
@@ -45,7 +49,7 @@ class NotificationHub extends PureComponent {
                 body: JSON.stringify({ phoneNumber: storedPhoneNumber.replace(/ /g, '') }),
             });
 
-            const jsonResp = await response.json();
+            const jsonResp: NotificationAPIResponse = await response.json();
 
             this.setState({
                 phoneNumber: storedPhoneNumber,

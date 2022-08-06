@@ -1,7 +1,6 @@
 import React from 'react';
 import { IconButton, Paper, Tooltip } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
-import PropTypes from 'prop-types';
 import ColorPicker from '../ColorPicker';
 import { Delete } from '@material-ui/icons';
 import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
@@ -76,7 +75,7 @@ const genMapLink = (location: string) => {
     }
 };
 
-export interface CalendarEvent extends Event {
+interface CommonCalendarEvent extends Event {
     color: string 
     start: Date
     end: Date
@@ -84,7 +83,7 @@ export interface CalendarEvent extends Event {
     title: string
 }
 
-export interface CourseEvent extends CalendarEvent {
+export interface CourseEvent extends CommonCalendarEvent {
     bldg: string
     finalExam: string
     instructors: string[]
@@ -92,16 +91,19 @@ export interface CourseEvent extends CalendarEvent {
     sectionCode: string
     sectionType: string 
     term: string
+    index: number
 }
 
-export interface CustomEvent extends CalendarEvent {
+export interface CustomEvent extends CommonCalendarEvent {
     customEventID: number
     isCustomEvent: true
 }
 
+export type CalendarEvent = CourseEvent|CustomEvent
+
 interface CourseCalendarEventProps {
     classes: ClassNameMap
-    courseInMoreInfo: CourseEvent|CustomEvent
+    courseInMoreInfo: CalendarEvent 
     currentScheduleIndex: number
     scheduleNames: string[]
     closePopover: ()=>void

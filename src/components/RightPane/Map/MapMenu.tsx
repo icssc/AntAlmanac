@@ -1,12 +1,12 @@
 import React, { PureComponent } from 'react';
 import { Tab, Tabs, Paper, TextField } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { Theme, withStyles, styled } from '@material-ui/core/styles';
 import buildingCatalogue from './static/buildingCatalogue';
-import PropTypes from 'prop-types';
+import Building from './static/building'
 import { Autocomplete } from '@material-ui/lab';
-import { styled } from '@material-ui/core/styles';
+import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 
-const styles = {
+const styles: Styles<Theme, object> = {
     tabContainer: {
         zIndex: 1000,
         marginLeft: '15%',
@@ -35,7 +35,14 @@ const StyledTab = styled(Tab)({
     padding: 0,
 });
 
-class MapTabsAndSearchBar extends PureComponent {
+interface MapMenuProps {
+    classes: ClassNameMap
+    day: number
+    setDay: (newDay: number)=>void
+    handleSearch: (event: React.ChangeEvent<{}>, value: Building|null)=>void
+}
+
+class MapMenu extends PureComponent<MapMenuProps> {
     state = {
         filteredItems: Object.values(buildingCatalogue),
     };
@@ -79,10 +86,5 @@ class MapTabsAndSearchBar extends PureComponent {
     }
 }
 
-MapTabsAndSearchBar.propTypes = {
-    handleSearch: PropTypes.func.isRequired,
-    setDay: PropTypes.func.isRequired,
-    day: PropTypes.number.isRequired,
-};
-
-export default withStyles(styles)(MapTabsAndSearchBar);
+/**Includes the tabs for days of the week, and the search bar */
+export default withStyles(styles)(MapMenu);
