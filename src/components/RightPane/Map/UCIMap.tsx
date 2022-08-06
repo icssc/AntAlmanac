@@ -1,30 +1,30 @@
 import React, { PureComponent } from 'react';
 import { Map, TileLayer, withLeaflet, Polyline, Marker, LeafletContext } from 'react-leaflet';
-import { Building } from './static/building';
+import Building from './static/building';
 import buildingCatalogue from './static/buildingCatalogue';
 import locations from '../SectionTable/static/locations.json';
 import AppStore from '../../../stores/AppStore';
 import MapMenu from './MapMenu';
 import MapMarker from './MapMarker';
-import Locate from 'leaflet.locatecontrol';
-import Leaflet, { LeafletMouseEvent } from 'leaflet';
+import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { CalendarEvent, CourseEvent } from '../../Calendar/CourseCalendarEvent';
 import { Coord, MapBoxResponse } from './static/mapbox'
+import '../../../../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js';
+// TODO investigate less jank ways of doing this if at all possible
 
 class LocateControl extends PureComponent<{leaflet: LeafletContext}> {
     componentDidMount() {
         const { map } = this.props.leaflet;
 
-        //@ts-ignore - Locate's package doesn't have type declarations as of summer 2022
-        const lc = new Locate({
+        const lc = new Control.Locate({
             position: 'topleft',
             strings: {
                 title: 'Look for your lost soul',
             },
             flyTo: true,
         });
-        lc.addTo(map);
+        lc.addTo(map as Leaflet.Map);
     }
 
     render() {
@@ -168,7 +168,7 @@ export default class UCIMap extends PureComponent {
                                 // TODO: If anyone wants to fix this ts-ignore in the future go ahead
                                 // the `this` parameter actually refers to the Polyline object this function is being passed to.
                                 // the `options property of this comes from the props of that Polyline, specifically `map` and `index`
-                                // @ts-ignore needs to be ignored because function definitions are not allowed in strict mode. This fix has to involve converting this function to an arrow function and not relying on accessing the index from the specific Polyline that it's being called from with the `this` parameter. 
+                                // @ts-ignore needs to be ignored because function definitions are not allowed in strict mode. This fix has to involve converting this function to an arrow function and not relying on accessing the index from the specific Polyline that it's being called from with the `this` parameter.
                                 function setInfoMarker(this: {options: {map: UCIMap, index: typeof waypointIndex}}, event: LeafletMouseEvent) {
                                     let [color, duration, miles] = this.options.map.state.info_markers[this.options.index - 1];
                                     this.options.map.setState({

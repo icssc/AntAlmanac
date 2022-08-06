@@ -1,6 +1,7 @@
 // generated with https://jvilk.com/MakeTypes/
-// with some fields ommitted for simplicity since we don't use them.
+// with some fields omitted for simplicity since we don't use them.
 // see below for a complete response object
+
 export type Coord = [number, number]
 
 /**
