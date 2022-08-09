@@ -5,7 +5,8 @@ import { Delete } from '@material-ui/icons';
 import ColorPicker from '../../ColorPicker';
 import moment from 'moment';
 import { deleteCustomEvent } from '../../../actions/AppStoreActions';
-import CustomEventDialog from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import CustomEventDialog, { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import ReactGA from 'react-ga';
 
 const styles = {
@@ -23,18 +24,25 @@ const styles = {
     },
 };
 
-const CustomEventDetailView = (props) => {
+interface CustomEventDetailViewProps {
+    classes: ClassNameMap
+    customEvent: RepeatingCustomEvent
+    currentScheduleIndex: number
+    scheduleNames: string[]
+}
+
+const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
     const { classes, customEvent } = props;
 
-    const readableDateAndTimeFormat = (start, end, days) => {
+    const readableDateAndTimeFormat = (start: string, end: string, days: boolean[]) => {
         const startTime = moment({
-            hours: start.slice(0, 2),
-            minutes: start.slice(3, 5),
+            hours: parseInt(start.slice(0, 2)),
+            minutes: parseInt(start.slice(3, 5)),
         });
 
         const endTime = moment({
-            hours: end.slice(0, 2),
-            minutes: end.slice(3, 5),
+            hours: parseInt(end.slice(0, 2)),
+            minutes: parseInt(end.slice(3, 5)),
         });
 
         const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -71,7 +79,7 @@ const CustomEventDetailView = (props) => {
                 >
                     <Delete fontSize="small" />
                 </IconButton>
-                <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
+                <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} currentScheduleIndex={props.currentScheduleIndex}/>
             </CardActions>
         </Card>
     );
