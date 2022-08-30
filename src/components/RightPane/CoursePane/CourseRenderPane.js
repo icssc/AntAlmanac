@@ -93,7 +93,7 @@ const RecruitmentBanner = ({ className }) => (
         Have web development experience or are interested in learning?
         <br />
         <a href="https://forms.gle/v32Cx65vwhnmxGPv8" target="__blank" rel="noopener noreferrer">
-            Join ICSSC and work on AntAlamanc and other projects!
+            Join ICSSC and work on AntAlmanac and other projects!
         </a>
     </div>
 );
