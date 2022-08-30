@@ -61,7 +61,8 @@ const styles = (theme) => ({
         height: '50px',
         paddingLeft: '110px',
         display: 'flex',
-        justifyContent: 'space-around',
+        justifyContent: 'flex-end',
+        paddingRight: '50px',
     },
 });
 
@@ -90,11 +91,13 @@ const flattenSOCObject = (SOCObject) => {
 
 const RecruitmentBanner = ({ className }) => (
     <div className={className}>
-        Have web development experience or are interested in learning?
+        Interested in web development?
         <br />
         <a href="https://forms.gle/v32Cx65vwhnmxGPv8" target="__blank" rel="noopener noreferrer">
             Join ICSSC and work on AntAlmanac and other projects!
         </a>
+        <br />
+        We have positions for experienced devs and those with zero experience!
     </div>
 );
 
