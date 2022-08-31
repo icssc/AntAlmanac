@@ -4,6 +4,7 @@ import { Button, Popover } from '@material-ui/core';
 import { useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { logAnalytics } from '../../../analytics';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 const styles = {
     button: {
@@ -12,8 +13,18 @@ const styles = {
     },
 };
 
-function CourseInfoButton({ classes, text, icon, redirectLink, popupContent, analyticsAction, analyticsCategory }) {
-    const [popupAnchor, setPopupAnchor] = useState(null);
+interface CourseInfoButtonProps {
+    classes: ClassNameMap
+    text: string
+    icon: HTMLImageElement
+    redirectLink: string
+    popupContent: HTMLElement
+    analyticsAction: string
+    analyticsCategory: string
+}
+
+function CourseInfoButton({ classes, text, icon, redirectLink, popupContent, analyticsAction, analyticsCategory }: CourseInfoButtonProps) {
+    const [popupAnchor, setPopupAnchor] = useState<HTMLElement|null>(null);
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
     return (
         <>
@@ -22,7 +33,7 @@ function CourseInfoButton({ classes, text, icon, redirectLink, popupContent, ana
                 startIcon={!isMobileScreen && icon}
                 variant="contained"
                 size="small"
-                onClick={(event) => {
+                onClick={(event: React.MouseEvent<HTMLElement>) => {
                     logAnalytics({
                         category: analyticsCategory,
                         action: analyticsAction,
@@ -60,13 +71,5 @@ function CourseInfoButton({ classes, text, icon, redirectLink, popupContent, ana
         </>
     );
 }
-
-CourseInfoButton.propTypes = {
-    text: PropTypes.string,
-    icon: PropTypes.object,
-    redirectLink: PropTypes.string,
-    analyticsAction: PropTypes.string,
-    analyticsCategory: PropTypes.string,
-};
 
 export default withStyles(styles)(CourseInfoButton);
