@@ -113,6 +113,7 @@ const SectionTableWrapped = (index, data) => {
                 colorAndDelete={false}
                 highlightAdded={true}
                 scheduleNames={scheduleNames}
+                analyticsCategory={analyticsEnum.classSearch.title}
             />
         );
     } else {

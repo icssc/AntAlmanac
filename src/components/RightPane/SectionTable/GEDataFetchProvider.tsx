@@ -2,21 +2,9 @@ import React, { PureComponent } from 'react';
 import SectionTableLazyWrapper from './SectionTableLazyWrapper';
 import RightPaneStore from '../RightPaneStore';
 import { queryWebsoc } from '../../../helpers';
+import { SectionTableProps } from './SectionTable.types';
 
-interface CourseDetails {
-    deptCode: string
-    courseNumber: string
-    courseTitle: string
-}
-
-interface GeDataFetchProviderProps {
-    courseDetails: CourseDetails
-    term: string
-    colorAndDelete: boolean
-}
-
-
-class GeDataFetchProvider extends PureComponent<GeDataFetchProviderProps> {
+class GeDataFetchProvider extends PureComponent<SectionTableProps> {
     state = {
         courseDetails: this.props.courseDetails,
     };

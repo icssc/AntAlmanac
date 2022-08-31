@@ -18,11 +18,9 @@ import SectionTableBody from './SectionTableBody';
 import CourseInfoButton from './CourseInfoButton';
 import { Help, Assessment, Assignment, RateReview } from '@material-ui/icons';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
-import PropTypes from 'prop-types';
 import analyticsEnum from '../../../analytics';
 import GradesPopup from './GradesPopup';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { AACourse } from '../../../peterportal.types';
+import { SectionTableProps } from './SectionTable.types';
 
 const styles = {
     flex: {
@@ -65,16 +63,6 @@ const styles = {
         },
     },
 };
-
-interface SectionTableProps {
-    classes: ClassNameMap
-    courseDetails: AACourse
-    term: string
-    colorAndDelete: boolean
-    highlightAdded: boolean
-    scheduleNames: string[]
-    analyticsCategory: string
-}
 
 const SectionTable = (props: SectionTableProps) => {
     const { classes, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames, analyticsCategory } = props;
