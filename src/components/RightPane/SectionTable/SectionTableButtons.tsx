@@ -10,7 +10,7 @@ import { withStyles } from '@material-ui/core/styles';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { Section } from '../../../peterportal.types'
+import { AASection, Course } from '../../../peterportal.types'
 
 const styles = {
     container: {
@@ -63,8 +63,8 @@ export const ColorAndDelete = withStyles(styles)((props: ColorAndDeleteProps) =>
 
 interface ScheduleAddCellProps {
     classes: ClassNameMap
-    section: Section
-    courseDetails: string
+    section: AASection
+    courseDetails: Course
     term: string
     scheduleNames: string[]
 }
@@ -73,7 +73,6 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
     const { classes, section, courseDetails, term, scheduleNames } = props;
     const popupState = usePopupState({ popupId: 'SectionTableAddCellPopup', variant: 'popover' });
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
-    console.log(section)
 
     const closeAndAddCourse = (scheduleIndex: number, specificSchedule?: boolean) => {
         popupState.close();

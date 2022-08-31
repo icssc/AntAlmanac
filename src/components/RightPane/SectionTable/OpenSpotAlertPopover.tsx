@@ -20,7 +20,7 @@ const styles: Styles<Theme, object> = (theme) => ({
     },
 });
 
-interface OpenSpotAlertPopoverProps {
+export interface OpenSpotAlertPopoverProps {
     classes: ClassNameMap
     status: string
     sectionCode: string
