@@ -8,6 +8,9 @@ import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import { clearSchedules, copySchedule } from '../../../actions/AppStoreActions';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
+import { AACourse } from '../../../peterportal.types';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 
 const styles = {
     container: {
@@ -28,8 +31,23 @@ const styles = {
     },
 };
 
-class AddedCoursePane extends PureComponent {
-    state = {
+interface CourseWithTerm extends AACourse {
+    term: string
+}
+
+interface AddedCoursePaneProps {
+    classes: ClassNameMap
+}
+
+interface AddedCoursePaneState {
+    courses: CourseWithTerm[]
+    customEvents: RepeatingCustomEvent[]
+    totalUnits: number
+    scheduleNames: string[]
+}
+
+class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePaneState> {
+    state: AddedCoursePaneState = {
         courses: [],
         customEvents: [],
         totalUnits: 0,
@@ -58,14 +76,15 @@ class AddedCoursePane extends PureComponent {
         AppStore.removeListener('scheduleNamesChange', this.loadScheduleNames);
     }
 
+
     loadCourses = () => {
         const addedCourses = AppStore.getAddedCourses();
         let totalUnits = 0;
-        const formattedCourses = [];
+        const formattedCourses: CourseWithTerm[] = [];
 
         for (const addedCourse of addedCourses) {
             if (addedCourse.scheduleIndices.includes(AppStore.getCurrentScheduleIndex())) {
-                let formattedCourse = formattedCourses.find(
+                let formattedCourse: CourseWithTerm|undefined = formattedCourses.find(
                     (needleCourse) =>
                         needleCourse.courseNumber === addedCourse.courseNumber &&
                         needleCourse.deptCode === addedCourse.deptCode
@@ -99,7 +118,7 @@ class AddedCoursePane extends PureComponent {
         }
         formattedCourses.forEach(function (course) {
             course.sections.sort(function (a, b) {
-                return a.sectionCode - b.sectionCode;
+                return parseInt(a.sectionCode) - parseInt(b.sectionCode);
             });
         });
         this.setState({ courses: formattedCourses, totalUnits });
@@ -190,10 +209,13 @@ class AddedCoursePane extends PureComponent {
                     return (
                         <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber}>
                             <SectionTableLazyWrapper
+                                classes={this.props.classes}
                                 courseDetails={course}
                                 term={course.term}
                                 colorAndDelete={true}
+                                highlightAdded={false}
                                 analyticsCategory={analyticsEnum.addedClasses.title}
+                                scheduleNames={this.state.scheduleNames}
                             />
                         </Grid>
                     );
