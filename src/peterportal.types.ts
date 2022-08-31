@@ -26,15 +26,11 @@ export interface Course {
     courseComment: string
     prerequisiteLink: string
     sections: Section[]
-    deptCode: string
 }
 
-interface AACourse {
-    courseNumber: string
-    courseTitle: string
-    courseComment: string
-    prerequisiteLink: string
+export interface AACourse extends Course {
     sections: AASection[]
+    deptCode: string
 }
 
 export interface Section {

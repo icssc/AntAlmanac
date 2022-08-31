@@ -15,9 +15,9 @@ const styles = {
 interface CourseInfoButtonProps {
     classes: ClassNameMap
     text: string
-    icon: HTMLImageElement
-    redirectLink: string
-    popupContent: HTMLElement
+    icon: React.ReactElement
+    redirectLink?: string
+    popupContent?: React.ReactElement
     analyticsAction: string
     analyticsCategory: string
 }

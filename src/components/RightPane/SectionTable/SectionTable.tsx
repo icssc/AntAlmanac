@@ -21,6 +21,8 @@ import ShowChartIcon from '@material-ui/icons/ShowChart';
 import PropTypes from 'prop-types';
 import analyticsEnum from '../../../analytics';
 import GradesPopup from './GradesPopup';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { AACourse } from '../../../peterportal.types';
 
 const styles = {
     flex: {
@@ -64,7 +66,17 @@ const styles = {
     },
 };
 
-const SectionTable = (props) => {
+interface SectionTableProps {
+    classes: ClassNameMap
+    courseDetails: AACourse
+    term: string
+    colorAndDelete: boolean
+    highlightAdded: boolean
+    scheduleNames: string[]
+    analyticsCategory: string
+}
+
+const SectionTable = (props: SectionTableProps) => {
     const { classes, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames, analyticsCategory } = props;
     const encodedDept = encodeURIComponent(courseDetails.deptCode);
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
@@ -194,12 +206,6 @@ const SectionTable = (props) => {
             </TableContainer>
         </>
     );
-};
-
-SectionTable.propTypes = {
-    courseDetails: PropTypes.object.isRequired,
-    term: PropTypes.string.isRequired,
-    colorAndDelete: PropTypes.bool.isRequired,
 };
 
 export default withStyles(styles)(SectionTable);
