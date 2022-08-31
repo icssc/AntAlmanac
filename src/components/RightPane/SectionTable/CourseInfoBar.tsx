@@ -6,6 +6,7 @@ import { Skeleton } from '@material-ui/lab';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { PETERPORTAL_REST_ENDPOINT } from '../../../api/endpoints';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 const styles = () => ({
     rightSpace: {
@@ -34,15 +35,31 @@ const noCourseInfo = {
     ge_list: '',
 };
 
-const CourseInfoBar = (props) => {
+interface CourseInfoBarProps {
+    courseTitle: string
+    courseNumber: string
+    deptCode: string
+    classes: ClassNameMap
+    analyticsCategory: string
+}
+
+interface CourseInfo {
+    title: string
+    prerequisite_text: string
+    prerequisite_for: string
+    description: string
+    ge_list: string
+}
+
+const CourseInfoBar = (props: CourseInfoBarProps) => {
     const { courseTitle, courseNumber, deptCode, classes, analyticsCategory } = props;
 
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [courseInfo, setCourseInfo] = useState(null);
+    const [anchorEl, setAnchorEl] = useState<HTMLElement|null>(null);
+    const [courseInfo, setCourseInfo] = useState<CourseInfo|null>(null);
 
-    const togglePopover = async (currentTarget) => {
+    const togglePopover = async (currentTarget: HTMLElement|null) => {
         if (Boolean(anchorEl)) {
-            setAnchorEl(false);
+            setAnchorEl(null);
         } else {
             setAnchorEl(currentTarget);
 
@@ -157,13 +174,6 @@ const CourseInfoBar = (props) => {
             </Popover>
         </>
     );
-};
-
-CourseInfoBar.propTypes = {
-    classes: PropTypes.object.isRequired,
-    courseTitle: PropTypes.string.isRequired,
-    courseNumber: PropTypes.string.isRequired,
-    deptCode: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(CourseInfoBar);
