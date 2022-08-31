@@ -54,6 +54,7 @@
         "@types/react": "^17.0.47",
         "@types/react-dom": "^18.0.6",
         "@types/react-leaflet": "^2.8.2",
+        "@types/recharts": "^1.8.23",
         "gh-pages": "^3.2.3",
         "husky": "^4.3.6",
         "lint-staged": "^10.5.3",

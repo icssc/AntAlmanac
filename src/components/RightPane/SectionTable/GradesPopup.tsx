@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Skeleton } from '@material-ui/lab';
+import {Theme} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { XAxis, YAxis, CartesianGrid, BarChart, Bar, ResponsiveContainer } from 'recharts';
 import { queryGrades, isDarkMode } from '../../../helpers';
+import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 
-const styles = {
+const styles: Styles<Theme, object> = {
     button: {
         backgroundColor: '#385EB1',
         color: '#fff',
@@ -22,10 +24,17 @@ const styles = {
     },
 };
 
-const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }) => {
+interface GradesPopupProps {
+    deptCode: string
+    courseNumber: string
+    classes: ClassNameMap
+    isMobileScreen: boolean
+}
+
+const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }: GradesPopupProps) => {
     const [loading, setLoading] = useState(true);
-    const [graphTitle, setGraphTitle] = useState(null);
-    const [gradeData, setGradeData] = useState(null);
+    const [graphTitle, setGraphTitle] = useState<string|null>(null);
+    const [gradeData, setGradeData] = useState<any[]|null>(null);
 
     const loadGrades = async () => {
         if (loading === false) {
