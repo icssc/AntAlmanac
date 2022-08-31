@@ -4,7 +4,20 @@ import SectionTableLazyWrapper from './SectionTableLazyWrapper';
 import RightPaneStore from '../RightPaneStore';
 import { queryWebsoc } from '../../../helpers';
 
-class GeDataFetchProvider extends PureComponent {
+interface CourseDetails {
+    deptCode: string
+    courseNumber: string
+    courseTitle: string
+}
+
+interface GeDataFetchProviderProps {
+    courseDetails: CourseDetails
+    term: string
+    colorAndDelete: boolean
+}
+
+
+class GeDataFetchProvider extends PureComponent<GeDataFetchProviderProps> {
     state = {
         courseDetails: this.props.courseDetails,
     };
@@ -31,11 +44,5 @@ class GeDataFetchProvider extends PureComponent {
         return <SectionTableLazyWrapper {...this.props} courseDetails={this.state.courseDetails} />;
     }
 }
-
-GeDataFetchProvider.propTypes = {
-    courseDetails: PropTypes.object.isRequired,
-    term: PropTypes.string.isRequired,
-    colorAndDelete: PropTypes.bool.isRequired,
-};
 
 export default GeDataFetchProvider;
