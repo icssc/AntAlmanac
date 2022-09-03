@@ -1,4 +1,6 @@
 import { withStyles } from '@material-ui/core/styles';
+import { Button, Grid } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import React, { PureComponent } from 'react';
 import SchoolDeptCard from './SchoolDeptCard';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
@@ -89,17 +91,40 @@ const flattenSOCObject = (SOCObject) => {
     }, []);
 };
 
-const RecruitmentBanner = ({ className }) => (
-    <div className={className}>
-        Interested in web development?
-        <br />
-        <a href="https://forms.gle/v32Cx65vwhnmxGPv8" target="__blank" rel="noopener noreferrer">
-            Join ICSSC and work on AntAlmanac and other projects!
-        </a>
-        <br />
-        We have positions for experienced devs and those with zero experience!
-    </div>
-);
+const RecruitmentBanner = ({ className }) => {
+    // Idk how else to force a function component to update
+    const [, updateState] = React.useState();
+    const forceUpdate = React.useCallback(() => updateState({}), []);
+
+    let displayRecruitmentBanner =
+        !Boolean(window.localStorage.getItem('dismissedRecruitmentBanner')) &&
+        ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue);
+
+    return displayRecruitmentBanner ? (
+        <>
+            <Grid container style={{ flexDirection: 'left', justifyContent: 'flex-end' }} className={className}>
+                <div>
+                    Interested in web development?
+                    <br />
+                    <a href="https://forms.gle/v32Cx65vwhnmxGPv8" target="__blank" rel="noopener noreferrer">
+                        Join ICSSC and work on AntAlmanac and other projects!
+                    </a>
+                    <br />
+                    We have positions for experienced devs and those with zero experience!
+                </div>
+
+                <Button
+                    onClick={() => {
+                        window.localStorage.setItem('dismissedRecruitmentBanner', true);
+                        forceUpdate();
+                    }}
+                    color="inherit"
+                    startIcon={<CloseIcon />}
+                ></Button>
+            </Grid>
+        </>
+    ) : null;
+};
 
 const SectionTableWrapped = (index, data) => {
     const { courseData, scheduleNames } = data;
@@ -228,10 +253,8 @@ class CourseRenderPane extends PureComponent {
 
             currentView = (
                 <div className={classes.root}>
-                    <div className={classes.bannerContainer}>
-                        {['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(
-                            RightPaneStore.getFormData().deptValue
-                        ) && <RecruitmentBanner className={classes.banner} />}
+                    <div className={classes.bannerContainer} style={{ paddingRight: '0' }}>
+                        <RecruitmentBanner className={classes.banner} />
                     </div>
                     {this.state.courseData.length === 0 ? (
                         <div className={classes.noResultsDiv}>
