@@ -1,5 +1,5 @@
 import { withStyles } from '@material-ui/core/styles';
-import { Button, Grid } from '@material-ui/core';
+import { Button, Grid, Paper } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { PureComponent } from 'react';
 import SchoolDeptCard from './SchoolDeptCard';
@@ -100,28 +100,32 @@ const RecruitmentBanner = ({ className }) => {
         !Boolean(window.localStorage.getItem('dismissedRecruitmentBanner')) &&
         ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue);
 
+    const bannerStyle = { flexDirection: 'left', justifyContent: 'flex-end' };
+
     return displayRecruitmentBanner ? (
         <>
-            <Grid container style={{ flexDirection: 'left', justifyContent: 'flex-end' }} className={className}>
-                <div>
-                    Interested in web development?
-                    <br />
-                    <a href="https://forms.gle/v32Cx65vwhnmxGPv8" target="__blank" rel="noopener noreferrer">
-                        Join ICSSC and work on AntAlmanac and other projects!
-                    </a>
-                    <br />
-                    We have positions for experienced devs and those with zero experience!
-                </div>
+            <Paper elevation={1} square>
+                <Grid container style={bannerStyle} className={className}>
+                    <div style={{ paddingLeft: '30px' }}>
+                        Interested in web development?
+                        <br />
+                        <a href="https://forms.gle/v32Cx65vwhnmxGPv8" target="__blank" rel="noopener noreferrer">
+                            Join ICSSC and work on AntAlmanac and other projects!
+                        </a>
+                        <br />
+                        We have positions for experienced devs and those with zero experience!
+                    </div>
 
-                <Button
-                    onClick={() => {
-                        window.localStorage.setItem('dismissedRecruitmentBanner', true);
-                        forceUpdate();
-                    }}
-                    color="inherit"
-                    startIcon={<CloseIcon />}
-                ></Button>
-            </Grid>
+                    <Button
+                        onClick={() => {
+                            window.localStorage.setItem('dismissedRecruitmentBanner', true);
+                            forceUpdate();
+                        }}
+                        color="inherit"
+                        startIcon={<CloseIcon />}
+                    ></Button>
+                </Grid>
+            </Paper>
         </>
     ) : null;
 };
@@ -253,7 +257,7 @@ class CourseRenderPane extends PureComponent {
 
             currentView = (
                 <div className={classes.root}>
-                    <div className={classes.bannerContainer} style={{ paddingRight: '0' }}>
+                    <div className={classes.bannerContainer} style={{ paddingRight: '0', marginBottom: '5px' }}>
                         <RecruitmentBanner className={classes.banner} />
                     </div>
                     {this.state.courseData.length === 0 ? (
