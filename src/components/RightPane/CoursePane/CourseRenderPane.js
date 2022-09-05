@@ -97,7 +97,7 @@ const RecruitmentBanner = ({ className }) => (
             Join ICSSC and work on AntAlmanac and other projects!
         </a>
         <br />
-        We have positions for experienced devs and those with zero experience!
+        We have opportunities for experienced devs and those with zero experience!
     </div>
 );
 
