@@ -64,7 +64,12 @@ const styles = (theme) => ({
         paddingLeft: '110px',
         display: 'flex',
         justifyContent: 'flex-end',
-        paddingRight: '50px',
+        paddingRight: '0px',
+        marginBottom: '5px',
+    },
+    bannerGrid: {
+        flexDirection: 'left',
+        justifyContent: 'flex-end',
     },
 });
 
@@ -91,7 +96,7 @@ const flattenSOCObject = (SOCObject) => {
     }, []);
 };
 
-const RecruitmentBanner = ({ className }) => {
+const RecruitmentBanner = (classes) => {
     // Idk how else to force a function component to update
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
@@ -100,34 +105,34 @@ const RecruitmentBanner = ({ className }) => {
         !Boolean(window.localStorage.getItem('dismissedRecruitmentBanner')) &&
         ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue);
 
-    const bannerStyle = { flexDirection: 'left', justifyContent: 'flex-end' };
+    return (
+        <div className={classes.bannerContainer}>
+            {displayRecruitmentBanner ? (
+                <Paper elevation={1} square>
+                    <Grid container className={classes.bannerGrid}>
+                        <div style={{ paddingLeft: '30px' }}>
+                            Interested in web development?
+                            <br />
+                            <a href="https://forms.gle/v32Cx65vwhnmxGPv8" target="__blank" rel="noopener noreferrer">
+                                Join ICSSC and work on AntAlmanac and other projects!
+                            </a>
+                            <br />
+                            We have positions for experienced devs and those with zero experience!
+                        </div>
 
-    return displayRecruitmentBanner ? (
-        <>
-            <Paper elevation={1} square>
-                <Grid container style={bannerStyle} className={className}>
-                    <div style={{ paddingLeft: '30px' }}>
-                        Interested in web development?
-                        <br />
-                        <a href="https://forms.gle/v32Cx65vwhnmxGPv8" target="__blank" rel="noopener noreferrer">
-                            Join ICSSC and work on AntAlmanac and other projects!
-                        </a>
-                        <br />
-                        We have positions for experienced devs and those with zero experience!
-                    </div>
-
-                    <Button
-                        onClick={() => {
-                            window.localStorage.setItem('dismissedRecruitmentBanner', true);
-                            forceUpdate();
-                        }}
-                        color="inherit"
-                        startIcon={<CloseIcon />}
-                    ></Button>
-                </Grid>
-            </Paper>
-        </>
-    ) : null;
+                        <Button
+                            onClick={() => {
+                                window.localStorage.setItem('dismissedRecruitmentBanner', true);
+                                forceUpdate();
+                            }}
+                            color="inherit"
+                            startIcon={<CloseIcon />}
+                        ></Button>
+                    </Grid>
+                </Paper>
+            ) : null}{' '}
+        </div>
+    );
 };
 
 const SectionTableWrapped = (index, data) => {
@@ -257,9 +262,7 @@ class CourseRenderPane extends PureComponent {
 
             currentView = (
                 <div className={classes.root}>
-                    <div className={classes.bannerContainer} style={{ paddingRight: '0', marginBottom: '5px' }}>
-                        <RecruitmentBanner className={classes.banner} />
-                    </div>
+                    <RecruitmentBanner {...classes} />
                     {this.state.courseData.length === 0 ? (
                         <div className={classes.noResultsDiv}>
                             <img src={isDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
