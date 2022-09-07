@@ -42,7 +42,6 @@ const styles = (theme) => ({
         height: '100%',
         overflowY: 'scroll',
         position: 'relative',
-        paddingTop: '50px',
     },
     noResultsDiv: {
         height: '100%',
@@ -57,6 +56,13 @@ const styles = (theme) => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    bannerContainer: {
+        height: '50px',
+        paddingLeft: '110px',
+        display: 'flex',
+        justifyContent: 'flex-end',
+        paddingRight: '50px',
     },
 });
 
@@ -82,6 +88,18 @@ const flattenSOCObject = (SOCObject) => {
         return accumulator;
     }, []);
 };
+
+const RecruitmentBanner = ({ className }) => (
+    <div className={className}>
+        Interested in web development?
+        <br />
+        <a href="https://forms.gle/v32Cx65vwhnmxGPv8" target="__blank" rel="noopener noreferrer">
+            Join ICSSC and work on AntAlmanac and other projects!
+        </a>
+        <br />
+        We have opportunities for experienced devs and those with zero experience!
+    </div>
+);
 
 const SectionTableWrapped = (index, data) => {
     const { courseData, scheduleNames } = data;
@@ -210,6 +228,11 @@ class CourseRenderPane extends PureComponent {
 
             currentView = (
                 <div className={classes.root}>
+                    <div className={classes.bannerContainer}>
+                        {['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(
+                            RightPaneStore.getFormData().deptValue
+                        ) && <RecruitmentBanner className={classes.banner} />}
+                    </div>
                     {this.state.courseData.length === 0 ? (
                         <div className={classes.noResultsDiv}>
                             <img src={isDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
