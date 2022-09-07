@@ -101,8 +101,9 @@ const RecruitmentBanner = (classes) => {
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
 
+    // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
     let displayRecruitmentBanner =
-        !Boolean(window.localStorage.getItem('dismissedRecruitmentBanner')) &&
+        Date.now() - window.localStorage.getItem('recruitmentDismissalTime') > 6652800000 &&
         ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue);
 
     return (
@@ -122,7 +123,8 @@ const RecruitmentBanner = (classes) => {
 
                         <Button
                             onClick={() => {
-                                window.localStorage.setItem('dismissedRecruitmentBanner', true);
+                                // Unix  time in seconds
+                                window.localStorage.setItem('recruitmentDismissalTime', Date.now());
                                 forceUpdate();
                             }}
                             color="inherit"
