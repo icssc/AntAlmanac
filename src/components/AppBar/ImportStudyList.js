@@ -7,7 +7,6 @@ import {
     DialogContentText,
     DialogTitle,
     TextField,
-    Tooltip,
 } from '@material-ui/core';
 import { addCoursesMultiple, combineSOCObjects, getCourseInfo, queryWebsoc } from '../../helpers';
 import RightPaneStore from '../RightPane/RightPaneStore';
@@ -134,11 +133,9 @@ class ImportStudyList extends PureComponent {
         return (
             <>
                 {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
-                <Tooltip title="Import a schedule from your Study List">
-                    <Button onClick={this.handleOpen} color="inherit" startIcon={<PostAdd />}>
-                        Import
-                    </Button>
-                </Tooltip>
+                <Button onClick={this.handleOpen} color="inherit" startIcon={<PostAdd />}>
+                    Import
+                </Button>
                 <Dialog open={this.state.isOpen}>
                     <DialogTitle>Import Schedule</DialogTitle>
                     <DialogContent>
