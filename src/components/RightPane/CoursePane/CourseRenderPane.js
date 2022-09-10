@@ -103,7 +103,7 @@ const RecruitmentBanner = (classes) => {
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
     let displayRecruitmentBanner =
-        Date.now() - window.localStorage.getItem('recruitmentDismissalTime') > 6652800000 &&
+        Date.now() - window.localStorage.getItem('recruitmentDismissalTime') > (11 * 7 * 24 * 3600 * 1000) &&
         ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue);
 
     return (
