@@ -16,7 +16,7 @@ import { withStyles } from '@material-ui/core/styles';
 import CourseInfoBar from './CourseInfoBar';
 import SectionTableBody from './SectionTableBody';
 import CourseInfoButton from './CourseInfoButton';
-import { Help, Assessment, Assignment, RateReview } from '@material-ui/icons';
+import { Help, Assessment, RateReview } from '@material-ui/icons';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import PropTypes from 'prop-types';
 import analyticsEnum from '../../../analytics';
@@ -82,21 +82,16 @@ const SectionTable = (props) => {
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
                     courseNumber={courseDetails.courseNumber}
+                    prerequisiteAnchorInfo={{
+                        link: courseDetails.prerequisiteLink,
+                        analyticsAction: analyticsEnum.classSearch.actions.CLICK_PREREQUISITES,
+                    }}
                     analyticsCategory={analyticsCategory}
                 />
 
                 {/* Temporarily remove "Past Enrollment" until data on PeterPortal API */}
                 {/* <AlmanacGraph courseDetails={courseDetails} />  */}
 
-                {courseDetails.prerequisiteLink && (
-                    <CourseInfoButton
-                        analyticsCategory={analyticsCategory}
-                        analyticsAction={analyticsEnum.classSearch.actions.CLICK_PREREQUISITES}
-                        text={isMobileScreen ? 'Prereqs' : 'Prerequisites'}
-                        icon={<Assignment />}
-                        redirectLink={courseDetails.prerequisiteLink}
-                    />
-                )}
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
                     analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}

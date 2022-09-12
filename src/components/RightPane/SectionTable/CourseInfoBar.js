@@ -35,7 +35,7 @@ const noCourseInfo = {
 };
 
 const CourseInfoBar = (props) => {
-    const { courseTitle, courseNumber, deptCode, classes, analyticsCategory } = props;
+    const { courseTitle, courseNumber, deptCode, prerequisiteAnchorInfo, classes, analyticsCategory } = props;
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [courseInfo, setCourseInfo] = useState(null);
@@ -100,7 +100,19 @@ const CourseInfoBar = (props) => {
                     <p>{description}</p>
                     {prerequisite_text !== '' && (
                         <p>
-                            <span className={classes.rightSpace}>Prerequisites:</span>
+                            <a
+                                onClick={() => {
+                                    logAnalytics({
+                                        category: analyticsCategory,
+                                        action: prerequisiteAnchorInfo.analyticsAction,
+                                    });
+                                }}
+                                href={prerequisiteAnchorInfo.link}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                            >
+                                <span className={classes.rightSpace}>Prerequisites:</span>
+                            </a>
                             {prerequisite_text}
                         </p>
                     )}
