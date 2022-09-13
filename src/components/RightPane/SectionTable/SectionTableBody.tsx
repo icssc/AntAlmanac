@@ -211,8 +211,10 @@ interface SectionEnrollmentCellProps {
     classes: ClassNameMap
     numCurrentlyEnrolled: EnrollmentCount
     maxCapacity: number
-    numOnWaitlist: number
-    numNewOnlyReserved: number
+    /** This is a string because sometimes it's "n/a" */
+    numOnWaitlist: string
+    /** This is a string because numOnWaitlist is a string. I haven't seen this be "n/a" but it seems possible and I don't want it to break if that happens. */
+    numNewOnlyReserved: string
 }
 
 const SectionEnrollmentCell = withStyles(styles)((props: SectionEnrollmentCellProps) => {
@@ -226,8 +228,8 @@ const SectionEnrollmentCell = withStyles(styles)((props: SectionEnrollmentCellPr
                         {numCurrentlyEnrolled.totalEnrolled} / {maxCapacity}
                     </strong>
                 </div>
-                {numOnWaitlist && <div>WL: {numOnWaitlist}</div>}
-                {numNewOnlyReserved && <div>NOR: {numNewOnlyReserved}</div>}
+                {numOnWaitlist !== '' && <div>WL: {numOnWaitlist}</div>}
+                {numNewOnlyReserved !== '' && <div>NOR: {numNewOnlyReserved}</div>}
             </div>
         </NoPaddingTableCell>
     );
@@ -388,8 +390,8 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             <SectionEnrollmentCell
                 numCurrentlyEnrolled={section.numCurrentlyEnrolled}
                 maxCapacity={parseInt(section.maxCapacity)}
-                numOnWaitlist={parseInt(section.numOnWaitlist)}
-                numNewOnlyReserved={parseInt(section.numNewOnlyReserved)}
+                numOnWaitlist={section.numOnWaitlist}
+                numNewOnlyReserved={section.numNewOnlyReserved}
             />
             <RestrictionsCell restrictions={section.restrictions} />
             <StatusCell
