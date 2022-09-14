@@ -9,6 +9,8 @@ import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/ho
 import { withStyles } from '@material-ui/core/styles';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { AASection, Course } from '../../../peterportal.types'
 
 const styles = {
     container: {
@@ -17,7 +19,14 @@ const styles = {
     },
 };
 
-export const ColorAndDelete = withStyles(styles)((props) => {
+interface ColorAndDeleteProps {
+    sectionCode: string
+    color: string
+    classes: ClassNameMap
+    term: string
+}
+
+export const ColorAndDelete = withStyles(styles)((props: ColorAndDeleteProps) => {
     const { sectionCode, color, classes, term } = props;
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
@@ -52,15 +61,24 @@ export const ColorAndDelete = withStyles(styles)((props) => {
     );
 });
 
-export const ScheduleAddCell = withStyles(styles)((props) => {
+interface ScheduleAddCellProps {
+    classes: ClassNameMap
+    section: AASection
+    courseDetails: Course
+    term: string
+    scheduleNames: string[]
+}
+
+export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) => {
     const { classes, section, courseDetails, term, scheduleNames } = props;
-    const popupState = usePopupState({ variant: 'popover' });
+    const popupState = usePopupState({ popupId: 'SectionTableAddCellPopup', variant: 'popover' });
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
-    const closeAndAddCourse = (scheduleIndex, specificSchedule) => {
+    const closeAndAddCourse = (scheduleIndex: number, specificSchedule?: boolean) => {
         popupState.close();
         for (const meeting of section.meetings) {
             if (meeting.time === 'TBA') {
+                // @ts-ignore
                 openSnackbar('success', 'Online/TBA class added');
                 // See Added Classes."
                 break;

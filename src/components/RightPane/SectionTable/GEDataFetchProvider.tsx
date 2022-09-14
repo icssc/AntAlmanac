@@ -1,10 +1,15 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
 import SectionTableLazyWrapper from './SectionTableLazyWrapper';
 import RightPaneStore from '../RightPaneStore';
 import { queryWebsoc } from '../../../helpers';
+import { SectionTableProps } from './SectionTable.types';
 
-class GeDataFetchProvider extends PureComponent {
+/**
+ * If we remove this class, when you search a department+GE combo, only the lectures show up, not the discussions.
+ * This is because all the non-lecture sections don't have the GE specified so the initial search that included the
+ * GE criteria will miss them.
+ */
+class GeDataFetchProvider extends PureComponent<SectionTableProps> {
     state = {
         courseDetails: this.props.courseDetails,
     };
@@ -31,11 +36,5 @@ class GeDataFetchProvider extends PureComponent {
         return <SectionTableLazyWrapper {...this.props} courseDetails={this.state.courseDetails} />;
     }
 }
-
-GeDataFetchProvider.propTypes = {
-    courseDetails: PropTypes.object.isRequired,
-    term: PropTypes.string.isRequired,
-    colorAndDelete: PropTypes.bool.isRequired,
-};
 
 export default GeDataFetchProvider;

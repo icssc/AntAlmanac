@@ -94,6 +94,10 @@ export interface CourseEvent extends CommonCalendarEvent {
     index: number
 }
 
+/**
+ * There is another CustomEvent interface in CourseCalendarEvent and they are slightly different.  The this one represents only one day, like the event on Monday, and needs to be duplicated to be repeated across multiple days. The other one, `CustomEventDialog`'s `RepeatingCustomEvent`, encapsulates the occurences of an event on multiple days, like Monday Tuesday Wednesday all in the same object as specified by the `days` array.
+ * https://github.com/icssc/AntAlmanac/wiki/The-Great-AntAlmanac-TypeScript-Rewritening%E2%84%A2#duplicate-interface-names-%EF%B8%8F
+ */
 export interface CustomEvent extends CommonCalendarEvent {
     customEventID: number
     isCustomEvent: true

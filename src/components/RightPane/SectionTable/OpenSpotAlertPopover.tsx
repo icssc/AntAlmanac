@@ -1,15 +1,15 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, Theme } from '@material-ui/core/styles';
 import InputMask from 'react-input-mask';
 import { Button, Popover, TextField, Typography } from '@material-ui/core';
+import { Styles, ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { openSnackbar } from '../../../actions/AppStoreActions';
 import { REGISTER_NOTIFICATIONS_ENDPOINT } from '../../../api/endpoints';
 import RightPaneStore from '../RightPaneStore';
 
 const phoneNumberRegex = RegExp(/\d{10}/);
 
-const styles = (theme) => ({
+const styles: Styles<Theme, object> = (theme) => ({
     container: {
         padding: theme.spacing(),
     },
@@ -20,7 +20,22 @@ const styles = (theme) => ({
     },
 });
 
-class OpenSpotAlertPopover extends PureComponent {
+export interface OpenSpotAlertPopoverProps {
+    classes: ClassNameMap
+    status: string
+    sectionCode: string
+    courseNumber: string
+    courseTitle: string
+}
+
+interface OpenSpotAlertPopoverState {
+    anchorElement: HTMLElement|null
+    phoneNumber: string
+    invalidInput: boolean
+    invalidInputMessage: string
+}
+
+class OpenSpotAlertPopover extends PureComponent<OpenSpotAlertPopoverProps, OpenSpotAlertPopoverState> {
     state = {
         anchorElement: null,
         phoneNumber: window.localStorage.getItem('phoneNumber') || '',
@@ -28,7 +43,7 @@ class OpenSpotAlertPopover extends PureComponent {
         invalidInputMessage: '',
     };
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    componentDidUpdate(prevProps: OpenSpotAlertPopoverProps, prevState: OpenSpotAlertPopoverState) {
         if (
             (!prevState.anchorElement && this.state.anchorElement) ||
             (prevState.anchorElement && !this.state.anchorElement)
@@ -37,7 +52,7 @@ class OpenSpotAlertPopover extends PureComponent {
         }
     }
 
-    handlePhoneNumberChange = (event) => {
+    handlePhoneNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         this.setState({ phoneNumber: event.target.value });
     };
 
@@ -60,6 +75,7 @@ class OpenSpotAlertPopover extends PureComponent {
             if (response.status === 200) {
                 window.localStorage.setItem('phoneNumber', this.state.phoneNumber);
                 this.setState({ anchorElement: null, invalidInput: false });
+                // @ts-ignore
                 openSnackbar('success', `Added to watch list for ${params.sectionCode}`);
                 //TODO: Dialog with the message about txt messages paywall etc etc
             } else {
@@ -108,6 +124,7 @@ class OpenSpotAlertPopover extends PureComponent {
                         {this.state.invalidInput ? <Typography>{this.state.invalidInputMessage}</Typography> : null}
                         <div>
                             <InputMask
+                                /* @ts-ignore The type interface for this library uses "maskPlaceholder" while the library itself uses "maskChar"*/
                                 maskChar={null}
                                 mask="999 999 9999"
                                 value={this.state.phoneNumber}
@@ -127,13 +144,5 @@ class OpenSpotAlertPopover extends PureComponent {
         );
     }
 }
-
-OpenSpotAlertPopover.propTypes = {
-    courseTitle: PropTypes.string.isRequired,
-    courseNumber: PropTypes.string.isRequired,
-    status: PropTypes.string.isRequired,
-    classes: PropTypes.object.isRequired,
-    sectionCode: PropTypes.string.isRequired,
-};
 
 export default withStyles(styles)(OpenSpotAlertPopover);

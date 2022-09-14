@@ -1,20 +1,21 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
-import locations from './static/locations';
-import restrictionsMapping from './static/restrictionsMapping';
-import { TableRow, Popover, Tooltip, Typography, TableCell, useMediaQuery } from '@material-ui/core';
+import locations from './static/locations.json';
+import restrictionsMapping from './static/restrictionsMapping.json';
+import { TableRow, Popover, Tooltip, Typography, TableCell, useMediaQuery, Theme } from '@material-ui/core';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
 import { withStyles } from '@material-ui/core/styles';
-import OpenSpotAlertPopover from './OpenSpotAlertPopover';
-import PropTypes from 'prop-types';
+import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import OpenSpotAlertPopover, {OpenSpotAlertPopoverProps} from './OpenSpotAlertPopover';
 import AppStore from '../../../stores/AppStore';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import classNames from 'classnames';
 import { clickToCopy, isDarkMode } from '../../../helpers';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { getDefaultTerm } from '../../../termData';
+import { Course, EnrollmentCount, Meeting, AASection } from '../../../peterportal.types';
 
-const styles = (theme) => ({
+const styles: Styles<Theme, object> = (theme) => ({
     popover: {
         pointerEvents: 'none',
     },
@@ -75,7 +76,12 @@ const NoPaddingTableCell = withStyles({
     sizeSmall: { padding: '0px 0px 0px 0px' },
 })(TableCell);
 
-const CourseCodeCell = withStyles(styles)((props) => {
+interface CourseCodeCellProps {
+    classes: ClassNameMap
+    sectionCode: string
+}
+
+const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
     const { classes, sectionCode } = props;
 
     return (
@@ -102,7 +108,16 @@ const CourseCodeCell = withStyles(styles)((props) => {
     );
 });
 
-const SectionDetailsCell = withStyles(styles)((props) => {
+type SectionType = 'Act' | 'Col' | 'Dis' | 'Fld' | 'Lab' | 'Lec' | 'Qiz' | 'Res' | 'Sem' | 'Stu' | 'Tap' | 'Tut';
+
+interface SectionDetailCellProps {
+    classes: ClassNameMap
+    sectionType: SectionType
+    sectionNum: string
+    units: number
+}
+
+const SectionDetailsCell = withStyles(styles)((props: SectionDetailCellProps) => {
     const { classes, sectionType, sectionNum, units } = props;
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
@@ -121,11 +136,16 @@ const SectionDetailsCell = withStyles(styles)((props) => {
     );
 });
 
-const InstructorsCell = withStyles(styles)((props) => {
+interface InstructorsCellProps {
+    classes: ClassNameMap
+    instructors: string[]
+}
+
+const InstructorsCell = withStyles(styles)((props: InstructorsCellProps) => {
     const { classes, instructors } = props;
 
-    const getLinks = (professorNames) => {
-        return professorNames.map((profName) => {
+    return <NoPaddingTableCell className={classes.cell}>
+        {instructors.map((profName) => {
             if (profName !== 'STAFF') {
                 const lastName = profName.substring(0, profName.indexOf(','));
                 return (
@@ -149,13 +169,16 @@ const InstructorsCell = withStyles(styles)((props) => {
             } else {
                 return profName;
             }
-        });
-    };
-
-    return <NoPaddingTableCell className={classes.cell}>{getLinks(instructors)}</NoPaddingTableCell>;
+        })}
+    </NoPaddingTableCell>;
 });
 
-const LocationsCell = withStyles(styles)((props) => {
+interface LocationsCellProps {
+    classes: ClassNameMap
+    meetings: Meeting[]
+}
+
+const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
     const { classes, meetings } = props;
 
     return (
@@ -165,7 +188,7 @@ const LocationsCell = withStyles(styles)((props) => {
                     <Fragment key={meeting.days + meeting.time + meeting.bldg}>
                         <a
                             href={(() => {
-                                const location_id = locations[meeting.bldg.split(' ')[0]];
+                                const location_id = locations[meeting.bldg.split(' ')[0] as keyof typeof locations];
                                 if (location_id !== undefined) return 'https://map.uci.edu/?id=463#!m/' + location_id;
                                 else return 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034';
                             })()}
@@ -184,7 +207,17 @@ const LocationsCell = withStyles(styles)((props) => {
     );
 });
 
-const SectionEnrollmentCell = withStyles(styles)((props) => {
+interface SectionEnrollmentCellProps {
+    classes: ClassNameMap
+    numCurrentlyEnrolled: EnrollmentCount
+    maxCapacity: number
+    /** This is a string because sometimes it's "n/a" */
+    numOnWaitlist: string
+    /** This is a string because numOnWaitlist is a string. I haven't seen this be "n/a" but it seems possible and I don't want it to break if that happens. */
+    numNewOnlyReserved: string
+}
+
+const SectionEnrollmentCell = withStyles(styles)((props: SectionEnrollmentCellProps) => {
     const { classes, numCurrentlyEnrolled, maxCapacity, numOnWaitlist, numNewOnlyReserved } = props;
 
     return (
@@ -195,20 +228,28 @@ const SectionEnrollmentCell = withStyles(styles)((props) => {
                         {numCurrentlyEnrolled.totalEnrolled} / {maxCapacity}
                     </strong>
                 </div>
-                {numOnWaitlist && <div>WL: {numOnWaitlist}</div>}
-                {numNewOnlyReserved && <div>NOR: {numNewOnlyReserved}</div>}
+                {numOnWaitlist !== '' && <div>WL: {numOnWaitlist}</div>}
+                {numNewOnlyReserved !== '' && <div>NOR: {numNewOnlyReserved}</div>}
             </div>
         </NoPaddingTableCell>
     );
 });
 
-const RestrictionsCell = withStyles(styles)((props) => {
-    const parseRestrictions = (restrictionCode) => {
+interface RestrictionsCellProps {
+    classes: ClassNameMap
+    restrictions: string
+}
+
+const RestrictionsCell = withStyles(styles)((props: RestrictionsCellProps) => {
+    const { classes, restrictions } = props;
+    const popupState = usePopupState({ popupId: "RestrictionsCellPopup", variant: 'popover' });
+
+    const parseRestrictions = (restrictionCode: string) => {
         return restrictionCode.split(' ').map((code, index) => {
             if (code !== 'and' && code !== 'or') {
                 return (
                     <Fragment key={index}>
-                        {restrictionsMapping[code]}
+                        {restrictionsMapping[code as keyof typeof restrictionsMapping]}
                         <br />
                     </Fragment>
                 );
@@ -216,9 +257,6 @@ const RestrictionsCell = withStyles(styles)((props) => {
             return null;
         });
     };
-
-    const { classes, restrictions } = props;
-    const popupState = usePopupState({ variant: 'popover' });
 
     return (
         <NoPaddingTableCell className={classes.cell}>
@@ -247,7 +285,12 @@ const RestrictionsCell = withStyles(styles)((props) => {
     );
 });
 
-const DayAndTimeCell = withStyles(styles)((props) => {
+interface DayAndTimeCellProps {
+    classes: ClassNameMap
+    meetings: Meeting[]
+}
+
+const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
     const { classes, meetings } = props;
 
     return (
@@ -260,8 +303,12 @@ const DayAndTimeCell = withStyles(styles)((props) => {
     );
 });
 
-const StatusCell = withStyles(styles)((props) => {
-    const { sectionCode, term, courseTitle, courseNumber, status, classes } = props;
+interface StatusCellProps extends OpenSpotAlertPopoverProps {
+    term: string
+}
+
+const StatusCell = withStyles(styles)((props: StatusCellProps) => {
+    const { term, sectionCode, courseTitle, courseNumber, status, classes } = props;
 
     if (term === getDefaultTerm().shortName && (status === 'NewOnly' || status === 'FULL')) {
         return (
@@ -282,12 +329,24 @@ const StatusCell = withStyles(styles)((props) => {
         );
     }
 });
+
+interface SectionTableBodyProps {
+    classes: ClassNameMap
+    section: AASection
+    courseDetails: Course
+    term: string
+    colorAndDelete: boolean
+    highlightAdded: boolean
+    scheduleNames: string[]
+}
+
 //TODO: SectionNum name parity -> SectionNumber
-const SectionTableBody = withStyles(styles)((props) => {
+const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames } = props;
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
     useEffect(() => {
         const toggleHighlight = () => {
+            // @ts-ignore
             const doAdd = AppStore.getAddedSectionCodes()[AppStore.getCurrentScheduleIndex()].has(
                 `${section.sectionCode} ${term}`
             );
@@ -321,16 +380,16 @@ const SectionTableBody = withStyles(styles)((props) => {
             )}
             <CourseCodeCell sectionCode={section.sectionCode} />
             <SectionDetailsCell
-                sectionType={section.sectionType}
+                sectionType={section.sectionType as SectionType}
                 sectionNum={section.sectionNum}
-                units={section.units}
+                units={parseInt(section.units)}
             />
             <InstructorsCell instructors={section.instructors} />
             <DayAndTimeCell meetings={section.meetings} />
             <LocationsCell meetings={section.meetings} />
             <SectionEnrollmentCell
                 numCurrentlyEnrolled={section.numCurrentlyEnrolled}
-                maxCapacity={section.maxCapacity}
+                maxCapacity={parseInt(section.maxCapacity)}
                 numOnWaitlist={section.numOnWaitlist}
                 numNewOnlyReserved={section.numNewOnlyReserved}
             />
@@ -345,13 +404,5 @@ const SectionTableBody = withStyles(styles)((props) => {
         </TableRow>
     );
 });
-
-SectionTableBody.propTypes = {
-    classes: PropTypes.object.isRequired,
-    section: PropTypes.object.isRequired,
-    courseDetails: PropTypes.object.isRequired,
-    term: PropTypes.string.isRequired,
-    colorAndDelete: PropTypes.bool.isRequired,
-};
 
 export default withStyles(styles)(SectionTableBody);

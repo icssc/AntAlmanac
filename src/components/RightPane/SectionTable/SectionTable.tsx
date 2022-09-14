@@ -12,15 +12,15 @@ import {
     useMediaQuery,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-// import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back
+// import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back and restore the files (https://github.com/icssc/AntAlmanac/tree/5e89e035e66f00608042871d43730ba785f756b0/src/components/RightPane/SectionTable/EnrollmentGraph)
 import CourseInfoBar from './CourseInfoBar';
 import SectionTableBody from './SectionTableBody';
 import CourseInfoButton from './CourseInfoButton';
 import { Help, Assessment, Assignment, RateReview } from '@material-ui/icons';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
-import PropTypes from 'prop-types';
 import analyticsEnum from '../../../analytics';
 import GradesPopup from './GradesPopup';
+import { SectionTableProps } from './SectionTable.types';
 
 const styles = {
     flex: {
@@ -64,7 +64,7 @@ const styles = {
     },
 };
 
-const SectionTable = (props) => {
+const SectionTable = (props: SectionTableProps) => {
     const { classes, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames, analyticsCategory } = props;
     const encodedDept = encodeURIComponent(courseDetails.deptCode);
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
@@ -194,12 +194,6 @@ const SectionTable = (props) => {
             </TableContainer>
         </>
     );
-};
-
-SectionTable.propTypes = {
-    courseDetails: PropTypes.object.isRequired,
-    term: PropTypes.string.isRequired,
-    colorAndDelete: PropTypes.bool.isRequired,
 };
 
 export default withStyles(styles)(SectionTable);

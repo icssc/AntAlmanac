@@ -2,10 +2,10 @@ import React, { PureComponent } from 'react';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import {CustomEvent} from './CustomEventDialog';
+import { RepeatingCustomEvent } from './CustomEventDialog';
 
 interface ScheduleSelectorProps {
-    customEvent?: CustomEvent
+    customEvent?: RepeatingCustomEvent
     scheduleIndices: number[]
     onSelectScheduleIndices: (scheduleIndices: number[]) => void
     scheduleNames: string[]
