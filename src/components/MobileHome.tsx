@@ -1,8 +1,9 @@
-import { Paper,Tab, Tabs } from '@material-ui/core';
-import React, { useState } from 'react';
+import { Paper ,Tab, Tabs } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
 
 import Calendar from './Calendar/CalendarRoot';
 import DesktopTabs from './RightPane/RightPaneRoot';
+import RightPaneStore from './RightPane/RightPaneStore';
 
 const MobileHome = () => {
     const [selectedTab, setSelectedTab] = useState(0);
@@ -10,6 +11,35 @@ const MobileHome = () => {
     const components = [
     <Calendar isMobile={true} key="calendar"/>, 
     <DesktopTabs style={{ height: 'calc(100% - 50px' }} key="desktop"/>];
+    
+    interface FocusOnBuildingArgs {
+        lat: number
+        lng: number
+        name: string
+        acronym: string
+        imgURL: string
+    }
+    const focusOnBuilding = (args: FocusOnBuildingArgs) => {
+        // Since MobileHome doesn't have DesktopTabs permamnently loaded,
+        // we need to switch over to it, get a confirmation that it's loaded,
+        // then re-emit 'focusOnBuilding'
+
+        if (selectedTab != 1) {
+            const reEmitFocus = () => {
+                RightPaneStore.emit('focusOnBuilding', args);
+                RightPaneStore.removeListener('RightPaneRootLoaded', reEmitFocus);
+            };
+
+            // Switch to DesktopTabs
+            setSelectedTab(1);
+            RightPaneStore.on('RightPaneRootLoaded', reEmitFocus);
+        }
+    };
+
+    useEffect(() => {
+        RightPaneStore.on('focusOnBuilding', focusOnBuilding);
+        return () => {RightPaneStore.removeListener('focusOnBuilding', focusOnBuilding)}
+    });
 
     return (
         <div style={{ height: 'calc(100% - 60px)' }}>

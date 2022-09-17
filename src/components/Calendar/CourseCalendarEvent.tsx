@@ -68,6 +68,22 @@ const styles: Styles<Theme, object> = {
 
 const selectBuilding = (buildingName: string) => {
     RightPaneStore.emit('focusOnBuilding', { name: buildingName });
+    /** Explanation of what happens when 'focusOnBuilding' is emitted:
+     *
+     *  If desktop:
+     *  1) RightPaneRoot recieves 'focusOnBuilding'.
+     *  2a) If the Map tab is selected already, it passes the args down to UCIMap with 'selectBuilding'.
+     *  2b) If the Map tab is not selected, it switches to the Map tab, waits for it to load, and does 1a.
+     *  3) UCIMap recieves 'selectBuilding' and focuses on that building.
+     *
+     *  If mobile (MobileHome.js is being displayed):
+     *  1a) If the "SEARCH" tab is selected, (and, therefore, RighPaneRoot is loaded), it can listen to 'focusOnBuilding' itself.
+     *  1b) If the "SEARCH" tab is not selected (and, therefore, RighPaneRoot is unloaded), switch to it,
+     *      wait for it to load and emit 'RightPaneRootLoaded', and re-emit 'focusOnBuilding'
+     *
+     *  The choice was between prop-drilling from Home and having cascading listeners, and
+     *  I think the latter is reasonable.
+     */
 };
 
 interface CommonCalendarEvent extends Event {
