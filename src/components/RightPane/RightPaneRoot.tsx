@@ -49,7 +49,7 @@ class DesktopTabs extends PureComponent<DesktopTabsProps> {
 
     focusOnBuilding(args) {
         // If the Map tab isn't already active
-        if (RightPaneStore.getActiveTab() != 2) {
+        if (RightPaneStore.getActiveTab() !== 2) {
             // Switch to Map tab
             RightPaneStore.handleTabChange(undefined, 2);
 

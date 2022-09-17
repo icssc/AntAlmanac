@@ -24,7 +24,7 @@ const MobileHome = () => {
         // we need to switch over to it, get a confirmation that it's loaded,
         // then re-emit 'focusOnBuilding'
 
-        if (selectedTab != 1) {
+        if (selectedTab !== 1) {
             const reEmitFocus = () => {
                 RightPaneStore.emit('focusOnBuilding', args);
                 RightPaneStore.removeListener('RightPaneRootLoaded', reEmitFocus);
