@@ -35,7 +35,7 @@ const noCourseInfo = {
 };
 
 const CourseInfoBar = (props) => {
-    const { courseTitle, courseNumber, deptCode, prerequisiteAnchorInfo, classes, analyticsCategory } = props;
+    const { courseTitle, courseNumber, deptCode, prerequisiteLink, classes, analyticsCategory } = props;
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [courseInfo, setCourseInfo] = useState(null);
@@ -104,10 +104,10 @@ const CourseInfoBar = (props) => {
                                 onClick={() => {
                                     logAnalytics({
                                         category: analyticsCategory,
-                                        action: prerequisiteAnchorInfo.analyticsAction,
+                                        action: analyticsEnum.classSearch.actions.CLICK_PREREQUISITES,
                                     });
                                 }}
-                                href={prerequisiteAnchorInfo.link}
+                                href={prerequisiteLink}
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >

@@ -82,10 +82,7 @@ const SectionTable = (props) => {
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
                     courseNumber={courseDetails.courseNumber}
-                    prerequisiteAnchorInfo={{
-                        link: courseDetails.prerequisiteLink,
-                        analyticsAction: analyticsEnum.classSearch.actions.CLICK_PREREQUISITES,
-                    }}
+                    prerequisiteLink={courseDetails.prerequisiteLink}
                     analyticsCategory={analyticsCategory}
                 />
 
