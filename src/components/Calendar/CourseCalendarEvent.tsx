@@ -10,10 +10,8 @@ import analyticsEnum, { logAnalytics } from '../../analytics';
 import { clickToCopy } from '../../helpers';
 import AppStore from '../../stores/AppStore';
 import ColorPicker from '../ColorPicker';
+import RightPaneStore from '../RightPane/RightPaneStore';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const locations = require('../RightPane/SectionTable/static/locations.json') as Record<string, string>;
 
 const styles: Styles<Theme, object> = {
     courseContainer: {
@@ -68,13 +66,8 @@ const styles: Styles<Theme, object> = {
     },
 };
 
-const genMapLink = (location: string) => {
-    try {
-        const location_id = locations[location.split(' ')[0]];
-        return 'https://map.uci.edu/?id=463#!m/' + location_id;
-    } catch (err) {
-        return 'https://map.uci.edu/';
-    }
+const selectBuilding = (buildingName: string) => {
+    RightPaneStore.emit('focusOnBuilding', { name: buildingName });
 };
 
 interface CommonCalendarEvent extends Event {
@@ -170,9 +163,9 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             <td className={classes.alignToTop}>Location</td>
                             <td className={`${classes.multiline} ${classes.rightCells}`}>
                                 {bldg !== 'TBA' ? (
-                                    <a href={genMapLink(bldg)} target="_blank" rel="noopener noreferrer">
-                                        {bldg}
-                                    </a>
+                                    // TODO: Style button to look like <a> (or decide not)
+                                    // Button instead of <a> because accessibilty. <a> is expected to be a hyperlink
+                                    <button onClick={() => selectBuilding(bldg)}>{bldg}</button>
                                 ) : (
                                     bldg
                                 )}
