@@ -64,10 +64,17 @@ const styles: Styles<Theme, object> = {
             borderRadius: '50%',
         },
     },
+    clickableLocation: {
+        cursor: 'pointer',
+        color: 'blue',
+    },
 };
 
 const selectBuilding = (buildingName: string) => {
-    RightPaneStore.emit('focusOnBuilding', { name: buildingName });
+    if (buildingName !== 'TBA') {
+        RightPaneStore.emit('focusOnBuilding', { name: buildingName });
+    }
+
     /** Explanation of what happens when 'focusOnBuilding' is emitted:
      *
      *  If desktop:
@@ -177,14 +184,14 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         </tr>
                         <tr>
                             <td className={classes.alignToTop}>Location</td>
-                            <td className={`${classes.multiline} ${classes.rightCells}`}>
-                                {bldg !== 'TBA' ? (
-                                    // TODO: Style button to look like <a> (or decide not)
-                                    // Button instead of <a> because accessibilty. <a> is expected to be a hyperlink
-                                    <button onClick={() => selectBuilding(bldg)}>{bldg}</button>
-                                ) : (
-                                    bldg
-                                )}
+                            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+                            <td
+                                onClick={() => selectBuilding(bldg)}
+                                className={`${classes.multiline} ${classes.rightCells} ${
+                                    bldg !== 'TBA' ? classes.clickableLocation : ""
+                                }`}
+                            >
+                                {bldg}
                             </td>
                         </tr>
                         <tr>
