@@ -1,28 +1,40 @@
-import React, { PureComponent } from 'react';
+import React, {ChangeEvent, PureComponent} from 'react';
 import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import search from 'websoc-fuzzy-search';
+import Autocomplete, {AutocompleteInputChangeReason} from '@material-ui/lab/Autocomplete';
+import search, { SearchResult } from 'websoc-fuzzy-search';
 import RightPaneStore from '../../RightPaneStore';
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
 
-const emojiMap = {
+const emojiMap: Record<string, string> = {
     GE_CATEGORY: '🏫', // U+1F3EB :school:
     DEPARTMENT: '🏢', // U+1F3E2 :office:
     COURSE: '📚', // U+1F4DA :books:
     INSTRUCTOR: '🍎', // U+1F34E :apple:
 };
 
-const romanArr = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+const romanArr: string[] = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
 
-class FuzzySearch extends PureComponent {
-    state = {
+interface FuzzySearchProps {
+    toggleSearch: () => void;
+
+}
+
+interface FuzzySearchState {
+    cache: Record<string, Record<string, SearchResult>>;
+    open: boolean;
+    results: Record<string, SearchResult>;
+    value: string;
+}
+
+class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
+    state: FuzzySearchState = {
         cache: {},
         open: false,
         results: {},
         value: '',
     };
 
-    doSearch = (value) => {
+    doSearch = (value: string) => {
         if (!value) return;
         const emoji = value.slice(0, 2);
         const ident = emoji === emojiMap.INSTRUCTOR ? value.slice(3) : value.slice(3).split(':');
@@ -38,7 +50,7 @@ class FuzzySearch extends PureComponent {
                 break;
             case emojiMap.DEPARTMENT:
                 RightPaneStore.updateFormValue('deptValue', ident[0]);
-                RightPaneStore.updateFormValue('deptLabel', ident.join(':'));
+                RightPaneStore.updateFormValue('deptLabel', (ident as string[]).join(':'));
                 break;
             case emojiMap.COURSE:
                 const deptValue = ident[0].split(' ').slice(0, -1).join(' ');
@@ -79,9 +91,9 @@ class FuzzySearch extends PureComponent {
         });
     };
 
-    filterOptions = (options) => options;
+    filterOptions = (options: string[]) => options;
 
-    getOptionLabel = (option) => {
+    getOptionLabel = (option: string) => {
         const object = this.state.results[option];
         if (!object) return option;
         switch (object.type) {
@@ -100,11 +112,12 @@ class FuzzySearch extends PureComponent {
             default:
                 break;
         }
+        return '';
     };
 
     getOptionSelected = () => true;
 
-    onInputChange = (event, value, reason) => {
+    onInputChange = (event: ChangeEvent<{}>, value: string, reason: AutocompleteInputChangeReason) => {
         if (reason === 'input') {
             this.setState(
                 { open: value.length >= 2, value: value.slice(-1) === ' ' ? value.slice(0, -1) : value },
