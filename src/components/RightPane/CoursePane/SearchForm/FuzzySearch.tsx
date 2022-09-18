@@ -16,7 +16,7 @@ const romanArr: string[] = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
 
 interface FuzzySearchProps {
     toggleSearch: () => void;
-
+    toggleShowLegacySearch: () => void;
 }
 
 interface FuzzySearchState {

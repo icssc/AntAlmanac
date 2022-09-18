@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, {FormEvent, useState} from 'react';
 import TermSelector from './TermSelector';
 import { withStyles } from '@material-ui/core/styles';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import RightPaneStore from '../../RightPaneStore';
 import FuzzySearch from './FuzzySearch';
 import LegacySearch from './LegacySearch';
-import { IconButton, Tooltip } from '@material-ui/core';
+import {IconButton, Theme, Tooltip} from '@material-ui/core';
 import { Tune } from '@material-ui/icons';
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
+import {ClassNameMap} from "notistack";
+import {Styles} from "@material-ui/core/styles/withStyles";
 
 const styles = {
     container: {
@@ -37,7 +39,7 @@ const styles = {
     },
 };
 
-const SearchForm = (props) => {
+const SearchForm = (props: { classes: ClassNameMap, toggleSearch: () => void }) => {
     const { classes, toggleSearch } = props;
 
     const [showLegacySearch, setShowLegacySearch] = useState(false);
@@ -46,7 +48,7 @@ const SearchForm = (props) => {
         setShowLegacySearch(!showLegacySearch);
     };
 
-    const onFormSubmit = (event) => {
+    const onFormSubmit = (event: FormEvent) => {
         event.preventDefault();
         toggleSearch();
     };
@@ -89,4 +91,4 @@ const SearchForm = (props) => {
     );
 };
 
-export default withStyles(styles)(SearchForm);
+export default withStyles(styles as unknown as Styles<Theme, {}>)(SearchForm);
