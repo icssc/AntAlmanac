@@ -12,8 +12,12 @@ import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import LazyLoad from 'react-lazyload';
 import { queryWebsoc, queryWebsocMultiple, isDarkMode } from '../../../helpers';
 import analyticsEnum from '../../../analytics';
+import {Theme} from "@material-ui/core";
+import {AACourse, AASection, Department, School, WebsocResponse} from "../../../peterportal.types";
+import {ClassNameMap} from "notistack";
+import {Styles} from "@material-ui/core/styles/withStyles";
 
-const styles = (theme) => ({
+const styles = (theme: Theme) => ({
     course: {
         ...theme.mixins.gutters(),
         paddingTop: theme.spacing(),
@@ -60,12 +64,12 @@ const styles = (theme) => ({
     },
 });
 
-const flattenSOCObject = (SOCObject) => {
+const flattenSOCObject = (SOCObject: WebsocResponse): AACourse[] => {
     const courseColors = AppStore.getAddedCourses().reduce((accumulator, { color, section }) => {
         accumulator[section.sectionCode] = color;
         return accumulator;
     }, {});
-    return SOCObject.schools.reduce((accumulator, school) => {
+    return SOCObject.schools.reduce((accumulator: unknown[], school) => {
         accumulator.push(school);
 
         school.departments.forEach((dept) => {
@@ -73,23 +77,35 @@ const flattenSOCObject = (SOCObject) => {
 
             dept.courses.forEach((course) => {
                 for (const section of course.sections) {
-                    section.color = courseColors[section.sectionCode];
+                    (section as AASection).color = courseColors[section.sectionCode];
                 }
                 accumulator.push(course);
             });
         });
 
         return accumulator;
-    }, []);
+    }, []) as AACourse[];
 };
 
-const SectionTableWrapped = (index, data) => {
+const courseDataIsSchoolMap = (courseData: (School | Department | AACourse)[]): courseData is School[] => {
+    return 'departments' in courseData[0];
+}
+
+const courseDataIsDepartmentMap = (courseData: (School | Department | AACourse)[]): courseData is Department[] => {
+    return 'courses' in courseData[0]
+}
+
+const courseDataIsAACourseMap = (courseData: (School | Department | AACourse)[]): courseData is AACourse[] => {
+    return 'deptCode' in courseData[0]
+}
+
+const SectionTableWrapped = (index: number, data: { courseData: (School | Department | AACourse)[], scheduleNames: string[] }) => {
     const { courseData, scheduleNames } = data;
     const formData = RightPaneStore.getFormData();
 
     let component;
 
-    if (courseData[index].departments !== undefined) {
+    if (courseDataIsSchoolMap(courseData) && courseData[index].departments !== undefined) {
         component = (
             <SchoolDeptCard
                 comment={courseData[index].schoolComment}
@@ -97,7 +113,7 @@ const SectionTableWrapped = (index, data) => {
                 name={courseData[index].schoolName}
             />
         );
-    } else if (courseData[index].courses !== undefined) {
+    } else if (courseDataIsDepartmentMap(courseData) && courseData[index].courses !== undefined) {
         component = (
             <SchoolDeptCard
                 name={`Department of ${courseData[index].deptName}`}
@@ -105,36 +121,49 @@ const SectionTableWrapped = (index, data) => {
                 type={'dept'}
             />
         );
-    } else if (formData.ge !== 'ANY') {
-        component = (
-            <GeDataFetchProvider
-                term={formData.term}
-                courseDetails={courseData[index]}
-                colorAndDelete={false}
-                highlightAdded={true}
-                scheduleNames={scheduleNames}
-                analyticsCategory={analyticsEnum.classSearch.title}
-            />
-        );
-    } else {
-        component = (
-            <SectionTableLazyWrapper
-                term={formData.term}
-                courseDetails={courseData[index]}
-                colorAndDelete={false}
-                highlightAdded={true}
-                scheduleNames={scheduleNames}
-                analyticsCategory={analyticsEnum.classSearch.title}
-            />
-        );
+    } else if (courseDataIsAACourseMap(courseData)) {
+        if (formData.ge !== 'ANY') {
+            component = (
+                <GeDataFetchProvider
+                    term={formData.term}
+                    courseDetails={courseData[index]}
+                    colorAndDelete={false}
+                    highlightAdded={true}
+                    scheduleNames={scheduleNames}
+                    analyticsCategory={analyticsEnum.classSearch.title}
+                />
+            );
+        } else {
+            component = (
+                <SectionTableLazyWrapper
+                    term={formData.term}
+                    courseDetails={courseData[index]}
+                    colorAndDelete={false}
+                    highlightAdded={true}
+                    scheduleNames={scheduleNames}
+                    analyticsCategory={analyticsEnum.classSearch.title}
+                />
+            );
+        }
     }
 
     return <div>{component}</div>;
 };
 
-class CourseRenderPane extends PureComponent {
-    state = {
-        courseData: null,
+interface CourseRenderPaneProps {
+    classes: ClassNameMap
+}
+
+interface CourseRenderPaneState {
+    courseData: AACourse[],
+    loading: boolean,
+    error: boolean,
+    scheduleNames: string[]
+}
+
+class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRenderPaneState> {
+    state: CourseRenderPaneState = {
+        courseData: [],
         loading: true,
         error: false,
         scheduleNames: AppStore.getScheduleNames(),
@@ -216,7 +245,7 @@ class CourseRenderPane extends PureComponent {
                             <img src={isDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
                         </div>
                     ) : (
-                        this.state.courseData.map((_, index) => {
+                        this.state.courseData.map((_: AACourse, index: number) => {
                             let heightEstimate = 300;
                             if (this.state.courseData[index].sections !== undefined)
                                 heightEstimate = this.state.courseData[index].sections.length * 60 + 20 + 40;
@@ -244,4 +273,4 @@ class CourseRenderPane extends PureComponent {
     }
 }
 
-export default withStyles(styles)(CourseRenderPane);
+export default withStyles(styles as unknown as Styles<Theme, {}>)(CourseRenderPane);
