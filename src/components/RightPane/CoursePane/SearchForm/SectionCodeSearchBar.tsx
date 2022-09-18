@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, {ChangeEvent, PureComponent} from 'react';
 import { TextField } from '@material-ui/core';
 import RightPaneStore from '../../RightPaneStore';
 
@@ -7,7 +7,7 @@ class SectionCodeSearchBar extends PureComponent {
         sectionCode: RightPaneStore.getFormData().sectionCode,
     };
 
-    handleChange = (event) => {
+    handleChange = (event: ChangeEvent<{ value: string }>) => {
         this.setState({ sectionCode: event.target.value });
         RightPaneStore.updateFormValue('sectionCode', event.target.value);
     };
