@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import { IconButton, Tooltip } from '@material-ui/core';
+import {IconButton, Theme, Tooltip} from '@material-ui/core';
 import { ArrowBack, Refresh } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
+import {ClassNameMap} from "notistack";
+import {Styles} from "@material-ui/core/styles/withStyles";
 
 const styles = {
     buttonRow: {
@@ -22,7 +23,14 @@ const styles = {
     },
 };
 
-class CoursePaneButtonRow extends PureComponent {
+interface CoursePaneButtonRowProps {
+    classes: ClassNameMap;
+    showSearch: boolean;
+    onDismissSearchResults: () => void;
+    onRefreshSearch: () => void;
+}
+
+class CoursePaneButtonRow extends PureComponent<CoursePaneButtonRowProps> {
     render() {
         const { classes } = this.props;
 
@@ -44,9 +52,4 @@ class CoursePaneButtonRow extends PureComponent {
     }
 }
 
-CoursePaneButtonRow.propTypes = {
-    showSearch: PropTypes.bool.isRequired,
-    onDismissSearchResults: PropTypes.func.isRequired,
-};
-
-export default withStyles(styles)(CoursePaneButtonRow);
+export default withStyles(styles as unknown as Styles<Theme, {}>)(CoursePaneButtonRow);
