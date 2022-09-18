@@ -128,28 +128,28 @@ const SectionTable = (props: SectionTableProps) => {
             </div>
 
             <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
-                <Table className={classes.table} size="small">
+                <Table className={classes?.table} size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row} />
-                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row} />
+                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
                                 Code
                             </TableCell>
-                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
                                 Type
                             </TableCell>
-                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
                                 Instructors
                             </TableCell>
-                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
                                 Times
                             </TableCell>
-                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
                                 Places
                             </TableCell>
-                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
-                                <div className={classes.flex}>
-                                    <span className={classes.iconMargin}>Enrollment</span>
+                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
+                                <div className={classes?.flex}>
+                                    <span className={classes?.iconMargin}>Enrollment</span>
                                     {!isMobileScreen && (
                                         <Tooltip
                                             title={
@@ -167,10 +167,10 @@ const SectionTable = (props: SectionTableProps) => {
                                     )}
                                 </div>
                             </TableCell>
-                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
                                 Rstr
                             </TableCell>
-                            <TableCell classes={{ sizeSmall: classes.cellPadding }} className={classes.row}>
+                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
                                 Status
                             </TableCell>
                         </TableRow>
