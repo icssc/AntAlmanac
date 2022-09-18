@@ -31,7 +31,7 @@ class MobileDeptSelector extends PureComponent<MobileDeptSelectorProps, MobileDe
 
     handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown; }>) => {
         this.setState({ deptLabel: event.target.value });
-        RightPaneStore.updateFormValue('deptLabel', event.target.value);
+        RightPaneStore.updateFormValue('deptLabel', event.target.value as string);
     };
 
     render() {

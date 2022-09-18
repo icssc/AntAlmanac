@@ -96,7 +96,7 @@ class ASTF extends PureComponent<AdvancedSearchTextFieldsProps, AdvancedSearchTe
             }
         } else {
             this.setState({ [name]: event.target.value } as unknown as AdvancedSearchTextFieldsState);
-            RightPaneStore.updateFormValue(name, event.target.value);
+            RightPaneStore.updateFormValue(name, event.target.value as string);
         }
     };
 

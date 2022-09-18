@@ -7,7 +7,7 @@ import RightPaneStore from '../../RightPaneStore';
 import { termData } from '../../../../termData';
 
 interface TermSelectorProps {
-    changeState: (arg0: string, arg1: unknown) => void;
+    changeState: (field: string, value: string) => void;
     fieldName: string
 }
 
@@ -31,7 +31,7 @@ class TermSelector extends PureComponent<TermSelectorProps> {
 
     handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown; }>) => {
         this.setState({ term: event.target.value });
-        this.props.changeState(this.props.fieldName, event.target.value);
+        this.props.changeState(this.props.fieldName, event.target.value as string);
     };
 
     render() {

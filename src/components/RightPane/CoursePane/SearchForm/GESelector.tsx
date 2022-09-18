@@ -40,7 +40,7 @@ class GESelector extends PureComponent<GESelectorProps, GESelectorState> {
 
     handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown; }>) => {
         this.setState({ ge: event.target.value as string });
-        RightPaneStore.updateFormValue('ge', event.target.value);
+        RightPaneStore.updateFormValue('ge', event.target.value as string);
     };
 
     componentDidMount() {
