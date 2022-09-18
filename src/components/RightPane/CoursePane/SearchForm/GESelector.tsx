@@ -1,9 +1,10 @@
-import React, { PureComponent } from 'react';
+import React, {ChangeEvent, PureComponent} from 'react';
 import { InputLabel, MenuItem, FormControl, Select } from '@material-ui/core';
 import RightPaneStore from '../../RightPaneStore';
 import { withStyles } from '@material-ui/core/styles';
+import {ClassNameMap} from "notistack";
 
-const geList = [
+const geList: { value: string, label: string }[] = [
     { value: 'ANY', label: "All: Don't filter for GE" },
     { value: 'GE-1A', label: 'GE Ia (1a): Lower Division Writing' },
     { value: 'GE-1B', label: 'GE Ib (1b): Upper Division Writing' },
@@ -25,13 +26,20 @@ const styles = {
     },
 };
 
-class GESelector extends PureComponent {
+interface GESelectorProps {
+    classes: ClassNameMap
+};
+interface GESelectorState {
+    ge: string;
+}
+
+class GESelector extends PureComponent<GESelectorProps, GESelectorState> {
     state = {
         ge: RightPaneStore.getFormData().ge,
     };
 
-    handleChange = (event) => {
-        this.setState({ ge: event.target.value });
+    handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown; }>) => {
+        this.setState({ ge: event.target.value as string });
         RightPaneStore.updateFormValue('ge', event.target.value);
     };
 
