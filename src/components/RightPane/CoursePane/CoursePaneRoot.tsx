@@ -23,7 +23,7 @@ class RightPane extends PureComponent {
         refresh: 0,
     };
 
-    returnToSearchBarEvent = (event) => {
+    returnToSearchBarEvent = (event: KeyboardEvent) => {
         if (
             !(RightPaneStore.getDoDisplaySearch() || RightPaneStore.getOpenSpotAlertPopoverActive()) &&
             (event.key === 'Backspace' || event.key === 'Escape')
@@ -61,6 +61,7 @@ class RightPane extends PureComponent {
             RightPaneStore.toggleSearch();
             this.forceUpdate();
         } else {
+            // @ts-ignore
             openSnackbar(
                 'error',
                 `Please provide one of the following: Department, GE, Course Code/Range, or Instructor`
