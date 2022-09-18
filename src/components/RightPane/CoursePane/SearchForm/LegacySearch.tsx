@@ -3,9 +3,11 @@ import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
 import GESelector from './GESelector';
 import SectionCodeSearchBar from './SectionCodeSearchBar';
 import CourseNumberSearchBar from './CourseNumberSearchBar';
-import { Button } from '@material-ui/core';
+import {Button, Theme} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AdvancedSearch from './AdvancedSearch';
+import {ClassNameMap} from "notistack";
+import {Styles} from "@material-ui/core/styles/withStyles";
 
 const styles = {
     container: {
@@ -45,7 +47,8 @@ const styles = {
     },
 };
 
-function LegacySearch({ classes, onSubmit, onReset }) {
+function LegacySearch(props: { classes: ClassNameMap, onSubmit: () => void, onReset: () => void }) {
+    const { classes, onSubmit, onReset } = props;
     return (
         <>
             <div className={classes.margin}>
@@ -81,4 +84,4 @@ function LegacySearch({ classes, onSubmit, onReset }) {
     );
 }
 
-export default withStyles(styles)(LegacySearch);
+export default withStyles(styles as unknown as Styles<Theme, {}>)(LegacySearch);
