@@ -87,64 +87,58 @@ const flattenSOCObject = (SOCObject: WebsocResponse): AACourse[] => {
     }, []) as AACourse[];
 };
 
-const courseDataIsSchoolMap = (courseData: (School | Department | AACourse)[]): courseData is School[] => {
-    return 'departments' in courseData[0];
-}
-
-const courseDataIsDepartmentMap = (courseData: (School | Department | AACourse)[]): courseData is Department[] => {
-    return 'courses' in courseData[0]
-}
-
-const courseDataIsAACourseMap = (courseData: (School | Department | AACourse)[]): courseData is AACourse[] => {
-    return 'deptCode' in courseData[0]
-}
-
+/* TODO: all this typecasting in the conditionals is pretty messy, but type guards don't really work in this context
+ *  for reasons that are currently beyond me (probably something in the transpiling process that JS doesn't like).
+ *  If you are smarter than me (which you probably are) and can find a way to make this cleaner, do it.
+ */
 const SectionTableWrapped = (index: number, data: { courseData: (School | Department | AACourse)[], scheduleNames: string[] }) => {
     const { courseData, scheduleNames } = data;
     const formData = RightPaneStore.getFormData();
 
     let component;
 
-    if (courseDataIsSchoolMap(courseData) && courseData[index].departments !== undefined) {
+    if ((courseData[index] as School).departments !== undefined) {
+        const school = courseData[index] as School;
         component = (
             <SchoolDeptCard
-                comment={courseData[index].schoolComment}
+                comment={school.schoolComment}
                 type={'school'}
-                name={courseData[index].schoolName}
+                name={school.schoolName}
             />
         );
-    } else if (courseDataIsDepartmentMap(courseData) && courseData[index].courses !== undefined) {
+    } else if ((courseData[index] as Department).courses !== undefined) {
+        const dept = courseData[index] as Department;
         component = (
             <SchoolDeptCard
-                name={`Department of ${courseData[index].deptName}`}
-                comment={courseData[index].deptComment}
+                name={`Department of ${dept.deptName}`}
+                comment={dept.deptComment}
                 type={'dept'}
             />
         );
-    } else if (courseDataIsAACourseMap(courseData)) {
-        if (formData.ge !== 'ANY') {
-            component = (
-                <GeDataFetchProvider
-                    term={formData.term}
-                    courseDetails={courseData[index]}
-                    colorAndDelete={false}
-                    highlightAdded={true}
-                    scheduleNames={scheduleNames}
-                    analyticsCategory={analyticsEnum.classSearch.title}
-                />
-            );
-        } else {
-            component = (
-                <SectionTableLazyWrapper
-                    term={formData.term}
-                    courseDetails={courseData[index]}
-                    colorAndDelete={false}
-                    highlightAdded={true}
-                    scheduleNames={scheduleNames}
-                    analyticsCategory={analyticsEnum.classSearch.title}
-                />
-            );
-        }
+    } else if (formData.ge !== 'ANY') {
+        const course = courseData[index] as AACourse;
+        component = (
+            <GeDataFetchProvider
+                term={formData.term}
+                courseDetails={course}
+                colorAndDelete={false}
+                highlightAdded={true}
+                scheduleNames={scheduleNames}
+                analyticsCategory={analyticsEnum.classSearch.title}
+            />
+        );
+    } else {
+        const course = courseData[index] as AACourse;
+        component = (
+            <SectionTableLazyWrapper
+                term={formData.term}
+                courseDetails={course}
+                colorAndDelete={false}
+                highlightAdded={true}
+                scheduleNames={scheduleNames}
+                analyticsCategory={analyticsEnum.classSearch.title}
+            />
+        );
     }
 
     return <div>{component}</div>;
