@@ -37,20 +37,6 @@ const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
 const DIRECTIONS_ENDPOINT = 'https://api.mapbox.com/directions/v5/mapbox/walking/';
 
-// NOTE: Maybe there's a better place to put this function
-const getLocationData = (buildingName) => {
-    // Gets the location data from the building name
-
-    // Get building code
-    const buildingCode = buildingName.split(' ').slice(0, -1).join(' ');
-    // Get ID of building code
-    const id = locations[buildingCode];
-    // Get building data from buildingCatalogue
-    const locationData = buildingCatalogue[id];
-
-    return locationData;
-};
-
 export default class UCIMap extends PureComponent {
     state = {
         lat: 33.6459,
@@ -66,6 +52,19 @@ export default class UCIMap extends PureComponent {
         info_markers: [],
         info_marker: null,
         pins: {},
+    };
+
+    getLocationData = (buildingName) => {
+        // Gets the location data from the building name
+
+        // Get building code
+        const buildingCode = buildingName.split(' ').slice(0, -1).join(' ');
+        // Get ID of building code
+        const id = locations[buildingCode];
+        // Get building data from buildingCatalogue
+        const locationData = buildingCatalogue[id];
+
+        return locationData;
     };
 
     generateRoute = (day) => {
@@ -95,7 +94,7 @@ export default class UCIMap extends PureComponent {
                 )
                 .sort((event, event2) => event.start - event2.start)
                 .forEach((event) => {
-                    const locationData = getLocationData(event.bldg);
+                    const locationData = this.getLocationData(event.bldg);
 
                     if (locationData === undefined) return;
 
@@ -263,7 +262,7 @@ export default class UCIMap extends PureComponent {
 
         // Try to search for lat/lng/imgURLif missing
         if (lat === undefined || lng === undefined || imgURL === undefined) {
-            const locationData = getLocationData(name);
+            const locationData = this.getLocationData(name);
 
             if (lat === undefined || lng === undefined) {
                 lat = locationData.lat;
