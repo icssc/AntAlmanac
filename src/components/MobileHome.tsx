@@ -19,14 +19,14 @@ const MobileHome = () => {
         acronym: string
         imgURL: string
     }
-    const focusOnBuilding = (args: FocusOnBuildingArgs) => {
+    const focusOnBuilding = (buildingInfo: FocusOnBuildingArgs) => {
         // Since MobileHome doesn't have DesktopTabs permamnently loaded,
         // we need to switch over to it, get a confirmation that it's loaded,
         // then re-emit 'focusOnBuilding'
 
         if (selectedTab !== 1) {
             const reEmitFocus = () => {
-                RightPaneStore.emit('focusOnBuilding', args);
+                RightPaneStore.emit('focusOnBuilding', buildingInfo);
                 RightPaneStore.removeListener('RightPaneRootLoaded', reEmitFocus);
             };
 

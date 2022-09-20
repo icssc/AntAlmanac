@@ -47,14 +47,14 @@ class DesktopTabs extends PureComponent<DesktopTabsProps> {
         RightPaneStore.removeListener('focusOnBuilding', this.focusOnBuilding);
     }
 
-    focusOnBuilding(args) {
+    focusOnBuilding(buildingInfo) {
         // If the Map tab isn't already active
         if (RightPaneStore.getActiveTab() !== 2) {
             // Switch to Map tab
             RightPaneStore.handleTabChange(undefined, 2);
 
             const selectBuilding = () => {
-                RightPaneStore.emit('selectBuilding', args);
+                RightPaneStore.emit('selectBuilding', buildingInfo);
                 RightPaneStore.removeListener('mapLoaded', selectBuilding);
             };
 
@@ -62,7 +62,7 @@ class DesktopTabs extends PureComponent<DesktopTabsProps> {
             // then we can tell it to focus on a building
             RightPaneStore.on('mapLoaded', selectBuilding);
         } else {
-            RightPaneStore.emit('selectBuilding', args);
+            RightPaneStore.emit('selectBuilding', buildingInfo);
         }
     }
 
