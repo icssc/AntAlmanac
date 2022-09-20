@@ -26,6 +26,8 @@ const MobileHome = () => {
 
         if (selectedTab !== 1) {
             const reEmitFocus = () => {
+                // This doesn't cause an infinite loop because after the first time it runs, it sets selectedTab
+                // to 1 (SEARCH), which causes the above condition to be false.
                 RightPaneStore.emit('focusOnBuilding', buildingInfo);
                 RightPaneStore.removeListener('RightPaneRootLoaded', reEmitFocus);
             };
