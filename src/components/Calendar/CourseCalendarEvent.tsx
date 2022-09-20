@@ -80,7 +80,7 @@ const selectBuilding = (buildingName: string) => {
      *  If desktop:
      *  1) RightPaneRoot recieves 'focusOnBuilding'.
      *  2a) If the Map tab is selected already, it passes the args down to UCIMap with 'selectBuilding'.
-     *  2b) If the Map tab is not selected, it switches to the Map tab, waits for it to load, and does 1a.
+     *  2b) If the Map tab is not selected, it switches to the Map tab, waits for it to load, and does 2a.
      *  3) UCIMap recieves 'selectBuilding' and focuses on that building.
      *
      *  If mobile (MobileHome.js is being displayed):

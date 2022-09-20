@@ -20,7 +20,7 @@ const MobileHome = () => {
         imgURL: string
     }
     const focusOnBuilding = (buildingInfo: FocusOnBuildingArgs) => {
-        // Since MobileHome doesn't have DesktopTabs permamnently loaded,
+        // Since MobileHome doesn't have DesktopTabs permanently loaded,
         // we need to switch over to it, get a confirmation that it's loaded,
         // then re-emit 'focusOnBuilding'
 
