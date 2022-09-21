@@ -1,7 +1,7 @@
 import { Button } from '@material-ui/core';
 import WalkIcon from '@material-ui/icons/DirectionsWalk';
 import Leaflet from 'leaflet';
-import React, { PureComponent, ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 import { Marker, Popup } from 'react-leaflet';
 
 import analyticsEnum, { logAnalytics } from '../../../analytics';
@@ -21,12 +21,12 @@ interface MapMarkerProps {
     children?: ReactElement;
 }
 
-class MapMarker extends PureComponent<MapMarkerProps> {
+const MapMarker = ({ index, markerColor, stackIndex, image, location, lat, lng, acronym, children }: MapMarkerProps) => {
     /**@param color rgb hex color string */
-    getMarkerIcon = (color: string) => {
+    const getMarkerIcon = (color: string) => {
         return Leaflet.divIcon({
-            iconAnchor: [0, 14 + 16 * this.props.stackIndex], // Adds offset for marker for stacking markers
-            popupAnchor: [0, -21 - 16 * this.props.stackIndex], // Adds offset for popup for stacking markers
+            iconAnchor: [0, 14 + 16 * stackIndex], // Adds offset for marker for stacking markers
+            popupAnchor: [0, -21 - 16 * stackIndex], // Adds offset for popup for stacking markers
             className: '',
             html: `<div style="position:relative;">
                         <span style="background-color: ${color};
@@ -47,71 +47,60 @@ class MapMarker extends PureComponent<MapMarkerProps> {
                                         top: -0.75rem;
                                         text-align: center; 
                                         color: white" >
-                            ${this.props.index}
+                            ${index}
                         </div>
                     </div>`,
         });
     };
+    let locationString;
 
-    render() {
-        let locationString;
-
-        if (this.props.acronym) {
-            locationString = (
-                <a
-                    href={`http://www.classrooms.uci.edu/classrooms/${this.props.acronym}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    {this.props.location}
-                </a>
-            );
-        } else {
-            locationString = this.props.location;
-        }
-
-        return (
-            <Marker
-                position={[this.props.lat, this.props.lng]}
-                icon={this.getMarkerIcon(this.props.markerColor)}
-                zIndexOffset={-this.props.stackIndex} // alter ZIndex so markers show above other markers in order of stack
-                onClick={() =>
-                    logAnalytics({
-                        category: analyticsEnum.map.title,
-                        action: analyticsEnum.map.actions.CLICK_PIN,
-                    })
-                }
-            >
-                <Popup>
-                    {locationString}
-
-                    <br />
-
-                    {this.props.image ? (
-                        <img
-                            src={`${IMAGE_CMS_URL}${this.props.image}`}
-                            alt="Building Snapshot"
-                            style={{ width: '100%' }}
-                        />
-                    ) : null}
-
-                    {this.props.children}
-
-                    <br />
-
-                    <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<WalkIcon />}
-                        href={`${GOOGLE_MAPS_URL}${this.props.lat},${this.props.lng}`}
-                        target="_blank"
-                    >
-                        Directions
-                    </Button>
-                </Popup>
-            </Marker>
+    if (acronym) {
+        locationString = (
+            <a href={`http://www.classrooms.uci.edu/classrooms/${acronym}`} target="_blank" rel="noopener noreferrer">
+                {location}
+            </a>
         );
+    } else {
+        locationString = location;
     }
-}
+
+    return (
+        <Marker
+            position={[lat, lng]}
+            icon={getMarkerIcon(markerColor)}
+            zIndexOffset={-stackIndex} // alter ZIndex so markers show above other markers in order of stack
+            onClick={() => {
+                logAnalytics({
+                    category: analyticsEnum.map.title,
+                    action: analyticsEnum.map.actions.CLICK_PIN,
+                });
+            }}
+        >
+            <Popup>
+                {locationString}
+
+                <br />
+
+                {image ? (
+                    <img src={`${IMAGE_CMS_URL}${image}`} alt="Building Snapshot" style={{ width: '100%' }} />
+                ) : null}
+
+                {children}
+
+                <br />
+
+                <Button
+                    variant="contained"
+                    size="small"
+                    startIcon={<WalkIcon />}
+                    href={`${GOOGLE_MAPS_URL}${lat},${lng}`}
+                    target="_blank"
+                >
+                    Directions
+                </Button>
+            </Popup>
+        </Marker>
+    );
+};
 
 export default MapMarker;
