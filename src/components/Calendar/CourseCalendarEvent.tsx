@@ -7,7 +7,7 @@ import { Event } from 'react-big-calendar';
 
 import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '../../analytics';
-import { clickToCopy } from '../../helpers';
+import { clickToCopy, isDarkMode  } from '../../helpers';
 import AppStore from '../../stores/AppStore';
 import ColorPicker from '../ColorPicker';
 import RightPaneStore from '../RightPane/RightPaneStore';
@@ -67,6 +67,11 @@ const styles: Styles<Theme, object> = {
     clickableLocation: {
         cursor: 'pointer',
         color: 'blue',
+    },
+
+    clickableLocationDark: {
+        cursor: 'pointer',
+        color: '#1cbeff',
     },
 };
 
@@ -188,7 +193,11 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             <td
                                 onClick={() => selectBuilding(bldg)}
                                 className={`${classes.multiline} ${classes.rightCells} ${
-                                    bldg !== 'TBA' ? classes.clickableLocation : ""
+                                    bldg !== 'TBA'
+                                        ? isDarkMode()
+                                            ? classes.clickableLocationDark
+                                            : classes.clickableLocation
+                                        : ""
                                 }`}
                             >
                                 {bldg}
