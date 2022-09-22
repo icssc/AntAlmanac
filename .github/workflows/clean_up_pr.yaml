@@ -2,9 +2,8 @@ name: "Pull Request Clean Up"
 
 on:
   pull_request:
-    types: [closed]
-    branches:
-      - main
+    types: [closed, labeled]
+    
 
 permissions:
   id-token: write
@@ -14,7 +13,7 @@ permissions:
 
 jobs:
   clean-up:
-    if: (!contains(github.event.pull_request.labels.*.name, 'no deploy'))
+    if: (github.event.action == 'labeled' && github.event.label.name == 'no deploy') || github.event.action == 'closed'
     runs-on: ubuntu-latest
     env: # env variables for Node.js
       HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}

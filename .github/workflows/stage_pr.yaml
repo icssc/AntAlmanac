@@ -2,7 +2,7 @@ name: "Deploy Pull Request"
 
 on: 
   pull_request:
-      types: [opened, synchronize]
+      types: [opened, synchronize, unlabeled]
 
 permissions:
   id-token: write
