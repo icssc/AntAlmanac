@@ -11,7 +11,7 @@ import analyticsEnum, { logAnalytics } from '../../../../analytics';
 import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 import {Styles} from "@material-ui/core/styles/withStyles";
 
-const styles = {
+const styles: Styles<Theme, object> = {
     container: {
         display: 'flex',
         flexDirection: 'column',
@@ -91,4 +91,4 @@ const SearchForm = (props: { classes: ClassNameMap, toggleSearch: () => void }) 
     );
 };
 
-export default withStyles(styles as unknown as Styles<Theme, {}>)(SearchForm);
+export default withStyles(styles)(SearchForm);

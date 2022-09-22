@@ -4,7 +4,7 @@ import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 import {Styles} from "@material-ui/core/styles/withStyles";
 
-const styles = (theme: Theme) => ({
+const styles: Styles<Theme, object> = (theme) => ({
     school: {
         display: 'flex',
         flexWrap: 'wrap',
@@ -21,7 +21,7 @@ const styles = (theme: Theme) => ({
     },
     text: {
         flexBasis: '50%',
-        flexGrow: '1',
+        flexGrow: 1,
         display: 'inline',
     },
     icon: {
@@ -82,4 +82,4 @@ class SchoolDeptCard extends PureComponent<SchoolDeptCardProps> {
     }
 }
 
-export default withStyles(styles as unknown as Styles<Theme, {}>)(SchoolDeptCard);
+export default withStyles(styles)(SchoolDeptCard);

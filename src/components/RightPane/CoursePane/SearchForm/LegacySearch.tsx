@@ -9,7 +9,7 @@ import AdvancedSearch from './AdvancedSearch';
 import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 import {Styles} from "@material-ui/core/styles/withStyles";
 
-const styles = {
+const styles: Styles<Theme, object> = {
     container: {
         display: 'flex',
         flexDirection: 'column',
@@ -84,4 +84,4 @@ function LegacySearch(props: { classes: ClassNameMap, onSubmit: () => void, onRe
     );
 }
 
-export default withStyles(styles as unknown as Styles<Theme, {}>)(LegacySearch);
+export default withStyles(styles)(LegacySearch);

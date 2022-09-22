@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 import {Styles} from "@material-ui/core/styles/withStyles";
 
-const styles = {
+const styles: Styles<Theme, object> = {
     buttonRow: {
         width: '100%',
         zIndex: 3,
@@ -15,7 +15,7 @@ const styles = {
     button: {
         backgroundColor: 'rgba(236, 236, 236, 1)',
         marginRight: 5,
-        boxShadow: 2,
+        boxShadow: "2",
         color: 'black',
         '&:hover': {
             backgroundColor: 'grey',
@@ -52,4 +52,4 @@ class CoursePaneButtonRow extends PureComponent<CoursePaneButtonRowProps> {
     }
 }
 
-export default withStyles(styles as unknown as Styles<Theme, {}>)(CoursePaneButtonRow);
+export default withStyles(styles)(CoursePaneButtonRow);
