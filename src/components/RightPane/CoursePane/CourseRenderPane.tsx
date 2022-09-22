@@ -17,7 +17,7 @@ import {AACourse, AASection, Department, School, WebsocResponse} from "../../../
 import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 import {Styles} from "@material-ui/core/styles/withStyles";
 
-const styles = (theme: Theme) => ({
+const styles: Styles<Theme, object> = (theme) => ({
     course: {
         ...theme.mixins.gutters(),
         paddingTop: theme.spacing(),
@@ -64,12 +64,12 @@ const styles = (theme: Theme) => ({
     },
 });
 
-const flattenSOCObject = (SOCObject: WebsocResponse): AACourse[] => {
+const flattenSOCObject = (SOCObject: WebsocResponse): (School | Department | AACourse)[] => {
     const courseColors = AppStore.getAddedCourses().reduce((accumulator, { color, section }) => {
         accumulator[section.sectionCode] = color;
         return accumulator;
     }, {});
-    return SOCObject.schools.reduce((accumulator: unknown[], school) => {
+    return SOCObject.schools.reduce((accumulator: (School | Department | AACourse)[], school) => {
         accumulator.push(school);
 
         school.departments.forEach((dept) => {
@@ -79,19 +79,19 @@ const flattenSOCObject = (SOCObject: WebsocResponse): AACourse[] => {
                 for (const section of course.sections) {
                     (section as AASection).color = courseColors[section.sectionCode];
                 }
-                accumulator.push(course);
+                accumulator.push(course as AACourse);
             });
         });
 
         return accumulator;
-    }, []) as AACourse[];
+    }, []);
 };
 
 /* TODO: all this typecasting in the conditionals is pretty messy, but type guards don't really work in this context
  *  for reasons that are currently beyond me (probably something in the transpiling process that JS doesn't like).
  *  If you are smarter than me (which you probably are) and can find a way to make this cleaner, do it.
  */
-const SectionTableWrapped = (index: number, data: { courseData: (School | Department | AACourse)[], scheduleNames: string[] }) => {
+const SectionTableWrapped = (index: number, data: { scheduleNames: string[]; courseData: (School | Department | AACourse)[] }) => {
     const { courseData, scheduleNames } = data;
     const formData = RightPaneStore.getFormData();
 
@@ -149,7 +149,7 @@ interface CourseRenderPaneProps {
 }
 
 interface CourseRenderPaneState {
-    courseData: AACourse[],
+    courseData: (School | Department | AACourse)[],
     loading: boolean,
     error: boolean,
     scheduleNames: string[]
@@ -239,10 +239,10 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
                             <img src={isDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
                         </div>
                     ) : (
-                        this.state.courseData.map((_: AACourse, index: number) => {
+                        this.state.courseData.map((_: School | Department | AACourse, index: number) => {
                             let heightEstimate = 300;
-                            if (this.state.courseData[index].sections !== undefined)
-                                heightEstimate = this.state.courseData[index].sections.length * 60 + 20 + 40;
+                            if ((this.state.courseData[index] as AACourse).sections !== undefined)
+                                heightEstimate = (this.state.courseData[index] as AACourse).sections.length * 60 + 20 + 40;
 
                             return (
                                 <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
@@ -267,4 +267,4 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
     }
 }
 
-export default withStyles(styles as unknown as Styles<Theme, {}>)(CourseRenderPane);
+export default withStyles(styles)(CourseRenderPane);
