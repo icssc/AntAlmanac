@@ -7,7 +7,7 @@ import { AACourse } from '../../../peterportal.types';
  * If you can figure out how to export this from SectionTable.tsx to SectionTableLazyWrapper.tsx, do it.
  */
 export interface SectionTableProps {
-    classes: ClassNameMap
+    classes?: ClassNameMap
     courseDetails: AACourse
     term: string
     colorAndDelete: boolean

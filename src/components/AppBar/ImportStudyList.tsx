@@ -42,13 +42,9 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         studyListText: '',
     };
 
-    onTermSelectorChange = (field: 'selectedTerm', value: any) => {
-        this.setState({ [field]: value });
+    onTermSelectorChange = (field: string, value: any) => {
+        this.setState({ selectedTerm: value });
     };
-
-    // handleChange = (event) => {
-    //     this.setState({ selectedTerm: event.target.value });
-    // };
 
     handleError = (error: Error) => {
         // @ts-ignore this should be fine once we refactor this function's definition in TS

@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import { IconButton, Tooltip } from '@material-ui/core';
+import {IconButton, Theme, Tooltip} from '@material-ui/core';
 import { ArrowBack, Refresh } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
+import {ClassNameMap} from "@material-ui/core/styles/withStyles";
+import {Styles} from "@material-ui/core/styles/withStyles";
 
-const styles = {
+const styles: Styles<Theme, object> = {
     buttonRow: {
         width: '100%',
         zIndex: 3,
@@ -14,7 +15,7 @@ const styles = {
     button: {
         backgroundColor: 'rgba(236, 236, 236, 1)',
         marginRight: 5,
-        boxShadow: 2,
+        boxShadow: "2",
         color: 'black',
         '&:hover': {
             backgroundColor: 'grey',
@@ -22,7 +23,14 @@ const styles = {
     },
 };
 
-class CoursePaneButtonRow extends PureComponent {
+interface CoursePaneButtonRowProps {
+    classes: ClassNameMap;
+    showSearch: boolean;
+    onDismissSearchResults: () => void;
+    onRefreshSearch: () => void;
+}
+
+class CoursePaneButtonRow extends PureComponent<CoursePaneButtonRowProps> {
     render() {
         const { classes } = this.props;
 
@@ -43,10 +51,5 @@ class CoursePaneButtonRow extends PureComponent {
         );
     }
 }
-
-CoursePaneButtonRow.propTypes = {
-    showSearch: PropTypes.bool.isRequired,
-    onDismissSearchResults: PropTypes.func.isRequired,
-};
 
 export default withStyles(styles)(CoursePaneButtonRow);

@@ -12,8 +12,12 @@ import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import LazyLoad from 'react-lazyload';
 import { queryWebsoc, queryWebsocMultiple, isDarkMode } from '../../../helpers';
 import analyticsEnum from '../../../analytics';
+import {Theme} from "@material-ui/core";
+import {AACourse, AASection, Department, School, WebsocResponse} from "../../../peterportal.types";
+import {ClassNameMap} from "@material-ui/core/styles/withStyles";
+import {Styles} from "@material-ui/core/styles/withStyles";
 
-const styles = (theme) => ({
+const styles: Styles<Theme, object> = (theme) => ({
     course: {
         ...theme.mixins.gutters(),
         paddingTop: theme.spacing(),
@@ -60,12 +64,12 @@ const styles = (theme) => ({
     },
 });
 
-const flattenSOCObject = (SOCObject) => {
+const flattenSOCObject = (SOCObject: WebsocResponse): (School | Department | AACourse)[] => {
     const courseColors = AppStore.getAddedCourses().reduce((accumulator, { color, section }) => {
         accumulator[section.sectionCode] = color;
         return accumulator;
     }, {});
-    return SOCObject.schools.reduce((accumulator, school) => {
+    return SOCObject.schools.reduce((accumulator: (School | Department | AACourse)[], school) => {
         accumulator.push(school);
 
         school.departments.forEach((dept) => {
@@ -73,9 +77,9 @@ const flattenSOCObject = (SOCObject) => {
 
             dept.courses.forEach((course) => {
                 for (const section of course.sections) {
-                    section.color = courseColors[section.sectionCode];
+                    (section as AASection).color = courseColors[section.sectionCode];
                 }
-                accumulator.push(course);
+                accumulator.push(course as AACourse);
             });
         });
 
@@ -83,33 +87,40 @@ const flattenSOCObject = (SOCObject) => {
     }, []);
 };
 
-const SectionTableWrapped = (index, data) => {
+/* TODO: all this typecasting in the conditionals is pretty messy, but type guards don't really work in this context
+ *  for reasons that are currently beyond me (probably something in the transpiling process that JS doesn't like).
+ *  If you are smarter than me (which you probably are) and can find a way to make this cleaner, do it.
+ */
+const SectionTableWrapped = (index: number, data: { scheduleNames: string[]; courseData: (School | Department | AACourse)[] }) => {
     const { courseData, scheduleNames } = data;
     const formData = RightPaneStore.getFormData();
 
     let component;
 
-    if (courseData[index].departments !== undefined) {
+    if ((courseData[index] as School).departments !== undefined) {
+        const school = courseData[index] as School;
         component = (
             <SchoolDeptCard
-                comment={courseData[index].schoolComment}
+                comment={school.schoolComment}
                 type={'school'}
-                name={courseData[index].schoolName}
+                name={school.schoolName}
             />
         );
-    } else if (courseData[index].courses !== undefined) {
+    } else if ((courseData[index] as Department).courses !== undefined) {
+        const dept = courseData[index] as Department;
         component = (
             <SchoolDeptCard
-                name={`Department of ${courseData[index].deptName}`}
-                comment={courseData[index].deptComment}
+                name={`Department of ${dept.deptName}`}
+                comment={dept.deptComment}
                 type={'dept'}
             />
         );
     } else if (formData.ge !== 'ANY') {
+        const course = courseData[index] as AACourse;
         component = (
             <GeDataFetchProvider
                 term={formData.term}
-                courseDetails={courseData[index]}
+                courseDetails={course}
                 colorAndDelete={false}
                 highlightAdded={true}
                 scheduleNames={scheduleNames}
@@ -117,10 +128,11 @@ const SectionTableWrapped = (index, data) => {
             />
         );
     } else {
+        const course = courseData[index] as AACourse;
         component = (
             <SectionTableLazyWrapper
                 term={formData.term}
-                courseDetails={courseData[index]}
+                courseDetails={course}
                 colorAndDelete={false}
                 highlightAdded={true}
                 scheduleNames={scheduleNames}
@@ -132,9 +144,20 @@ const SectionTableWrapped = (index, data) => {
     return <div>{component}</div>;
 };
 
-class CourseRenderPane extends PureComponent {
-    state = {
-        courseData: null,
+interface CourseRenderPaneProps {
+    classes: ClassNameMap
+}
+
+interface CourseRenderPaneState {
+    courseData: (School | Department | AACourse)[],
+    loading: boolean,
+    error: boolean,
+    scheduleNames: string[]
+}
+
+class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRenderPaneState> {
+    state: CourseRenderPaneState = {
+        courseData: [],
         loading: true,
         error: false,
         scheduleNames: AppStore.getScheduleNames(),
@@ -216,10 +239,10 @@ class CourseRenderPane extends PureComponent {
                             <img src={isDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
                         </div>
                     ) : (
-                        this.state.courseData.map((_, index) => {
+                        this.state.courseData.map((_: School | Department | AACourse, index: number) => {
                             let heightEstimate = 300;
-                            if (this.state.courseData[index].sections !== undefined)
-                                heightEstimate = this.state.courseData[index].sections.length * 60 + 20 + 40;
+                            if ((this.state.courseData[index] as AACourse).sections !== undefined)
+                                heightEstimate = (this.state.courseData[index] as AACourse).sections.length * 60 + 20 + 40;
 
                             return (
                                 <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>

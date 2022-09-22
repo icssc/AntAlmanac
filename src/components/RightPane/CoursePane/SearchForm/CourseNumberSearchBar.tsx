@@ -1,13 +1,17 @@
-import React, { PureComponent } from 'react';
+import React, {ChangeEvent, PureComponent} from 'react';
 import { TextField } from '@material-ui/core';
 import RightPaneStore from '../../RightPaneStore';
 
-class CourseNumberSearchBar extends PureComponent {
+interface CourseNumberSearchBarState {
+    courseNumber: string
+};
+
+class CourseNumberSearchBar extends PureComponent<{}, CourseNumberSearchBarState> {
     state = {
         courseNumber: RightPaneStore.getFormData().courseNumber,
     };
 
-    handleChange = (event) => {
+    handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         this.setState({ courseNumber: event.target.value });
         RightPaneStore.updateFormValue('courseNumber', event.target.value);
     };

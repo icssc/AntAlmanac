@@ -1,12 +1,12 @@
-import React, { PureComponent } from 'react';
+import React, { ChangeEvent, PureComponent } from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import depts from './depts';
-import { updateFormValue } from '../../../../stores/RightPaneStore';
 import RightPaneStore from '../../../RightPaneStore';
 import { withStyles } from '@material-ui/core/styles';
+import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 
 const style = {
     formControl: {
@@ -16,14 +16,22 @@ const style = {
     },
 };
 
-class MobileDeptSelector extends PureComponent {
+interface MobileDeptSelectorProps {
+    classes: ClassNameMap
+}
+
+interface MobileDeptSelectorState {
+    deptLabel: string | unknown
+}
+
+class MobileDeptSelector extends PureComponent<MobileDeptSelectorProps, MobileDeptSelectorState> {
     state = {
         deptLabel: RightPaneStore.getFormData().deptLabel,
     };
 
-    handleChange = (event) => {
+    handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown; }>) => {
         this.setState({ deptLabel: event.target.value });
-        updateFormValue('deptLabel', event.target.value);
+        RightPaneStore.updateFormValue('deptLabel', event.target.value as string);
     };
 
     render() {
@@ -35,8 +43,8 @@ class MobileDeptSelector extends PureComponent {
                 <Select value={this.state.deptLabel} onChange={this.handleChange} fullWidth>
                     {depts.map((dept) => {
                         return (
-                            <MenuItem key={dept.value} value={dept.value}>
-                                {dept.label}
+                            <MenuItem key={dept.deptValue} value={dept.deptValue}>
+                                {dept.deptLabel}
                             </MenuItem>
                         );
                     })}

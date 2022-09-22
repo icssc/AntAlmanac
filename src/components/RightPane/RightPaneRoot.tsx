@@ -20,12 +20,16 @@ const styles = {
     },
 };
 
-class DesktopTabs extends PureComponent {
+interface DesktopTabsProps {
+    style: Record<string, unknown>
+}
+
+class DesktopTabs extends PureComponent<DesktopTabsProps> {
     state = {
         activeTab: 0,
     };
 
-    changeTab = (activeTab) => {
+    changeTab = (activeTab: number) => {
         this.setState({ activeTab: activeTab });
     };
 

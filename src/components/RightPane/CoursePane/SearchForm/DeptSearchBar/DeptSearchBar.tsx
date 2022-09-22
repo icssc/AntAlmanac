@@ -1,9 +1,10 @@
-import React, { PureComponent } from 'react';
+import React, { ChangeEvent, PureComponent } from 'react';
 import depts from './depts';
 import { withStyles } from '@material-ui/core/styles';
 import { TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import RightPaneStore from '../../../RightPaneStore';
+import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 
 const style = {
     formControl: {
@@ -20,8 +21,23 @@ const options = depts.map((dept) => {
     };
 });
 
-class DeptSearchBar extends PureComponent {
-    constructor(props) {
+interface DeptSearchBarProps {
+    classes: ClassNameMap
+}
+
+interface Department {
+    deptLabel: string;
+    deptValue: string;
+    isFavorite: boolean;
+}
+
+interface DeptSearchBarState {
+    value: Department;
+    favorites: Department[];
+}
+
+class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState> {
+    constructor(props: DeptSearchBarProps) {
         super(props);
 
         let favorites = [];
@@ -57,11 +73,11 @@ class DeptSearchBar extends PureComponent {
         });
     };
 
-    compareValues = (option, value) => {
+    compareValues = (option: Department, value: Department) => {
         return option.deptValue === value.deptValue;
     };
 
-    handleSetDept = (event, newDept) => {
+    handleSetDept = (event: ChangeEvent<{}>, newDept: Department | null) => {
         let setDeptValue = newDept === null ? options[0] : newDept;
 
         this.setState({ value: setDeptValue });

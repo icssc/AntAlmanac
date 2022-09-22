@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, {ChangeEvent, PureComponent} from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -6,7 +6,12 @@ import Select from '@material-ui/core/Select';
 import RightPaneStore from '../../RightPaneStore';
 import { termData } from '../../../../termData';
 
-class TermSelector extends PureComponent {
+interface TermSelectorProps {
+    changeState: (field: string, value: string) => void;
+    fieldName: string
+}
+
+class TermSelector extends PureComponent<TermSelectorProps> {
     state = {
         term: RightPaneStore.getFormData().term,
     };
@@ -16,7 +21,6 @@ class TermSelector extends PureComponent {
     };
 
     componentDidMount = () => {
-        document.addEventListener('keydown', this.enterEvent, false);
         RightPaneStore.on('formReset', this.resetField);
     };
 
@@ -24,9 +28,9 @@ class TermSelector extends PureComponent {
         RightPaneStore.removeListener('formReset', this.resetField);
     }
 
-    handleChange = (event) => {
+    handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown; }>) => {
         this.setState({ term: event.target.value });
-        this.props.changeState(this.props.fieldName, event.target.value);
+        this.props.changeState(this.props.fieldName, event.target.value as string);
     };
 
     render() {

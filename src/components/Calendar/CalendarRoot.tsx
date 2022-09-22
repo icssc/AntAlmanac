@@ -11,7 +11,7 @@ import CourseCalendarEvent from './CourseCalendarEvent';
 import AppStore from '../../stores/AppStore';
 import ReactGA from 'react-ga';
 import { Styles } from '@material-ui/core/styles/withStyles';
-import { ClassNameMap } from 'notistack';
+import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 import { CalendarEvent } from './CourseCalendarEvent';
 
 const localizer = momentLocalizer(moment);

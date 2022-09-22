@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, {ChangeEvent, PureComponent} from 'react';
 import {
     MenuItem,
     Select,
@@ -8,13 +8,15 @@ import {
     Switch,
     FormControlLabel,
     Typography,
-    Collapse,
+    Collapse, Theme,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import RightPaneStore from '../../RightPaneStore';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
+import {ClassNameMap} from "@material-ui/core/styles/withStyles";
+import {Styles} from "@material-ui/core/styles/withStyles";
 
-const styles = {
+const styles: Styles<Theme, object> = {
     units: {
         width: '80px',
     },
@@ -28,7 +30,29 @@ const styles = {
     },
 };
 
-class AdvancedSearchTextFields extends PureComponent {
+interface AdvancedSearchTextFieldsProps {
+    classes?: ClassNameMap
+}
+
+interface AdvancedSearchTextFieldsState {
+    instructor: string;
+    units: string;
+    endTime: string;
+    startTime: string;
+    coursesFull: string;
+    building: string;
+    room: string;
+}
+
+interface AdvancedSearchProps {
+    classes: ClassNameMap
+}
+
+interface AdvancedSearchState {
+    expandAdvanced: boolean;
+}
+
+class UnstyledAdvancedSearchTextFields extends PureComponent<AdvancedSearchTextFieldsProps, AdvancedSearchTextFieldsState> {
     state = {
         instructor: RightPaneStore.getFormData().instructor,
         units: RightPaneStore.getFormData().units,
@@ -59,7 +83,7 @@ class AdvancedSearchTextFields extends PureComponent {
         });
     };
 
-    handleChange = (name) => (event) => {
+    handleChange = (name: string) => (event: ChangeEvent<{ checked?: boolean, name?: string; value: unknown; }>) => {
         if (name === 'online') {
             if (event.target.checked) {
                 this.setState({ building: 'ON', room: 'LINE' });
@@ -71,8 +95,8 @@ class AdvancedSearchTextFields extends PureComponent {
                 RightPaneStore.updateFormValue('room', '');
             }
         } else {
-            this.setState({ [name]: event.target.value });
-            RightPaneStore.updateFormValue(name, event.target.value);
+            this.setState({ [name]: event.target.value } as unknown as AdvancedSearchTextFieldsState);
+            RightPaneStore.updateFormValue(name, event.target.value as string);
         }
     };
 
@@ -90,7 +114,7 @@ class AdvancedSearchTextFields extends PureComponent {
             ...[...Array(11).keys()].map((v) => v + 1 + ':00pm'),
         ];
         // Creates a MenuItem for time selection
-        const createdMenuItemTime = (time) => (
+        const createdMenuItemTime = (time: string) => (
             <MenuItem key={time} value={`${time}`}>
                 {time ? time : <em>None</em>}
             </MenuItem>
@@ -100,7 +124,7 @@ class AdvancedSearchTextFields extends PureComponent {
         const endsBeforeMenuItems = ['', ...menuItemTimes].map((time) => createdMenuItemTime(time));
 
         return (
-            <div className={classes.smallTextFields}>
+            <div className={classes?.smallTextFields}>
                 <TextField
                     label="Instructor"
                     type="search"
@@ -116,7 +140,7 @@ class AdvancedSearchTextFields extends PureComponent {
                     onChange={this.handleChange('units')}
                     type="search"
                     helperText="ex. 3, 4, or VAR"
-                    className={classes.units}
+                    className={classes?.units}
                 />
 
                 <FormControl>
@@ -136,7 +160,7 @@ class AdvancedSearchTextFields extends PureComponent {
                         labelId="starts-after-dropdown-label"
                         value={this.state.startTime}
                         onChange={this.handleChange('startTime')}
-                        className={classes.timePicker}
+                        className={classes?.timePicker}
                     >
                         {startsAfterMenuItems}
                     </Select>
@@ -148,7 +172,7 @@ class AdvancedSearchTextFields extends PureComponent {
                         labelId="ends-before-dropdown-label"
                         value={this.state.endTime}
                         onChange={this.handleChange('endTime')}
-                        className={classes.timePicker}
+                        className={classes?.timePicker}
                     >
                         {endsBeforeMenuItems}
                     </Select>
@@ -186,7 +210,7 @@ class AdvancedSearchTextFields extends PureComponent {
     }
 }
 
-AdvancedSearchTextFields = withStyles(styles)(AdvancedSearchTextFields);
+const AdvancedSearchTextFields = withStyles(styles)(UnstyledAdvancedSearchTextFields);
 
 const parentStyles = {
     container: {
@@ -201,8 +225,8 @@ const parentStyles = {
     },
 };
 
-class AdvancedSearch extends PureComponent {
-    constructor(props) {
+class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchState> {
+    constructor(props: AdvancedSearchProps) {
         super(props);
 
         let advanced = false;

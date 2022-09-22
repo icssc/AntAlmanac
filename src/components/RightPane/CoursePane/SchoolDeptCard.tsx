@@ -1,8 +1,10 @@
 import React, { PureComponent } from 'react';
-import { Grid, Paper, Typography, withStyles, Collapse } from '@material-ui/core';
+import {Grid, Paper, Typography, withStyles, Collapse, Theme} from '@material-ui/core';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
+import {ClassNameMap} from "@material-ui/core/styles/withStyles";
+import {Styles} from "@material-ui/core/styles/withStyles";
 
-const styles = (theme) => ({
+const styles: Styles<Theme, object> = (theme) => ({
     school: {
         display: 'flex',
         flexWrap: 'wrap',
@@ -19,7 +21,7 @@ const styles = (theme) => ({
     },
     text: {
         flexBasis: '50%',
-        flexGrow: '1',
+        flexGrow: 1,
         display: 'inline',
     },
     icon: {
@@ -34,11 +36,18 @@ const styles = (theme) => ({
     },
 });
 
-class SchoolDeptCard extends PureComponent {
+interface SchoolDeptCardProps {
+    classes: ClassNameMap;
+    comment: string;
+    name: string;
+    type: string;
+}
+
+class SchoolDeptCard extends PureComponent<SchoolDeptCardProps> {
     state = { commentsOpen: false };
 
     render() {
-        const html = { __html: [this.props.comment] };
+        const html = { __html: this.props.comment };
         const ExpandIcon = this.state.commentsOpen ? ExpandLess : ExpandMore;
         return (
             <Grid item xs={12}>

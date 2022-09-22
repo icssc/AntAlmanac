@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import { getDefaultTerm } from '../../termData';
 import ReactGA from 'react-ga';
 
-const defaultFormValues = {
+const defaultFormValues: Record<string, string> = {
     deptValue: 'ALL',
     deptLabel: 'ALL: Include All Departments',
     ge: 'ANY',
@@ -19,6 +19,10 @@ const defaultFormValues = {
 };
 
 class RightPaneStore extends EventEmitter {
+    private formData: Record<string, string>;
+    private activeTab: number;
+    private doDisplaySearch: boolean;
+    private openSpotAlertPopoverActive: boolean;
     constructor() {
         super();
         this.setMaxListeners(15);
@@ -44,7 +48,7 @@ class RightPaneStore extends EventEmitter {
         return this.openSpotAlertPopoverActive;
     }
 
-    updateFormValue(field, value) {
+    updateFormValue(field: string, value: string) {
         this.formData[field] = value;
         this.emit('formDataChange');
     }
@@ -54,7 +58,7 @@ class RightPaneStore extends EventEmitter {
         this.emit('formReset');
     }
 
-    handleTabChange = (event, value) => {
+    handleTabChange = (event: unknown, value: number) => {
         this.activeTab = value;
         this.emit('tabChange', value);
         switch (
