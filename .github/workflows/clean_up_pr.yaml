@@ -5,9 +5,14 @@ on:
     types: [closed, labeled]
     
 
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
 permissions:
   id-token: write
   contents: read
+  pull-requests: write
   deployments: write
   repository-projects: write
 
@@ -36,6 +41,20 @@ jobs:
             
       - name: check if stack exists
         id: check-stack-exists
+        run: echo ::set-output name=stack_status::$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME }} --query "Stacks[0].Outputs[1].StackStatus" --output text)
+        continue-on-error: true
+
+      - name: wait for stack create
+        id: wait-for-stack-create
+        if: steps.check-stack-exists.outcome == 'success' && steps.check-stack-exists.outputs.stack_status == 'CREATE_IN_PROGRESS'
+        run: aws cloudformation wait stack-create-complete --stack-name ${{ env.STACK_NAME }}
+        continue-on-error: true
+          
+      - name: wait for stack update
+        id: wait-for-stack-update
+        if: steps.check-stack-exists.outcome == 'success' && steps.check-stack-exists.outputs.stack_status == 'UPDATE_IN_PROGRESS'
+        run: aws cloudformation wait stack-update-complete --stack-name ${{ env.STACK_NAME }}
+        continue-on-error: true
 
       - name: delete the stack from AWS
         if: steps.check-stack-exists.outcome == 'success'
