@@ -29,9 +29,11 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
-          role-to-assume: ${{ secrets.ACTIONS_IAM_ROLE }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-
+          role-duration-seconds: 2400
+            
       - name: check if stack exists
         id: check-stack-exists
 
