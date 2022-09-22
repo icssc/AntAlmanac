@@ -42,13 +42,6 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         studyListText: '',
     };
 
-    // The type hack is cool, but string literal as type is not compatible with the `string` type, so I've changed the
-    // type of `field` back to `string`.
-
-    // onTermSelectorChange = (field: 'selectedTerm', value: any) => {
-    //     this.setState( { [field]: value });
-    // };
-
     onTermSelectorChange = (field: string, value: any) => {
         this.setState({ selectedTerm: value });
     };

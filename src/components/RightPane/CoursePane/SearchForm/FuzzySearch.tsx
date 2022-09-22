@@ -12,7 +12,7 @@ const emojiMap: Record<string, string> = {
     INSTRUCTOR: '🍎', // U+1F34E :apple:
 };
 
-const romanArr: string[] = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+const romanArr = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
 
 interface FuzzySearchProps {
     toggleSearch: () => void;
@@ -37,7 +37,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     doSearch = (value: string) => {
         if (!value) return;
         const emoji = value.slice(0, 2);
-        const ident = emoji === emojiMap.INSTRUCTOR ? value.slice(3) : value.slice(3).split(':');
+        const ident: string[] = emoji === emojiMap.INSTRUCTOR ? [value.slice(3)] : value.slice(3).split(':');
         const term = RightPaneStore.getFormData().term;
         RightPaneStore.resetFormValues();
         RightPaneStore.updateFormValue('term', term);
@@ -50,7 +50,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 break;
             case emojiMap.DEPARTMENT:
                 RightPaneStore.updateFormValue('deptValue', ident[0]);
-                RightPaneStore.updateFormValue('deptLabel', (ident as string[]).join(':'));
+                RightPaneStore.updateFormValue('deptLabel', (ident).join(':'));
                 break;
             case emojiMap.COURSE:
                 const deptValue = ident[0].split(' ').slice(0, -1).join(' ');
@@ -78,7 +78,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
             case emojiMap.INSTRUCTOR:
                 RightPaneStore.updateFormValue(
                     'instructor',
-                    Object.keys(this.state.results).filter((x) => this.state.results[x].name === ident)[0]
+                    Object.keys(this.state.results).filter((x) => this.state.results[x].name === ident[0])[0]
                 );
                 break;
             default:

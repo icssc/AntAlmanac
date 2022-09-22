@@ -2,7 +2,7 @@ import React, {ChangeEvent, PureComponent} from 'react';
 import { InputLabel, MenuItem, FormControl, Select } from '@material-ui/core';
 import RightPaneStore from '../../RightPaneStore';
 import { withStyles } from '@material-ui/core/styles';
-import {ClassNameMap} from "notistack";
+import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 
 const geList: { value: string, label: string }[] = [
     { value: 'ANY', label: "All: Don't filter for GE" },

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Paper, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core';
-import {ClassNameMap} from "notistack";
+import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 
 const styles = {
     container: {

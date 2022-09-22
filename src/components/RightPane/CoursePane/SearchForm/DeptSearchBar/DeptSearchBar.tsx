@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import RightPaneStore from '../../../RightPaneStore';
-import { ClassNameMap } from 'notistack';
+import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 
 const style = {
     formControl: {
@@ -25,11 +25,15 @@ interface DeptSearchBarProps {
     classes: ClassNameMap
 }
 
-interface Department { deptLabel: string, deptValue: string, isFavorite: boolean }
+interface Department {
+    deptLabel: string;
+    deptValue: string;
+    isFavorite: boolean;
+}
 
 interface DeptSearchBarState {
-    value: Department,
-    favorites: Department[]
+    value: Department;
+    favorites: Department[];
 }
 
 class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState> {

@@ -8,7 +8,7 @@ import LegacySearch from './LegacySearch';
 import {IconButton, Theme, Tooltip} from '@material-ui/core';
 import { Tune } from '@material-ui/icons';
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
-import {ClassNameMap} from "notistack";
+import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 import {Styles} from "@material-ui/core/styles/withStyles";
 
 const styles = {

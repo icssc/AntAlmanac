@@ -6,7 +6,7 @@ import CourseNumberSearchBar from './CourseNumberSearchBar';
 import {Button, Theme} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AdvancedSearch from './AdvancedSearch';
-import {ClassNameMap} from "notistack";
+import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 import {Styles} from "@material-ui/core/styles/withStyles";
 
 const styles = {

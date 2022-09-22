@@ -14,7 +14,7 @@ import { queryWebsoc, queryWebsocMultiple, isDarkMode } from '../../../helpers';
 import analyticsEnum from '../../../analytics';
 import {Theme} from "@material-ui/core";
 import {AACourse, AASection, Department, School, WebsocResponse} from "../../../peterportal.types";
-import {ClassNameMap} from "notistack";
+import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 import {Styles} from "@material-ui/core/styles/withStyles";
 
 const styles = (theme: Theme) => ({

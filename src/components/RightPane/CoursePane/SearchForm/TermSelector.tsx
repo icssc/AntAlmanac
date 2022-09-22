@@ -21,7 +21,6 @@ class TermSelector extends PureComponent<TermSelectorProps> {
     };
 
     componentDidMount = () => {
-        // document.addEventListener('keydown', this.enterEvent, false);
         RightPaneStore.on('formReset', this.resetField);
     };
 

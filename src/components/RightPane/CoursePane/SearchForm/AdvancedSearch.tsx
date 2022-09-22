@@ -13,10 +13,10 @@ import {
 import { withStyles } from '@material-ui/core/styles';
 import RightPaneStore from '../../RightPaneStore';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import {ClassNameMap} from "notistack";
+import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 import {Styles} from "@material-ui/core/styles/withStyles";
 
-const styles = {
+const styles: Styles<Theme, object> = {
     units: {
         width: '80px',
     },
@@ -52,7 +52,7 @@ interface AdvancedSearchState {
     expandAdvanced: boolean;
 }
 
-class ASTF extends PureComponent<AdvancedSearchTextFieldsProps, AdvancedSearchTextFieldsState> {
+class UnstyledAdvancedSearchTextFields extends PureComponent<AdvancedSearchTextFieldsProps, AdvancedSearchTextFieldsState> {
     state = {
         instructor: RightPaneStore.getFormData().instructor,
         units: RightPaneStore.getFormData().units,
@@ -83,7 +83,7 @@ class ASTF extends PureComponent<AdvancedSearchTextFieldsProps, AdvancedSearchTe
         });
     };
 
-    handleChange = (name: string) => (event: ChangeEvent<{ checked?: boolean, name?: string | undefined; value: unknown; }>) => {
+    handleChange = (name: string) => (event: ChangeEvent<{ checked?: boolean, name?: string; value: unknown; }>) => {
         if (name === 'online') {
             if (event.target.checked) {
                 this.setState({ building: 'ON', room: 'LINE' });
@@ -210,7 +210,7 @@ class ASTF extends PureComponent<AdvancedSearchTextFieldsProps, AdvancedSearchTe
     }
 }
 
-const AdvancedSearchTextFields = withStyles(styles as unknown as Styles<Theme, Record<string, string>>)(ASTF);
+const AdvancedSearchTextFields = withStyles(styles)(UnstyledAdvancedSearchTextFields);
 
 const parentStyles = {
     container: {

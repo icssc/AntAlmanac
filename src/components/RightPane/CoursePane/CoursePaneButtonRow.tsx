@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import {IconButton, Theme, Tooltip} from '@material-ui/core';
 import { ArrowBack, Refresh } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
-import {ClassNameMap} from "notistack";
+import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 import {Styles} from "@material-ui/core/styles/withStyles";
 
 const styles = {

@@ -6,7 +6,7 @@ import Select from '@material-ui/core/Select';
 import depts from './depts';
 import RightPaneStore from '../../../RightPaneStore';
 import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from 'notistack';
+import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 
 const style = {
     formControl: {
@@ -41,10 +41,10 @@ class MobileDeptSelector extends PureComponent<MobileDeptSelectorProps, MobileDe
             <FormControl className={classes.formControl}>
                 <InputLabel>Department</InputLabel>
                 <Select value={this.state.deptLabel} onChange={this.handleChange} fullWidth>
-                    {(depts as unknown as {value: string, label: string}[]).map((dept) => {
+                    {depts.map((dept) => {
                         return (
-                            <MenuItem key={dept.value} value={dept.value}>
-                                {dept.label}
+                            <MenuItem key={dept.deptValue} value={dept.deptValue}>
+                                {dept.deptLabel}
                             </MenuItem>
                         );
                     })}
