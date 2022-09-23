@@ -103,7 +103,7 @@ const RecruitmentBanner = (classes) => {
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
     let displayRecruitmentBanner =
-        Date.now() - window.localStorage.getItem('recruitmentDismissalTime') > (11 * 7 * 24 * 3600 * 1000) &&
+        Date.now() - window.localStorage.getItem('recruitmentDismissalTime') > 11 * 7 * 24 * 3600 * 1000 &&
         ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue);
 
     return (
@@ -118,7 +118,7 @@ const RecruitmentBanner = (classes) => {
                                 Join ICSSC and work on AntAlmanac and other projects!
                             </a>
                             <br />
-                            We have positions for experienced devs and those with zero experience!
+                            We have opportunities for experienced devs and those with zero experience!
                         </div>
 
                         <Button
