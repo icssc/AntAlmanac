@@ -19,6 +19,8 @@ import {
 } from '@material-ui/core/colors';
 import { getCoursesData, termsInSchedule, warnMultipleTerms } from '../helpers';
 import { LOAD_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '../api/endpoints';
+import { AASection, AACourse } from '../peterportal.types';
+import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
 
 const arrayOfColors = [
     red[500],
@@ -36,7 +38,7 @@ const arrayOfColors = [
     blueGrey[500],
 ];
 
-export const addCourse = (section, courseDetails, term, scheduleIndex, color, quiet) => {
+export const addCourse = (section: AASection, courseDetails: AACourse, term: string, scheduleIndex: number, color?: string, quiet?: boolean) => {
     logAnalytics({
         category: analyticsEnum.classSearch.title,
         action: analyticsEnum.classSearch.actions.ADD_COURSE,
@@ -102,12 +104,17 @@ export const addCourse = (section, courseDetails, term, scheduleIndex, color, qu
  * @param variant usually 'info', 'error', 'warning', or 'success'
  * @param message any string to display
  * @param duration in seconds and is optional.
+ * position and style are typed as "never" because I don't know what type they're supposed to be, and I don't
+ * think we ever use them. When someone decides to use them, they should get a compiler error and come here
+ * to change them to their appropriate types
+ * also, if anyone comes back to refactor this, I think `notistack` provides its own types we could use.
  */
-export const openSnackbar = (variant, message, duration, position, style) => {
+export const openSnackbar = (variant: string, message: string, duration?: number, position?: SnackbarPosition, style?: never) => {
+    console.log(variant,message,duration,position,style)
     AppStore.openSnackbar(variant, message, duration, position, style);
 };
 
-export const saveSchedule = async (userID, rememberMe) => {
+export const saveSchedule = async (userID: string, rememberMe: boolean) => {
     logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,

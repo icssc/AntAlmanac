@@ -31,6 +31,11 @@ const styles: Styles<Theme, object> = (theme) => ({
     },
 });
 
+export interface SnackbarPosition {
+    horizontal: 'left'|'right'
+    vertical: 'bottom'|'top'
+}
+
 interface NotificationSnackbarProps {
     classes: ClassNameMap,
     enqueueSnackbar: any, // these come from AppStoreActions. leaving untyped because we're hopefully gonna refactor. see #401

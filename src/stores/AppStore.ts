@@ -1,7 +1,22 @@
 import { EventEmitter } from 'events';
+import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
+import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import ColorPicker from '../components/ColorPicker';
+import { AACourse } from '../peterportal.types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calenderizeHelpers';
 
 class AppStore extends EventEmitter {
+    currentScheduleIndex: number;
+    customEvents: RepeatingCustomEvent[]
+    addedCourses: AACourse[]
+    addedSectionCodes: any//{[key: number]: Set<unknown type>}
+    colorPickers: {[key:string]: ColorPicker}
+    deletedCourses: AACourse[]
+    snackbarMessage: string
+    snackbarVariant: string
+    snackbarDuration: number
+    snackbarPosition: SnackbarPosition
+    snackbarStyle: object // not sure what this is. I don't think we ever use it
     constructor() {
         super();
         this.setMaxListeners(300); //this number is big because every section on the search results page listens to two events each.
@@ -292,7 +307,7 @@ class AppStore extends EventEmitter {
         this.snackbarDuration = duration ? duration : this.snackbarDuration;
         this.snackbarPosition = position ? position : this.snackbarPosition;
         this.snackbarStyle = style ? style : this.snackbarStyle;
-        this.emit('openSnackbar');
+        this.emit('openSnackbar'); // sends event to NotificationSnackbar
     }
 
     toggleTheme(theme) {
