@@ -1,17 +1,34 @@
 import { EventEmitter } from 'events';
 import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
+import { CourseEvent } from '../components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '../components/ColorPicker';
-import { AACourse } from '../peterportal.types';
+import { AACourse, AASection } from '../peterportal.types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calenderizeHelpers';
+
+export interface AppStoreCourse {
+    color: string
+    courseComment: string
+    courseNumber: string //i.e. 122a
+    courseTitle: string
+    deptCode: string
+    prerequisiteLink: string
+    scheduleIndices: number[]
+    section: AASection
+    term: string
+}
+
+export interface AppStoreDeletedCourse extends AppStoreCourse {
+    scheduleIndex: number
+}
 
 class AppStore extends EventEmitter {
     currentScheduleIndex: number;
     customEvents: RepeatingCustomEvent[]
-    addedCourses: AACourse[]
-    addedSectionCodes: any//{[key: number]: Set<unknown type>}
+    addedCourses: AppStoreCourse[]
+    addedSectionCodes: any//{[key: number]: Set<TODO: unknown type, figure out what this is>}
     colorPickers: {[key:string]: ColorPicker}
-    deletedCourses: AACourse[]
+    deletedCourses: AppStoreDeletedCourse[]
     snackbarMessage: string
     snackbarVariant: string
     snackbarDuration: number
@@ -60,7 +77,8 @@ class AppStore extends EventEmitter {
         return this.addedCourses;
     }
 
-    addCourse(newCourse) {
+    addCourse(newCourse: AppStoreCourse) {
+        console.log("added", newCourse)
         this.addedCourses = this.addedCourses.concat(newCourse);
         this.updateAddedSectionCodes();
         this.finalsEventsInCalendar = calendarizeFinals();
