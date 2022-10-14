@@ -91,7 +91,6 @@ export interface CourseEvent extends CommonCalendarEvent {
     sectionCode: string
     sectionType: string 
     term: string
-    index: number
 }
 
 /**
