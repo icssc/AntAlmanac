@@ -259,7 +259,7 @@ export const deleteCustomEvent = (customEventID: number, scheduleIndex: number) 
     AppStore.deleteCustomEvent(customEventsAfterDelete);
 };
 
-export const editCustomEvent = (newCustomEvent: CustomEvent) => {
+export const editCustomEvent = (newCustomEvent: RepeatingCustomEvent) => {
     const customEventsAfterEdit = AppStore.getCustomEvents().map((customEvent) => {
         if (newCustomEvent.customEventID !== customEvent.customEventID) return customEvent;
         else return newCustomEvent;
@@ -285,7 +285,7 @@ export const clearSchedules = (scheduleIndicesToClear: number[]) => {
     AppStore.clearSchedule(addedCoursesAfterClear, customEventsAfterClear);
 };
 
-export const addCustomEvent = (customEvent: CustomEvent) => {
+export const addCustomEvent = (customEvent: RepeatingCustomEvent) => {
     AppStore.addCustomEvent(customEvent);
 };
 
@@ -458,8 +458,8 @@ export const deleteSchedule = (scheduleIndex: number) => {
         newScheduleIndex--;
     }
 
-    const newAddedCourses = getEventsAfterDeleteSchedule(AppStore.getAddedCourses());
-    const newCustomEvents = getEventsAfterDeleteSchedule(AppStore.getCustomEvents());
+    const newAddedCourses = getEventsAfterDeleteSchedule(AppStore.getAddedCourses()) as AppStoreCourse[];
+    const newCustomEvents = getEventsAfterDeleteSchedule(AppStore.getCustomEvents()) as RepeatingCustomEvent[];
 
     AppStore.deleteSchedule(newScheduleNames, newAddedCourses, newCustomEvents, newScheduleIndex);
 };
