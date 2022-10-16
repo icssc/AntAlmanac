@@ -10,7 +10,7 @@ import { withStyles } from '@material-ui/core/styles';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { AASection, Course } from '../../../peterportal.types'
+import { AASection, AACourse } from '../../../peterportal.types'
 
 const styles = {
     container: {
@@ -64,7 +64,7 @@ export const ColorAndDelete = withStyles(styles)((props: ColorAndDeleteProps) =>
 interface ScheduleAddCellProps {
     classes: ClassNameMap
     section: AASection
-    courseDetails: Course
+    courseDetails: AACourse
     term: string
     scheduleNames: string[]
 }

@@ -75,7 +75,7 @@ const genMapLink = (location: string) => {
     }
 };
 
-export interface CommonCalendarEvent extends Event {
+interface CommonCalendarEvent extends Event {
     color: string 
     start: Date
     end: Date

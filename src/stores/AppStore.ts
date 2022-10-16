@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
-import { CommonCalendarEvent, CourseEvent } from '../components/Calendar/CourseCalendarEvent';
+import { CalendarEvent, CourseEvent } from '../components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { AACourse, AASection } from '../peterportal.types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calenderizeHelpers';
@@ -44,7 +44,7 @@ class AppStore extends EventEmitter {
     snackbarPosition: SnackbarPosition
     snackbarStyle: object // not sure what this is. I don't think we ever use it
     theme: string
-    eventsInCalendar: CommonCalendarEvent[]
+    eventsInCalendar: CalendarEvent[]
     finalsEventsInCalendar: CourseEvent[]
     scheduleNames: string[]
     unsavedChanges: boolean

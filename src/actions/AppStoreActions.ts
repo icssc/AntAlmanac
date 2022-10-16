@@ -56,7 +56,7 @@ export const addCourse = (section: AASection, courseDetails: AACourse, term: str
         if (course.section.sectionCode === section.sectionCode && term === course.term) {
             existingCourse = course;
             if (course.scheduleIndices.includes(scheduleIndex)) {
-                return;
+                return course.color;
             } else {
                 break;
             }
