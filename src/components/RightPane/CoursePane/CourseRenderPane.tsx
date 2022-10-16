@@ -68,7 +68,7 @@ const flattenSOCObject = (SOCObject: WebsocResponse): (School | Department | AAC
     const courseColors = AppStore.getAddedCourses().reduce((accumulator, { color, section }) => {
         accumulator[section.sectionCode] = color;
         return accumulator;
-    }, {});
+    }, {} as {[key:string]: string});
     return SOCObject.schools.reduce((accumulator: (School | Department | AACourse)[], school) => {
         accumulator.push(school);
 
