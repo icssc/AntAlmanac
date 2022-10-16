@@ -71,7 +71,6 @@ class App extends PureComponent {
                         }
                     />
                     <Route
-                        exact
                         path="/feedback"
                         element={() => window.location.replace('https://forms.gle/k81f2aNdpdQYeKK8A')}
                     />
