@@ -1,6 +1,5 @@
 import AppStore from '../stores/AppStore';
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
 import { Popover, IconButton } from '@material-ui/core';
 import { SketchPicker } from 'react-color';
 import { changeCourseColor, changeCustomEventColor } from '../actions/AppStoreActions';
@@ -8,13 +7,23 @@ import { ColorLens } from '@material-ui/icons';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../analytics';
 
-class ColorPicker extends PureComponent {
+interface ColorPickerProps {
+    color: string
+    analyticsCategory: string
+    isCustomEvent: boolean
+    customEventID?: number // present if isCustomEvent is true
+    //present if isCustomEvent is false:
+    term?: string
+    sectionCode?: string
+}
+
+class ColorPicker extends PureComponent<ColorPickerProps> {
     state = {
         anchorEl: null,
         color: this.props.color,
     };
 
-    handleClick = (event) => {
+    handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         event.stopPropagation();
 
         this.setState({
@@ -26,17 +35,18 @@ class ColorPicker extends PureComponent {
         });
     };
 
-    handleClose = (event) => {
+    handleClose = (event: Event) => {
         if (event.stopPropagation) event.stopPropagation();
         this.setState({
             anchorEl: null,
         });
     };
 
-    handleColorChange = (color) => {
+    handleColorChange = (color: {hex: string}) => {
         this.setState({ color: color.hex }, () => {
-            if (this.props.isCustomEvent) changeCustomEventColor(this.props.customEventID, this.state.color);
-            else changeCourseColor(this.props.sectionCode, this.state.color, this.props.term);
+            // The && here is to keep the TS compiler happy. If isCustomEvent is true, there should always be a customEventID passed to props.
+            if (this.props.isCustomEvent && this.props.customEventID) changeCustomEventColor(this.props.customEventID, this.state.color);
+            else if(this.props.sectionCode&&this.props.term) changeCourseColor(this.props.sectionCode, this.state.color, this.props.term);
         });
     };
 
@@ -46,21 +56,35 @@ class ColorPicker extends PureComponent {
             action: 'Change Course Color',
         });
     };
-    updateColor = (color) => {
+    updateColor = (color: string) => {
         if (color !== this.props.color) {
             this.setState({ color: color });
         }
     };
 
     componentDidMount = () => {
+        let colorPickerId
+        if(this.props.isCustomEvent&&this.props.customEventID)
+            colorPickerId = this.props.customEventID.toString()
+        else if(this.props.sectionCode)
+            colorPickerId=this.props.sectionCode
+        else
+            throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.")
         AppStore.registerColorPicker(
-            this.props.isCustomEvent ? this.props.customEventID : this.props.sectionCode,
+            colorPickerId,
             this.updateColor
         );
     };
     componentWillUnmount = () => {
+        let colorPickerId
+        if(this.props.isCustomEvent&&this.props.customEventID)
+            colorPickerId = this.props.customEventID.toString()
+        else if(this.props.sectionCode)
+            colorPickerId=this.props.sectionCode
+        else
+            throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.")
         AppStore.unregisterColorPicker(
-            this.props.isCustomEvent ? this.props.customEventID : this.props.sectionCode,
+            colorPickerId,
             this.updateColor
         );
     };
@@ -101,13 +125,5 @@ class ColorPicker extends PureComponent {
         );
     }
 }
-
-ColorPicker.propTypes = {
-    color: PropTypes.string.isRequired,
-    sectionCode: PropTypes.string,
-    isCustomEvent: PropTypes.bool.isRequired,
-    customEventID: PropTypes.number,
-    term: PropTypes.string,
-};
 
 export default ColorPicker;

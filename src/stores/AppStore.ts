@@ -2,7 +2,6 @@ import { EventEmitter } from 'events';
 import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
 import { CommonCalendarEvent, CourseEvent } from '../components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import ColorPicker from '../components/ColorPicker';
 import { AACourse, AASection } from '../peterportal.types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calenderizeHelpers';
 
@@ -37,7 +36,7 @@ class AppStore extends EventEmitter {
     customEvents: RepeatingCustomEvent[]
     addedCourses: AppStoreCourse[]
     addedSectionCodes: any//{[key: number]: Set<TODO: unknown type, figure out what this is>}
-    colorPickers: {[key:string]: ColorPicker}
+    colorPickers: {[key:string]: EventEmitter}
     deletedCourses: AppStoreDeletedCourse[]
     snackbarMessage: string
     snackbarVariant: string
@@ -190,7 +189,7 @@ class AppStore extends EventEmitter {
         }
     }
 
-    registerColorPicker(id, update) {
+    registerColorPicker(id: string, update: (color: string)=>void) {
         if (id in this.colorPickers) {
             this.colorPickers[id].on('colorChange', update);
         } else {
@@ -198,7 +197,7 @@ class AppStore extends EventEmitter {
             this.colorPickers[id].on('colorChange', update);
         }
     }
-    unregisterColorPicker(id, update) {
+    unregisterColorPicker(id: string, update: (color: string)=>void) {
         if (id in this.colorPickers) {
             this.colorPickers[id].removeListener('colorChange', update);
             if (this.colorPickers[id].listenerCount('colorChange') === 0) {
