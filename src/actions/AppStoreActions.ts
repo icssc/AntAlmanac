@@ -42,7 +42,6 @@ const arrayOfColors = [
 ];
 
 export const addCourse = (section: AASection, courseDetails: AACourse, term: string, scheduleIndex: number, color?: string, quiet?: boolean) => {
-    console.log("??")
     logAnalytics({
         category: analyticsEnum.classSearch.title,
         action: analyticsEnum.classSearch.actions.ADD_COURSE,
@@ -114,7 +113,6 @@ export const addCourse = (section: AASection, courseDetails: AACourse, term: str
  * also, if anyone comes back to refactor this, I think `notistack` provides its own types we could use.
  */
 export const openSnackbar = (variant: string, message: string, duration?: number, position?: SnackbarPosition, style?: never) => {
-    console.log(variant,message,duration,position,style)
     AppStore.openSnackbar(variant, message, duration, position, style);
 };
 
