@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
-import { CourseEvent } from '../components/Calendar/CourseCalendarEvent';
+import { CommonCalendarEvent, CourseEvent } from '../components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '../components/ColorPicker';
 import { AACourse, AASection } from '../peterportal.types';
@@ -18,6 +18,16 @@ export interface AppStoreCourse {
     term: string
 }
 
+// interface AppStoreSection {
+//     color: string
+//     courseComment: string
+//     courseNumber: string // ex: 122a
+//     courseTitle: string
+//     deptCode: string
+//     prerequisiteLink: string
+//     scheduleIndices: number[]
+// }
+
 export interface AppStoreDeletedCourse extends AppStoreCourse {
     scheduleIndex: number
 }
@@ -34,6 +44,12 @@ class AppStore extends EventEmitter {
     snackbarDuration: number
     snackbarPosition: SnackbarPosition
     snackbarStyle: object // not sure what this is. I don't think we ever use it
+    theme: string
+    eventsInCalendar: CommonCalendarEvent[]
+    finalsEventsInCalendar: CourseEvent[]
+    scheduleNames: string[]
+    unsavedChanges: boolean
+
     constructor() {
         super();
         this.setMaxListeners(300); //this number is big because every section on the search results page listens to two events each.
@@ -78,23 +94,27 @@ class AppStore extends EventEmitter {
     }
 
     addCourse(newCourse: AppStoreCourse) {
-        console.log("added", newCourse)
         this.addedCourses = this.addedCourses.concat(newCourse);
         this.updateAddedSectionCodes();
         this.finalsEventsInCalendar = calendarizeFinals();
-        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
         this.unsavedChanges = true;
         this.emit('addedCoursesChange');
     }
 
-    addSection(newSection) {
+    
+    /**
+     * This gets run when you add the same section code to multiple schedules.
+     */
+    addSection(newSection: AppStoreCourse) {
+        console.log("new section", newSection)
         this.addedCourses = this.addedCourses.map((course) => {
             if (course.section.sectionCode === newSection.section.sectionCode) return newSection;
             else return course;
         });
         this.updateAddedSectionCodes();
         this.finalsEventsInCalendar = calendarizeFinals();
-        this.eventsInCalendar = calendarizeCourseEvents().concat(calendarizeCustomEvents());
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
         this.unsavedChanges = true;
         this.emit('addedCoursesChange');
     }
@@ -319,7 +339,7 @@ class AppStore extends EventEmitter {
         this.emit('colorChange', false);
     }
 
-    openSnackbar(variant, message, duration, position, style) {
+    openSnackbar(variant: string, message: string, duration?: number, position?: SnackbarPosition, style?: never) {
         this.snackbarVariant = variant;
         this.snackbarMessage = message;
         this.snackbarDuration = duration ? duration : this.snackbarDuration;
@@ -328,7 +348,7 @@ class AppStore extends EventEmitter {
         this.emit('openSnackbar'); // sends event to NotificationSnackbar
     }
 
-    toggleTheme(theme) {
+    toggleTheme(theme: string) {
         this.theme = theme;
         this.emit('themeToggle');
         window.localStorage.setItem('theme', theme);

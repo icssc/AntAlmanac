@@ -1,4 +1,4 @@
-import { CourseEvent } from '../components/Calendar/CourseCalendarEvent';
+import { CustomEvent, CourseEvent } from '../components/Calendar/CourseCalendarEvent';
 import AppStore from './AppStore';
 
 export const calendarizeCourseEvents = () => {
@@ -6,7 +6,6 @@ export const calendarizeCourseEvents = () => {
     const courseEventsInCalendar: CourseEvent[] = [];
 
     for (const course of addedCourses) {
-        console.log("Course",course)
         for (const meeting of course.section.meetings) {
             const timeString = meeting.time.replace(/\s/g, '');
 
@@ -142,5 +141,5 @@ export const calendarizeCustomEvents = () => {
         }
     }
 
-    return customEventsInCalendar;
+    return customEventsInCalendar as CustomEvent[];
 };
