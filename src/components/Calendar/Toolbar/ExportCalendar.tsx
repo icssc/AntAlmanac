@@ -48,14 +48,14 @@ type HourMinute = [number,number];
 /** getByDays returns the days that a class occurs
     Given a string of days, convert it to a list of days in ics format
     Ex: ("TuThF") -> ["TU", "TH", "FR"] */
-const getByDays = (days: typeof daysOfWeek) => {
+const getByDays = (days: string) => {
     return daysOfWeek.filter((day) => days.includes(day)).map((day) => translateDaysForIcs[day]);
 };
 
 /** getClassStartDate returns the start date of a class
     Given the term and bydays, this computes the start date of the class
     Ex: ("2021 Spring", 'Tu') -> [2021, 3, 30] */
-const getClassStartDate = (term: `${string} ${string}`, bydays: ReturnType<typeof getByDays>) => {
+const getClassStartDate = (term: string, bydays: ReturnType<typeof getByDays>) => {
     // Get the start date of the quarter (Monday)
     const quarterStartDate = new Date(...quarterStartDates[term]);
 
@@ -157,13 +157,13 @@ const parseTimes = (time: string) => {
 
 /** getYear returns the year of a given term
     Ex: "2019 Fall" -> "2019" */
-const getYear = (term:`${string} ${string}`) => {
+const getYear = (term: string) => {
     return parseInt(term.split(' ')[0]);
 };
 
 /** getQuarter returns the quarter of a given term
     Ex: "2019 Fall" -> "Fall" */
-const getQuarter = (term:`${string} ${string}`) => {
+const getQuarter = (term: string) => {
     return term.split(' ')[1];
 };
 
@@ -225,7 +225,6 @@ const exportCalendar = () => {
                 // Skip this meeting if there is no meeting time
                 continue;
             }
-
             const bydays = getByDays(meeting.days);
             const classStartDate = getClassStartDate(term, bydays);
             const [firstClassStart, firstClassEnd] = getFirstClass(classStartDate, meeting.time);
