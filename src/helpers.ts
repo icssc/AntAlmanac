@@ -1,3 +1,4 @@
+import React from 'react';
 import { addCourse, openSnackbar } from './actions/AppStoreActions';
 import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from './api/endpoints';
 import { AACourse, Section, WebsocResponse } from './peterportal.types';
@@ -129,7 +130,7 @@ export function clearCache() {
     Object.keys(websocCache).forEach((key) => delete websocCache[key]); //https://stackoverflow.com/a/19316873/14587004
 }
 
-export async function queryWebsoc(params: {term: string, sectionCodes: string}): Promise<WebsocResponse> {
+export async function queryWebsoc(params: Record<string,string>): Promise<WebsocResponse> {
     // Construct a request to PeterPortal with the params as a query string
     const url = new URL(PETERPORTAL_WEBSOC_ENDPOINT);
     const searchString = new URLSearchParams(params).toString();
@@ -233,7 +234,6 @@ export async function queryWebsocMultiple(params: {[key: string]: string}, field
 export const addCoursesMultiple = (courseInfo: {[sectionCode: string]: CourseInfo}, term: string, scheduleIndex: number) => {
     let sectionsAdded = 0;
     for (const section of Object.values(courseInfo)) {
-        console.log(section.courseDetails)
         addCourse(section.section, section.courseDetails, term, scheduleIndex, undefined, true);
         ++sectionsAdded;
     }
@@ -258,7 +258,7 @@ export const warnMultipleTerms = (terms: Set<string>) => {
     );
 };
 
-export function clickToCopy(event: Event, sectionCode: string) {
+export function clickToCopy(event: React.MouseEvent<HTMLDivElement,MouseEvent>, sectionCode: string) {
     event.stopPropagation();
 
     let tempEventTarget = document.createElement('input');
