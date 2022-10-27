@@ -10,7 +10,7 @@ import OpenSpotAlertPopover, {OpenSpotAlertPopoverProps} from './OpenSpotAlertPo
 import AppStore from '../../../stores/AppStore';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import classNames from 'classnames';
-import { clickToCopy, isDarkMode } from '../../../helpers';
+import { clickToCopy, CourseDetails, isDarkMode } from '../../../helpers';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { getDefaultTerm } from '../../../termData';
 import { Course, EnrollmentCount, Meeting, AASection } from '../../../peterportal.types';
@@ -333,7 +333,7 @@ const StatusCell = withStyles(styles)((props: StatusCellProps) => {
 interface SectionTableBodyProps {
     classes: ClassNameMap
     section: AASection
-    courseDetails: Course
+    courseDetails: CourseDetails
     term: string
     colorAndDelete: boolean
     highlightAdded: boolean
