@@ -21,10 +21,7 @@ import { getCoursesData, termsInSchedule, warnMultipleTerms } from '../helpers';
 import { LOAD_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '../api/endpoints';
 import { Section } from '../peterportal.types';
 import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
-import { CustomEvent } from '../components/Calendar/CourseCalendarEvent';
-import { KeyboardEvent } from 'react';
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { Styles } from '@material-ui/core/styles/withStyles';
 
 const arrayOfColors = [
     red[500],
@@ -288,7 +285,7 @@ export const addCustomEvent = (customEvent: RepeatingCustomEvent) => {
     AppStore.addCustomEvent(customEvent);
 };
 
-export const undoDelete = (event: KeyboardEvent) => {
+export const undoDelete = (event: KeyboardEvent|null) => {
     const deletedCourses = AppStore.getDeletedCourses();
 
     if (deletedCourses.length > 0 && (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))) {
