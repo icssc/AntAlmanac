@@ -292,7 +292,7 @@ export const undoDelete = (event: KeyboardEvent|null) => {
         const lastDeleted = deletedCourses[deletedCourses.length - 1];
 
         if (lastDeleted !== undefined) {
-            addCourse(lastDeleted.section, lastDeleted, lastDeleted.term, lastDeleted.scheduleIndex, lastDeleted.color);// TODO: scuffed fix for 2nd argument, should be cleaner
+            addCourse(lastDeleted.section, lastDeleted, lastDeleted.term, lastDeleted.scheduleIndex, lastDeleted.color);
 
             AppStore.undoDelete(deletedCourses.slice(0, deletedCourses.length - 1));
 
