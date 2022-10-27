@@ -63,7 +63,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
 
     const handleRename = () => {
         onClose();
-        renameSchedule(scheduleName, scheduleRenameIndex);
+        renameSchedule(scheduleName, scheduleRenameIndex as number); // typecast works b/c this function only runs when `const rename = scheduleRenameIndex !== undefined` is true.
         setIsOpen(false);
         setScheduleName('');
     };
