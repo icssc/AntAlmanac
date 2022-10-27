@@ -52,7 +52,7 @@ interface UCIMapState {
     poly: any[]
     info_markers: any[]
     info_marker: Marker|null
-    pins: Record<string, CourseEvent[]>
+    pins: Record<string, [CourseEvent,number][]>
 }
 export default class UCIMap extends PureComponent {
     state: UCIMapState = {
@@ -297,11 +297,10 @@ export default class UCIMap extends PureComponent {
             .forEach((event, index) => {
                 if(event.isCustomEvent) return;
                 const buildingCode = event.bldg.split(' ').slice(0, -1).join(' ');
-                event.index = index + 1;
                 if (pins.hasOwnProperty(buildingCode)) {
-                    pins[buildingCode].push(event);
+                    pins[buildingCode].push([event, index+1]);
                 } else {
-                    pins[buildingCode] = [event];
+                    pins[buildingCode] = [[event,index+1]];
                 }
             }); // Creates a map between buildingCodes to pins to determine stacks and store in pins
         this.setState({ pins: pins });
@@ -316,7 +315,7 @@ export default class UCIMap extends PureComponent {
             const locationData = buildingCatalogue[id];
             const courses = pins[buildingCode];
             for (let index = courses.length - 1; index >= 0; index--) {
-                const event = courses[index];
+                const [event, eventIndex] = courses[index];
                 const courseString = `${event.title} ${event.sectionType} @ ${event.bldg}`;
                 if (locationData === undefined) return;
 
@@ -335,7 +334,7 @@ export default class UCIMap extends PureComponent {
                         lat={locationData.lat}
                         lng={locationData.lng}
                         acronym={acronym}
-                        index={this.state.day ? event.index.toString() : ''}
+                        index={this.state.day ? eventIndex.toString() : ''}
                         stackIndex={courses.length - 1 - index}
                     >
                         <>
