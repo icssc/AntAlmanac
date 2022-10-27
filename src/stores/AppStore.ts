@@ -284,7 +284,6 @@ class AppStore extends EventEmitter {
     }
 
     loadSchedule(userData: UserData) {
-        console.log(userData)
         this.addedCourses = userData.addedCourses;
         this.scheduleNames = userData.scheduleNames;
         this.updateAddedSectionCodes();
