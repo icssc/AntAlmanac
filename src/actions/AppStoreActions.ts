@@ -1,7 +1,7 @@
-import AppStore, {AppStoreCourse} from '../stores/AppStore';
+import AppStore, {AppStoreCourse, UserData} from '../stores/AppStore';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../analytics';
-import { courseNumAsDecimal } from '../helpers';
+import { CourseDetails, courseNumAsDecimal } from '../helpers';
 import {
     amber,
     blue,
@@ -19,11 +19,12 @@ import {
 } from '@material-ui/core/colors';
 import { getCoursesData, termsInSchedule, warnMultipleTerms } from '../helpers';
 import { LOAD_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '../api/endpoints';
-import { AASection, AACourse } from '../peterportal.types';
+import { Section } from '../peterportal.types';
 import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
 import { CustomEvent } from '../components/Calendar/CourseCalendarEvent';
 import { KeyboardEvent } from 'react';
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { Styles } from '@material-ui/core/styles/withStyles';
 
 const arrayOfColors = [
     red[500],
@@ -41,7 +42,7 @@ const arrayOfColors = [
     blueGrey[500],
 ];
 
-export const addCourse = (section: AASection, courseDetails: AACourse, term: string, scheduleIndex: number, color?: string, quiet?: boolean) => {
+export const addCourse = (section: Section, courseDetails: CourseDetails, term: string, scheduleIndex: number, color?: string, quiet?: boolean) => {
     logAnalytics({
         category: analyticsEnum.classSearch.title,
         action: analyticsEnum.classSearch.actions.ADD_COURSE,
@@ -88,7 +89,7 @@ export const addCourse = (section: AASection, courseDetails: AACourse, term: str
             prerequisiteLink: courseDetails.prerequisiteLink,
             scheduleIndices:
                 scheduleIndex === scheduleNames.length ? [...scheduleNames.keys()] : [scheduleIndex],
-            section: section,
+            section: {...section, color: color},
         };
         AppStore.addCourse(newCourse);
     } else {
@@ -107,12 +108,10 @@ export const addCourse = (section: AASection, courseDetails: AACourse, term: str
  * @param variant usually 'info', 'error', 'warning', or 'success'
  * @param message any string to display
  * @param duration in seconds and is optional.
- * position and style are typed as "never" because I don't know what type they're supposed to be, and I don't
- * think we ever use them. When someone decides to use them, they should get a compiler error and come here
- * to change them to their appropriate types
- * also, if anyone comes back to refactor this, I think `notistack` provides its own types we could use.
+ * @param styles object containing css-in-js object, like {[propertyName]: string}
+ * if anyone comes back to refactor this, I think `notistack` provides its own types we could use.
  */
-export const openSnackbar = (variant: string, message: string, duration?: number, position?: SnackbarPosition, style?: never) => {
+export const openSnackbar = (variant: string, message: string, duration?: number, position?: SnackbarPosition, style?: {[cssPropertyName: string]: string}) => {
     AppStore.openSnackbar(variant, message, duration, position, style);
 };
 
@@ -206,7 +205,7 @@ export const loadSchedule = async (userID: string, rememberMe: boolean) => {
 
                 const json = await data.json();
 
-                AppStore.loadSchedule(await getCoursesData(json.userData));
+                AppStore.loadSchedule(await getCoursesData(json.userData) as UserData);
 
                 openSnackbar('success', `Schedule for username "${userID}" loaded.`);
             } catch (e) {
@@ -296,7 +295,7 @@ export const undoDelete = (event: KeyboardEvent) => {
         const lastDeleted = deletedCourses[deletedCourses.length - 1];
 
         if (lastDeleted !== undefined) {
-            addCourse(lastDeleted.section, {...lastDeleted, sections: [lastDeleted.section]}, lastDeleted.term, lastDeleted.scheduleIndex, lastDeleted.color);// TODO: scuffed fix for 2nd argument, should be cleaner
+            addCourse(lastDeleted.section, lastDeleted, lastDeleted.term, lastDeleted.scheduleIndex, lastDeleted.color);// TODO: scuffed fix for 2nd argument, should be cleaner
 
             AppStore.undoDelete(deletedCourses.slice(0, deletedCourses.length - 1));
 

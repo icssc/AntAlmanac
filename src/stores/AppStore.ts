@@ -5,6 +5,12 @@ import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEvent
 import { AACourse, AASection } from '../peterportal.types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calenderizeHelpers';
 
+export interface UserData {
+    addedCourses: AppStoreCourse[]
+    scheduleNames: string[]
+    customEvents: RepeatingCustomEvent[]
+}
+
 export interface AppStoreCourse {
     color: string
     courseComment: string
@@ -14,18 +20,9 @@ export interface AppStoreCourse {
     prerequisiteLink: string
     scheduleIndices: number[]
     section: AASection
+    // sectionCode: string
     term: string
 }
-
-// interface AppStoreSection {
-//     color: string
-//     courseComment: string
-//     courseNumber: string // ex: 122a
-//     courseTitle: string
-//     deptCode: string
-//     prerequisiteLink: string
-//     scheduleIndices: number[]
-// }
 
 export interface AppStoreDeletedCourse extends AppStoreCourse {
     scheduleIndex: number
@@ -106,7 +103,6 @@ class AppStore extends EventEmitter {
      * This gets run when you add the same section code to multiple schedules.
      */
     addSection(newSection: AppStoreCourse) {
-        console.log("new section", newSection)
         this.addedCourses = this.addedCourses.map((course) => {
             if (course.section.sectionCode === newSection.section.sectionCode) return newSection;
             else return course;
@@ -197,6 +193,8 @@ class AppStore extends EventEmitter {
             this.colorPickers[id].on('colorChange', update);
         }
     }
+
+    
     unregisterColorPicker(id: string, update: (color: string)=>void) {
         if (id in this.colorPickers) {
             this.colorPickers[id].removeListener('colorChange', update);
@@ -285,7 +283,8 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    loadSchedule(userData: {addedCourses: AppStoreCourse[], scheduleNames: string[], customEvents: RepeatingCustomEvent[]}) {
+    loadSchedule(userData: UserData) {
+        console.log(userData)
         this.addedCourses = userData.addedCourses;
         this.scheduleNames = userData.scheduleNames;
         this.updateAddedSectionCodes();
@@ -338,7 +337,7 @@ class AppStore extends EventEmitter {
         this.emit('colorChange', false);
     }
 
-    openSnackbar(variant: string, message: string, duration?: number, position?: SnackbarPosition, style?: never) {
+    openSnackbar(variant: string, message: string, duration?: number, position?: SnackbarPosition, style?: {[cssPropertyName: string]: string}) {
         this.snackbarVariant = variant;
         this.snackbarMessage = message;
         this.snackbarDuration = duration ? duration : this.snackbarDuration;
