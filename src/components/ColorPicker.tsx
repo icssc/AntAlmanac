@@ -7,13 +7,17 @@ import { ColorLens } from '@material-ui/icons';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../analytics';
 
+
 interface ColorPickerProps {
     color: string
     analyticsCategory: string
+    /**If true, this object has a customEventID. If false, this object has a term and sectionCode. */
     isCustomEvent: boolean
-    customEventID?: number // present if isCustomEvent is true
-    //present if isCustomEvent is false:
+    /**Not undefined when isCustomEvent is true */
+    customEventID?: number
+    /**Not undefined  when isCustomEvent is false */
     term?: string
+    /**Not undefined  when isCustomEvent is false */
     sectionCode?: string
 }
 
