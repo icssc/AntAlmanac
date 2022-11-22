@@ -34,6 +34,8 @@ We welcome open-source contributions 🤗 Here is a rough guide on how to contri
 6. Wait for your request to get reviewed and respond to any changes until you get approval.
 7. Your PR gets merged and you see your changes live on the site 🥳
 
+We have a 30 minute contributor video tutorial available on YouTube (https://www.youtube.com/watch?v=_v91cqGzu5o).
+
 If you ever need help, feel free to ask around on our [Discord server](https://discord.gg/Zu8KZHERtJ).
 ### Get Setup to Develop Locally
 1. Clone the AntAlmanc repository or your fork
