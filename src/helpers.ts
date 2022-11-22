@@ -1,13 +1,32 @@
+import React from 'react';
 import { addCourse, openSnackbar } from './actions/AppStoreActions';
 import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from './api/endpoints';
-import AppStore from './stores/AppStore';
+import { AACourse, Section, WebsocResponse } from './peterportal.types';
+import AppStore, { AppStoreCourse, UserData } from './stores/AppStore';
 
-export async function queryGraphQL(queryString) {
+interface GradesGraphQLResponse {
+    data: {
+        courseGrades: {
+            aggregate: {
+                average_gpa: number
+                sum_grade_a_count: number
+                sum_grade_b_count: number
+                sum_grade_c_count: number
+                sum_grade_d_count: number
+                sum_grade_f_count: number
+                sum_grade_np_count: number
+                sum_grade_p_count: number
+            }
+        }
+    }
+}
+
+export async function queryGraphQL(queryString: string): Promise<GradesGraphQLResponse> {
     let query = JSON.stringify({
         query: queryString,
     });
 
-    return await fetch(`${PETERPORTAL_GRAPHQL_ENDPOINT}`, {
+    const res = await fetch(`${PETERPORTAL_GRAPHQL_ENDPOINT}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -15,19 +34,20 @@ export async function queryGraphQL(queryString) {
         },
         body: query,
     });
+    return res.json()
 }
 
-export async function getCoursesData(userData) {
-    const dataToSend = {};
+export async function getCoursesData(userData: UserData) {
+    const dataToSend: {[key: string]: string[][]} = {};
     const addedCourses = [];
 
-    let sectionCodeToInfoMapping;
-    if (userData.addedCourses.length !== 0) {
-        sectionCodeToInfoMapping = userData.addedCourses.reduce((accumulator, addedCourse) => {
-            accumulator[addedCourse.sectionCode] = { ...addedCourse };
-            return accumulator;
-        }, {});
+    if (userData.addedCourses.length == 0) {
+        return 
     }
+    const sectionCodeToInfoMapping = userData.addedCourses.reduce((accumulator, addedCourse) => {
+        accumulator[addedCourse.section.sectionCode] = { ...addedCourse };
+        return accumulator;
+    }, {} as {[key: string]: AppStoreCourse});
 
     for (let i = 0; i < userData.addedCourses.length; ++i) {
         const addedCourse = userData.addedCourses[i];
@@ -35,10 +55,10 @@ export async function getCoursesData(userData) {
 
         if (sectionsOfTermArray !== undefined) {
             const lastSectionArray = sectionsOfTermArray[sectionsOfTermArray.length - 1];
-            if (lastSectionArray.length === 10) sectionsOfTermArray.push([addedCourse.sectionCode]);
-            else lastSectionArray.push(addedCourse.sectionCode);
+            if (lastSectionArray.length === 10) sectionsOfTermArray.push([addedCourse.section.sectionCode]);
+            else lastSectionArray.push(addedCourse.section.sectionCode);
         } else {
-            dataToSend[addedCourse.term] = [[addedCourse.sectionCode]];
+            dataToSend[addedCourse.term] = [[addedCourse.section.sectionCode]];
         }
     }
     //TODO: Cancelled classes?
@@ -68,8 +88,21 @@ export async function getCoursesData(userData) {
     };
 }
 
-export function getCourseInfo(SOCObject) {
-    let courseInfo = {};
+export interface CourseDetails {
+    deptCode: string
+    courseNumber: string
+    courseTitle: string
+    courseComment: string
+    prerequisiteLink: string
+}
+
+interface CourseInfo {
+    courseDetails: CourseDetails
+    section: Section
+}
+
+export function getCourseInfo(SOCObject: WebsocResponse) {
+    let courseInfo: {[sectionCode: string]: CourseInfo} = {};
     for (const school of SOCObject.schools) {
         for (const department of school.departments) {
             for (const course of department.courses) {
@@ -91,13 +124,13 @@ export function getCourseInfo(SOCObject) {
     return courseInfo;
 }
 
-const websocCache = {};
+const websocCache: {[key: string]: any} = {};
 
 export function clearCache() {
     Object.keys(websocCache).forEach((key) => delete websocCache[key]); //https://stackoverflow.com/a/19316873/14587004
 }
 
-export async function queryWebsoc(params) {
+export async function queryWebsoc(params: Record<string,string>): Promise<WebsocResponse> {
     // Construct a request to PeterPortal with the params as a query string
     const url = new URL(PETERPORTAL_WEBSOC_ENDPOINT);
     const searchString = new URLSearchParams(params).toString();
@@ -123,9 +156,20 @@ export async function queryWebsoc(params) {
     }
 }
 
-const gradesCache = {};
+interface Grades {
+    average_gpa: number;
+    sum_grade_a_count: number;
+    sum_grade_b_count: number;
+    sum_grade_c_count: number;
+    sum_grade_d_count: number;
+    sum_grade_f_count: number;
+    sum_grade_np_count: number;
+    sum_grade_p_count: number;
+}
 
-export async function queryGrades(deptCode, courseNumber) {
+const gradesCache: {[key: string]: Grades} = {};
+
+export async function queryGrades(deptCode: string, courseNumber: string) {
     if (gradesCache[deptCode + courseNumber]) {
         return gradesCache[deptCode + courseNumber];
     }
@@ -145,7 +189,7 @@ export async function queryGrades(deptCode, courseNumber) {
       },
     }`;
 
-    const resp = await queryGraphQL(queryString).then((r) => r.json());
+    const resp = await queryGraphQL(queryString);
     const grades = resp.data.courseGrades.aggregate;
 
     gradesCache[deptCode + courseNumber] = grades;
@@ -153,8 +197,8 @@ export async function queryGrades(deptCode, courseNumber) {
     return grades;
 }
 
-export function combineSOCObjects(SOCObjects) {
-    let combined = SOCObjects.shift();
+export function combineSOCObjects(SOCObjects: WebsocResponse[]) {
+    const combined = SOCObjects.shift() as WebsocResponse;
     for (const res of SOCObjects) {
         for (const school of res.schools) {
             let schoolIndex = combined.schools.findIndex((s) => s.schoolName === school.schoolName);
@@ -164,17 +208,17 @@ export function combineSOCObjects(SOCObjects) {
                         (d) => d.deptCode === dept.deptCode
                     );
                     if (deptIndex !== -1) {
-                        let courses = new Set(combined.schools[schoolIndex].departments[deptIndex].courses);
+                        const courses = new Set(combined.schools[schoolIndex].departments[deptIndex].courses);
                         for (const course of dept.courses) {
                             courses.add(course);
                         }
-                        courses = Array.from(courses);
-                        courses.sort(
+                        const coursesArray = Array.from(courses);
+                        coursesArray.sort(
                             (left, right) =>
-                                parseInt(left.courseNumber.replace(/\D/g, '')) >
+                                parseInt(left.courseNumber.replace(/\D/g, '')) -
                                 parseInt(right.courseNumber.replace(/\D/g, ''))
                         );
-                        combined.schools[schoolIndex].departments[deptIndex].courses = courses;
+                        combined.schools[schoolIndex].departments[deptIndex].courses = coursesArray;
                     } else {
                         combined.schools[schoolIndex].departments.push(dept);
                     }
@@ -187,21 +231,18 @@ export function combineSOCObjects(SOCObjects) {
     return combined;
 }
 
-export async function queryWebsocMultiple(params, fieldName) {
-    let responses = [];
+export async function queryWebsocMultiple(params: {[key: string]: string}, fieldName: string) {
+    let responses: WebsocResponse[] = [];
     for (const field of params[fieldName].trim().replace(' ', '').split(',')) {
         let req = JSON.parse(JSON.stringify(params));
         req[fieldName] = field;
         responses.push(await queryWebsoc(req));
     }
-    const res = responses.find((r) => r.status === 400);
-    if (res) {
-        return res;
-    }
+
     return combineSOCObjects(responses);
 }
 
-export const addCoursesMultiple = (courseInfo, term, scheduleIndex) => {
+export const addCoursesMultiple = (courseInfo: {[sectionCode: string]: CourseInfo}, term: string, scheduleIndex: number) => {
     let sectionsAdded = 0;
     for (const section of Object.values(courseInfo)) {
         addCourse(section.section, section.courseDetails, term, scheduleIndex, undefined, true);
@@ -212,23 +253,23 @@ export const addCoursesMultiple = (courseInfo, term, scheduleIndex) => {
     return sectionsAdded;
 };
 
-export const termsInSchedule = (courses, term, scheduleIndex) =>
+export const termsInSchedule = (courses: AppStoreCourse[], term: string, scheduleIndex: number) =>
     new Set([
         term,
         ...courses.filter((course) => course.scheduleIndices.includes(scheduleIndex)).map((course) => course.term),
     ]);
 
-export const warnMultipleTerms = (terms) => {
+export const warnMultipleTerms = (terms: Set<string>) => {
     openSnackbar(
         'warning',
         `Course added from different term.\nSchedule now contains courses from ${[...terms].sort().join(', ')}.`,
-        null,
-        null,
+        undefined,
+        undefined,
         { whiteSpace: 'pre-line' }
     );
 };
 
-export function clickToCopy(event, sectionCode) {
+export function clickToCopy(event: React.MouseEvent<HTMLDivElement,MouseEvent>, sectionCode: string) {
     event.stopPropagation();
 
     let tempEventTarget = document.createElement('input');
@@ -255,7 +296,7 @@ export function isDarkMode() {
  * @param {string} courseNumber A string that represents the course number of a course (eg. '122A', '121')
  * @returns {int | number} This function returns an int or number with a decimal representation of the passed in string (eg. courseNumAsDecimal('122A') returns 122.1, courseNumAsDecimal('121') returns 121)
  */
-export function courseNumAsDecimal(courseNumber) {
+export function courseNumAsDecimal(courseNumber: string) {
     // I wanted to split the course detail number into letters and digits
     const courseNumArr = courseNumber.split(/(\d+)/);
     // Gets rid of empty strings in courseNumArr

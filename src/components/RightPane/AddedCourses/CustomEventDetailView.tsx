@@ -8,6 +8,7 @@ import { deleteCustomEvent } from '../../../actions/AppStoreActions';
 import CustomEventDialog, { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import ReactGA from 'react-ga';
+import analyticsEnum from '../../../analytics';
 
 const styles = {
     root: {
@@ -62,9 +63,10 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
             <CardActions disableSpacing={true}>
                 <div className={classes.colorPicker}>
                     <ColorPicker
-                        color={customEvent.color}
+                        color={customEvent.color as string}
                         isCustomEvent={true}
                         customEventID={customEvent.customEventID}
+                        analyticsCategory={analyticsEnum.addedClasses.title}
                     />
                 </div>
                 <IconButton

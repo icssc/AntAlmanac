@@ -69,7 +69,7 @@ const CalendarPaneToolbar = ({
             category: analyticsEnum.calendar.title,
             action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
         });
-        changeCurrentSchedule(event.target.value);
+        changeCurrentSchedule(event.target.value as number);
     };
 
     const isMobileScreen = useMediaQuery('(max-width:630px)');
