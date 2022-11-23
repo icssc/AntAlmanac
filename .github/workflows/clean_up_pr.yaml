@@ -28,6 +28,9 @@ jobs:
       PR_NUM: ${{ github.event.pull_request.number }}
 
     steps:
+      - name: checkout antalmanac
+        uses: actions/checkout@v3
+
       - name: set STAGE variable in environment for next steps
         run: echo "STAGE=pr-${{ github.event.pull_request.number }}-${{ env.GITHUB_HEAD_REF_SLUG }}" >> $GITHUB_ENV
 
@@ -38,31 +41,23 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
           role-duration-seconds: 2400
-            
-      - name: check if stack exists
-        id: check-stack-exists
-        run: echo "STACK_STATUS=$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME }} --query "Stacks[0].StackStatus" --output text)" >> $GITHUB_ENV
-        continue-on-error: true
-
-      - name: wait for stack create
-        id: wait-for-stack-create
-        if: steps.check-stack-exists.outcome == 'success' && env.STACK_STATUS == 'CREATE_IN_PROGRESS'
-        run: aws cloudformation wait stack-create-complete --stack-name ${{ env.STACK_NAME }}
-        continue-on-error: true
           
-      - name: wait for stack update
-        id: wait-for-stack-update
-        if: steps.check-stack-exists.outcome == 'success' && env.STACK_STATUS == 'UPDATE_IN_PROGRESS'
-        run: aws cloudformation wait stack-update-complete --stack-name ${{ env.STACK_NAME }}
-        continue-on-error: true
+      - name: wait for stack stabilize
+        id: stabilize-stack
+        uses: ./.github/actions/stabilize_stack
+        with: 
+          stack_name: ${{ env.STACK_NAME }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
 
       - name: delete the stack from AWS
-        if: steps.check-stack-exists.outcome == 'success'
+        id: delete-stack
+        if: steps.stabilize-stack.outputs.stack-exists
         run: aws cloudformation delete-stack --stack-name ${{ env.STACK_NAME }}
+        continue-on-error: true
         
       - name: wait for stack delete
-        id: wait-for-stack-delete
-        if: steps.check-stack-exists.outcome == 'success'
+        if: steps.delete-stack.outcome == 'success'
         run: aws cloudformation wait stack-delete-complete --stack-name ${{ env.STACK_NAME }}
 
       - name: delete staging url
