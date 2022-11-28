@@ -254,10 +254,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
             ? this.state.finalsEventsInCalendar
             : this.state.eventsInCalendar;
 
-        return eventSet.filter(
-            (event) =>
-                event.scheduleIndices.includes(this.state.currentScheduleIndex) || event.scheduleIndices.length === 4
-        );
+        return eventSet.filter((event) => event.scheduleIndices.includes(this.state.currentScheduleIndex));
     };
 
     render() {
