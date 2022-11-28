@@ -24,6 +24,7 @@ jobs:
       HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
       CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
       PR_NUM: ${{ github.event.pull_request.number }}
+      REACT_APP_STAGING: true
 
     steps: 
       - uses: actions/setup-node@v2
