@@ -1,5 +1,5 @@
 name: "Wait for Stack Stabilize"
-
+description: "Wait for all in-progress operations in the stack to complete"
 inputs:
   stack_name:
     required: true
