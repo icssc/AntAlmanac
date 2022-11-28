@@ -26,37 +26,37 @@ class RightPaneStore extends EventEmitter {
     constructor() {
         super();
         this.setMaxListeners(15);
-        this.formData = defaultFormValues;
+        this.formData = { ...defaultFormValues }; // creates shallow copy
         this.activeTab = 0;
         this.doDisplaySearch = true;
         this.openSpotAlertPopoverActive = false;
     }
 
-    getFormData() {
+    getFormData = () => {
         return this.formData;
-    }
+    };
 
-    getActiveTab() {
+    getActiveTab = () => {
         return this.activeTab;
-    }
+    };
 
-    getDoDisplaySearch() {
+    getDoDisplaySearch = () => {
         return this.doDisplaySearch;
-    }
+    };
 
-    getOpenSpotAlertPopoverActive() {
+    getOpenSpotAlertPopoverActive = () => {
         return this.openSpotAlertPopoverActive;
-    }
+    };
 
     updateFormValue(field: string, value: string) {
         this.formData[field] = value;
         this.emit('formDataChange');
-    }
+    };
 
-    resetFormValues() {
-        this.formData = defaultFormValues;
+    resetFormValues = () => {
+        this.formData = { ...defaultFormValues }; // shallow copy again
         this.emit('formReset');
-    }
+    };
 
     handleTabChange = (event: unknown, value: number) => {
         this.activeTab = value;
@@ -80,13 +80,13 @@ class RightPaneStore extends EventEmitter {
         }
     };
 
-    toggleSearch() {
+    toggleSearch = () => {
         this.doDisplaySearch = !this.doDisplaySearch;
-    }
+    };
 
-    toggleOpenSpotAlert() {
+    toggleOpenSpotAlert = () => {
         this.openSpotAlertPopoverActive = !this.openSpotAlertPopoverActive;
-    }
+    };
 }
 
 const store = new RightPaneStore();

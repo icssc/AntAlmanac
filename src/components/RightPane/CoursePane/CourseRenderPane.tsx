@@ -1,4 +1,6 @@
 import { withStyles } from '@material-ui/core/styles';
+import { Button, Grid, Paper } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import React, { PureComponent } from 'react';
 import SchoolDeptCard from './SchoolDeptCard';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
@@ -46,7 +48,6 @@ const styles: Styles<Theme, object> = (theme) => ({
         height: '100%',
         overflowY: 'scroll',
         position: 'relative',
-        paddingTop: '50px',
     },
     noResultsDiv: {
         height: '100%',
@@ -61,6 +62,18 @@ const styles: Styles<Theme, object> = (theme) => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    bannerContainer: {
+        height: '50px',
+        paddingLeft: '110px',
+        display: 'flex',
+        justifyContent: 'flex-end',
+        paddingRight: '0px',
+        marginBottom: '5px',
+    },
+    bannerGrid: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
     },
 });
 
@@ -85,6 +98,46 @@ const flattenSOCObject = (SOCObject: WebsocResponse): (School | Department | AAC
 
         return accumulator;
     }, []);
+};
+const RecruitmentBanner = (classes: ClassNameMap) => {
+    // Idk how else to force a function component to update
+    const [, updateState] = React.useState();
+    const forceUpdate = React.useCallback(() => updateState(undefined), []);
+
+    // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
+    let displayRecruitmentBanner =
+        Date.now() - parseInt(window.localStorage.getItem('recruitmentDismissalTime') as string) > 11 * 7 * 24 * 3600 * 1000 &&
+        ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue);
+
+    return (
+        <div className={classes.bannerContainer}>
+            {displayRecruitmentBanner ? (
+                <Paper elevation={1} square>
+                    <Grid container className={classes.bannerGrid}>
+                        <div style={{ paddingLeft: '30px' }}>
+                            Interested in web development?
+                            <br />
+                            <a href="https://forms.gle/v32Cx65vwhnmxGPv8" target="__blank" rel="noopener noreferrer">
+                                Join ICSSC and work on AntAlmanac and other projects!
+                            </a>
+                            <br />
+                            We have opportunities for experienced devs and those with zero experience!
+                        </div>
+
+                        <Button
+                            onClick={() => {
+                                // Unix  time in seconds
+                                window.localStorage.setItem('recruitmentDismissalTime', Date.now().toString());
+                                forceUpdate();
+                            }}
+                            color="inherit"
+                            startIcon={<CloseIcon />}
+                        ></Button>
+                    </Grid>
+                </Paper>
+            ) : null}{' '}
+        </div>
+    );
 };
 
 /* TODO: all this typecasting in the conditionals is pretty messy, but type guards don't really work in this context
@@ -234,6 +287,7 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
 
             currentView = (
                 <div className={classes.root}>
+                    <RecruitmentBanner {...classes} />
                     {this.state.courseData.length === 0 ? (
                         <div className={classes.noResultsDiv}>
                             <img src={isDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
