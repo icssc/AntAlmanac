@@ -1,0 +1,51 @@
+name: "Wait for Stack Stabilize"
+
+inputs:
+  stack_name:
+    required: true
+  aws_access_key_id:
+    required: true
+  aws_secret_access_key:
+    required: true
+  
+outputs:
+  stack-exists: 
+    value: ${{ steps.check-stack-exists.outcome == 'success' && !steps.wait-for-stack-delete.outcome == 'success'}}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@master
+      with:
+        aws-access-key-id: ${{ inputs.aws_secret_access_key_id }}
+        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+        aws-region: us-east-1
+        role-duration-seconds: 2400
+
+    - name: check if stack exists
+      id: check-stack-exists
+      run: echo "STACK_STATUS=$(aws cloudformation describe-stacks --stack-name ${{ inputs.stack_name }} --query "Stacks[0].StackStatus" --output text)" >> $GITHUB_ENV
+      continue-on-error: true
+      shell: bash
+
+    - name: wait for stack create
+      id: wait-for-stack-create
+      if: steps.check-stack-exists.outcome == 'success' && env.STACK_STATUS == 'CREATE_IN_PROGRESS'
+      run: aws cloudformation wait stack-create-complete --stack-name ${{ inputs.stack_name }}
+      continue-on-error: true
+      shell: bash
+        
+    - name: wait for stack update
+      id: wait-for-stack-update
+      if: steps.check-stack-exists.outcome == 'success' && env.STACK_STATUS == 'UPDATE_IN_PROGRESS'
+      run: aws cloudformation wait stack-update-complete --stack-name ${{ inputs.stack_name }}
+      continue-on-error: true
+      shell: bash
+
+    - name: wait for stack delete
+      id: wait-for-stack-delete
+      if: steps.check-stack-exists.outcome == 'success' && env.STACK_STATUS == 'DELETE_IN_PROGRESS'
+      run: aws cloudformation wait stack-delete-complete --stack-name ${{ inputs.stack_name }}
+      continue-on-error: true
+      shell: bash

@@ -24,6 +24,7 @@ jobs:
       HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
       CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
       PR_NUM: ${{ github.event.pull_request.number }}
+      REACT_APP_STAGING: true
 
     steps: 
       - uses: actions/setup-node@v2
@@ -55,23 +56,13 @@ jobs:
       - name: build CDK
         working-directory: ./.github/workflows/actions_stack
         run: npm run build
-
-      - name: check if stack exists
-        id: check-stack-exists
-        run: echo ::set-output name=stack_status::$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME }} --query "Stacks[0].Outputs[1].StackStatus" --output text)
-        continue-on-error: true
-
-      - name: wait for stack create
-        id: wait-for-stack-create
-        if: steps.check-stack-exists.outcome == 'success' && steps.check-stack-exists.outputs.stack_status == 'CREATE_IN_PROGRESS'
-        run: aws cloudformation wait stack-create-complete --stack-name ${{ env.STACK_NAME }}
-        continue-on-error: true
           
-      - name: wait for stack update
-        id: wait-for-stack-update
-        if: steps.check-stack-exists.outcome == 'success' && steps.check-stack-exists.outputs.stack_status == 'UPDATE_IN_PROGRESS'
-        run: aws cloudformation wait stack-update-complete --stack-name ${{ env.STACK_NAME }}
-        continue-on-error: true
+      - name: wait for stack stabilize
+        uses: ./.github/actions/stabilize_stack
+        with: 
+          stack_name: ${{ env.STACK_NAME }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
 
       - name: deploy the stack to AWS
         working-directory: ./.github/workflows/actions_stack
