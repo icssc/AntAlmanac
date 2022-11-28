@@ -1,6 +1,7 @@
 import React from 'react';
 import { Paper } from '@material-ui/core';
 import { withStyles } from '@material-ui/core';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 const styles = {
     container: {
@@ -23,9 +24,11 @@ const styles = {
         height: 250,
     },
 };
+interface HelpBoxProps {
+    classes: ClassNameMap
+}
 
-const HelpBox = (props) => {
-    const { classes } = props;
+const HelpBox = ({classes}: HelpBoxProps) => {
     return (
         <Paper variant="outlined" className={classes.container}>
             <h2 className={classes.heading}>Need help planning your schedule?</h2>
