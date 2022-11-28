@@ -100,14 +100,16 @@ const flattenSOCObject = (SOCObject: WebsocResponse): (School | Department | AAC
     }, []);
 };
 const RecruitmentBanner = (classes: ClassNameMap) => {
-    // Idk how else to force a function component to update
-    const [, updateState] = React.useState();
-    const forceUpdate = React.useCallback(() => updateState(undefined), []);
+    const [bannerVisibility, setBannerVisibility] = React.useState<boolean>(true);
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
-    let displayRecruitmentBanner =
-        Date.now() - parseInt(window.localStorage.getItem('recruitmentDismissalTime') as string) > 11 * 7 * 24 * 3600 * 1000 &&
-        ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue);
+    const displayRecruitmentBanner =
+        bannerVisibility && (
+            window.localStorage.getItem('recruitmentDismissalTime') === null || 
+            Date.now() - parseInt(window.localStorage.getItem('recruitmentDismissalTime') as string) > 11 * 7 * 24 * 3600 * 1000 
+            &&
+            ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue)
+        );
 
     return (
         <div className={classes.bannerContainer}>
@@ -128,7 +130,7 @@ const RecruitmentBanner = (classes: ClassNameMap) => {
                             onClick={() => {
                                 // Unix  time in seconds
                                 window.localStorage.setItem('recruitmentDismissalTime', Date.now().toString());
-                                forceUpdate();
+                                setBannerVisibility(false);
                             }}
                             color="inherit"
                             startIcon={<CloseIcon />}
