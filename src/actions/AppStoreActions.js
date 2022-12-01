@@ -182,19 +182,23 @@ export const loadSchedule = async (userID, rememberMe) => {
             }
 
             try {
-                const data = await fetch(LOAD_DATA_ENDPOINT, {
+                const response_data = await fetch(LOAD_DATA_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userID: userID }),
                 });
-
-                const json = await data.json();
+                if (response_data.status === 404) {
+                    openSnackbar('error', `Couldn't find schedules for username "${userID}".`);
+                    return;
+                }
+                const json = await response_data.json();
 
                 AppStore.loadSchedule(await getCoursesData(json.userData));
 
                 openSnackbar('success', `Schedule for username "${userID}" loaded.`);
             } catch (e) {
-                openSnackbar('error', `Couldn't find schedules for username "${userID}".`);
+                console.error(e);
+                openSnackbar('error', `Unknown error loading schedule for "${userID}".`);
             }
         }
     }
