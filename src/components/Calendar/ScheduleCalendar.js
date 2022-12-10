@@ -297,7 +297,7 @@ class ScheduleCalendar extends PureComponent {
                         step={15}
                         timeslots={2}
                         defaultDate={new Date(2018, 0, 1)}
-                        min={new Date(2018, 0, 1, 7)}
+                        min={new Date(2018, 0, 1, 6)}
                         max={new Date(2018, 0, 1, 23)}
                         events={events}
                         eventPropGetter={ScheduleCalendar.eventStyleGetter}
