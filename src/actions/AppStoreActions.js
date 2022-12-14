@@ -141,9 +141,6 @@ export const login = async () => {
 export const logout = async () => {
     await fetch(AUTH_ENDPOINT + '/logout', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
         credentials: 'include',
     });
     window.location.reload();
@@ -159,11 +156,13 @@ export const checkUser = async () => {
             credentials: 'include',
         });
         const json = await resp.json();
-        return json && 'passport' in json && json;
+        return json && 'passport' in json && json.passport.user && json;
     } catch (e) {
+        console.error(e);
         return false;
     }
 };
+
 export const saveGoogleUser = async (user) => {
     const userData = compileUserData();
 
@@ -186,9 +185,11 @@ export const saveGoogleUser = async (user) => {
             type: 'SAVE_SCHEDULE',
         });
     } catch (e) {
+        console.error(e);
         openSnackbar('error', `Schedule could not be saved for email "${user.passport.user.email}`);
     }
 };
+
 export const loadGoogleUser = async (user) => {
     if (
         !AppStore.hasUnsavedChanges() ||
@@ -210,6 +211,7 @@ export const loadGoogleUser = async (user) => {
             openSnackbar('success', `Schedule for email "${user.passport.user.email}" loaded.`);
             return true;
         } catch (e) {
+            console.error(e);
             openSnackbar('error', `Couldn't find schedules for email "${user.passport.user.email}".`);
             return false;
         }
@@ -266,13 +268,61 @@ export const saveSchedule = async (userID, rememberMe) => {
                     type: 'SAVE_SCHEDULE',
                 });
             } catch (e) {
+                console.error(e);
                 openSnackbar('error', `Schedule could not be saved under username "${userID}`);
             }
         }
     }
 };
 
-export const loadSchedule = async (userID, rememberMe) => {
+export const mergeSchedule = (newSchedule, oldSchedule) => {
+    //Courses have to be handled differently than events as courses are unique and can only appear once in addedCourses
+
+    const scheduleIndex = new Map();
+
+    for (const course of oldSchedule.addedCourses) {
+        scheduleIndex[JSON.stringify({ sectionCode: course.sectionCode, term: course.term })] = {
+            color: course.color,
+            scheduleIndices: course.scheduleIndices.map((index) => (index += newSchedule.scheduleNames.length)),
+        };
+    }
+    for (const course of newSchedule.addedCourses) {
+        const courseKey = JSON.stringify({ sectionCode: course.sectionCode, term: course.term });
+        if (courseKey in scheduleIndex) {
+            scheduleIndex[courseKey] = {
+                color: course.color,
+                scheduleIndices: scheduleIndex[courseKey].scheduleIndices.concat(course.scheduleIndices),
+            };
+        } else {
+            scheduleIndex[courseKey] = {
+                color: course.color,
+                scheduleIndices: course.scheduleIndices,
+            };
+        }
+    }
+
+    const newAddedCourses = [];
+    for (const course in scheduleIndex) {
+        newAddedCourses.push({ ...JSON.parse(course), ...scheduleIndex[course] });
+    }
+    console.log(newAddedCourses);
+    oldSchedule.customEvents = oldSchedule.customEvents.map((event) => {
+        // Custom event indices must be offset to account for existing schedules
+        // Add the current number of schedules onto the index
+        return {
+            ...event,
+            scheduleIndices: event.scheduleIndices.map((index) => (index += newSchedule.scheduleNames.length)),
+        };
+    });
+
+    // Add the cached data onto userData
+    newSchedule.addedCourses = newAddedCourses;
+    newSchedule.scheduleNames = newSchedule.scheduleNames.concat(oldSchedule.scheduleNames);
+    newSchedule.customEvents = newSchedule.customEvents.concat(oldSchedule.customEvents);
+    return newSchedule;
+};
+
+export const loadSchedule = async (userID, rememberMe, user) => {
     logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
@@ -301,13 +351,19 @@ export const loadSchedule = async (userID, rememberMe) => {
                 });
 
                 const json = await data.json();
-
+                let userData = json.userData;
+                if (user) {
+                    userData = compileUserData();
+                    const oldData = json.userData;
+                    mergeSchedule(userData, oldData);
+                }
                 dispatcher.dispatch({
                     type: 'LOAD_SCHEDULE',
-                    userData: await getCoursesData(json.userData),
+                    userData: await getCoursesData(userData),
                 });
                 openSnackbar('success', `Schedule for username "${userID}" loaded.`);
             } catch (e) {
+                console.error(e);
                 openSnackbar('error', `Couldn't find schedules for username "${userID}".`);
             }
         }

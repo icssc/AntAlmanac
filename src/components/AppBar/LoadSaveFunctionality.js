@@ -40,7 +40,7 @@ class LoadSaveButtonBase extends PureComponent {
         else
             this.setState({ isOpen: false }, () => {
                 document.removeEventListener('keydown', this.enterEvent, false);
-                this.props.action(this.state.userID, this.state.rememberMe);
+                this.props.action(this.state.userID, this.state.rememberMe, this.props.user);
                 this.setState({ userID: '' });
             });
     };
@@ -80,7 +80,8 @@ class LoadSaveButtonBase extends PureComponent {
                     <DialogTitle>{this.props.actionName}</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Enter your username here to {this.props.actionName.toLowerCase()} your schedule.
+                            Enter your username here to{' '}
+                            {this.props.user ? 'merge' : this.props.actionName.toLowerCase()} your schedule.
                         </DialogContentText>
                         <TextField
                             autoFocus
@@ -108,7 +109,7 @@ class LoadSaveButtonBase extends PureComponent {
                             Cancel
                         </Button>
                         <Button onClick={() => this.handleClose(false)} color={isDarkMode() ? 'white' : 'primary'}>
-                            {this.props.actionName}
+                            {this.props.user ? 'MERGE' : this.props.actionName}
                         </Button>
                     </DialogActions>
                 </Dialog>
@@ -127,6 +128,8 @@ const LoadSaveScheduleFunctionality = () => {
 };
 
 export const SaveSchedule = () => <LoadSaveButtonBase actionName={'Save'} action={saveSchedule} />;
-export const LoadSchedule = () => <LoadSaveButtonBase actionName={'Load'} action={loadSchedule} />;
+export const LoadSchedule = (props) => (
+    <LoadSaveButtonBase user={props.user} actionName={props.user ? 'Load (legacy)' : 'Load'} action={loadSchedule} />
+);
 
 export default LoadSaveScheduleFunctionality;

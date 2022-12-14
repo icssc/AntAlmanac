@@ -9,6 +9,7 @@ import {
     login,
     loadLocalSchedule,
     compileUserData,
+    mergeSchedule,
 } from '../../actions/AppStoreActions';
 import { LoadSchedule, SaveSchedule } from './LoadSaveFunctionality';
 import GoogleAccountBase from './AccountBase';
@@ -44,34 +45,10 @@ const ScheduleLoginManager = () => {
                 // After we've successfully loaded that temporary schedule, we can remove it from local storage
                 const tempUserData = window.localStorage.getItem('tempUserData');
                 if (tempUserData != null) {
-                    const userData = compileUserData();
+                    let userData = compileUserData();
                     const oldData = JSON.parse(tempUserData);
 
-                    oldData.addedCourses = oldData.addedCourses.map((course) => {
-                        // Course schedule indices must be offset to account for existing schedules
-                        // Add the current number of schedules onto the index
-                        return {
-                            ...course,
-                            scheduleIndices: course.scheduleIndices.map(
-                                (index) => (index += userData.scheduleNames.length)
-                            ),
-                        };
-                    });
-                    oldData.customEvents = oldData.customEvents.map((event) => {
-                        // Custom event indices must be offset to account for existing schedules
-                        // Add the current number of schedules onto the index
-                        return {
-                            ...event,
-                            scheduleIndices: event.scheduleIndices.map(
-                                (index) => (index += userData.scheduleNames.length)
-                            ),
-                        };
-                    });
-
-                    // Add the cached data onto userData
-                    userData.addedCourses = userData.addedCourses.concat(oldData.addedCourses);
-                    userData.scheduleNames = userData.scheduleNames.concat(oldData.scheduleNames);
-                    userData.customEvents = userData.customEvents.concat(oldData.customEvents);
+                    userData = mergeSchedule(userData, oldData);
 
                     // Load the combined data
                     await loadLocalSchedule(userData);
@@ -125,6 +102,7 @@ const ScheduleLoginManager = () => {
                     <Button onClick={() => saveGoogleUser(user)} color="inherit" startIcon={<Save />}>
                         Save
                     </Button>
+                    <LoadSchedule user={user} />
                 </>
             ) : (
                 <>
