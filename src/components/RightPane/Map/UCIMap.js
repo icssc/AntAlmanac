@@ -1,5 +1,5 @@
-import React, { PureComponent } from 'react';
-import { Map, TileLayer, withLeaflet, Polyline, Marker } from 'react-leaflet';
+import React, { PureComponent, useEffect } from 'react';
+import { useMap, MapContainer, TileLayer, Polyline, Marker } from 'react-leaflet';
 import buildingCatalogue from './static/buildingCatalogue';
 import locations from '../SectionTable/static/locations.json';
 import AppStore from '../../../stores/AppStore';
@@ -9,10 +9,9 @@ import Locate from 'leaflet.locatecontrol';
 import Leaflet from 'leaflet';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 
-class LocateControl extends PureComponent {
-    componentDidMount() {
-        const { map } = this.props.leaflet;
-
+const LocateControl = () => {
+    const map = useMap();
+    useEffect(() => {
         const lc = new Locate({
             position: 'topleft',
             strings: {
@@ -21,14 +20,9 @@ class LocateControl extends PureComponent {
             flyTo: true,
         });
         lc.addTo(map);
-    }
-
-    render() {
-        return null;
-    }
-}
-
-LocateControl = withLeaflet(LocateControl);
+    }, [map]);
+    return null;
+};
 
 const DAYS = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
@@ -359,7 +353,7 @@ export default class UCIMap extends PureComponent {
 
     render() {
         return (
-            <Map
+            <MapContainer
                 center={[this.state.lat, this.state.lng]}
                 zoom={this.state.zoom}
                 maxZoom={19}
@@ -402,7 +396,7 @@ export default class UCIMap extends PureComponent {
                         stackIndex={this.state.selected_acronym in this.state.pins ? -1 : 0}
                     />
                 ) : null}
-            </Map>
+            </MapContainer>
         );
     }
 }
