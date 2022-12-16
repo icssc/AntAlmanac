@@ -19,9 +19,9 @@
         "@date-io/date-fns": "^2.16.0",
         "@emotion/react": "^11.10.5",
         "@emotion/styled": "^11.10.5",
-        "@material-ui/core": "^4.11.0",
-        "@material-ui/icons": "^4.9.1",
-        "@material-ui/lab": "^4.0.0-alpha.56",
+        "@material-ui/core": "^4.12.4",
+        "@material-ui/icons": "^4.11.3",
+        "@material-ui/lab": "^4.0.0-alpha.61",
         "@material-ui/pickers": "^3.3.10",
         "date-fns": "^2.29.3",
         "file-saver": "^2.0.5",
@@ -62,14 +62,16 @@
     },
     "browserslist": {
         "production": [
-            ">0.2%",
+            ">0.5%",
             "not dead",
-            "not op_mini all"
+            "not op_mini all",
+            "not IE 11",
+            "maintained node versions"
         ],
         "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
+            "last 2 chrome version",
+            "last 2 firefox version",
+            "last 2 safari version"
         ]
     }
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import App from './components/App';
-import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
+import { ThemeProvider, createTheme } from '@material-ui/core/styles';
 import { unregister } from './registerServiceWorker';
 import { SnackbarProvider } from 'notistack';
 // import whyDidYouRender from '@welldone-software/why-did-you-render';
@@ -42,11 +42,11 @@ const theme = createTheme({
 
 const rootElement = document.getElementById('root');
 render(
-    <MuiThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
         <SnackbarProvider>
             <App style={{ height: '100%' }} />
         </SnackbarProvider>
-    </MuiThemeProvider>,
+    </ThemeProvider>,
     rootElement
 );
 
