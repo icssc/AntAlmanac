@@ -128,7 +128,7 @@ class AddedCoursePane extends PureComponent {
                         <PopupState variant="popover">
                             {(popupState) => (
                                 <>
-                                    <Button variant="outlined" {...bindTrigger(popupState)}>
+                                    <Button variant="outlined" {...bindTrigger(popupState)} color="button">
                                         Copy Schedule
                                     </Button>
                                     <Menu {...bindMenu(popupState)}>
@@ -164,7 +164,7 @@ class AddedCoursePane extends PureComponent {
                         <Button
                             className={this.props.classes.clearSchedule}
                             variant="outlined"
-                            color="secondary"
+                            color="clearButton"
                             onClick={() => {
                                 if (
                                     window.confirm(

@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { createTheme, ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
+import GlobalStyles from '@mui/material/GlobalStyles';
 import ReactGA from 'react-ga';
 import ReactGA4 from 'react-ga4';
 import { undoDelete } from '../actions/AppStoreActions';
@@ -39,26 +40,63 @@ class App extends PureComponent {
 
     render() {
         const theme = createTheme({
-            components: {
-                MuiCssBaseline: {
-                    styleOverrides: {
-                        a: {
-                            color: this.state.darkMode ? 'dodgerblue' : 'blue',
-                        },
-                    },
-                },
+            typography: {
+                htmlFontSize: parseInt(
+                    window.getComputedStyle(document.documentElement).getPropertyValue('font-size'),
+                    10
+                ),
+                fontSize:
+                    parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
+                color: 'dodgerblue',
             },
-            palette: {
-                mode: this.state.darkMode ? 'dark' : 'light',
-                primary: {
-                    main: '#305db7',
-                },
-                secondary: {
-                    main: '#f50057',
-                },
-            },
+            palette: this.state.darkMode
+                ? {
+                      mode: 'dark',
+                      primary: {
+                          light: '#5191d6',
+                          main: '#1E90FF',
+                          dark: '#003a75',
+                          contrastText: '#fff',
+                      },
+                      secondary: {
+                          main: '#1E90FF',
+                          contrastText: '#000',
+                      },
+                      background: {
+                          default: '#303030',
+                          paper: '#424242',
+                      },
+                      text: {
+                          primary: '#FFF',
+                      },
+                      action: {
+                          active: '#FFF',
+                      },
+                      divider: '#AAA',
+                      clearButton: { main: '#f50057' },
+                      button: { main: '#FFF', dark: '#000' },
+                      link: { main: '#1E90FF' },
+                      appBar: { main: '#305db7' },
+                  }
+                : {
+                      mode: 'light',
+                      primary: {
+                          light: '#5191d6',
+                          main: '#305db7',
+                          dark: '#003a75',
+                          contrastText: '#fff',
+                      },
+                      secondary: {
+                          main: '#00F',
+                          contrastText: '#000',
+                      },
+                      clearButton: { main: '#f50057' },
+                      button: { main: '#000' },
+                      link: { main: '#00F' },
+                      appBar: { main: '#305db7' },
+                  },
+            spacing: 4,
         });
-
         return (
             <BrowserRouter>
                 <Routes>
@@ -67,6 +105,9 @@ class App extends PureComponent {
                         element={
                             <StyledEngineProvider injectFirst>
                                 <ThemeProvider theme={theme}>
+                                    <GlobalStyles
+                                        styles={{ a: { color: this.state.darkMode ? 'dodgerblue' : 'blue' } }}
+                                    />
                                     <Home />
                                 </ThemeProvider>
                             </StyledEngineProvider>

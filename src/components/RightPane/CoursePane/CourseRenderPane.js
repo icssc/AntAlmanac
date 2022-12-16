@@ -132,7 +132,7 @@ const RecruitmentBanner = (classes) => {
                                 window.localStorage.setItem('recruitmentDismissalTime', Date.now());
                                 forceUpdate();
                             }}
-                            color="inherit"
+                            color="button"
                             startIcon={<CloseIcon />}
                         ></Button>
                     </Grid>

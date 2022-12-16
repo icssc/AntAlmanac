@@ -36,24 +36,28 @@ class AboutPage extends PureComponent {
                             <br />
                             <br />
                             Interested in helping out? Join our{' '}
-                            <Link target="_blank" href="https://discord.gg/GzF76D7UhY">
+                            <Link target="_blank" href="https://discord.gg/GzF76D7UhY" color="secondary">
                                 Discord
                             </Link>{' '}
                             or checkout the{' '}
-                            <Link target="_blank" href="https://github.com/icssc/AntAlmanac">
+                            <Link target="_blank" href="https://github.com/icssc/AntAlmanac" color="secondary">
                                 code on GitHub
                             </Link>
                             .
                             <br />
                             <br />
                             This website is maintained by the{' '}
-                            <Link target="_blank" href="https://studentcouncil.ics.uci.edu/">
+                            <Link target="_blank" href="https://studentcouncil.ics.uci.edu/" color="secondary">
                                 ICS Student Council
                             </Link>{' '}
                             Projects Committee and built by students from the UCI community.
                             <br />
                             <br />
-                            <Link target="_blank" href="https://github.com/icssc/AntAlmanac/contributors">
+                            <Link
+                                target="_blank"
+                                href="https://github.com/icssc/AntAlmanac/contributors"
+                                color="secondary"
+                            >
                                 <img
                                     src="https://contrib.rocks/image?repo=icssc/antalmanac"
                                     width={'100%'}
@@ -63,7 +67,7 @@ class AboutPage extends PureComponent {
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => this.setState({ isOpen: false })} color="primary">
+                        <Button onClick={() => this.setState({ isOpen: false })} color="secondary">
                             Close
                         </Button>
                     </DialogActions>

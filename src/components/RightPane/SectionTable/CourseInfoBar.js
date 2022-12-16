@@ -12,7 +12,6 @@ const styles = () => ({
         marginRight: 4,
     },
     button: {
-        backgroundColor: '#72a9ed',
         boxShadow: 'none',
     },
     courseInfoPane: {
@@ -137,6 +136,8 @@ const CourseInfoBar = (props) => {
                     const currentTarget = event.currentTarget;
                     togglePopover(currentTarget);
                 }}
+                color="inherit"
+                sx={{ color: 'black' }}
             >
                 {`${deptCode} ${courseNumber} | ${courseTitle}`}
             </Button>

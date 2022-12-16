@@ -80,7 +80,7 @@ class OpenSpotAlertPopover extends PureComponent {
             <>
                 <Button
                     variant="outlined"
-                    color="inherit"
+                    color="button"
                     onClick={(event) => this.setState({ anchorElement: event.currentTarget })}
                 >
                     {status}

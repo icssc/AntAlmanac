@@ -69,7 +69,7 @@ class DesktopTabs extends PureComponent {
             <div style={style}>
                 <Paper
                     elevation={0}
-                    variant="outlined"
+                    variant="standard"
                     square
                     style={{
                         overflow: 'hidden',

@@ -32,7 +32,7 @@ const StyledTabs = styled(Tabs)({
 const StyledTab = styled(Tab)({
     minHeight: 'auto',
     minWidth: '10%',
-    padding: 0,
+    padding: 5,
 });
 
 class MapTabsAndSearchBar extends PureComponent {

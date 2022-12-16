@@ -32,7 +32,7 @@ class ScreenshotButton extends PureComponent {
                     onClick={() => this.props.onTakeScreenshot(this.handleClick)}
                     variant="outlined"
                     size="small"
-                    color="inherit"
+                    color="button"
                     startIcon={<Panorama fontSize="small" />}
                 >
                     Screenshot

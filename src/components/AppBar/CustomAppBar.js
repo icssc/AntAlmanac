@@ -14,12 +14,14 @@ import AboutPage from './AboutPage';
 import ConditionalWrapper from '../ConditionalWrapper';
 import ImportStudyList from './ImportStudyList';
 
-const styles = {
+const styles = (theme) => ({
     appBar: {
+        paddingLeft: '12px',
         marginBottom: '4px',
         boxShadow: 'none',
         minHeight: 0,
         height: '50px',
+        backgroundColor: theme.palette.appBar.main,
     },
     buttonMargin: {
         marginRight: '4px',
@@ -31,7 +33,7 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'center',
     },
-};
+});
 
 const CustomAppBar = (props) => {
     const { classes } = props;

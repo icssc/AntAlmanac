@@ -28,7 +28,7 @@ const EditSchedule = (props) => {
     return (
         <>
             <Tooltip title="Edit schedule">
-                <Button className={classes.editButton} variant="outlined" onClick={handleClick} color="inherit">
+                <Button className={classes.editButton} variant="outlined" onClick={handleClick} color="button">
                     <Edit />
                 </Button>
             </Tooltip>
