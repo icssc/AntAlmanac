@@ -11,31 +11,28 @@ import { SnackbarProvider } from 'notistack';
 //         trackAllPureComponents: true,
 //     });
 // // }
-const theme = createTheme(
-    adaptV4Theme({
-        typography: {
-            htmlFontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10),
-            fontSize:
-                parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
+const theme = createTheme({
+    typography: {
+        htmlFontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10),
+        fontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
+    },
+    palette: {
+        // mode: 'dark',
+        primary: {
+            light: '#5191d6',
+            main: '#0064a4',
+            dark: '#003a75',
+            contrastText: '#fff',
         },
-        palette: {
-            // mode: 'dark',
-            primary: {
-                light: '#5191d6',
-                main: '#0064a4',
-                dark: '#003a75',
-                contrastText: '#fff',
-            },
-            secondary: {
-                light: '#ffff52',
-                main: '#ffd200',
-                dark: '#c7a100',
-                contrastText: '#000',
-            },
+        secondary: {
+            light: '#ffff52',
+            main: '#ffd200',
+            dark: '#c7a100',
+            contrastText: '#000',
         },
-        spacing: 4,
-    })
-);
+    },
+    spacing: 4,
+});
 
 // if (process.env.NODE_ENV === 'development') {
 //     whyDidYouRender(React, {

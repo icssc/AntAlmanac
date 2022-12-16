@@ -287,7 +287,13 @@ const exportCalendar = () => {
 
 const ExportCalendarButton = () => (
     <Tooltip title="Download Calendar as an .ics file">
-        <Button onClick={exportCalendar} variant="outlined" size="small" startIcon={<Today fontSize="small" />}>
+        <Button
+            onClick={exportCalendar}
+            variant="outlined"
+            size="small"
+            color="inherit"
+            startIcon={<Today fontSize="small" />}
+        >
             Download
         </Button>
     </Tooltip>

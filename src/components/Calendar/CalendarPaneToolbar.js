@@ -39,7 +39,7 @@ const styles = {
         flexGrow: '1',
     },
     scheduleSelector: {
-        marginLeft: '10px',
+        marginLeft: '15px',
         maxWidth: '9rem',
     },
     rootScheduleSelector: {
@@ -93,6 +93,7 @@ const CalendarPaneToolbar = (props) => {
                 onChange={handleScheduleChange}
                 open={openSchedules}
                 onClick={handleScheduleClick}
+                variant="standard"
             >
                 {scheduleNames.map((name, index) => (
                     <MenuItem key={index} value={index}>

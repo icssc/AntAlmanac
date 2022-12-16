@@ -9,7 +9,7 @@ import { clearSchedules, copySchedule } from '../../../actions/AppStoreActions';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 
-const styles = {
+const styles = (theme) => ({
     container: {
         height: '100%',
         width: '100%',
@@ -21,12 +21,14 @@ const styles = {
         display: 'flex',
         width: '100%',
         justifyContent: 'space-between',
+        marginTop: theme.spacing(),
+        marginLeft: theme.spacing(),
     },
     clearSchedule: {
-        marginLeft: '4px',
-        marginRight: '4px',
+        marginLeft: theme.spacing(),
+        marginRight: theme.spacing(),
     },
-};
+});
 
 class AddedCoursePane extends PureComponent {
     state = {

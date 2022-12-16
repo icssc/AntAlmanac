@@ -128,6 +128,7 @@ class CustomEventDialog extends PureComponent {
                             variant="outlined"
                             size="small"
                             startIcon={<Add fontSize="small" />}
+                            color="inherit"
                         >
                             Add Custom
                         </Button>
