@@ -127,7 +127,7 @@ const SectionTable = (props) => {
                 />
             </div>
 
-            <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
+            <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="standard">
                 <Table className={classes.table} size="small">
                     <TableHead>
                         <TableRow>

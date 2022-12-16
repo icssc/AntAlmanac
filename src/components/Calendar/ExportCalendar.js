@@ -291,7 +291,7 @@ const ExportCalendarButton = () => (
             onClick={exportCalendar}
             variant="outlined"
             size="small"
-            color="inherit"
+            color="button"
             startIcon={<Today fontSize="small" />}
         >
             Download

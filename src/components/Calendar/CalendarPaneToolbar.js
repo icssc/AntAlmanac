@@ -119,7 +119,7 @@ const CalendarPaneToolbar = (props) => {
                         toggleDisplayFinalsSchedule();
                     }}
                     size="small"
-                    color={showFinalsSchedule ? 'primary' : 'inherit'}
+                    color={showFinalsSchedule ? 'primary' : 'button'}
                 >
                     Finals
                 </Button>
