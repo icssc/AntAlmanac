@@ -12,7 +12,8 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "predeploy": "npm run build",
-        "deploy": "gh-pages -d build"
+        "deploy": "gh-pages -d build",
+        "prepare": "husky install"
     },
     "dependencies": {
         "@date-io/date-fns": "^2.16.0",
@@ -52,11 +53,6 @@
         "husky": "^8.0.2",
         "lint-staged": "^13.1.0",
         "prettier": "^2.2.1"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
     },
     "lint-staged": {
         "*.{js,json,css,html}": [
