@@ -4,15 +4,16 @@ import Calendar from './Calendar/ScheduleCalendar';
 import Bar from './AppBar/CustomAppBar';
 import DesktopTabs from './RightPane/RightPaneRoot';
 import NotificationSnackbar from './AppBar/NotificationSnackbar';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import MobileHome from './MobileHome';
-import DateFnsUtils from '@date-io/date-fns';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import MomentUtils from '@date-io/moment';
 
 const Home = () => {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
     return (
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <LocalizationProvider dateAdapter={MomentUtils}>
             <CssBaseline />
             <Bar />
             {isMobileScreen ? (
@@ -28,7 +29,7 @@ const Home = () => {
                 </Grid>
             )}
             <NotificationSnackbar />
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
     );
 };
 
