@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactGA from 'react-ga';
-import Button from '@material-ui/core/Button';
-import { Tooltip } from '@material-ui/core';
-import Today from '@material-ui/icons/Today';
+import Button from '@mui/material/Button';
+import { Tooltip } from '@mui/material';
+import Today from '@mui/icons-material/Today';
 import { saveAs } from 'file-saver';
 import { createEvents } from 'ics';
 import AppStore from '../../stores/AppStore';

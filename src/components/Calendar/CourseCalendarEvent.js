@@ -1,9 +1,9 @@
 import React from 'react';
-import { IconButton, Paper, Tooltip } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { IconButton, Paper, Tooltip } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import ColorPicker from '../ColorPicker.js';
-import { Delete } from '@material-ui/icons';
+import { Delete } from '@mui/icons-material';
 import locations from '../RightPane/SectionTable/static/locations.json';
 import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
 import CustomEventDialog from './CustomEvents/CustomEventDialog';
@@ -201,6 +201,7 @@ const CourseCalendarEvent = (props) => {
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
                                 });
                             }}
+                            size="large"
                         >
                             <Delete fontSize="small" />
                         </IconButton>

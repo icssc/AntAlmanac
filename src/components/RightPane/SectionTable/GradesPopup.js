@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Skeleton } from '@material-ui/lab';
-import { withStyles } from '@material-ui/core/styles';
+import { Skeleton } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import { XAxis, YAxis, CartesianGrid, BarChart, Bar, ResponsiveContainer } from 'recharts';
 import { queryGrades, isDarkMode } from '../../../helpers';
 

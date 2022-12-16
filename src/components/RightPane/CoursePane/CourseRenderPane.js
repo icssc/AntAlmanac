@@ -1,6 +1,6 @@
-import { withStyles } from '@material-ui/core/styles';
-import { Button, Grid, Paper } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { withStyles } from '@mui/styles';
+import { Button, Grid, Paper } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import React, { PureComponent } from 'react';
 import SchoolDeptCard from './SchoolDeptCard';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
@@ -17,7 +17,12 @@ import analyticsEnum from '../../../analytics';
 
 const styles = (theme) => ({
     course: {
-        ...theme.mixins.gutters(),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        [theme.breakpoints.up('sm')]: {
+            paddingLeft: theme.spacing(3),
+            paddingRight: theme.spacing(3),
+        },
         paddingTop: theme.spacing(),
         paddingBottom: theme.spacing(),
         display: 'flex',

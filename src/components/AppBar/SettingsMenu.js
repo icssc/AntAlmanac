@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
-import { Button, FormControl, FormControlLabel, Popover, RadioGroup, Radio, Paper } from '@material-ui/core';
-import Brightness4Icon from '@material-ui/icons/Brightness4';
+import { Button, FormControl, FormControlLabel, Popover, RadioGroup, Radio, Paper } from '@mui/material';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
 import AppStore from '../../stores/AppStore';
 import { toggleTheme } from '../../actions/AppStoreActions';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 import ReactGA from 'react-ga';
 
 const styles = {

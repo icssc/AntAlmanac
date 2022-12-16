@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import SearchForm from './SearchForm/SearchForm';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
 import CourseRenderPane from './CourseRenderPane';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 import RightPaneStore from '../RightPaneStore';
 import { clearCache } from '../../../helpers';
 import { openSnackbar } from '../../../actions/AppStoreActions';

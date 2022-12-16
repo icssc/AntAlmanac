@@ -1,17 +1,9 @@
 import React, { PureComponent, useEffect } from 'react';
-import { CloudDownload, Save } from '@material-ui/icons';
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    TextField,
-} from '@material-ui/core';
+import { CloudDownload, Save } from '@mui/icons-material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
 import { loadSchedule, saveSchedule } from '../../actions/AppStoreActions';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import { isDarkMode } from '../../helpers';
 
 class LoadSaveButtonBase extends PureComponent {
@@ -104,10 +96,10 @@ class LoadSaveButtonBase extends PureComponent {
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'white' : 'primary'}>
+                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'inherit' : 'primary'}>
                             Cancel
                         </Button>
-                        <Button onClick={() => this.handleClose(false)} color={isDarkMode() ? 'white' : 'primary'}>
+                        <Button onClick={() => this.handleClose(false)} color={isDarkMode() ? 'inherit' : 'primary'}>
                             {this.props.actionName}
                         </Button>
                     </DialogActions>

@@ -16,7 +16,7 @@ import {
     purple,
     red,
     teal,
-} from '@material-ui/core/colors';
+} from '@mui/material/colors';
 import { getCoursesData, termsInSchedule, warnMultipleTerms } from '../helpers';
 import { LOAD_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '../api/endpoints';
 

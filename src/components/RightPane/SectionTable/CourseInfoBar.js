@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import { Button, Popover, useMediaQuery } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import { withStyles } from '@mui/styles';
+import { Button, Popover, useMediaQuery } from '@mui/material';
+import { Skeleton } from '@mui/material';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { PETERPORTAL_REST_ENDPOINT } from '../../../api/endpoints';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 

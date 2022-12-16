@@ -3,8 +3,8 @@ import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
 import GESelector from './GESelector';
 import SectionCodeSearchBar from './SectionCodeSearchBar';
 import CourseNumberSearchBar from './CourseNumberSearchBar';
-import { Button } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { Button } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import AdvancedSearch from './AdvancedSearch';
 
 const styles = {

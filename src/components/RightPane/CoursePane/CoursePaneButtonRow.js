@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { IconButton, Tooltip } from '@material-ui/core';
-import { ArrowBack, Refresh } from '@material-ui/icons';
-import { withStyles } from '@material-ui/core/styles';
+import { IconButton, Tooltip } from '@mui/material';
+import { ArrowBack, Refresh } from '@mui/icons-material';
+import { withStyles } from '@mui/styles';
 
 const styles = {
     buttonRow: {
@@ -31,13 +31,13 @@ class CoursePaneButtonRow extends PureComponent {
         return (
             <div className={classes.buttonRow} style={{ display: this.props.showSearch ? 'block' : 'none' }}>
                 <Tooltip title="Back">
-                    <IconButton onClick={this.props.onDismissSearchResults} className={classes.button}>
+                    <IconButton onClick={this.props.onDismissSearchResults} className={classes.button} size="large">
                         <ArrowBack />
                     </IconButton>
                 </Tooltip>
 
                 <Tooltip title="Refresh Search Results">
-                    <IconButton onClick={this.props.onRefreshSearch} className={classes.button}>
+                    <IconButton onClick={this.props.onRefreshSearch} className={classes.button} size="large">
                         <Refresh />
                     </IconButton>
                 </Tooltip>

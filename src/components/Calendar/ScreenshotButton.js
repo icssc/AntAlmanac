@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import html2canvas from 'html2canvas';
-import { Panorama } from '@material-ui/icons';
+import { Panorama } from '@mui/icons-material';
 import PropTypes from 'prop-types';
-import { Tooltip } from '@material-ui/core';
+import { Tooltip } from '@mui/material';
 
 class ScreenshotButton extends PureComponent {
     handleClick = () => {

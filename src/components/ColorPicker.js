@@ -1,10 +1,10 @@
 import AppStore from '../stores/AppStore';
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Popover, IconButton } from '@material-ui/core';
+import { Popover, IconButton } from '@mui/material';
 import { SketchPicker } from 'react-color';
 import { changeCourseColor, changeCustomEventColor } from '../actions/AppStoreActions';
-import { ColorLens } from '@material-ui/icons';
+import { ColorLens } from '@mui/icons-material';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../analytics';
 
@@ -73,6 +73,7 @@ class ColorPicker extends PureComponent {
                     onClick={(e) => {
                         this.handleClick(e);
                     }}
+                    size="large"
                 >
                     <ColorLens fontSize="small" />
                 </IconButton>

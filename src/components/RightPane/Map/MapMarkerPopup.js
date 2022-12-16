@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
-import WalkIcon from '@material-ui/icons/DirectionsWalk';
+import WalkIcon from '@mui/icons-material/DirectionsWalk';
 import { Marker, Popup } from 'react-leaflet';
 import PropTypes from 'prop-types';
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import Leaflet from 'leaflet';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 

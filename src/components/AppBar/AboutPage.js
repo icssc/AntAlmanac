@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@material-ui/core';
-import { Info } from '@material-ui/icons';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@mui/material';
+import { Info } from '@mui/icons-material';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../../analytics';
 

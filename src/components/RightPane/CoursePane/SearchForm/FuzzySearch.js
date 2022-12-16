@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 import search from 'websoc-fuzzy-search';
 import RightPaneStore from '../../RightPaneStore';
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
@@ -148,7 +148,7 @@ class FuzzySearch extends PureComponent {
                 autoHighlight={true}
                 filterOptions={this.filterOptions}
                 getOptionLabel={this.getOptionLabel}
-                getOptionSelected={this.getOptionSelected}
+                isOptionEqualToValue={this.getOptionSelected}
                 id={'fuzzy-search'}
                 noOptionsText={'No results found! Please try broadening your search.'}
                 onClose={this.onClose}

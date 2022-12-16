@@ -11,9 +11,9 @@ import {
     InputLabel,
     TextField,
     Tooltip,
-} from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { Add, Edit } from '@material-ui/icons';
+} from '@mui/material';
+import { withStyles } from '@mui/styles';
+import { Add, Edit } from '@mui/icons-material';
 import PropTypes from 'prop-types';
 import { addCustomEvent, editCustomEvent } from '../../../actions/AppStoreActions';
 import ScheduleSelector from './ScheduleSelector';
@@ -117,7 +117,7 @@ class CustomEventDialog extends PureComponent {
         return (
             <>
                 {this.props.customEvent ? (
-                    <IconButton onClick={() => this.setState({ open: true })}>
+                    <IconButton onClick={() => this.setState({ open: true })} size="large">
                         <Edit fontSize="small" />
                     </IconButton>
                 ) : (
@@ -181,7 +181,7 @@ class CustomEventDialog extends PureComponent {
                     </DialogContent>
 
                     <DialogActions>
-                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'white' : 'primary'}>
+                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'inherit' : 'primary'}>
                             Cancel
                         </Button>
                         <Tooltip title="Schedule and day must be checked" disableHoverListener={!this.isAddDisabled()}>

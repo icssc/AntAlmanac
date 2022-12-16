@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Popover } from '@material-ui/core';
-import { useMediaQuery } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { Button, Popover } from '@mui/material';
+import { useMediaQuery } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import { logAnalytics } from '../../../analytics';
 
 const styles = {

@@ -1,19 +1,30 @@
 import React, { PureComponent } from 'react';
-import { Grid, Paper, Typography, withStyles, Collapse } from '@material-ui/core';
-import { ExpandLess, ExpandMore } from '@material-ui/icons';
+import { Grid, Paper, Typography, Collapse } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 const styles = (theme) => ({
     school: {
         display: 'flex',
         flexWrap: 'wrap',
-        ...theme.mixins.gutters(),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        [theme.breakpoints.up('sm')]: {
+            paddingLeft: theme.spacing(3),
+            paddingRight: theme.spacing(3),
+        },
         paddingTop: theme.spacing(),
         paddingBottom: theme.spacing(),
     },
     dept: {
         display: 'flex',
         flexWrap: 'wrap',
-        ...theme.mixins.gutters(),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        [theme.breakpoints.up('sm')]: {
+            paddingLeft: theme.spacing(3),
+            paddingRight: theme.spacing(3),
+        },
         paddingTop: theme.spacing(),
         paddingBottom: theme.spacing(),
     },

@@ -1,8 +1,8 @@
 import AppStore from '../../../stores/AppStore';
 import React, { PureComponent } from 'react';
-import { Grid, Typography, Button, Menu, MenuItem } from '@material-ui/core';
+import { Grid, Typography, Button, Menu, MenuItem } from '@mui/material';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 import CustomEventDetailView from './CustomEventDetailView';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import { clearSchedules, copySchedule } from '../../../actions/AppStoreActions';

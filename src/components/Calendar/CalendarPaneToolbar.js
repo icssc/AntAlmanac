@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import { IconButton, Tooltip, Paper, Button, useMediaQuery, Menu } from '@material-ui/core';
-import { Delete, Undo, MoreHoriz } from '@material-ui/icons';
+import { withStyles } from '@mui/styles';
+import { IconButton, Tooltip, Paper, Button, useMediaQuery, Menu } from '@mui/material';
+import { Delete, Undo, MoreHoriz } from '@mui/icons-material';
 import PropTypes from 'prop-types';
 import { clearSchedules, undoDelete } from '../../actions/AppStoreActions';
 import CustomEventsDialog from './CustomEvents/CustomEventDialog';
 import { changeCurrentSchedule } from '../../actions/AppStoreActions';
 import ScreenshotButton from './ScreenshotButton';
 import ExportCalendar from './ExportCalendar';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import ReactGA from 'react-ga';
 import ConditionalWrapper from '../ConditionalWrapper';
 import analyticsEnum, { logAnalytics } from '../../analytics';
@@ -118,7 +118,7 @@ const CalendarPaneToolbar = (props) => {
                         toggleDisplayFinalsSchedule();
                     }}
                     size="small"
-                    color={showFinalsSchedule ? 'primary' : 'default'}
+                    color={showFinalsSchedule ? 'primary' : 'inherit'}
                 >
                     Finals
                 </Button>
@@ -135,6 +135,7 @@ const CalendarPaneToolbar = (props) => {
                         });
                         undoDelete(null);
                     }}
+                    size="large"
                 >
                     <Undo fontSize="small" />
                 </IconButton>
@@ -160,6 +161,7 @@ const CalendarPaneToolbar = (props) => {
                             });
                         }
                     }}
+                    size="large"
                 >
                     <Delete fontSize="small" />
                 </IconButton>
@@ -169,7 +171,7 @@ const CalendarPaneToolbar = (props) => {
                 condition={isMobileScreen}
                 wrapper={(children) => (
                     <div>
-                        <IconButton onClick={handleMenuClick}>
+                        <IconButton onClick={handleMenuClick} size="large">
                             <MoreHoriz />
                         </IconButton>
 

@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
-import { createTheme } from '@material-ui/core';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import ReactGA from 'react-ga';
 import ReactGA4 from 'react-ga4';
 import { undoDelete } from '../actions/AppStoreActions';
@@ -40,9 +39,9 @@ class App extends PureComponent {
 
     render() {
         const theme = createTheme({
-            overrides: {
+            components: {
                 MuiCssBaseline: {
-                    '@global': {
+                    styleOverrides: {
                         a: {
                             color: this.state.darkMode ? 'dodgerblue' : 'blue',
                         },
@@ -50,7 +49,7 @@ class App extends PureComponent {
                 },
             },
             palette: {
-                type: this.state.darkMode ? 'dark' : 'light',
+                mode: this.state.darkMode ? 'dark' : 'light',
                 primary: {
                     main: '#305db7',
                 },
@@ -63,9 +62,11 @@ class App extends PureComponent {
                     <Route
                         path="/"
                         element={
-                            <ThemeProvider theme={theme}>
-                                <Home />
-                            </ThemeProvider>
+                            <StyledEngineProvider injectFirst>
+                                <ThemeProvider theme={theme}>
+                                    <Home />
+                                </ThemeProvider>
+                            </StyledEngineProvider>
                         }
                     />
                     <Route exact path="/feedback" element={<Feedback />} />

@@ -1,19 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
-import {
-    Badge,
-    Button,
-    Divider,
-    List,
-    ListItem,
-    Paper,
-    Popover,
-    Tooltip,
-    Typography,
-    withStyles,
-} from '@material-ui/core';
-import { RssFeed } from '@material-ui/icons';
+import { Badge, Button, Divider, List, ListItem, Paper, Popover, Tooltip, Typography } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import { RssFeed } from '@mui/icons-material';
 import { NEWS_ENDPOINT } from '../../api/endpoints';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/material';
 import moment from 'moment-timezone';
 import analyticsEnum, { logAnalytics } from '../../analytics';
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Tooltip, Button, Menu } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { Edit } from '@material-ui/icons';
+import { Tooltip, Button, Menu } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import { Edit } from '@mui/icons-material';
 import ScheduleNameDialog from './ScheduleNameDialog';
 import DeleteScheduleDialog from './DeleteScheduleDialog';
 

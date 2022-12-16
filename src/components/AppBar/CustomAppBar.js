@@ -1,10 +1,10 @@
 import React from 'react';
-import { AppBar, Button, Toolbar, Tooltip, Menu, useMediaQuery } from '@material-ui/core';
+import { AppBar, Button, Toolbar, Tooltip, Menu, useMediaQuery } from '@mui/material';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
-import { Assignment } from '@material-ui/icons';
-import MenuIcon from '@material-ui/icons/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import { withStyles } from '@material-ui/core/styles';
+import { Assignment } from '@mui/icons-material';
+import MenuIcon from '@mui/icons-material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import { withStyles } from '@mui/styles';
 import NotificationHub from './NotificationHub';
 import SettingsMenu from './SettingsMenu';
 import { ReactComponent as Logo } from './logo.svg';

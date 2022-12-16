@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
-import { Tab, Tabs, Paper, TextField } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { Tab, Tabs, Paper, TextField } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import buildingCatalogue from './static/buildingCatalogue';
 import PropTypes from 'prop-types';
-import { Autocomplete } from '@material-ui/lab';
-import { styled } from '@material-ui/core/styles';
+import { Autocomplete } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 const styles = {
     tabContainer: {

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import TermSelector from './TermSelector';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import RightPaneStore from '../../RightPaneStore';
 import FuzzySearch from './FuzzySearch';
 import LegacySearch from './LegacySearch';
-import { IconButton, Tooltip } from '@material-ui/core';
-import { Tune } from '@material-ui/icons';
+import { IconButton, Tooltip } from '@mui/material';
+import { Tune } from '@mui/icons-material';
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
 import HelpBox from './HelpBox';
 
@@ -69,7 +69,7 @@ const SearchForm = (props) => {
                         <div className={classes.searchBar}>
                             <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleShowLegacySearch} />
                             <Tooltip title="Manual Search">
-                                <IconButton onClick={toggleShowLegacySearch}>
+                                <IconButton onClick={toggleShowLegacySearch} size="large">
                                     <Tune />
                                 </IconButton>
                             </Tooltip>

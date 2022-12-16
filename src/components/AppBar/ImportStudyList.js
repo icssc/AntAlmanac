@@ -1,20 +1,12 @@
 import React, { PureComponent } from 'react';
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    TextField,
-} from '@material-ui/core';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
 import { addCoursesMultiple, combineSOCObjects, getCourseInfo, queryWebsoc } from '../../helpers';
 import RightPaneStore from '../RightPane/RightPaneStore';
 import { openSnackbar } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
-import { PostAdd } from '@material-ui/icons';
-import InputLabel from '@material-ui/core/InputLabel';
-import { withStyles } from '@material-ui/core/styles';
+import { PostAdd } from '@mui/icons-material';
+import InputLabel from '@mui/material/InputLabel';
+import { withStyles } from '@mui/styles';
 import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '../../analytics';
 

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
-import { InputLabel, MenuItem, FormControl, Select } from '@material-ui/core';
+import { InputLabel, MenuItem, FormControl, Select } from '@mui/material';
 import RightPaneStore from '../../RightPaneStore';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
 const geList = [
     { value: 'ANY', label: "All: Don't filter for GE" },

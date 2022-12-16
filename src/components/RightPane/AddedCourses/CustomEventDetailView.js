@@ -1,7 +1,7 @@
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import { Card, CardActions, CardHeader, IconButton } from '@material-ui/core';
-import { Delete } from '@material-ui/icons';
+import { withStyles } from '@mui/styles';
+import { Card, CardActions, CardHeader, IconButton } from '@mui/material';
+import { Delete } from '@mui/icons-material';
 import ColorPicker from '../../ColorPicker';
 import moment from 'moment';
 import { deleteCustomEvent } from '../../../actions/AppStoreActions';
@@ -68,6 +68,7 @@ const CustomEventDetailView = (props) => {
                             label: 'Added Course pane',
                         });
                     }}
+                    size="large"
                 >
                     <Delete fontSize="small" />
                 </IconButton>

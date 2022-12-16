@@ -1,14 +1,6 @@
 import React, { PureComponent } from 'react';
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Tooltip,
-} from '@material-ui/core';
-import { Notifications } from '@material-ui/icons';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Tooltip } from '@mui/material';
+import { Notifications } from '@mui/icons-material';
 import ReactGA from 'react-ga';
 import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '../../api/endpoints';
 import analyticsEnum, { logAnalytics } from '../../analytics';

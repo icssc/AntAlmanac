@@ -1,9 +1,9 @@
 import React from 'react';
-import { Menu, MenuItem, MenuList, Button, Typography } from '@material-ui/core';
-import { GetApp } from '@material-ui/icons';
+import { Menu, MenuItem, MenuList, Button, Typography } from '@mui/material';
+import { GetApp } from '@mui/icons-material';
 import ScreenshotButton from './ScreenshotButton';
 import ExportButton from './ExportCalendar';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 
 class DownloadMenu extends React.Component {
     state = {

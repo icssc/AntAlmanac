@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Button, Dialog, DialogTitle, DialogActions, DialogContent, TextField, MenuItem } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { Button, Dialog, DialogTitle, DialogActions, DialogContent, TextField, MenuItem } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import { addSchedule, renameSchedule } from '../../actions/AppStoreActions';
 import { isDarkMode } from '../../helpers';
-import { Add } from '@material-ui/icons';
+import { Add } from '@mui/icons-material';
 
 const styles = () => ({
     addButton: {
@@ -100,7 +100,7 @@ const ScheduleNameDialog = (props) => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDarkMode() ? 'white' : 'primary'}>
+                    <Button onClick={handleClose} color={isDarkMode() ? 'inherit' : 'primary'}>
                         Cancel
                     </Button>
                     <Button

@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-    Button,
-    Dialog,
-    DialogTitle,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    MenuItem,
-} from '@material-ui/core';
+import { Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, MenuItem } from '@mui/material';
 import { isDarkMode } from '../../helpers';
 import { deleteSchedule } from '../../actions/AppStoreActions';
 
@@ -44,7 +36,7 @@ const DeleteScheduleDialog = (props) => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDarkMode() ? 'white' : 'primary'}>
+                    <Button onClick={handleClose} color={isDarkMode() ? 'inherit' : 'primary'}>
                         Cancel
                     </Button>
                     <Button onClick={handleDelete} variant="contained" color="primary">

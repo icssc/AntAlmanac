@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import ReactGA from 'react-ga';
-import { withStyles } from '@material-ui/core/styles';
-import { Image } from '@material-ui/icons';
+import { withStyles } from '@mui/styles';
+import { Image } from '@mui/icons-material';
 import PropTypes from 'prop-types';
-import { Modal, Button, Typography } from '@material-ui/core';
+import { Modal, Button, Typography } from '@mui/material';
 import GraphModalContent from './GraphModalContent';
 
 const styles = (theme) => ({

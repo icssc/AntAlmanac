@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, CssBaseline, useMediaQuery } from '@material-ui/core';
+import { Grid, CssBaseline, useMediaQuery } from '@mui/material';
 import Calendar from './Calendar/ScheduleCalendar';
 import Bar from './AppBar/CustomAppBar';
 import DesktopTabs from './RightPane/RightPaneRoot';

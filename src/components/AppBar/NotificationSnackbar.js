@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
-import CloseIcon from '@material-ui/icons/Close';
-import { amber, green } from '@material-ui/core/colors';
-import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import { amber, green } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
 import AppStore from '../../stores/AppStore';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 import { withSnackbar } from 'notistack';
 
 const styles = (theme) => ({
@@ -56,6 +56,7 @@ class NotificationSnackbar extends PureComponent {
                 onClick={() => {
                     this.props.closeSnackbar(key);
                 }}
+                size="large"
             >
                 <CloseIcon className={classes.icon} />
             </IconButton>
