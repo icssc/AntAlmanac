@@ -277,16 +277,12 @@ class AppStore extends EventEmitter {
         this.emit('currentScheduleIndexChange');
     }
 
-    clearSchedule(addedCoursesAfterClear: AppStoreCourse[], customEventsAfterClear: RepeatingCustomEvent[]) {
-        throw new Error('Not Implemented')
-        // this.addedCourses = addedCoursesAfterClear;
-        // this.updateAddedSectionCodes();
-        // this.customEvents = customEventsAfterClear;
-        // this.finalsEventsInCalendar = calendarizeFinals();
-        // this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
-        // this.unsavedChanges = true;
-        // this.emit('addedCoursesChange');
-        // this.emit('customEventsChange');
+    clearSchedule() {
+        this.schedule.clearCurrentSchedule();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
+        this.unsavedChanges = true;
+        this.emit('addedCoursesChange');
+        this.emit('customEventsChange');
     }
 
     deleteSchedule() {

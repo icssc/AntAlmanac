@@ -81,6 +81,10 @@ export class Schedules {
         this.currentScheduleIndex = Math.min(this.currentScheduleIndex, this.getNumberOfSchedules() - 1);
     }
 
+    clearCurrentSchedule() {
+        this.getCurrentCourses().length = 0;
+    }
+
     addSchedule(newScheduleName: string) {
         this.schedules.push({scheduleName: newScheduleName, courses: []})
     }

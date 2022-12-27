@@ -154,7 +154,7 @@ const CalendarPaneToolbar = ({
                                 'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
                             )
                         ) {
-                            clearSchedules([currentScheduleIndex]);
+                            clearSchedules();
                             logAnalytics({
                                 category: analyticsEnum.calendar.title,
                                 action: analyticsEnum.calendar.actions.CLEAR_SCHEDULE,

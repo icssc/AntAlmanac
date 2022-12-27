@@ -232,23 +232,8 @@ export const editCustomEvent = (newCustomEvent: RepeatingCustomEvent) => {
     // AppStore.editCustomEvent(customEventsAfterEdit);
 };
 
-export const clearSchedules = (scheduleIndicesToClear: number[]) => {
-    throw new Error('Not Implemented')
-    // const addedCourses = AppStore.getAddedCourses();
-    // const customEvents = AppStore.getCustomEvents();
-    // const addedCoursesAfterClear = addedCourses.filter((course) => {
-    //     course.scheduleIndices = course.scheduleIndices.filter((index) => !scheduleIndicesToClear.includes(index));
-    //     return course.scheduleIndices.length !== 0;
-    // });
-    //
-    // const customEventsAfterClear = customEvents.filter((customEvent) => {
-    //     customEvent.scheduleIndices = customEvent.scheduleIndices.filter(
-    //         (index) => !scheduleIndicesToClear.includes(index)
-    //     );
-    //     return customEvent.scheduleIndices.length !== 0;
-    // });
-    //
-    // AppStore.clearSchedule(addedCoursesAfterClear, customEventsAfterClear);
+export const clearSchedules = () => {
+    AppStore.clearSchedule();
 };
 
 export const addCustomEvent = (customEvent: RepeatingCustomEvent) => {

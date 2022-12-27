@@ -187,7 +187,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                                         'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
                                     )
                                 ) {
-                                    clearSchedules([AppStore.getCurrentScheduleIndex()]);
+                                    clearSchedules();
                                     logAnalytics({
                                         category: analyticsEnum.addedClasses.title,
                                         action: analyticsEnum.addedClasses.actions.CLEAR_SCHEDULE,
