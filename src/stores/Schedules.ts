@@ -85,6 +85,13 @@ export class Schedules {
         this.getCurrentCourses().length = 0;
     }
 
+    changeCourseColor(sectionCode: string, term: string, newColor: string) {
+        const course = this.getExistingCourse(sectionCode, term);
+        if (course) {
+            course.color = newColor;
+        }
+    }
+
     addSchedule(newScheduleName: string) {
         this.schedules.push({scheduleName: newScheduleName, courses: []})
     }

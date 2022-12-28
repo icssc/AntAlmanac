@@ -287,19 +287,8 @@ export const changeCustomEventColor = (customEventID: number, newColor: string) 
     // AppStore.changeCustomEventColor(customEventsAfterColorChange, customEventID, newColor);
 };
 
-export const changeCourseColor = (sectionCode: string, newColor: string, term: string) => {
-    throw new Error("Whoops!");
-    // const addedCourses = AppStore.getAddedCourses();
-    //
-    // const addedCoursesAfterColorChange = addedCourses.map((addedCourse) => {
-    //     if (addedCourse.section.sectionCode === sectionCode && addedCourse.term === term) {
-    //         return { ...addedCourse, color: newColor };
-    //     } else {
-    //         return addedCourse;
-    //     }
-    // });
-    //
-    // AppStore.changeCourseColor(addedCoursesAfterColorChange, sectionCode, newColor);
+export const changeCourseColor = (sectionCode: string, term: string, newColor: string) => {
+    AppStore.changeCourseColor(sectionCode, term, newColor);
 };
 
 export const copySchedule = (from: number, to: number) => {

@@ -295,15 +295,13 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    changeCourseColor(addedCoursesAfterColorChange: AppStoreCourse[], sectionCode: string, newColor: string) {
-        throw new Error('Not Implemented')
-        // this.addedCourses = addedCoursesAfterColorChange;
-        // this.updateAddedSectionCodes();
-        // this.finalsEventsInCalendar = calendarizeFinals();
-        // this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
-        // this.unsavedChanges = true;
-        // this.colorPickers[sectionCode].emit('colorChange', newColor);
-        // this.emit('colorChange', false);
+    changeCourseColor(sectionCode: string, term: string, newColor: string) {
+        this.schedule.changeCourseColor(sectionCode, term, newColor);
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
+        this.unsavedChanges = true;
+        this.colorPickers[sectionCode].emit('colorChange', newColor);
+        this.emit('colorChange', false);
     }
 
     openSnackbar(variant: VariantType, message: string, duration?: number, position?: SnackbarPosition, style?: {[cssPropertyName: string]: string}) {
