@@ -66,6 +66,7 @@ const styles = {
 
 const SectionTable = (props) => {
     const { classes, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames, analyticsCategory } = props;
+    const courseId = courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     const encodedDept = encodeURIComponent(courseDetails.deptCode);
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
@@ -94,7 +95,7 @@ const SectionTable = (props) => {
                     analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
                     text="Reviews"
                     icon={<RateReview />}
-                    redirectLink={`https://peterportal.org/course/${encodedDept}${courseDetails.courseNumber}`}
+                    redirectLink={`https://peterportal.org/course/${courseId}`}
                 />
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
