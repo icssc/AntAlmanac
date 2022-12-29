@@ -54,7 +54,7 @@ class NotificationSnackbar extends PureComponent {
                 key="close"
                 color="inherit"
                 onClick={() => {
-                    size = 'large' > key;
+                    this.props.closeSnackbar(key);
                 }}
                 size="large"
             >
