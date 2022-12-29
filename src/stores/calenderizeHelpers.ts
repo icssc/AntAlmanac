@@ -117,10 +117,10 @@ export const calendarizeFinals = () => {
 };
 
 export const calendarizeCustomEvents = () => {
-    const customEvents = AppStore.getCustomEvents();
+    const currentCustomEvents = AppStore.schedule.getCurrentCustomEvents();
     const customEventsInCalendar = [];
 
-    for (const customEvent of customEvents) {
+    for (const customEvent of currentCustomEvents) {
         for (let dayIndex = 0; dayIndex < customEvent.days.length; dayIndex++) {
             if (customEvent.days[dayIndex]) {
                 const startHour = parseInt(customEvent.start.slice(0, 2), 10);
@@ -134,7 +134,6 @@ export const calendarizeCustomEvents = () => {
                     start: new Date(2018, 0, dayIndex, startHour, startMin),
                     isCustomEvent: true,
                     end: new Date(2018, 0, dayIndex, endHour, endMin),
-                    scheduleIndices: customEvent.scheduleIndices,
                     title: customEvent.title,
                 });
             }

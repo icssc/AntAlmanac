@@ -199,7 +199,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             </Paper>
         );
     } else {
-        const { title, customEventID } = courseInMoreInfo;
+            const { title, customEventID } = courseInMoreInfo;
         return (
             <Paper className={classes.customEventContainer} onClick={(event) => event.stopPropagation()}>
                 <div className={classes.title}>{title}</div>
@@ -214,9 +214,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                     </div>
                     <CustomEventDialog
                         onDialogClose={props.closePopover}
-                        customEvent={AppStore.getCustomEvents().find(
-                            (customEvent) => customEvent.customEventID === customEventID
-                        )}
+                        customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
                         scheduleNames={props.scheduleNames}
                         currentScheduleIndex={currentScheduleIndex}
                     />

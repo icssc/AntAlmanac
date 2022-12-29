@@ -1,5 +1,4 @@
-import AppStore, {AppStoreCourse, UserData} from '../stores/AppStore';
-import { VariantType } from 'notistack';
+import AppStore, { AppStoreCourse, UserData } from '../stores/AppStore';
 import analyticsEnum, { logAnalytics } from '../analytics';
 import { CourseDetails, courseNumAsDecimal } from '../helpers';
 import {
@@ -39,7 +38,14 @@ const arrayOfColors = [
     blueGrey[500],
 ];
 
-export const addCourse = (section: Section, courseDetails: CourseDetails, term: string, scheduleIndex: number, color?: string, quiet?: boolean) => {
+export const addCourse = (
+    section: Section,
+    courseDetails: CourseDetails,
+    term: string,
+    scheduleIndex: number,
+    color?: string,
+    quiet?: boolean
+) => {
     logAnalytics({
         category: analyticsEnum.classSearch.title,
         action: analyticsEnum.classSearch.actions.ADD_COURSE,
@@ -52,11 +58,13 @@ export const addCourse = (section: Section, courseDetails: CourseDetails, term: 
 
     if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 
-    if (existingCourse !== undefined)  {
-        if (AppStore.schedule.doesCourseExistInCurrentSchedule(existingCourse.section.sectionCode, existingCourse.term)) {
-            return existingCourse.color
+    if (existingCourse !== undefined) {
+        if (
+            AppStore.schedule.doesCourseExistInCurrentSchedule(existingCourse.section.sectionCode, existingCourse.term)
+        ) {
+            return existingCourse.color;
         }
-        color = existingCourse.color
+        color = existingCourse.color;
     }
 
     if (color === undefined) {
@@ -78,12 +86,12 @@ export const addCourse = (section: Section, courseDetails: CourseDetails, term: 
         courseTitle: courseDetails.courseTitle,
         courseComment: courseDetails.courseComment,
         prerequisiteLink: courseDetails.prerequisiteLink,
-        section: {...section, color: color},
+        section: { ...section, color: color },
     };
     if (scheduleIndex === AppStore.schedule.getNumberOfSchedules()) {
-        AppStore.addCourse(newCourse, true)
+        AppStore.addCourse(newCourse, true);
     } else {
-        AppStore.addCourse(newCourse)
+        AppStore.addCourse(newCourse);
     }
     return color;
 };
@@ -94,12 +102,18 @@ export const addCourse = (section: Section, courseDetails: CourseDetails, term: 
  * @param styles object containing css-in-js object, like {[propertyName]: string}
  * if anyone comes back to refactor this, I think `notistack` provides its own types we could use.
  */
-export const openSnackbar = (variant: VariantType, message: string, duration?: number, position?: SnackbarPosition, style?: {[cssPropertyName: string]: string}) => {
+export const openSnackbar = (
+    variant: string,
+    message: string,
+    duration?: number,
+    position?: SnackbarPosition,
+    style?: { [cssPropertyName: string]: string }
+) => {
     AppStore.openSnackbar(variant, message, duration, position, style);
 };
 
 export const saveSchedule = async (userID: string, rememberMe: boolean) => {
-    throw new Error('Not Implemented')
+    throw new Error('Not Implemented');
     // logAnalytics({
     //     category: analyticsEnum.nav.title,
     //     action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
@@ -160,7 +174,7 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
 };
 
 export const loadSchedule = async (userID: string, rememberMe: boolean) => {
-    throw new Error('Not Implemented')
+    throw new Error('Not Implemented');
     // logAnalytics({
     //     category: analyticsEnum.nav.title,
     //     action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
@@ -200,49 +214,28 @@ export const loadSchedule = async (userID: string, rememberMe: boolean) => {
     // }
 };
 
-export const deleteCourse = (sectionCode: string,  term: string) => {
-    AppStore.deleteCourse(sectionCode, term)
+export const deleteCourse = (sectionCode: string, term: string) => {
+    AppStore.deleteCourse(sectionCode, term);
 };
 
 export const deleteCustomEvent = (customEventID: number) => {
-    throw new Error('Not Implemented')
-    // const customEvents = AppStore.getCustomEvents();
-    //
-    // const customEventsAfterDelete = customEvents.filter((customEvent) => {
-    //     if (customEvent.customEventID === customEventID) {
-    //         if (customEvent.scheduleIndices.length === 1) {
-    //             return false;
-    //         } else {
-    //             customEvent.scheduleIndices = customEvent.scheduleIndices.filter((index) => index !== scheduleIndex);
-    //
-    //             return true;
-    //         }
-    //     }
-    //     return true;
-    // });
-    //
-    // AppStore.deleteCustomEvent(customEventsAfterDelete);
+    AppStore.deleteCustomEvent(customEventID);
 };
 
-export const editCustomEvent = (newCustomEvent: RepeatingCustomEvent) => {
-    // const customEventsAfterEdit = AppStore.getCustomEvents().map((customEvent) => {
-    //     if (newCustomEvent.customEventID !== customEvent.customEventID) return customEvent;
-    //     else return newCustomEvent;
-    // });
-    // AppStore.editCustomEvent(customEventsAfterEdit);
+export const editCustomEvent = (editedCustomEvent: RepeatingCustomEvent, newScheduleIndices: number[]) => {
+    AppStore.editCustomEvent(editedCustomEvent, newScheduleIndices);
 };
 
 export const clearSchedules = () => {
     AppStore.clearSchedule();
 };
 
-export const addCustomEvent = (customEvent: RepeatingCustomEvent) => {
-    throw new Error('Not Implemented')
-    // AppStore.addCustomEvent(customEvent);
+export const addCustomEvent = (customEvent: RepeatingCustomEvent, scheduleIndices: number[]) => {
+    AppStore.addCustomEvent(customEvent, scheduleIndices);
 };
 
-export const undoDelete = (event: KeyboardEvent|null) => {
-    throw new Error('Not Implemented')
+export const undoDelete = (event: KeyboardEvent | null) => {
+    throw new Error('Not Implemented');
     // const deletedCourses = AppStore.getDeletedCourses();
     //
     // if (deletedCourses.length > 0 && (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))) {
@@ -273,7 +266,7 @@ export const changeCurrentSchedule = (newScheduleIndex: number) => {
 };
 
 export const changeCustomEventColor = (customEventID: number, newColor: string) => {
-    throw new Error('Not Implemented')
+    throw new Error('Not Implemented');
     // const customEvents = AppStore.getCustomEvents();
     //
     // const customEventsAfterColorChange = customEvents.map((customEvent) => {
@@ -292,7 +285,7 @@ export const changeCourseColor = (sectionCode: string, term: string, newColor: s
 };
 
 export const copySchedule = (from: number, to: number) => {
-    throw new Error('Not Implemented')
+    throw new Error('Not Implemented');
     // const addedCourses = AppStore.getAddedCourses();
     // const customEvents = AppStore.getCustomEvents();
     // const scheduleNames = AppStore.getScheduleNames();

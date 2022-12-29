@@ -1,10 +1,11 @@
-import {AppStoreCourse} from "./AppStore";
+import { AppStoreCourse } from './AppStore';
+import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { addCustomEvent } from '../actions/AppStoreActions';
 
 export interface Schedule {
-    scheduleName: string
-    courses: AppStoreCourse[]
-    // TODO: Figure out custom events
-    // customEvents: RepeatingCustomEvent[]
+    scheduleName: string;
+    courses: AppStoreCourse[];
+    customEvents: RepeatingCustomEvent[];
 }
 
 export class Schedules {
@@ -12,8 +13,8 @@ export class Schedules {
     private currentScheduleIndex: number
 
     constructor() {
-        this.schedules = [{scheduleName: 'Schedule 1', courses: []}]
-        this.currentScheduleIndex = 0
+        this.schedules = [{ scheduleName: 'Schedule 1', courses: [], customEvents: [] }];
+        this.currentScheduleIndex = 0;
     }
 
     setCurrentScheduleIndex(newScheduleIndex: number) {
@@ -32,6 +33,10 @@ export class Schedules {
         return this.schedules[this.currentScheduleIndex].courses
     }
 
+    getCurrentCustomEvents() {
+        return this.schedules[this.currentScheduleIndex].customEvents;
+    }
+
     getCurrentScheduleName() {
         return this.schedules[this.currentScheduleIndex].scheduleName
     }
@@ -42,6 +47,10 @@ export class Schedules {
 
     getAllCourses() {
         return this.schedules.map(schedule => schedule.courses).flat(1)
+    }
+
+    getAllCustomEvents() {
+        return this.schedules.map((schedule) => schedule.customEvents).flat(1);
     }
 
     getCurrentScheduleIndex() {
@@ -58,6 +67,26 @@ export class Schedules {
         return undefined;
     }
 
+    getExistingCustomEvent(customEventId: number) {
+        // Get the first instance of a custom event that matches the parameters
+        for (const customEvent of this.getAllCustomEvents()) {
+            if (customEvent.customEventID === customEventId) {
+                return customEvent;
+            }
+        }
+        return undefined;
+    }
+
+    getIndexesOfCustomEvent(customEventId: number) {
+        const indices: number[] = [];
+        for (const scheduleIndex of this.schedules.keys()) {
+            if (this.doesCustomEventExistInSchedule(customEventId, scheduleIndex)) {
+                indices.push(scheduleIndex);
+            }
+        }
+        return indices;
+    }
+
     addCourse(newCourse: AppStoreCourse, scheduleIndex: number = this.getCurrentScheduleIndex()) {
         if (!this.doesCourseExistInCurrentSchedule(newCourse.section.sectionCode, newCourse.term)){
             this.schedules[scheduleIndex].courses.push(newCourse)
@@ -70,10 +99,28 @@ export class Schedules {
         }
     }
 
-    deleteCourse(sectionCode: string, term: string){
+    addCustomEvent(newCustomEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
+        for (const scheduleIndex of scheduleIndices) {
+            if (!this.doesCustomEventExistInSchedule(newCustomEvent.customEventID, scheduleIndex)) {
+                this.schedules[scheduleIndex].customEvents.push(newCustomEvent);
+            }
+        }
+    }
+
+    deleteCourse(sectionCode: string, term: string) {
         this.schedules[this.currentScheduleIndex].courses = this.getCurrentCourses().filter((course) => {
             return !(course.section.sectionCode === sectionCode && course.term === term)
         })
+    }
+
+    deleteCustomEvent(customEventId: number, scheduleIndices: number[] = [this.getCurrentScheduleIndex()]) {
+        for (const scheduleIndex of scheduleIndices) {
+            const currentCustomEvents = this.schedules[scheduleIndex].customEvents;
+            const index = currentCustomEvents.findIndex((customEvent) => customEvent.customEventID === customEventId);
+            if (index !== undefined) {
+                currentCustomEvents.splice(index, 1);
+            }
+        }
     }
 
     deleteCurrentSchedule() {
@@ -92,8 +139,28 @@ export class Schedules {
         }
     }
 
+    editCustomEvent(editedCustomEvent: RepeatingCustomEvent, newIndices: number[]) {
+        const customEvent = this.getExistingCustomEvent(editedCustomEvent.customEventID);
+        if (customEvent === undefined) {
+            this.addCustomEvent(editedCustomEvent, newIndices);
+            return;
+        }
+
+        // Modify the original custom event so all references are updated as well
+        Object.assign(customEvent, editedCustomEvent);
+
+        const currentIndices = this.getIndexesOfCustomEvent(editedCustomEvent.customEventID);
+        // Equivalent to currentIndices set minus newIndices
+        const indicesToDelete = currentIndices.filter((index) => !newIndices.includes(index));
+        this.deleteCustomEvent(customEvent.customEventID, indicesToDelete);
+
+        // Equivalent to newIndices set minus currentIndices
+        const indicesToAdd = newIndices.filter((index) => !currentIndices.includes(index));
+        this.addCustomEvent(customEvent, indicesToAdd);
+    }
+
     addSchedule(newScheduleName: string) {
-        this.schedules.push({scheduleName: newScheduleName, courses: []})
+        this.schedules.push({ scheduleName: newScheduleName, courses: [], customEvents: [] });
     }
 
     renameSchedule(newScheduleName: string, scheduleIndex: number) {
@@ -104,6 +171,15 @@ export class Schedules {
         for (const course of this.getCurrentCourses()) {
             if (course.section.sectionCode === sectionCode && term === course.term) {
                 return true
+            }
+        }
+        return false;
+    }
+
+    doesCustomEventExistInSchedule(customEventId: number, scheduleIndex: number) {
+        for (const customEvent of this.schedules[scheduleIndex].customEvents) {
+            if (customEvent.customEventID === customEventId) {
+                return true;
             }
         }
         return false;

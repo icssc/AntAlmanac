@@ -124,7 +124,10 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
     };
 
     loadCustomEvents = () => {
-        this.setState({ customEvents: AppStore.getCustomEvents() });
+        this.setState({ customEvents: AppStore.schedule.getCurrentCustomEvents() });
+        // Force update required because the state has a reference to custom events
+        // so it doesn't see differences all the time
+        this.forceUpdate()
     };
 
     loadScheduleNames = () => {
@@ -216,8 +219,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                 })}
                 {this.state.customEvents.length > 0 && <Typography variant="h6">Custom Events</Typography>}
                 {this.state.customEvents.map((customEvent) => {
-                    if (customEvent.scheduleIndices.includes(AppStore.getCurrentScheduleIndex())) {
-                        return (
+                    return (
                             <Grid item md={12} xs={12} key={customEvent.title}>
                                 <CustomEventDetailView
                                     customEvent={customEvent}
@@ -226,8 +228,6 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                                 />
                             </Grid>
                         );
-                    }
-                    return null;
                 })}
             </>
         );
