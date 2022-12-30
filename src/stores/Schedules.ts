@@ -139,6 +139,13 @@ export class Schedules {
         }
     }
 
+    changeCustomEventColor(customEventId: number, newColor: string) {
+        const customEvent = this.getExistingCustomEvent(customEventId);
+        if (customEvent) {
+            customEvent.color = newColor;
+        }
+    }
+
     editCustomEvent(editedCustomEvent: RepeatingCustomEvent, newIndices: number[]) {
         const customEvent = this.getExistingCustomEvent(editedCustomEvent.customEventID);
         if (customEvent === undefined) {

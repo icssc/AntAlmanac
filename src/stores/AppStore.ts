@@ -195,18 +195,13 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    changeCustomEventColor(
-        customEventsAfterColorChange: RepeatingCustomEvent[],
-        customEventID: number,
-        newColor: string
-    ) {
-        throw new Error('Not Implemented');
-        // this.customEvents = customEventsAfterColorChange;
-        // this.finalsEventsInCalendar = calendarizeFinals();
-        // this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
-        // this.unsavedChanges = true;
-        // this.colorPickers[customEventID].emit('colorChange', newColor);
-        // this.emit('colorChange', false);
+    changeCustomEventColor(customEventId: number, newColor: string) {
+        this.schedule.changeCustomEventColor(customEventId, newColor);
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
+        this.unsavedChanges = true;
+        this.colorPickers[customEventId].emit('colorChange', newColor);
+        this.emit('colorChange', false);
     }
 
     addSchedule(newScheduleName: string) {

@@ -266,18 +266,7 @@ export const changeCurrentSchedule = (newScheduleIndex: number) => {
 };
 
 export const changeCustomEventColor = (customEventID: number, newColor: string) => {
-    throw new Error('Not Implemented');
-    // const customEvents = AppStore.getCustomEvents();
-    //
-    // const customEventsAfterColorChange = customEvents.map((customEvent) => {
-    //     if (customEvent.customEventID === customEventID) {
-    //         return { ...customEvent, color: newColor };
-    //     } else {
-    //         return customEvent;
-    //     }
-    // });
-    //
-    // AppStore.changeCustomEventColor(customEventsAfterColorChange, customEventID, newColor);
+    AppStore.changeCustomEventColor(customEventID, newColor);
 };
 
 export const changeCourseColor = (sectionCode: string, term: string, newColor: string) => {
