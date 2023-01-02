@@ -14,7 +14,7 @@ const styles = {
 
 function CourseInfoButton({ classes, text, icon, redirectLink, popupContent, analyticsAction, analyticsCategory }) {
     const [popupAnchor, setPopupAnchor] = useState(null);
-    const isMobileScreen = useMediaQuery('(max-width: 750px)');
+    const isMobileScreen = useMediaQuery('(max-width: 960px)');
     return (
         <>
             <Button

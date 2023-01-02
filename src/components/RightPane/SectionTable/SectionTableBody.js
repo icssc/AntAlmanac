@@ -104,7 +104,7 @@ const CourseCodeCell = withStyles(styles)((props) => {
 
 const SectionDetailsCell = withStyles(styles)((props) => {
     const { classes, sectionType, sectionNum, units } = props;
-    const isMobileScreen = useMediaQuery('(max-width: 750px)');
+    const isMobileScreen = useMediaQuery('(max-width: 960px)');
 
     return (
         <NoPaddingTableCell className={classes.cell} style={isMobileScreen ? { textAlign: 'center' } : {}}>
