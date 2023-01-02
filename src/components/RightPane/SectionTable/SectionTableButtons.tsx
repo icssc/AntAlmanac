@@ -27,7 +27,7 @@ interface ColorAndDeleteProps {
 
 export const ColorAndDelete = withStyles(styles)((props: ColorAndDeleteProps) => {
     const { sectionCode, color, classes, term } = props;
-    const isMobileScreen = useMediaQuery('(max-width: 750px)');
+    const isMobileScreen = useMediaQuery('(max-width: 960px)');
 
     return (
         <TableCell padding="none">
@@ -66,7 +66,7 @@ interface ScheduleAddCellProps {
 export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) => {
     const { classes, section, courseDetails, term, scheduleNames } = props;
     const popupState = usePopupState({ popupId: 'SectionTableAddCellPopup', variant: 'popover' });
-    const isMobileScreen = useMediaQuery('(max-width: 750px)');
+    const isMobileScreen = useMediaQuery('(max-width: 960px)');
 
     const closeAndAddCourse = (scheduleIndex: number, specificSchedule?: boolean) => {
         popupState.close();

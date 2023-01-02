@@ -124,7 +124,7 @@ interface SectionDetailCellProps {
 
 const SectionDetailsCell = withStyles(styles)((props: SectionDetailCellProps) => {
     const { classes, sectionType, sectionNum, units } = props;
-    const isMobileScreen = useMediaQuery('(max-width: 750px)');
+    const isMobileScreen = useMediaQuery('(max-width: 960px)');
 
     return (
         <NoPaddingTableCell className={classes.cell} style={isMobileScreen ? { textAlign: 'center' } : {}}>

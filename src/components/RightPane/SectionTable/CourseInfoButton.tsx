@@ -32,7 +32,7 @@ function CourseInfoButton({
     analyticsCategory,
 }: CourseInfoButtonProps) {
     const [popupAnchor, setPopupAnchor] = useState<HTMLElement | null>(null);
-    const isMobileScreen = useMediaQuery('(max-width: 750px)');
+    const isMobileScreen = useMediaQuery('(max-width: 960px)');
     return (
         <>
             <Button

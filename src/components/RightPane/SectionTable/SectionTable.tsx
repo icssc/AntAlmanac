@@ -68,7 +68,7 @@ const SectionTable = (props: SectionTableProps) => {
     const { classes, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames, analyticsCategory } = props;
     const courseId = courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     const encodedDept = encodeURIComponent(courseDetails.deptCode);
-    const isMobileScreen = useMediaQuery('(max-width: 750px)');
+    const isMobileScreen = useMediaQuery('(max-width: 960px)');
 
     return (
         <>

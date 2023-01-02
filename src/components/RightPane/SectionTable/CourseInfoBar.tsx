@@ -139,7 +139,7 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
         }
     };
 
-    const isMobileScreen = useMediaQuery('(max-width: 750px)');
+    const isMobileScreen = useMediaQuery('(max-width: 960px)');
 
     return (
         <>
