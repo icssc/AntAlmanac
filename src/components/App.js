@@ -49,53 +49,76 @@ class App extends PureComponent {
                     parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
                 color: 'dodgerblue',
             },
-            palette: this.state.darkMode
-                ? {
-                      mode: 'dark',
-                      primary: {
-                          light: '#5191d6',
-                          main: '#1E90FF',
-                          dark: '#003a75',
-                          contrastText: '#fff',
-                      },
-                      secondary: {
-                          main: '#1E90FF',
-                          contrastText: '#000',
-                      },
-                      background: {
-                          default: '#303030',
-                          paper: '#424242',
-                      },
-                      text: {
-                          primary: '#FFF',
-                      },
-                      action: {
-                          active: '#FFF',
-                      },
-                      divider: '#AAA',
-                      clearButton: { main: '#f50057' },
-                      button: { main: '#FFF', dark: '#000' },
-                      link: { main: '#1E90FF' },
-                      appBar: { main: '#305db7' },
-                  }
-                : {
-                      mode: 'light',
-                      primary: {
-                          light: '#5191d6',
-                          main: '#305db7',
-                          dark: '#003a75',
-                          contrastText: '#fff',
-                      },
-                      secondary: {
-                          main: '#00F',
-                          contrastText: '#000',
-                      },
-                      clearButton: { main: '#f50057' },
-                      button: { main: '#000' },
-                      link: { main: '#00F' },
-                      appBar: { main: '#305db7' },
-                  },
+            palette: {
+                appBar: {
+                    main: '#305db7',
+                },
+                white: {
+                    main: '#d5d5d5',
+                    contrastText: '#000',
+                },
+                clearButton: {
+                    main: '#f50057',
+                },
+                ...(this.state.darkMode
+                    ? {
+                          mode: 'dark',
+                          primary: {
+                              main: '#1E90FF',
+                              contrastText: '#fff',
+                          },
+                          secondary: {
+                              main: '#1E90FF',
+                              contrastText: '#000',
+                          },
+                          background: {
+                              default: '#303030',
+                              paper: '#424242',
+                          },
+                          divider: '#AAA',
+
+                          button: {
+                              main: '#FFF',
+                          },
+                      }
+                    : {
+                          mode: 'light',
+                          primary: {
+                              main: '#305db7',
+                              contrastText: '#fff',
+                          },
+                          secondary: {
+                              main: '#00F',
+                              contrastText: '#000',
+                          },
+                          button: {
+                              main: 'rgba(0, 0, 0, 0.23)',
+                          },
+                      }),
+            },
             spacing: 4,
+            components: {
+                MuiPaper: {
+                    styleOverrides: { root: { backgroundImage: 'unset' } }, // removes transparent gradient
+                },
+                MuiButton: {
+                    //change outlined button variant
+                    variants: [
+                        {
+                            props: { variant: 'outlined', color: 'button' },
+                            style: {
+                                color: this.state.darkMode ? '#FFF' : '#000',
+                                borderColor: this.state.darkMode ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
+                                '&:hover': {
+                                    borderColor: this.state.darkMode
+                                        ? 'rgba(255, 255, 255, 0.23)'
+                                        : 'rgba(0, 0, 0, 0.23)',
+                                },
+                            },
+                        },
+                    ],
+                },
+            },
         });
         return (
             <BrowserRouter>

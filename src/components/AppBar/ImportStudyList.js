@@ -4,7 +4,7 @@ import { addCoursesMultiple, combineSOCObjects, getCourseInfo, queryWebsoc } fro
 import RightPaneStore from '../RightPane/RightPaneStore';
 import { openSnackbar } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
-import { PostAdd } from '@mui/icons-material';
+import { ContentPasteGo } from '@mui/icons-material';
 import InputLabel from '@mui/material/InputLabel';
 import { withStyles } from '@mui/styles';
 import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
@@ -124,8 +124,7 @@ class ImportStudyList extends PureComponent {
         const { classes } = this.props;
         return (
             <>
-                {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
-                <Button onClick={this.handleOpen} color="inherit" startIcon={<PostAdd />}>
+                <Button onClick={this.handleOpen} color="inherit" startIcon={<ContentPasteGo />}>
                     Import
                 </Button>
                 <Dialog open={this.state.isOpen}>
@@ -156,7 +155,7 @@ class ImportStudyList extends PureComponent {
                         <TermSelector changeState={this.onTermSelectorChange} fieldName={'selectedTerm'} />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => this.handleClose(false)} color="primary">
+                        <Button onClick={() => this.handleClose(false)} variant="primary">
                             Cancel
                         </Button>
                         <Button onClick={() => this.handleClose(true)} color="primary">

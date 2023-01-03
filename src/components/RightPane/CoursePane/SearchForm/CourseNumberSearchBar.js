@@ -33,6 +33,7 @@ class CourseNumberSearchBar extends PureComponent {
                     value={this.state.courseNumber}
                     onChange={this.handleChange}
                     helperText="ex. 6B, 17, 30-40"
+                    variant="standard"
                 />
             </div>
         );

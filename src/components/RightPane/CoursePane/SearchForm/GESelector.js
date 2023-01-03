@@ -52,8 +52,8 @@ class GESelector extends PureComponent {
 
         return (
             <FormControl className={classes.formControl}>
-                <InputLabel>General Education</InputLabel>
-                <Select value={this.state.ge} onChange={this.handleChange} fullWidth>
+                <InputLabel variant="standard">General Education</InputLabel>
+                <Select value={this.state.ge} onChange={this.handleChange} fullWidth variant="standard">
                     {geList.map((category) => {
                         return (
                             <MenuItem key={category.value} value={category.value}>

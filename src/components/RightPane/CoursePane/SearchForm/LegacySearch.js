@@ -72,7 +72,7 @@ function LegacySearch({ classes, onSubmit, onReset }) {
                         Search
                     </Button>
 
-                    <Button variant="contained" onClick={onReset}>
+                    <Button variant="contained" color="white" onClick={onReset}>
                         Reset
                     </Button>
                 </div>

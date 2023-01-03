@@ -107,6 +107,7 @@ class AdvancedSearchTextFields extends PureComponent {
                     value={this.state.instructor}
                     onChange={this.handleChange('instructor')}
                     helperText="Last name only"
+                    variant="standard"
                 />
 
                 <TextField
@@ -117,11 +118,16 @@ class AdvancedSearchTextFields extends PureComponent {
                     type="search"
                     helperText="ex. 3, 4, or VAR"
                     className={classes.units}
+                    variant="standard"
                 />
 
                 <FormControl>
                     <InputLabel>Class Full Option</InputLabel>
-                    <Select value={this.state.coursesFull} onChange={this.handleChange('coursesFull')}>
+                    <Select
+                        value={this.state.coursesFull}
+                        onChange={this.handleChange('coursesFull')}
+                        variant="standard"
+                    >
                         <MenuItem value={'ANY'}>Include all classes</MenuItem>
                         <MenuItem value={'SkipFullWaitlist'}>Include full courses if space on waitlist</MenuItem>
                         <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
@@ -137,6 +143,7 @@ class AdvancedSearchTextFields extends PureComponent {
                         value={this.state.startTime}
                         onChange={this.handleChange('startTime')}
                         className={classes.timePicker}
+                        variant="standard"
                     >
                         {startsAfterMenuItems}
                     </Select>
@@ -149,6 +156,7 @@ class AdvancedSearchTextFields extends PureComponent {
                         value={this.state.endTime}
                         onChange={this.handleChange('endTime')}
                         className={classes.timePicker}
+                        variant="standard"
                     >
                         {endsBeforeMenuItems}
                     </Select>
@@ -172,6 +180,7 @@ class AdvancedSearchTextFields extends PureComponent {
                     type="search"
                     value={this.state.building}
                     onChange={this.handleChange('building')}
+                    variant="standard"
                 />
 
                 <TextField
@@ -180,6 +189,7 @@ class AdvancedSearchTextFields extends PureComponent {
                     type="search"
                     value={this.state.room}
                     onChange={this.handleChange('room')}
+                    variant="standard"
                 />
             </div>
         );
