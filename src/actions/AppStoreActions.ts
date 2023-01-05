@@ -1,4 +1,4 @@
-import AppStore, {AppStoreCourse, UserData} from '../stores/AppStore';
+import AppStore, {AppStoreCourse, UserData, ShortCourseInfo} from '../stores/AppStore';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../analytics';
 import { CourseDetails, courseNumAsDecimal } from '../helpers';
@@ -133,13 +133,6 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
             const customEvents = AppStore.getCustomEvents();
             const scheduleNames = AppStore.getScheduleNames();
 
-            interface ShortCourseInfo {
-                color: string
-                term: string
-                sectionCode: string
-                scheduleIndices: number[]
-            }
-
             const userData = { addedCourses: [] as ShortCourseInfo[], scheduleNames: scheduleNames, customEvents: customEvents };
 
             userData.addedCourses = addedCourses.map((course) => {
@@ -204,8 +197,8 @@ export const loadSchedule = async (userID: string, rememberMe: boolean) => {
                     return;
                 }
                 const json = await response_data.json();
-
-                AppStore.loadSchedule(await getCoursesData(json.userData) as UserData);
+                const courseData = await getCoursesData(json.userData);
+                AppStore.loadSchedule(courseData);
 
                 openSnackbar('success', `Schedule for username "${userID}" loaded.`);
             } catch (e) {
