@@ -45,7 +45,7 @@ export async function getCoursesData(userData: UserData) {
         return 
     }
     const sectionCodeToInfoMapping = userData.addedCourses.reduce((accumulator, addedCourse) => {
-        accumulator[addedCourse.section.sectionCode] = { ...addedCourse };
+        accumulator[`${addedCourse.section.sectionCode}${addedCourse.term}`] = { ...addedCourse };
         return accumulator;
     }, {} as {[key: string]: AppStoreCourse});
 
@@ -74,7 +74,7 @@ export async function getCoursesData(userData: UserData) {
 
             for (const [sectionCode, courseData] of Object.entries(getCourseInfo(jsonResp))) {
                 addedCourses.push({
-                    ...sectionCodeToInfoMapping[sectionCode],
+                    ...sectionCodeToInfoMapping[`${sectionCode}${term}`],
                     ...courseData.courseDetails,
                     section: courseData.section,
                 });
