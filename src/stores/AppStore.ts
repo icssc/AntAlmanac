@@ -2,9 +2,10 @@ import { EventEmitter } from 'events';
 import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '../components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { AASection } from '../peterportal.types';
+import { AASection, Section } from '../peterportal.types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calenderizeHelpers';
 import { Schedules } from './Schedules';
+import { CourseDetails } from '../helpers';
 
 export interface UserData {
     addedCourses: AppStoreCourse[];
@@ -83,8 +84,8 @@ class AppStore extends EventEmitter {
         return this.schedule.getAllCourses();
     }
 
-    addCourse(newCourse: AppStoreCourse, addToAllSchedules: boolean = false) {
-        if (addToAllSchedules) {
+    addCourse(newCourse: AppStoreCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
+        if (scheduleIndex === this.schedule.getNumberOfSchedules()) {
             this.schedule.addCourseToAllSchedules(newCourse);
         } else {
             this.schedule.addCourse(newCourse);

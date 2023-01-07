@@ -325,14 +325,12 @@ export const addCoursesMultiple = (
     term: string,
     scheduleIndex: number
 ) => {
-    let sectionsAdded = 0;
     for (const section of Object.values(courseInfo)) {
-        addCourse(section.section, section.courseDetails, term, scheduleIndex, undefined, true);
-        ++sectionsAdded;
+        addCourse(section.section, section.courseDetails, term, scheduleIndex, true);
     }
     const terms = termsInSchedule(AppStore.getAddedCourses(), term, scheduleIndex);
     if (terms.size > 1) warnMultipleTerms(terms);
-    return sectionsAdded;
+    return Object.values(courseInfo).length;
 };
 
 export const termsInSchedule = (courses: AppStoreCourse[], term: string, scheduleIndex: number) =>

@@ -1,6 +1,36 @@
 import { AppStoreCourse } from './AppStore';
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { addCustomEvent } from '../actions/AppStoreActions';
+import {
+    amber,
+    blue,
+    blueGrey,
+    cyan,
+    deepPurple,
+    green,
+    indigo,
+    lightGreen,
+    lime,
+    pink,
+    purple,
+    red,
+    teal,
+} from '@material-ui/core/colors';
+
+const arrayOfColors = [
+    red[500],
+    pink[500],
+    purple[500],
+    indigo[500],
+    deepPurple[500],
+    blue[500],
+    green[500],
+    cyan[500],
+    teal[500],
+    lightGreen[500],
+    lime[500],
+    amber[500],
+    blueGrey[500],
+];
 
 export interface Schedule {
     scheduleName: string;
@@ -88,8 +118,21 @@ export class Schedules {
     }
 
     addCourse(newCourse: AppStoreCourse, scheduleIndex: number = this.getCurrentScheduleIndex()) {
-        if (!this.doesCourseExistInCurrentSchedule(newCourse.section.sectionCode, newCourse.term)){
-            this.schedules[scheduleIndex].courses.push(newCourse)
+        let courseToAdd = this.getExistingCourse(newCourse.section.sectionCode, newCourse.term);
+        if (courseToAdd === undefined) {
+            const setOfUsedColors = new Set(this.getAllCourses().map((course) => course.color));
+
+            let color: string =
+                arrayOfColors.find((materialColor) => {
+                    if (!setOfUsedColors.has(materialColor)) return materialColor;
+                    else return undefined;
+                }) ?? '#5ec8e0';
+            courseToAdd = newCourse;
+            courseToAdd.color = courseToAdd.section.color = color;
+        }
+
+        if (!this.doesCourseExistInCurrentSchedule(newCourse.section.sectionCode, newCourse.term)) {
+            this.schedules[scheduleIndex].courses.push(courseToAdd);
         }
     }
 
@@ -168,6 +211,7 @@ export class Schedules {
 
     addSchedule(newScheduleName: string) {
         this.schedules.push({ scheduleName: newScheduleName, courses: [], customEvents: [] });
+        this.setCurrentScheduleIndex(this.getNumberOfSchedules() - 1);
     }
 
     renameSchedule(newScheduleName: string, scheduleIndex: number) {

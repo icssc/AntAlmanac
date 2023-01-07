@@ -22,28 +22,11 @@ import { Section } from '../peterportal.types';
 import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 
-const arrayOfColors = [
-    red[500],
-    pink[500],
-    purple[500],
-    indigo[500],
-    deepPurple[500],
-    blue[500],
-    green[500],
-    cyan[500],
-    teal[500],
-    lightGreen[500],
-    lime[500],
-    amber[500],
-    blueGrey[500],
-];
-
 export const addCourse = (
     section: Section,
     courseDetails: CourseDetails,
     term: string,
     scheduleIndex: number,
-    color?: string,
     quiet?: boolean
 ) => {
     logAnalytics({
@@ -52,48 +35,23 @@ export const addCourse = (
         label: courseDetails.deptCode,
         value: courseNumAsDecimal(courseDetails.courseNumber),
     });
-    const addedCourses = AppStore.getAddedCourses();
     const terms = termsInSchedule(term);
-    const existingCourse = AppStore.schedule.getExistingCourse(section.sectionCode, term);
 
     if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 
-    if (existingCourse !== undefined) {
-        if (
-            AppStore.schedule.doesCourseExistInCurrentSchedule(existingCourse.section.sectionCode, existingCourse.term)
-        ) {
-            return existingCourse.color;
-        }
-        color = existingCourse.color;
-    }
-
-    if (color === undefined) {
-        const setOfUsedColors = new Set(addedCourses.map((course) => course.color));
-
-        color = arrayOfColors.find((materialColor) => {
-            if (!setOfUsedColors.has(materialColor)) return materialColor;
-            else return undefined;
-        });
-
-        if (color === undefined) color = '#5ec8e0';
-    }
-
+    // The color will be set properly in Schedules
     const newCourse: AppStoreCourse = {
-        color: color,
+        color: '',
         term: term,
         deptCode: courseDetails.deptCode,
         courseNumber: courseDetails.courseNumber,
         courseTitle: courseDetails.courseTitle,
         courseComment: courseDetails.courseComment,
         prerequisiteLink: courseDetails.prerequisiteLink,
-        section: { ...section, color: color },
+        section: { ...section, color: '' },
     };
-    if (scheduleIndex === AppStore.schedule.getNumberOfSchedules()) {
-        AppStore.addCourse(newCourse, true);
-    } else {
-        AppStore.addCourse(newCourse);
-    }
-    return color;
+
+    AppStore.addCourse(newCourse, scheduleIndex);
 };
 /**
  * @param variant usually 'info', 'error', 'warning', or 'success'
