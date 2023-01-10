@@ -39,17 +39,7 @@ export async function queryGraphQL(queryString: string): Promise<GradesGraphQLRe
 }
 
 export interface CourseData {
-    addedCourses: {
-        section: AASection;
-        deptCode: string;
-        courseNumber: string;
-        courseTitle: string;
-        courseComment: string;
-        prerequisiteLink: string;
-        color: string;
-        term: string;
-        scheduleIndices: number[];
-    }[]
+    addedCourses: AppStoreCourse[]
     scheduleNames: string[];
     customEvents: RepeatingCustomEvent[];
 }
