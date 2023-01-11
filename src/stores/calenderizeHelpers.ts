@@ -2,10 +2,10 @@ import { CourseEvent, CustomEvent } from '../components/Calendar/CourseCalendarE
 import AppStore from './AppStore';
 
 export const calendarizeCourseEvents = () => {
-    const addedCourses = AppStore.getAddedCourses();
+    const currentCourses = AppStore.schedule.getCurrentCourses();
     const courseEventsInCalendar: CourseEvent[] = [];
 
-    for (const course of addedCourses) {
+    for (const course of currentCourses) {
         for (const meeting of course.section.meetings) {
             const timeString = meeting.time.replace(/\s/g, '');
 
@@ -38,7 +38,7 @@ export const calendarizeCourseEvents = () => {
                 dates.forEach((shouldBeInCal, index) => {
                     if (shouldBeInCal) {
                         const newEvent = {
-                            color: course.color,
+                            color: course.section.color,
                             term: course.term,
                             title: course.deptCode + ' ' + course.courseNumber,
                             courseTitle: course.courseTitle,
@@ -49,8 +49,7 @@ export const calendarizeCourseEvents = () => {
                             start: new Date(2018, 0, index, startHr, startMin),
                             finalExam: course.section.finalExam,
                             end: new Date(2018, 0, index, endHr, endMin),
-                            isCustomEvent: false as const,
-                            scheduleIndices: course.scheduleIndices,
+                            isCustomEvent: false as const
                         };
 
                         courseEventsInCalendar.push(newEvent);
@@ -64,10 +63,10 @@ export const calendarizeCourseEvents = () => {
 };
 
 export const calendarizeFinals = () => {
-    const addedCourses = AppStore.getAddedCourses();
-    const finalsEventsInCalendar = [] as CourseEvent[];
+    const currentCourses = AppStore.schedule.getCurrentCourses();
+    let finalsEventsInCalendar = [] as CourseEvent[];
 
-    for (const course of addedCourses) {
+    for (const course of currentCourses) {
         const finalExam = course.section.finalExam;
         if (finalExam.length > 5) {
             const [, date, , , startStr, startMinStr, endStr, endMinStr, ampm] = finalExam.match(
@@ -100,8 +99,7 @@ export const calendarizeFinals = () => {
                         sectionCode: course.section.sectionCode,
                         sectionType: 'Fin',
                         bldg: course.section.meetings[0].bldg,
-                        color: course.color,
-                        scheduleIndices: course.scheduleIndices,
+                        color: course.section.color,
                         start: new Date(2018, 0, index - 1, startHour, startMin),
                         end: new Date(2018, 0, index - 1, endHour, endMin),
                         finalExam: course.section.finalExam,

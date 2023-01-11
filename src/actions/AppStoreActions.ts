@@ -41,7 +41,6 @@ export const addCourse = (
 
     // The color will be set properly in Schedules
     const newCourse: AppStoreCourse = {
-        color: '',
         term: term,
         deptCode: courseDetails.deptCode,
         courseNumber: courseDetails.courseNumber,

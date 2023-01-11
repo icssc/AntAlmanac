@@ -14,7 +14,6 @@ export interface UserData {
 }
 
 export interface AppStoreCourse {
-    color: string;
     courseComment: string;
     courseNumber: string; //i.e. 122a
     courseTitle: string;

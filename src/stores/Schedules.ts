@@ -120,7 +120,7 @@ export class Schedules {
     addCourse(newCourse: AppStoreCourse, scheduleIndex: number = this.getCurrentScheduleIndex()) {
         let courseToAdd = this.getExistingCourse(newCourse.section.sectionCode, newCourse.term);
         if (courseToAdd === undefined) {
-            const setOfUsedColors = new Set(this.getAllCourses().map((course) => course.color));
+            const setOfUsedColors = new Set(this.getAllCourses().map((course) => course.section.color));
 
             let color: string =
                 arrayOfColors.find((materialColor) => {
@@ -128,7 +128,7 @@ export class Schedules {
                     else return undefined;
                 }) ?? '#5ec8e0';
             courseToAdd = newCourse;
-            courseToAdd.color = courseToAdd.section.color = color;
+            courseToAdd.section.color = color;
         }
 
         if (!this.doesCourseExistInCurrentSchedule(newCourse.section.sectionCode, newCourse.term)) {
@@ -178,7 +178,7 @@ export class Schedules {
     changeCourseColor(sectionCode: string, term: string, newColor: string) {
         const course = this.getExistingCourse(sectionCode, term);
         if (course) {
-            course.color = newColor;
+            course.section.color = newColor;
         }
     }
 

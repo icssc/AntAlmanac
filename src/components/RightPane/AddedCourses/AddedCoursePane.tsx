@@ -1,16 +1,15 @@
-import { Button, Grid, Menu, MenuItem,Typography } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
+import AppStore from '../../../stores/AppStore';
 import React, { PureComponent } from 'react';
-
+import { Grid, Typography, Button, Menu, MenuItem } from '@material-ui/core';
+import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
+import { withStyles } from '@material-ui/core/styles';
+import CustomEventDetailView from './CustomEventDetailView';
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import { clearSchedules, copySchedule } from '../../../actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { AACourse } from '../../../peterportal.types';
-import AppStore from '../../../stores/AppStore';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
-import CustomEventDetailView from './CustomEventDetailView';
 
 const styles = {
     container: {
@@ -32,18 +31,18 @@ const styles = {
 };
 
 interface CourseWithTerm extends AACourse {
-    term: string;
+    term: string
 }
 
 interface AddedCoursePaneProps {
-    classes: ClassNameMap;
+    classes: ClassNameMap
 }
 
 interface AddedCoursePaneState {
-    courses: CourseWithTerm[];
-    customEvents: RepeatingCustomEvent[];
-    totalUnits: number;
-    scheduleNames: string[];
+    courses: CourseWithTerm[]
+    customEvents: RepeatingCustomEvent[]
+    totalUnits: number
+    scheduleNames: string[]
 }
 
 class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePaneState> {
@@ -76,43 +75,40 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         AppStore.removeListener('scheduleNamesChange', this.loadScheduleNames);
     }
 
+
     loadCourses = () => {
-        const addedCourses = AppStore.getAddedCourses();
+        const currentCourses = AppStore.schedule.getCurrentCourses();
         let totalUnits = 0;
         const formattedCourses: CourseWithTerm[] = [];
 
-        for (const addedCourse of addedCourses) {
-            if (addedCourse.scheduleIndices.includes(AppStore.getCurrentScheduleIndex())) {
-                let formattedCourse: CourseWithTerm | undefined = formattedCourses.find(
-                    (needleCourse) =>
-                        needleCourse.courseNumber === addedCourse.courseNumber &&
-                        needleCourse.deptCode === addedCourse.deptCode
-                );
+        for (const course of currentCourses) {
+            let formattedCourse: CourseWithTerm|undefined = formattedCourses.find(
+                (needleCourse) =>
+                    needleCourse.courseNumber === course.courseNumber &&
+                    needleCourse.deptCode === course.deptCode
+            );
 
-                if (formattedCourse) {
-                    formattedCourse.sections.push({
-                        ...addedCourse.section,
-                        color: addedCourse.color,
-                    });
-                } else {
-                    formattedCourse = {
-                        term: addedCourse.term,
-                        deptCode: addedCourse.deptCode,
-                        courseComment: addedCourse.courseComment,
-                        prerequisiteLink: addedCourse.prerequisiteLink,
-                        courseNumber: addedCourse.courseNumber,
-                        courseTitle: addedCourse.courseTitle,
-                        sections: [
-                            {
-                                ...addedCourse.section,
-                                color: addedCourse.color,
-                            },
-                        ],
-                    };
-                    formattedCourses.push(formattedCourse);
-                }
+            if (formattedCourse) {
+                formattedCourse.sections.push({
+                    ...course.section,
+                });
+            } else {
+                formattedCourse = {
+                    term: course.term,
+                    deptCode: course.deptCode,
+                    courseComment: course.courseComment,
+                    prerequisiteLink: course.prerequisiteLink,
+                    courseNumber: course.courseNumber,
+                    courseTitle: course.courseTitle,
+                    sections: [
+                        {
+                            ...course.section,
+                        },
+                    ],
+                };
+                formattedCourses.push(formattedCourse);
 
-                if (!isNaN(Number(addedCourse.section.units))) totalUnits += Number(addedCourse.section.units);
+                if (!isNaN(Number(course.section.units))) totalUnits += Number(course.section.units);
             }
         }
         formattedCourses.forEach(function (course) {
