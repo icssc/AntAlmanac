@@ -229,16 +229,13 @@ class AppStore extends EventEmitter {
         this.unsavedChanges = false;
     }
 
-    copySchedule(addedCoursesAfterCopy: AppStoreCourse[], customEventsAfterCopy: RepeatingCustomEvent[]) {
-        throw new Error('Not Implemented');
-        // this.addedCourses = addedCoursesAfterCopy;
-        // this.updateAddedSectionCodes();
-        // this.customEvents = customEventsAfterCopy;
-        // this.finalsEventsInCalendar = calendarizeFinals();
-        // this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
-        // this.unsavedChanges = true;
-        // this.emit('addedCoursesChange');
-        // this.emit('customEventsChange');
+    copySchedule(to: number) {
+        this.schedule.copySchedule(to);
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
+        this.unsavedChanges = true;
+        this.emit('addedCoursesChange');
+        this.emit('customEventsChange');
     }
 
     loadSchedule(userData: UserData) {

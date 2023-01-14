@@ -213,54 +213,18 @@ export const changeCourseColor = (sectionCode: string, term: string, newColor: s
     AppStore.changeCourseColor(sectionCode, term, newColor);
 };
 
-export const copySchedule = (from: number, to: number) => {
-    throw new Error('Not Implemented');
-    // const addedCourses = AppStore.getAddedCourses();
-    // const customEvents = AppStore.getCustomEvents();
-    // const scheduleNames = AppStore.getScheduleNames();
-    //
-    // const addedCoursesAfterCopy = addedCourses.map((addedCourse) => {
-    //     if (addedCourse.scheduleIndices.includes(from) && !addedCourse.scheduleIndices.includes(to)) {
-    //         // If to is equal to the length of scheduleNames, then the user wanted to copy to
-    //         // all schedules; otherwise, if to is less than the length of scheduleNames, then
-    //         // only one schedule should be altered
-    //         if (to === scheduleNames.length)
-    //             return { ...addedCourse, scheduleIndices: [...scheduleNames.keys()] }; // this [...array.keys()] idiom is like list(range(len(array))) in python
-    //         else
-    //             return {
-    //                 ...addedCourse,
-    //                 scheduleIndices: addedCourse.scheduleIndices.concat(to),
-    //             };
-    //     } else {
-    //         return addedCourse;
-    //     }
-    // });
-    //
-    // const customEventsAfterCopy = customEvents.map((customEvent) => {
-    //     if (customEvent.scheduleIndices.includes(from) && !customEvent.scheduleIndices.includes(to)) {
-    //         if (to === scheduleNames.length)
-    //             return { ...customEvent, scheduleIndices: [...scheduleNames.keys()] };
-    //         else
-    //             return {
-    //                 ...customEvent,
-    //                 scheduleIndices: customEvent.scheduleIndices.concat(to),
-    //             };
-    //     } else {
-    //         return customEvent;
-    //     }
-    // });
-    //
-    // ReactGA.event({
-    //     category: 'antalmanac-rewrite',
-    //     action: 'Click Copy Schedule',
-    // });
-    //
-    // logAnalytics({
-    //     category: analyticsEnum.addedClasses.title,
-    //     action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
-    // });
-    //
-    // AppStore.copySchedule(addedCoursesAfterCopy, customEventsAfterCopy);
+export const copySchedule = (to: number) => {
+    ReactGA.event({
+        category: 'antalmanac-rewrite',
+        action: 'Click Copy Schedule',
+    });
+
+    logAnalytics({
+        category: analyticsEnum.addedClasses.title,
+        action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
+    });
+
+    AppStore.copySchedule(to);
 };
 
 export const toggleTheme = (radioGroupEvent: React.ChangeEvent<HTMLInputElement>) => {

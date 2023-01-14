@@ -153,7 +153,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                                                     key={index}
                                                     disabled={AppStore.getCurrentScheduleIndex() === index}
                                                     onClick={() => {
-                                                        copySchedule(AppStore.getCurrentScheduleIndex(), index);
+                                                        copySchedule(index);
                                                         popupState.close();
                                                     }}
                                                 >
@@ -164,7 +164,6 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                                         <MenuItem
                                             onClick={() => {
                                                 copySchedule(
-                                                    AppStore.getCurrentScheduleIndex(),
                                                     this.state.scheduleNames.length
                                                 );
                                                 popupState.close();

@@ -146,7 +146,7 @@ export class Schedules {
             courseToAdd.section.color = color;
         }
 
-        if (!this.doesCourseExistInCurrentSchedule(newCourse.section.sectionCode, newCourse.term)) {
+        if (!this.doesCourseExistInSchedule(newCourse.section.sectionCode, newCourse.term, scheduleIndex)) {
             this.schedules[scheduleIndex].courses.push(courseToAdd);
         }
     }
@@ -245,8 +245,19 @@ export class Schedules {
         this.schedules[scheduleIndex].scheduleName = newScheduleName;
     }
 
-    doesCourseExistInCurrentSchedule(sectionCode: string, term: string){
+    copySchedule(to: number) {
+        this.addUndoState();
         for (const course of this.getCurrentCourses()) {
+            if (to === this.getNumberOfSchedules()) {
+                this.addCourseToAllSchedules(course);
+            } else {
+                this.addCourse(course, to, false);
+            }
+        }
+    }
+
+    doesCourseExistInSchedule(sectionCode: string, term: string, scheduleIndex: number) {
+        for (const course of this.schedules[scheduleIndex].courses) {
             if (course.section.sectionCode === sectionCode && term === course.term) {
                 return true
             }
