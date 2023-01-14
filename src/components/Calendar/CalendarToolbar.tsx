@@ -132,7 +132,7 @@ const CalendarPaneToolbar = ({
 
             <div className={classes.spacer} />
 
-            <Tooltip title="Undo last deleted course">
+            <Tooltip title="Undo last action">
                 <IconButton
                     onClick={() => {
                         logAnalytics({
@@ -151,7 +151,7 @@ const CalendarPaneToolbar = ({
                     onClick={() => {
                         if (
                             window.confirm(
-                                'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
+                                'Are you sure you want to clear this schedule?'
                             )
                         ) {
                             clearSchedules();

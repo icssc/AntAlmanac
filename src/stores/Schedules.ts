@@ -38,17 +38,25 @@ export interface Schedule {
     customEvents: RepeatingCustomEvent[];
 }
 
+interface ScheduleState {
+    schedules: Schedule[];
+    scheduleIndex: number;
+}
+
 export class Schedules {
-    private schedules: Schedule[]
-    private currentScheduleIndex: number
+    private schedules: Schedule[];
+    private currentScheduleIndex: number;
+    private previousStates: ScheduleState[];
 
     constructor() {
         this.schedules = [{ scheduleName: 'Schedule 1', courses: [], customEvents: [] }];
         this.currentScheduleIndex = 0;
+        this.previousStates = [];
     }
 
     setCurrentScheduleIndex(newScheduleIndex: number) {
-        this.currentScheduleIndex = newScheduleIndex
+        this.addUndoState();
+        this.currentScheduleIndex = newScheduleIndex;
     }
 
     getNumberOfSchedules() {
@@ -117,7 +125,14 @@ export class Schedules {
         return indices;
     }
 
-    addCourse(newCourse: AppStoreCourse, scheduleIndex: number = this.getCurrentScheduleIndex()) {
+    addCourse(
+        newCourse: AppStoreCourse,
+        scheduleIndex: number = this.getCurrentScheduleIndex(),
+        addUndoState: boolean = true
+    ) {
+        if (addUndoState) {
+            this.addUndoState();
+        }
         let courseToAdd = this.getExistingCourse(newCourse.section.sectionCode, newCourse.term);
         if (courseToAdd === undefined) {
             const setOfUsedColors = new Set(this.getAllCourses().map((course) => course.section.color));
@@ -136,13 +151,15 @@ export class Schedules {
         }
     }
 
-    addCourseToAllSchedules(newCourse: AppStoreCourse){
-        for (let i = 0; i < this.getNumberOfSchedules(); i++){
-            this.addCourse(newCourse, i)
+    addCourseToAllSchedules(newCourse: AppStoreCourse) {
+        this.addUndoState();
+        for (let i = 0; i < this.getNumberOfSchedules(); i++) {
+            this.addCourse(newCourse, i, false);
         }
     }
 
     addCustomEvent(newCustomEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
+        this.addUndoState();
         for (const scheduleIndex of scheduleIndices) {
             if (!this.doesCustomEventExistInSchedule(newCustomEvent.customEventID, scheduleIndex)) {
                 this.schedules[scheduleIndex].customEvents.push(newCustomEvent);
@@ -151,12 +168,14 @@ export class Schedules {
     }
 
     deleteCourse(sectionCode: string, term: string) {
+        this.addUndoState();
         this.schedules[this.currentScheduleIndex].courses = this.getCurrentCourses().filter((course) => {
             return !(course.section.sectionCode === sectionCode && course.term === term)
         })
     }
 
     deleteCustomEvent(customEventId: number, scheduleIndices: number[] = [this.getCurrentScheduleIndex()]) {
+        this.addUndoState();
         for (const scheduleIndex of scheduleIndices) {
             const currentCustomEvents = this.schedules[scheduleIndex].customEvents;
             const index = currentCustomEvents.findIndex((customEvent) => customEvent.customEventID === customEventId);
@@ -167,15 +186,18 @@ export class Schedules {
     }
 
     deleteCurrentSchedule() {
+        this.addUndoState();
         this.schedules.splice(this.currentScheduleIndex, 1);
         this.currentScheduleIndex = Math.min(this.currentScheduleIndex, this.getNumberOfSchedules() - 1);
     }
 
     clearCurrentSchedule() {
+        this.addUndoState();
         this.getCurrentCourses().length = 0;
     }
 
     changeCourseColor(sectionCode: string, term: string, newColor: string) {
+        this.addUndoState();
         const course = this.getExistingCourse(sectionCode, term);
         if (course) {
             course.section.color = newColor;
@@ -183,6 +205,7 @@ export class Schedules {
     }
 
     changeCustomEventColor(customEventId: number, newColor: string) {
+        this.addUndoState();
         const customEvent = this.getExistingCustomEvent(customEventId);
         if (customEvent) {
             customEvent.color = newColor;
@@ -190,6 +213,7 @@ export class Schedules {
     }
 
     editCustomEvent(editedCustomEvent: RepeatingCustomEvent, newIndices: number[]) {
+        this.addUndoState();
         const customEvent = this.getExistingCustomEvent(editedCustomEvent.customEventID);
         if (customEvent === undefined) {
             this.addCustomEvent(editedCustomEvent, newIndices);
@@ -210,12 +234,15 @@ export class Schedules {
     }
 
     addSchedule(newScheduleName: string) {
+        this.addUndoState();
         this.schedules.push({ scheduleName: newScheduleName, courses: [], customEvents: [] });
-        this.setCurrentScheduleIndex(this.getNumberOfSchedules() - 1);
+        // Do not use the setScheduleIndex otherwise 2 undo states are added
+        this.currentScheduleIndex = this.getNumberOfSchedules() - 1;
     }
 
     renameSchedule(newScheduleName: string, scheduleIndex: number) {
-        this.schedules[scheduleIndex].scheduleName = newScheduleName
+        this.addUndoState();
+        this.schedules[scheduleIndex].scheduleName = newScheduleName;
     }
 
     doesCourseExistInCurrentSchedule(sectionCode: string, term: string){
@@ -234,5 +261,27 @@ export class Schedules {
             }
         }
         return false;
+    }
+
+    addUndoState() {
+        const clonedSchedules = JSON.parse(JSON.stringify(this.schedules));
+        this.previousStates.push({ schedules: clonedSchedules, scheduleIndex: this.currentScheduleIndex });
+        if (this.previousStates.length >= 100) {
+            this.previousStates.shift();
+        }
+    }
+
+    revertState() {
+        /**
+         * Reverts: setCurrentScheduleIndex, addCourse, addCourseToAllSchedules, addCustomEvent, deleteCourse,
+         *          deleteCustomEvent, deleteCourse, deleteCurrentSchedule, clearCurrentSchedule, changeCourseColor,
+         *          changeCustomEventColor, editCustomEvent, addSchedule, renameSchedule
+         */
+        const state = this.previousStates.pop();
+        if (state !== undefined) {
+            // Object.assign(this.schedules, state.schedules)
+            this.schedules = state.schedules;
+            this.currentScheduleIndex = state.scheduleIndex;
+        }
     }
 }

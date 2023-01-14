@@ -165,10 +165,16 @@ class AppStore extends EventEmitter {
         this.emit('addedCoursesChange');
     }
 
-    undoDelete(deletedCourses: AppStoreDeletedCourse[]) {
-        // TODO
-        // this.deletedCourses = deletedCourses;
-        // this.unsavedChanges = true;
+    undoAction() {
+        this.schedule.revertState();
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
+        this.unsavedChanges = true;
+        this.emit('addedCoursesChange');
+        this.emit('customEventsChange');
+        this.emit('colorChange', false);
+        this.emit('scheduleNamesChange');
+        this.emit('currentScheduleIndexChange');
     }
 
     addCustomEvent(customEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
@@ -209,6 +215,7 @@ class AppStore extends EventEmitter {
         // another key/value pair to keep track of the section codes for that schedule,
         // and redirect the user to the new schedule
         this.schedule.addSchedule(newScheduleName);
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
     }

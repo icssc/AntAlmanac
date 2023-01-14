@@ -192,30 +192,13 @@ export const addCustomEvent = (customEvent: RepeatingCustomEvent, scheduleIndice
 };
 
 export const undoDelete = (event: KeyboardEvent | null) => {
-    throw new Error('Not Implemented');
-    // const deletedCourses = AppStore.getDeletedCourses();
-    //
-    // if (deletedCourses.length > 0 && (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))) {
-    //     const lastDeleted = deletedCourses[deletedCourses.length - 1];
-    //
-    //     if (lastDeleted !== undefined) {
-    //         addCourse(lastDeleted.section, lastDeleted, lastDeleted.term, lastDeleted.scheduleIndex, lastDeleted.color);
-    //
-    //         AppStore.undoDelete(deletedCourses.slice(0, deletedCourses.length - 1));
-    //
-    //         openSnackbar(
-    //             'success',
-    //             `Undo delete ${lastDeleted.deptCode} ${lastDeleted.courseNumber} in schedule ${
-    //                 lastDeleted.scheduleIndex + 1
-    //             }.`
-    //         );
-    //     }
-    //
-    //     ReactGA.event({
-    //         category: 'antalmanac-rewrite',
-    //         action: 'Click Undo button',
-    //     });
-    // }
+    if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey))) {
+        AppStore.undoAction();
+        ReactGA.event({
+            category: 'antalmanac-rewrite',
+            action: 'Click Undo button',
+        });
+    }
 };
 
 export const changeCurrentSchedule = (newScheduleIndex: number) => {
