@@ -26,12 +26,15 @@ Since then, the project has continued to evolve and grow with successive generat
 | 2022 - | @EricPedley |
 ## Contributing
 We welcome open-source contributions 🤗 Here is a rough guide on how to contribute:
-1. Look through the [issue tracker](https://github.com/icssc/AntAlmanac/issues) or [Kanban board](https://github.com/icssc/AntAlmanac/wiki/About-the-Projects-Board) to find an open issue (nobody else is assigned) or create your own that describes the problem you want to fix. 
+1. Look through the [issue tracker](https://github.com/icssc/AntAlmanac/issues) or [Kanban board](https://github.com/icssc/AntAlmanac/wiki/Kanban-Board-Docs) to find an open issue (nobody else is assigned) or create your own that describes the problem you want to fix. 
 2. Fork the repository. If you're on the ICSSC Projects Committee and we've given you write access, create a branch instead of forking.
 3. [Get Setup to Develop Locally](#get-setup-to-develop-locally)
-4. Make your changes and push them. Then create a pull request from your branch or fork to `main`.
+4. Create a draft pull request so others can track your progress.
+5. Make your changes and push them as you complete them. Change the PR from draft to open once you're done.
 6. Wait for your request to get reviewed and respond to any changes until you get approval.
 7. Your PR gets merged and you see your changes live on the site 🥳
+
+We have a 30 minute contributor video tutorial available on YouTube (https://www.youtube.com/watch?v=_v91cqGzu5o).
 
 If you ever need help, feel free to ask around on our [Discord server](https://discord.gg/Zu8KZHERtJ).
 ### Get Setup to Develop Locally
@@ -47,7 +50,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 4. The site should load on http://localhost:3000  
 As you make changes to the React application in `src`, those changes will be automatically reflected on the site.
 
-### Running the Backend
+### Running the [Backend](https://github.com/icssc/antalmanac-backend)
 The backend server **isn't necessary for frontend development**. By default, your frontend will send requests to `dev.api.antalmanac.com`, which has it's own database that is seperate from production's.
 
 If you need run the backend, you must do the following:

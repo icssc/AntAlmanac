@@ -10,8 +10,14 @@ import { Tune } from '@material-ui/icons';
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
 import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 import {Styles} from "@material-ui/core/styles/withStyles";
+import HelpBox from './HelpBox';
 
 const styles: Styles<Theme, object> = {
+    rightPane: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
     container: {
         display: 'flex',
         flexDirection: 'column',
@@ -27,8 +33,8 @@ const styles: Styles<Theme, object> = {
         display: 'inline-flex',
     },
     form: {
-        minHeight: 'calc(100% - 120px)',
         marginBottom: '20px',
+        flexGrow: 2,
     },
     fallback: {
         height: '100%',
@@ -54,7 +60,7 @@ const SearchForm = (props: { classes: ClassNameMap, toggleSearch: () => void }) 
     };
 
     return (
-        <>
+        <div className={classes.rightPane}>
             <form onSubmit={onFormSubmit} className={classes.form}>
                 <div className={classes.container}>
                     <div className={classes.margin}>
@@ -86,8 +92,10 @@ const SearchForm = (props: { classes: ClassNameMap, toggleSearch: () => void }) 
                     )}
                 </div>
             </form>
+
+            <HelpBox />
             <PrivacyPolicyBanner />
-        </>
+        </div>
     );
 };
 

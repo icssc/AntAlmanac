@@ -11,6 +11,7 @@ const styles: Styles<Theme, object> = {
         zIndex: 3,
         marginBottom: 8,
         position: 'absolute',
+        pointerEvents: 'none',
     },
     button: {
         backgroundColor: 'rgba(236, 236, 236, 1)',
@@ -20,6 +21,7 @@ const styles: Styles<Theme, object> = {
         '&:hover': {
             backgroundColor: 'grey',
         },
+        pointerEvents: 'auto',
     },
 };
 
