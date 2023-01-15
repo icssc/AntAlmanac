@@ -9,7 +9,6 @@ import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
 import CustomEventDialog from './CustomEvents/CustomEventDialog';
 import AppStore from '../../stores/AppStore';
 import { clickToCopy } from '../../helpers';
-import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../../analytics.js';
 
 const styles = {
@@ -89,11 +88,6 @@ const CourseCalendarEvent = (props) => {
                             size="small"
                             onClick={() => {
                                 deleteCourse(sectionCode, currentScheduleIndex, term);
-                                ReactGA.event({
-                                    category: 'antalmanac-rewrite',
-                                    action: 'Click Delete Course',
-                                    label: 'Course Calendar Event',
-                                });
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_COURSE,
@@ -191,11 +185,6 @@ const CourseCalendarEvent = (props) => {
                             onClick={() => {
                                 props.closePopover();
                                 deleteCustomEvent(customEventID, currentScheduleIndex);
-                                ReactGA.event({
-                                    category: 'antalmanac-rewrite',
-                                    action: 'Click Delete Custom Event',
-                                    label: 'Course Calendar Event',
-                                });
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
