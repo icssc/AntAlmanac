@@ -39,7 +39,6 @@ class ColorPicker extends PureComponent {
         });
     };
 
-    handleColorChangeComplete = () => {};
     updateColor = (color) => {
         if (color !== this.props.color) {
             this.setState({ color: color });
@@ -85,11 +84,7 @@ class ColorPicker extends PureComponent {
                         horizontal: 'left',
                     }}
                 >
-                    <SketchPicker
-                        color={this.state.color}
-                        onChange={this.handleColorChange}
-                        onChangeComplete={this.handleColorChangeComplete}
-                    />
+                    <SketchPicker color={this.state.color} onChange={this.handleColorChange} />
                 </Popover>
             </>
         );
