@@ -100,6 +100,10 @@ export function clearCache() {
 export async function queryWebsoc(params) {
     // Construct a request to PeterPortal with the params as a query string
     const url = new URL(PETERPORTAL_WEBSOC_ENDPOINT);
+    // TODO: API may return empty result if params has empty sectionCodes
+    if (params.sectionCodes === '') {
+        delete params.sectionCodes;
+    }
     const searchString = new URLSearchParams(params).toString();
     if (websocCache[searchString]?.timestamp > Date.now() - 30 * 60 * 1000) {
         //if cache hit and less than 30 minutes old
