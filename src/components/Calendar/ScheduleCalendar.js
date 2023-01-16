@@ -9,7 +9,6 @@ import './calendar.css';
 import CalendarPaneToolbar from './CalendarPaneToolbar';
 import CourseCalendarEvent from './CourseCalendarEvent';
 import AppStore from '../../stores/AppStore';
-import ReactGA from 'react-ga';
 
 const localizer = momentLocalizer(moment);
 
@@ -187,10 +186,6 @@ class ScheduleCalendar extends PureComponent {
             calendarHeader.style.marginRight = oldMargin;
 
             this.setState({ screenshotting: false });
-        });
-        ReactGA.event({
-            category: 'antalmanac-rewrite',
-            action: 'screenshot',
         });
     };
 

@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import ReactGA from 'react-ga';
 import { withStyles } from '@material-ui/core/styles';
 import { Image } from '@material-ui/icons';
 import PropTypes from 'prop-types';
@@ -21,10 +20,6 @@ class EnrollmentGraph extends PureComponent {
 
     handleOpen = () => {
         this.setState({ open: true });
-        ReactGA.event({
-            category: 'antalmanac-rewrite',
-            action: `Click Past Enrollment button`,
-        });
     };
 
     handleClose = () => {

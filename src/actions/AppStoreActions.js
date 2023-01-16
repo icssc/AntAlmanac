@@ -1,5 +1,4 @@
 import AppStore from '../stores/AppStore';
-import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../analytics';
 import { courseNumAsDecimal } from '../helpers';
 import {
@@ -295,11 +294,6 @@ export const undoDelete = (event) => {
                 }.`
             );
         }
-
-        ReactGA.event({
-            category: 'antalmanac-rewrite',
-            action: 'Click Undo button',
-        });
     }
 };
 
@@ -371,11 +365,6 @@ export const copySchedule = (from, to) => {
         }
     });
 
-    ReactGA.event({
-        category: 'antalmanac-rewrite',
-        action: 'Click Copy Schedule',
-    });
-
     logAnalytics({
         category: analyticsEnum.addedClasses.title,
         action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
@@ -386,10 +375,6 @@ export const copySchedule = (from, to) => {
 
 export const toggleTheme = (radioGroupEvent) => {
     AppStore.toggleTheme(radioGroupEvent.target.value);
-    ReactGA.event({
-        category: 'antalmanac-rewrite',
-        action: 'toggle theme',
-    });
     logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.CHANGE_THEME,
