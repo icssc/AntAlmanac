@@ -7,7 +7,6 @@ import { Delete, Add, ArrowDropDown } from '@material-ui/icons';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 
 import { withStyles } from '@material-ui/core/styles';
-import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 
 const styles = {
@@ -27,11 +26,6 @@ export const ColorAndDelete = withStyles(styles)((props) => {
                 <IconButton
                     onClick={() => {
                         deleteCourse(sectionCode, AppStore.getCurrentScheduleIndex(), term);
-                        ReactGA.event({
-                            category: 'antalmanac-rewrite',
-                            action: 'Click Delete Course',
-                            label: 'Added Course pane',
-                        });
                         logAnalytics({
                             category: analyticsEnum.addedClasses.title,
                             action: analyticsEnum.addedClasses.actions.DELETE_COURSE,

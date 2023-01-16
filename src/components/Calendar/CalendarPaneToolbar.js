@@ -10,7 +10,6 @@ import ScreenshotButton from './ScreenshotButton';
 import ExportCalendar from './ExportCalendar';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import ReactGA from 'react-ga';
 import ConditionalWrapper from '../ConditionalWrapper';
 import analyticsEnum, { logAnalytics } from '../../analytics';
 import ScheduleNameDialog from './ScheduleNameDialog';
@@ -149,11 +148,6 @@ const CalendarPaneToolbar = (props) => {
                             )
                         ) {
                             clearSchedules([currentScheduleIndex]);
-                            ReactGA.event({
-                                category: 'antalmanac-rewrite',
-                                action: 'Click Clear button',
-                                label: 'Calendar Pane Toolbar',
-                            });
                             logAnalytics({
                                 category: analyticsEnum.calendar.title,
                                 action: analyticsEnum.calendar.actions.CLEAR_SCHEDULE,

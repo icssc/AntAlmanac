@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactGA from 'react-ga';
 import Button from '@material-ui/core/Button';
 import { Tooltip } from '@material-ui/core';
 import Today from '@material-ui/icons/Today';
@@ -277,11 +276,6 @@ const exportCalendar = () => {
             openSnackbar('error', 'Something went wrong! Unable to download schedule.', 5);
             console.log(err);
         }
-    });
-
-    ReactGA.event({
-        category: 'antalmanac-rewrite',
-        action: 'Download .ics file',
     });
 };
 

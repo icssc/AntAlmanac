@@ -5,7 +5,6 @@ import { Popover, IconButton } from '@material-ui/core';
 import { SketchPicker } from 'react-color';
 import { changeCourseColor, changeCustomEventColor } from '../actions/AppStoreActions';
 import { ColorLens } from '@material-ui/icons';
-import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../analytics';
 
 class ColorPicker extends PureComponent {
@@ -40,12 +39,6 @@ class ColorPicker extends PureComponent {
         });
     };
 
-    handleColorChangeComplete = () => {
-        ReactGA.event({
-            category: 'antalmanac-rewrite',
-            action: 'Change Course Color',
-        });
-    };
     updateColor = (color) => {
         if (color !== this.props.color) {
             this.setState({ color: color });
@@ -91,11 +84,7 @@ class ColorPicker extends PureComponent {
                         horizontal: 'left',
                     }}
                 >
-                    <SketchPicker
-                        color={this.state.color}
-                        onChange={this.handleColorChange}
-                        onChangeComplete={this.handleColorChangeComplete}
-                    />
+                    <SketchPicker color={this.state.color} onChange={this.handleColorChange} />
                 </Popover>
             </>
         );

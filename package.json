@@ -35,7 +35,6 @@
         "react-big-calendar": "^0.24.6",
         "react-color": "^2.18.1",
         "react-dom": "^16.13.1",
-        "react-ga": "^2.7.0",
         "react-ga4": "^1.4.1",
         "react-input-mask": "^2.0.4",
         "react-lazyload": "^3.1.0",

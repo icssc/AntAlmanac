@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import ReactGA from 'react-ga';
 import locations from './static/locations';
 import restrictionsMapping from './static/restrictionsMapping';
 import { TableRow, Popover, Tooltip, Typography, TableCell, useMediaQuery } from '@material-ui/core';
@@ -84,10 +83,6 @@ const CourseCodeCell = withStyles(styles)((props) => {
                 <div
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);
-                        ReactGA.event({
-                            category: 'antalmanac-rewrite',
-                            action: `Click section code`,
-                        });
                         logAnalytics({
                             category: analyticsEnum.classSearch.title,
                             action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
@@ -134,13 +129,6 @@ const InstructorsCell = withStyles(styles)((props) => {
                             href={`https://www.ratemyprofessors.com/search/teachers?sid=U2Nob29sLTEwNzQ=&query=${lastName}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            onClick={() => {
-                                ReactGA.event({
-                                    category: 'antalmanac-rewrite',
-                                    action: `Click instructor name`,
-                                    label: `RateMyProfessors`,
-                                });
-                            }}
                         >
                             {profName}
                         </a>
