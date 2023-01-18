@@ -106,8 +106,8 @@ export const calendarizeFinals = () => {
                         end: new Date(2018, 0, index - 1, endHour, endMin),
                         finalExam: course.section.finalExam,
                         instructors: course.section.instructors,
-                        term:course.term,
-                        isCustomEvent: false
+                        term: course.term,
+                        isCustomEvent: false,
                     });
             });
         }

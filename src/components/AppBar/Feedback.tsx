@@ -1,6 +1,6 @@
-import React, {FunctionComponent} from 'react';
+import React, { FunctionComponent } from 'react';
 import { Assignment } from '@material-ui/icons';
-import { Button, Tooltip} from '@material-ui/core';
+import { Button, Tooltip } from '@material-ui/core';
 
 const Feedback: FunctionComponent = () => {
     return (
@@ -15,7 +15,7 @@ const Feedback: FunctionComponent = () => {
                 Feedback
             </Button>
         </Tooltip>
-    )
-}
+    );
+};
 
-export default Feedback
+export default Feedback;

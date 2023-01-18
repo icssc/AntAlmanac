@@ -12,9 +12,9 @@ import { isDarkMode } from '../../../../helpers';
 import { deleteSchedule } from '../../../../actions/AppStoreActions';
 
 interface DeleteScheduleDialogProps {
-    onClose: ()=>void
-    scheduleIndex: number
-    scheduleNames: string[]
+    onClose: () => void;
+    scheduleIndex: number;
+    scheduleNames: string[];
 }
 
 const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {

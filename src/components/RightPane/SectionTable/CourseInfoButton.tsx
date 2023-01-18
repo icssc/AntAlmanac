@@ -13,17 +13,25 @@ const styles = {
 };
 
 interface CourseInfoButtonProps {
-    classes: ClassNameMap
-    text: string
-    icon: React.ReactElement
-    redirectLink?: string
-    popupContent?: React.ReactElement
-    analyticsAction: string
-    analyticsCategory: string
+    classes: ClassNameMap;
+    text: string;
+    icon: React.ReactElement;
+    redirectLink?: string;
+    popupContent?: React.ReactElement;
+    analyticsAction: string;
+    analyticsCategory: string;
 }
 
-function CourseInfoButton({ classes, text, icon, redirectLink, popupContent, analyticsAction, analyticsCategory }: CourseInfoButtonProps) {
-    const [popupAnchor, setPopupAnchor] = useState<HTMLElement|null>(null);
+function CourseInfoButton({
+    classes,
+    text,
+    icon,
+    redirectLink,
+    popupContent,
+    analyticsAction,
+    analyticsCategory,
+}: CourseInfoButtonProps) {
+    const [popupAnchor, setPopupAnchor] = useState<HTMLElement | null>(null);
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
     return (
         <>

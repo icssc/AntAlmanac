@@ -3,11 +3,11 @@ import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
 import GESelector from './GESelector';
 import SectionCodeSearchBar from './SectionCodeSearchBar';
 import CourseNumberSearchBar from './CourseNumberSearchBar';
-import {Button, Theme} from '@material-ui/core';
+import { Button, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AdvancedSearch from './AdvancedSearch';
-import {ClassNameMap} from "@material-ui/core/styles/withStyles";
-import {Styles} from "@material-ui/core/styles/withStyles";
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { Styles } from '@material-ui/core/styles/withStyles';
 
 const styles: Styles<Theme, object> = {
     container: {
@@ -47,7 +47,7 @@ const styles: Styles<Theme, object> = {
     },
 };
 
-function LegacySearch(props: { classes: ClassNameMap, onSubmit: () => void, onReset: () => void }) {
+function LegacySearch(props: { classes: ClassNameMap; onSubmit: () => void; onReset: () => void }) {
     const { classes, onSubmit, onReset } = props;
     return (
         <>

@@ -11,7 +11,7 @@ import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../../analytics';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Event } from 'react-big-calendar';
-const locations: Record<string, string>  = require('../RightPane/SectionTable/static/locations.json');
+const locations: Record<string, string> = require('../RightPane/SectionTable/static/locations.json');
 
 const styles: Styles<Theme, object> = {
     courseContainer: {
@@ -76,21 +76,21 @@ const genMapLink = (location: string) => {
 };
 
 interface CommonCalendarEvent extends Event {
-    color: string 
-    start: Date
-    end: Date
-    scheduleIndices: number[]
-    title: string
+    color: string;
+    start: Date;
+    end: Date;
+    scheduleIndices: number[];
+    title: string;
 }
 
 export interface CourseEvent extends CommonCalendarEvent {
-    bldg: string
-    finalExam: string
-    instructors: string[]
-    isCustomEvent: false
-    sectionCode: string
-    sectionType: string 
-    term: string
+    bldg: string;
+    finalExam: string;
+    instructors: string[];
+    isCustomEvent: false;
+    sectionCode: string;
+    sectionType: string;
+    term: string;
 }
 
 /**
@@ -98,18 +98,18 @@ export interface CourseEvent extends CommonCalendarEvent {
  * https://github.com/icssc/AntAlmanac/wiki/The-Great-AntAlmanac-TypeScript-Rewritening%E2%84%A2#duplicate-interface-names-%EF%B8%8F
  */
 export interface CustomEvent extends CommonCalendarEvent {
-    customEventID: number
-    isCustomEvent: true
+    customEventID: number;
+    isCustomEvent: true;
 }
 
-export type CalendarEvent = CourseEvent|CustomEvent
+export type CalendarEvent = CourseEvent | CustomEvent;
 
 interface CourseCalendarEventProps {
-    classes: ClassNameMap
-    courseInMoreInfo: CalendarEvent 
-    currentScheduleIndex: number
-    scheduleNames: string[]
-    closePopover: ()=>void
+    classes: ClassNameMap;
+    courseInMoreInfo: CalendarEvent;
+    currentScheduleIndex: number;
+    scheduleNames: string[];
+    closePopover: () => void;
 }
 
 const CourseCalendarEvent = (props: CourseCalendarEventProps) => {

@@ -1,6 +1,6 @@
-import React, {ChangeEvent, PureComponent} from 'react';
+import React, { ChangeEvent, PureComponent } from 'react';
 import TextField from '@material-ui/core/TextField';
-import Autocomplete, {AutocompleteInputChangeReason} from '@material-ui/lab/Autocomplete';
+import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Autocomplete';
 import search, { SearchResult } from 'websoc-fuzzy-search';
 import RightPaneStore from '../../RightPaneStore';
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
@@ -50,7 +50,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 break;
             case emojiMap.DEPARTMENT:
                 RightPaneStore.updateFormValue('deptValue', ident[0]);
-                RightPaneStore.updateFormValue('deptLabel', (ident).join(':'));
+                RightPaneStore.updateFormValue('deptLabel', ident.join(':'));
                 break;
             case emojiMap.COURSE:
                 const deptValue = ident[0].split(' ').slice(0, -1).join(' ');

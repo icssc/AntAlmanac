@@ -16,17 +16,17 @@ const styles = () => ({
 });
 
 interface ScheduleNameDialogProps {
-    classes: ClassNameMap
-    onOpen?: ()=>void
-    onClose: ()=>void
-    scheduleNames: string[]
-    scheduleRenameIndex?: number
+    classes: ClassNameMap;
+    onOpen?: () => void;
+    onClose: () => void;
+    scheduleNames: string[];
+    scheduleRenameIndex?: number;
 }
 
 const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
     const { classes, onOpen, onClose, scheduleNames, scheduleRenameIndex } = props;
     const rename = scheduleRenameIndex !== undefined;
-    
+
     const [isOpen, setIsOpen] = useState(false);
     const [scheduleName, setScheduleName] = useState(
         scheduleRenameIndex !== undefined ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`

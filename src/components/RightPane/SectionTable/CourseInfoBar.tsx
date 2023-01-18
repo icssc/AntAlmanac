@@ -35,28 +35,28 @@ const noCourseInfo = {
 };
 
 interface CourseInfoBarProps {
-    courseTitle: string
-    courseNumber: string
-    deptCode: string
-    classes: ClassNameMap
-    analyticsCategory: string
+    courseTitle: string;
+    courseNumber: string;
+    deptCode: string;
+    classes: ClassNameMap;
+    analyticsCategory: string;
 }
 
 interface CourseInfo {
-    title: string
-    prerequisite_text: string
-    prerequisite_for: string
-    description: string
-    ge_list: string
+    title: string;
+    prerequisite_text: string;
+    prerequisite_for: string;
+    description: string;
+    ge_list: string;
 }
 
 const CourseInfoBar = (props: CourseInfoBarProps) => {
     const { courseTitle, courseNumber, deptCode, classes, analyticsCategory } = props;
 
-    const [anchorEl, setAnchorEl] = useState<HTMLElement|null>(null);
-    const [courseInfo, setCourseInfo] = useState<CourseInfo|null>(null);
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const [courseInfo, setCourseInfo] = useState<CourseInfo | null>(null);
 
-    const togglePopover = async (currentTarget: HTMLElement|null) => {
+    const togglePopover = async (currentTarget: HTMLElement | null) => {
         if (Boolean(anchorEl)) {
             setAnchorEl(null);
         } else {

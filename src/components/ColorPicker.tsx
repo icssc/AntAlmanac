@@ -7,18 +7,17 @@ import { ColorLens } from '@material-ui/icons';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../analytics';
 
-
 interface ColorPickerProps {
-    color: string
-    analyticsCategory: string
+    color: string;
+    analyticsCategory: string;
     /**If true, this object has a customEventID. If false, this object has a term and sectionCode. */
-    isCustomEvent: boolean
+    isCustomEvent: boolean;
     /**Not undefined when isCustomEvent is true */
-    customEventID?: number
+    customEventID?: number;
     /**Not undefined  when isCustomEvent is false */
-    term?: string
+    term?: string;
     /**Not undefined  when isCustomEvent is false */
-    sectionCode?: string
+    sectionCode?: string;
 }
 
 class ColorPicker extends PureComponent<ColorPickerProps> {
@@ -46,11 +45,13 @@ class ColorPicker extends PureComponent<ColorPickerProps> {
         });
     };
 
-    handleColorChange = (color: {hex: string}) => {
+    handleColorChange = (color: { hex: string }) => {
         this.setState({ color: color.hex }, () => {
             // The && here is to keep the TS compiler happy. If isCustomEvent is true, there should always be a customEventID passed to props.
-            if (this.props.isCustomEvent && this.props.customEventID) changeCustomEventColor(this.props.customEventID, this.state.color);
-            else if(this.props.sectionCode&&this.props.term) changeCourseColor(this.props.sectionCode, this.state.color, this.props.term);
+            if (this.props.isCustomEvent && this.props.customEventID)
+                changeCustomEventColor(this.props.customEventID, this.state.color);
+            else if (this.props.sectionCode && this.props.term)
+                changeCourseColor(this.props.sectionCode, this.state.color, this.props.term);
         });
     };
 
@@ -67,30 +68,18 @@ class ColorPicker extends PureComponent<ColorPickerProps> {
     };
 
     componentDidMount = () => {
-        let colorPickerId
-        if(this.props.isCustomEvent&&this.props.customEventID)
-            colorPickerId = this.props.customEventID.toString()
-        else if(this.props.sectionCode)
-            colorPickerId=this.props.sectionCode
-        else
-            throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.")
-        AppStore.registerColorPicker(
-            colorPickerId,
-            this.updateColor
-        );
+        let colorPickerId;
+        if (this.props.isCustomEvent && this.props.customEventID) colorPickerId = this.props.customEventID.toString();
+        else if (this.props.sectionCode) colorPickerId = this.props.sectionCode;
+        else throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.");
+        AppStore.registerColorPicker(colorPickerId, this.updateColor);
     };
     componentWillUnmount = () => {
-        let colorPickerId
-        if(this.props.isCustomEvent&&this.props.customEventID)
-            colorPickerId = this.props.customEventID.toString()
-        else if(this.props.sectionCode)
-            colorPickerId=this.props.sectionCode
-        else
-            throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.")
-        AppStore.unregisterColorPicker(
-            colorPickerId,
-            this.updateColor
-        );
+        let colorPickerId;
+        if (this.props.isCustomEvent && this.props.customEventID) colorPickerId = this.props.customEventID.toString();
+        else if (this.props.sectionCode) colorPickerId = this.props.sectionCode;
+        else throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.");
+        AppStore.unregisterColorPicker(colorPickerId, this.updateColor);
     };
 
     render() {

@@ -1,4 +1,4 @@
-import React, {ChangeEvent, PureComponent} from 'react';
+import React, { ChangeEvent, PureComponent } from 'react';
 import { TextField } from '@material-ui/core';
 import RightPaneStore from '../../RightPaneStore';
 

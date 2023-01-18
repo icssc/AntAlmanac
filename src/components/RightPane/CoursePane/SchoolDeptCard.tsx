@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
-import {Grid, Paper, Typography, withStyles, Collapse, Theme} from '@material-ui/core';
+import { Grid, Paper, Typography, withStyles, Collapse, Theme } from '@material-ui/core';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import {ClassNameMap} from "@material-ui/core/styles/withStyles";
-import {Styles} from "@material-ui/core/styles/withStyles";
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { Styles } from '@material-ui/core/styles/withStyles';
 
 const styles: Styles<Theme, object> = (theme) => ({
     school: {

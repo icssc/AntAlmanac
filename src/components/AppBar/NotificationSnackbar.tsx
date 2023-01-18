@@ -32,14 +32,14 @@ const styles: Styles<Theme, object> = (theme) => ({
 });
 
 export interface SnackbarPosition {
-    horizontal: 'left'|'right'
-    vertical: 'bottom'|'top'
+    horizontal: 'left' | 'right';
+    vertical: 'bottom' | 'top';
 }
 
 interface NotificationSnackbarProps {
-    classes: ClassNameMap,
-    enqueueSnackbar: any, // these come from AppStoreActions. leaving untyped because we're hopefully gonna refactor. see #401
-    closeSnackbar: any
+    classes: ClassNameMap;
+    enqueueSnackbar: any; // these come from AppStoreActions. leaving untyped because we're hopefully gonna refactor. see #401
+    closeSnackbar: any;
 }
 
 class NotificationSnackbar extends PureComponent<NotificationSnackbarProps> {
@@ -59,7 +59,7 @@ class NotificationSnackbar extends PureComponent<NotificationSnackbarProps> {
         });
     };
 
-    snackbarAction = (key: string|number) => {
+    snackbarAction = (key: string | number) => {
         const { classes } = this.props;
         return (
             <IconButton

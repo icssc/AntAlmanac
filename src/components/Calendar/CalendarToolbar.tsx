@@ -3,7 +3,7 @@ import { Theme, withStyles } from '@material-ui/core/styles';
 import { IconButton, Tooltip, Paper, Button, useMediaQuery, Menu } from '@material-ui/core';
 import { Delete, Undo, MoreHoriz } from '@material-ui/icons';
 import CustomEventsDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
-import { changeCurrentSchedule, clearSchedules, undoDelete  } from '../../actions/AppStoreActions';
+import { changeCurrentSchedule, clearSchedules, undoDelete } from '../../actions/AppStoreActions';
 import ScreenshotButton from './Toolbar/ScreenshotButton';
 import ExportCalendar from './Toolbar/ExportCalendar';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -35,7 +35,7 @@ const styles: Styles<Theme, object> = {
         display: 'inline',
     },
     spacer: {
-        flexGrow: 1
+        flexGrow: 1,
     },
     scheduleSelector: {
         marginLeft: '10px',
@@ -47,12 +47,12 @@ const styles: Styles<Theme, object> = {
 };
 
 interface CalendarPaneToolbarProps {
-    classes: ClassNameMap
-    scheduleNames: string[]
-    currentScheduleIndex: number
-    showFinalsSchedule: boolean
-    toggleDisplayFinalsSchedule: ()=>void
-    onTakeScreenshot: (html2CanvasScreenshot:  ()=>void)=>void // the function in an ancestor component that wraps ScreenshotButton.handleClick to perform canvas transformations before and after downloading the screenshot.
+    classes: ClassNameMap;
+    scheduleNames: string[];
+    currentScheduleIndex: number;
+    showFinalsSchedule: boolean;
+    toggleDisplayFinalsSchedule: () => void;
+    onTakeScreenshot: (html2CanvasScreenshot: () => void) => void; // the function in an ancestor component that wraps ScreenshotButton.handleClick to perform canvas transformations before and after downloading the screenshot.
 }
 
 const CalendarPaneToolbar = ({
@@ -63,8 +63,7 @@ const CalendarPaneToolbar = ({
     toggleDisplayFinalsSchedule,
     onTakeScreenshot,
 }: CalendarPaneToolbarProps) => {
-
-    const handleScheduleChange = (event: React.ChangeEvent<{ name?: string; value: unknown; }>) => {
+    const handleScheduleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
         logAnalytics({
             category: analyticsEnum.calendar.title,
             action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
@@ -186,24 +185,24 @@ const CalendarPaneToolbar = ({
                     </div>
                 )}
             >
-                <>{[
-                    <ExportCalendar />,
-                    <ScreenshotButton
-                        onTakeScreenshot={onTakeScreenshot}
-                    />,
-                    <CustomEventsDialog
-                        currentScheduleIndex={currentScheduleIndex}
-                        scheduleNames={scheduleNames}
-                    />,
-                ].map((element, index) => (
-                    <ConditionalWrapper
-                        key={index}
-                        condition={isMobileScreen}
-                        wrapper={(children) => <MenuItem onClick={handleMenuClose}>{children}</MenuItem>}
-                    >
-                        {element}
-                    </ConditionalWrapper>
-                ))}</>
+                <>
+                    {[
+                        <ExportCalendar />,
+                        <ScreenshotButton onTakeScreenshot={onTakeScreenshot} />,
+                        <CustomEventsDialog
+                            currentScheduleIndex={currentScheduleIndex}
+                            scheduleNames={scheduleNames}
+                        />,
+                    ].map((element, index) => (
+                        <ConditionalWrapper
+                            key={index}
+                            condition={isMobileScreen}
+                            wrapper={(children) => <MenuItem onClick={handleMenuClose}>{children}</MenuItem>}
+                        >
+                            {element}
+                        </ConditionalWrapper>
+                    ))}
+                </>
             </ConditionalWrapper>
         </Paper>
     );

@@ -51,7 +51,7 @@ class RightPaneStore extends EventEmitter {
     updateFormValue(field: string, value: string) {
         this.formData[field] = value;
         this.emit('formDataChange');
-    };
+    }
 
     resetFormValues = () => {
         this.formData = { ...defaultFormValues }; // shallow copy again

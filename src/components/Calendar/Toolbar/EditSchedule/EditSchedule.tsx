@@ -15,14 +15,14 @@ const styles = () => ({
 });
 
 interface EditScheduleProps {
-    classes: ClassNameMap
-    scheduleNames: string[]
-    scheduleIndex: number
+    classes: ClassNameMap;
+    scheduleNames: string[];
+    scheduleIndex: number;
 }
 
 const EditSchedule = (props: EditScheduleProps) => {
     const { classes, scheduleNames, scheduleIndex } = props;
-    const [anchorEl, setAnchorEl] = useState<HTMLElement|null>(null);
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         setAnchorEl(event.currentTarget);

@@ -5,14 +5,14 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { RepeatingCustomEvent } from './CustomEventDialog';
 
 interface ScheduleSelectorProps {
-    customEvent?: RepeatingCustomEvent
-    scheduleIndices: number[]
-    onSelectScheduleIndices: (scheduleIndices: number[]) => void
-    scheduleNames: string[]
+    customEvent?: RepeatingCustomEvent;
+    scheduleIndices: number[];
+    onSelectScheduleIndices: (scheduleIndices: number[]) => void;
+    scheduleNames: string[];
 }
 
 interface ScheduleSelectorState {
-    scheduleIndices: number[]
+    scheduleIndices: number[];
 }
 
 class ScheduleSelector extends PureComponent<ScheduleSelectorProps, ScheduleSelectorState> {

@@ -31,24 +31,24 @@ const styles = {
  * https://github.com/icssc/AntAlmanac/wiki/The-Great-AntAlmanac-TypeScript-Rewritening%E2%84%A2#duplicate-interface-names-%EF%B8%8F
  */
 export interface RepeatingCustomEvent {
-    title: string
-    start: string
-    end: string
-    days: boolean[]
-    scheduleIndices: number[]
-    customEventID: number
-    color?: string
+    title: string;
+    start: string;
+    end: string;
+    days: boolean[];
+    scheduleIndices: number[];
+    customEventID: number;
+    color?: string;
 }
 
 interface CustomEventDialogProps {
-    customEvent?: RepeatingCustomEvent
-    onDialogClose?: ()=>void
-    currentScheduleIndex: number
-    scheduleNames: string[]
-};
+    customEvent?: RepeatingCustomEvent;
+    onDialogClose?: () => void;
+    currentScheduleIndex: number;
+    scheduleNames: string[];
+}
 
-interface CustomEventDialogState extends RepeatingCustomEvent{
-    open: boolean
+interface CustomEventDialogState extends RepeatingCustomEvent {
+    open: boolean;
 }
 
 const defaultCustomEvent: RepeatingCustomEvent = {
@@ -57,13 +57,13 @@ const defaultCustomEvent: RepeatingCustomEvent = {
     title: '',
     days: [false, false, false, false, false, false, false],
     scheduleIndices: [],
-    customEventID: 0
-}
+    customEventID: 0,
+};
 
 class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEventDialogState> {
     state: CustomEventDialogState = {
         open: false,
-        ...(this.props.customEvent || defaultCustomEvent)
+        ...(this.props.customEvent || defaultCustomEvent),
     };
 
     handleOpen = () => {
@@ -90,7 +90,7 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
 
         this.setState({
             ...this.state,
-            open: false
+            open: false,
         });
     };
 
@@ -189,10 +189,7 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
                                 style={{ marginRight: 5, marginTop: 5 }}
                             />
                         </form>
-                        <DaySelector
-                            onSelectDay={this.handleDayChange}
-                            days={this.props.customEvent?.days}
-                        />
+                        <DaySelector onSelectDay={this.handleDayChange} days={this.props.customEvent?.days} />
                         <ScheduleSelector
                             scheduleIndices={this.state.scheduleIndices}
                             onSelectScheduleIndices={this.handleSelectScheduleIndices}

@@ -6,7 +6,7 @@ import Select from '@material-ui/core/Select';
 import depts from './depts';
 import RightPaneStore from '../../../RightPaneStore';
 import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from "@material-ui/core/styles/withStyles";
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 const style = {
     formControl: {
@@ -17,11 +17,11 @@ const style = {
 };
 
 interface MobileDeptSelectorProps {
-    classes: ClassNameMap
+    classes: ClassNameMap;
 }
 
 interface MobileDeptSelectorState {
-    deptLabel: string | unknown
+    deptLabel: string | unknown;
 }
 
 class MobileDeptSelector extends PureComponent<MobileDeptSelectorProps, MobileDeptSelectorState> {
@@ -29,7 +29,7 @@ class MobileDeptSelector extends PureComponent<MobileDeptSelectorProps, MobileDe
         deptLabel: RightPaneStore.getFormData().deptLabel,
     };
 
-    handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown; }>) => {
+    handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
         this.setState({ deptLabel: event.target.value });
         RightPaneStore.updateFormValue('deptLabel', event.target.value as string);
     };

@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
-import {IconButton, Theme, Tooltip} from '@material-ui/core';
+import { IconButton, Theme, Tooltip } from '@material-ui/core';
 import { ArrowBack, Refresh } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
-import {ClassNameMap} from "@material-ui/core/styles/withStyles";
-import {Styles} from "@material-ui/core/styles/withStyles";
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { Styles } from '@material-ui/core/styles/withStyles';
 
 const styles: Styles<Theme, object> = {
     buttonRow: {
@@ -16,7 +16,7 @@ const styles: Styles<Theme, object> = {
     button: {
         backgroundColor: 'rgba(236, 236, 236, 1)',
         marginRight: 5,
-        boxShadow: "2",
+        boxShadow: '2',
         color: 'black',
         '&:hover': {
             backgroundColor: 'grey',

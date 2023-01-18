@@ -6,7 +6,7 @@ import { TableRow, Popover, Tooltip, Typography, TableCell, useMediaQuery, Theme
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import OpenSpotAlertPopover, {OpenSpotAlertPopoverProps} from './OpenSpotAlertPopover';
+import OpenSpotAlertPopover, { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import AppStore from '../../../stores/AppStore';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import classNames from 'classnames';
@@ -77,8 +77,8 @@ const NoPaddingTableCell = withStyles({
 })(TableCell);
 
 interface CourseCodeCellProps {
-    classes: ClassNameMap
-    sectionCode: string
+    classes: ClassNameMap;
+    sectionCode: string;
 }
 
 const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
@@ -111,10 +111,10 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
 type SectionType = 'Act' | 'Col' | 'Dis' | 'Fld' | 'Lab' | 'Lec' | 'Qiz' | 'Res' | 'Sem' | 'Stu' | 'Tap' | 'Tut';
 
 interface SectionDetailCellProps {
-    classes: ClassNameMap
-    sectionType: SectionType
-    sectionNum: string
-    units: number
+    classes: ClassNameMap;
+    sectionType: SectionType;
+    sectionNum: string;
+    units: number;
 }
 
 const SectionDetailsCell = withStyles(styles)((props: SectionDetailCellProps) => {
@@ -137,45 +137,47 @@ const SectionDetailsCell = withStyles(styles)((props: SectionDetailCellProps) =>
 });
 
 interface InstructorsCellProps {
-    classes: ClassNameMap
-    instructors: string[]
+    classes: ClassNameMap;
+    instructors: string[];
 }
 
 const InstructorsCell = withStyles(styles)((props: InstructorsCellProps) => {
     const { classes, instructors } = props;
 
-    return <NoPaddingTableCell className={classes.cell}>
-        {instructors.map((profName) => {
-            if (profName !== 'STAFF') {
-                const lastName = profName.substring(0, profName.indexOf(','));
-                return (
-                    <div key={profName}>
-                        <a
-                            href={`https://www.ratemyprofessors.com/search/teachers?sid=U2Nob29sLTEwNzQ=&query=${lastName}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => {
-                                ReactGA.event({
-                                    category: 'antalmanac-rewrite',
-                                    action: `Click instructor name`,
-                                    label: `RateMyProfessors`,
-                                });
-                            }}
-                        >
-                            {profName}
-                        </a>
-                    </div>
-                );
-            } else {
-                return profName;
-            }
-        })}
-    </NoPaddingTableCell>;
+    return (
+        <NoPaddingTableCell className={classes.cell}>
+            {instructors.map((profName) => {
+                if (profName !== 'STAFF') {
+                    const lastName = profName.substring(0, profName.indexOf(','));
+                    return (
+                        <div key={profName}>
+                            <a
+                                href={`https://www.ratemyprofessors.com/search/teachers?sid=U2Nob29sLTEwNzQ=&query=${lastName}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => {
+                                    ReactGA.event({
+                                        category: 'antalmanac-rewrite',
+                                        action: `Click instructor name`,
+                                        label: `RateMyProfessors`,
+                                    });
+                                }}
+                            >
+                                {profName}
+                            </a>
+                        </div>
+                    );
+                } else {
+                    return profName;
+                }
+            })}
+        </NoPaddingTableCell>
+    );
 });
 
 interface LocationsCellProps {
-    classes: ClassNameMap
-    meetings: Meeting[]
+    classes: ClassNameMap;
+    meetings: Meeting[];
 }
 
 const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
@@ -208,13 +210,13 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
 });
 
 interface SectionEnrollmentCellProps {
-    classes: ClassNameMap
-    numCurrentlyEnrolled: EnrollmentCount
-    maxCapacity: number
+    classes: ClassNameMap;
+    numCurrentlyEnrolled: EnrollmentCount;
+    maxCapacity: number;
     /** This is a string because sometimes it's "n/a" */
-    numOnWaitlist: string
+    numOnWaitlist: string;
     /** This is a string because numOnWaitlist is a string. I haven't seen this be "n/a" but it seems possible and I don't want it to break if that happens. */
-    numNewOnlyReserved: string
+    numNewOnlyReserved: string;
 }
 
 const SectionEnrollmentCell = withStyles(styles)((props: SectionEnrollmentCellProps) => {
@@ -236,13 +238,13 @@ const SectionEnrollmentCell = withStyles(styles)((props: SectionEnrollmentCellPr
 });
 
 interface RestrictionsCellProps {
-    classes: ClassNameMap
-    restrictions: string
+    classes: ClassNameMap;
+    restrictions: string;
 }
 
 const RestrictionsCell = withStyles(styles)((props: RestrictionsCellProps) => {
     const { classes, restrictions } = props;
-    const popupState = usePopupState({ popupId: "RestrictionsCellPopup", variant: 'popover' });
+    const popupState = usePopupState({ popupId: 'RestrictionsCellPopup', variant: 'popover' });
 
     const parseRestrictions = (restrictionCode: string) => {
         return restrictionCode.split(' ').map((code, index) => {
@@ -286,8 +288,8 @@ const RestrictionsCell = withStyles(styles)((props: RestrictionsCellProps) => {
 });
 
 interface DayAndTimeCellProps {
-    classes: ClassNameMap
-    meetings: Meeting[]
+    classes: ClassNameMap;
+    meetings: Meeting[];
 }
 
 const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
@@ -304,7 +306,7 @@ const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
 });
 
 interface StatusCellProps extends OpenSpotAlertPopoverProps {
-    term: string
+    term: string;
 }
 
 const StatusCell = withStyles(styles)((props: StatusCellProps) => {
@@ -331,13 +333,13 @@ const StatusCell = withStyles(styles)((props: StatusCellProps) => {
 });
 
 interface SectionTableBodyProps {
-    classes: ClassNameMap
-    section: AASection
-    courseDetails: CourseDetails
-    term: string
-    colorAndDelete: boolean
-    highlightAdded: boolean
-    scheduleNames: string[]
+    classes: ClassNameMap;
+    section: AASection;
+    courseDetails: CourseDetails;
+    term: string;
+    colorAndDelete: boolean;
+    highlightAdded: boolean;
+    scheduleNames: string[];
 }
 
 //TODO: SectionNum name parity -> SectionNumber

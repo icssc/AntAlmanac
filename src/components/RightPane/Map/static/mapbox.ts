@@ -2,7 +2,7 @@
 // with some fields omitted for simplicity since we don't use them.
 // see below for a complete response object
 
-export type Coord = [number, number]
+export type Coord = [number, number];
 
 /**
  * Response from mapbox API. This interface omits some fields. Read the top
@@ -33,8 +33,8 @@ interface MapBoxLeg {
 }
 
 interface MapBoxGeometry {
-    coordinates: Coord[]
-    type: "LineString" | string;
+    coordinates: Coord[];
+    type: 'LineString' | string;
 }
 
 interface MapBoxWaypoint {
@@ -42,7 +42,6 @@ interface MapBoxWaypoint {
     name: string;
     location: Coord;
 }
-
 
 /*
 Example object:

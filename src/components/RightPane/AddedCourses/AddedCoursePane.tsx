@@ -32,18 +32,18 @@ const styles = {
 };
 
 interface CourseWithTerm extends AACourse {
-    term: string
+    term: string;
 }
 
 interface AddedCoursePaneProps {
-    classes: ClassNameMap
+    classes: ClassNameMap;
 }
 
 interface AddedCoursePaneState {
-    courses: CourseWithTerm[]
-    customEvents: RepeatingCustomEvent[]
-    totalUnits: number
-    scheduleNames: string[]
+    courses: CourseWithTerm[];
+    customEvents: RepeatingCustomEvent[];
+    totalUnits: number;
+    scheduleNames: string[];
 }
 
 class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePaneState> {
@@ -76,7 +76,6 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         AppStore.removeListener('scheduleNamesChange', this.loadScheduleNames);
     }
 
-
     loadCourses = () => {
         const addedCourses = AppStore.getAddedCourses();
         let totalUnits = 0;
@@ -84,7 +83,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
 
         for (const addedCourse of addedCourses) {
             if (addedCourse.scheduleIndices.includes(AppStore.getCurrentScheduleIndex())) {
-                let formattedCourse: CourseWithTerm|undefined = formattedCourses.find(
+                let formattedCourse: CourseWithTerm | undefined = formattedCourses.find(
                     (needleCourse) =>
                         needleCourse.courseNumber === addedCourse.courseNumber &&
                         needleCourse.deptCode === addedCourse.deptCode

@@ -9,11 +9,11 @@ import MapMarker from './MapMarker';
 import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { CalendarEvent, CourseEvent } from '../../Calendar/CourseCalendarEvent';
-import { Coord, MapBoxResponse } from './static/mapbox'
+import { Coord, MapBoxResponse } from './static/mapbox';
 import '../../../../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js';
 // TODO investigate less jank ways of doing this if at all possible
 
-class LocateControl extends PureComponent<{leaflet: LeafletContext}> {
+class LocateControl extends PureComponent<{ leaflet: LeafletContext }> {
     componentDidMount() {
         const { map } = this.props.leaflet;
 
@@ -41,18 +41,18 @@ const ATTRIBUTION_MARKUP =
 const DIRECTIONS_ENDPOINT = 'https://api.mapbox.com/directions/v5/mapbox/walking/';
 
 interface UCIMapState {
-    lat: number
-    lng: number
-    zoom: number
-    day: number
-    selected: string|null
-    selected_img: string
-    selected_acronym: string
-    eventsInCalendar: CalendarEvent[]
-    poly: any[]
-    info_markers: any[]
-    info_marker: Marker|null
-    pins: Record<string, [CourseEvent,number][]>
+    lat: number;
+    lng: number;
+    zoom: number;
+    day: number;
+    selected: string | null;
+    selected_img: string;
+    selected_acronym: string;
+    eventsInCalendar: CalendarEvent[];
+    poly: any[];
+    info_markers: any[];
+    info_marker: Marker | null;
+    pins: Record<string, [CourseEvent, number][]>;
 }
 export default class UCIMap extends PureComponent {
     state: UCIMapState = {
@@ -97,7 +97,7 @@ export default class UCIMap extends PureComponent {
                 )
                 .sort((event, event2) => event.start.getTime() - event2.start.getTime())
                 .forEach((event) => {
-                    if(event.isCustomEvent) return;
+                    if (event.isCustomEvent) return;
                     // Get building code, get id of building code, which will get us the building data from buildingCatalogue
                     const buildingCode = event.bldg.split(' ').slice(0, -1).join(' ') as keyof typeof locations;
                     const id = locations[buildingCode] as keyof typeof buildingCatalogue;
@@ -119,9 +119,9 @@ export default class UCIMap extends PureComponent {
                 var url = new URL(DIRECTIONS_ENDPOINT + encodeURIComponent(coords));
 
                 url.search = new URLSearchParams({
-                    alternatives: "false",
+                    alternatives: 'false',
                     geometries: 'geojson',
-                    steps: "false",
+                    steps: 'false',
                     access_token: ACCESS_TOKEN,
                 }).toString();
 
@@ -132,7 +132,7 @@ export default class UCIMap extends PureComponent {
                 const obj: MapBoxResponse = await response.json();
                 const coordinates = obj['routes'][0]['geometry']['coordinates']; // The coordinates for the lines of the routes
                 const waypoints = obj['waypoints']; // The waypoints we specified in the request
-                let waypointIndex=0;
+                let waypointIndex = 0;
                 const path: Coord[][] = [
                     [[waypoints[waypointIndex]['location'][1], waypoints[waypointIndex]['location'][0]]],
                 ]; // Path is a list of paths for each waypoint. For example, path[0] is the path to waypoint 0, path[1] is the path from 0 to 1... etc.
@@ -169,8 +169,12 @@ export default class UCIMap extends PureComponent {
                                 // the `this` parameter actually refers to the Polyline object this function is being passed to.
                                 // the `options property of this comes from the props of that Polyline, specifically `map` and `index`
                                 // @ts-ignore needs to be ignored because function definitions are not allowed in strict mode. This fix has to involve converting this function to an arrow function and not relying on accessing the index from the specific Polyline that it's being called from with the `this` parameter.
-                                function setInfoMarker(this: {options: {map: UCIMap, index: typeof waypointIndex}}, event: LeafletMouseEvent) {
-                                    let [color, duration, miles] = this.options.map.state.info_markers[this.options.index - 1];
+                                function setInfoMarker(
+                                    this: { options: { map: UCIMap; index: typeof waypointIndex } },
+                                    event: LeafletMouseEvent
+                                ) {
+                                    let [color, duration, miles] =
+                                        this.options.map.state.info_markers[this.options.index - 1];
                                     this.options.map.setState({
                                         info_marker: (
                                             <Marker
@@ -225,8 +229,8 @@ export default class UCIMap extends PureComponent {
                                 let duration =
                                     obj['routes'][0]['legs'][waypointIndex - 1]['duration'] > 30
                                         ? Math.round(
-                                                obj['routes'][0]['legs'][waypointIndex - 1]['duration'] / 60
-                                            ).toString() + ' min'
+                                              obj['routes'][0]['legs'][waypointIndex - 1]['duration'] / 60
+                                          ).toString() + ' min'
                                         : '<1 min';
                                 let miles =
                                     (
@@ -295,12 +299,12 @@ export default class UCIMap extends PureComponent {
             )
             .sort((event, event2) => event.start.getTime() - event2.start.getTime())
             .forEach((event, index) => {
-                if(event.isCustomEvent) return;
+                if (event.isCustomEvent) return;
                 const buildingCode = event.bldg.split(' ').slice(0, -1).join(' ');
                 if (pins.hasOwnProperty(buildingCode)) {
-                    pins[buildingCode].push([event, index+1]);
+                    pins[buildingCode].push([event, index + 1]);
                 } else {
-                    pins[buildingCode] = [[event,index+1]];
+                    pins[buildingCode] = [[event, index + 1]];
                 }
             }); // Creates a map between buildingCodes to pins to determine stacks and store in pins
         this.setState({ pins: pins });
@@ -350,7 +354,7 @@ export default class UCIMap extends PureComponent {
         return markers;
     };
 
-    handleSearch = (event: React.ChangeEvent<{}>, searchValue: Building|null) => {
+    handleSearch = (event: React.ChangeEvent<{}>, searchValue: Building | null) => {
         if (searchValue) {
             // Acronym, if it exists, is in between parentheses
             const acronym = searchValue.name.substring(

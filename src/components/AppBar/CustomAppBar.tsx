@@ -1,4 +1,4 @@
-import React, {MouseEventHandler, ReactElement} from 'react';
+import React, { MouseEventHandler, ReactElement } from 'react';
 import { AppBar, Toolbar, Menu, useMediaQuery } from '@material-ui/core';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -14,7 +14,6 @@ import ConditionalWrapper from '../ConditionalWrapper';
 import ImportStudyList from './ImportStudyList';
 import Feedback from './Feedback';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-
 
 const styles = {
     appBar: {
@@ -36,14 +35,13 @@ const styles = {
 };
 
 interface CustomAppBarProps {
-    classes: ClassNameMap
+    classes: ClassNameMap;
 }
 
-const CustomAppBar = ({classes}: CustomAppBarProps) => {
-
+const CustomAppBar = ({ classes }: CustomAppBarProps) => {
     const isMobileScreen = useMediaQuery('(max-width:750px)');
 
-    const [anchorEl, setAnchorEl] = React.useState<Element|null>(null);
+    const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
 
     const handleClick: MouseEventHandler<SVGSVGElement> = (event) => {
         setAnchorEl(event.currentTarget);
@@ -73,22 +71,24 @@ const CustomAppBar = ({classes}: CustomAppBarProps) => {
                         </div>
                     )}
                 >
-                    <>{[
-                        <SettingsMenu />,
-                        <NotificationHub />,
-                        <ImportStudyList />,
-                        <Feedback />,
-                        <News />,
-                        <AboutPage />,
-                    ].map((element, index) => (
-                        <ConditionalWrapper
-                            key={index}
-                            condition={isMobileScreen}
-                            wrapper={(children) => <MenuItem>{children}</MenuItem>}
-                        >
-                            {element}
-                        </ConditionalWrapper>
-                    ))}</>
+                    <>
+                        {[
+                            <SettingsMenu />,
+                            <NotificationHub />,
+                            <ImportStudyList />,
+                            <Feedback />,
+                            <News />,
+                            <AboutPage />,
+                        ].map((element, index) => (
+                            <ConditionalWrapper
+                                key={index}
+                                condition={isMobileScreen}
+                                wrapper={(children) => <MenuItem>{children}</MenuItem>}
+                            >
+                                {element}
+                            </ConditionalWrapper>
+                        ))}
+                    </>
                 </ConditionalWrapper>
             </Toolbar>
         </AppBar>

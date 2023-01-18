@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import RightPaneStore from '../../../RightPaneStore';
-import { ClassNameMap } from "@material-ui/core/styles/withStyles";
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 const style = {
     formControl: {
@@ -22,7 +22,7 @@ const options = depts.map((dept) => {
 });
 
 interface DeptSearchBarProps {
-    classes: ClassNameMap
+    classes: ClassNameMap;
 }
 
 interface Department {

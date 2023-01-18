@@ -1,4 +1,4 @@
-import React, {ChangeEvent, PureComponent} from 'react';
+import React, { ChangeEvent, PureComponent } from 'react';
 import {
     MenuItem,
     Select,
@@ -8,13 +8,14 @@ import {
     Switch,
     FormControlLabel,
     Typography,
-    Collapse, Theme,
+    Collapse,
+    Theme,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import RightPaneStore from '../../RightPaneStore';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import {ClassNameMap} from "@material-ui/core/styles/withStyles";
-import {Styles} from "@material-ui/core/styles/withStyles";
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { Styles } from '@material-ui/core/styles/withStyles';
 
 const styles: Styles<Theme, object> = {
     units: {
@@ -31,7 +32,7 @@ const styles: Styles<Theme, object> = {
 };
 
 interface AdvancedSearchTextFieldsProps {
-    classes?: ClassNameMap
+    classes?: ClassNameMap;
 }
 
 interface AdvancedSearchTextFieldsState {
@@ -45,14 +46,17 @@ interface AdvancedSearchTextFieldsState {
 }
 
 interface AdvancedSearchProps {
-    classes: ClassNameMap
+    classes: ClassNameMap;
 }
 
 interface AdvancedSearchState {
     expandAdvanced: boolean;
 }
 
-class UnstyledAdvancedSearchTextFields extends PureComponent<AdvancedSearchTextFieldsProps, AdvancedSearchTextFieldsState> {
+class UnstyledAdvancedSearchTextFields extends PureComponent<
+    AdvancedSearchTextFieldsProps,
+    AdvancedSearchTextFieldsState
+> {
     state = {
         instructor: RightPaneStore.getFormData().instructor,
         units: RightPaneStore.getFormData().units,
@@ -83,7 +87,7 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<AdvancedSearchTextF
         });
     };
 
-    handleChange = (name: string) => (event: ChangeEvent<{ checked?: boolean, name?: string; value: unknown; }>) => {
+    handleChange = (name: string) => (event: ChangeEvent<{ checked?: boolean; name?: string; value: unknown }>) => {
         if (name === 'online') {
             if (event.target.checked) {
                 this.setState({ building: 'ON', room: 'LINE' });

@@ -7,7 +7,7 @@ import { saveAs } from 'file-saver';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 
 interface ScreenshotButtonProps {
-    onTakeScreenshot: (html2CanvasScreenshot: ()=>void)=>void // the function in an ancestor component that wraps ScreenshotButton.handleClick to perform canvas transformations before and after downloading the screenshot.
+    onTakeScreenshot: (html2CanvasScreenshot: () => void) => void; // the function in an ancestor component that wraps ScreenshotButton.handleClick to perform canvas transformations before and after downloading the screenshot.
 }
 
 class ScreenshotButton extends PureComponent<ScreenshotButtonProps> {
@@ -20,7 +20,7 @@ class ScreenshotButton extends PureComponent<ScreenshotButtonProps> {
             scale: 2.5,
         }).then((canvas) => {
             const imgRaw = canvas.toDataURL('image/png');
-            saveAs(imgRaw,'Schedule.png')
+            saveAs(imgRaw, 'Schedule.png');
         });
     };
 

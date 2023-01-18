@@ -9,17 +9,17 @@ interface GradesGraphQLResponse {
     data: {
         courseGrades: {
             aggregate: {
-                average_gpa: number
-                sum_grade_a_count: number
-                sum_grade_b_count: number
-                sum_grade_c_count: number
-                sum_grade_d_count: number
-                sum_grade_f_count: number
-                sum_grade_np_count: number
-                sum_grade_p_count: number
-            }
-        }
-    }
+                average_gpa: number;
+                sum_grade_a_count: number;
+                sum_grade_b_count: number;
+                sum_grade_c_count: number;
+                sum_grade_d_count: number;
+                sum_grade_f_count: number;
+                sum_grade_np_count: number;
+                sum_grade_p_count: number;
+            };
+        };
+    };
 }
 
 export async function queryGraphQL(queryString: string): Promise<GradesGraphQLResponse> {
@@ -35,11 +35,11 @@ export async function queryGraphQL(queryString: string): Promise<GradesGraphQLRe
         },
         body: query,
     });
-    return res.json()
+    return res.json();
 }
 
 export interface CourseData {
-    addedCourses: AppStoreCourse[]
+    addedCourses: AppStoreCourse[];
     scheduleNames: string[];
     customEvents: RepeatingCustomEvent[];
 }
@@ -50,14 +50,14 @@ export async function getCoursesData(userData: UserData): Promise<CourseData> {
             addedCourses: [],
             scheduleNames: userData.scheduleNames,
             customEvents: userData.customEvents,
-        }
-    
+        };
+
     const sectionCodeToInfoMapping = userData.addedCourses.reduce((accumulator, addedCourse) => {
         accumulator[`${addedCourse.sectionCode}${addedCourse.term}`] = { ...addedCourse };
         return accumulator;
-    }, {} as {[key: string]: ShortCourseInfo});
+    }, {} as { [key: string]: ShortCourseInfo });
 
-    const dataToSend: {[key: string]: string[][]} = {};
+    const dataToSend: { [key: string]: string[][] } = {};
     for (let i = 0; i < userData.addedCourses.length; ++i) {
         const addedCourse = userData.addedCourses[i];
         const sectionsOfTermArray = dataToSend[addedCourse.term];
@@ -83,14 +83,14 @@ export async function getCoursesData(userData: UserData): Promise<CourseData> {
             const jsonResp = await queryWebsoc(params);
 
             for (const [sectionCode, courseData] of Object.entries(getCourseInfo(jsonResp))) {
-                const sectionCodeInfo = sectionCodeToInfoMapping[`${sectionCode}${term}`]
+                const sectionCodeInfo = sectionCodeToInfoMapping[`${sectionCode}${term}`];
                 addedCourses.push({
                     ...sectionCodeInfo,
                     ...courseData.courseDetails,
                     section: {
                         ...courseData.section,
-                        color: sectionCodeInfo.color
-                    }
+                        color: sectionCodeInfo.color,
+                    },
                 });
             }
         }
@@ -103,20 +103,20 @@ export async function getCoursesData(userData: UserData): Promise<CourseData> {
 }
 
 export interface CourseDetails {
-    deptCode: string
-    courseNumber: string
-    courseTitle: string
-    courseComment: string
-    prerequisiteLink: string
+    deptCode: string;
+    courseNumber: string;
+    courseTitle: string;
+    courseComment: string;
+    prerequisiteLink: string;
 }
 
 interface CourseInfo {
-    courseDetails: CourseDetails
-    section: Section
+    courseDetails: CourseDetails;
+    section: Section;
 }
 
 export function getCourseInfo(SOCObject: WebsocResponse) {
-    let courseInfo: {[sectionCode: string]: CourseInfo} = {};
+    let courseInfo: { [sectionCode: string]: CourseInfo } = {};
     for (const school of SOCObject.schools) {
         for (const department of school.departments) {
             for (const course of department.courses) {
@@ -138,13 +138,13 @@ export function getCourseInfo(SOCObject: WebsocResponse) {
     return courseInfo;
 }
 
-const websocCache: {[key: string]: any} = {};
+const websocCache: { [key: string]: any } = {};
 
 export function clearCache() {
     Object.keys(websocCache).forEach((key) => delete websocCache[key]); //https://stackoverflow.com/a/19316873/14587004
 }
 
-export async function queryWebsoc(params: Record<string,string>): Promise<WebsocResponse> {
+export async function queryWebsoc(params: Record<string, string>): Promise<WebsocResponse> {
     // Construct a request to PeterPortal with the params as a query string
     const url = new URL(PETERPORTAL_WEBSOC_ENDPOINT);
     const searchString = new URLSearchParams(params).toString();
@@ -181,7 +181,7 @@ interface Grades {
     sum_grade_p_count: number;
 }
 
-const gradesCache: {[key: string]: Grades} = {};
+const gradesCache: { [key: string]: Grades } = {};
 
 export async function queryGrades(deptCode: string, courseNumber: string) {
     if (gradesCache[deptCode + courseNumber]) {
@@ -245,7 +245,7 @@ export function combineSOCObjects(SOCObjects: WebsocResponse[]) {
     return combined;
 }
 
-export async function queryWebsocMultiple(params: {[key: string]: string}, fieldName: string) {
+export async function queryWebsocMultiple(params: { [key: string]: string }, fieldName: string) {
     let responses: WebsocResponse[] = [];
     for (const field of params[fieldName].trim().replace(' ', '').split(',')) {
         let req = JSON.parse(JSON.stringify(params));
@@ -256,7 +256,11 @@ export async function queryWebsocMultiple(params: {[key: string]: string}, field
     return combineSOCObjects(responses);
 }
 
-export const addCoursesMultiple = (courseInfo: {[sectionCode: string]: CourseInfo}, term: string, scheduleIndex: number) => {
+export const addCoursesMultiple = (
+    courseInfo: { [sectionCode: string]: CourseInfo },
+    term: string,
+    scheduleIndex: number
+) => {
     let sectionsAdded = 0;
     for (const section of Object.values(courseInfo)) {
         addCourse(section.section, section.courseDetails, term, scheduleIndex, undefined, true);
@@ -283,7 +287,7 @@ export const warnMultipleTerms = (terms: Set<string>) => {
     );
 };
 
-export function clickToCopy(event: React.MouseEvent<HTMLDivElement,MouseEvent>, sectionCode: string) {
+export function clickToCopy(event: React.MouseEvent<HTMLDivElement, MouseEvent>, sectionCode: string) {
     event.stopPropagation();
 
     let tempEventTarget = document.createElement('input');

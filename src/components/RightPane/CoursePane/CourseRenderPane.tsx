@@ -14,10 +14,10 @@ import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import LazyLoad from 'react-lazyload';
 import { queryWebsoc, queryWebsocMultiple, isDarkMode } from '../../../helpers';
 import analyticsEnum from '../../../analytics';
-import {Theme} from "@material-ui/core";
-import {AACourse, AASection, Department, School, WebsocResponse} from "../../../peterportal.types";
-import {ClassNameMap} from "@material-ui/core/styles/withStyles";
-import {Styles} from "@material-ui/core/styles/withStyles";
+import { Theme } from '@material-ui/core';
+import { AACourse, AASection, Department, School, WebsocResponse } from '../../../peterportal.types';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { Styles } from '@material-ui/core/styles/withStyles';
 
 const styles: Styles<Theme, object> = (theme) => ({
     course: {
@@ -81,7 +81,7 @@ const flattenSOCObject = (SOCObject: WebsocResponse): (School | Department | AAC
     const courseColors = AppStore.getAddedCourses().reduce((accumulator, { color, section }) => {
         accumulator[section.sectionCode] = color;
         return accumulator;
-    }, {} as {[key:string]: string});
+    }, {} as { [key: string]: string });
     return SOCObject.schools.reduce((accumulator: (School | Department | AACourse)[], school) => {
         accumulator.push(school);
 
@@ -104,12 +104,11 @@ const RecruitmentBanner = (classes: ClassNameMap) => {
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
     const displayRecruitmentBanner =
-        bannerVisibility && (
-            window.localStorage.getItem('recruitmentDismissalTime') === null || 
-            Date.now() - parseInt(window.localStorage.getItem('recruitmentDismissalTime') as string) > 11 * 7 * 24 * 3600 * 1000 
-            &&
-            ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue)
-        );
+        bannerVisibility &&
+        (window.localStorage.getItem('recruitmentDismissalTime') === null ||
+            (Date.now() - parseInt(window.localStorage.getItem('recruitmentDismissalTime') as string) >
+                11 * 7 * 24 * 3600 * 1000 &&
+                ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue)));
 
     return (
         <div className={classes.bannerContainer}>
@@ -146,7 +145,10 @@ const RecruitmentBanner = (classes: ClassNameMap) => {
  *  for reasons that are currently beyond me (probably something in the transpiling process that JS doesn't like).
  *  If you are smarter than me (which you probably are) and can find a way to make this cleaner, do it.
  */
-const SectionTableWrapped = (index: number, data: { scheduleNames: string[]; courseData: (School | Department | AACourse)[] }) => {
+const SectionTableWrapped = (
+    index: number,
+    data: { scheduleNames: string[]; courseData: (School | Department | AACourse)[] }
+) => {
     const { courseData, scheduleNames } = data;
     const formData = RightPaneStore.getFormData();
 
@@ -154,22 +156,10 @@ const SectionTableWrapped = (index: number, data: { scheduleNames: string[]; cou
 
     if ((courseData[index] as School).departments !== undefined) {
         const school = courseData[index] as School;
-        component = (
-            <SchoolDeptCard
-                comment={school.schoolComment}
-                type={'school'}
-                name={school.schoolName}
-            />
-        );
+        component = <SchoolDeptCard comment={school.schoolComment} type={'school'} name={school.schoolName} />;
     } else if ((courseData[index] as Department).courses !== undefined) {
         const dept = courseData[index] as Department;
-        component = (
-            <SchoolDeptCard
-                name={`Department of ${dept.deptName}`}
-                comment={dept.deptComment}
-                type={'dept'}
-            />
-        );
+        component = <SchoolDeptCard name={`Department of ${dept.deptName}`} comment={dept.deptComment} type={'dept'} />;
     } else if (formData.ge !== 'ANY') {
         const course = courseData[index] as AACourse;
         component = (
@@ -200,14 +190,14 @@ const SectionTableWrapped = (index: number, data: { scheduleNames: string[]; cou
 };
 
 interface CourseRenderPaneProps {
-    classes: ClassNameMap
+    classes: ClassNameMap;
 }
 
 interface CourseRenderPaneState {
-    courseData: (School | Department | AACourse)[],
-    loading: boolean,
-    error: boolean,
-    scheduleNames: string[]
+    courseData: (School | Department | AACourse)[];
+    loading: boolean;
+    error: boolean;
+    scheduleNames: string[];
 }
 
 class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRenderPaneState> {
@@ -298,7 +288,8 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
                         this.state.courseData.map((_: School | Department | AACourse, index: number) => {
                             let heightEstimate = 300;
                             if ((this.state.courseData[index] as AACourse).sections !== undefined)
-                                heightEstimate = (this.state.courseData[index] as AACourse).sections.length * 60 + 20 + 40;
+                                heightEstimate =
+                                    (this.state.courseData[index] as AACourse).sections.length * 60 + 20 + 40;
 
                             return (
                                 <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>

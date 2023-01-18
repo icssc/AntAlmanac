@@ -1,4 +1,4 @@
-import React, {ChangeEvent, PureComponent} from 'react';
+import React, { ChangeEvent, PureComponent } from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -8,7 +8,7 @@ import { termData } from '../../../../termData';
 
 interface TermSelectorProps {
     changeState: (field: string, value: string) => void;
-    fieldName: string
+    fieldName: string;
 }
 
 class TermSelector extends PureComponent<TermSelectorProps> {
@@ -28,7 +28,7 @@ class TermSelector extends PureComponent<TermSelectorProps> {
         RightPaneStore.removeListener('formReset', this.resetField);
     }
 
-    handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown; }>) => {
+    handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
         this.setState({ term: event.target.value });
         this.props.changeState(this.props.fieldName, event.target.value as string);
     };

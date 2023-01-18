@@ -14,18 +14,18 @@ import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '../../api/endpoints';
 import analyticsEnum, { logAnalytics } from '../../analytics';
 
 interface NotificationItem {
-    courseTitle: string,
-    sectionCode: string
+    courseTitle: string;
+    sectionCode: string;
 }
 
 interface NotificationAPIResponse {
-    smsNotificationList: NotificationItem[]
+    smsNotificationList: NotificationItem[];
 }
 
 interface NotificationHubState {
-    open: boolean,
-    phoneNumber: string,
-    smsNotificationList: NotificationItem[]
+    open: boolean;
+    phoneNumber: string;
+    smsNotificationList: NotificationItem[];
 }
 
 class NotificationHub extends PureComponent {

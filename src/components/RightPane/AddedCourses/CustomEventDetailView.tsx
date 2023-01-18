@@ -26,10 +26,10 @@ const styles = {
 };
 
 interface CustomEventDetailViewProps {
-    classes: ClassNameMap
-    customEvent: RepeatingCustomEvent
-    currentScheduleIndex: number
-    scheduleNames: string[]
+    classes: ClassNameMap;
+    customEvent: RepeatingCustomEvent;
+    currentScheduleIndex: number;
+    scheduleNames: string[];
 }
 
 const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
@@ -81,7 +81,11 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                 >
                     <Delete fontSize="small" />
                 </IconButton>
-                <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} currentScheduleIndex={props.currentScheduleIndex}/>
+                <CustomEventDialog
+                    customEvent={customEvent}
+                    scheduleNames={props.scheduleNames}
+                    currentScheduleIndex={props.currentScheduleIndex}
+                />
             </CardActions>
         </Card>
     );

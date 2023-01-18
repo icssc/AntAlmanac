@@ -16,11 +16,11 @@ const styles = {
 };
 
 interface SettingsState {
-    anchorEl?: HTMLElement,
-    theme: string
+    anchorEl?: HTMLElement;
+    theme: string;
 }
 
-class SettingsMenu extends PureComponent<{classes: ClassNameMap}, SettingsState> {
+class SettingsMenu extends PureComponent<{ classes: ClassNameMap }, SettingsState> {
     state: SettingsState = {
         anchorEl: undefined,
         theme: AppStore.getTheme(),

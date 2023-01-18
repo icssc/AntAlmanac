@@ -19,7 +19,7 @@ import moment from 'moment-timezone';
 import analyticsEnum, { logAnalytics } from '../../analytics';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 
-const styles: Styles<Theme, object> = (theme) => ({ 
+const styles: Styles<Theme, object> = (theme) => ({
     list: {
         width: theme.spacing(40),
         maxHeight: theme.spacing(40),
@@ -38,25 +38,25 @@ const styles: Styles<Theme, object> = (theme) => ({
 });
 
 interface NewsItem {
-    title: string,
-    body: string,
-    date: string, // TODO: what format is this in?
-    _id: string // mongoose object id
+    title: string;
+    body: string;
+    date: string; // TODO: what format is this in?
+    _id: string; // mongoose object id
 }
 
 interface NewsResponse {
-    news: Array<NewsItem>
+    news: Array<NewsItem>;
 }
 
 interface NewsProps {
-    classes: ClassNameMap<string>
+    classes: ClassNameMap<string>;
 }
 
 interface NewsState {
-    anchorEl?: Element,
-    newsItems?: Array<NewsItem>,
-    loading: boolean,
-    showDot: boolean
+    anchorEl?: Element;
+    newsItems?: Array<NewsItem>;
+    loading: boolean;
+    showDot: boolean;
 }
 
 class News extends PureComponent<NewsProps, NewsState> {

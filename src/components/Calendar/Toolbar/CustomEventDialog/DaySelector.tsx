@@ -4,14 +4,14 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
 interface DaySelectorProps {
-    days?: boolean[]
-    onSelectDay: (days: boolean[]) => void
+    days?: boolean[];
+    onSelectDay: (days: boolean[]) => void;
 }
 
 interface DaySelectorState {
-    days: boolean[]
+    days: boolean[];
 }
-class DaySelector extends PureComponent<DaySelectorProps,DaySelectorState> {
+class DaySelector extends PureComponent<DaySelectorProps, DaySelectorState> {
     state: DaySelectorState = {
         days: this.props.days || [false, false, false, false, false, false, false],
     };

@@ -10,7 +10,7 @@ import { withStyles } from '@material-ui/core/styles';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { AASection, AACourse } from '../../../peterportal.types'
+import { AASection, AACourse } from '../../../peterportal.types';
 import { CourseDetails } from '../../../helpers';
 
 const styles = {
@@ -21,10 +21,10 @@ const styles = {
 };
 
 interface ColorAndDeleteProps {
-    sectionCode: string
-    color: string
-    classes: ClassNameMap
-    term: string
+    sectionCode: string;
+    color: string;
+    classes: ClassNameMap;
+    term: string;
 }
 
 export const ColorAndDelete = withStyles(styles)((props: ColorAndDeleteProps) => {
@@ -63,11 +63,11 @@ export const ColorAndDelete = withStyles(styles)((props: ColorAndDeleteProps) =>
 });
 
 interface ScheduleAddCellProps {
-    classes: ClassNameMap
-    section: AASection
-    courseDetails: CourseDetails
-    term: string
-    scheduleNames: string[]
+    classes: ClassNameMap;
+    section: AASection;
+    courseDetails: CourseDetails;
+    term: string;
+    scheduleNames: string[];
 }
 
 export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) => {

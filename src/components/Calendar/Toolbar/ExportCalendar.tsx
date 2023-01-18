@@ -10,9 +10,11 @@ import { openSnackbar } from '../../../actions/AppStoreActions';
 import { termData } from '../../../termData';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 
-const quarterStartDates = Object.fromEntries(termData
-    .filter(term => term.startDate !== undefined)
-    .map(term=> [term.shortName, term.startDate as [number,number,number]]));
+const quarterStartDates = Object.fromEntries(
+    termData
+        .filter((term) => term.startDate !== undefined)
+        .map((term) => [term.shortName, term.startDate as [number, number, number]])
+);
 const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
 const daysOffset: Record<string, number> = { SU: -1, MO: 0, TU: 1, WE: 2, TH: 3, FR: 4, SA: 5 };
 const fallDaysOffset: Record<string, number> = { TH: 0, FR: 1, SA: 2, SU: 3, MO: 4, TU: 5, WE: 6 };
@@ -39,11 +41,11 @@ const vTimeZoneSection =
     'BEGIN:VEVENT';
 
 /** [YEAR, MONTH, DAY, HOUR, MINUTE]*/
-type DateTimeArray = [number,number,number,number,number];
+type DateTimeArray = [number, number, number, number, number];
 /** [YEAR, MONTH, DAY]*/
 type YearMonthDay = [number, number, number];
 /** [HOUR, MINUTE]*/
-type HourMinute = [number,number];
+type HourMinute = [number, number];
 
 /** getByDays returns the days that a class occurs
     Given a string of days, convert it to a list of days in ics format
@@ -115,7 +117,7 @@ const getExamTime = (exam: string, year: number) => {
 
 /** parseTimes converts a time string to a
     This is a helper function used by getFirstClass
-    Ex: " 4:00-4:50p" -> [[16, 0], [16, 50]] */ 
+    Ex: " 4:00-4:50p" -> [[16, 0], [16, 50]] */
 const parseTimes = (time: string) => {
     // Determine whether the time is in the afternoon (PM)
     let pm = false;
@@ -136,7 +138,7 @@ const parseTimes = (time: string) => {
             (timeString) =>
                 timeString
                     .split(':') // Ex: [[" 4", "00"], ["4", "50"]]
-                    .map((val) => parseInt(val)) as HourMinute// Ex: [[4, 0], [4, 50]]
+                    .map((val) => parseInt(val)) as HourMinute // Ex: [[4, 0], [4, 50]]
         );
 
     // Add 12 hours if the time is PM

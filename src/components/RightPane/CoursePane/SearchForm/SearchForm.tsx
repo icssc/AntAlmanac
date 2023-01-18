@@ -1,15 +1,15 @@
-import React, {FormEvent, useState} from 'react';
+import React, { FormEvent, useState } from 'react';
 import TermSelector from './TermSelector';
 import { withStyles } from '@material-ui/core/styles';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import RightPaneStore from '../../RightPaneStore';
 import FuzzySearch from './FuzzySearch';
 import LegacySearch from './LegacySearch';
-import {IconButton, Theme, Tooltip} from '@material-ui/core';
+import { IconButton, Theme, Tooltip } from '@material-ui/core';
 import { Tune } from '@material-ui/icons';
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
-import {ClassNameMap} from "@material-ui/core/styles/withStyles";
-import {Styles} from "@material-ui/core/styles/withStyles";
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { Styles } from '@material-ui/core/styles/withStyles';
 import HelpBox from './HelpBox';
 
 const styles: Styles<Theme, object> = {
@@ -45,7 +45,7 @@ const styles: Styles<Theme, object> = {
     },
 };
 
-const SearchForm = (props: { classes: ClassNameMap, toggleSearch: () => void }) => {
+const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) => {
     const { classes, toggleSearch } = props;
 
     const [showLegacySearch, setShowLegacySearch] = useState(false);

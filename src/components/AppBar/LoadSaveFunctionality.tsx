@@ -15,14 +15,14 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { isDarkMode } from '../../helpers';
 
 interface LoadSaveButtonBaseProps {
-    action: any,
-    actionName: string
+    action: any;
+    actionName: string;
 }
 
 interface LoadSaveButtonBaseState {
-    isOpen: boolean,
-    userID: string,
-    rememberMe: boolean
+    isOpen: boolean;
+    userID: string;
+    rememberMe: boolean;
 }
 
 class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSaveButtonBaseState> {
@@ -60,7 +60,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
         this.setState({ rememberMe: event.target.checked });
     };
 
-    componentDidUpdate(prevProps: any, prevState: LoadSaveButtonBaseState,) {
+    componentDidUpdate(prevProps: any, prevState: LoadSaveButtonBaseState) {
         if (!prevState.isOpen && this.state.isOpen) document.addEventListener('keydown', this.enterEvent, false);
         else if (prevState.isOpen && !this.state.isOpen)
             document.removeEventListener('keydown', this.enterEvent, false);
@@ -116,7 +116,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'secondary' : 'primary'}>
-                            {"Cancel"}
+                            {'Cancel'}
                         </Button>
                         <Button onClick={() => this.handleClose(false)} color={isDarkMode() ? 'secondary' : 'primary'}>
                             {this.props.actionName}

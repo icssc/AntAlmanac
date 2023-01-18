@@ -9,14 +9,14 @@ const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walki
 const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId=463&image=';
 
 interface MapMarkerProps {
-    index: string
-    stackIndex: number
-    acronym: string
-    location: string
-    lat: number
-    lng: number
-    markerColor: string
-    image?: string
+    index: string;
+    stackIndex: number;
+    acronym: string;
+    location: string;
+    lat: number;
+    lng: number;
+    markerColor: string;
+    image?: string;
 }
 
 class MapMarker extends PureComponent<MapMarkerProps> {
@@ -111,6 +111,5 @@ class MapMarker extends PureComponent<MapMarkerProps> {
         );
     }
 }
-
 
 export default MapMarker;

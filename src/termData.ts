@@ -4,12 +4,12 @@ const defaultTerm = 0;
 class Term {
     shortName: `${string} ${string}`;
     longName: string;
-    startDate?: [number,number,number];
-    constructor(shortName: `${string} ${string}`, longName: string, startDate?: [number,number,number]) {
-        this.shortName=shortName
-        this.longName=longName
-        this.startDate=startDate
-    };
+    startDate?: [number, number, number];
+    constructor(shortName: `${string} ${string}`, longName: string, startDate?: [number, number, number]) {
+        this.shortName = shortName;
+        this.longName = longName;
+        this.startDate = startDate;
+    }
 }
 
 // Quarterly Academic Calendar: https://www.reg.uci.edu/calendars/quarterly/2022-2023/quarterly22-23.html

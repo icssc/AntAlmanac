@@ -1,4 +1,4 @@
-import AppStore, {AppStoreCourse, UserData, ShortCourseInfo} from '../stores/AppStore';
+import AppStore, { AppStoreCourse, UserData, ShortCourseInfo } from '../stores/AppStore';
 import ReactGA from 'react-ga';
 import analyticsEnum, { logAnalytics } from '../analytics';
 import { CourseDetails, courseNumAsDecimal } from '../helpers';
@@ -39,7 +39,14 @@ const arrayOfColors = [
     blueGrey[500],
 ];
 
-export const addCourse = (section: Section, courseDetails: CourseDetails, term: string, scheduleIndex: number, color?: string, quiet?: boolean) => {
+export const addCourse = (
+    section: Section,
+    courseDetails: CourseDetails,
+    term: string,
+    scheduleIndex: number,
+    color?: string,
+    quiet?: boolean
+) => {
     logAnalytics({
         category: analyticsEnum.classSearch.title,
         action: analyticsEnum.classSearch.actions.ADD_COURSE,
@@ -84,9 +91,8 @@ export const addCourse = (section: Section, courseDetails: CourseDetails, term: 
             courseTitle: courseDetails.courseTitle,
             courseComment: courseDetails.courseComment,
             prerequisiteLink: courseDetails.prerequisiteLink,
-            scheduleIndices:
-                scheduleIndex === scheduleNames.length ? [...scheduleNames.keys()] : [scheduleIndex],
-            section: {...section, color: color},
+            scheduleIndices: scheduleIndex === scheduleNames.length ? [...scheduleNames.keys()] : [scheduleIndex],
+            section: { ...section, color: color },
         };
         AppStore.addCourse(newCourse);
     } else {
@@ -108,7 +114,13 @@ export const addCourse = (section: Section, courseDetails: CourseDetails, term: 
  * @param styles object containing css-in-js object, like {[propertyName]: string}
  * if anyone comes back to refactor this, I think `notistack` provides its own types we could use.
  */
-export const openSnackbar = (variant: string, message: string, duration?: number, position?: SnackbarPosition, style?: {[cssPropertyName: string]: string}) => {
+export const openSnackbar = (
+    variant: string,
+    message: string,
+    duration?: number,
+    position?: SnackbarPosition,
+    style?: { [cssPropertyName: string]: string }
+) => {
     AppStore.openSnackbar(variant, message, duration, position, style);
 };
 
@@ -117,7 +129,7 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
         label: userID,
-        value: rememberMe? 1:0,
+        value: rememberMe ? 1 : 0,
     });
     if (userID != null) {
         userID = userID.replace(/\s+/g, '');
@@ -133,7 +145,11 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
             const customEvents = AppStore.getCustomEvents();
             const scheduleNames = AppStore.getScheduleNames();
 
-            const userData = { addedCourses: [] as ShortCourseInfo[], scheduleNames: scheduleNames, customEvents: customEvents };
+            const userData = {
+                addedCourses: [] as ShortCourseInfo[],
+                scheduleNames: scheduleNames,
+                customEvents: customEvents,
+            };
 
             userData.addedCourses = addedCourses.map((course) => {
                 return {
@@ -170,7 +186,7 @@ export const loadSchedule = async (userID: string, rememberMe: boolean) => {
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
         label: userID,
-        value: rememberMe? 1:0,
+        value: rememberMe ? 1 : 0,
     });
     if (
         userID != null &&
@@ -282,7 +298,7 @@ export const addCustomEvent = (customEvent: RepeatingCustomEvent) => {
     AppStore.addCustomEvent(customEvent);
 };
 
-export const undoDelete = (event: KeyboardEvent|null) => {
+export const undoDelete = (event: KeyboardEvent | null) => {
     const deletedCourses = AppStore.getDeletedCourses();
 
     if (deletedCourses.length > 0 && (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey)))) {
@@ -350,8 +366,8 @@ export const copySchedule = (from: number, to: number) => {
             // If to is equal to the length of scheduleNames, then the user wanted to copy to
             // all schedules; otherwise, if to is less than the length of scheduleNames, then
             // only one schedule should be altered
-            if (to === scheduleNames.length)
-                return { ...addedCourse, scheduleIndices: [...scheduleNames.keys()] }; // this [...array.keys()] idiom is like list(range(len(array))) in python
+            if (to === scheduleNames.length) return { ...addedCourse, scheduleIndices: [...scheduleNames.keys()] };
+            // this [...array.keys()] idiom is like list(range(len(array))) in python
             else
                 return {
                     ...addedCourse,
@@ -364,8 +380,7 @@ export const copySchedule = (from: number, to: number) => {
 
     const customEventsAfterCopy = customEvents.map((customEvent) => {
         if (customEvent.scheduleIndices.includes(from) && !customEvent.scheduleIndices.includes(to)) {
-            if (to === scheduleNames.length)
-                return { ...customEvent, scheduleIndices: [...scheduleNames.keys()] };
+            if (to === scheduleNames.length) return { ...customEvent, scheduleIndices: [...scheduleNames.keys()] };
             else
                 return {
                     ...customEvent,

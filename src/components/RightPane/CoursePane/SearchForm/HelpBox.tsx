@@ -25,10 +25,10 @@ const styles = {
     },
 };
 interface HelpBoxProps {
-    classes: ClassNameMap
+    classes: ClassNameMap;
 }
 
-const HelpBox = ({classes}: HelpBoxProps) => {
+const HelpBox = ({ classes }: HelpBoxProps) => {
     return (
         <Paper variant="outlined" className={classes.container}>
             <h2 className={classes.heading}>Need help planning your schedule?</h2>

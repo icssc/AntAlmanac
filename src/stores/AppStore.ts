@@ -7,50 +7,50 @@ import { AASection } from '../peterportal.types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calenderizeHelpers';
 
 export interface ShortCourseInfo {
-    color: string
-    term: string
-    sectionCode: string
-    scheduleIndices: number[]
+    color: string;
+    term: string;
+    sectionCode: string;
+    scheduleIndices: number[];
 }
 export interface UserData {
-    addedCourses: ShortCourseInfo[]
-    scheduleNames: string[]
-    customEvents: RepeatingCustomEvent[]
+    addedCourses: ShortCourseInfo[];
+    scheduleNames: string[];
+    customEvents: RepeatingCustomEvent[];
 }
 
 export interface AppStoreCourse {
-    color: string
-    courseComment: string
-    courseNumber: string //i.e. 122a
-    courseTitle: string
-    deptCode: string
-    prerequisiteLink: string
-    scheduleIndices: number[]
-    section: AASection
-    term: string
+    color: string;
+    courseComment: string;
+    courseNumber: string; //i.e. 122a
+    courseTitle: string;
+    deptCode: string;
+    prerequisiteLink: string;
+    scheduleIndices: number[];
+    section: AASection;
+    term: string;
 }
 
 export interface AppStoreDeletedCourse extends AppStoreCourse {
-    scheduleIndex: number
+    scheduleIndex: number;
 }
 
 class AppStore extends EventEmitter {
     currentScheduleIndex: number;
-    customEvents: RepeatingCustomEvent[]
-    addedCourses: AppStoreCourse[]
-    addedSectionCodes: any//{[key: number]: Set<TODO: unknown type, figure out what this is>}
-    colorPickers: {[key:string]: EventEmitter}
-    deletedCourses: AppStoreDeletedCourse[]
-    snackbarMessage: string
-    snackbarVariant: string
-    snackbarDuration: number
-    snackbarPosition: SnackbarPosition
-    snackbarStyle: object // not sure what this is. I don't think we ever use it
-    theme: string
-    eventsInCalendar: CalendarEvent[]
-    finalsEventsInCalendar: CourseEvent[]
-    scheduleNames: string[]
-    unsavedChanges: boolean
+    customEvents: RepeatingCustomEvent[];
+    addedCourses: AppStoreCourse[];
+    addedSectionCodes: any; //{[key: number]: Set<TODO: unknown type, figure out what this is>}
+    colorPickers: { [key: string]: EventEmitter };
+    deletedCourses: AppStoreDeletedCourse[];
+    snackbarMessage: string;
+    snackbarVariant: string;
+    snackbarDuration: number;
+    snackbarPosition: SnackbarPosition;
+    snackbarStyle: object; // not sure what this is. I don't think we ever use it
+    theme: string;
+    eventsInCalendar: CalendarEvent[];
+    finalsEventsInCalendar: CourseEvent[];
+    scheduleNames: string[];
+    unsavedChanges: boolean;
 
     constructor() {
         super();
@@ -104,7 +104,6 @@ class AppStore extends EventEmitter {
         this.emit('addedCoursesChange');
     }
 
-    
     /**
      * This gets run when you add the same section code to multiple schedules.
      */
@@ -191,7 +190,7 @@ class AppStore extends EventEmitter {
         }
     }
 
-    registerColorPicker(id: string, update: (color: string)=>void) {
+    registerColorPicker(id: string, update: (color: string) => void) {
         if (id in this.colorPickers) {
             this.colorPickers[id].on('colorChange', update);
         } else {
@@ -200,8 +199,7 @@ class AppStore extends EventEmitter {
         }
     }
 
-    
-    unregisterColorPicker(id: string, update: (color: string)=>void) {
+    unregisterColorPicker(id: string, update: (color: string) => void) {
         if (id in this.colorPickers) {
             this.colorPickers[id].removeListener('colorChange', update);
             if (this.colorPickers[id].listenerCount('colorChange') === 0) {
@@ -249,7 +247,11 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    changeCustomEventColor(customEventsAfterColorChange: RepeatingCustomEvent[], customEventID: number, newColor: string) {
+    changeCustomEventColor(
+        customEventsAfterColorChange: RepeatingCustomEvent[],
+        customEventID: number,
+        newColor: string
+    ) {
         this.customEvents = customEventsAfterColorChange;
         this.finalsEventsInCalendar = calendarizeFinals();
         this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
@@ -318,7 +320,12 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    deleteSchedule(newScheduleNames: string[], newAddedCourses: AppStoreCourse[], newCustomEvents: RepeatingCustomEvent[], newScheduleIndex: number) {
+    deleteSchedule(
+        newScheduleNames: string[],
+        newAddedCourses: AppStoreCourse[],
+        newCustomEvents: RepeatingCustomEvent[],
+        newScheduleIndex: number
+    ) {
         this.scheduleNames = newScheduleNames;
         this.addedCourses = newAddedCourses;
         this.updateAddedSectionCodes();
@@ -342,7 +349,13 @@ class AppStore extends EventEmitter {
         this.emit('colorChange', false);
     }
 
-    openSnackbar(variant: string, message: string, duration?: number, position?: SnackbarPosition, style?: {[cssPropertyName: string]: string}) {
+    openSnackbar(
+        variant: string,
+        message: string,
+        duration?: number,
+        position?: SnackbarPosition,
+        style?: { [cssPropertyName: string]: string }
+    ) {
         this.snackbarVariant = variant;
         this.snackbarMessage = message;
         this.snackbarDuration = duration ? duration : this.snackbarDuration;

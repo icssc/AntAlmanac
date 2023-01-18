@@ -21,18 +21,18 @@ const styles: Styles<Theme, object> = (theme) => ({
 });
 
 export interface OpenSpotAlertPopoverProps {
-    classes: ClassNameMap
-    status: string
-    sectionCode: string
-    courseNumber: string
-    courseTitle: string
+    classes: ClassNameMap;
+    status: string;
+    sectionCode: string;
+    courseNumber: string;
+    courseTitle: string;
 }
 
 interface OpenSpotAlertPopoverState {
-    anchorElement: HTMLElement|null
-    phoneNumber: string
-    invalidInput: boolean
-    invalidInputMessage: string
+    anchorElement: HTMLElement | null;
+    phoneNumber: string;
+    invalidInput: boolean;
+    invalidInputMessage: string;
 }
 
 class OpenSpotAlertPopover extends PureComponent<OpenSpotAlertPopoverProps, OpenSpotAlertPopoverState> {

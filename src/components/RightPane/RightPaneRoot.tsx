@@ -21,7 +21,7 @@ const styles = {
 };
 
 interface DesktopTabsProps {
-    style: Record<string, unknown>
+    style: Record<string, unknown>;
 }
 
 class DesktopTabs extends PureComponent<DesktopTabsProps> {

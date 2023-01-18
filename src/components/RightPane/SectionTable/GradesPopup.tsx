@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Skeleton } from '@material-ui/lab';
-import {Theme} from '@material-ui/core';
+import { Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { XAxis, YAxis, CartesianGrid, BarChart, Bar, ResponsiveContainer } from 'recharts';
 import { queryGrades, isDarkMode } from '../../../helpers';
@@ -25,16 +25,16 @@ const styles: Styles<Theme, object> = {
 };
 
 interface GradesPopupProps {
-    deptCode: string
-    courseNumber: string
-    classes: ClassNameMap
-    isMobileScreen: boolean
+    deptCode: string;
+    courseNumber: string;
+    classes: ClassNameMap;
+    isMobileScreen: boolean;
 }
 
 const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }: GradesPopupProps) => {
     const [loading, setLoading] = useState(true);
-    const [graphTitle, setGraphTitle] = useState<string|null>(null);
-    const [gradeData, setGradeData] = useState<any[]|null>(null);
+    const [graphTitle, setGraphTitle] = useState<string | null>(null);
+    const [gradeData, setGradeData] = useState<any[] | null>(null);
 
     const loadGrades = async () => {
         if (loading === false) {

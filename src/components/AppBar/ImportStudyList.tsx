@@ -6,7 +6,7 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-    TextField
+    TextField,
 } from '@material-ui/core';
 import { addCoursesMultiple, combineSOCObjects, getCourseInfo, queryWebsoc } from '../../helpers';
 import RightPaneStore from '../RightPane/RightPaneStore';
@@ -26,13 +26,13 @@ const styles = {
 };
 
 interface ImportStudyListProps {
-    classes: ClassNameMap
+    classes: ClassNameMap;
 }
 
 interface ImportStudyListState {
-    isOpen: boolean,
-    selectedTerm: string,
-    studyListText: string
+    isOpen: boolean;
+    selectedTerm: string;
+    studyListText: string;
 }
 
 class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyListState> {
@@ -116,8 +116,7 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                         );
                     }
                 } catch (e) {
-                    if(e instanceof Error)
-                        this.handleError(e);
+                    if (e instanceof Error) this.handleError(e);
                 }
             }
             this.setState({ studyListText: '' });

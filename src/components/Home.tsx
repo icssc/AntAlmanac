@@ -21,7 +21,7 @@ const Home = () => {
                 <Grid container alignItems={'stretch'} style={{ flexGrow: '1' }}>
                     {/* @ts-ignore */}
                     <Grid item xs={12} s={6} md={6} lg={6} xl={6}>
-                        <Calendar isMobile={false}/>
+                        <Calendar isMobile={false} />
                     </Grid>
                     {/* @ts-ignore */}
                     <Grid item xs={12} s={6} md={6} lg={6} xl={6}>
