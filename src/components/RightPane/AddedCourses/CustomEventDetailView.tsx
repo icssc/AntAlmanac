@@ -1,14 +1,15 @@
-import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
 import { Card, CardActions, CardHeader, IconButton } from '@material-ui/core';
-import { Delete } from '@material-ui/icons';
-import ColorPicker from '../../ColorPicker';
-import moment from 'moment';
-import { deleteCustomEvent } from '../../../actions/AppStoreActions';
-import CustomEventDialog, { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { Delete } from '@material-ui/icons';
+import moment from 'moment';
+import React from 'react';
 import ReactGA from 'react-ga';
+
+import { deleteCustomEvent } from '../../../actions/AppStoreActions';
 import analyticsEnum from '../../../analytics';
+import CustomEventDialog, { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import ColorPicker from '../../ColorPicker';
 
 const styles = {
     root: {

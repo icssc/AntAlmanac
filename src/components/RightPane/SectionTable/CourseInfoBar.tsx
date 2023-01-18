@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { withStyles } from '@material-ui/core/styles';
 import { Button, Popover, useMediaQuery } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-import { PETERPORTAL_REST_ENDPOINT } from '../../../api/endpoints';
-import analyticsEnum, { logAnalytics } from '../../../analytics';
+import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import { Skeleton } from '@material-ui/lab';
+import React, { useState } from 'react';
+
+import analyticsEnum, { logAnalytics } from '../../../analytics';
+import { PETERPORTAL_REST_ENDPOINT } from '../../../api/endpoints';
 
 const styles = () => ({
     rightSpace: {
@@ -57,7 +58,7 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
     const [courseInfo, setCourseInfo] = useState<CourseInfo | null>(null);
 
     const togglePopover = async (currentTarget: HTMLElement | null) => {
-        if (Boolean(anchorEl)) {
+        if (anchorEl) {
             setAnchorEl(null);
         } else {
             setAnchorEl(currentTarget);

@@ -1,12 +1,13 @@
-import React from 'react';
-import { Grid, CssBaseline, useMediaQuery } from '@material-ui/core';
-import Calendar from './Calendar/CalendarRoot';
-import Bar from './AppBar/CustomAppBar';
-import DesktopTabs from './RightPane/RightPaneRoot';
-import NotificationSnackbar from './AppBar/NotificationSnackbar';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import MobileHome from './MobileHome';
 import DateFnsUtils from '@date-io/date-fns';
+import { CssBaseline, Grid, useMediaQuery } from '@material-ui/core';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import React from 'react';
+
+import Bar from './AppBar/CustomAppBar';
+import NotificationSnackbar from './AppBar/NotificationSnackbar';
+import Calendar from './Calendar/CalendarRoot';
+import MobileHome from './MobileHome';
+import DesktopTabs from './RightPane/RightPaneRoot';
 
 const Home = () => {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');

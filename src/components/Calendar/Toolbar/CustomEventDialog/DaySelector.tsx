@@ -1,7 +1,7 @@
-import React, { PureComponent } from 'react';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import React, { PureComponent } from 'react';
 
 interface DaySelectorProps {
     days?: boolean[];

@@ -1,8 +1,9 @@
-import React, { PureComponent } from 'react';
-import { withStyles, Theme } from '@material-ui/core/styles';
-import InputMask from 'react-input-mask';
 import { Button, Popover, TextField, Typography } from '@material-ui/core';
-import { Styles, ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { Theme,withStyles } from '@material-ui/core/styles';
+import { ClassNameMap,Styles } from '@material-ui/core/styles/withStyles';
+import React, { PureComponent } from 'react';
+import InputMask from 'react-input-mask';
+
 import { openSnackbar } from '../../../actions/AppStoreActions';
 import { REGISTER_NOTIFICATIONS_ENDPOINT } from '../../../api/endpoints';
 import RightPaneStore from '../RightPaneStore';

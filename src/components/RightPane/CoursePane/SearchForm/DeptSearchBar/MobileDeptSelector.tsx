@@ -1,12 +1,13 @@
-import React, { ChangeEvent, PureComponent } from 'react';
+import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import depts from './depts';
-import RightPaneStore from '../../../RightPaneStore';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import React, { ChangeEvent, PureComponent } from 'react';
+
+import RightPaneStore from '../../../RightPaneStore';
+import depts from './depts';
 
 const style = {
     formControl: {

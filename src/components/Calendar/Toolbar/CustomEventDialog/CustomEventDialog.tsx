@@ -1,5 +1,3 @@
-import React, { PureComponent } from 'react';
-import DaySelector from './DaySelector';
 import {
     Button,
     Dialog,
@@ -14,11 +12,14 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { Add, Edit } from '@material-ui/icons';
-import { addCustomEvent, editCustomEvent } from '../../../../actions/AppStoreActions';
-import ScheduleSelector from './ScheduleSelector';
+import React, { PureComponent } from 'react';
 import ReactGA from 'react-ga';
+
+import { addCustomEvent, editCustomEvent } from '../../../../actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
 import { isDarkMode } from '../../../../helpers';
+import DaySelector from './DaySelector';
+import ScheduleSelector from './ScheduleSelector';
 
 const styles = {
     textField: {

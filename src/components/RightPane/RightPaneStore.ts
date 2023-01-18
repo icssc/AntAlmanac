@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
-import { getDefaultTerm } from '../../termData';
 import ReactGA from 'react-ga';
+
+import { getDefaultTerm } from '../../termData';
 
 const defaultFormValues: Record<string, string> = {
     deptValue: 'ALL',

@@ -1,16 +1,16 @@
-import React, { FormEvent, useState } from 'react';
-import TermSelector from './TermSelector';
+import { IconButton, Theme, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import PrivacyPolicyBanner from './PrivacyPolicyBanner';
+import { ClassNameMap , Styles } from '@material-ui/core/styles/withStyles';
+import { Tune } from '@material-ui/icons';
+import React, { FormEvent, useState } from 'react';
+
+import analyticsEnum, { logAnalytics } from '../../../../analytics';
 import RightPaneStore from '../../RightPaneStore';
 import FuzzySearch from './FuzzySearch';
-import LegacySearch from './LegacySearch';
-import { IconButton, Theme, Tooltip } from '@material-ui/core';
-import { Tune } from '@material-ui/icons';
-import analyticsEnum, { logAnalytics } from '../../../../analytics';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { Styles } from '@material-ui/core/styles/withStyles';
 import HelpBox from './HelpBox';
+import LegacySearch from './LegacySearch';
+import PrivacyPolicyBanner from './PrivacyPolicyBanner';
+import TermSelector from './TermSelector';
 
 const styles: Styles<Theme, object> = {
     rightPane: {

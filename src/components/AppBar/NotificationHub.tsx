@@ -1,4 +1,3 @@
-import React, { PureComponent } from 'react';
 import {
     Button,
     Dialog,
@@ -9,9 +8,11 @@ import {
     Tooltip,
 } from '@material-ui/core';
 import { Notifications } from '@material-ui/icons';
+import React, { PureComponent } from 'react';
 import ReactGA from 'react-ga';
-import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '../../api/endpoints';
+
 import analyticsEnum, { logAnalytics } from '../../analytics';
+import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '../../api/endpoints';
 
 interface NotificationItem {
     courseTitle: string;

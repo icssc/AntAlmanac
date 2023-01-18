@@ -1,19 +1,20 @@
-import React, { MouseEventHandler, ReactElement } from 'react';
-import { AppBar, Toolbar, Menu, useMediaQuery } from '@material-ui/core';
-import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
-import MenuIcon from '@material-ui/icons/Menu';
+import { AppBar, Menu, Toolbar, useMediaQuery } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
-import NotificationHub from './NotificationHub';
-import SettingsMenu from './SettingsMenu';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import MenuIcon from '@material-ui/icons/Menu';
+import React, { MouseEventHandler, ReactElement } from 'react';
+
+import ConditionalWrapper from '../ConditionalWrapper';
+import AboutPage from './AboutPage';
+import Feedback from './Feedback';
+import ImportStudyList from './ImportStudyList';
+import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { ReactComponent as Logo } from './logo.svg';
 import { ReactComponent as MobileLogo } from './mobile-logo.svg';
 import News from './News';
-import AboutPage from './AboutPage';
-import ConditionalWrapper from '../ConditionalWrapper';
-import ImportStudyList from './ImportStudyList';
-import Feedback from './Feedback';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import NotificationHub from './NotificationHub';
+import SettingsMenu from './SettingsMenu';
 
 const styles = {
     appBar: {

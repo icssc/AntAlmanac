@@ -1,16 +1,17 @@
-import AppStore from '../../../stores/AppStore';
-import React, { PureComponent } from 'react';
-import { Grid, Typography, Button, Menu, MenuItem } from '@material-ui/core';
-import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
+import { Button, Grid, Menu, MenuItem,Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import CustomEventDetailView from './CustomEventDetailView';
-import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
-import { clearSchedules, copySchedule } from '../../../actions/AppStoreActions';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import PopupState, { bindMenu,bindTrigger } from 'material-ui-popup-state';
+import React, { PureComponent } from 'react';
 import ReactGA from 'react-ga';
+
+import { clearSchedules, copySchedule } from '../../../actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { AACourse } from '../../../peterportal.types';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import AppStore from '../../../stores/AppStore';
 import { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
+import CustomEventDetailView from './CustomEventDetailView';
 
 const styles = {
     container: {

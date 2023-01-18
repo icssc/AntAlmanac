@@ -72,4 +72,4 @@ function getDefaultTerm() {
     return termData[defaultTerm];
 }
 
-export { termData, defaultTerm, getDefaultTerm };
+export { defaultTerm, getDefaultTerm, termData };

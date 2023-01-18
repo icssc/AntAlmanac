@@ -1,11 +1,12 @@
-import React, { PureComponent } from 'react';
-import CloseIcon from '@material-ui/icons/Close';
 import { amber, green } from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
-import AppStore from '../../stores/AppStore';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import CloseIcon from '@material-ui/icons/Close';
 import { withSnackbar } from 'notistack';
+import React, { PureComponent } from 'react';
+
+import AppStore from '../../stores/AppStore';
 
 const styles: Styles<Theme, object> = (theme) => ({
     success: {

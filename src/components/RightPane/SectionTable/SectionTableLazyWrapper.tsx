@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+
 import { SectionTableProps } from './SectionTable.types';
 
 const SectionTable = React.lazy(() => import('./SectionTable'));

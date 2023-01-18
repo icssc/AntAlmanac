@@ -1,7 +1,8 @@
+import { Paper,Tab, Tabs } from '@material-ui/core';
 import React, { useState } from 'react';
-import { Tab, Tabs, Paper } from '@material-ui/core';
-import DesktopTabs from './RightPane/RightPaneRoot';
+
 import Calendar from './Calendar/CalendarRoot';
+import DesktopTabs from './RightPane/RightPaneRoot';
 
 const MobileHome = () => {
     const [selectedTab, setSelectedTab] = useState(0);

@@ -1,17 +1,17 @@
-import React from 'react';
-import ColorPicker from '../../ColorPicker';
 import { IconButton, Menu, MenuItem, TableCell, useMediaQuery } from '@material-ui/core';
-import { deleteCourse, addCourse, openSnackbar } from '../../../actions/AppStoreActions';
-import AppStore from '../../../stores/AppStore';
-import { Delete, Add, ArrowDropDown } from '@material-ui/icons';
-import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
-
 import { withStyles } from '@material-ui/core/styles';
-import ReactGA from 'react-ga';
-import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { AASection, AACourse } from '../../../peterportal.types';
+import { Add, ArrowDropDown,Delete } from '@material-ui/icons';
+import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
+import React from 'react';
+import ReactGA from 'react-ga';
+
+import { addCourse, deleteCourse, openSnackbar } from '../../../actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { CourseDetails } from '../../../helpers';
+import { AACourse,AASection } from '../../../peterportal.types';
+import AppStore from '../../../stores/AppStore';
+import ColorPicker from '../../ColorPicker';
 
 const styles = {
     container: {

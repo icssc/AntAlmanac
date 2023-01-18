@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
-import { Theme, withStyles } from '@material-ui/core/styles';
-import { IconButton, Tooltip, Paper, Button, useMediaQuery, Menu } from '@material-ui/core';
-import { Delete, Undo, MoreHoriz } from '@material-ui/icons';
-import CustomEventsDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
-import { changeCurrentSchedule, clearSchedules, undoDelete } from '../../actions/AppStoreActions';
-import ScreenshotButton from './Toolbar/ScreenshotButton';
-import ExportCalendar from './Toolbar/ExportCalendar';
+import { Button, IconButton, Menu,Paper, Tooltip, useMediaQuery } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import ReactGA from 'react-ga';
-import ConditionalWrapper from '../ConditionalWrapper';
-import analyticsEnum, { logAnalytics } from '../../analytics';
-import ScheduleNameDialog from './Toolbar/EditSchedule/ScheduleNameDialog';
-import EditSchedule from './Toolbar/EditSchedule/EditSchedule';
+import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { Delete, MoreHoriz,Undo } from '@material-ui/icons';
+import React, { useState } from 'react';
+import ReactGA from 'react-ga';
+
+import { changeCurrentSchedule, clearSchedules, undoDelete } from '../../actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '../../analytics';
+import ConditionalWrapper from '../ConditionalWrapper';
+import CustomEventsDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
+import EditSchedule from './Toolbar/EditSchedule/EditSchedule';
+import ScheduleNameDialog from './Toolbar/EditSchedule/ScheduleNameDialog';
+import ExportCalendar from './Toolbar/ExportCalendar';
+import ScreenshotButton from './Toolbar/ScreenshotButton';
 
 const styles: Styles<Theme, object> = {
     toolbar: {

@@ -1,8 +1,9 @@
-import React, { PureComponent } from 'react';
-import WalkIcon from '@material-ui/icons/DirectionsWalk';
-import { Marker, Popup } from 'react-leaflet';
 import { Button } from '@material-ui/core';
+import WalkIcon from '@material-ui/icons/DirectionsWalk';
 import Leaflet from 'leaflet';
+import React, { PureComponent } from 'react';
+import { Marker, Popup } from 'react-leaflet';
+
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 
 const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';

@@ -1,13 +1,13 @@
+import { Button, Theme } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import { ClassNameMap , Styles } from '@material-ui/core/styles/withStyles';
 import React from 'react';
+
+import AdvancedSearch from './AdvancedSearch';
+import CourseNumberSearchBar from './CourseNumberSearchBar';
 import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
 import GESelector from './GESelector';
 import SectionCodeSearchBar from './SectionCodeSearchBar';
-import CourseNumberSearchBar from './CourseNumberSearchBar';
-import { Button, Theme } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import AdvancedSearch from './AdvancedSearch';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { Styles } from '@material-ui/core/styles/withStyles';
 
 const styles: Styles<Theme, object> = {
     container: {

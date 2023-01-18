@@ -1,4 +1,3 @@
-import React, { PureComponent, Fragment, MouseEventHandler } from 'react';
 import {
     Badge,
     Button,
@@ -12,12 +11,14 @@ import {
     Typography,
     withStyles,
 } from '@material-ui/core';
+import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { RssFeed } from '@material-ui/icons';
-import { NEWS_ENDPOINT } from '../../api/endpoints';
 import { Skeleton } from '@material-ui/lab';
 import moment from 'moment-timezone';
+import React, { Fragment, MouseEventHandler,PureComponent } from 'react';
+
 import analyticsEnum, { logAnalytics } from '../../analytics';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { NEWS_ENDPOINT } from '../../api/endpoints';
 
 const styles: Styles<Theme, object> = (theme) => ({
     list: {
@@ -70,7 +71,7 @@ class News extends PureComponent<NewsProps, NewsState> {
 
     componentDidMount = async () => {
         this._isMounted = true;
-        var rawResponse;
+        let rawResponse;
         try {
             const data = await fetch(NEWS_ENDPOINT);
             const json: NewsResponse = await data.json();

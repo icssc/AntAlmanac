@@ -1,4 +1,3 @@
-import React, { PureComponent } from 'react';
 import {
     Button,
     Dialog,
@@ -8,16 +7,18 @@ import {
     DialogTitle,
     TextField,
 } from '@material-ui/core';
-import { addCoursesMultiple, combineSOCObjects, getCourseInfo, queryWebsoc } from '../../helpers';
-import RightPaneStore from '../RightPane/RightPaneStore';
-import { openSnackbar } from '../../actions/AppStoreActions';
-import AppStore from '../../stores/AppStore';
-import { PostAdd } from '@material-ui/icons';
 import InputLabel from '@material-ui/core/InputLabel';
 import { withStyles } from '@material-ui/core/styles';
-import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
-import analyticsEnum, { logAnalytics } from '../../analytics';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { PostAdd } from '@material-ui/icons';
+import React, { PureComponent } from 'react';
+
+import { openSnackbar } from '../../actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '../../analytics';
+import { addCoursesMultiple, combineSOCObjects, getCourseInfo, queryWebsoc } from '../../helpers';
+import AppStore from '../../stores/AppStore';
+import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
+import RightPaneStore from '../RightPane/RightPaneStore';
 
 const styles = {
     inputLabel: {

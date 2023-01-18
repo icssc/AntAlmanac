@@ -1,9 +1,10 @@
-import React, { PureComponent } from 'react';
-import Button from '@material-ui/core/Button';
-import html2canvas from 'html2canvas';
-import { Panorama } from '@material-ui/icons';
 import { Tooltip } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import { Panorama } from '@material-ui/icons';
 import { saveAs } from 'file-saver';
+import html2canvas from 'html2canvas';
+import React, { PureComponent } from 'react';
+
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 
 interface ScreenshotButtonProps {

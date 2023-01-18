@@ -1,4 +1,4 @@
-import { CustomEvent, CourseEvent } from '../components/Calendar/CourseCalendarEvent';
+import { CourseEvent, CustomEvent } from '../components/Calendar/CourseCalendarEvent';
 import AppStore from './AppStore';
 
 export const calendarizeCourseEvents = () => {
@@ -19,7 +19,7 @@ export const calendarizeCourseEvents = () => {
                 let endHr = parseInt(endHrStr, 10);
                 const endMin = parseInt(endMinStr, 10);
 
-                let dates = [
+                const dates = [
                     meeting.days.includes('Su'),
                     meeting.days.includes('M'),
                     meeting.days.includes('Tu'),
@@ -49,7 +49,7 @@ export const calendarizeCourseEvents = () => {
                             start: new Date(2018, 0, index, startHr, startMin),
                             finalExam: course.section.finalExam,
                             end: new Date(2018, 0, index, endHr, endMin),
-                            isCustomEvent: false as false,
+                            isCustomEvent: false as const,
                             scheduleIndices: course.scheduleIndices,
                         };
 
@@ -65,12 +65,12 @@ export const calendarizeCourseEvents = () => {
 
 export const calendarizeFinals = () => {
     const addedCourses = AppStore.getAddedCourses();
-    let finalsEventsInCalendar = [] as CourseEvent[];
+    const finalsEventsInCalendar = [] as CourseEvent[];
 
     for (const course of addedCourses) {
         const finalExam = course.section.finalExam;
         if (finalExam.length > 5) {
-            let [, date, , , startStr, startMinStr, endStr, endMinStr, ampm] = finalExam.match(
+            const [, date, , , startStr, startMinStr, endStr, endMinStr, ampm] = finalExam.match(
                 /([A-za-z]+) ([A-Za-z]+) *(\d{1,2}) *(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(am|pm)/
             ) as RegExpMatchArray;
             // TODO: this block is almost the same as in calenarizeCourseEvents. we should refactor to remove the duplicate code.

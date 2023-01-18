@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Button, Dialog, DialogTitle, DialogActions, DialogContent, TextField, MenuItem } from '@material-ui/core';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem,TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { Add } from '@material-ui/icons';
+import React, { useState } from 'react';
+
 import { addSchedule, renameSchedule } from '../../../../actions/AppStoreActions';
 import { isDarkMode } from '../../../../helpers';
-import { Add } from '@material-ui/icons';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 const styles = () => ({
     addButton: {

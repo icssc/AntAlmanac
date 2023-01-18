@@ -1,14 +1,15 @@
-import React from 'react';
-import ReactGA from 'react-ga';
-import Button from '@material-ui/core/Button';
 import { Tooltip } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import Today from '@material-ui/icons/Today';
 import { saveAs } from 'file-saver';
 import { createEvents } from 'ics';
-import AppStore from '../../../stores/AppStore';
+import React from 'react';
+import ReactGA from 'react-ga';
+
 import { openSnackbar } from '../../../actions/AppStoreActions';
-import { termData } from '../../../termData';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
+import AppStore from '../../../stores/AppStore';
+import { termData } from '../../../termData';
 
 const quarterStartDates = Object.fromEntries(
     termData

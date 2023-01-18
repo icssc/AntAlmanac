@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
 import {
     Button,
     Dialog,
-    DialogTitle,
     DialogActions,
     DialogContent,
     DialogContentText,
+    DialogTitle,
     MenuItem,
 } from '@material-ui/core';
-import { isDarkMode } from '../../../../helpers';
+import React, { useState } from 'react';
+
 import { deleteSchedule } from '../../../../actions/AppStoreActions';
+import { isDarkMode } from '../../../../helpers';
 
 interface DeleteScheduleDialogProps {
     onClose: () => void;

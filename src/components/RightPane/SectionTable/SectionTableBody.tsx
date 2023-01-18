@@ -1,19 +1,20 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import ReactGA from 'react-ga';
-import locations from './static/locations.json';
-import restrictionsMapping from './static/restrictionsMapping.json';
-import { TableRow, Popover, Tooltip, Typography, TableCell, useMediaQuery, Theme } from '@material-ui/core';
-import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
+import { Popover, TableCell, TableRow, Theme,Tooltip, Typography, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import OpenSpotAlertPopover, { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
-import AppStore from '../../../stores/AppStore';
-import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import classNames from 'classnames';
-import { clickToCopy, CourseDetails, isDarkMode } from '../../../helpers';
+import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
+import React, { Fragment, useEffect, useState } from 'react';
+import ReactGA from 'react-ga';
+
 import analyticsEnum, { logAnalytics } from '../../../analytics';
+import { clickToCopy, CourseDetails, isDarkMode } from '../../../helpers';
+import { AASection,Course, EnrollmentCount, Meeting } from '../../../peterportal.types';
+import AppStore from '../../../stores/AppStore';
 import { getDefaultTerm } from '../../../termData';
-import { Course, EnrollmentCount, Meeting, AASection } from '../../../peterportal.types';
+import OpenSpotAlertPopover, { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
+import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
+import locations from './static/locations.json';
+import restrictionsMapping from './static/restrictionsMapping.json';
 
 const styles: Styles<Theme, object> = (theme) => ({
     popover: {

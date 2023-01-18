@@ -1,11 +1,12 @@
-import React, { PureComponent } from 'react';
-import { Button, FormControl, FormControlLabel, Popover, RadioGroup, Radio, Paper } from '@material-ui/core';
-import Brightness4Icon from '@material-ui/icons/Brightness4';
-import AppStore from '../../stores/AppStore';
-import { toggleTheme } from '../../actions/AppStoreActions';
+import { Button, FormControl, FormControlLabel, Paper,Popover, Radio, RadioGroup } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import ReactGA from 'react-ga';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import Brightness4Icon from '@material-ui/icons/Brightness4';
+import React, { PureComponent } from 'react';
+import ReactGA from 'react-ga';
+
+import { toggleTheme } from '../../actions/AppStoreActions';
+import AppStore from '../../stores/AppStore';
 
 const styles = {
     container: {

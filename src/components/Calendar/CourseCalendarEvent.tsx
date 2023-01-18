@@ -1,16 +1,18 @@
-import React from 'react';
 import { IconButton, Paper, Tooltip } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
-import ColorPicker from '../ColorPicker';
-import { Delete } from '@material-ui/icons';
-import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
-import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
-import AppStore from '../../stores/AppStore';
-import { clickToCopy } from '../../helpers';
-import ReactGA from 'react-ga';
-import analyticsEnum, { logAnalytics } from '../../analytics';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { Delete } from '@material-ui/icons';
+import React from 'react';
 import { Event } from 'react-big-calendar';
+import ReactGA from 'react-ga';
+
+import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '../../analytics';
+import { clickToCopy } from '../../helpers';
+import AppStore from '../../stores/AppStore';
+import ColorPicker from '../ColorPicker';
+import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
+
 const locations: Record<string, string> = require('../RightPane/SectionTable/static/locations.json');
 
 const styles: Styles<Theme, object> = {

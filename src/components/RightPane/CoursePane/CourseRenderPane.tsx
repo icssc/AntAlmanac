@@ -1,23 +1,22 @@
+import { Button, Grid, Paper , Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, Grid, Paper } from '@material-ui/core';
+import { ClassNameMap , Styles } from '@material-ui/core/styles/withStyles';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { PureComponent } from 'react';
-import SchoolDeptCard from './SchoolDeptCard';
-import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
-import noNothing from './static/no_results.png';
-import darkNoNothing from './static/dark-no_results.png';
+import LazyLoad from 'react-lazyload';
+
+import analyticsEnum from '../../../analytics';
+import { isDarkMode,queryWebsoc, queryWebsocMultiple } from '../../../helpers';
+import { AACourse, AASection, Department, School, WebsocResponse } from '../../../peterportal.types';
 import AppStore from '../../../stores/AppStore';
 import RightPaneStore from '../RightPaneStore';
-import loadingGif from './SearchForm/Gifs/loading.gif';
-import darkModeLoadingGif from './SearchForm/Gifs/dark-loading.gif';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
-import LazyLoad from 'react-lazyload';
-import { queryWebsoc, queryWebsocMultiple, isDarkMode } from '../../../helpers';
-import analyticsEnum from '../../../analytics';
-import { Theme } from '@material-ui/core';
-import { AACourse, AASection, Department, School, WebsocResponse } from '../../../peterportal.types';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { Styles } from '@material-ui/core/styles/withStyles';
+import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
+import SchoolDeptCard from './SchoolDeptCard';
+import darkModeLoadingGif from './SearchForm/Gifs/dark-loading.gif';
+import loadingGif from './SearchForm/Gifs/loading.gif';
+import darkNoNothing from './static/dark-no_results.png';
+import noNothing from './static/no_results.png';
 
 const styles: Styles<Theme, object> = (theme) => ({
     course: {

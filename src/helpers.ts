@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { addCourse, openSnackbar } from './actions/AppStoreActions';
 import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from './api/endpoints';
 import { RepeatingCustomEvent } from './components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
@@ -23,7 +24,7 @@ interface GradesGraphQLResponse {
 }
 
 export async function queryGraphQL(queryString: string): Promise<GradesGraphQLResponse> {
-    let query = JSON.stringify({
+    const query = JSON.stringify({
         query: queryString,
     });
 
@@ -116,7 +117,7 @@ interface CourseInfo {
 }
 
 export function getCourseInfo(SOCObject: WebsocResponse) {
-    let courseInfo: { [sectionCode: string]: CourseInfo } = {};
+    const courseInfo: { [sectionCode: string]: CourseInfo } = {};
     for (const school of SOCObject.schools) {
         for (const department of school.departments) {
             for (const course of department.courses) {
@@ -215,10 +216,10 @@ export function combineSOCObjects(SOCObjects: WebsocResponse[]) {
     const combined = SOCObjects.shift() as WebsocResponse;
     for (const res of SOCObjects) {
         for (const school of res.schools) {
-            let schoolIndex = combined.schools.findIndex((s) => s.schoolName === school.schoolName);
+            const schoolIndex = combined.schools.findIndex((s) => s.schoolName === school.schoolName);
             if (schoolIndex !== -1) {
                 for (const dept of school.departments) {
-                    let deptIndex = combined.schools[schoolIndex].departments.findIndex(
+                    const deptIndex = combined.schools[schoolIndex].departments.findIndex(
                         (d) => d.deptCode === dept.deptCode
                     );
                     if (deptIndex !== -1) {
@@ -246,9 +247,9 @@ export function combineSOCObjects(SOCObjects: WebsocResponse[]) {
 }
 
 export async function queryWebsocMultiple(params: { [key: string]: string }, fieldName: string) {
-    let responses: WebsocResponse[] = [];
+    const responses: WebsocResponse[] = [];
     for (const field of params[fieldName].trim().replace(' ', '').split(',')) {
-        let req = JSON.parse(JSON.stringify(params));
+        const req = JSON.parse(JSON.stringify(params));
         req[fieldName] = field;
         responses.push(await queryWebsoc(req));
     }
@@ -290,7 +291,7 @@ export const warnMultipleTerms = (terms: Set<string>) => {
 export function clickToCopy(event: React.MouseEvent<HTMLDivElement, MouseEvent>, sectionCode: string) {
     event.stopPropagation();
 
-    let tempEventTarget = document.createElement('input');
+    const tempEventTarget = document.createElement('input');
     document.body.appendChild(tempEventTarget);
     tempEventTarget.setAttribute('value', sectionCode);
     tempEventTarget.select();

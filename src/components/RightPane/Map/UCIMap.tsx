@@ -1,16 +1,18 @@
+import '../../../../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js';
+
+import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
 import React, { PureComponent } from 'react';
-import { Map, TileLayer, withLeaflet, Polyline, Marker, LeafletContext } from 'react-leaflet';
+import { LeafletContext,Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
+
+import analyticsEnum, { logAnalytics } from '../../../analytics';
+import AppStore from '../../../stores/AppStore';
+import { CalendarEvent, CourseEvent } from '../../Calendar/CourseCalendarEvent';
+import locations from '../SectionTable/static/locations.json';
+import MapMarker from './MapMarker';
+import MapMenu from './MapMenu';
 import Building from './static/building';
 import buildingCatalogue from './static/buildingCatalogue';
-import locations from '../SectionTable/static/locations.json';
-import AppStore from '../../../stores/AppStore';
-import MapMenu from './MapMenu';
-import MapMarker from './MapMarker';
-import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
-import analyticsEnum, { logAnalytics } from '../../../analytics';
-import { CalendarEvent, CourseEvent } from '../../Calendar/CourseCalendarEvent';
 import { Coord, MapBoxResponse } from './static/mapbox';
-import '../../../../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js';
 // TODO investigate less jank ways of doing this if at all possible
 
 class LocateControl extends PureComponent<{ leaflet: LeafletContext }> {
@@ -77,9 +79,9 @@ export default class UCIMap extends PureComponent {
         if (day) {
             let index = 0;
             let coords = ''; // lat and lng of markers to be passed to api
-            let coords_array: Coord[] = []; // lat and lng of markers to be used later
-            let colors: string[] = [];
-            let courses = new Set();
+            const coords_array: Coord[] = []; // lat and lng of markers to be used later
+            const colors: string[] = [];
+            const courses = new Set();
 
             // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
             this.state.eventsInCalendar
@@ -116,7 +118,7 @@ export default class UCIMap extends PureComponent {
                     index++;
                 });
             if (index > 1) {
-                var url = new URL(DIRECTIONS_ENDPOINT + encodeURIComponent(coords));
+                const url = new URL(DIRECTIONS_ENDPOINT + encodeURIComponent(coords));
 
                 url.search = new URLSearchParams({
                     alternatives: 'false',
@@ -173,7 +175,7 @@ export default class UCIMap extends PureComponent {
                                     this: { options: { map: UCIMap; index: typeof waypointIndex } },
                                     event: LeafletMouseEvent
                                 ) {
-                                    let [color, duration, miles] =
+                                    const [color, duration, miles] =
                                         this.options.map.state.info_markers[this.options.index - 1];
                                     this.options.map.setState({
                                         info_marker: (
@@ -226,13 +228,13 @@ export default class UCIMap extends PureComponent {
                                         dashArray="4"
                                     />
                                 ); // Draw a dashed line directly to waypoint
-                                let duration =
+                                const duration =
                                     obj['routes'][0]['legs'][waypointIndex - 1]['duration'] > 30
                                         ? Math.round(
                                               obj['routes'][0]['legs'][waypointIndex - 1]['duration'] / 60
                                           ).toString() + ' min'
                                         : '<1 min';
-                                let miles =
+                                const miles =
                                     (
                                         Math.floor(
                                             obj['routes'][0]['legs'][waypointIndex - 1]['distance'] / 1.609 / 10

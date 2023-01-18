@@ -1,7 +1,8 @@
-import React, { PureComponent } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@material-ui/core';
 import { Info } from '@material-ui/icons';
+import React, { PureComponent } from 'react';
 import ReactGA from 'react-ga';
+
 import analyticsEnum, { logAnalytics } from '../../analytics';
 
 class AboutPage extends PureComponent {

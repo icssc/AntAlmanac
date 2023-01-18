@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Skeleton } from '@material-ui/lab';
 import { Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { XAxis, YAxis, CartesianGrid, BarChart, Bar, ResponsiveContainer } from 'recharts';
-import { queryGrades, isDarkMode } from '../../../helpers';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { Skeleton } from '@material-ui/lab';
+import React, { useState } from 'react';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer,XAxis, YAxis } from 'recharts';
+
+import { isDarkMode,queryGrades } from '../../../helpers';
 
 const styles: Styles<Theme, object> = {
     button: {
@@ -42,9 +43,9 @@ const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }: Grades
         }
 
         try {
-            let courseGrades = await queryGrades(deptCode, courseNumber);
+            const courseGrades = await queryGrades(deptCode, courseNumber);
 
-            let data = [];
+            const data = [];
             for (const [key, value] of Object.entries(courseGrades)) {
                 // format data for display in chart
                 // key formatting: sum_grade_a_count -> A

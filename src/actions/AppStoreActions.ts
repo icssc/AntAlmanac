@@ -1,7 +1,3 @@
-import AppStore, { AppStoreCourse, UserData, ShortCourseInfo } from '../stores/AppStore';
-import ReactGA from 'react-ga';
-import analyticsEnum, { logAnalytics } from '../analytics';
-import { CourseDetails, courseNumAsDecimal } from '../helpers';
 import {
     amber,
     blue,
@@ -17,11 +13,15 @@ import {
     red,
     teal,
 } from '@material-ui/core/colors';
-import { getCoursesData, termsInSchedule, warnMultipleTerms } from '../helpers';
+import ReactGA from 'react-ga';
+
+import analyticsEnum, { logAnalytics } from '../analytics';
 import { LOAD_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '../api/endpoints';
-import { Section } from '../peterportal.types';
 import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { CourseDetails, courseNumAsDecimal, getCoursesData, termsInSchedule, warnMultipleTerms } from '../helpers';
+import { Section } from '../peterportal.types';
+import AppStore, { AppStoreCourse, ShortCourseInfo, UserData } from '../stores/AppStore';
 
 const arrayOfColors = [
     red[500],
@@ -424,7 +424,7 @@ export const addSchedule = (scheduleName: string) => {
 };
 
 export const renameSchedule = (scheduleName: string, scheduleIndex: number) => {
-    let newScheduleNames = [...AppStore.getScheduleNames()];
+    const newScheduleNames = [...AppStore.getScheduleNames()];
     newScheduleNames[scheduleIndex] = scheduleName;
 
     AppStore.renameSchedule(newScheduleNames);
@@ -434,11 +434,11 @@ export const renameSchedule = (scheduleName: string, scheduleIndex: number) => {
 // custom event in every schedule. In this case, we want to update the
 // scheduleIndices array so that each event appears in the correct schedule
 const getEventsAfterDeleteSchedule = (events: (AppStoreCourse | RepeatingCustomEvent)[]) => {
-    let newEvents = [] as typeof events;
+    const newEvents = [] as typeof events;
     const currentScheduleIndex = AppStore.getCurrentScheduleIndex();
 
     events.forEach((event) => {
-        let newScheduleIndices = [] as number[];
+        const newScheduleIndices = [] as number[];
 
         event.scheduleIndices.forEach((index) => {
             if (index !== currentScheduleIndex) {
@@ -458,7 +458,7 @@ const getEventsAfterDeleteSchedule = (events: (AppStoreCourse | RepeatingCustomE
 };
 
 export const deleteSchedule = (scheduleIndex: number) => {
-    let newScheduleNames = [...AppStore.getScheduleNames()];
+    const newScheduleNames = [...AppStore.getScheduleNames()];
     newScheduleNames.splice(scheduleIndex, 1);
 
     let newScheduleIndex = AppStore.getCurrentScheduleIndex();

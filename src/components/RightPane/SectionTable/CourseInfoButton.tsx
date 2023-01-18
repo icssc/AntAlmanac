@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Button, Popover } from '@material-ui/core';
-import { useMediaQuery } from '@material-ui/core';
+import { Button, Popover , useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { logAnalytics } from '../../../analytics';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import React, { useState } from 'react';
+
+import { logAnalytics } from '../../../analytics';
 
 const styles = {
     button: {

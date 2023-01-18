@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Tooltip, Button, Menu } from '@material-ui/core';
+import { Button, Menu,Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { Edit } from '@material-ui/icons';
-import ScheduleNameDialog from './ScheduleNameDialog';
-import DeleteScheduleDialog from './DeleteScheduleDialog';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { Edit } from '@material-ui/icons';
+import React, { useState } from 'react';
+
+import DeleteScheduleDialog from './DeleteScheduleDialog';
+import ScheduleNameDialog from './ScheduleNameDialog';
 
 const styles = () => ({
     editButton: {

@@ -1,7 +1,6 @@
-import React from 'react';
-import { Paper } from '@material-ui/core';
-import { withStyles } from '@material-ui/core';
+import { Paper , withStyles } from '@material-ui/core';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import React from 'react';
 
 const styles = {
     container: {

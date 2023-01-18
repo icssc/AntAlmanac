@@ -1,10 +1,11 @@
-import React, { ChangeEvent, PureComponent } from 'react';
-import depts from './depts';
-import { withStyles } from '@material-ui/core/styles';
 import { TextField } from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
-import RightPaneStore from '../../../RightPaneStore';
+import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { Autocomplete } from '@material-ui/lab';
+import React, { ChangeEvent, PureComponent } from 'react';
+
+import RightPaneStore from '../../../RightPaneStore';
+import depts from './depts';
 
 const style = {
     formControl: {
@@ -78,7 +79,7 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
     };
 
     handleSetDept = (event: ChangeEvent<{}>, newDept: Department | null) => {
-        let setDeptValue = newDept === null ? options[0] : newDept;
+        const setDeptValue = newDept === null ? options[0] : newDept;
 
         this.setState({ value: setDeptValue });
         RightPaneStore.updateFormValue('deptValue', setDeptValue.deptValue);

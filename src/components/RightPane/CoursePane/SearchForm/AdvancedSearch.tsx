@@ -1,21 +1,21 @@
-import React, { ChangeEvent, PureComponent } from 'react';
 import {
+    Collapse,
+    FormControl,
+    FormControlLabel,
+    InputLabel,
     MenuItem,
     Select,
-    TextField,
-    FormControl,
-    InputLabel,
     Switch,
-    FormControlLabel,
-    Typography,
-    Collapse,
+    TextField,
     Theme,
+    Typography,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import RightPaneStore from '../../RightPaneStore';
+import { ClassNameMap , Styles } from '@material-ui/core/styles/withStyles';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { Styles } from '@material-ui/core/styles/withStyles';
+import React, { ChangeEvent, PureComponent } from 'react';
+
+import RightPaneStore from '../../RightPaneStore';
 
 const styles: Styles<Theme, object> = {
     units: {
