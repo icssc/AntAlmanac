@@ -9,6 +9,7 @@ import './calendar.css';
 import CalendarPaneToolbar from './CalendarPaneToolbar';
 import CourseCalendarEvent from './CourseCalendarEvent';
 import AppStore from '../../stores/AppStore';
+import { isDarkMode } from '../../helpers';
 
 const localizer = momentLocalizer(moment);
 
@@ -168,15 +169,25 @@ class ScheduleCalendar extends PureComponent {
         // Fetch the canvas and calendarHeader
         const canvas = document.getElementById('screenshot');
         const calendarHeader = ReactDOM.findDOMNode(this).getElementsByClassName('rbc-time-header')[0];
-
         // Save the current styling, so we can add it back afterwards
         const oldColor = canvas.style.color;
         const oldMargin = calendarHeader.style.marginRight;
-
         // Update the canvas and calendar header for the picture
         canvas.style.color = 'black';
         calendarHeader.style.marginRight = '0px';
 
+        // Set each rbc header and time slot text color to white if the theme is dark
+        let rbc_headers = document.getElementsByClassName('rbc-header');
+        let rbc_time_slots = document.getElementsByClassName('rbc-label');
+        console.log(rbc_headers);
+        if (isDarkMode()) {
+            for (let i = 0; i < rbc_headers.length; i++) {
+                rbc_headers[i].className = 'rbc-header dark-mode';
+            }
+            for (let i = 0; i < rbc_time_slots.length; i++) {
+                rbc_time_slots[i].className = 'rbc-label dark-mode';
+            }
+        }
         this.setState({ screenshotting: true }, async () => {
             // Take the picture
             await html2CanvasScreenshot();
@@ -184,6 +195,18 @@ class ScheduleCalendar extends PureComponent {
             // Revert the temporary changes to the canvas and calendar
             canvas.style.color = oldColor;
             calendarHeader.style.marginRight = oldMargin;
+
+            // Set text color back
+            if (!isDarkMode()) {
+                for (let i = 0; i < rbc_headers.length; i++) {
+                    // delete rbc_headers[i].style;
+                    rbc_headers[i].className = 'rbc-header';
+                }
+                for (let i = 0; i < rbc_time_slots.length; i++) {
+                    // delete rbc_time_slots[i].style;
+                    rbc_time_slots[i].className = 'rbc-label';
+                }
+            }
 
             this.setState({ screenshotting: false });
         });
