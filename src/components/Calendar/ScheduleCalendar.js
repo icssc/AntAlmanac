@@ -177,10 +177,11 @@ class ScheduleCalendar extends PureComponent {
         calendarHeader.style.marginRight = '0px';
 
         // Set each rbc header and time slot text color to white if the theme is dark
+        // TODO: If theme is auto, by default set to light theme. Need solution
         let rbc_headers = document.getElementsByClassName('rbc-header');
         let rbc_time_slots = document.getElementsByClassName('rbc-label');
-        console.log(rbc_headers);
-        if (isDarkMode()) {
+        const theme = window.localStorage.getItem('theme');
+        if (theme === 'dark' && theme !== 'auto') {
             for (let i = 0; i < rbc_headers.length; i++) {
                 rbc_headers[i].className = 'rbc-header dark-mode';
             }
@@ -197,7 +198,8 @@ class ScheduleCalendar extends PureComponent {
             calendarHeader.style.marginRight = oldMargin;
 
             // Set text color back
-            if (!isDarkMode()) {
+            // TODO: If theme is auto, by default set to light theme. Need solution
+            if (theme !== 'dark' && theme !== 'auto') {
                 for (let i = 0; i < rbc_headers.length; i++) {
                     // delete rbc_headers[i].style;
                     rbc_headers[i].className = 'rbc-header';

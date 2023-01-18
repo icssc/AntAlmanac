@@ -9,7 +9,7 @@ class ScreenshotButton extends PureComponent {
     handleClick = () => {
         html2canvas(document.getElementById('screenshot'), {
             scale: 2.5,
-            backgroundColor: window.localStorage.getItem('theme') === 'light' ? '#fafafa' : '#303030',
+            backgroundColor: window.localStorage.getItem('theme') === 'dark' ? '#303030' : '#fafafa',
         }).then((canvas) => {
             const img = canvas.toDataURL('image/png');
             const lnk = document.createElement('a');
