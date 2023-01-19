@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+
 import { getDefaultTerm } from '../../termData';
 
 const defaultFormValues: Record<string, string> = {

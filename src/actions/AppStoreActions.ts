@@ -14,7 +14,6 @@ import {
     teal,
 } from '@material-ui/core/colors';
 import { VariantType } from 'notistack';
-import ReactGA from 'react-ga';
 
 import analyticsEnum, { logAnalytics } from '../analytics';
 import { LOAD_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '../api/endpoints';
