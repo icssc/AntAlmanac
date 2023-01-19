@@ -50,7 +50,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 ### Get Setup to Develop Locally
 
-1. Clone the AntAlmanc repository or your fork
+1. Clone the AntAlmanac repository or your fork
 
 2. Navigate to the root directory and install the dependencies  
    `cd AntAlmanac`  
@@ -64,7 +64,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 ### Running the [Backend](https://github.com/icssc/antalmanac-backend)
 
-The backend server **isn't necessary for frontend development**. By default, your frontend will send requests to `dev.api.antalmanac.com`, which has it's own database that is seperate from production's.
+The backend server **isn't necessary for frontend development**. By default, your frontend will send requests to `dev.api.antalmanac.com`, which has it's own database that is separate from production's.
 
 If you need run the backend, you must do the following:
 
