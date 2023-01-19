@@ -8,7 +8,6 @@ import moment from 'moment';
 import React, { PureComponent, SyntheticEvent } from 'react';
 import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
 import ReactDOM from 'react-dom';
-import ReactGA from 'react-ga';
 
 import AppStore from '../../stores/AppStore';
 import CalendarToolbar from './CalendarToolbar';
@@ -233,10 +232,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
             calendarHeader.style.marginRight = oldMargin;
 
             this.setState({ screenshotting: false });
-        });
-        ReactGA.event({
-            category: 'antalmanac-rewrite',
-            action: 'screenshot',
         });
     };
 

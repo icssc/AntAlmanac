@@ -4,7 +4,6 @@ import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
 import React, { Fragment, useEffect, useState } from 'react';
-import ReactGA from 'react-ga';
 
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { clickToCopy, CourseDetails, isDarkMode } from '../../../helpers';
@@ -91,10 +90,6 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
                 <button
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);
-                        ReactGA.event({
-                            category: 'antalmanac-rewrite',
-                            action: `Click section code`,
-                        });
                         logAnalytics({
                             category: analyticsEnum.classSearch.title,
                             action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
@@ -145,35 +140,28 @@ interface InstructorsCellProps {
 const InstructorsCell = withStyles(styles)((props: InstructorsCellProps) => {
     const { classes, instructors } = props;
 
-    return (
-        <NoPaddingTableCell className={classes.cell}>
-            {instructors.map((profName) => {
-                if (profName !== 'STAFF') {
-                    const lastName = profName.substring(0, profName.indexOf(','));
-                    return (
-                        <div key={profName}>
-                            <a
-                                href={`https://www.ratemyprofessors.com/search/teachers?sid=U2Nob29sLTEwNzQ=&query=${lastName}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={() => {
-                                    ReactGA.event({
-                                        category: 'antalmanac-rewrite',
-                                        action: `Click instructor name`,
-                                        label: `RateMyProfessors`,
-                                    });
-                                }}
-                            >
-                                {profName}
-                            </a>
-                        </div>
-                    );
-                } else {
-                    return profName;
-                }
-            })}
-        </NoPaddingTableCell>
-    );
+    const getLinks = (professorNames: string[]) => {
+        return professorNames.map((profName) => {
+            if (profName !== 'STAFF') {
+                const lastName = profName.substring(0, profName.indexOf(','));
+                return (
+                    <div key={profName}>
+                        <a
+                            href={`https://www.ratemyprofessors.com/search/teachers?sid=U2Nob29sLTEwNzQ=&query=${lastName}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {profName}
+                        </a>
+                    </div>
+                );
+            } else {
+                return profName;
+            }
+        });
+    };
+
+    return <NoPaddingTableCell className={classes.cell}>{getLinks(instructors)}</NoPaddingTableCell>;
 });
 
 interface LocationsCellProps {

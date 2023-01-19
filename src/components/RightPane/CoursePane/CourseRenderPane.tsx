@@ -1,4 +1,4 @@
-import { Button, Grid, Paper , Theme } from '@material-ui/core';
+import { Button, Grid, Paper, Theme  } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap , Styles } from '@material-ui/core/styles/withStyles';
 import CloseIcon from '@material-ui/icons/Close';
@@ -142,7 +142,7 @@ const RecruitmentBanner = (classes: ClassNameMap) => {
 
 /* TODO: all this typecasting in the conditionals is pretty messy, but type guards don't really work in this context
  *  for reasons that are currently beyond me (probably something in the transpiling process that JS doesn't like).
- *  If you are smarter than me (which you probably are) and can find a way to make this cleaner, do it.
+ *  If you can find a way to make this cleaner, do it.
  */
 const SectionTableWrapped = (
     index: number,

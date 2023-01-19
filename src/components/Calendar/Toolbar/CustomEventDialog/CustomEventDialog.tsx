@@ -13,7 +13,6 @@ import {
 import { withStyles } from '@material-ui/core/styles';
 import { Add, Edit } from '@material-ui/icons';
 import React, { PureComponent } from 'react';
-import ReactGA from 'react-ga';
 
 import { addCustomEvent, editCustomEvent } from '../../../../actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
@@ -69,10 +68,6 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
 
     handleOpen = () => {
         this.setState({ open: true, scheduleIndices: [this.props.currentScheduleIndex] });
-        ReactGA.event({
-            category: 'antalmanac-rewrite',
-            action: 'Click Custom Event button',
-        });
         logAnalytics({
             category: analyticsEnum.calendar.title,
             action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,

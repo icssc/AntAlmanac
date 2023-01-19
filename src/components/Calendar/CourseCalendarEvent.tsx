@@ -4,7 +4,6 @@ import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
 import React from 'react';
 import { Event } from 'react-big-calendar';
-import ReactGA from 'react-ga';
 
 import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '../../analytics';
@@ -129,11 +128,6 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             size="small"
                             onClick={() => {
                                 deleteCourse(sectionCode, currentScheduleIndex, term);
-                                ReactGA.event({
-                                    category: 'antalmanac-rewrite',
-                                    action: 'Click Delete Course',
-                                    label: 'Course Calendar Event',
-                                });
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_COURSE,
@@ -231,11 +225,6 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             onClick={() => {
                                 props.closePopover();
                                 deleteCustomEvent(customEventID, currentScheduleIndex);
-                                ReactGA.event({
-                                    category: 'antalmanac-rewrite',
-                                    action: 'Click Delete Custom Event',
-                                    label: 'Course Calendar Event',
-                                });
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,

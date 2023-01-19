@@ -4,7 +4,6 @@ import Today from '@material-ui/icons/Today';
 import { saveAs } from 'file-saver';
 import { createEvents } from 'ics';
 import React from 'react';
-import ReactGA from 'react-ga';
 
 import { openSnackbar } from '../../../actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
@@ -285,11 +284,6 @@ const exportCalendar = () => {
             openSnackbar('error', 'Something went wrong! Unable to download schedule.', 5);
             console.log(err);
         }
-    });
-
-    ReactGA.event({
-        category: 'antalmanac-rewrite',
-        action: 'Download .ics file',
     });
 };
 

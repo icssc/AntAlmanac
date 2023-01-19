@@ -1,9 +1,8 @@
 import { Button, Grid, Menu, MenuItem,Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import PopupState, { bindMenu,bindTrigger } from 'material-ui-popup-state';
+import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 import React, { PureComponent } from 'react';
-import ReactGA from 'react-ga';
 
 import { clearSchedules, copySchedule } from '../../../actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
@@ -189,11 +188,6 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                                     )
                                 ) {
                                     clearSchedules([AppStore.getCurrentScheduleIndex()]);
-                                    ReactGA.event({
-                                        category: 'antalmanac-rewrite',
-                                        action: 'Click Clear button',
-                                        label: 'Added Course pane',
-                                    });
                                     logAnalytics({
                                         category: analyticsEnum.addedClasses.title,
                                         action: analyticsEnum.addedClasses.actions.CLEAR_SCHEDULE,

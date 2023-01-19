@@ -4,7 +4,6 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
 import moment from 'moment';
 import React from 'react';
-import ReactGA from 'react-ga';
 
 import { deleteCustomEvent } from '../../../actions/AppStoreActions';
 import analyticsEnum from '../../../analytics';
@@ -73,11 +72,6 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                 <IconButton
                     onClick={() => {
                         deleteCustomEvent(customEvent.customEventID, props.currentScheduleIndex);
-                        ReactGA.event({
-                            category: 'antalmanac-rewrite',
-                            action: 'Click Delete Custom Event',
-                            label: 'Added Course pane',
-                        });
                     }}
                 >
                     <Delete fontSize="small" />

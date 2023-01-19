@@ -317,11 +317,6 @@ export const undoDelete = (event: KeyboardEvent | null) => {
                 }.`
             );
         }
-
-        ReactGA.event({
-            category: 'antalmanac-rewrite',
-            action: 'Click Undo button',
-        });
     }
 };
 
@@ -392,11 +387,6 @@ export const copySchedule = (from: number, to: number) => {
         }
     });
 
-    ReactGA.event({
-        category: 'antalmanac-rewrite',
-        action: 'Click Copy Schedule',
-    });
-
     logAnalytics({
         category: analyticsEnum.addedClasses.title,
         action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
@@ -407,10 +397,6 @@ export const copySchedule = (from: number, to: number) => {
 
 export const toggleTheme = (radioGroupEvent: React.ChangeEvent<HTMLInputElement>) => {
     AppStore.toggleTheme(radioGroupEvent.target.value);
-    ReactGA.event({
-        category: 'antalmanac-rewrite',
-        action: 'toggle theme',
-    });
     logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.CHANGE_THEME,

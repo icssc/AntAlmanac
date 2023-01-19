@@ -5,12 +5,11 @@ import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete, MoreHoriz,Undo } from '@material-ui/icons';
 import React, { useState } from 'react';
-import ReactGA from 'react-ga';
 
 import { changeCurrentSchedule, clearSchedules, undoDelete } from '../../actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '../../analytics';
 import ConditionalWrapper from '../ConditionalWrapper';
-import CustomEventsDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
+import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import EditSchedule from './Toolbar/EditSchedule/EditSchedule';
 import ScheduleNameDialog from './Toolbar/EditSchedule/ScheduleNameDialog';
 import ExportCalendar from './Toolbar/ExportCalendar';
@@ -156,11 +155,6 @@ const CalendarPaneToolbar = ({
                             )
                         ) {
                             clearSchedules([currentScheduleIndex]);
-                            ReactGA.event({
-                                category: 'antalmanac-rewrite',
-                                action: 'Click Clear button',
-                                label: 'Calendar Pane Toolbar',
-                            });
                             logAnalytics({
                                 category: analyticsEnum.calendar.title,
                                 action: analyticsEnum.calendar.actions.CLEAR_SCHEDULE,
@@ -190,7 +184,7 @@ const CalendarPaneToolbar = ({
                     {[
                         <ExportCalendar key="export"/>,
                         <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot"/>,
-                        <CustomEventsDialog
+                        <CustomEventDialog
                             currentScheduleIndex={currentScheduleIndex}
                             scheduleNames={scheduleNames}
                             key="custom"

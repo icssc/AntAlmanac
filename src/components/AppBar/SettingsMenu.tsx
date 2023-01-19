@@ -3,7 +3,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import React, { PureComponent } from 'react';
-import ReactGA from 'react-ga';
 
 import { toggleTheme } from '../../actions/AppStoreActions';
 import AppStore from '../../stores/AppStore';
@@ -41,10 +40,6 @@ class SettingsMenu extends PureComponent<{ classes: ClassNameMap }, SettingsStat
                 <Button
                     onClick={(event) => {
                         this.setState({ anchorEl: event.currentTarget });
-                        ReactGA.event({
-                            category: 'antalmanac-rewrite',
-                            action: 'Click "Settings"',
-                        });
                     }}
                     color="inherit"
                     startIcon={<Brightness4Icon />}

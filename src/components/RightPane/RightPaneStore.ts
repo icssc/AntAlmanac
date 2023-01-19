@@ -1,6 +1,4 @@
 import { EventEmitter } from 'events';
-import ReactGA from 'react-ga';
-
 import { getDefaultTerm } from '../../termData';
 
 const defaultFormValues: Record<string, string> = {
@@ -49,10 +47,10 @@ class RightPaneStore extends EventEmitter {
         return this.openSpotAlertPopoverActive;
     };
 
-    updateFormValue(field: string, value: string) {
+    updateFormValue = (field: string, value: string) => {
         this.formData[field] = value;
         this.emit('formDataChange');
-    }
+    };
 
     resetFormValues = () => {
         this.formData = { ...defaultFormValues }; // shallow copy again
@@ -62,23 +60,6 @@ class RightPaneStore extends EventEmitter {
     handleTabChange = (event: unknown, value: number) => {
         this.activeTab = value;
         this.emit('tabChange', value);
-        switch (
-            value // 0 is Class Search Tab, 1 is Added Classes Tab, 2 is Map Tab
-        ) {
-            case 1:
-                ReactGA.event({
-                    category: 'antalmanac-rewrite',
-                    action: `Switch tab to Added Classes`,
-                });
-                break;
-            case 2:
-                ReactGA.event({
-                    category: 'antalmanac-rewrite',
-                    action: `Switch tab to Map`,
-                });
-                break;
-            default: // do nothing
-        }
     };
 
     toggleSearch = () => {

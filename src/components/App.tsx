@@ -1,7 +1,6 @@
 import { createTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import React, { PureComponent } from 'react';
-import ReactGA from 'react-ga';
 import ReactGA4 from 'react-ga4';
 import { BrowserRouter, Route,Routes } from 'react-router-dom';
 
@@ -28,8 +27,6 @@ class App extends PureComponent {
             }
         });
 
-        ReactGA.initialize('UA-133683751-1');
-        ReactGA.pageview('/homepage');
         ReactGA4.initialize('G-30HVJXC2Y4');
         ReactGA4.send('pageview');
     };
