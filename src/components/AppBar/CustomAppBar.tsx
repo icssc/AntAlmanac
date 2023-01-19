@@ -3,7 +3,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import MenuIcon from '@material-ui/icons/Menu';
-import React, { MouseEventHandler, ReactElement } from 'react';
+import React, { MouseEventHandler } from 'react';
 
 import ConditionalWrapper from '../ConditionalWrapper';
 import AboutPage from './AboutPage';
@@ -73,13 +73,13 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
                     )}
                 >
                     <>
-                        {[
-                            <SettingsMenu />,
-                            <NotificationHub />,
-                            <ImportStudyList />,
-                            <Feedback />,
-                            <News />,
-                            <AboutPage />,
+                        {[// the keys here don't do anything they just make eslint happy.
+                            <SettingsMenu key="settings"/>,
+                            <NotificationHub key="notifications"/>,
+                            <ImportStudyList key="studylist"/>,
+                            <Feedback key="feedback"/>,
+                            <News key="news"/>,
+                            <AboutPage key="about"/>,
                         ].map((element, index) => (
                             <ConditionalWrapper
                                 key={index}

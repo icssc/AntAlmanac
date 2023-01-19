@@ -9,7 +9,7 @@ import ReactGA from 'react-ga';
 import { addCourse, deleteCourse, openSnackbar } from '../../../actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { CourseDetails } from '../../../helpers';
-import { AACourse,AASection } from '../../../peterportal.types';
+import { AASection } from '../../../peterportal.types';
 import AppStore from '../../../stores/AppStore';
 import ColorPicker from '../../ColorPicker';
 
@@ -79,7 +79,6 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
         popupState.close();
         for (const meeting of section.meetings) {
             if (meeting.time === 'TBA') {
-                // @ts-ignore
                 openSnackbar('success', 'Online/TBA class added');
                 // See Added Classes."
                 break;

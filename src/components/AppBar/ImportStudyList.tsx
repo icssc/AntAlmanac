@@ -43,12 +43,11 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         studyListText: '',
     };
 
-    onTermSelectorChange = (field: string, value: any) => {
+    onTermSelectorChange = (field: string, value: string) => {
         this.setState({ selectedTerm: value });
     };
 
     handleError = (error: Error) => {
-        // @ts-ignore this should be fine once we refactor this function's definition in TS
         openSnackbar('error', 'An error occurred while trying to import the Study List.');
         console.error(error);
     };
@@ -63,7 +62,6 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
             if (doImport) {
                 const sectionCodes = this.state.studyListText.match(/\d{5}/g);
                 if (!sectionCodes) {
-                    // @ts-ignore
                     openSnackbar('error', 'Cannot import an empty/invalid Study List.');
                     return;
                 }
@@ -100,17 +98,14 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                         value: sectionsAdded / (sectionCodes.length || 1),
                     });
                     if (sectionsAdded === sectionCodes.length) {
-                        // @ts-ignore
                         openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
                     } else if (sectionsAdded !== 0) {
-                        // @ts-ignore
                         openSnackbar(
                             'warning',
                             `Successfully imported ${sectionsAdded} of ${sectionCodes.length} classes. 
                         Please make sure that you selected the correct term and that none of your classes are missing.`
                         );
                     } else {
-                        // @ts-ignore
                         openSnackbar(
                             'error',
                             'Failed to import any classes! Please make sure that you pasted the correct Study List.'
@@ -158,11 +153,13 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                             To find your Study List, go to{' '}
                             <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>WebReg</a> or{' '}
                             <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>, and click on
-                            Study List once you've logged in. Copy everything below the column names (Code, Dept, etc.)
-                            under the Enrolled Classes section.
+                            Study List once you&apos;ve logged in. Copy everything below the column names (Code, Dept, etc.)
+                            under the Enrolled Classes section. 
+                            {/* &apos; is an apostrophe (') */}
                         </DialogContentText>
                         <InputLabel className={classes.inputLabel}>Study List</InputLabel>
                         <TextField
+                            // eslint-disable-next-line jsx-a11y/no-autofocus
                             autoFocus
                             fullWidth
                             multiline

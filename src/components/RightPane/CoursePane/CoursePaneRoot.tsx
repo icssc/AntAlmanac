@@ -62,7 +62,6 @@ class RightPane extends PureComponent {
             RightPaneStore.toggleSearch();
             this.forceUpdate();
         } else {
-            // @ts-ignore
             openSnackbar(
                 'error',
                 `Please provide one of the following: Department, GE, Course Code/Range, or Instructor`

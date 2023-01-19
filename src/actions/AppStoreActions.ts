@@ -13,6 +13,7 @@ import {
     red,
     teal,
 } from '@material-ui/core/colors';
+import { VariantType } from 'notistack';
 import ReactGA from 'react-ga';
 
 import analyticsEnum, { logAnalytics } from '../analytics';
@@ -115,7 +116,7 @@ export const addCourse = (
  * if anyone comes back to refactor this, I think `notistack` provides its own types we could use.
  */
 export const openSnackbar = (
-    variant: string,
+    variant: VariantType,
     message: string,
     duration?: number,
     position?: SnackbarPosition,
@@ -212,7 +213,7 @@ export const loadSchedule = async (userID: string, rememberMe: boolean) => {
                     openSnackbar('error', `Couldn't find schedules for username "${userID}".`);
                     return;
                 }
-                const json = await response_data.json();
+                const json = (await response_data.json()) as { userData: UserData };
                 const courseData = await getCoursesData(json.userData);
                 AppStore.loadSchedule(courseData);
 

@@ -28,6 +28,54 @@ export interface Course {
     sections: Section[];
 }
 
+export interface CourseResponse {
+    id: string;
+    department: string;
+    number: string;
+    school: string;
+    title: string;
+    course_level: string;
+    department_alias: string[];
+    units: number[];
+    description: string;
+    department_name: string;
+    professor_history: string[];
+    prerequisite_tree: string;
+    prerequisite_list: string[];
+    prerequisite_text: string;
+    prerequisite_for: string[];
+    repeatability: string;
+    grading_option: string;
+    concurrent: string;
+    same_as: string;
+    restriction: string;
+    overlap: string;
+    corequisite: string;
+    ge_list: string[];
+    ge_text: string;
+    terms: string[];
+    course_offering?: CourseOffering[];
+}
+
+export interface CourseOffering {
+    year: string;
+    quarter: string;
+    instructors: string[];
+    final_exam: string;
+    max_capacity: number;
+    meetings: Meeting[];
+    num_section_enrolled: number;
+    num_total_enrolled: number;
+    num_new_only_reserved: number;
+    num_on_waitlist: number;
+    num_requested: number;
+    restrictions: string;
+    section: SectionGQL;
+    status: string;
+    units: number;
+    course: CourseResponse;
+}
+
 /**
  * Same as Course, except includes a `deptCode` and sections contains AASection objects, which have colors.
  */

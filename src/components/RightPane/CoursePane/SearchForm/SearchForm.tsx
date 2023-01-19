@@ -64,7 +64,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
             <form onSubmit={onFormSubmit} className={classes.form}>
                 <div className={classes.container}>
                     <div className={classes.margin}>
-                        <TermSelector changeState={RightPaneStore.updateFormValue} fieldName={'term'} />
+                        <TermSelector changeState={(field: string,  value: string)=>RightPaneStore.updateFormValue(field,value)} fieldName={'term'} />
                     </div>
 
                     <div className={classes.container}>

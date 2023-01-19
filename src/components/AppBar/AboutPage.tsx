@@ -13,7 +13,7 @@ class AboutPage extends PureComponent {
         return (
             <>
                 <Button
-                    onClick={(event) => {
+                    onClick={() => {
                         this.setState({ isOpen: true });
                         ReactGA.event({
                             category: 'antalmanac-rewrite',

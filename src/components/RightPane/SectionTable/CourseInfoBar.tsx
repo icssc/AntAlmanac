@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { PETERPORTAL_REST_ENDPOINT } from '../../../api/endpoints';
+import { CourseResponse } from '../../../peterportal.types';
 
 const styles = () => ({
     rightSpace: {
@@ -71,7 +72,7 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
                     const response = await fetch(`${PETERPORTAL_REST_ENDPOINT}/courses/${courseId}`);
 
                     if (response.ok) {
-                        const jsonResp = await response.json();
+                        const jsonResp = await response.json() as CourseResponse;
 
                         setCourseInfo({
                             title: jsonResp.title,
@@ -152,7 +153,7 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
                         action: analyticsEnum.classSearch.actions.CLICK_INFO,
                     });
                     const currentTarget = event.currentTarget;
-                    togglePopover(currentTarget);
+                    void togglePopover(currentTarget);
                 }}
             >
                 {`${deptCode} ${courseNumber} | ${courseTitle}`}

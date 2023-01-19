@@ -188,11 +188,12 @@ const CalendarPaneToolbar = ({
             >
                 <>
                     {[
-                        <ExportCalendar />,
-                        <ScreenshotButton onTakeScreenshot={onTakeScreenshot} />,
+                        <ExportCalendar key="export"/>,
+                        <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot"/>,
                         <CustomEventsDialog
                             currentScheduleIndex={currentScheduleIndex}
                             scheduleNames={scheduleNames}
+                            key="custom"
                         />,
                     ].map((element, index) => (
                         <ConditionalWrapper

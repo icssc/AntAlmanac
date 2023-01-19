@@ -50,7 +50,7 @@ class NotificationHub extends PureComponent {
                 body: JSON.stringify({ phoneNumber: storedPhoneNumber.replace(/ /g, '') }),
             });
 
-            const jsonResp: NotificationAPIResponse = await response.json();
+            const jsonResp = await response.json() as NotificationAPIResponse;
 
             this.setState({
                 phoneNumber: storedPhoneNumber,
@@ -66,7 +66,7 @@ class NotificationHub extends PureComponent {
                     <Button
                         onClick={() => {
                             this.setState({ open: true });
-                            this.getNotificationLists();
+                            void this.getNotificationLists();
                             ReactGA.event({
                                 category: 'antalmanac-rewrite',
                                 action: 'Click "Notifications"',
@@ -90,7 +90,7 @@ class NotificationHub extends PureComponent {
                     }}
                     scroll="paper"
                 >
-                    <DialogTitle>Notifications You've Registered For</DialogTitle>
+                    <DialogTitle>Notifications You&apos;ve Registered For</DialogTitle>
 
                     <DialogContent dividers={true}>
                         <DialogContentText>

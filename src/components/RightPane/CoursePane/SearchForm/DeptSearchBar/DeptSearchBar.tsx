@@ -41,10 +41,10 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
     constructor(props: DeptSearchBarProps) {
         super(props);
 
-        let favorites = [];
+        let favorites: Department[] = [];
         if (typeof Storage !== 'undefined') {
             const locallyStoredFavorites = window.localStorage.getItem('favorites');
-            favorites = locallyStoredFavorites !== null ? JSON.parse(locallyStoredFavorites) : [];
+            favorites = locallyStoredFavorites !== null ? JSON.parse(locallyStoredFavorites) as Department[] : [];
         }
         this.state = {
             value: {
@@ -78,7 +78,7 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
         return option.deptValue === value.deptValue;
     };
 
-    handleSetDept = (event: ChangeEvent<{}>, newDept: Department | null) => {
+    handleSetDept = (event: ChangeEvent<unknown>, newDept: Department | null) => {
         const setDeptValue = newDept === null ? options[0] : newDept;
 
         this.setState({ value: setDeptValue });

@@ -13,7 +13,8 @@ import AppStore from '../../stores/AppStore';
 import ColorPicker from '../ColorPicker';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 
-const locations: Record<string, string> = require('../RightPane/SectionTable/static/locations.json');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const locations = require('../RightPane/SectionTable/static/locations.json') as Record<string, string>;
 
 const styles: Styles<Theme, object> = {
     courseContainer: {
@@ -148,7 +149,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         <tr>
                             <td className={classes.alignToTop}>Section code</td>
                             <Tooltip title="Click to copy course code" placement="right">
-                                <td
+                                <button
                                     onClick={(e) => {
                                         logAnalytics({
                                             category: analyticsEnum.calendar.title,
@@ -159,7 +160,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                                     className={classes.rightCells}
                                 >
                                     <u>{sectionCode}</u>
-                                </td>
+                                </button>
                             </Tooltip>
                         </tr>
                         <tr>

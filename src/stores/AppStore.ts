@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import { VariantType } from 'notistack';
 
 import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '../components/Calendar/CourseCalendarEvent';
@@ -39,11 +40,11 @@ class AppStore extends EventEmitter {
     currentScheduleIndex: number;
     customEvents: RepeatingCustomEvent[];
     addedCourses: AppStoreCourse[];
-    addedSectionCodes: any; //{[key: number]: Set<TODO: unknown type, figure out what this is>}
+    addedSectionCodes: { [key: number]: Set<string> };
     colorPickers: { [key: string]: EventEmitter };
     deletedCourses: AppStoreDeletedCourse[];
     snackbarMessage: string;
-    snackbarVariant: string;
+    snackbarVariant: VariantType;
     snackbarDuration: number;
     snackbarPosition: SnackbarPosition;
     snackbarStyle: object; // not sure what this is. I don't think we ever use it
@@ -351,7 +352,7 @@ class AppStore extends EventEmitter {
     }
 
     openSnackbar(
-        variant: string,
+        variant: VariantType,
         message: string,
         duration?: number,
         position?: SnackbarPosition,

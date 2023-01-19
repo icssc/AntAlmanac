@@ -32,10 +32,15 @@ interface GradesPopupProps {
     isMobileScreen: boolean;
 }
 
+interface GradeData {
+    name: string;
+    all: number
+}
+
 const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }: GradesPopupProps) => {
     const [loading, setLoading] = useState(true);
     const [graphTitle, setGraphTitle] = useState<string | null>(null);
-    const [gradeData, setGradeData] = useState<any[] | null>(null);
+    const [gradeData, setGradeData] = useState<GradeData[] | null>(null);
 
     const loadGrades = async () => {
         if (loading === false) {
@@ -50,7 +55,7 @@ const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }: Grades
                 // format data for display in chart
                 // key formatting: sum_grade_a_count -> A
                 if (key !== 'average_gpa') {
-                    data.push({ name: key.split('_')[2]?.toUpperCase(), all: value });
+                    data.push({ name: key.split('_')[2]?.toUpperCase(), all: value as number });
                 }
             }
 
@@ -67,7 +72,7 @@ const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }: Grades
     const width = isMobileScreen ? 300 : 500;
     const height = isMobileScreen ? 200 : 300;
 
-    loadGrades();
+    void loadGrades();
 
     if (loading) {
         return (

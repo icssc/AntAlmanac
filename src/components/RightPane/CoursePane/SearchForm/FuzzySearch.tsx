@@ -53,7 +53,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 RightPaneStore.updateFormValue('deptValue', ident[0]);
                 RightPaneStore.updateFormValue('deptLabel', ident.join(':'));
                 break;
-            case emojiMap.COURSE:
+            case emojiMap.COURSE: {
                 const deptValue = ident[0].split(' ').slice(0, -1).join(' ');
                 let deptLabel;
                 for (const [key, value] of Object.entries(this.state.cache)) {
@@ -76,6 +76,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 RightPaneStore.updateFormValue('deptLabel', `${deptValue}: ${deptLabel}`);
                 RightPaneStore.updateFormValue('courseNumber', ident[0].split(' ').slice(-1)[0]);
                 break;
+            }
             case emojiMap.INSTRUCTOR:
                 RightPaneStore.updateFormValue(
                     'instructor',
@@ -98,15 +99,18 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         const object = this.state.results[option];
         if (!object) return option;
         switch (object.type) {
-            case 'GE_CATEGORY':
+            case 'GE_CATEGORY': {
                 const cat = option.split('-')[1].toLowerCase();
                 const num = parseInt(cat);
                 return `${emojiMap.GE_CATEGORY} GE ${cat.replace(num.toString(), romanArr[num - 1])} (${cat}): ${
                     object.name
                 }`;
+            }
             case 'DEPARTMENT':
                 return `${emojiMap.DEPARTMENT} ${option}: ${object.name}`;
             case 'COURSE':
+                // TODO: fix our `websoc-fuzzy-search` package to strongly type `object.metadata` correctly
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
                 return `${emojiMap.COURSE} ${object.metadata.department} ${object.metadata.number}: ${object.name}`;
             case 'INSTRUCTOR':
                 return `${emojiMap.INSTRUCTOR} ${object.name}`;
@@ -118,7 +122,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
     getOptionSelected = () => true;
 
-    onInputChange = (event: ChangeEvent<{}>, value: string, reason: AutocompleteInputChangeReason) => {
+    onInputChange = (event: ChangeEvent<unknown>, value: string, reason: AutocompleteInputChangeReason) => {
         if (reason === 'input') {
             this.setState(
                 { open: value.length >= 2, value: value.slice(-1) === ' ' ? value.slice(0, -1) : value },
@@ -157,6 +161,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 style={{ width: '100%' }}
                 options={Object.keys(this.state.results)}
                 renderInput={(params) => (
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
                     <TextField {...params} inputRef={(input) => input} fullWidth label={'Search'} />
                 )}
                 autoHighlight={true}

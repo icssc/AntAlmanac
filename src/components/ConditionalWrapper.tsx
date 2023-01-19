@@ -13,8 +13,10 @@ interface ConditionalWrapperProps {
  * This uses forwardRef because at some point we got a console warning
  * about "functional components cannot be given refs" (https://github.com/icssc/AntAlmanac/pull/231/commits/bd80dd085e4f502292b4e1002fdc8fa398f375ab)
  */
-const ConditionalWrapper = forwardRef<Element, ConditionalWrapperProps>(({ condition, wrapper, children }, ref) => {
+const ConditionalWrapper = forwardRef<Element, ConditionalWrapperProps>(({ condition, wrapper, children }) => {
     return condition ? wrapper(children) : children;
 });
+
+ConditionalWrapper.displayName = "ConditionalWrapper";
 
 export default ConditionalWrapper;

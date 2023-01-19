@@ -7,7 +7,7 @@ interface CourseNumberSearchBarState {
     courseNumber: string;
 }
 
-class CourseNumberSearchBar extends PureComponent<{}, CourseNumberSearchBarState> {
+class CourseNumberSearchBar extends PureComponent<Record<string,never>, CourseNumberSearchBarState> {
     state = {
         courseNumber: RightPaneStore.getFormData().courseNumber,
     };

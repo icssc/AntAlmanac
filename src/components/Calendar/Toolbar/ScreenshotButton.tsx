@@ -17,7 +17,7 @@ class ScreenshotButton extends PureComponent<ScreenshotButtonProps> {
             category: analyticsEnum.calendar.title,
             action: analyticsEnum.calendar.actions.SCREENSHOT,
         });
-        html2canvas(document.getElementById('screenshot') as HTMLElement, {
+        void html2canvas(document.getElementById('screenshot') as HTMLElement, {
             scale: 2.5,
         }).then((canvas) => {
             const imgRaw = canvas.toDataURL('image/png');

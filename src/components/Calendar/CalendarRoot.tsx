@@ -68,7 +68,8 @@ const styles: Styles<Theme, object> = {
 };
 
 const AntAlmanacEvent =
-    ({ classes }: { classes: ClassNameMap }) =>
+    (classes: ClassNameMap) =>
+    // eslint-disable-next-line react/display-name
     ({ event }: { event: CalendarEvent }) => {
         if (!event.isCustomEvent)
             return (
@@ -201,7 +202,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
     };
 
-    handleTakeScreenshot = async (html2CanvasScreenshot: () => void) => {
+    handleTakeScreenshot = (html2CanvasScreenshot: () => void) => {
         // This function takes a screenshot of the user's schedule
         // Before we take the screenshot, we need to make some adjustments to the canvas:
         //  - Set the color to black, so that the weekdays/times still appear when Dark Mode is on
@@ -209,6 +210,9 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
 
         // Fetch the canvas and calendarHeader
         const canvas = document.getElementById('screenshot') as HTMLElement;
+
+        // this disable only works because this isn't a functional component. It's kinda a hack
+        // eslint-disable-next-line react/no-find-dom-node
         const headerNode = ReactDOM.findDOMNode(this) as Element;
         const calendarHeader = headerNode.getElementsByClassName('rbc-time-header')[0] as HTMLElement;
 
@@ -220,9 +224,9 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         canvas.style.color = 'black';
         calendarHeader.style.marginRight = '0px';
 
-        this.setState({ screenshotting: true }, async () => {
+        this.setState({ screenshotting: true }, () => {
             // Take the picture
-            await html2CanvasScreenshot();
+            html2CanvasScreenshot();
 
             // Revert the temporary changes to the canvas and calendar
             canvas.style.color = oldColor;
@@ -335,7 +339,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                         defaultView={Views.WORK_WEEK}
                         views={[Views.WEEK, Views.WORK_WEEK]}
                         view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
-                        onView={() => {}} //added to get rid of a warning. This callback is supposed to fire when view changes, but it doesn't actually ever run (possibly a bug in the dependency)
                         step={15}
                         timeslots={2}
                         defaultDate={new Date(2018, 0, 1)}
@@ -344,7 +347,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                         events={events}
                         eventPropGetter={ScheduleCalendar.eventStyleGetter}
                         showMultiDayTimes={false}
-                        components={{ event: AntAlmanacEvent({ classes }) }}
+                        components={{ event: AntAlmanacEvent(classes) }}
                         onSelectEvent={this.handleEventClick}
                     />
                 </div>

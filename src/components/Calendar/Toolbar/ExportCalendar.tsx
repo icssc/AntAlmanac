@@ -202,7 +202,7 @@ const getRRule = (bydays: ReturnType<typeof getByDays>, quarter: string) => {
         default:
             break;
     }
-    return `FREQ=WEEKLY;BYDAY=${bydays};INTERVAL=1;COUNT=${count}`;
+    return `FREQ=WEEKLY;BYDAY=${bydays.toString()};INTERVAL=1;COUNT=${count}`;
 };
 
 const exportCalendar = () => {
@@ -280,10 +280,8 @@ const exportCalendar = () => {
                 new Blob([icsString.replace('BEGIN:VEVENT', vTimeZoneSection)], { type: 'text/plain;charset=utf-8' }),
                 'schedule.ics'
             );
-            //@ts-ignore
             openSnackbar('success', 'Schedule downloaded!', 5);
         } else {
-            //@ts-ignore
             openSnackbar('error', 'Something went wrong! Unable to download schedule.', 5);
             console.log(err);
         }

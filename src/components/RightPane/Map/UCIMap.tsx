@@ -51,8 +51,8 @@ interface UCIMapState {
     selected_img: string;
     selected_acronym: string;
     eventsInCalendar: CalendarEvent[];
-    poly: any[];
-    info_markers: any[];
+    poly: Polyline[];
+    info_markers: [string[], string, string][];
     info_marker: Marker | null;
     pins: Record<string, [CourseEvent, number][]>;
 }
@@ -112,7 +112,7 @@ export default class UCIMap extends PureComponent {
                     if (coords) {
                         coords += ';';
                     }
-                    coords += locationData.lng + ',' + locationData.lat;
+                    coords += `${locationData.lng},${locationData.lat}`;
                     coords_array.push([locationData.lat, locationData.lng]);
 
                     index++;
@@ -131,7 +131,7 @@ export default class UCIMap extends PureComponent {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
                 });
-                const obj: MapBoxResponse = await response.json();
+                const obj = await response.json() as MapBoxResponse;
                 const coordinates = obj['routes'][0]['geometry']['coordinates']; // The coordinates for the lines of the routes
                 const waypoints = obj['waypoints']; // The waypoints we specified in the request
                 let waypointIndex = 0;
@@ -170,7 +170,9 @@ export default class UCIMap extends PureComponent {
                                 // TODO: If anyone wants to fix this ts-ignore in the future go ahead
                                 // the `this` parameter actually refers to the Polyline object this function is being passed to.
                                 // the `options property of this comes from the props of that Polyline, specifically `map` and `index`
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                                 // @ts-ignore needs to be ignored because function definitions are not allowed in strict mode. This fix has to involve converting this function to an arrow function and not relying on accessing the index from the specific Polyline that it's being called from with the `this` parameter.
+                                // eslint-disable-next-line no-inner-declarations
                                 function setInfoMarker(
                                     this: { options: { map: UCIMap; index: typeof waypointIndex } },
                                     event: LeafletMouseEvent
@@ -187,8 +189,8 @@ export default class UCIMap extends PureComponent {
                                                     popupAnchor: [0, -21],
                                                     className: '',
                                                     iconSize: [1000, 14],
-                                                    html: `<div style="position:relative; top:-200%; left:2px; pointer-events: none; background-color: white; border-left-color: ${color}; border-left-style: solid; width: fit-content; border-left-width: 5px; padding-left: 10px; padding-right: 10px; padding-top: 4px; padding-bottom: 4px;">
-                                                        <span style="color:${color}">
+                                                    html: `<div style="position:relative; top:-200%; left:2px; pointer-events: none; background-color: white; border-left-color: ${color.toString()}; border-left-style: solid; width: fit-content; border-left-width: 5px; padding-left: 10px; padding-right: 10px; padding-top: 4px; padding-bottom: 4px;">
+                                                        <span style="color:${color.toString()}">
                                                         ${duration} 
                                                         </span>
                                                         <br>
@@ -254,7 +256,7 @@ export default class UCIMap extends PureComponent {
 
     updateCurrentScheduleIndex = () => {
         this.createMarkers(this.state.day);
-        this.generateRoute(this.state.day);
+        void this.generateRoute(this.state.day);
     };
 
     updateEventsInCalendar = () => {
@@ -262,7 +264,7 @@ export default class UCIMap extends PureComponent {
             eventsInCalendar: AppStore.getEventsInCalendar(),
         });
         this.createMarkers(this.state.day);
-        this.generateRoute(this.state.day);
+        void this.generateRoute(this.state.day);
     };
 
     componentDidMount = () => {
@@ -303,7 +305,7 @@ export default class UCIMap extends PureComponent {
             .forEach((event, index) => {
                 if (event.isCustomEvent) return;
                 const buildingCode = event.bldg.split(' ').slice(0, -1).join(' ');
-                if (pins.hasOwnProperty(buildingCode)) {
+                if (buildingCode in pins) {
                     pins[buildingCode].push([event, index + 1]);
                 } else {
                     pins[buildingCode] = [[event, index + 1]];
@@ -356,7 +358,7 @@ export default class UCIMap extends PureComponent {
         return markers;
     };
 
-    handleSearch = (event: React.ChangeEvent<{}>, searchValue: Building | null) => {
+    handleSearch = (event: React.ChangeEvent<unknown>, searchValue: Building | null) => {
         if (searchValue) {
             // Acronym, if it exists, is in between parentheses
             const acronym = searchValue.name.substring(
@@ -393,7 +395,7 @@ export default class UCIMap extends PureComponent {
                     day={this.state.day}
                     setDay={(day) => {
                         this.createMarkers(day);
-                        this.generateRoute(day);
+                        void this.generateRoute(day);
                         this.setState({ day: day });
                     }}
                     handleSearch={this.handleSearch}

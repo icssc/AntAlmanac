@@ -74,7 +74,7 @@ class News extends PureComponent<NewsProps, NewsState> {
         let rawResponse;
         try {
             const data = await fetch(NEWS_ENDPOINT);
-            const json: NewsResponse = await data.json();
+            const json = await data.json() as NewsResponse;
             if (!this._isMounted) return; //prevents state update if we've unmounted in the time it took for the request to finish.
             const sortedNewsItems = json.news.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? 1 : 0));
 

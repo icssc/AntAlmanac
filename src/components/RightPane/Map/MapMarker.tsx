@@ -1,7 +1,7 @@
 import { Button } from '@material-ui/core';
 import WalkIcon from '@material-ui/icons/DirectionsWalk';
 import Leaflet from 'leaflet';
-import React, { PureComponent } from 'react';
+import React, { PureComponent, ReactElement } from 'react';
 import { Marker, Popup } from 'react-leaflet';
 
 import analyticsEnum, { logAnalytics } from '../../../analytics';
@@ -18,6 +18,7 @@ interface MapMarkerProps {
     lng: number;
     markerColor: string;
     image?: string;
+    children?: ReactElement;
 }
 
 class MapMarker extends PureComponent<MapMarkerProps> {

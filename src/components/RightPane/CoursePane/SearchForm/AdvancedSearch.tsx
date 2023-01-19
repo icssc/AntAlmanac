@@ -113,9 +113,9 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
 
         // List of times from 2:00am-11:00pm
         const menuItemTimes = [
-            ...[...Array(10).keys()].map((v) => v + 2 + ':00am'),
+            ...[...Array(10).keys()].map((v) => `${v + 2}:00am`),
             '12:00pm',
-            ...[...Array(11).keys()].map((v) => v + 1 + ':00pm'),
+            ...[...Array(11).keys()].map((v) => `${v + 1}:00am`),
         ];
         // Creates a MenuItem for time selection
         const createdMenuItemTime = (time: string) => (

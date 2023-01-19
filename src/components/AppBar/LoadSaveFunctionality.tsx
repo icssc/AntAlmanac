@@ -16,7 +16,7 @@ import { loadSchedule, saveSchedule } from '../../actions/AppStoreActions';
 import { isDarkMode } from '../../helpers';
 
 interface LoadSaveButtonBaseProps {
-    action: any;
+    action: typeof saveSchedule;
     actionName: string;
 }
 
@@ -52,7 +52,8 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
         else
             this.setState({ isOpen: false }, () => {
                 document.removeEventListener('keydown', this.enterEvent, false);
-                this.props.action(this.state.userID, this.state.rememberMe);
+                // this `void` is for eslint "no floating promises"
+                void this.props.action(this.state.userID, this.state.rememberMe);
                 this.setState({ userID: '' });
             });
     };
@@ -61,7 +62,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
         this.setState({ rememberMe: event.target.checked });
     };
 
-    componentDidUpdate(prevProps: any, prevState: LoadSaveButtonBaseState) {
+    componentDidUpdate(_prevProps: unknown, prevState: LoadSaveButtonBaseState) {
         if (!prevState.isOpen && this.state.isOpen) document.addEventListener('keydown', this.enterEvent, false);
         else if (prevState.isOpen && !this.state.isOpen)
             document.removeEventListener('keydown', this.enterEvent, false);
@@ -95,6 +96,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                             Enter your username here to {this.props.actionName.toLowerCase()} your schedule.
                         </DialogContentText>
                         <TextField
+                            // eslint-disable-next-line jsx-a11y/no-autofocus
                             autoFocus
                             margin="dense"
                             label="User ID"
@@ -135,7 +137,8 @@ const LoadSaveScheduleFunctionality = () => {
             const savedUserID = window.localStorage.getItem('userID');
 
             if (savedUserID != null) {
-                loadSchedule(savedUserID, true);
+                // this `void` is for eslint "no floating promises"
+                void loadSchedule(savedUserID, true);
             }
         }
     }, []);

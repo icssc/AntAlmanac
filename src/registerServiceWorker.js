@@ -36,7 +36,7 @@ export default function register() {
 
                 // Add some additional logging to localhost, pointing developers to the
                 // service worker/PWA documentation.
-                navigator.serviceWorker.ready.then(() => {
+                void navigator.serviceWorker.ready.then(() => {
                     console.log(
                         'This web App is being served cache-first by a service ' +
                             'worker. To learn more, visit https://goo.gl/SC7cgQ'
@@ -50,6 +50,10 @@ export default function register() {
     }
 }
 
+/**
+ *
+ * @param {string} swUrl
+ */
 function registerValidSW(swUrl) {
     navigator.serviceWorker
         .register(swUrl)
@@ -79,6 +83,10 @@ function registerValidSW(swUrl) {
         });
 }
 
+/**
+ *
+ * @param {string} swUrl
+ */
 function checkValidServiceWorker(swUrl) {
     // Check if the service worker can be found. If it can't reload the page.
     fetch(swUrl)
@@ -86,8 +94,8 @@ function checkValidServiceWorker(swUrl) {
             // Ensure service worker exists, and that we really are getting a JS file.
             if (response.status === 404 || response.headers.get('content-type').indexOf('javascript') === -1) {
                 // No service worker found. Probably a different App. Reload the page.
-                navigator.serviceWorker.ready.then((registration) => {
-                    registration.unregister().then(() => {
+                void navigator.serviceWorker.ready.then((registration) => {
+                    void registration.unregister().then(() => {
                         window.location.reload();
                     });
                 });
@@ -103,8 +111,8 @@ function checkValidServiceWorker(swUrl) {
 
 export function unregister() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.ready.then((registration) => {
-            registration.unregister();
+        void navigator.serviceWorker.ready.then((registration) => {
+            void registration.unregister();
         });
     }
 }

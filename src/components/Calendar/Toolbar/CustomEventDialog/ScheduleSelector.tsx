@@ -53,6 +53,7 @@ class ScheduleSelector extends PureComponent<ScheduleSelectorProps, ScheduleSele
                                 />
                             }
                             label={name}
+                            key={name}
                         />
                     );
                 })}

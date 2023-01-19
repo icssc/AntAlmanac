@@ -76,7 +76,6 @@ class OpenSpotAlertPopover extends PureComponent<OpenSpotAlertPopoverProps, Open
             if (response.status === 200) {
                 window.localStorage.setItem('phoneNumber', this.state.phoneNumber);
                 this.setState({ anchorElement: null, invalidInput: false });
-                // @ts-ignore
                 openSnackbar('success', `Added to watch list for ${params.sectionCode}`);
                 //TODO: Dialog with the message about txt messages paywall etc etc
             } else {
@@ -125,6 +124,7 @@ class OpenSpotAlertPopover extends PureComponent<OpenSpotAlertPopoverProps, Open
                         {this.state.invalidInput ? <Typography>{this.state.invalidInputMessage}</Typography> : null}
                         <div>
                             <InputMask
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                                 /* @ts-ignore The type interface for this library uses "maskPlaceholder" while the library itself uses "maskChar"*/
                                 maskChar={null}
                                 mask="999 999 9999"

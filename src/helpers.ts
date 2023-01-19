@@ -3,7 +3,7 @@ import React from 'react';
 import { addCourse, openSnackbar } from './actions/AppStoreActions';
 import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from './api/endpoints';
 import { RepeatingCustomEvent } from './components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { AACourse, AASection, Section, WebsocResponse } from './peterportal.types';
+import { Section, WebsocResponse } from './peterportal.types';
 import AppStore, { AppStoreCourse, ShortCourseInfo, UserData } from './stores/AppStore';
 
 interface GradesGraphQLResponse {
@@ -36,7 +36,7 @@ export async function queryGraphQL(queryString: string): Promise<GradesGraphQLRe
         },
         body: query,
     });
-    return res.json();
+    return res.json() as Promise<GradesGraphQLResponse>;
 }
 
 export interface CourseData {
@@ -139,7 +139,11 @@ export function getCourseInfo(SOCObject: WebsocResponse) {
     return courseInfo;
 }
 
-const websocCache: { [key: string]: any } = {};
+interface CacheEntry extends WebsocResponse {
+    timestamp: number;
+}
+
+const websocCache: { [key: string]: CacheEntry } = {};
 
 export function clearCache() {
     Object.keys(websocCache).forEach((key) => delete websocCache[key]); //https://stackoverflow.com/a/19316873/14587004
@@ -155,23 +159,21 @@ export async function queryWebsoc(params: Record<string, string>): Promise<Webso
     }
     url.search = searchString;
     try {
-        const response = await fetch(url).then((r) => r.json());
-        websocCache[searchString] = response;
+        const response = (await fetch(url).then((r) => r.json())) as WebsocResponse;
+        websocCache[searchString] = { ...response, timestamp: Date.now() };
         return response;
     } catch {
-        const backupResponse = await fetch(WEBSOC_ENDPOINT, {
+        const backupResponse = (await fetch(WEBSOC_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(params),
-        }).then((res) => res.json());
-        websocCache[searchString] = backupResponse;
+        }).then((res) => res.json())) as WebsocResponse;
+        websocCache[searchString] = { ...backupResponse, timestamp: Date.now() };
         return backupResponse;
-    } finally {
-        websocCache[searchString].timestamp = Date.now();
     }
 }
 
-interface Grades {
+export interface Grades {
     average_gpa: number;
     sum_grade_a_count: number;
     sum_grade_b_count: number;
@@ -249,7 +251,7 @@ export function combineSOCObjects(SOCObjects: WebsocResponse[]) {
 export async function queryWebsocMultiple(params: { [key: string]: string }, fieldName: string) {
     const responses: WebsocResponse[] = [];
     for (const field of params[fieldName].trim().replace(' ', '').split(',')) {
-        const req = JSON.parse(JSON.stringify(params));
+        const req = JSON.parse(JSON.stringify(params)) as Record<string, string>;
         req[fieldName] = field;
         responses.push(await queryWebsoc(req));
     }
@@ -288,7 +290,7 @@ export const warnMultipleTerms = (terms: Set<string>) => {
     );
 };
 
-export function clickToCopy(event: React.MouseEvent<HTMLDivElement, MouseEvent>, sectionCode: string) {
+export function clickToCopy(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sectionCode: string) {
     event.stopPropagation();
 
     const tempEventTarget = document.createElement('input');

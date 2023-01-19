@@ -8,7 +8,7 @@ import ReactGA from 'react-ga';
 
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { clickToCopy, CourseDetails, isDarkMode } from '../../../helpers';
-import { AASection,Course, EnrollmentCount, Meeting } from '../../../peterportal.types';
+import { AASection, EnrollmentCount, Meeting } from '../../../peterportal.types';
 import AppStore from '../../../stores/AppStore';
 import { getDefaultTerm } from '../../../termData';
 import OpenSpotAlertPopover, { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
@@ -88,7 +88,7 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             <Tooltip title="Click to copy course code" placement="bottom" enterDelay={300}>
-                <div
+                <button
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);
                         ReactGA.event({
@@ -103,7 +103,7 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
                     className={classes.sectionCode}
                 >
                     {sectionCode}
-                </div>
+                </button>
             </Tooltip>
         </NoPaddingTableCell>
     );
@@ -190,10 +190,12 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                 return meeting.bldg !== 'TBA' ? (
                     <Fragment key={meeting.days + meeting.time + meeting.bldg}>
                         <a
-                            href={(() => {
+                            href={((): string => {
                                 const location_id = locations[meeting.bldg.split(' ')[0] as keyof typeof locations];
-                                if (location_id !== undefined) return 'https://map.uci.edu/?id=463#!m/' + location_id;
-                                else return 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034';
+                                if (location_id !== undefined) 
+                                    return `https://map.uci.edu/?id=463#!m/${location_id}`;
+                                else 
+                                    return 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034';
                             })()}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -349,7 +351,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
     useEffect(() => {
         const toggleHighlight = () => {
-            // @ts-ignore
             const doAdd = AppStore.getAddedSectionCodes()[AppStore.getCurrentScheduleIndex()].has(
                 `${section.sectionCode} ${term}`
             );

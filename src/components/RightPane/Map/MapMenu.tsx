@@ -40,7 +40,7 @@ interface MapMenuProps {
     classes: ClassNameMap;
     day: number;
     setDay: (newDay: number) => void;
-    handleSearch: (event: React.ChangeEvent<{}>, value: Building | null) => void;
+    handleSearch: (event: React.ChangeEvent<unknown>, value: Building | null) => void;
 }
 
 class MapMenu extends PureComponent<MapMenuProps> {
@@ -56,7 +56,7 @@ class MapMenu extends PureComponent<MapMenuProps> {
                 <Paper elevation={0} className={classes.tabContainer}>
                     <StyledTabs
                         value={this.props.day}
-                        onChange={(event, newDay) => {
+                        onChange={(event, newDay: number) => {
                             this.props.setDay(newDay);
                         }}
                         indicatorColor="primary"
