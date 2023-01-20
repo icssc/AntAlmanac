@@ -4,12 +4,13 @@ import html2canvas from 'html2canvas';
 import { Panorama } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import { Tooltip } from '@material-ui/core';
+import { isDarkMode } from '../../helpers';
 
 class ScreenshotButton extends PureComponent {
     handleClick = () => {
         html2canvas(document.getElementById('screenshot'), {
             scale: 2.5,
-            backgroundColor: window.localStorage.getItem('theme') === 'dark' ? '#303030' : '#fafafa',
+            backgroundColor: isDarkMode() ? '#303030' : '#fafafa',
         }).then((canvas) => {
             const img = canvas.toDataURL('image/png');
             const lnk = document.createElement('a');
