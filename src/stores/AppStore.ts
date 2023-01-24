@@ -4,7 +4,7 @@ import { CalendarEvent, CourseEvent } from '../components/Calendar/CourseCalenda
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { AASection, Section } from '../peterportal.types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calenderizeHelpers';
-import { Schedules } from './Schedules';
+import { Schedules, ScheduleSaveState } from './Schedules';
 import { CourseDetails } from '../helpers';
 
 export interface UserData {
@@ -81,6 +81,10 @@ class AppStore extends EventEmitter {
 
     getAddedCourses() {
         return this.schedule.getAllCourses();
+    }
+
+    getCustomEvents() {
+        return this.schedule.getAllCustomEvents();
     }
 
     addCourse(newCourse: AppStoreCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
@@ -238,18 +242,15 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    loadSchedule(userData: UserData) {
-        throw new Error('Not Implemented');
-        // this.addedCourses = userData.addedCourses;
-        // this.scheduleNames = userData.scheduleNames;
-        // this.updateAddedSectionCodes();
-        // this.customEvents = userData.customEvents;
-        // this.finalsEventsInCalendar = calendarizeFinals();
-        // this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
-        // this.unsavedChanges = false;
-        // this.emit('addedCoursesChange');
-        // this.emit('customEventsChange');
-        // this.emit('scheduleNamesChange');
+    async loadSchedule(savedSchedule: ScheduleSaveState) {
+        await this.schedule.fromScheduleSaveState(savedSchedule);
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
+        this.unsavedChanges = false;
+        this.emit('addedCoursesChange');
+        this.emit('customEventsChange');
+        this.emit('scheduleNamesChange');
+        this.emit('currentScheduleIndexChange');
     }
 
     changeCurrentSchedule(newScheduleIndex: number) {

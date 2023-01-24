@@ -15,6 +15,7 @@ import {
     red,
     teal,
 } from '@material-ui/core/colors';
+import { getCourseInfo, queryWebsoc } from '../helpers';
 
 const arrayOfColors = [
     red[500],
@@ -38,7 +39,24 @@ export interface Schedule {
     customEvents: RepeatingCustomEvent[];
 }
 
-interface ScheduleState {
+interface ShortCourseInfo {
+    color: string;
+    term: string;
+    sectionCode: string;
+}
+
+interface ShortCourseSchedule {
+    scheduleName: string;
+    courses: ShortCourseInfo[];
+    customEvents: RepeatingCustomEvent[];
+}
+
+export interface ScheduleSaveState {
+    schedules: ShortCourseSchedule[];
+    scheduleIndex: number;
+}
+
+interface ScheduleUndoState {
     schedules: Schedule[];
     scheduleIndex: number;
 }
@@ -46,7 +64,7 @@ interface ScheduleState {
 export class Schedules {
     private schedules: Schedule[];
     private currentScheduleIndex: number;
-    private previousStates: ScheduleState[];
+    private previousStates: ScheduleUndoState[];
 
     constructor() {
         this.schedules = [{ scheduleName: 'Schedule 1', courses: [], customEvents: [] }];
@@ -286,13 +304,65 @@ export class Schedules {
         /**
          * Reverts: setCurrentScheduleIndex, addCourse, addCourseToAllSchedules, addCustomEvent, deleteCourse,
          *          deleteCustomEvent, deleteCourse, deleteCurrentSchedule, clearCurrentSchedule, changeCourseColor,
-         *          changeCustomEventColor, editCustomEvent, addSchedule, renameSchedule
+         *          changeCustomEventColor, editCustomEvent, addSchedule, renameSchedule, fromScheduleSaveState
          */
         const state = this.previousStates.pop();
         if (state !== undefined) {
             // Object.assign(this.schedules, state.schedules)
             this.schedules = state.schedules;
             this.currentScheduleIndex = state.scheduleIndex;
+        }
+    }
+
+    getScheduleAsSaveState(): ScheduleSaveState {
+        const shortSchedules: ShortCourseSchedule[] = this.schedules.map((schedule) => {
+            return {
+                scheduleName: schedule.scheduleName,
+                customEvents: schedule.customEvents,
+                courses: schedule.courses.map((course) => {
+                    return {
+                        color: course.section.color,
+                        term: course.term,
+                        sectionCode: course.section.sectionCode,
+                    };
+                }),
+            };
+        });
+
+        return { schedules: shortSchedules, scheduleIndex: this.currentScheduleIndex };
+    }
+
+    async fromScheduleSaveState(saveState: ScheduleSaveState) {
+        this.addUndoState();
+        try {
+            this.currentScheduleIndex = saveState.scheduleIndex;
+            this.schedules = await Promise.all(
+                saveState.schedules.map(async (shortCourseSchedule) => {
+                    return {
+                        ...shortCourseSchedule,
+                        courses: await Promise.all(
+                            shortCourseSchedule.courses.map(async (shortCourse) => {
+                                const jsonResp = await queryWebsoc({
+                                    term: shortCourse.term,
+                                    sectionCodes: shortCourse.sectionCode,
+                                });
+                                const courseInfo = getCourseInfo(jsonResp)[shortCourse.sectionCode];
+                                return {
+                                    ...shortCourse,
+                                    ...courseInfo.courseDetails,
+                                    section: {
+                                        ...courseInfo.section,
+                                        color: shortCourse.color,
+                                    },
+                                };
+                            })
+                        ),
+                    };
+                })
+            );
+        } catch (e) {
+            this.revertState();
+            throw new Error('Unable to load schedule');
         }
     }
 }

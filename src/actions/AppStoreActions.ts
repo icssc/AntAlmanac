@@ -17,10 +17,12 @@ import {
     teal,
 } from '@material-ui/core/colors';
 import { getCoursesData, termsInSchedule, warnMultipleTerms } from '../helpers';
-import { LOAD_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '../api/endpoints';
+import { LOAD_DATA_ENDPOINT, LOAD_LEGACY_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '../api/endpoints';
 import { Section } from '../peterportal.types';
 import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { ScheduleSaveState } from '../stores/Schedules';
+import { convertLegacySchedule, LegacyUserData } from '../stores/legacyScheduleHelpers';
 
 export const addCourse = (
     section: Section,
@@ -70,105 +72,119 @@ export const openSnackbar = (
 };
 
 export const saveSchedule = async (userID: string, rememberMe: boolean) => {
-    throw new Error('Not Implemented');
-    // logAnalytics({
-    //     category: analyticsEnum.nav.title,
-    //     action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
-    //     label: userID,
-    //     value: rememberMe? 1:0,
-    // });
-    // if (userID != null) {
-    //     userID = userID.replace(/\s+/g, '');
-    //
-    //     if (userID.length > 0) {
-    //         if (rememberMe) {
-    //             window.localStorage.setItem('userID', userID);
-    //         } else {
-    //             window.localStorage.removeItem('userID');
-    //         }
-    //
-    //         const addedCourses = AppStore.getAddedCourses();
-    //         const customEvents = AppStore.getCustomEvents();
-    //         const scheduleNames = AppStore.getScheduleNames();
-    //
-    //         interface ShortCourseInfo {
-    //             color: string
-    //             term: string
-    //             sectionCode: string
-    //             scheduleIndices: number[]
-    //         }
-    //
-    //         const userData = { addedCourses: [] as ShortCourseInfo[], scheduleNames: scheduleNames, customEvents: customEvents };
-    //
-    //         userData.addedCourses = addedCourses.map((course) => {
-    //             return {
-    //                 color: course.color,
-    //                 term: course.term,
-    //                 sectionCode: course.section.sectionCode,
-    //                 scheduleIndices: course.scheduleIndices,
-    //             };
-    //         });
-    //
-    //         try {
-    //             await fetch(SAVE_DATA_ENDPOINT, {
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                 },
-    //                 body: JSON.stringify({ userID, userData }),
-    //             });
-    //
-    //             openSnackbar(
-    //                 'success',
-    //                 `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
-    //             );
-    //             AppStore.saveSchedule();
-    //         } catch (e) {
-    //             openSnackbar('error', `Schedule could not be saved under username "${userID}`);
-    //         }
-    //     }
-    // }
+    logAnalytics({
+        category: analyticsEnum.nav.title,
+        action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
+        label: userID,
+        value: rememberMe ? 1 : 0,
+    });
+    if (userID != null) {
+        userID = userID.replace(/\s+/g, '');
+
+        if (userID.length > 0) {
+            if (rememberMe) {
+                window.localStorage.setItem('userID', userID);
+            } else {
+                window.localStorage.removeItem('userID');
+            }
+
+            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+
+            try {
+                await fetch(SAVE_DATA_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userID, userData: scheduleSaveState }),
+                });
+
+                openSnackbar(
+                    'success',
+                    `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
+                );
+                AppStore.saveSchedule();
+            } catch (e) {
+                openSnackbar('error', `Schedule could not be saved under username "${userID}`);
+            }
+        }
+    }
 };
 
 export const loadSchedule = async (userID: string, rememberMe: boolean) => {
-    throw new Error('Not Implemented');
-    // logAnalytics({
-    //     category: analyticsEnum.nav.title,
-    //     action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
-    //     label: userID,
-    //     value: rememberMe? 1:0,
-    // });
-    // if (
-    //     userID != null &&
-    //     (!AppStore.hasUnsavedChanges() ||
-    //         window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
-    // ) {
-    //     userID = userID.replace(/\s+/g, '');
-    //
-    //     if (userID.length > 0) {
-    //         if (rememberMe) {
-    //             window.localStorage.setItem('userID', userID);
-    //         } else {
-    //             window.localStorage.removeItem('userID');
-    //         }
-    //
-    //         try {
-    //             const data = await fetch(LOAD_DATA_ENDPOINT, {
-    //                 method: 'POST',
-    //                 headers: { 'Content-Type': 'application/json' },
-    //                 body: JSON.stringify({ userID: userID }),
-    //             });
-    //
-    //             const json = await data.json();
-    //
-    //             AppStore.loadSchedule(await getCoursesData(json.userData) as UserData);
-    //
-    //             openSnackbar('success', `Schedule for username "${userID}" loaded.`);
-    //         } catch (e) {
-    //             openSnackbar('error', `Couldn't find schedules for username "${userID}".`);
-    //         }
-    //     }
-    // }
+    logAnalytics({
+        category: analyticsEnum.nav.title,
+        action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
+        label: userID,
+        value: rememberMe ? 1 : 0,
+    });
+    if (
+        userID != null &&
+        (!AppStore.hasUnsavedChanges() ||
+            window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
+    ) {
+        userID = userID.replace(/\s+/g, '');
+
+        if (userID.length > 0) {
+            if (rememberMe) {
+                window.localStorage.setItem('userID', userID);
+            } else {
+                window.localStorage.removeItem('userID');
+            }
+
+            try {
+                // First we will try loading the schedule normally
+                let scheduleSaveState;
+                let data = await fetch(LOAD_DATA_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userID: userID }),
+                });
+
+                if (data.ok) {
+                    const json = await data.json();
+                    scheduleSaveState = json.userData;
+
+                    if (scheduleSaveState !== undefined) {
+                        try {
+                            await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState);
+                            openSnackbar('success', `Schedule for username "${userID}" loaded.`);
+                            return;
+                        } catch (e) {}
+                    }
+                }
+
+                // Second we try loading the schedule as if it was legacy
+                // in case a legacy schedule was somehow saved to the new DB
+                try {
+                    await AppStore.loadSchedule(convertLegacySchedule(scheduleSaveState as LegacyUserData));
+                    openSnackbar('success', `Schedule for username "${userID}" loaded.`);
+                    return;
+                } catch (e) {}
+
+                // Finally try getting and loading from legacy
+                data = await fetch(LOAD_LEGACY_DATA_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userID: userID }),
+                });
+                if (data.ok) {
+                    const json = await data.json();
+                    const legacyUserData = json.userData as LegacyUserData;
+                    if (legacyUserData !== undefined) {
+                        try {
+                            await AppStore.loadSchedule(convertLegacySchedule(legacyUserData));
+                            openSnackbar('success', `Legacy schedule for username "${userID}" loaded.`);
+                            return;
+                        } catch (e) {}
+                    }
+                }
+                openSnackbar('error', `Couldn't find schedules for username "${userID}".`);
+            } catch (e) {
+                openSnackbar('error', `Got a network error when trying to load schedules.`);
+            }
+        }
+    }
 };
 
 export const deleteCourse = (sectionCode: string, term: string) => {
