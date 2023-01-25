@@ -143,7 +143,8 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         <tr>
                             <td className={classes.alignToTop}>Section code</td>
                             <Tooltip title="Click to copy course code" placement="right">
-                                <button
+                                {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+                                <td
                                     onClick={(e) => {
                                         logAnalytics({
                                             category: analyticsEnum.calendar.title,
@@ -154,7 +155,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                                     className={classes.rightCells}
                                 >
                                     <u>{sectionCode}</u>
-                                </button>
+                                </td>
                             </Tooltip>
                         </tr>
                         <tr>
