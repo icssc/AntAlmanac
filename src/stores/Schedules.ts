@@ -209,6 +209,7 @@ export class Schedules {
     clearCurrentSchedule() {
         this.addUndoState();
         this.getCurrentCourses().length = 0;
+        this.getCurrentCustomEvents().length = 0;
     }
 
     changeCourseColor(sectionCode: string, term: string, newColor: string) {
