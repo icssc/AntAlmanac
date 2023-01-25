@@ -1,28 +1,14 @@
-import AppStore, { AppStoreCourse, UserData } from '../stores/AppStore';
+import { VariantType } from 'notistack';
+
 import analyticsEnum, { logAnalytics } from '../analytics';
-import { CourseDetails, courseNumAsDecimal } from '../helpers';
-import {
-    amber,
-    blue,
-    blueGrey,
-    cyan,
-    deepPurple,
-    green,
-    indigo,
-    lightGreen,
-    lime,
-    pink,
-    purple,
-    red,
-    teal,
-} from '@material-ui/core/colors';
-import { getCoursesData, termsInSchedule, warnMultipleTerms } from '../helpers';
 import { LOAD_DATA_ENDPOINT, LOAD_LEGACY_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '../api/endpoints';
-import { Section } from '../peterportal.types';
 import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { ScheduleSaveState } from '../stores/Schedules';
+import { CourseDetails, courseNumAsDecimal, termsInSchedule, warnMultipleTerms } from '../helpers';
+import { Section } from '../peterportal.types';
+import AppStore, { AppStoreCourse } from '../stores/AppStore';
 import { convertLegacySchedule, LegacyUserData } from '../stores/legacyScheduleHelpers';
+import { ScheduleSaveState } from '../stores/Schedules';
 
 export const addCourse = (
     section: Section,
@@ -62,7 +48,7 @@ export const addCourse = (
  * if anyone comes back to refactor this, I think `notistack` provides its own types we could use.
  */
 export const openSnackbar = (
-    variant: string,
+    variant: VariantType,
     message: string,
     duration?: number,
     position?: SnackbarPosition,
@@ -134,15 +120,15 @@ export const loadSchedule = async (userID: string, rememberMe: boolean) => {
 
             try {
                 // First we will try loading the schedule normally
-                let scheduleSaveState;
-                let data = await fetch(LOAD_DATA_ENDPOINT, {
+                let scheduleSaveState: unknown;
+                let response_data = await fetch(LOAD_DATA_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userID: userID }),
                 });
 
-                if (data.ok) {
-                    const json = await data.json();
+                if (response_data.ok) {
+                    const json = (await response_data.json()) as { userData: ScheduleSaveState };
                     scheduleSaveState = json.userData;
 
                     if (scheduleSaveState !== undefined) {
@@ -150,33 +136,39 @@ export const loadSchedule = async (userID: string, rememberMe: boolean) => {
                             await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState);
                             openSnackbar('success', `Schedule for username "${userID}" loaded.`);
                             return;
-                        } catch (e) {}
+                        } catch {
+                            console.error('Failed loading schedule from DDB');
+                        }
+
+                        // Second we try loading the schedule as if it was legacy
+                        // in case a legacy schedule was somehow saved to the new DB
+                        try {
+                            await AppStore.loadSchedule(convertLegacySchedule(scheduleSaveState as LegacyUserData));
+                            openSnackbar('success', `Schedule for username "${userID}" loaded.`);
+                            return;
+                        } catch {
+                            console.error('Failed loading schedule as legacy from DDB');
+                        }
                     }
                 }
 
-                // Second we try loading the schedule as if it was legacy
-                // in case a legacy schedule was somehow saved to the new DB
-                try {
-                    await AppStore.loadSchedule(convertLegacySchedule(scheduleSaveState as LegacyUserData));
-                    openSnackbar('success', `Schedule for username "${userID}" loaded.`);
-                    return;
-                } catch (e) {}
-
                 // Finally try getting and loading from legacy
-                data = await fetch(LOAD_LEGACY_DATA_ENDPOINT, {
+                response_data = await fetch(LOAD_LEGACY_DATA_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userID: userID }),
                 });
-                if (data.ok) {
-                    const json = await data.json();
-                    const legacyUserData = json.userData as LegacyUserData;
+                if (response_data.ok) {
+                    const json = (await response_data.json()) as { userData: LegacyUserData };
+                    const legacyUserData = json.userData;
                     if (legacyUserData !== undefined) {
                         try {
                             await AppStore.loadSchedule(convertLegacySchedule(legacyUserData));
                             openSnackbar('success', `Legacy schedule for username "${userID}" loaded.`);
                             return;
-                        } catch (e) {}
+                        } catch (e) {
+                            console.error('Failed loading legacy schedule');
+                        }
                     }
                 }
                 openSnackbar('error', `Couldn't find schedules for username "${userID}".`);
@@ -210,10 +202,6 @@ export const addCustomEvent = (customEvent: RepeatingCustomEvent, scheduleIndice
 export const undoDelete = (event: KeyboardEvent | null) => {
     if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey))) {
         AppStore.undoAction();
-        ReactGA.event({
-            category: 'antalmanac-rewrite',
-            action: 'Click Undo button',
-        });
     }
 };
 
@@ -230,11 +218,6 @@ export const changeCourseColor = (sectionCode: string, term: string, newColor: s
 };
 
 export const copySchedule = (to: number) => {
-    ReactGA.event({
-        category: 'antalmanac-rewrite',
-        action: 'Click Copy Schedule',
-    });
-
     logAnalytics({
         category: analyticsEnum.addedClasses.title,
         action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,

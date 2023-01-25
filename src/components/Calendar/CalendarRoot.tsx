@@ -67,9 +67,9 @@ const styles: Styles<Theme, object> = {
 };
 
 const AntAlmanacEvent =
-    (classes: ClassNameMap) =>
+    ({ classes }: {classes: ClassNameMap}) =>
     // eslint-disable-next-line react/display-name
-    ({ event }: { event: CalendarEvent }) => {
+    ({event}: {event: CalendarEvent}) => {
         if (!event.isCustomEvent)
             return (
                 <div>
@@ -92,21 +92,21 @@ const AntAlmanacEvent =
         }
     };
 interface ScheduleCalendarProps {
-    classes: ClassNameMap;
-    isMobile: boolean;
+    classes: ClassNameMap
+    isMobile: boolean
 }
 
 interface ScheduleCalendarState {
-    screenshotting: boolean;
-    anchorEl: HTMLElement | null;
-    showFinalsSchedule: boolean;
-    moreInfoOpen: false;
-    courseInMoreInfo: CalendarEvent | null;
-    calendarEventKey: number | null;
-    eventsInCalendar: CalendarEvent[];
-    finalsEventsInCalendar: CalendarEvent[];
-    currentScheduleIndex: number;
-    scheduleNames: string[];
+    screenshotting: boolean
+    anchorEl: HTMLElement|null
+    showFinalsSchedule: boolean
+    moreInfoOpen: false
+    courseInMoreInfo: CalendarEvent|null
+    calendarEventKey: number|null
+    eventsInCalendar: CalendarEvent[]
+    finalsEventsInCalendar: CalendarEvent[]
+    currentScheduleIndex: number
+    scheduleNames: string[]
 }
 class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCalendarState> {
     state: ScheduleCalendarState = {
@@ -139,11 +139,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         const minBrightnessDiff = 125;
 
         const backgroundRegexResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(bg) as RegExpExecArray; // returns {hex, r, g, b}
-        const backgroundRGB = {
-            r: parseInt(backgroundRegexResult[1], 16),
-            g: parseInt(backgroundRegexResult[2], 16),
-            b: parseInt(backgroundRegexResult[3], 16),
-        } as const;
+        const backgroundRGB = { r: parseInt(backgroundRegexResult[1], 16), g: parseInt(backgroundRegexResult[2], 16), b: parseInt(backgroundRegexResult[3], 16) } as const;
         const textRgb = { r: 255, g: 255, b: 255 }; // white text
 
         const getBrightness = (color: typeof backgroundRGB) => {
@@ -163,16 +159,9 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         });
     };
 
-    updateCurrentScheduleIndex = () => {
-        this.handleClosePopover();
-
-        this.setState({
-            currentScheduleIndex: AppStore.currentScheduleIndex,
-        });
-    };
-
     updateEventsInCalendar = (close = true) => {
         this.setState({
+            currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
             eventsInCalendar: AppStore.getEventsInCalendar(),
             finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
         });
@@ -189,7 +178,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.on('customEventsChange', this.updateEventsInCalendar);
         AppStore.on('colorChange', this.updateEventsInCalendar);
-        AppStore.on('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
+        AppStore.on('currentScheduleIndexChange', this.updateEventsInCalendar);
         AppStore.on('scheduleNamesChange', this.updateScheduleNames);
     };
 
@@ -197,11 +186,11 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         AppStore.removeListener('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.removeListener('customEventsChange', this.updateEventsInCalendar);
         AppStore.removeListener('colorChange', this.updateEventsInCalendar);
-        AppStore.removeListener('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
+        AppStore.removeListener('currentScheduleIndexChange', this.updateEventsInCalendar);
         AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
     };
 
-    handleTakeScreenshot = (html2CanvasScreenshot: () => void) => {
+    handleTakeScreenshot = (html2CanvasScreenshot: ()=>void) => {
         // This function takes a screenshot of the user's schedule
         // Before we take the screenshot, we need to make some adjustments to the canvas:
         //  - Set the color to black, so that the weekdays/times still appear when Dark Mode is on
@@ -253,11 +242,9 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
     };
 
     getEventsForCalendar = () => {
-        const eventSet = this.state.showFinalsSchedule
+        return this.state.showFinalsSchedule
             ? this.state.finalsEventsInCalendar
             : this.state.eventsInCalendar;
-
-        return eventSet.filter((event) => event.scheduleIndices.includes(this.state.currentScheduleIndex));
     };
 
     render() {
@@ -276,7 +263,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         return (
             <div
                 className={classes.container}
-                style={isMobile ? { height: 'calc(100% - 50px)' } : undefined}
+                style={isMobile? { height: 'calc(100% - 50px)' }: undefined}
                 onClick={this.handleClosePopover}
             >
                 <CalendarToolbar
@@ -319,7 +306,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                             key={this.state.calendarEventKey}
                             closePopover={this.handleClosePopover}
                             courseInMoreInfo={this.state.courseInMoreInfo as CalendarEvent}
-                            currentScheduleIndex={this.state.currentScheduleIndex}
                             scheduleNames={this.state.scheduleNames}
                         />
                     </Popper>
@@ -327,8 +313,8 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                         localizer={localizer}
                         toolbar={false}
                         formats={{
-                            timeGutterFormat: (date: Date, culture?: string, localizer?: DateLocalizer) =>
-                                date.getMinutes() > 0 || !localizer ? '' : localizer.format(date, 'h A', culture),
+                            timeGutterFormat: (date: Date, culture?: string, localizer?: DateLocalizer) => 
+                                (date.getMinutes() > 0 || !localizer) ? '' : localizer.format(date, 'h A', culture),
                             dayFormat: 'ddd',
                         }}
                         defaultView={Views.WORK_WEEK}
@@ -342,7 +328,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                         events={events}
                         eventPropGetter={ScheduleCalendar.eventStyleGetter}
                         showMultiDayTimes={false}
-                        components={{ event: AntAlmanacEvent(classes) }}
+                        components={{ event: AntAlmanacEvent({ classes }) }}
                         onSelectEvent={this.handleEventClick}
                     />
                 </div>

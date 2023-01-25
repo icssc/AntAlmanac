@@ -1,5 +1,3 @@
-import { AppStoreCourse } from './AppStore';
-import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import {
     amber,
     blue,
@@ -15,7 +13,10 @@ import {
     red,
     teal,
 } from '@material-ui/core/colors';
+
+import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { getCourseInfo, queryWebsoc } from '../helpers';
+import { AppStoreCourse } from './AppStore';
 
 const arrayOfColors = [
     red[500],
@@ -78,15 +79,15 @@ export class Schedules {
     }
 
     getNumberOfSchedules() {
-        return this.schedules.length
+        return this.schedules.length;
     }
 
     getScheduleNames() {
-        return this.schedules.map(schedule => schedule.scheduleName)
+        return this.schedules.map((schedule) => schedule.scheduleName);
     }
 
     getCurrentCourses() {
-        return this.schedules[this.currentScheduleIndex].courses
+        return this.schedules[this.currentScheduleIndex].courses;
     }
 
     getCurrentCustomEvents() {
@@ -94,15 +95,15 @@ export class Schedules {
     }
 
     getCurrentScheduleName() {
-        return this.schedules[this.currentScheduleIndex].scheduleName
+        return this.schedules[this.currentScheduleIndex].scheduleName;
     }
 
     getAddedSectionCodes() {
-        return new Set(this.getCurrentCourses().map((course) => `${course.section.sectionCode} ${course.term}`))
+        return new Set(this.getCurrentCourses().map((course) => `${course.section.sectionCode} ${course.term}`));
     }
 
     getAllCourses() {
-        return this.schedules.map(schedule => schedule.courses).flat(1)
+        return this.schedules.map((schedule) => schedule.courses).flat(1);
     }
 
     getAllCustomEvents() {
@@ -110,14 +111,14 @@ export class Schedules {
     }
 
     getCurrentScheduleIndex() {
-        return this.currentScheduleIndex
+        return this.currentScheduleIndex;
     }
 
     getExistingCourse(sectionCode: string, term: string) {
         // Get the first instance of a course that matches the parameters
         for (const course of this.getAllCourses()) {
             if (course.section.sectionCode === sectionCode && term === course.term) {
-                return course
+                return course;
             }
         }
         return undefined;
@@ -143,11 +144,7 @@ export class Schedules {
         return indices;
     }
 
-    addCourse(
-        newCourse: AppStoreCourse,
-        scheduleIndex: number = this.getCurrentScheduleIndex(),
-        addUndoState: boolean = true
-    ) {
+    addCourse(newCourse: AppStoreCourse, scheduleIndex: number = this.getCurrentScheduleIndex(), addUndoState = true) {
         if (addUndoState) {
             this.addUndoState();
         }
@@ -155,7 +152,7 @@ export class Schedules {
         if (courseToAdd === undefined) {
             const setOfUsedColors = new Set(this.getAllCourses().map((course) => course.section.color));
 
-            let color: string =
+            const color: string =
                 arrayOfColors.find((materialColor) => {
                     if (!setOfUsedColors.has(materialColor)) return materialColor;
                     else return undefined;
@@ -188,8 +185,8 @@ export class Schedules {
     deleteCourse(sectionCode: string, term: string) {
         this.addUndoState();
         this.schedules[this.currentScheduleIndex].courses = this.getCurrentCourses().filter((course) => {
-            return !(course.section.sectionCode === sectionCode && course.term === term)
-        })
+            return !(course.section.sectionCode === sectionCode && course.term === term);
+        });
     }
 
     deleteCustomEvent(customEventId: number, scheduleIndices: number[] = [this.getCurrentScheduleIndex()]) {
@@ -277,7 +274,7 @@ export class Schedules {
     doesCourseExistInSchedule(sectionCode: string, term: string, scheduleIndex: number) {
         for (const course of this.schedules[scheduleIndex].courses) {
             if (course.section.sectionCode === sectionCode && term === course.term) {
-                return true
+                return true;
             }
         }
         return false;
@@ -293,7 +290,7 @@ export class Schedules {
     }
 
     addUndoState() {
-        const clonedSchedules = JSON.parse(JSON.stringify(this.schedules));
+        const clonedSchedules = JSON.parse(JSON.stringify(this.schedules)) as Schedule[];
         this.previousStates.push({ schedules: clonedSchedules, scheduleIndex: this.currentScheduleIndex });
         if (this.previousStates.length >= 100) {
             this.previousStates.shift();

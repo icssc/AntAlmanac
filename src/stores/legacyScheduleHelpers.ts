@@ -1,4 +1,5 @@
 import { ScheduleSaveState } from './Schedules';
+
 interface LegacyShortCourseInfo {
     color: string;
     term: string;

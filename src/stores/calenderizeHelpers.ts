@@ -49,7 +49,7 @@ export const calendarizeCourseEvents = () => {
                             start: new Date(2018, 0, index, startHr, startMin),
                             finalExam: course.section.finalExam,
                             end: new Date(2018, 0, index, endHr, endMin),
-                            isCustomEvent: false as const
+                            isCustomEvent: false as const,
                         };
 
                         courseEventsInCalendar.push(newEvent);
@@ -64,7 +64,7 @@ export const calendarizeCourseEvents = () => {
 
 export const calendarizeFinals = () => {
     const currentCourses = AppStore.schedule.getCurrentCourses();
-    let finalsEventsInCalendar = [] as CourseEvent[];
+    const finalsEventsInCalendar = [] as CourseEvent[];
 
     for (const course of currentCourses) {
         const finalExam = course.section.finalExam;

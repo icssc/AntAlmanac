@@ -90,7 +90,7 @@ export async function getCoursesData(userData: UserData): Promise<CourseData> {
                     ...courseData.courseDetails,
                     section: {
                         ...courseData.section,
-                        color: sectionCodeInfo.color,
+                        color: sectionCodeInfo.section.color,
                     },
                 });
             }
@@ -333,11 +333,8 @@ export const addCoursesMultiple = (
     return Object.values(courseInfo).length;
 };
 
-export const termsInSchedule = (courses: AppStoreCourse[], term: string, scheduleIndex: number) =>
-    new Set([
-        term,
-        ...courses.filter((course) => course.scheduleIndices.includes(scheduleIndex)).map((course) => course.term),
-    ]);
+export const termsInSchedule = (term: string) =>
+    new Set([term, ...AppStore.schedule.getCurrentCourses().map((course) => course.term)]);
 
 export const warnMultipleTerms = (terms: Set<string>) => {
     openSnackbar(

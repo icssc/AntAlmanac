@@ -134,10 +134,9 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
     render() {
         return (
             <>
-                {this.props.customEvent ? (
-                    // @ts-ignore
-                    // For some reason TypeScript thinks this.props.customEvent is possibly undefined despite the ternary operator
-                    <IconButton onClick={() => this.setState({ open: true, scheduleIndices: AppStore.schedule.getIndexesOfCustomEvent(this.props.customEvent.customEventID) })}>
+                {this.props.customEvent !== undefined ? (
+                    // Dumb ternary added to get rid of TypeScript possibly undefined compile error
+                    <IconButton onClick={() => this.setState({open: true, scheduleIndices: AppStore.schedule.getIndexesOfCustomEvent(this.props.customEvent ? this.props.customEvent.customEventID : 0)})}>
                         <Edit fontSize="small" />
                     </IconButton>
                 ) : (
