@@ -290,7 +290,7 @@ export const warnMultipleTerms = (terms: Set<string>) => {
     );
 };
 
-export function clickToCopy(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sectionCode: string) {
+export function clickToCopy(event: React.MouseEvent<HTMLElement, MouseEvent>, sectionCode: string) {
     event.stopPropagation();
 
     const tempEventTarget = document.createElement('input');

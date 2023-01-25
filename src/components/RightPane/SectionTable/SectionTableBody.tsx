@@ -87,7 +87,7 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             <Tooltip title="Click to copy course code" placement="bottom" enterDelay={300}>
-                <button
+                <div
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);
                         logAnalytics({
@@ -98,7 +98,7 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
                     className={classes.sectionCode}
                 >
                     {sectionCode}
-                </button>
+                </div>
             </Tooltip>
         </NoPaddingTableCell>
     );
