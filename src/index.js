@@ -1,9 +1,10 @@
+import { createTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import { render } from 'react-dom';
+
 import App from './components/App';
-import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
 import { unregister } from './registerServiceWorker';
-import { SnackbarProvider } from 'notistack';
 // import whyDidYouRender from '@welldone-software/why-did-you-render';
 // if (process.env.NODE_ENV === 'development') {
 // const whyDidYouRender = require('@welldone-software/why-did-you-render/dist/no-classes-transpile/umd/whyDidYouRender.min.js');

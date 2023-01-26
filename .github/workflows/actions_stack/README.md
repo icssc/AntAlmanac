@@ -6,5 +6,6 @@ CDK stack template that is deployed by Github actions for a specific pull reques
 The URL for a deployed site is `staging-{pr_num}.antalmanac.com`.
 
 Relevant deployed infrastructure:
-- S3 bucket containing website code
-- Cloudfront Distribution that redirects staging URL to bucket
+
+-   S3 bucket containing website code
+-   Cloudfront Distribution that redirects staging URL to bucket

@@ -3,8 +3,9 @@
 ## Test Plan
 
 ## Issues
-Closes # 
+
+Closes #
 
 <!-- [Optional]
-## Future Followup  
+## Future Followup
 -->
