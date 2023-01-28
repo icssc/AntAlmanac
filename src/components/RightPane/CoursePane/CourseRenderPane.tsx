@@ -1,12 +1,12 @@
-import { Button, Grid, Paper, Theme  } from '@material-ui/core';
+import { Button, Grid, Paper, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap , Styles } from '@material-ui/core/styles/withStyles';
+import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { PureComponent } from 'react';
 import LazyLoad from 'react-lazyload';
 
 import analyticsEnum from '../../../analytics';
-import { isDarkMode,queryWebsoc, queryWebsocMultiple } from '../../../helpers';
+import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '../../../helpers';
 import { AACourse, AASection, Department, School, WebsocResponse } from '../../../peterportal.types';
 import AppStore from '../../../stores/AppStore';
 import RightPaneStore from '../RightPaneStore';
@@ -285,7 +285,7 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
                         </div>
                     ) : (
                         this.state.courseData.map((_: School | Department | AACourse, index: number) => {
-                            let heightEstimate = 300;
+                            let heightEstimate = 200;
                             if ((this.state.courseData[index] as AACourse).sections !== undefined)
                                 heightEstimate =
                                     (this.state.courseData[index] as AACourse).sections.length * 60 + 20 + 40;
