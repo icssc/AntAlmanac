@@ -3,12 +3,13 @@ import './calendar.css';
 
 import { Popper } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
-import { ClassNameMap,Styles  } from '@material-ui/core/styles/withStyles';
+import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import moment from 'moment';
 import React, { PureComponent, SyntheticEvent } from 'react';
 import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
 import ReactDOM from 'react-dom';
 
+import { isDarkMode } from '../../helpers';
 import AppStore from '../../stores/AppStore';
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
@@ -223,6 +224,18 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         canvas.style.color = 'black';
         calendarHeader.style.marginRight = '0px';
 
+        // Set each rbc header and time slot text color to white if the theme is dark
+        const rbc_headers = document.getElementsByClassName('rbc-header');
+        const rbc_time_slots = document.getElementsByClassName('rbc-label');
+
+        if (isDarkMode()) {
+            for (let i = 0; i < rbc_headers.length; i++) {
+                rbc_headers[i].className = 'rbc-header dark-mode';
+            }
+            for (let i = 0; i < rbc_time_slots.length; i++) {
+                rbc_time_slots[i].className = 'rbc-label dark-mode';
+            }
+        }
         this.setState({ screenshotting: true }, () => {
             // Take the picture
             html2CanvasScreenshot();
@@ -231,6 +244,17 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
             canvas.style.color = oldColor;
             calendarHeader.style.marginRight = oldMargin;
 
+            // Set text color back
+            if (isDarkMode()) {
+                for (let i = 0; i < rbc_headers.length; i++) {
+                    // delete rbc_headers[i].style;
+                    rbc_headers[i].className = 'rbc-header';
+                }
+                for (let i = 0; i < rbc_time_slots.length; i++) {
+                    // delete rbc_time_slots[i].style;
+                    rbc_time_slots[i].className = 'rbc-label';
+                }
+            }
             this.setState({ screenshotting: false });
         });
     };
