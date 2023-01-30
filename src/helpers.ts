@@ -3,7 +3,7 @@ import React from 'react';
 import { addCourse, openSnackbar } from './actions/AppStoreActions';
 import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from './api/endpoints';
 import { RepeatingCustomEvent } from './components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { Section, WebsocResponse } from './peterportal.types';
+import { Meeting, Section, WebsocResponse } from './peterportal.types';
 import AppStore, { AppStoreCourse, ShortCourseInfo, UserData } from './stores/AppStore';
 
 interface GradesGraphQLResponse {
@@ -154,6 +154,7 @@ export async function queryWebsoc(params: Record<string, string>): Promise<Webso
     const url = new URL(PETERPORTAL_WEBSOC_ENDPOINT);
     const searchString = new URLSearchParams(params).toString();
     if (websocCache[searchString]?.timestamp > Date.now() - 30 * 60 * 1000) {
+        //NOTE: Check out how caching works
         //if cache hit and less than 30 minutes old
         return websocCache[searchString];
     }
@@ -161,7 +162,7 @@ export async function queryWebsoc(params: Record<string, string>): Promise<Webso
     try {
         const response = (await fetch(url).then((r) => r.json())) as WebsocResponse;
         websocCache[searchString] = { ...response, timestamp: Date.now() };
-        return response;
+        return removeDuplicateMeetings(response);
     } catch {
         const backupResponse = (await fetch(WEBSOC_ENDPOINT, {
             method: 'POST',
@@ -169,8 +170,63 @@ export async function queryWebsoc(params: Record<string, string>): Promise<Webso
             body: JSON.stringify(params),
         }).then((res) => res.json())) as WebsocResponse;
         websocCache[searchString] = { ...backupResponse, timestamp: Date.now() };
-        return backupResponse;
+        return removeDuplicateMeetings(backupResponse);
     }
+}
+
+// Removes duplicate meetings as a result of multiple locations from WebsocResponse
+// See CourseRenderPane::loadCourses() for more info
+// NOTE: The separator is currently an ampersand. Maybe it should be refactored to be an array
+// TODO: Remove if and when API is fixed
+// Maybe put this into CourseRenderPane.tsx -> flattenSOCObject()
+function removeDuplicateMeetings(websocResp: WebsocResponse): WebsocResponse {
+    websocResp.schools.forEach((school, schoolIndex) => {
+        school.departments.forEach((department, departmentIndex) => {
+            department.courses.forEach((course, courseIndex) => {
+                course.sections.forEach((section, sectionIndex) => {
+                    // Merge meetings that have the same meeting day and time
+
+                    const existingMeetings: Meeting[] = [];
+
+                    // I know that this is n^2, but a section can't have *that* many locations
+                    for (const meeting of section.meetings) {
+                        let isNewMeeting = true;
+
+                        for (let i = 0; i < existingMeetings.length; i++) {
+                            const sameDayAndTime =
+                                meeting.days === existingMeetings[i].days && meeting.time === existingMeetings[i].time;
+                            const sameBuilding = meeting.bldg === existingMeetings[i].bldg;
+
+                            //This shouldn't be possible because there shouldn't be duplicate locations in a section
+                            if (sameDayAndTime && sameBuilding) {
+                                console.warn('Found two meetings with same days, time, and bldg', websocResp);
+                                break;
+                            }
+
+                            // Add the building to existing meeting instead of creating a new one
+                            if (sameDayAndTime && !sameBuilding) {
+                                const newMeeting: Meeting = {
+                                    days: existingMeetings[i].days,
+                                    time: existingMeetings[i].time,
+                                    bldg: existingMeetings[i].bldg + ' & ' + meeting.bldg,
+                                };
+                                existingMeetings[i] = newMeeting;
+                                isNewMeeting = false;
+                            }
+                        }
+
+                        if (isNewMeeting) existingMeetings.push(meeting);
+                    }
+
+                    // Update websocResp with correct meetings
+                    websocResp.schools[schoolIndex].departments[departmentIndex].courses[courseIndex].sections[
+                        sectionIndex
+                    ].meetings = existingMeetings;
+                });
+            });
+        });
+    });
+    return websocResp;
 }
 
 export interface Grades {
