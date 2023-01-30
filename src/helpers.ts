@@ -159,6 +159,12 @@ export async function queryWebsoc(params: Record<string, string>): Promise<Webso
         return websocCache[searchString];
     }
     url.search = searchString;
+
+    //The data from the API will duplicate a section if it has multiple locations.
+    //I.e., if there's a Tuesday section in two different (probably adjoined) rooms,
+    //courses[i].sections[j].meetings will have two entries, despite it being the same section.
+    //For now, I'm correcting it with removeDuplicateMeetings, but the API should handle this
+
     try {
         const response = (await fetch(url).then((r) => r.json())) as WebsocResponse;
         websocCache[searchString] = { ...response, timestamp: Date.now() };
@@ -174,8 +180,8 @@ export async function queryWebsoc(params: Record<string, string>): Promise<Webso
     }
 }
 
-// Removes duplicate meetings as a result of multiple locations from WebsocResponse
-// See CourseRenderPane::loadCourses() for more info
+// Removes duplicate meetings as a result of multiple locations from WebsocResponse.
+// See queryWebsoc for more info
 // NOTE: The separator is currently an ampersand. Maybe it should be refactored to be an array
 // TODO: Remove if and when API is fixed
 // Maybe put this into CourseRenderPane.tsx -> flattenSOCObject()
