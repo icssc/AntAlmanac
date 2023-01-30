@@ -211,12 +211,11 @@ function removeDuplicateMeetings(websocResp: WebsocResponse): WebsocResponse {
 
                             // Add the building to existing meeting instead of creating a new one
                             if (sameDayAndTime && !sameBuilding) {
-                                const newMeeting: Meeting = {
+                                existingMeetings[i] = {
                                     days: existingMeetings[i].days,
                                     time: existingMeetings[i].time,
                                     bldg: existingMeetings[i].bldg + ' & ' + meeting.bldg,
                                 };
-                                existingMeetings[i] = newMeeting;
                                 isNewMeeting = false;
                             }
                         }
