@@ -244,7 +244,11 @@ class AppStore extends EventEmitter {
     }
 
     async loadSchedule(savedSchedule: ScheduleSaveState) {
-        await this.schedule.fromScheduleSaveState(savedSchedule);
+        try {
+            await this.schedule.fromScheduleSaveState(savedSchedule);
+        } catch {
+            return false;
+        }
         this.finalsEventsInCalendar = calendarizeFinals();
         this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
         this.unsavedChanges = false;
@@ -252,6 +256,7 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
+        return true;
     }
 
     changeCurrentSchedule(newScheduleIndex: number) {

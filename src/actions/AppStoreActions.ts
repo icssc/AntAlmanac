@@ -119,8 +119,7 @@ export const loadSchedule = async (userID: string, rememberMe: boolean) => {
             }
 
             try {
-                // First we will try loading the schedule normally
-                let scheduleSaveState: unknown;
+                let scheduleSaveState: unknown; // Unknown because we cast this as two conflicting types
                 let response_data = await fetch(LOAD_DATA_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -132,27 +131,23 @@ export const loadSchedule = async (userID: string, rememberMe: boolean) => {
                     scheduleSaveState = json.userData;
 
                     if (scheduleSaveState !== undefined) {
-                        try {
-                            await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState);
+                        // First we will try loading the schedule normally
+                        if (await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState)) {
                             openSnackbar('success', `Schedule for username "${userID}" loaded.`);
                             return;
-                        } catch {
-                            console.error('Failed loading schedule from DDB');
                         }
-
                         // Second we try loading the schedule as if it was legacy
                         // in case a legacy schedule was somehow saved to the new DB
-                        try {
-                            await AppStore.loadSchedule(convertLegacySchedule(scheduleSaveState as LegacyUserData));
+                        else if (
+                            await AppStore.loadSchedule(convertLegacySchedule(scheduleSaveState as LegacyUserData))
+                        ) {
                             openSnackbar('success', `Schedule for username "${userID}" loaded.`);
                             return;
-                        } catch {
-                            console.error('Failed loading schedule as legacy from DDB');
                         }
                     }
                 }
 
-                // Finally try getting and loading from legacy
+                // Finally try getting and loading from legacy if none of the above works
                 response_data = await fetch(LOAD_LEGACY_DATA_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -162,15 +157,14 @@ export const loadSchedule = async (userID: string, rememberMe: boolean) => {
                     const json = (await response_data.json()) as { userData: LegacyUserData };
                     const legacyUserData = json.userData;
                     if (legacyUserData !== undefined) {
-                        try {
-                            await AppStore.loadSchedule(convertLegacySchedule(legacyUserData));
+                        if (await AppStore.loadSchedule(convertLegacySchedule(legacyUserData))) {
                             openSnackbar('success', `Legacy schedule for username "${userID}" loaded.`);
                             return;
-                        } catch (e) {
-                            console.error('Failed loading legacy schedule');
                         }
                     }
                 }
+
+                // If none of the above works
                 openSnackbar('error', `Couldn't find schedules for username "${userID}".`);
             } catch (e) {
                 openSnackbar('error', `Got a network error when trying to load schedules.`);
