@@ -1,14 +1,22 @@
+# desktop configuration files
+.DS_Store
+desktop.ini
+
+# very big
 node_modules/
 
-# production
+# outputs
+dist/
+.svelte-kit/
 build/
+.turbo/
+.vercel/
+vite.config.js.timestamp-*
 
-# misc
-.DS_Store
+# private
 .env
-.idea
-.vscode
+.env.*
+credentials.json
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# error logs
+*.log

@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "jsx": "react-jsx",
+    "strict": true,
+    "baseUrl": "../..",
+    "esModuleInterop": true,
+    "target": "esnext",
+    "module": "NodeNext",
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+    ],
+    "paths": {
+      "$lib/*": ["apps/antalmanac/src/lib/*"],
+      "$components/*": ["apps/antalmanac/src/components/*"],
+      "$types/*": ["apps/antalmanac/src/types/*"],
+    }
+  }
+}
