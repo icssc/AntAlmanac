@@ -1,5 +1,5 @@
-import { IconButton,Popover } from '@material-ui/core';
-import { ColorLens } from '@material-ui/icons';
+import { IconButton,Popover } from '@mui/material';
+import { ColorLens } from '@mui/icons-material';
 import React, { PureComponent } from 'react';
 import { SketchPicker } from 'react-color';
 
