@@ -1,5 +1,4 @@
-import { createTheme } from '@material-ui/core';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@mui/material';
 import React, { PureComponent } from 'react';
 import ReactGA4 from 'react-ga4';
 import { BrowserRouter, Route,Routes } from 'react-router-dom';
