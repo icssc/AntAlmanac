@@ -1,4 +1,4 @@
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { ClassNameMap } from '@mui/styles/withStyles';
 
 import { AACourse } from '../../../peterportal.types';
 
