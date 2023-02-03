@@ -1,6 +1,6 @@
-import { Button, Popover , useMediaQuery } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { Button, Popover , useMediaQuery } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import { ClassNameMap } from '@mui/styles/withStyles';
 import React, { useState } from 'react';
 
 import { logAnalytics } from '../../../analytics';
