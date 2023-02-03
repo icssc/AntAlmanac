@@ -18,7 +18,7 @@ const theme = createTheme({
         fontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
     },
     palette: {
-        // type: 'dark',
+        mode: 'dark',
         primary: {
             light: '#5191d6',
             main: '#0064a4',

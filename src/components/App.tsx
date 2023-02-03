@@ -1,4 +1,4 @@
-import { createTheme, ThemeProvider } from '@mui/material';
+import { GlobalStyles, createTheme, ThemeProvider } from '@mui/material';
 import React, { PureComponent } from 'react';
 import ReactGA4 from 'react-ga4';
 import { BrowserRouter, Route,Routes } from 'react-router-dom';
@@ -36,17 +36,8 @@ class App extends PureComponent {
 
     render() {
         const theme = createTheme({
-            overrides: {
-                MuiCssBaseline: {
-                    '@global': {
-                        a: {
-                            color: this.state.darkMode ? 'dodgerblue' : 'blue',
-                        },
-                    },
-                },
-            },
             palette: {
-                type: this.state.darkMode ? 'dark' : 'light',
+                mode: this.state.darkMode ? 'dark' : 'light',
                 primary: {
                     main: '#305db7',
                 },
@@ -63,6 +54,7 @@ class App extends PureComponent {
                         path="/"
                         element={
                             <ThemeProvider theme={theme}>
+                                <GlobalStyles styles={{ a: { color: this.state.darkMode ? 'dodgerblue' : 'blue' } }} />
                                 <Home />
                             </ThemeProvider>
                         }
