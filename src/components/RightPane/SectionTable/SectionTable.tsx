@@ -9,10 +9,10 @@ import {
     Tooltip,
     Typography,
     useMediaQuery,
-} from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { Assessment, Assignment, Help, RateReview } from '@material-ui/icons';
-import ShowChartIcon from '@material-ui/icons/ShowChart';
+} from '@mui/material';
+import { withStyles } from '@mui/styles';
+import { Assessment, Assignment, Help, RateReview } from '@mui/icons-material';
+import ShowChartIcon from '@mui/icons-material/ShowChart';
 import React from 'react';
 
 import analyticsEnum from '../../../analytics';
