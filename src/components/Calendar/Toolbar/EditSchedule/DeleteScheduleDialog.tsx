@@ -6,7 +6,7 @@ import {
     DialogContentText,
     DialogTitle,
     MenuItem,
-} from '@material-ui/core';
+} from '@mui/material';
 import React, { useState } from 'react';
 
 import { deleteSchedule } from '../../../../actions/AppStoreActions';
