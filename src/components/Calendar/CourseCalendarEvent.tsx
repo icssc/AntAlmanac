@@ -70,8 +70,8 @@ const styles: Styles<Theme, object> = {
 
 const genMapLink = (location: string) => {
     try {
-        const location_id = locations[location.split(' ')[0]];
-        return 'https://map.uci.edu/?id=463#!m/' + location_id;
+        const location_id = locations[location.split(' ')[0] as keyof typeof locations];
+        return `https://map.uci.edu/?id=463#!m/${location_id}`;
     } catch (err) {
         return 'https://map.uci.edu/';
     }
