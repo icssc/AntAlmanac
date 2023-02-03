@@ -6,7 +6,9 @@
     "private": true,
     "license": "UNLICENSED",
     "scripts": {
-        "dev": "vite"
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
     },
     "devDependencies": {
         "@types/file-saver": "^2.0.5",
