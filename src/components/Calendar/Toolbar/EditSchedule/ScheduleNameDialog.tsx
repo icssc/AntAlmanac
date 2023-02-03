@@ -47,8 +47,8 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
 
     const handleClose = () => {
         setIsOpen(false);
-        // If the user cancelled renaming the schedule, the schedule name and note are changed to its original value;
-        // if the user cancelled adding a new schedule, the schedule name and note are changed to the default schedule name
+        // If the user cancelled renaming the schedule, the schedule name and note are changed to their original values;
+        // if the user cancelled adding a new schedule, the schedule name and note are changed to their default values
         setScheduleName(rename ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`);
         setScheduleNote(rename ? scheduleNotes[scheduleRenameIndex] : '');
         setClickedText(false);

@@ -10,6 +10,7 @@ import FuzzySearch from './FuzzySearch';
 import HelpBox from './HelpBox';
 import LegacySearch from './LegacySearch';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
+import ScheduleNote from './ScheduleNote';
 import TermSelector from './TermSelector';
 
 const styles: Styles<Theme, object> = {
@@ -93,6 +94,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                 </div>
             </form>
 
+            <ScheduleNote />
             <HelpBox />
             <PrivacyPolicyBanner />
         </div>
