@@ -1,4 +1,4 @@
-import { createTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import { render } from 'react-dom';
@@ -43,11 +43,11 @@ const theme = createTheme({
 
 const rootElement = document.getElementById('root');
 render(
-    <MuiThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
         <SnackbarProvider>
             <App style={{ height: '100%' }} />
         </SnackbarProvider>
-    </MuiThemeProvider>,
+    </ThemeProvider>,
     rootElement
 );
 
