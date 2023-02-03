@@ -18,6 +18,7 @@ export interface UserData {
     addedCourses: ShortCourseInfo[];
     scheduleNames: string[];
     customEvents: RepeatingCustomEvent[];
+    scheduleNotes: string[];
 }
 
 export interface AppStoreCourse {
@@ -53,6 +54,7 @@ class AppStore extends EventEmitter {
     finalsEventsInCalendar: CourseEvent[];
     scheduleNames: string[];
     unsavedChanges: boolean;
+    scheduleNotes: string[];
 
     constructor() {
         super();
@@ -72,6 +74,7 @@ class AppStore extends EventEmitter {
         this.finalsEventsInCalendar = [];
         this.unsavedChanges = false;
         this.scheduleNames = ['Schedule 1'];
+        this.scheduleNotes = [''];
         this.theme = (() => {
             // either 'light', 'dark', or 'auto'
             const theme = typeof Storage === 'undefined' ? 'auto' : window.localStorage.getItem('theme');
@@ -95,6 +98,10 @@ class AppStore extends EventEmitter {
 
     getAddedCourses() {
         return this.addedCourses;
+    }
+
+    getScheduleNotes() {
+        return this.scheduleNotes;
     }
 
     addCourse(newCourse: AppStoreCourse) {
@@ -262,20 +269,28 @@ class AppStore extends EventEmitter {
         this.emit('colorChange', false);
     }
 
-    addSchedule(newScheduleNames: string[]) {
+    addSchedule(newScheduleNames: string[], newScheduleNotes: string[]) {
         // If the user adds a schedule, update the array of schedule names, add
         // another key/value pair to keep track of the section codes for that schedule,
         // and redirect the user to the new schedule
         this.scheduleNames = newScheduleNames;
         this.addedSectionCodes[newScheduleNames.length - 1] = new Set();
         this.currentScheduleIndex = newScheduleNames.length - 1;
+        this.scheduleNotes = newScheduleNotes;
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
+
+        console.log(this.scheduleNotes);
     }
 
-    renameSchedule(newScheduleNames: string[]) {
+    renameSchedule(newScheduleNames: string[], newScheduleNotes: string[]) {
         this.scheduleNames = newScheduleNames;
+        this.scheduleNotes = newScheduleNotes;
         this.emit('scheduleNamesChange');
+        this.emit('scheduleNotesChange');
+
+        console.log(this.scheduleNotes);
     }
 
     saveSchedule() {
@@ -326,7 +341,8 @@ class AppStore extends EventEmitter {
         newScheduleNames: string[],
         newAddedCourses: AppStoreCourse[],
         newCustomEvents: RepeatingCustomEvent[],
-        newScheduleIndex: number
+        newScheduleIndex: number,
+        newScheduleNotes: string[]
     ) {
         this.scheduleNames = newScheduleNames;
         this.addedCourses = newAddedCourses;
@@ -335,10 +351,14 @@ class AppStore extends EventEmitter {
         this.currentScheduleIndex = newScheduleIndex;
         this.finalsEventsInCalendar = calendarizeFinals();
         this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
+        this.scheduleNotes = newScheduleNotes;
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
+        this.emit('scheduleNotesChange');
+
+        console.log(this.scheduleNotes);
     }
 
     changeCourseColor(addedCoursesAfterColorChange: AppStoreCourse[], sectionCode: string, newColor: string) {

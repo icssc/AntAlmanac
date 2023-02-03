@@ -19,10 +19,11 @@ interface EditScheduleProps {
     classes: ClassNameMap;
     scheduleNames: string[];
     scheduleIndex: number;
+    scheduleNotes: string[];
 }
 
 const EditSchedule = (props: EditScheduleProps) => {
-    const { classes, scheduleNames, scheduleIndex } = props;
+    const { classes, scheduleNames, scheduleIndex, scheduleNotes } = props;
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
@@ -57,6 +58,7 @@ const EditSchedule = (props: EditScheduleProps) => {
                     scheduleNames={scheduleNames}
                     scheduleRenameIndex={scheduleIndex}
                     onClose={handleClose}
+                    scheduleNotes={scheduleNotes}
                 />
                 <DeleteScheduleDialog
                     scheduleNames={scheduleNames}

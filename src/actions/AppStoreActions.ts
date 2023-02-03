@@ -403,17 +403,20 @@ export const toggleTheme = (radioGroupEvent: React.ChangeEvent<HTMLInputElement>
     });
 };
 
-export const addSchedule = (scheduleName: string) => {
+export const addSchedule = (scheduleName: string, scheduleNote: string) => {
     const newScheduleNames = [...AppStore.getScheduleNames(), scheduleName];
+    const newScheduleNotes = [...AppStore.getScheduleNotes(), scheduleNote];
 
-    AppStore.addSchedule(newScheduleNames);
+    AppStore.addSchedule(newScheduleNames, newScheduleNotes);
 };
 
-export const renameSchedule = (scheduleName: string, scheduleIndex: number) => {
+export const renameSchedule = (scheduleName: string, scheduleNote: string, scheduleIndex: number) => {
     const newScheduleNames = [...AppStore.getScheduleNames()];
+    const newScheduleNotes = [...AppStore.getScheduleNotes()];
     newScheduleNames[scheduleIndex] = scheduleName;
+    newScheduleNotes[scheduleIndex] = scheduleNote;
 
-    AppStore.renameSchedule(newScheduleNames);
+    AppStore.renameSchedule(newScheduleNames, newScheduleNotes);
 };
 
 // After a schedule is deleted, we need to update every course and
@@ -455,5 +458,8 @@ export const deleteSchedule = (scheduleIndex: number) => {
     const newAddedCourses = getEventsAfterDeleteSchedule(AppStore.getAddedCourses()) as AppStoreCourse[];
     const newCustomEvents = getEventsAfterDeleteSchedule(AppStore.getCustomEvents()) as RepeatingCustomEvent[];
 
-    AppStore.deleteSchedule(newScheduleNames, newAddedCourses, newCustomEvents, newScheduleIndex);
+    const newScheduleNotes = [...AppStore.getScheduleNames()];
+    newScheduleNotes.splice(scheduleIndex, 1);
+
+    AppStore.deleteSchedule(newScheduleNames, newAddedCourses, newCustomEvents, newScheduleIndex, newScheduleNotes);
 };

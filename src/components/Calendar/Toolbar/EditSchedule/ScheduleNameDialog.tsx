@@ -22,10 +22,11 @@ interface ScheduleNameDialogProps {
     onClose: () => void;
     scheduleNames: string[];
     scheduleRenameIndex?: number;
+    scheduleNotes: string[];
 }
 
 const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
-    const { classes, onOpen, onClose, scheduleNames, scheduleRenameIndex } = props;
+    const { classes, onOpen, onClose, scheduleNames, scheduleRenameIndex, scheduleNotes } = props;
     const rename = scheduleRenameIndex !== undefined;
 
     const [isOpen, setIsOpen] = useState(false);
@@ -33,6 +34,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
         scheduleRenameIndex !== undefined ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`
     );
     const [clickedText, setClickedText] = useState(false);
+    const [scheduleNote, setScheduleNote] = useState(scheduleRenameIndex !== undefined ? scheduleNotes[scheduleRenameIndex] : '');
 
     const handleOpen: React.MouseEventHandler<HTMLLIElement> = (event) => {
         // We need to stop propagation so that the select menu won't close
@@ -45,9 +47,10 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
 
     const handleClose = () => {
         setIsOpen(false);
-        // If the user cancelled renaming the schedule, the schedule name is changed to its original value;
-        // if the user cancelled adding a new schedule, the schedule name is changed to the default schedule name
+        // If the user cancelled renaming the schedule, the schedule name and note are changed to its original value;
+        // if the user cancelled adding a new schedule, the schedule name and note are changed to the default schedule name
         setScheduleName(rename ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`);
+        setScheduleNote(rename ? scheduleNotes[scheduleRenameIndex] : '');
         setClickedText(false);
     };
 
@@ -57,16 +60,22 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
 
     const handleAdd = () => {
         onClose();
-        addSchedule(scheduleName);
+        addSchedule(scheduleName, scheduleNote);
         setIsOpen(false);
         setScheduleName('');
+        setScheduleNote('');
     };
 
     const handleRename = () => {
         onClose();
-        renameSchedule(scheduleName, scheduleRenameIndex as number); // typecast works b/c this function only runs when `const rename = scheduleRenameIndex !== undefined` is true.
+        renameSchedule(scheduleName, scheduleNote, scheduleRenameIndex as number); // typecast works b/c this function only runs when `const rename = scheduleRenameIndex !== undefined` is true.
         setIsOpen(false);
         setScheduleName('');
+        setScheduleNote('');
+    };
+
+    const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setScheduleNote(event.target.value);
     };
 
     const handleTextClick = () => {
@@ -108,6 +117,18 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
                         value={scheduleName}
                         onClick={handleTextClick}
                         fullWidth
+                    />
+                </DialogContent>
+                <DialogContent>
+                    <TextField
+                        label="Notes"
+                        margin="dense"
+                        type="text"
+                        placeholder="This schedule is for..."
+                        onChange={handleNoteChange}
+                        value={scheduleNote}
+                        fullWidth
+                        multiline
                     />
                 </DialogContent>
                 <DialogActions>
