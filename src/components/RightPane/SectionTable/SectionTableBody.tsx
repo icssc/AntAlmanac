@@ -1,6 +1,6 @@
-import { Popover, TableCell, TableRow, Theme,Tooltip, Typography, useMediaQuery } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { Popover, TableCell, TableRow, Theme,Tooltip, Typography, useMediaQuery } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import { ClassNameMap, Styles } from '@mui/styles/withStyles';
 import classNames from 'classnames';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
 import React, { Fragment, useEffect, useState } from 'react';
