@@ -1,9 +1,9 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
-import { Popper } from '@material-ui/core';
-import { Theme, withStyles } from '@material-ui/core/styles';
-import { ClassNameMap,Styles  } from '@material-ui/core/styles/withStyles';
+import { Popper, Theme } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import { ClassNameMap,Styles  } from '@mui/styles/withStyles';
 import moment from 'moment';
 import React, { PureComponent, SyntheticEvent } from 'react';
 import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
