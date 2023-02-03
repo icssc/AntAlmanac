@@ -9,10 +9,10 @@ import {
     TextField,
     Theme,
     Typography,
-} from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap , Styles } from '@material-ui/core/styles/withStyles';
-import { ExpandLess, ExpandMore } from '@material-ui/icons';
+} from '@mui/material';
+import { withStyles } from '@mui/styles';
+import { ClassNameMap , Styles } from '@mui/styles/withStyles';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import React, { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
