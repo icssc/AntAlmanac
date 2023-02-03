@@ -1,0 +1,3 @@
+"*.{ts,js,json,css,html}":
+  - prettier --write
+  - eslint --fix

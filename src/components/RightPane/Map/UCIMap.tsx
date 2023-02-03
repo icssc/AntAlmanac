@@ -1,4 +1,4 @@
-import '../../../../../../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js';
+import '../../../../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js';
 
 import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
 import L from 'leaflet.locatecontrol'
