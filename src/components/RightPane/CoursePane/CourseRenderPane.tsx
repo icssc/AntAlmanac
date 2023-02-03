@@ -20,7 +20,8 @@ import noNothing from './static/no_results.png';
 
 const styles: Styles<Theme, object> = (theme) => ({
     course: {
-        ...theme.mixins.gutters(),
+        // TODO: FIXME: gutters doesn't exist??
+        // ...theme.mixins.gutters(),
         paddingTop: theme.spacing(),
         paddingBottom: theme.spacing(),
         display: 'flex',
