@@ -1,0 +1,99 @@
+{
+    "name": "@apps/antalmanac",
+    "version": "1.0.0",
+    "private": true,
+    "homepage": "https://antalmanac.com",
+    "description": "A course exploration and scheduling tool for UCI Anteaters",
+    "bugs": {
+        "url": "https://antalmanac.com/feedback"
+    },
+    "repository": "github:icssc/antalmanac",
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -d build"
+    },
+    "dependencies": {
+        "@date-io/date-fns": "^1.3.13",
+        "@material-ui/core": "^4.11.0",
+        "@material-ui/icons": "^4.9.1",
+        "@material-ui/lab": "^4.0.0-alpha.56",
+        "@material-ui/pickers": "^3.3.10",
+        "@types/react-big-calendar": "^0.38.1",
+        "date-fns": "^2.19.0",
+        "file-saver": "^2.0.2",
+        "html2canvas": "^1.0.0-rc.5",
+        "ics": "^2.27.0",
+        "leaflet": "^1.6.0",
+        "leaflet.locatecontrol": "^0.72.0",
+        "material-ui-popup-state": "^1.6.1",
+        "moment": "^2.27.0",
+        "moment-timezone": "^0.5.33",
+        "notistack": "^1.0.2",
+        "prop-types": "^15.7.2",
+        "react": "^16.13.1",
+        "react-big-calendar": "^1.5.0",
+        "react-color": "^2.18.1",
+        "react-dom": "^16.13.1",
+        "react-ga4": "^1.4.1",
+        "react-input-mask": "^2.0.4",
+        "react-lazyload": "^3.1.0",
+        "react-leaflet": "^2.7.0",
+        "react-router-dom": "^6.2.1",
+        "react-scripts": "^5.0.1",
+        "recharts": "^1.8.5",
+        "websoc-fuzzy-search": "^0.10.0"
+    },
+    "devDependencies": {
+        "@types/file-saver": "^2.0.5",
+        "@types/leaflet": "^1.7.11",
+        "@types/leaflet.locatecontrol": "^0.74.0",
+        "@types/node": "^18.0.6",
+        "@types/react": "^17.0.47",
+        "@types/react-color": "^3.0.6",
+        "@types/react-dom": "^18.0.6",
+        "@types/react-input-mask": "^3.0.1",
+        "@types/react-lazyload": "^3.2.0",
+        "@types/react-leaflet": "^2.8.2",
+        "@types/recharts": "^1.8.23",
+        "@typescript-eslint/eslint-plugin": "^5.48.2",
+        "@typescript-eslint/parser": "^5.48.2",
+        "eslint": "^8.32.0",
+        "eslint-import-resolver-typescript": "^3.5.3",
+        "eslint-plugin-import": "^2.27.5",
+        "eslint-plugin-jsx-a11y": "^6.7.1",
+        "eslint-plugin-react": "^7.32.1",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "eslint-plugin-simple-import-sort": "^9.0.0",
+        "gh-pages": "^3.2.3",
+        "husky": "^4.3.6",
+        "lint-staged": "^10.5.3",
+        "prettier": "^2.2.1",
+        "typescript": "^4.7.4"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.{ts,js,json,css,html}": [
+            "prettier --write",
+            "eslint --fix",
+            "git add"
+        ]
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    }
+}
