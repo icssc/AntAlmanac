@@ -1,8 +1,8 @@
-import { AppBar, Menu, Toolbar, useMediaQuery } from '@material-ui/core';
-import MenuItem from '@material-ui/core/MenuItem';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import MenuIcon from '@material-ui/icons/Menu';
+import { AppBar, Menu, Toolbar, useMediaQuery } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
+import { withStyles } from '@mui/styles';
+import { ClassNameMap } from '@mui/styles/withStyles';
+import MenuIcon from '@mui/icons-material/Menu';
 import React, { MouseEventHandler } from 'react';
 
 import ConditionalWrapper from '../ConditionalWrapper';
