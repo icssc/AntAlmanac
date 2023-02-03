@@ -1,6 +1,6 @@
-import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import { ClassNameMap } from '@mui/styles/withStyles';
 import React, { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
