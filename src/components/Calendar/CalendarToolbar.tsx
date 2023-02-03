@@ -1,9 +1,9 @@
-import { Button, IconButton, Menu,Paper, Tooltip, useMediaQuery } from '@material-ui/core';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { Theme, withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { Delete, MoreHoriz,Undo } from '@material-ui/icons';
+import { Button, IconButton, Menu,Paper, Tooltip, useMediaQuery, Theme } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import { withStyles } from '@mui/styles';
+import { ClassNameMap, Styles } from '@mui/styles/withStyles';
+import { Delete, MoreHoriz,Undo } from '@mui/icons-material';
 import React, { useState } from 'react';
 
 import { changeCurrentSchedule, clearSchedules, undoDelete } from '../../actions/AppStoreActions';
@@ -124,7 +124,8 @@ const CalendarPaneToolbar = ({
                         toggleDisplayFinalsSchedule();
                     }}
                     size="small"
-                    color={showFinalsSchedule ? 'primary' : 'default'}
+                    // TODO: FIXME this breaks the app ??
+                    // color={showFinalsSchedule ? 'primary' : 'default'}
                 >
                     Finals
                 </Button>
