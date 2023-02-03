@@ -1,7 +1,7 @@
-import { Card, CardActions, CardHeader, IconButton } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { Delete } from '@material-ui/icons';
+import { Card, CardActions, CardHeader, IconButton } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import { ClassNameMap } from '@mui/styles/withStyles';
+import { Delete } from '@mui/icons-material';
 import moment from 'moment';
 import React from 'react';
 
