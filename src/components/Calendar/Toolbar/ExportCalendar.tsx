@@ -1,6 +1,6 @@
-import { Tooltip } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Today from '@material-ui/icons/Today';
+import { Tooltip } from '@mui/material';
+import Button from '@mui/material/Button';
+import Today from '@mui/icons-material/Today';
 import { saveAs } from 'file-saver';
 import { createEvents } from 'ics';
 import React from 'react';
