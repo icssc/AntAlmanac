@@ -1,6 +1,6 @@
 import DateFnsUtils from '@date-io/date-fns';
-import { CssBaseline, Grid, useMediaQuery } from '@material-ui/core';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { CssBaseline, Grid, useMediaQuery } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 import React from 'react';
 
 import Bar from './AppBar/CustomAppBar';
@@ -13,7 +13,7 @@ const Home = () => {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
 
     return (
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <LocalizationProvider dateAdapter={DateFnsUtils}>
             <CssBaseline />
             <Bar />
             {isMobileScreen ? (
@@ -29,7 +29,7 @@ const Home = () => {
                 </Grid>
             )}
             <NotificationSnackbar />
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
     );
 };
 

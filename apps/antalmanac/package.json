@@ -50,7 +50,8 @@
         "@mui/material": "latest",
         "@mui/lab": "latest",
         "@mui/icons-material": "latest",
-        "@mui/styles": "latest"
+        "@mui/styles": "latest",
+        "@mui/x-date-pickers": "latest"
     },
     "devDependencies": {
         "@types/file-saver": "^2.0.5",
