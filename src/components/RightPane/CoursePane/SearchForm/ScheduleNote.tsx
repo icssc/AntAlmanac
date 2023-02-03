@@ -13,17 +13,6 @@ const styles = {
     heading: {
         marginTop: 2,
     },
-    list: {
-        paddingLeft: '1.5em',
-    },
-    images: {
-        display: 'flex',
-        gap: 10,
-        overflow: 'auto',
-    },
-    image: {
-        height: 250,
-    },
 };
 interface ScheduleNoteProps {
     classes: ClassNameMap;
