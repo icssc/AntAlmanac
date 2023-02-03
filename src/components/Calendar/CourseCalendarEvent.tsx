@@ -1,7 +1,7 @@
-import { IconButton, Paper, Tooltip } from '@material-ui/core';
-import { Theme, withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { Delete } from '@material-ui/icons';
+import { IconButton, Paper, Tooltip, Theme } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import { ClassNameMap, Styles } from '@mui/styles/withStyles';
+import { Delete } from '@mui/icons-material';
 import React from 'react';
 import { Event } from 'react-big-calendar';
 
