@@ -1,5 +1,5 @@
-import TextField from '@material-ui/core/TextField';
-import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Autocomplete';
+import TextField from '@mui/material/TextField';
+import { Autocomplete, AutocompleteInputChangeReason } from '@mui/material';
 import React, { ChangeEvent, PureComponent } from 'react';
 import search, { SearchResult } from 'websoc-fuzzy-search';
 
