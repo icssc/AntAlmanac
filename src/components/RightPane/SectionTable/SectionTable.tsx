@@ -1,3 +1,5 @@
+import { Assessment, Assignment, Help, RateReview } from '@mui/icons-material';
+import ShowChartIcon from '@mui/icons-material/ShowChart';
 import {
     Paper,
     Table,
@@ -11,8 +13,6 @@ import {
     useMediaQuery,
 } from '@mui/material';
 import { withStyles } from '@mui/styles';
-import { Assessment, Assignment, Help, RateReview } from '@mui/icons-material';
-import ShowChartIcon from '@mui/icons-material/ShowChart';
 import React from 'react';
 
 import analyticsEnum from '../../../analytics';

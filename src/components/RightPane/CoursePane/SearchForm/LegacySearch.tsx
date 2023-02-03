@@ -1,6 +1,5 @@
 import { Button, Theme } from '@mui/material';
-import { withStyles } from '@mui/styles';
-import { ClassNameMap, Styles } from '@mui/styles';
+import { ClassNameMap, Styles,withStyles  } from '@mui/styles';
 import React from 'react';
 
 import AdvancedSearch from './AdvancedSearch';

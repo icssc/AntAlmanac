@@ -1,6 +1,6 @@
+import Today from '@mui/icons-material/Today';
 import { Tooltip } from '@mui/material';
 import Button from '@mui/material/Button';
-import Today from '@mui/icons-material/Today';
 import { saveAs } from 'file-saver';
 import { createEvents } from 'ics';
 import React from 'react';

@@ -1,7 +1,7 @@
+import { Tune } from '@mui/icons-material';
 import { IconButton, Theme, Tooltip } from '@mui/material';
 import { withStyles } from '@mui/styles';
 import { ClassNameMap , Styles } from '@mui/styles/withStyles';
-import { Tune } from '@mui/icons-material';
 import React, { FormEvent, useState } from 'react';
 
 import analyticsEnum, { logAnalytics } from '../../../../analytics';

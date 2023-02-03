@@ -1,3 +1,4 @@
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import {
     Collapse,
     FormControl,
@@ -12,7 +13,6 @@ import {
 } from '@mui/material';
 import { withStyles } from '@mui/styles';
 import { ClassNameMap , Styles } from '@mui/styles/withStyles';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import React, { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';

@@ -1,5 +1,5 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@mui/material';
 import { Info } from '@mui/icons-material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@mui/material';
 import React, { PureComponent } from 'react';
 
 import analyticsEnum, { logAnalytics } from '../../analytics';

@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
+import CloseIcon from '@mui/icons-material/Close';
+import { Theme } from '@mui/material'
 import { amber, green } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
-import { Theme } from '@mui/material'
 import { withStyles } from '@mui/styles';
 import { ClassNameMap, Styles } from '@mui/styles/withStyles';
-import CloseIcon from '@mui/icons-material/Close';
 import { ProviderContext, withSnackbar } from 'notistack';
 import React, { PureComponent } from 'react';
 
