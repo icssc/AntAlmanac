@@ -12,7 +12,7 @@ import {
     purple,
     red,
     teal,
-} from '@material-ui/core/colors';
+} from '@mui/material/colors';
 import { VariantType } from 'notistack';
 
 import analyticsEnum, { logAnalytics } from '../analytics';
