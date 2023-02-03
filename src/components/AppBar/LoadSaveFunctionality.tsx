@@ -6,10 +6,10 @@ import {
     DialogContentText,
     DialogTitle,
     TextField,
-} from '@material-ui/core';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { CloudDownload, Save } from '@material-ui/icons';
+} from '@mui/material';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import { CloudDownload, Save } from '@mui/icons-material';
 import React, { ChangeEvent,PureComponent, useEffect } from 'react';
 
 import { loadSchedule, saveSchedule } from '../../actions/AppStoreActions';
