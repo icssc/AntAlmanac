@@ -1,6 +1,6 @@
-import { Button, Grid, Menu, MenuItem,Typography } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { Button, Grid, Menu, MenuItem,Typography } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import { ClassNameMap } from '@mui/styles/withStyles';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 import React, { PureComponent } from 'react';
 
