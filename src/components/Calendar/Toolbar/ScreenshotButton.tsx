@@ -1,6 +1,6 @@
-import { Tooltip } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import { Panorama } from '@material-ui/icons';
+import { Tooltip } from '@mui/material';
+import Button from '@mui/material/Button';
+import { Panorama } from '@mui/icons-material';
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
 import React, { PureComponent } from 'react';
