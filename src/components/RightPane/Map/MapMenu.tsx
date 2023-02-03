@@ -1,7 +1,6 @@
-import { Paper, Tab, Tabs, TextField, Theme } from '@mui/material';
+import { Autocomplete, Paper, Tab, Tabs, TextField, Theme } from '@mui/material';
 import { styled, withStyles } from '@mui/styles';
 import { ClassNameMap, Styles } from '@mui/styles/withStyles';
-import { Autocomplete } from '@material-ui/lab';
 import React, { PureComponent } from 'react';
 
 import Building from './static/building';
