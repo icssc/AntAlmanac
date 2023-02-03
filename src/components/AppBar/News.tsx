@@ -9,11 +9,10 @@ import {
     Theme,
     Tooltip,
     Typography,
-    withStyles,
-} from '@material-ui/core';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { RssFeed } from '@material-ui/icons';
-import { Skeleton } from '@material-ui/lab';
+} from '@mui/material';
+import { withStyles, ClassNameMap, Styles } from '@mui/styles';
+import { RssFeed } from '@mui/icons-material';
+import { Skeleton } from '@mui/lab';
 import moment from 'moment-timezone';
 import React, { Fragment, MouseEventHandler,PureComponent } from 'react';
 
