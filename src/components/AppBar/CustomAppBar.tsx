@@ -73,20 +73,20 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
                     )}
                 >
                     <>
-                        {[// the keys here don't do anything they just make eslint happy.
-                            <SettingsMenu key="settings"/>,
-                            <NotificationHub key="notifications"/>,
-                            <ImportStudyList key="studylist"/>,
-                            <Feedback key="feedback"/>,
-                            <News key="news"/>,
-                            <AboutPage key="about"/>,
-                        ].map((element, index) => (
+                        {[
+                            SettingsMenu as React.FC,
+                            NotificationHub,
+                            ImportStudyList as React.FC,
+                            Feedback,
+                            News as React.FC,
+                            AboutPage,
+                        ].map((Element, index) => (
                             <ConditionalWrapper
                                 key={index}
                                 condition={isMobileScreen}
                                 wrapper={(children) => <MenuItem>{children}</MenuItem>}
                             >
-                                {element}
+                                <Element />
                             </ConditionalWrapper>
                         ))}
                     </>
