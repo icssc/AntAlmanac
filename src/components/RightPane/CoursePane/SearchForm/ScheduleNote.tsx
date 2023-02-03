@@ -1,4 +1,4 @@
-import { Paper , withStyles } from '@material-ui/core';
+import { Paper, withStyles } from '@material-ui/core';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import React, { useEffect, useState } from 'react';
 
@@ -19,38 +19,37 @@ interface ScheduleNoteProps {
 }
 
 const ScheduleNote = ({ classes }: ScheduleNoteProps) => {
-	const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
-	const [scheduleNotes, setScheduleNotes] = useState(AppStore.getScheduleNotes());
-	const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
-
-	useEffect(() => {
-		AppStore.on('scheduleNamesChange', updateScheduleNames);
-		AppStore.on('scheduleNotesChange', updateScheduleNotes);
-		AppStore.on('currentScheduleIndexChange', updateScheduleIndex);
-		return () => {
-			AppStore.removeListener('scheduleNamesChange', updateScheduleNames);
-			AppStore.removeListener('scheduleNotesChange', updateScheduleNotes);
-			AppStore.removeListener('currentScheduleIndexChange', updateScheduleIndex);
-		};
-	}, []);
+    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+    const [scheduleNotes, setScheduleNotes] = useState(AppStore.getScheduleNotes());
+    const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
 
     const updateScheduleNames = () => {
         setScheduleNames(AppStore.getScheduleNames());
     };
 
-	const updateScheduleNotes = () => {
-		setScheduleNotes(AppStore.getScheduleNotes());
-	};
+    const updateScheduleNotes = () => {
+        setScheduleNotes(AppStore.getScheduleNotes());
+    };
 
-	const updateScheduleIndex = () => {
-		setScheduleIndex(AppStore.getCurrentScheduleIndex());
-	}
+    const updateScheduleIndex = () => {
+        setScheduleIndex(AppStore.getCurrentScheduleIndex());
+    };
+
+    useEffect(() => {
+        AppStore.on('scheduleNamesChange', updateScheduleNames);
+        AppStore.on('scheduleNotesChange', updateScheduleNotes);
+        AppStore.on('currentScheduleIndexChange', updateScheduleIndex);
+        return () => {
+            AppStore.removeListener('scheduleNamesChange', updateScheduleNames);
+            AppStore.removeListener('scheduleNotesChange', updateScheduleNotes);
+            AppStore.removeListener('currentScheduleIndexChange', updateScheduleIndex);
+        };
+    }, []);
 
     return (
         <Paper variant="outlined" className={classes.container}>
             <h2 className={classes.heading}>{scheduleNames[scheduleIndex]} Notes</h2>
-			{/* TODO: process newlines */}
-			<p>{scheduleNotes[scheduleIndex]}</p>
+            <div style={{ whiteSpace: 'pre-line' }}>{scheduleNotes[scheduleIndex]}</div>
         </Paper>
     );
 };

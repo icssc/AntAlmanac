@@ -458,7 +458,7 @@ export const deleteSchedule = (scheduleIndex: number) => {
     const newAddedCourses = getEventsAfterDeleteSchedule(AppStore.getAddedCourses()) as AppStoreCourse[];
     const newCustomEvents = getEventsAfterDeleteSchedule(AppStore.getCustomEvents()) as RepeatingCustomEvent[];
 
-    const newScheduleNotes = [...AppStore.getScheduleNames()];
+    const newScheduleNotes = [...AppStore.getScheduleNotes()];
     newScheduleNotes.splice(scheduleIndex, 1);
 
     AppStore.deleteSchedule(newScheduleNames, newAddedCourses, newCustomEvents, newScheduleIndex, newScheduleNotes);
