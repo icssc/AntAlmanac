@@ -49,6 +49,7 @@
         "@emotion/react": "latest",
         "@mui/material": "latest",
         "@mui/lab": "latest",
+        "@mui/icons-material": "latest",
         "@mui/styles": "latest"
     },
     "devDependencies": {
