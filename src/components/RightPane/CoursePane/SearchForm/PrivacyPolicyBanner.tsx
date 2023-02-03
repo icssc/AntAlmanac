@@ -1,5 +1,5 @@
-import { Paper, Typography , withStyles } from '@material-ui/core';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { Paper, Typography } from '@mui/material';
+import { withStyles, ClassNameMap } from '@mui/styles';
 import React, { PureComponent } from 'react';
 
 const styles = {
