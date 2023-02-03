@@ -1,7 +1,7 @@
-import { Theme } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { Skeleton } from '@material-ui/lab';
+import { Theme } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import { ClassNameMap, Styles } from '@mui/styles/withStyles';
+import { Skeleton } from '@mui/lab';
 import React, { useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer,XAxis, YAxis } from 'recharts';
 
