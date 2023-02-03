@@ -6,8 +6,8 @@ import {
     DialogContentText,
     DialogTitle,
     Tooltip,
-} from '@material-ui/core';
-import { Notifications } from '@material-ui/icons';
+} from '@mui/material';
+import { Notifications } from '@mui/icons-material';
 import React, { PureComponent } from 'react';
 
 import analyticsEnum, { logAnalytics } from '../../analytics';
