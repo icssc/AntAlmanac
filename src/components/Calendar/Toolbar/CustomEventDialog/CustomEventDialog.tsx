@@ -9,9 +9,9 @@ import {
     InputLabel,
     TextField,
     Tooltip,
-} from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { Add, Edit } from '@material-ui/icons';
+} from '@mui/material';
+import { withStyles } from '@mui/styles';
+import { Add, Edit } from '@mui/icons-material';
 import React, { PureComponent } from 'react';
 
 import { addCustomEvent, editCustomEvent } from '../../../../actions/AppStoreActions';
