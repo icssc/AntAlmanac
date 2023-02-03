@@ -1,5 +1,5 @@
-import { Paper,Tab, Tabs, Typography } from '@material-ui/core';
-import { FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
+import { Paper,Tab, Tabs, Typography } from '@mui/material';
+import { FormatListBulleted, MyLocation, Search } from '@mui/icons-material';
 import React, { PureComponent, Suspense } from 'react';
 
 import { isDarkMode } from '../../helpers';
