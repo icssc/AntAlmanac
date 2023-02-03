@@ -1,8 +1,8 @@
-import { Button, Popover, useMediaQuery } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-import { Skeleton } from '@material-ui/lab';
+import { Button, Popover, useMediaQuery } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import { ClassNameMap } from '@mui/styles/withStyles';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { Skeleton } from '@mui/lab';
 import React, { useState } from 'react';
 
 import analyticsEnum, { logAnalytics } from '../../../analytics';
