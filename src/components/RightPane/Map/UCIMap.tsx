@@ -1,8 +1,9 @@
 import '../../../../../../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js';
 
-import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
-import React, { PureComponent } from 'react';
-import { LeafletContext,Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
+import L from 'leaflet.locatecontrol'
+import Leaflet, { LeafletMouseEvent } from 'leaflet';
+import React, { PureComponent, useEffect } from 'react';
+import { LeafletContext, Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
 
 import analyticsEnum, { logAnalytics } from '../../../analytics';
 import AppStore from '../../../stores/AppStore';
@@ -15,23 +16,19 @@ import buildingCatalogue from './static/buildingCatalogue';
 import { Coord, MapBoxResponse } from './static/mapbox';
 // TODO investigate less jank ways of doing this if at all possible
 
-class LocateControl extends PureComponent<{ leaflet: LeafletContext }> {
-    componentDidMount() {
-        const { map } = this.props.leaflet;
-
-        const lc = new Control.Locate({
+function LocateControl(props: { leaflet: LeafletContext }) {
+    const { map } = props.leaflet
+    useEffect(() => {
+        const lc = new (L as any)({
             position: 'topleft',
             strings: {
                 title: 'Look for your lost soul',
             },
             flyTo: true,
-        });
-        lc.addTo(map as Leaflet.Map);
-    }
-
-    render() {
-        return null;
-    }
+        })
+        lc.addTo(map)
+    }, [])
+    return null
 }
 
 const LocateControlLeaflet = withLeaflet(LocateControl);
