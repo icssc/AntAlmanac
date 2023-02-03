@@ -1,5 +1,5 @@
-import { Button } from '@material-ui/core';
-import WalkIcon from '@material-ui/icons/DirectionsWalk';
+import { Button } from '@mui/material';
+import WalkIcon from '@mui/icons-material/DirectionsWalk';
 import Leaflet from 'leaflet';
 import React, { PureComponent, ReactElement } from 'react';
 import { Marker, Popup } from 'react-leaflet';
