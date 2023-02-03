@@ -13,7 +13,8 @@ import ColorPicker from '../ColorPicker';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const locations = require('../RightPane/SectionTable/static/locations.json') as Record<string, string>;
+// const locations = require('../RightPane/SectionTable/static/locations.json') as Record<string, string>;
+import locations from '../RightPane/SectionTable/static/locations.json';
 
 const styles: Styles<Theme, object> = {
     courseContainer: {
