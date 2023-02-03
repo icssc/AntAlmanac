@@ -1,6 +1,6 @@
 import '../../../../../../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js';
 
-import Leaflet, { LeafletMouseEvent } from 'leaflet';
+import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
 import L from 'leaflet.locatecontrol'
 import React, { PureComponent, useEffect } from 'react';
 import { LeafletContext, Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
@@ -19,15 +19,15 @@ import { Coord, MapBoxResponse } from './static/mapbox';
 function LocateControl(props: { leaflet: LeafletContext }) {
     const { map } = props.leaflet
     useEffect(() => {
-        const lc = new (L as any)({
+        const lc = new (L as typeof Control.Locate)({
             position: 'topleft',
             strings: {
                 title: 'Look for your lost soul',
             },
             flyTo: true,
-        })
-        lc.addTo(map)
-    }, [])
+        }) 
+        map && lc.addTo(map)
+    }, [map])
     return null
 }
 
