@@ -6,11 +6,11 @@ import {
     DialogContentText,
     DialogTitle,
     TextField,
-} from '@material-ui/core';
-import InputLabel from '@material-ui/core/InputLabel';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { PostAdd } from '@material-ui/icons';
+} from '@mui/material';
+import InputLabel from '@mui/material/InputLabel';
+import { withStyles } from '@mui/styles';
+import { ClassNameMap } from '@mui/styles/withStyles';
+import { PostAdd } from '@mui/icons-material';
 import React, { PureComponent } from 'react';
 
 import { openSnackbar } from '../../actions/AppStoreActions';
