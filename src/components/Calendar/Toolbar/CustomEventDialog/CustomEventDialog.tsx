@@ -1,3 +1,4 @@
+import { Add, Edit } from '@mui/icons-material';
 import {
     Button,
     Dialog,
@@ -11,7 +12,6 @@ import {
     Tooltip,
 } from '@mui/material';
 import { withStyles } from '@mui/styles';
-import { Add, Edit } from '@mui/icons-material';
 import React, { PureComponent } from 'react';
 
 import { addCustomEvent, editCustomEvent } from '../../../../actions/AppStoreActions';

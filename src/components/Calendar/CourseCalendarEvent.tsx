@@ -1,7 +1,7 @@
-import { IconButton, Paper, Tooltip, Theme } from '@mui/material';
+import { Delete } from '@mui/icons-material';
+import { IconButton, Paper, Theme,Tooltip } from '@mui/material';
 import { withStyles } from '@mui/styles';
 import { ClassNameMap, Styles } from '@mui/styles/withStyles';
-import { Delete } from '@mui/icons-material';
 import React from 'react';
 import { Event } from 'react-big-calendar';
 
@@ -10,11 +10,10 @@ import analyticsEnum, { logAnalytics } from '../../analytics';
 import { clickToCopy } from '../../helpers';
 import AppStore from '../../stores/AppStore';
 import ColorPicker from '../ColorPicker';
-import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
-
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 // const locations = require('../RightPane/SectionTable/static/locations.json') as Record<string, string>;
 import locations from '../RightPane/SectionTable/static/locations.json';
+import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 
 const styles: Styles<Theme, object> = {
     courseContainer: {

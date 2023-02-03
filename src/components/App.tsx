@@ -1,4 +1,4 @@
-import { GlobalStyles, createTheme, ThemeProvider } from '@mui/material';
+import { createTheme, GlobalStyles, ThemeProvider } from '@mui/material';
 import React, { PureComponent } from 'react';
 import ReactGA4 from 'react-ga4';
 import { BrowserRouter, Route,Routes } from 'react-router-dom';

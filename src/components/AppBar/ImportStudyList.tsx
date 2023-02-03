@@ -1,3 +1,4 @@
+import { PostAdd } from '@mui/icons-material';
 import {
     Button,
     Dialog,
@@ -10,7 +11,6 @@ import {
 import InputLabel from '@mui/material/InputLabel';
 import { withStyles } from '@mui/styles';
 import { ClassNameMap } from '@mui/styles/withStyles';
-import { PostAdd } from '@mui/icons-material';
 import React, { PureComponent } from 'react';
 
 import { openSnackbar } from '../../actions/AppStoreActions';

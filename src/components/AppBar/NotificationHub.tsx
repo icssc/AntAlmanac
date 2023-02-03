@@ -1,3 +1,4 @@
+import { Notifications } from '@mui/icons-material';
 import {
     Button,
     Dialog,
@@ -7,7 +8,6 @@ import {
     DialogTitle,
     Tooltip,
 } from '@mui/material';
-import { Notifications } from '@mui/icons-material';
 import React, { PureComponent } from 'react';
 
 import analyticsEnum, { logAnalytics } from '../../analytics';

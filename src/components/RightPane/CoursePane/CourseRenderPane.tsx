@@ -1,7 +1,7 @@
+import CloseIcon from '@mui/icons-material/Close';
 import { Button, Grid, Paper, Theme  } from '@mui/material';
 import { withStyles } from '@mui/styles';
 import { ClassNameMap , Styles } from '@mui/styles/withStyles';
-import CloseIcon from '@mui/icons-material/Close';
 import React, { PureComponent } from 'react';
 import LazyLoad from 'react-lazyload';
 

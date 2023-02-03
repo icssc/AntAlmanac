@@ -1,7 +1,7 @@
+import { ArrowBack, Refresh } from '@mui/icons-material';
 import { IconButton, Theme, Tooltip } from '@mui/material';
 import { withStyles } from '@mui/styles';
 import { ClassNameMap , Styles } from '@mui/styles/withStyles';
-import { ArrowBack, Refresh } from '@mui/icons-material';
 import React, { PureComponent } from 'react';
 
 const styles: Styles<Theme, object> = {
