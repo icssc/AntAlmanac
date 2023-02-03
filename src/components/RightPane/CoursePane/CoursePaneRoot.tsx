@@ -1,4 +1,4 @@
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 import React, { PureComponent } from 'react';
 
 import { openSnackbar } from '../../../actions/AppStoreActions';
