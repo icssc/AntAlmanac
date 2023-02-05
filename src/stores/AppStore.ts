@@ -4,36 +4,13 @@ import { VariantType } from 'notistack';
 import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '../components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { AASection } from '../peterportal.types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calenderizeHelpers';
-import { Schedules, ScheduleSaveState } from './Schedules';
-
-export interface UserData {
-    addedCourses: AppStoreCourse[];
-    scheduleNames: string[];
-    customEvents: RepeatingCustomEvent[];
-}
-
-export interface AppStoreCourse {
-    courseComment: string;
-    courseNumber: string; //i.e. 122a
-    courseTitle: string;
-    deptCode: string;
-    prerequisiteLink: string;
-    section: AASection;
-    // sectionCode: string
-    term: string;
-}
-
-export interface AppStoreDeletedCourse extends AppStoreCourse {
-    scheduleIndex: number;
-}
+import { ScheduleCourse, Schedules, ScheduleSaveState } from './Schedules';
 
 class AppStore extends EventEmitter {
     schedule: Schedules;
     customEvents: RepeatingCustomEvent[];
     colorPickers: { [key: string]: EventEmitter };
-    deletedCourses: AppStoreDeletedCourse[];
     snackbarMessage: string;
     snackbarVariant: VariantType;
     snackbarDuration: number;
@@ -50,7 +27,6 @@ class AppStore extends EventEmitter {
         this.customEvents = [];
         this.schedule = new Schedules();
         this.colorPickers = {};
-        this.deletedCourses = [];
         this.snackbarMessage = '';
         this.snackbarVariant = 'info';
         this.snackbarDuration = 3000;
@@ -88,7 +64,7 @@ class AppStore extends EventEmitter {
         return this.schedule.getAllCustomEvents();
     }
 
-    addCourse(newCourse: AppStoreCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
+    addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
         if (scheduleIndex === this.schedule.getNumberOfSchedules()) {
             this.schedule.addCourseToAllSchedules(newCourse);
         } else {
@@ -106,10 +82,6 @@ class AppStore extends EventEmitter {
 
     getFinalEventsInCalendar() {
         return this.finalsEventsInCalendar;
-    }
-
-    getDeletedCourses() {
-        return this.deletedCourses;
     }
 
     getSnackbarMessage() {

@@ -6,9 +6,9 @@ import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { CourseDetails, courseNumAsDecimal, termsInSchedule, warnMultipleTerms } from '../helpers';
 import { Section } from '../peterportal.types';
-import AppStore, { AppStoreCourse } from '../stores/AppStore';
+import AppStore from '../stores/AppStore';
 import { convertLegacySchedule, LegacyUserData } from '../stores/legacyScheduleHelpers';
-import { ScheduleSaveState } from '../stores/Schedules';
+import { ScheduleCourse, ScheduleSaveState } from '../stores/Schedules';
 
 export const addCourse = (
     section: Section,
@@ -28,7 +28,7 @@ export const addCourse = (
     if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 
     // The color will be set properly in Schedules
-    const newCourse: AppStoreCourse = {
+    const newCourse: ScheduleCourse = {
         term: term,
         deptCode: courseDetails.deptCode,
         courseNumber: courseDetails.courseNumber,

@@ -4,7 +4,7 @@ import { addCourse, openSnackbar } from './actions/AppStoreActions';
 import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from './api/endpoints';
 import { RepeatingCustomEvent } from './components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { Meeting, Section, WebsocResponse } from './peterportal.types';
-import AppStore, { AppStoreCourse, ShortCourseInfo, UserData } from './stores/AppStore';
+import AppStore from './stores/AppStore';
 
 interface GradesGraphQLResponse {
     data: {
@@ -38,71 +38,6 @@ export async function queryGraphQL(queryString: string): Promise<GradesGraphQLRe
     });
     return res.json() as Promise<GradesGraphQLResponse>;
 }
-
-export interface CourseData {
-    addedCourses: AppStoreCourse[];
-    scheduleNames: string[];
-    customEvents: RepeatingCustomEvent[];
-}
-
-export async function getCoursesData(userData: UserData): Promise<CourseData> {
-    if (userData.addedCourses.length == 0)
-        return {
-            addedCourses: [],
-            scheduleNames: userData.scheduleNames,
-            customEvents: userData.customEvents,
-        };
-
-    const sectionCodeToInfoMapping = userData.addedCourses.reduce((accumulator, addedCourse) => {
-        accumulator[`${addedCourse.sectionCode}${addedCourse.term}`] = { ...addedCourse };
-        return accumulator;
-    }, {} as { [key: string]: ShortCourseInfo });
-
-    const dataToSend: { [key: string]: string[][] } = {};
-    for (let i = 0; i < userData.addedCourses.length; ++i) {
-        const addedCourse = userData.addedCourses[i];
-        const sectionsOfTermArray = dataToSend[addedCourse.term];
-
-        if (sectionsOfTermArray !== undefined) {
-            const lastSectionArray = sectionsOfTermArray[sectionsOfTermArray.length - 1];
-            if (lastSectionArray.length === 10) sectionsOfTermArray.push([addedCourse.sectionCode]);
-            else lastSectionArray.push(addedCourse.sectionCode);
-        } else {
-            dataToSend[addedCourse.term] = [[addedCourse.sectionCode]];
-        }
-    }
-    //TODO: Cancelled classes?
-
-    const addedCourses: AppStoreCourse[] = [];
-    for (const [term, sectionsOfTermArray] of Object.entries(dataToSend)) {
-        for (const sectionArray of sectionsOfTermArray) {
-            const params = {
-                term: term,
-                sectionCodes: sectionArray.join(','),
-            };
-
-            const jsonResp = await queryWebsoc(params);
-
-            for (const [sectionCode, courseData] of Object.entries(getCourseInfo(jsonResp))) {
-                const sectionCodeInfo = sectionCodeToInfoMapping[`${sectionCode}${term}`];
-                addedCourses.push({
-                    ...sectionCodeInfo,
-                    ...courseData.courseDetails,
-                    section: {
-                        ...courseData.section,
-                        color: sectionCodeInfo.section.color,
-                    },
-                });
-            }
-        }
-    }
-    return {
-        addedCourses: addedCourses,
-        scheduleNames: userData.scheduleNames,
-        customEvents: userData.customEvents,
-    };
-}
-
 export interface CourseDetails {
     deptCode: string;
     courseNumber: string;
@@ -111,7 +46,7 @@ export interface CourseDetails {
     prerequisiteLink: string;
 }
 
-interface CourseInfo {
+export interface CourseInfo {
     courseDetails: CourseDetails;
     section: Section;
 }

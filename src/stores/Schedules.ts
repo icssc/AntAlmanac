@@ -15,8 +15,8 @@ import {
 } from '@material-ui/core/colors';
 
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { getCourseInfo, queryWebsoc } from '../helpers';
-import { AppStoreCourse } from './AppStore';
+import { CourseInfo, getCourseInfo, queryWebsoc } from '../helpers';
+import { AASection } from '../peterportal.types';
 
 const arrayOfColors = [
     red[500],
@@ -34,21 +34,36 @@ const arrayOfColors = [
     blueGrey[500],
 ];
 
+export interface ScheduleCourse {
+    // Course as stored in schedule
+    courseComment: string;
+    courseNumber: string; //i.e. 122a
+    courseTitle: string;
+    deptCode: string;
+    prerequisiteLink: string;
+    section: AASection;
+    // sectionCode: string
+    term: string;
+}
+
 export interface Schedule {
+    // User's schedule
     scheduleName: string;
-    courses: AppStoreCourse[];
+    courses: ScheduleCourse[];
     customEvents: RepeatingCustomEvent[];
 }
 
-interface ShortCourseInfo {
+interface ShortCourse {
+    // Shortened course for saving in DB
     color: string;
     term: string;
     sectionCode: string;
 }
 
 interface ShortCourseSchedule {
+    // Schedule of short courses that is saved to DB
     scheduleName: string;
-    courses: ShortCourseInfo[];
+    courses: ShortCourse[];
     customEvents: RepeatingCustomEvent[];
 }
 
@@ -144,7 +159,7 @@ export class Schedules {
         return indices;
     }
 
-    addCourse(newCourse: AppStoreCourse, scheduleIndex: number = this.getCurrentScheduleIndex(), addUndoState = true) {
+    addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.getCurrentScheduleIndex(), addUndoState = true) {
         if (addUndoState) {
             this.addUndoState();
         }
@@ -166,7 +181,7 @@ export class Schedules {
         }
     }
 
-    addCourseToAllSchedules(newCourse: AppStoreCourse) {
+    addCourseToAllSchedules(newCourse: ScheduleCourse) {
         this.addUndoState();
         for (let i = 0; i < this.getNumberOfSchedules(); i++) {
             this.addCourse(newCourse, i, false);
@@ -333,31 +348,52 @@ export class Schedules {
     async fromScheduleSaveState(saveState: ScheduleSaveState) {
         this.addUndoState();
         try {
+            this.schedules.length = 0;
             this.currentScheduleIndex = saveState.scheduleIndex;
-            this.schedules = await Promise.all(
-                saveState.schedules.map(async (shortCourseSchedule) => {
-                    return {
-                        ...shortCourseSchedule,
-                        courses: await Promise.all(
-                            shortCourseSchedule.courses.map(async (shortCourse) => {
-                                const jsonResp = await queryWebsoc({
-                                    term: shortCourse.term,
-                                    sectionCodes: shortCourse.sectionCode,
-                                });
-                                const courseInfo = getCourseInfo(jsonResp)[shortCourse.sectionCode];
-                                return {
-                                    ...shortCourse,
-                                    ...courseInfo.courseDetails,
-                                    section: {
-                                        ...courseInfo.section,
-                                        color: shortCourse.color,
-                                    },
-                                };
-                            })
-                        ),
-                    };
-                })
-            );
+            const courseDict: { [key: string]: Set<string> } = {};
+            for (const schedule of saveState.schedules) {
+                for (const course of schedule.courses) {
+                    if (course.term in courseDict) {
+                        courseDict[course.term].add(course.sectionCode);
+                    } else {
+                        courseDict[course.term] = new Set([course.sectionCode]);
+                    }
+                }
+            }
+
+            const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
+            for (const [term, courseSet] of Object.entries(courseDict)) {
+                const params = {
+                    term: term,
+                    sectionCodes: Array.from(courseSet).join(','),
+                };
+
+                const jsonResp = await queryWebsoc(params);
+
+                courseInfoDict.set(term, getCourseInfo(jsonResp));
+            }
+
+            for (const shortCourseSchedule of saveState.schedules) {
+                const courses: ScheduleCourse[] = [];
+                for (const shortCourse of shortCourseSchedule.courses) {
+                    const courseInfoMap = courseInfoDict.get(shortCourse.term);
+                    if (courseInfoMap !== undefined) {
+                        const courseInfo = courseInfoMap[shortCourse.sectionCode];
+                        courses.push({
+                            ...shortCourse,
+                            ...courseInfo.courseDetails,
+                            section: {
+                                ...courseInfo.section,
+                                color: shortCourse.color,
+                            },
+                        });
+                    }
+                }
+                this.schedules.push({
+                    ...shortCourseSchedule,
+                    courses,
+                });
+            }
         } catch (e) {
             this.revertState();
             throw new Error('Unable to load schedule');
