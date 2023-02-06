@@ -192,7 +192,7 @@ class AppStore extends EventEmitter {
         // If the user adds a schedule, update the array of schedule names, add
         // another key/value pair to keep track of the section codes for that schedule,
         // and redirect the user to the new schedule
-        this.schedule.addSchedule(newScheduleName);
+        this.schedule.addNewSchedule(newScheduleName);
         this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
