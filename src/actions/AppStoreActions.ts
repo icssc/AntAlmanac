@@ -1,42 +1,41 @@
-import {
-    amber,
-    blue,
-    blueGrey,
-    cyan,
-    deepPurple,
-    green,
-    indigo,
-    lightGreen,
-    lime,
-    pink,
-    purple,
-    red,
-    teal,
-} from '@material-ui/core/colors';
 import { VariantType } from 'notistack';
 
 import analyticsEnum, { logAnalytics } from '../analytics';
 import { LOAD_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '../api/endpoints';
 import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { CourseDetails, courseNumAsDecimal, getCoursesData, termsInSchedule, warnMultipleTerms } from '../helpers';
+import {
+    CourseDetails,
+    courseNumAsDecimal,
+    getCoursesData,
+    HexToHSL,
+    HSLToHex,
+    termsInSchedule,
+    warnMultipleTerms,
+} from '../helpers';
 import { Section } from '../peterportal.types';
 import AppStore, { AppStoreCourse, ShortCourseInfo, UserData } from '../stores/AppStore';
 
+// arrayOfColors must only consist of hex values that have a lightness of 50% in HSL
+// How the colors in arrayOfColors was calculated:
+// 1. Selected a hue with a shade of 500 from https://mui.com/material-ui/customization/color/ (e.g. red[500])
+// 2. Converted its hex value to hsl (e.g. red[500] = #f44336 = hsl(4, 90%, 58%))
+// 3. Change the lightness of the hsl to 50% (e.g. hsl(4, 90%, 58%) -> hsl(4, 90%, 50%))
+// 4. Coverted the new hsl value back to hex (e.g. hsl(4, 90%, 50%) = #f21c0d)
 const arrayOfColors = [
-    red[500],
-    pink[500],
-    purple[500],
-    indigo[500],
-    deepPurple[500],
-    blue[500],
-    green[500],
-    cyan[500],
-    teal[500],
-    lightGreen[500],
-    lime[500],
-    amber[500],
-    blueGrey[500],
+    '#f21c0d', // red
+    '#e8175d', // pink
+    '#b92ed1', // purple
+    '#4255bd', // indigo
+    '#6e3dc2', // deep purple
+    '#0d8bf2', // blue
+    '#4eb151', // green
+    '#00e1ff', // cyan
+    '#00ffe6', // teal
+    '#84bf40', // light green
+    '#c7d926', // lime
+    '#ffbf00', // amber
+    '#698796', // blue grey
 ];
 
 export const addCourse = (
@@ -71,14 +70,41 @@ export const addCourse = (
     if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 
     if (color === undefined) {
-        const setOfUsedColors = new Set(addedCourses.map((course) => course.color));
+        let isSameCourse = false;
+        let l = 50; // l determines the shade of the color
 
-        color = arrayOfColors.find((materialColor) => {
-            if (!setOfUsedColors.has(materialColor)) return materialColor;
-            else return undefined;
-        });
+        if (section.sectionType === 'Dis') {
+            l = 75;
+        } else if (section.sectionType === 'Lab') {
+            l = 35;
+        }
+
+        for (const course of addedCourses) {
+            if (course.courseTitle === courseDetails.courseTitle) {
+                isSameCourse = true;
+                color = course.color;
+                break;
+            }
+        }
+
+        if (!isSameCourse) {
+            const setOfUsedColors = new Set(
+                addedCourses.map((course) => {
+                    const hsl = HexToHSL(course.color);
+                    return HSLToHex({ h: hsl.h, s: hsl.s, l: 50 });
+                })
+            );
+
+            color = arrayOfColors.find((materialColor) => {
+                if (!setOfUsedColors.has(materialColor)) return materialColor;
+                else return undefined;
+            });
+        }
 
         if (color === undefined) color = '#5ec8e0';
+
+        const hsl = HexToHSL(color);
+        color = HSLToHex({ h: hsl.h, s: hsl.s, l: l });
     }
 
     const scheduleNames = AppStore.getScheduleNames();
