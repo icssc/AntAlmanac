@@ -34,20 +34,9 @@ class DesktopTabs extends PureComponent<DesktopTabsProps> {
         this.setState({ activeTab: activeTab });
     };
 
-    componentDidMount() {
-        RightPaneStore.on('tabChange', this.changeTab);
-        this.setState({ activeTab: RightPaneStore.getActiveTab() });
-        RightPaneStore.on('focusOnBuilding', this.focusOnBuilding);
-        // Signal to MobileHome that we're loaded so that it can re-emit 'focusOnBuilding'
-        RightPaneStore.emit('RightPaneRootLoaded');
-    }
 
-    componentWillUnmount() {
-        RightPaneStore.removeListener('tabChange', this.changeTab);
-        RightPaneStore.removeListener('focusOnBuilding', this.focusOnBuilding);
-    }
-
-    focusOnBuilding(buildingInfo) {
+    // TODO: See if the type's actually correct
+    focusOnBuilding(buildingInfo: { name: string }) {
         // If the Map tab isn't already active
         if (RightPaneStore.getActiveTab() !== 2) {
             // Switch to Map tab
@@ -64,6 +53,21 @@ class DesktopTabs extends PureComponent<DesktopTabsProps> {
         } else {
             RightPaneStore.emit('selectBuilding', buildingInfo);
         }
+    }
+
+    componentDidMount() {
+        RightPaneStore.on('tabChange', this.changeTab);
+        this.setState({ activeTab: RightPaneStore.getActiveTab() });
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        RightPaneStore.on('focusOnBuilding', this.focusOnBuilding);
+        // Signal to MobileHome that we're loaded so that it can re-emit 'focusOnBuilding'
+        RightPaneStore.emit('RightPaneRootLoaded');
+    }
+
+    componentWillUnmount() {
+        RightPaneStore.removeListener('tabChange', this.changeTab);
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        RightPaneStore.removeListener('focusOnBuilding', this.focusOnBuilding);
     }
 
     render() {
