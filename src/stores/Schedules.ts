@@ -16,7 +16,7 @@ import {
 
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { CourseInfo, getCourseInfo, queryWebsoc } from '../helpers';
-import { AASection } from '../peterportal.types';
+import { Schedule, ScheduleCourse, ScheduleSaveState, ScheduleUndoState, ShortCourseSchedule } from './schedule.types';
 
 const arrayOfColors = [
     red[500],
@@ -33,49 +33,6 @@ const arrayOfColors = [
     amber[500],
     blueGrey[500],
 ];
-
-export interface ScheduleCourse {
-    // Course as stored in schedule
-    courseComment: string;
-    courseNumber: string; //i.e. 122a
-    courseTitle: string;
-    deptCode: string;
-    prerequisiteLink: string;
-    section: AASection;
-    // sectionCode: string
-    term: string;
-}
-
-export interface Schedule {
-    // User's schedule
-    scheduleName: string;
-    courses: ScheduleCourse[];
-    customEvents: RepeatingCustomEvent[];
-}
-
-interface ShortCourse {
-    // Shortened course for saving in DB
-    color: string;
-    term: string;
-    sectionCode: string;
-}
-
-interface ShortCourseSchedule {
-    // Schedule of short courses that is saved to DB
-    scheduleName: string;
-    courses: ShortCourse[];
-    customEvents: RepeatingCustomEvent[];
-}
-
-export interface ScheduleSaveState {
-    schedules: ShortCourseSchedule[];
-    scheduleIndex: number;
-}
-
-interface ScheduleUndoState {
-    schedules: Schedule[];
-    scheduleIndex: number;
-}
 
 export class Schedules {
     private schedules: Schedule[];

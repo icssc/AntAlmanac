@@ -1,4 +1,4 @@
-import { ScheduleSaveState } from './Schedules';
+import { ScheduleSaveState } from './schedule.types';
 
 interface LegacyShortCourseInfo {
     color: string;

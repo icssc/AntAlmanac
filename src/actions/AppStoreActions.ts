@@ -8,7 +8,7 @@ import { CourseDetails, courseNumAsDecimal, termsInSchedule, warnMultipleTerms }
 import { Section } from '../peterportal.types';
 import AppStore from '../stores/AppStore';
 import { convertLegacySchedule, LegacyUserData } from '../stores/legacyScheduleHelpers';
-import { ScheduleCourse, ScheduleSaveState } from '../stores/Schedules';
+import { ScheduleCourse, ScheduleSaveState } from '../stores/schedule.types';
 
 export const addCourse = (
     section: Section,

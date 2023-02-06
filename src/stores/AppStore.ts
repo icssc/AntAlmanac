@@ -5,7 +5,8 @@ import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '../components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calenderizeHelpers';
-import { ScheduleCourse, Schedules, ScheduleSaveState } from './Schedules';
+import { ScheduleCourse, ScheduleSaveState } from './schedule.types';
+import { Schedules } from './Schedules';
 
 class AppStore extends EventEmitter {
     schedule: Schedules;
