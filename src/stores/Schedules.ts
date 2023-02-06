@@ -147,7 +147,7 @@ export class Schedules {
     }
 
     /**
-     * @return Set of all "{sectionCode} {term}"
+     * @return Set of "{sectionCode} {term} in current schedule"
      */
     getAddedSectionCodes() {
         return new Set(this.getCurrentCourses().map((course) => `${course.section.sectionCode} ${course.term}`));

@@ -122,8 +122,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
 
     loadCustomEvents = () => {
         this.setState({ customEvents: AppStore.schedule.getCurrentCustomEvents() });
-        // Force update required because the state has a reference to custom events
-        // so it doesn't see differences all the time
+        // Force update required because the state has a reference to custom events, so it doesn't see differences all the time
         this.forceUpdate()
     };
 

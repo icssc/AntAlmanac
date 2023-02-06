@@ -35,7 +35,7 @@ export const ColorAndDelete = withStyles(styles)((props: ColorAndDeleteProps) =>
             <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
                 <IconButton
                     onClick={() => {
-                        deleteCourse(sectionCode, AppStore.getCurrentScheduleIndex(), term);
+                        deleteCourse(sectionCode, term);
                         logAnalytics({
                             category: analyticsEnum.addedClasses.title,
                             action: analyticsEnum.addedClasses.actions.DELETE_COURSE,

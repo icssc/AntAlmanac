@@ -263,7 +263,7 @@ export const addCoursesMultiple = (
     for (const section of Object.values(courseInfo)) {
         addCourse(section.section, section.courseDetails, term, scheduleIndex, true);
     }
-    const terms = termsInSchedule(AppStore.getAddedCourses(), term, scheduleIndex);
+    const terms = termsInSchedule(term);
     if (terms.size > 1) warnMultipleTerms(terms);
     return Object.values(courseInfo).length;
 };

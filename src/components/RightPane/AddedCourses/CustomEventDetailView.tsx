@@ -71,7 +71,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                 </div>
                 <IconButton
                     onClick={() => {
-                        deleteCustomEvent(customEvent.customEventID, props.currentScheduleIndex);
+                        deleteCustomEvent(customEvent.customEventID);
                     }}
                 >
                     <Delete fontSize="small" />
@@ -79,7 +79,6 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                 <CustomEventDialog
                     customEvent={customEvent}
                     scheduleNames={props.scheduleNames}
-                    currentScheduleIndex={props.currentScheduleIndex}
                 />
             </CardActions>
         </Card>

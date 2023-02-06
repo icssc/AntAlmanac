@@ -185,7 +185,6 @@ const CalendarPaneToolbar = ({
                         <ExportCalendar key="export"/>,
                         <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot"/>,
                         <CustomEventDialog
-                            currentScheduleIndex={currentScheduleIndex}
                             scheduleNames={scheduleNames}
                             key="custom"
                         />,
