@@ -41,6 +41,7 @@ export const ColorAndDelete = withStyles(styles)((props: ColorAndDeleteProps) =>
                             action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
                         });
                     }}
+                    size="large"
                 >
                     <Delete fontSize="small" />
                 </IconButton>
@@ -93,10 +94,10 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
     return (
         <TableCell padding="none">
             <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
-                <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
+                <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())} size="large">
                     <Add fontSize="small" />
                 </IconButton>
-                <IconButton {...bindTrigger(popupState)}>
+                <IconButton {...bindTrigger(popupState)} size="large">
                     <ArrowDropDown fontSize="small" />
                 </IconButton>
                 <Menu {...bindMenu(popupState)} onClose={() => closeAndAddCourse(-1)}>
