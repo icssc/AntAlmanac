@@ -167,7 +167,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 autoHighlight={true}
                 filterOptions={this.filterOptions}
                 getOptionLabel={this.getOptionLabel}
-                getOptionSelected={this.getOptionSelected}
+                isOptionEqualToValue={this.getOptionSelected}
                 id={'fuzzy-search'}
                 noOptionsText={'No results found! Please try broadening your search.'}
                 onClose={this.onClose}
