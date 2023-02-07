@@ -135,7 +135,7 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
         return (
             <>
                 {this.props.customEvent ? (
-                    <IconButton onClick={() => this.setState({ open: true })}>
+                    <IconButton onClick={() => this.setState({ open: true })} size="large">
                         <Edit fontSize="small" />
                     </IconButton>
                 ) : (
@@ -195,7 +195,7 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
                     </DialogContent>
 
                     <DialogActions>
-                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'secondary' : 'primary'}>
+                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'inherit' : 'primary'}>
                             Cancel
                         </Button>
                         <Tooltip title="Schedule and day must be checked" disableHoverListener={!this.isAddDisabled()}>
