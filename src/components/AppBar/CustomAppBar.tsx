@@ -1,8 +1,6 @@
 import MenuIcon from '@mui/icons-material/Menu';
-import { AppBar, Menu, Toolbar, useMediaQuery } from '@mui/material';
+import { AppBar, Box, Menu, Toolbar, useMediaQuery } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
-import { withStyles } from '@mui/styles';
-import { ClassNameMap } from '@mui/styles/withStyles';
 import React, { MouseEventHandler } from 'react';
 
 import ConditionalWrapper from '../ConditionalWrapper';
@@ -18,10 +16,12 @@ import SettingsMenu from './SettingsMenu';
 
 const styles = {
     appBar: {
+        paddingLeft: '12px',
         marginBottom: '4px',
         boxShadow: 'none',
         minHeight: 0,
         height: '50px',
+        backgroundColor: '#305db7',
     },
     buttonMargin: {
         marginRight: '4px',
@@ -35,11 +35,7 @@ const styles = {
     },
 };
 
-interface CustomAppBarProps {
-    classes: ClassNameMap;
-}
-
-const CustomAppBar = ({ classes }: CustomAppBarProps) => {
+const CustomAppBar = () => {
     const isMobileScreen = useMediaQuery('(max-width:750px)');
 
     const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
@@ -53,23 +49,23 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
     };
 
     return (
-        <AppBar position="static" className={classes.appBar}>
+        <AppBar position="static" sx={styles.appBar}>
             <Toolbar variant="dense">
                 {isMobileScreen ? <MobileLogo height={32} /> : <Logo height={32} />}
 
-                <div style={{ flexGrow: '1' }} />
+                <Box sx={{ flexGrow: '1' }} />
 
                 <LoadSaveScheduleFunctionality />
 
                 <ConditionalWrapper
                     condition={isMobileScreen}
                     wrapper={(children) => (
-                        <div>
+                        <Box>
                             <MenuIcon onClick={handleClick} />
                             <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
                                 {children}
                             </Menu>
-                        </div>
+                        </Box>
                     )}
                 >
                     <>
@@ -96,4 +92,4 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
     );
 };
 
-export default withStyles(styles)(CustomAppBar);
+export default CustomAppBar
