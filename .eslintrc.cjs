@@ -53,4 +53,14 @@ module.exports = {
             version: 'detect',
         },
     },
+    ignorePatterns: [
+        'tools/*',
+        'static/*',
+        '.eslintrc.cjs',
+        'prettier.config.js',
+        'package.json',
+        'tsconfig.json',
+        'index.html',
+        'vite.config.ts'
+    ],
 };
