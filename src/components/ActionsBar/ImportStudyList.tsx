@@ -1,13 +1,13 @@
 import { ContentPasteGo } from '@mui/icons-material';
 import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Link,
-    TextField,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Link,
+  TextField,
 } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import React, { PureComponent } from 'react';
@@ -21,19 +21,19 @@ import AppStore from '$lib/AppStore';
 // import RightPaneStore from '../RightPane/RightPaneStore';
 
 const styles = {
-    inputLabel: {
-        'font-size': '9px',
-    },
+  inputLabel: {
+    'font-size': '9px',
+  },
 };
 
 interface ImportStudyListProps {
-    classes: ClassNameMap;
+  classes: ClassNameMap;
 }
 
 interface ImportStudyListState {
-    isOpen: boolean;
-    selectedTerm: string;
-    studyListText: string;
+  isOpen: boolean;
+  selectedTerm: string;
+  studyListText: string;
 }
 
 // class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyListState> {
@@ -42,20 +42,20 @@ interface ImportStudyListState {
 //         selectedTerm: RightPaneStore.getFormData().term,
 //         studyListText: '',
 //     };
-// 
+//
 //     onTermSelectorChange = (field: string, value: string) => {
 //         this.setState({ selectedTerm: value });
 //     };
-// 
+//
 //     handleError = (error: Error) => {
 //         openSnackbar('error', 'An error occurred while trying to import the Study List.');
 //         console.error(error);
 //     };
-// 
+//
 //     handleOpen = () => {
 //         this.setState({ isOpen: true });
 //     };
-// 
+//
 //     handleClose = (doImport: boolean) => {
 //         this.setState({ isOpen: false }, async () => {
 //             document.removeEventListener('keydown', this.enterEvent, false);
@@ -102,7 +102,7 @@ interface ImportStudyListState {
 //                     } else if (sectionsAdded !== 0) {
 //                         openSnackbar(
 //                             'warning',
-//                             `Successfully imported ${sectionsAdded} of ${sectionCodes.length} classes. 
+//                             `Successfully imported ${sectionsAdded} of ${sectionCodes.length} classes.
 //                         Please make sure that you selected the correct term and that none of your classes are missing.`
 //                         );
 //                     } else {
@@ -118,7 +118,7 @@ interface ImportStudyListState {
 //             this.setState({ studyListText: '' });
 //         });
 //     };
-// 
+//
 //     enterEvent = (event: KeyboardEvent) => {
 //         const charCode = event.which ? event.which : event.keyCode;
 //         // enter (13) or newline (10)
@@ -127,7 +127,7 @@ interface ImportStudyListState {
 //             this.handleClose(true);
 //         }
 //     };
-// 
+//
 //     componentDidUpdate(prevProps: ImportStudyListProps, prevState: ImportStudyListState) {
 //         if (!prevState.isOpen && this.state.isOpen) {
 //             document.addEventListener('keydown', this.enterEvent, false);
@@ -135,7 +135,7 @@ interface ImportStudyListState {
 //             document.removeEventListener('keydown', this.enterEvent, false);
 //         }
 //     }
-// 
+//
 //     render() {
 //         return (
 //             <>
@@ -153,7 +153,7 @@ interface ImportStudyListState {
 //                             <Link href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>WebReg</Link> or{' '}
 //                             <Link href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</Link>, and click on
 //                             Study List once you&apos;ve logged in. Copy everything below the column names (Code, Dept, etc.)
-//                             under the Enrolled Classes section. 
+//                             under the Enrolled Classes section.
 //                             {/* &apos; is an apostrophe (') */}
 //                         </DialogContentText>
 //                         <br />
@@ -188,4 +188,4 @@ interface ImportStudyListState {
 //     }
 // }
 
-export default ImportStudyList
+export default ImportStudyList;

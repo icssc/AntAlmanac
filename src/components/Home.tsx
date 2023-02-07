@@ -3,9 +3,9 @@ import ActionsBar from './ActionsBar';
 
 export default function Home() {
   return (
-  <>
-    <AppBar />
-    <ActionsBar />
-  </>
+    <>
+      <AppBar />
+      <ActionsBar />
+    </>
   );
 }
