@@ -6,6 +6,7 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
+    Link,
     TextField,
 } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
@@ -149,12 +150,13 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                             Paste the contents of your Study List below to import it into AntAlmanac.
                             <br />
                             To find your Study List, go to{' '}
-                            <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>WebReg</a> or{' '}
-                            <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>, and click on
+                            <Link href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>WebReg</Link> or{' '}
+                            <Link href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</Link>, and click on
                             Study List once you&apos;ve logged in. Copy everything below the column names (Code, Dept, etc.)
                             under the Enrolled Classes section. 
                             {/* &apos; is an apostrophe (') */}
                         </DialogContentText>
+                        <br />
                         <InputLabel sx={styles.inputLabel}>Study List</InputLabel>
                         <TextField
                             // eslint-disable-next-line jsx-a11y/no-autofocus
@@ -169,6 +171,7 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                         />
                         <br />
                         <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
+                        <br />
                         <TermSelector changeState={this.onTermSelectorChange} fieldName={'selectedTerm'} />
                     </DialogContent>
                     <DialogActions>
