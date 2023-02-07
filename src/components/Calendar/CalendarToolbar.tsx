@@ -38,7 +38,7 @@ const styles: Styles<Theme, object> = {
         flexGrow: 1,
     },
     scheduleSelector: {
-        marginLeft: '10px',
+        marginLeft: '15px',
         maxWidth: '9rem',
     },
     rootScheduleSelector: {
@@ -99,6 +99,7 @@ const CalendarPaneToolbar = ({
                 onChange={handleScheduleChange}
                 open={openSchedules}
                 onClick={handleScheduleClick}
+                variant="standard"
             >
                 {scheduleNames.map((name, index) => (
                     <MenuItem key={index} value={index}>
@@ -125,7 +126,7 @@ const CalendarPaneToolbar = ({
                     }}
                     size="small"
                     // TODO: FIXME this breaks the app ??
-                    // color={showFinalsSchedule ? 'primary' : 'default'}
+                    color={showFinalsSchedule ? 'primary' : 'button'}
                 >
                     Finals
                 </Button>
@@ -142,6 +143,7 @@ const CalendarPaneToolbar = ({
                         });
                         undoDelete(null);
                     }}
+                    size="large"
                 >
                     <Undo fontSize="small" />
                 </IconButton>
@@ -171,7 +173,7 @@ const CalendarPaneToolbar = ({
                 condition={isMobileScreen}
                 wrapper={(children) => (
                     <div>
-                        <IconButton onClick={handleMenuClick}>
+                        <IconButton onClick={handleMenuClick} size="large">
                             <MoreHoriz />
                         </IconButton>
 
