@@ -300,19 +300,23 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                     <Popper
                         anchorEl={this.state.anchorEl}
                         placement="right"
-                        modifiers={{
-                            offset: {
-                                enabled: true,
-                                offset: '0, 10',
+                        modifiers={[
+                            {
+                                name: 'flip',
                             },
-                            flip: {
-                                enabled: true,
+                            {
+                                name: 'offset',
+                                options: {
+                                    offset: [0, 10],
+                                },
                             },
-                            preventOverflow: {
-                                enabled: true,
-                                boundariesElement: 'scrollParent',
+                            {
+                                name: 'preventOverflow',
+                                options: {
+                                    altBoundary: true, // false by default
+                                },
                             },
-                        }}
+                        ]}
                         open={Boolean(this.state.anchorEl)}
                     >
                         <CourseCalendarEvent

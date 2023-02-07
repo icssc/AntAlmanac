@@ -125,8 +125,7 @@ const CalendarPaneToolbar = ({
                         toggleDisplayFinalsSchedule();
                     }}
                     size="small"
-                    // TODO: FIXME this breaks the app ??
-                    color={showFinalsSchedule ? 'primary' : 'button'}
+                    color={showFinalsSchedule ? 'primary' : 'inherit'}
                 >
                     Finals
                 </Button>
