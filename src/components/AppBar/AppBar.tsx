@@ -31,68 +31,82 @@ export default function CustomAppBar() {
   }, [isMobileScreen]);
 
   return (
-    <AppBar
-      position="static"
-      sx={{
-        paddingLeft: '12px',
-        marginBottom: '4px',
-        boxShadow: 'none',
-        minHeight: 0,
-        height: '50px',
-        backgroundColor: '#305db7',
-      }}
-    >
-      <Toolbar variant="dense" sx={{ justifyContent: 'space-between' }}>
-        {isMobileScreen ? <MobileLogo height={32} /> : <Logo height={32} />}
-        {isMobileScreen ? (
-          <Box>
-            <IconButton onClick={handleClick}>
-              <MenuIcon />
-            </IconButton>
-            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-              <MenuItem>
-                <Settings />
-              </MenuItem>
-              <MenuItem>
-                <NotificationHub />
-              </MenuItem>
-              <MenuItem>
-                <Tooltip title="Give Us Feedback">
-                  <Button
-                    href="https://forms.gle/k81f2aNdpdQYeKK8A"
-                    target="_blank"
-                    color="inherit"
-                    startIcon={<AssignmentIcon />}
-                  >
-                    Feedback
-                  </Button>
-                </Tooltip>
-              </MenuItem>
-              <MenuItem>
-                <NewsModal />
-              </MenuItem>
-              <MenuItem>
-                <AboutModal />
-              </MenuItem>
-            </Menu>
-          </Box>
-        ) : (
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Settings />
-            <NotificationHub />
-            <Button
-              href="https://forms.gle/k81f2aNdpdQYeKK8A"
-              target="_blank"
-              color="inherit"
-              startIcon={<AssignmentIcon />}
-            >
-              Feedback
-            </Button>
-            <NewsModal />
-            <AboutModal />
-          </Box>
-        )}
-      </Toolbar>
-    </AppBar>
+    <>
+      <AppBar
+        position="static"
+        sx={{
+          paddingLeft: '12px',
+          boxShadow: 'none',
+          minHeight: 0,
+          height: '50px',
+          backgroundColor: '#305db7',
+        }}
+      >
+        <Toolbar variant="dense" sx={{ justifyContent: 'space-between' }}>
+          {isMobileScreen ? <MobileLogo height={32} /> : <Logo height={32} />}
+          {isMobileScreen ? (
+            <Box>
+              <IconButton onClick={handleClick}>
+                <MenuIcon />
+              </IconButton>
+              <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+                <MenuItem>
+                  <Settings />
+                </MenuItem>
+                <MenuItem>
+                  <NotificationHub />
+                </MenuItem>
+                <MenuItem>
+                  <Tooltip title="Give Us Feedback">
+                    <Button
+                      href="https://forms.gle/k81f2aNdpdQYeKK8A"
+                      target="_blank"
+                      color="inherit"
+                      startIcon={<AssignmentIcon />}
+                    >
+                      Feedback
+                    </Button>
+                  </Tooltip>
+                </MenuItem>
+                <MenuItem>
+                  <NewsModal />
+                </MenuItem>
+                <MenuItem>
+                  <AboutModal />
+                </MenuItem>
+              </Menu>
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Settings />
+              <NotificationHub />
+              <Button
+                href="https://forms.gle/k81f2aNdpdQYeKK8A"
+                target="_blank"
+                color="inherit"
+                startIcon={<AssignmentIcon />}
+              >
+                Feedback
+              </Button>
+              <NewsModal />
+              <AboutModal />
+            </Box>
+          )}
+        </Toolbar>
+      </AppBar>
+      <AppBar position="static" sx={{ marginBottom: '4px' }}>
+        <Toolbar variant="dense" sx={{ justifyContent: 'space-evenly' }}>
+          <Button color="inherit" startIcon={<AssignmentIcon />}>
+            Save
+          </Button>
+          <Button color="inherit" startIcon={<AssignmentIcon />}>
+            Load
+          </Button>
+          <Button color="inherit" startIcon={<AssignmentIcon />}>
+            Import
+          </Button>
+        </Toolbar>
+      </AppBar>
+    </>
   );
 }
