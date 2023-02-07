@@ -1,4 +1,4 @@
-import { PostAdd } from '@mui/icons-material';
+import { ContentPasteGo } from '@mui/icons-material';
 import {
     Button,
     Dialog,
@@ -139,7 +139,7 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         return (
             <>
                 {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
-                <Button onClick={this.handleOpen} color="inherit" startIcon={<PostAdd />}>
+                <Button onClick={this.handleOpen} color="inherit" startIcon={<ContentPasteGo />}>
                     Import
                 </Button>
                 <Dialog open={this.state.isOpen}>
