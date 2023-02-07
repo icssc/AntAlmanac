@@ -14,10 +14,12 @@ export default function AppThemeProvider({ children }: Props) {
   /**
    * dark mode reacts to the store's theme
    */
-  const darkMode = 
-    colorScheme === 'dark' ? true : 
-    colorScheme === 'light' ? false : 
-    window.matchMedia('(prefers-color-scheme: dark)').matches
+  const darkMode =
+    colorScheme === 'dark'
+      ? true
+      : colorScheme === 'light'
+      ? false
+      : window.matchMedia('(prefers-color-scheme: dark)').matches;
 
   /**
    * set the store's theme when the media query changes

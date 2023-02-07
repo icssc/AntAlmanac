@@ -8,7 +8,7 @@ import Home from '$components/Home';
 import ColorPicker from '$components/ColorPicker';
 
 export default function App() {
-  useGoogleAnalytics()
+  useGoogleAnalytics();
   return (
     <AppQueryProvider>
       <AppThemeProvider>

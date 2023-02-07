@@ -3,19 +3,7 @@ import { Fragment, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { RssFeed } from '@mui/icons-material';
 import { Skeleton } from '@mui/lab';
-import {
-  Badge,
-  Box,
-  Button,
-  ButtonBase,
-  Divider,
-  List,
-  ListItem,
-  Paper,
-  Popover,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Badge, Box, Button, Divider, List, ListItem, Paper, Popover, Tooltip, Typography } from '@mui/material';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { NEWS_ENDPOINT } from '$lib/endpoints';
 
@@ -120,12 +108,8 @@ export default function NewsModal() {
               query.data.map((newsItem, index) => (
                 <Fragment key={index}>
                   <ListItem alignItems="flex-start" sx={{ display: 'flex', flexDirection: 'column' }} dense>
-                    <Typography variant="body1" gutterBottom>
-                      {newsItem.title}
-                    </Typography>
-                    <Typography variant="body2" gutterBottom>
-                      {newsItem.body}
-                    </Typography>
+                    <Typography variant="body1">{newsItem.title}</Typography>
+                    <Typography variant="body2">{newsItem.body}</Typography>
                     <Typography variant="caption" gutterBottom color="textSecondary">
                       {dayjs(newsItem.date, 'MMMM Do YYYY', 'en-us').toString()}
                     </Typography>

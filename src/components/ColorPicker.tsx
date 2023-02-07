@@ -34,7 +34,10 @@ export default function ColorPicker(props: ColorPickerProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [color, setColor] = useState(props.color);
 
-  const {} = useAppStore(state => ({ changeCustomEventColor: state.changeCustomEventColor, changeCourseColor: state.changeCourseColor }))
+  const {} = useAppStore((state) => ({
+    changeCustomEventColor: state.changeCustomEventColor,
+    changeCourseColor: state.changeCourseColor,
+  }));
 
   function handleClick(event: React.MouseEvent<HTMLElement>) {
     event.stopPropagation();

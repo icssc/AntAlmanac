@@ -5,7 +5,7 @@ import { useSettingsStore } from '$lib/stores/settings';
 
 export default function SettingsMenu() {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const { colorScheme, setColorScheme } = useSettingsStore()
+  const { colorScheme, setColorScheme } = useSettingsStore();
 
   /**
    * update the global theme when a radio button is clicked

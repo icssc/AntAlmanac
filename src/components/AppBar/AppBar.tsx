@@ -1,13 +1,23 @@
 import { useEffect, useState } from 'react';
-import { AppBar, Box, Button, IconButton, Menu, MenuItem, Toolbar, Tooltip, useMediaQuery } from '@mui/material';
-import { Menu as MenuIcon, Assignment as AssignmentIcon } from '@mui/icons-material';
+import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, useMediaQuery } from '@mui/material';
+import { Menu as MenuIcon } from '@mui/icons-material';
+
 import AboutModal from './AboutModal';
 import NewsModal from './NewsModal';
 import Settings from './Settings';
 import NotificationHub from './NotificationsHub';
+import FeedbackButton from './FeedbackButton';
 
 import { ReactComponent as Logo } from './logo.svg';
 import { ReactComponent as MobileLogo } from './logo.svg';
+
+const AppBarButtons = [
+      Settings,
+      NotificationHub,
+      FeedbackButton,
+      NewsModal,
+      AboutModal,
+]
 
 export default function CustomAppBar() {
   const isMobileScreen = useMediaQuery('(max-width:750px)');
@@ -45,50 +55,23 @@ export default function CustomAppBar() {
         {isMobileScreen ? <MobileLogo height={32} /> : <Logo height={32} />}
         {isMobileScreen ? (
           <Box>
-            <IconButton onClick={handleClick}>
+            <IconButton onClick={handleClick} color="inherit">
               <MenuIcon />
             </IconButton>
+
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-              <MenuItem>
-                <Settings />
-              </MenuItem>
-              <MenuItem>
-                <NotificationHub />
-              </MenuItem>
-              <MenuItem>
-                <Tooltip title="Give Us Feedback">
-                  <Button
-                    href="https://forms.gle/k81f2aNdpdQYeKK8A"
-                    target="_blank"
-                    color="inherit"
-                    startIcon={<AssignmentIcon />}
-                  >
-                    Feedback
-                  </Button>
-                </Tooltip>
-              </MenuItem>
-              <MenuItem>
-                <NewsModal />
-              </MenuItem>
-              <MenuItem>
-                <AboutModal />
-              </MenuItem>
+              {AppBarButtons.map((AppBarButton, index) => (
+                <MenuItem key={index}>
+                  <AppBarButton />
+                </MenuItem>
+              ))}
             </Menu>
           </Box>
         ) : (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Settings />
-            <NotificationHub />
-            <Button
-              href="https://forms.gle/k81f2aNdpdQYeKK8A"
-              target="_blank"
-              color="inherit"
-              startIcon={<AssignmentIcon />}
-            >
-              Feedback
-            </Button>
-            <NewsModal />
-            <AboutModal />
+              {AppBarButtons.map((AppBarButton, index) => (
+                <AppBarButton key={index} />
+              ))}
           </Box>
         )}
       </Toolbar>
