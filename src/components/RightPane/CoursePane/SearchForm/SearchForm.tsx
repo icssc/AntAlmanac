@@ -71,7 +71,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                         <div className={classes.searchBar}>
                             <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleShowLegacySearch} />
                             <Tooltip title="Manual Search">
-                                <IconButton onClick={toggleShowLegacySearch}>
+                                <IconButton onClick={toggleShowLegacySearch} size="large">
                                     <Tune />
                                 </IconButton>
                             </Tooltip>
