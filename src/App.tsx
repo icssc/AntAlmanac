@@ -5,7 +5,6 @@ import AppThemeProvider from './providers/Theme';
 import AppQueryProvider from './providers/Query';
 
 import Home from '$components/Home';
-import ColorPicker from '$components/ColorPicker';
 
 export default function App() {
   useGoogleAnalytics();
@@ -15,10 +14,6 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route
-              path="/color"
-              element={<ColorPicker color="blue" sectionCode="123" isCustomEvent={false} analyticsCategory="nya" />}
-            />
             <Route path="/feedback" element={<h1>feedback</h1>} />
           </Routes>
         </BrowserRouter>

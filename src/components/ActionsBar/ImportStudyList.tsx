@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ContentPasteGo } from '@mui/icons-material';
 import {
   Button,
@@ -6,17 +7,13 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  InputLabel,
   Link,
   TextField,
 } from '@mui/material';
-import InputLabel from '@mui/material/InputLabel';
-import React, { PureComponent } from 'react';
+import { useAppStore } from '$lib/stores/global';
 
-import { openSnackbar } from '$lib/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { addCoursesMultiple, combineSOCObjects, getCourseInfo, queryWebsoc } from '$lib/helpers';
-import AppStore from '$lib/AppStore';
-
+// import analyticsEnum, { logAnalytics } from '$lib/analytics';
 // import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 // import RightPaneStore from '../RightPane/RightPaneStore';
 
@@ -26,14 +23,122 @@ const styles = {
   },
 };
 
-interface ImportStudyListProps {
-  classes: ClassNameMap;
-}
+export default function ImportStudyList() {
+  const [open, setOpen] = useState(false);
+  const [studyListText, setStudyListText] = useState('');
 
-interface ImportStudyListState {
-  isOpen: boolean;
-  selectedTerm: string;
-  studyListText: string;
+  const currentScheduleIndex = useAppStore((state) => state.currentScheduleIndex);
+
+  function handleClose() {}
+
+  function handleImport(doImport: boolean) {
+    // document.removeEventListener('keydown', this.enterEvent, false);
+    const sectionCodes = studyListText.match(/\d{5}/g);
+    if (!sectionCodes) {
+      // openSnackbar('error', 'Cannot import an empty/invalid Study List.');
+      return;
+    }
+    const currSchedule = currentScheduleIndex;
+    try {
+      //   const sectionsAdded = addCoursesMultiple(
+      //     getCourseInfo(
+      //       combineSOCObjects(
+      //         await Promise.all(
+      //           sectionCodes
+      //             .reduce((result: string[][], item, index) => {
+      //               // WebSOC queries can have a maximum of 10 course codes in tandem
+      //               const chunkIndex = Math.floor(index / 10);
+      //               result[chunkIndex] ? result[chunkIndex].push(item) : (result[chunkIndex] = [item]);
+      //               return result;
+      //             }, []) // https://stackoverflow.com/a/37826698
+      //             .map((sectionCode: string[]) =>
+      //               queryWebsoc({
+      //                 term: this.state.selectedTerm,
+      //                 sectionCodes: sectionCode.join(','),
+      //               })
+      //             )
+      //         )
+      //       )
+      //     ),
+      //     this.state.selectedTerm,
+      //     currSchedule
+      //   );
+      //   logAnalytics({
+      //     category: analyticsEnum.nav.title,
+      //     action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
+      //     value: sectionsAdded / (sectionCodes.length || 1),
+      //   });
+      //   if (sectionsAdded === sectionCodes.length) {
+      //     openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
+      //   } else if (sectionsAdded !== 0) {
+      //     openSnackbar(
+      //       'warning',
+      //       `Successfully imported ${sectionsAdded} of ${sectionCodes.length} classes.
+      //                   Please make sure that you selected the correct term and that none of your classes are missing.`
+      //     );
+      //   } else {
+      //     openSnackbar(
+      //       'error',
+      //       'Failed to import any classes! Please make sure that you pasted the correct Study List.'
+      //     );
+      //   }
+    } catch (e) {
+      if (e instanceof Error) this.handleError(e);
+    }
+  }
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {}
+
+  function handleOpen() {}
+
+  return (
+    <>
+      {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
+      <Button onClick={handleOpen} color="inherit" startIcon={<ContentPasteGo />}>
+        Import
+      </Button>
+      <Dialog open={open}>
+        <DialogTitle>Import Schedule</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Paste the contents of your Study List below to import it into AntAlmanac.
+            <br />
+            To find your Study List, go to{' '}
+            <Link href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>WebReg</Link> or{' '}
+            <Link href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</Link>, and click on Study List
+            once you&apos;ve logged in. Copy everything below the column names (Code, Dept, etc.) under the Enrolled
+            Classes section.
+            {/* &apos; is an apostrophe (') */}
+          </DialogContentText>
+          <br />
+          <InputLabel sx={styles.inputLabel}>Study List</InputLabel>
+          <TextField
+            // eslint-disable-next-line jsx-a11y/no-autofocus
+            autoFocus
+            fullWidth
+            multiline
+            margin="dense"
+            type="text"
+            placeholder="Paste here"
+            value={studyListText}
+            onChange={handleChange}
+          />
+          <br />
+          <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
+          <br />
+          {/* <TermSelector changeState={this.onTermSelectorChange} fieldName={'selectedTerm'} /> */}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => this.handleClose(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={() => this.handleClose(true)} color="primary">
+            Import
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
 }
 
 // class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyListState> {
@@ -187,5 +292,3 @@ interface ImportStudyListState {
 //         );
 //     }
 // }
-
-export default ImportStudyList;
