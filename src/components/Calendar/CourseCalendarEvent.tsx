@@ -231,6 +231,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
                                 });
                             }}
+                            size="large"
                         >
                             <Delete fontSize="small" />
                         </IconButton>
