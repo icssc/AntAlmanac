@@ -1,10 +1,36 @@
-import { useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@mui/material';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Link,
+  Typography,
+} from '@mui/material';
 import { Info } from '@mui/icons-material';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
-export default function AboutButton() {
-  const [open, setOpen] = useState(false);
+interface Props {
+  /**
+   * can be open from outside component
+   */
+  open?: boolean;
+
+  /**
+   * set state from parent component
+   */
+  setOpen?: React.Dispatch<this['open']>;
+
+  /**
+   * whether to show a button to click (e.g. when inside a menu item, no button is needed)
+   */
+  button?: boolean;
+}
+
+export default function AboutModal(props: Props) {
+  const { open, setOpen } = props;
 
   function openAbout() {
     setOpen(true);
@@ -14,16 +40,24 @@ export default function AboutButton() {
     });
   }
 
-  function closeAbout() {
+  function closeAbout(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    e.stopPropagation();
     setOpen(false);
   }
 
   return (
     <>
-      <Button onClick={openAbout} color="inherit" startIcon={<Info />}>
-        About
-      </Button>
-      <Dialog open={open}>
+      {props.button ? (
+        <Button onClick={openAbout} color="inherit" startIcon={<Info />}>
+          About
+        </Button>
+      ) : (
+        <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+          <Info />
+          <Typography>About</Typography>
+        </Box>
+      )}
+      <Dialog open={open || false}>
         <DialogTitle>About</DialogTitle>
         <DialogContent>
           <DialogContentText>

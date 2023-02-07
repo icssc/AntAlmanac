@@ -3,6 +3,7 @@ import ReactGA4 from 'react-ga4';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material';
 import AppStore from '$lib/AppStore';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { isDarkMode } from '$lib/helpers';
 import { undoDelete } from '$lib/AppStoreActions';
 
@@ -12,6 +13,14 @@ import ColorPicker from '$components/ColorPicker';
 export default function App() {
   const [darkMode, setDarkMode] = useState(isDarkMode());
 
+  /**
+   * shared query client for app
+   */
+  const queryClient = new QueryClient();
+
+  /**
+   * setup
+   */
   useEffect(() => {
     document.addEventListener('keydown', undoDelete, false);
 
@@ -33,6 +42,9 @@ export default function App() {
     };
   }, []);
 
+  /**
+   * theme changes based on global App state
+   */
   const theme = createTheme({
     typography: {
       htmlFontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10),
@@ -110,18 +122,29 @@ export default function App() {
   });
 
   return (
-    <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={
-          <>
-            <Home />
-            <ColorPicker color="pink" analyticsCategory="asdf" isCustomEvent={false} customEventID={69420} sectionCode="asdf" />
-          </>
-          } />
-          <Route path="/feedback" element={<h1>feedback</h1>} />
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <Home />
+                  <ColorPicker
+                    color="pink"
+                    analyticsCategory="asdf"
+                    isCustomEvent={false}
+                    customEventID={69420}
+                    sectionCode="asdf"
+                  />
+                </>
+              }
+            />
+            <Route path="/feedback" element={<h1>feedback</h1>} />
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }

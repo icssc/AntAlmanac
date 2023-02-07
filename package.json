@@ -6,6 +6,7 @@
     "private": true,
     "license": "UNLICENSED",
     "scripts": {
+        "prepare": "husky install",
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
@@ -19,6 +20,8 @@
         "@mui/icons-material": "^5.11.0",
         "@mui/lab": "^5.0.0-alpha.118",
         "@mui/material": "^5.11.7",
+        "@tanstack/react-query": "^4.24.4",
+        "dayjs": "^1.11.7",
         "events": "^3.3.0",
         "notistack": "^2.0.8",
         "react": "^18.2.0",
@@ -40,8 +43,11 @@
         "eslint-config-prettier": "^8.6.0",
         "eslint-plugin-react": "^7.32.2",
         "eslint-plugin-react-hooks": "^4.6.0",
+        "husky": "^8.0.3",
+        "lint-staged": "^13.1.1",
         "prettier": "^2.8.3",
         "typescript": "^4.9.5",
-        "vite": "^4.1.1"
+        "vite": "^4.1.1",
+        "vite-plugin-svgr": "^2.4.0"
     }
 }
