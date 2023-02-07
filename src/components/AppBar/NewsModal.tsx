@@ -37,27 +37,10 @@ interface NewsItem {
   _id: string;
 }
 
-interface Props {
-  /**
-   * can be open from parent component
-   */
-  open?: boolean;
-
-  /**
-   * set state from parent component
-   */
-  setOpen?: React.Dispatch<this['open']>;
-
-  /**
-   * whether to show a button to click (e.g. when inside a menu item, no button is needed)
-   */
-  button?: boolean;
-}
-
 /**
  * News Modal
  */
-export default function NewsModal(props: Props) {
+export default function NewsModal() {
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const [showDot, setShowDot] = useState(false);
 
@@ -99,16 +82,9 @@ export default function NewsModal(props: Props) {
     <div>
       <Tooltip title="See latest updates">
         <Badge variant="dot" overlap="circular" color="error" invisible={!showDot} sx={{ right: '5%' }}>
-          {props.button ? (
-            <Button onClick={openPopup} color="inherit" startIcon={<RssFeed />}>
-              News
-            </Button>
-          ) : (
-            <ButtonBase disableRipple sx={{ display: 'flex', gap: 3, alignItems: 'center' }} onClick={openPopup}>
-              <RssFeed />
-              <Typography>News</Typography>
-            </ButtonBase>
-          )}
+        <Button onClick={openPopup} color="inherit" startIcon={<RssFeed />}>
+          News
+        </Button>
         </Badge>
       </Tooltip>
       <Popover

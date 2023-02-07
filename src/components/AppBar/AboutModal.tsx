@@ -1,5 +1,5 @@
+import { useState } from 'react'
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
@@ -7,30 +7,12 @@ import {
   DialogContentText,
   DialogTitle,
   Link,
-  Typography,
 } from '@mui/material';
 import { Info } from '@mui/icons-material';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
-interface Props {
-  /**
-   * can be open from outside component
-   */
-  open?: boolean;
-
-  /**
-   * set state from parent component
-   */
-  setOpen?: React.Dispatch<this['open']>;
-
-  /**
-   * whether to show a button to click (e.g. when inside a menu item, no button is needed)
-   */
-  button?: boolean;
-}
-
-export default function AboutModal(props: Props) {
-  const { open, setOpen } = props;
+export default function AboutModal() {
+  const [open, setOpen] = useState(false);
 
   function openAbout() {
     setOpen(true);
@@ -47,16 +29,9 @@ export default function AboutModal(props: Props) {
 
   return (
     <>
-      {props.button ? (
-        <Button onClick={openAbout} color="inherit" startIcon={<Info />}>
-          About
-        </Button>
-      ) : (
-        <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
-          <Info />
-          <Typography>About</Typography>
-        </Box>
-      )}
+      <Button onClick={openAbout} color="inherit" startIcon={<Info />}>
+        About
+      </Button>
       <Dialog open={open || false}>
         <DialogTitle>About</DialogTitle>
         <DialogContent>

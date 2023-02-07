@@ -3,6 +3,8 @@ import { AppBar, Box, Button, IconButton, Menu, MenuItem, Toolbar, Tooltip, useM
 import { Menu as MenuIcon, Assignment as AssignmentIcon } from '@mui/icons-material';
 import AboutModal from './AboutModal';
 import NewsModal from './NewsModal';
+import Settings from './Settings';
+
 import { ReactComponent as Logo } from './logo.svg';
 import { ReactComponent as MobileLogo } from './logo.svg';
 
@@ -62,29 +64,13 @@ export default function CustomAppBar() {
             </IconButton>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
               <MenuItem onClick={openAbout}>
-                <AboutModal open={aboutOpen} setOpen={setAboutOpen} />
+                <AboutModal />
               </MenuItem>
               <MenuItem onClick={openNews}>
-                <NewsModal open={newsOpen} setOpen={setNewsOpen} />
+                <NewsModal />
               </MenuItem>
               <MenuItem>
                 <Tooltip title="Give Us Feedback">
-                  <Button
-                    href="https://forms.gle/k81f2aNdpdQYeKK8A"
-                    target="_blank"
-                    color="inherit"
-                    startIcon={<AssignmentIcon />}
-                  >
-                    Feedback
-                  </Button>
-                </Tooltip>
-              </MenuItem>
-            </Menu>
-          </Box>
-        ) : (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <NewsModal button />
-            <AboutModal button open={aboutOpen} setOpen={setAboutOpen} />
             <Button
               href="https://forms.gle/k81f2aNdpdQYeKK8A"
               target="_blank"
@@ -93,6 +79,23 @@ export default function CustomAppBar() {
             >
               Feedback
             </Button>
+                </Tooltip>
+              </MenuItem>
+            </Menu>
+          </Box>
+        ) : (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <NewsModal />
+            <AboutModal />
+            <Button
+              href="https://forms.gle/k81f2aNdpdQYeKK8A"
+              target="_blank"
+              color="inherit"
+              startIcon={<AssignmentIcon />}
+            >
+              Feedback
+            </Button>
+            <Settings />
           </Box>
         )}
       </Toolbar>
