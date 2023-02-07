@@ -1,4 +1,4 @@
-import { Button, Grid, Menu, MenuItem,Typography } from '@mui/material';
+import { Button, Grid, Menu, MenuItem, Theme, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
 import { ClassNameMap } from '@mui/styles/withStyles';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
@@ -12,7 +12,7 @@ import { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/C
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
 
-const styles = {
+const styles = (theme: Theme) => ({
     container: {
         height: '100%',
         width: '100%',
@@ -24,12 +24,14 @@ const styles = {
         display: 'flex',
         width: '100%',
         justifyContent: 'space-between',
+        marginTop: theme.spacing(),
+        marginLeft: theme.spacing(),
     },
     clearSchedule: {
-        marginLeft: '4px',
-        marginRight: '4px',
+        marginLeft: theme.spacing(),
+        marginRight: theme.spacing(),
     },
-};
+});
 
 interface CourseWithTerm extends AACourse {
     term: string;
@@ -144,7 +146,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                         <PopupState variant="popover">
                             {(popupState) => (
                                 <>
-                                    <Button variant="outlined" {...bindTrigger(popupState)}>
+                                    <Button variant="outlined" {...bindTrigger(popupState)} color="inherit">
                                         Copy Schedule
                                     </Button>
                                     <Menu {...bindMenu(popupState)}>
