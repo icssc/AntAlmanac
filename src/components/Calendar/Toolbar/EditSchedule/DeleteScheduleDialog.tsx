@@ -51,7 +51,7 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDarkMode() ? 'secondary' : 'primary'}>
+                    <Button onClick={handleClose} color={isDarkMode() ? 'inherit' : 'primary'}>
                         Cancel
                     </Button>
                     <Button onClick={handleDelete} variant="contained" color="primary">
