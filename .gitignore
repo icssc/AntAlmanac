@@ -16,5 +16,9 @@ Desktop.ini
 .idea
 .vscode
 
+# dev
+stats.html
+vite.config.ts.timestamp-*
+
 # error logs
 *.log*
