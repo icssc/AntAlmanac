@@ -5,7 +5,6 @@ import { Menu as MenuIcon } from '@mui/icons-material';
 import { ReactComponent as Logo } from './logo.svg';
 import { ReactComponent as MobileLogo } from './logo.svg';
 
-
 import Settings from './Settings';
 import NotificationHub from './NotificationsHub';
 import FeedbackButton from './FeedbackButton';
