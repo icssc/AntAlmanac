@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, useMediaQuery } from '@mui/material';
-import { Menu as MenuIcon } from '@mui/icons-material';
+import { AppBar, Box, Button, IconButton, Menu, MenuItem, Toolbar, Tooltip, useMediaQuery } from '@mui/material';
+import { Menu as MenuIcon, Assignment as AssignmentIcon } from '@mui/icons-material';
 import AboutModal from './AboutModal';
 import NewsModal from './NewsModal';
 import { ReactComponent as Logo } from './logo.svg';
@@ -67,12 +67,32 @@ export default function CustomAppBar() {
               <MenuItem onClick={openNews}>
                 <NewsModal open={newsOpen} setOpen={setNewsOpen} />
               </MenuItem>
+              <MenuItem>
+                <Tooltip title="Give Us Feedback">
+                  <Button
+                    href="https://forms.gle/k81f2aNdpdQYeKK8A"
+                    target="_blank"
+                    color="inherit"
+                    startIcon={<AssignmentIcon />}
+                  >
+                    Feedback
+                  </Button>
+                </Tooltip>
+              </MenuItem>
             </Menu>
           </Box>
         ) : (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <NewsModal button />
             <AboutModal button open={aboutOpen} setOpen={setAboutOpen} />
+            <Button
+              href="https://forms.gle/k81f2aNdpdQYeKK8A"
+              target="_blank"
+              color="inherit"
+              startIcon={<AssignmentIcon />}
+            >
+              Feedback
+            </Button>
           </Box>
         )}
       </Toolbar>
