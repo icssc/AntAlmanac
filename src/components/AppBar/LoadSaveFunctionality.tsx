@@ -118,10 +118,10 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'secondary' : 'primary'}>
+                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'inherit' : 'primary'}>
                             {'Cancel'}
                         </Button>
-                        <Button onClick={() => this.handleClose(false)} color={isDarkMode() ? 'secondary' : 'primary'}>
+                        <Button onClick={() => this.handleClose(false)} color={isDarkMode() ? 'inherit' : 'primary'}>
                             {this.props.actionName}
                         </Button>
                     </DialogActions>
