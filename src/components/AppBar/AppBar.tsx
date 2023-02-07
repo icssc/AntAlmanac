@@ -4,6 +4,7 @@ import { Menu as MenuIcon, Assignment as AssignmentIcon } from '@mui/icons-mater
 import AboutModal from './AboutModal';
 import NewsModal from './NewsModal';
 import Settings from './Settings';
+import NotificationHub from './NotificationsHub';
 
 import { ReactComponent as Logo } from './logo.svg';
 import { ReactComponent as MobileLogo } from './logo.svg';
@@ -12,23 +13,12 @@ export default function CustomAppBar() {
   const isMobileScreen = useMediaQuery('(max-width:750px)');
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
-  const [aboutOpen, setAboutOpen] = useState(false);
-  const [newsOpen, setNewsOpen] = useState(false);
-
   function handleClick(event: React.MouseEvent<Element, MouseEvent>) {
     setAnchorEl(event.currentTarget);
   }
 
   function handleClose() {
     setAnchorEl(null);
-  }
-
-  function openAbout() {
-    setAboutOpen(true);
-  }
-
-  function openNews() {
-    setNewsOpen(true);
   }
 
   /**
@@ -54,39 +44,42 @@ export default function CustomAppBar() {
     >
       <Toolbar variant="dense" sx={{ justifyContent: 'space-between' }}>
         {isMobileScreen ? <MobileLogo height={32} /> : <Logo height={32} />}
-
-        {/* <LoadSaveScheduleFunctionality /> */}
-
         {isMobileScreen ? (
           <Box>
             <IconButton onClick={handleClick}>
               <MenuIcon />
             </IconButton>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-              <MenuItem onClick={openAbout}>
-                <AboutModal />
+              <MenuItem>
+                <Settings />
               </MenuItem>
-              <MenuItem onClick={openNews}>
-                <NewsModal />
+              <MenuItem>
+                <NotificationHub />
               </MenuItem>
               <MenuItem>
                 <Tooltip title="Give Us Feedback">
-            <Button
-              href="https://forms.gle/k81f2aNdpdQYeKK8A"
-              target="_blank"
-              color="inherit"
-              startIcon={<AssignmentIcon />}
-            >
-              Feedback
-            </Button>
+                  <Button
+                    href="https://forms.gle/k81f2aNdpdQYeKK8A"
+                    target="_blank"
+                    color="inherit"
+                    startIcon={<AssignmentIcon />}
+                  >
+                    Feedback
+                  </Button>
                 </Tooltip>
+              </MenuItem>
+              <MenuItem>
+                <NewsModal />
+              </MenuItem>
+              <MenuItem>
+                <AboutModal />
               </MenuItem>
             </Menu>
           </Box>
         ) : (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <NewsModal />
-            <AboutModal />
+            <Settings />
+            <NotificationHub />
             <Button
               href="https://forms.gle/k81f2aNdpdQYeKK8A"
               target="_blank"
@@ -95,7 +88,8 @@ export default function CustomAppBar() {
             >
               Feedback
             </Button>
-            <Settings />
+            <NewsModal />
+            <AboutModal />
           </Box>
         )}
       </Toolbar>

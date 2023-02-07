@@ -82,9 +82,9 @@ export default function NewsModal() {
     <div>
       <Tooltip title="See latest updates">
         <Badge variant="dot" overlap="circular" color="error" invisible={!showDot} sx={{ right: '5%' }}>
-        <Button onClick={openPopup} color="inherit" startIcon={<RssFeed />}>
-          News
-        </Button>
+          <Button onClick={openPopup} color="inherit" startIcon={<RssFeed />}>
+            News
+          </Button>
         </Badge>
       </Tooltip>
       <Popover
