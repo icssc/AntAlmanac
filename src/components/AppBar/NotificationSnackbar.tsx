@@ -73,6 +73,7 @@ class NotificationSnackbar extends PureComponent<NotificationSnackbarProps> {
                 onClick={() => {
                     this.props.closeSnackbar(key);
                 }}
+                size="large"
             >
                 <CloseIcon className={classes.icon} />
             </IconButton>
