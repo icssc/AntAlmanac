@@ -207,6 +207,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         AppStore.removeListener('customEventsChange', this.updateEventsInCalendar);
         AppStore.removeListener('colorChange', this.updateEventsInCalendar);
         AppStore.removeListener('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
+        AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
         AppStore.removeListener('scheduleNotesChange', this.updateScheduleNotes);
     };
 
