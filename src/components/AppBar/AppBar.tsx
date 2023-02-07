@@ -2,23 +2,24 @@ import { useEffect, useState } from 'react';
 import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, useMediaQuery } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
 
-import AboutModal from './AboutModal';
-import NewsModal from './NewsModal';
-import Settings from './Settings';
-import NotificationHub from './NotificationsHub';
-import FeedbackButton from './FeedbackButton';
-
 import { ReactComponent as Logo } from './logo.svg';
 import { ReactComponent as MobileLogo } from './logo.svg';
 
-const AppBarButtons = [
-      Settings,
-      NotificationHub,
-      FeedbackButton,
-      NewsModal,
-      AboutModal,
-]
 
+import Settings from './Settings';
+import NotificationHub from './NotificationsHub';
+import FeedbackButton from './FeedbackButton';
+import NewsModal from './NewsModal';
+import AboutModal from './AboutModal';
+
+/**
+ * all buttons to render for the app bar
+ */
+const AppBarButtons = [Settings, NotificationHub, FeedbackButton, NewsModal, AboutModal];
+
+/**
+ * main app bar, i.e. header
+ */
 export default function CustomAppBar() {
   const isMobileScreen = useMediaQuery('(max-width:750px)');
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
@@ -51,14 +52,14 @@ export default function CustomAppBar() {
         backgroundColor: '#305db7',
       }}
     >
-      <Toolbar variant="dense" sx={{ justifyContent: 'space-between' }}>
-        {isMobileScreen ? <MobileLogo height={32} /> : <Logo height={32} />}
+      <Toolbar variant="dense">
         {isMobileScreen ? (
-          <Box>
+          <>
+            <MobileLogo height={32} />
+            <Box sx={{ flexGrow: 1 }} />
             <IconButton onClick={handleClick} color="inherit">
               <MenuIcon />
             </IconButton>
-
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
               {AppBarButtons.map((AppBarButton, index) => (
                 <MenuItem key={index}>
@@ -66,13 +67,17 @@ export default function CustomAppBar() {
                 </MenuItem>
               ))}
             </Menu>
-          </Box>
+          </>
         ) : (
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <>
+            <Logo height={32} />
+            <Box sx={{ flexGrow: 1 }} />
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
               {AppBarButtons.map((AppBarButton, index) => (
                 <AppBarButton key={index} />
               ))}
-          </Box>
+            </Box>
+          </>
         )}
       </Toolbar>
     </AppBar>
