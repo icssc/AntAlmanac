@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "node",
+        "skipLibCheck": true,
+        "baseUrl": ".",
+        "outDir": "dist",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "paths": {
+            "$lib/*": ["src/lib/*"],
+            "$components/*": ["src/components/*"],
+        }
+    }
+}

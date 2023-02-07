@@ -1,0 +1,20 @@
+# big
+node_modules/
+
+# production
+build/
+dist/
+
+# OS configs
+.DS_Store
+Desktop.ini
+
+# private
+.env
+
+# IDE
+.idea
+.vscode
+
+# error logs
+*.log*

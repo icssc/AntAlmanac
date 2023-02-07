@@ -1,0 +1,47 @@
+{
+    "name": "auntAlmanac",
+    "version": "0.1.0",
+    "description": "",
+    "type": "module",
+    "private": true,
+    "license": "UNLICENSED",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "start": "serve dist",
+        "format": "prettier --write src",
+        "lint": "eslint src/**/*.tsx"
+    },
+    "dependencies": {
+        "@emotion/react": "^11.10.5",
+        "@emotion/styled": "^11.10.5",
+        "@mui/icons-material": "^5.11.0",
+        "@mui/lab": "^5.0.0-alpha.118",
+        "@mui/material": "^5.11.7",
+        "events": "^3.3.0",
+        "notistack": "^2.0.8",
+        "react": "^18.2.0",
+        "react-color": "^2.19.3",
+        "react-dom": "^18.2.0",
+        "react-ga4": "^2.0.0",
+        "react-router-dom": "^6.8.1"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.20.12",
+        "@types/events": "^3.0.0",
+        "@types/react": "^18.0.27",
+        "@types/react-color": "^3.0.6",
+        "@types/react-dom": "^18.0.10",
+        "@typescript-eslint/eslint-plugin": "^5.51.0",
+        "@typescript-eslint/parser": "^5.51.0",
+        "@vitejs/plugin-react": "^3.1.0",
+        "eslint": "^8.33.0",
+        "eslint-config-prettier": "^8.6.0",
+        "eslint-plugin-react": "^7.32.2",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "prettier": "^2.8.3",
+        "typescript": "^4.9.5",
+        "vite": "^4.1.1"
+    }
+}
