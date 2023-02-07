@@ -111,13 +111,13 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
                     options={this.state.favorites.concat(options)}
                     autoHighlight={true}
                     openOnFocus={true}
-                    getOptionSelected={this.compareValues}
+                    isOptionEqualToValue={this.compareValues}
                     getOptionLabel={(option) => option.deptLabel}
                     onChange={this.handleSetDept}
                     includeInputInList={true}
                     noOptionsText="No departments match the search"
                     groupBy={(dept) => (dept.isFavorite ? 'Recent Departments' : 'Departments')}
-                    renderInput={(params) => <TextField {...params} label="Department" />}
+                    renderInput={(params) => <TextField {...params} label="Department" variant="standard" />}
                 />
             </div>
         );
