@@ -9,7 +9,6 @@ import {
     TextField,
 } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
-import { withStyles } from '@mui/styles';
 import { ClassNameMap } from '@mui/styles/withStyles';
 import React, { PureComponent } from 'react';
 
@@ -137,7 +136,6 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
     }
 
     render() {
-        const { classes } = this.props;
         return (
             <>
                 {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
@@ -157,7 +155,7 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                             under the Enrolled Classes section. 
                             {/* &apos; is an apostrophe (') */}
                         </DialogContentText>
-                        <InputLabel className={classes.inputLabel}>Study List</InputLabel>
+                        <InputLabel sx={styles.inputLabel}>Study List</InputLabel>
                         <TextField
                             // eslint-disable-next-line jsx-a11y/no-autofocus
                             autoFocus
@@ -187,4 +185,4 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
     }
 }
 
-export default withStyles(styles)(ImportStudyList);
+export default ImportStudyList
