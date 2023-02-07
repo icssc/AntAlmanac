@@ -23,8 +23,6 @@ export default function AppThemeProvider({ children }: Props) {
       : window.matchMedia('(prefers-color-scheme: dark)').matches
   );
 
-  useAppStore.subscribe((s) => console.log(s.theme));
-
   /**
    * set the store's theme when the media query changes
    */
