@@ -111,7 +111,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDarkMode() ? 'secondary' : 'primary'}>
+                    <Button onClick={handleClose} color={isDarkMode() ? 'inherit' : 'primary'}>
                         Cancel
                     </Button>
                     <Button
