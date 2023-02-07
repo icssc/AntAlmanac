@@ -26,6 +26,9 @@ export interface AppStoreDeletedCourse extends AppStoreCourse {
 }
 
 export interface AppStore {
+  //---------------------------------------------------------------------------------
+  // global state
+  //---------------------------------------------------------------------------------
   currentScheduleIndex: number;
   customEvents: RepeatingCustomEvent[];
   addedCourses: AppStoreCourse[];
@@ -43,6 +46,11 @@ export interface AppStore {
   scheduleNames: string[];
   unsavedChanges: boolean;
   color: any;
+
+  //---------------------------------------------------------------------------------
+  // helper functions to mutate state
+  //---------------------------------------------------------------------------------
+  setTheme: (color: string) => void;
 }
 
 export function getTheme() {
@@ -315,7 +323,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
     }));
   },
 
-  toggleTheme(theme: string) {
+  setTheme(theme: string) {
     window.localStorage.setItem('theme', theme);
     set(() => ({ theme }));
   },

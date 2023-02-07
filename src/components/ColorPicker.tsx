@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { SketchPicker, ColorResult } from 'react-color';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover } from '@mui/material';
-import AppStore from '$lib/AppStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { changeCourseColor, changeCustomEventColor } from '$lib/AppStoreActions';
+import { useAppStore } from '$lib/stores/global';
 
 interface ColorPickerProps {
   color: string;
@@ -58,24 +58,24 @@ export default function ColorPicker(props: ColorPickerProps) {
   }
 
   useEffect(() => {
-    function updateColor(color: string) {
-      if (color !== props.color) {
-        setColor(color);
-      }
-    }
-
     let colorPickerId = '';
-    if (props.isCustomEvent && props.customEventID) colorPickerId = props.customEventID.toString();
-    else if (props.sectionCode) colorPickerId = props.sectionCode;
-    else throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.");
-    AppStore.registerColorPicker(colorPickerId, updateColor);
+    if (props.isCustomEvent && props.customEventID) {
+      colorPickerId = props.customEventID.toString();
+    } else if (props.sectionCode) {
+      colorPickerId = props.sectionCode;
+    } else throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.");
+
+    // AppStore.registerColorPicker(colorPickerId, updateColor);
 
     return () => {
       let colorPickerId = '';
-      if (props.isCustomEvent && props.customEventID) colorPickerId = props.customEventID.toString();
-      else if (props.sectionCode) colorPickerId = props.sectionCode;
-      else throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.");
-      AppStore.unregisterColorPicker(colorPickerId, updateColor);
+      if (props.isCustomEvent && props.customEventID) {
+        colorPickerId = props.customEventID.toString();
+      } else if (props.sectionCode) {
+        colorPickerId = props.sectionCode;
+      } else throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.");
+
+      // AppStore.unregisterColorPicker(colorPickerId, updateColor);
     };
   }, [props.color, props.isCustomEvent, props.customEventID, props.sectionCode]);
 
