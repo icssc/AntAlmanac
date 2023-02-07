@@ -280,8 +280,6 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
-
-        console.log(this.scheduleNotes);
     }
 
     renameSchedule(newScheduleNames: string[], newScheduleNotes: string[]) {
@@ -289,8 +287,6 @@ class AppStore extends EventEmitter {
         this.scheduleNotes = newScheduleNotes;
         this.emit('scheduleNamesChange');
         this.emit('scheduleNotesChange');
-
-        console.log(this.scheduleNotes);
     }
 
     saveSchedule() {
@@ -357,8 +353,6 @@ class AppStore extends EventEmitter {
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
         this.emit('scheduleNotesChange');
-
-        console.log(this.scheduleNotes);
     }
 
     changeCourseColor(addedCoursesAfterColorChange: AppStoreCourse[], sectionCode: string, newColor: string) {

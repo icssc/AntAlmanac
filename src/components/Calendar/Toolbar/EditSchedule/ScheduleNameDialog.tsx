@@ -94,7 +94,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
     return (
         <>
             {rename ? (
-                <MenuItem onClick={handleOpen}>Rename Schedule</MenuItem>
+                <MenuItem onClick={handleOpen}>Edit Schedule</MenuItem>
             ) : (
                 <MenuItem onClick={handleOpen}>
                     <Add className={classes.addButton} />
@@ -107,7 +107,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
                 onClick={(event) => event.stopPropagation()}
                 fullWidth
             >
-                <DialogTitle>{rename ? 'Rename Schedule' : 'Add a New Schedule'}</DialogTitle>
+                <DialogTitle>{rename ? 'Edit Schedule' : 'Add a New Schedule'}</DialogTitle>
                 <DialogContent>
                     <TextField
                         className={classes.textField}
@@ -141,7 +141,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
                         color="primary"
                         disabled={scheduleName.trim() === ''}
                     >
-                        {rename ? 'Rename Schedule' : 'Add Schedule'}
+                        {rename ? 'Edit Schedule' : 'Add Schedule'}
                     </Button>
                 </DialogActions>
             </Dialog>
