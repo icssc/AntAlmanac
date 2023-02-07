@@ -149,7 +149,7 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
 
                 <FormControl>
                     <InputLabel>Class Full Option</InputLabel>
-                    <Select value={this.state.coursesFull} onChange={this.handleChange('coursesFull')}>
+                    <Select value={this.state.coursesFull} onChange={this.handleChange('coursesFull')} variant="standard">
                         <MenuItem value={'ANY'}>Include all classes</MenuItem>
                         <MenuItem value={'SkipFullWaitlist'}>Include full courses if space on waitlist</MenuItem>
                         <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
@@ -165,6 +165,7 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
                         value={this.state.startTime}
                         onChange={this.handleChange('startTime')}
                         className={classes?.timePicker}
+                        variant="standard"
                     >
                         {startsAfterMenuItems}
                     </Select>
@@ -177,6 +178,7 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
                         value={this.state.endTime}
                         onChange={this.handleChange('endTime')}
                         className={classes?.timePicker}
+                        variant="standard"
                     >
                         {endsBeforeMenuItems}
                     </Select>
@@ -200,6 +202,7 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
                     type="search"
                     value={this.state.building}
                     onChange={this.handleChange('building')}
+                    variant="standard"
                 />
 
                 <TextField
@@ -208,6 +211,7 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
                     type="search"
                     value={this.state.room}
                     onChange={this.handleChange('room')}
+                    variant="standard"
                 />
             </div>
         );
