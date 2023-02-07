@@ -3,7 +3,7 @@ import { SketchPicker, ColorResult } from 'react-color';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover } from '@mui/material';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { changeCourseColor, changeCustomEventColor } from '$lib/AppStoreActions';
+// import { changeCourseColor, changeCustomEventColor } from '$lib/AppStoreActions';
 import { useAppStore } from '$lib/stores/global';
 
 interface ColorPickerProps {
@@ -33,6 +33,8 @@ interface ColorPickerProps {
 export default function ColorPicker(props: ColorPickerProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [color, setColor] = useState(props.color);
+
+  const {} = useAppStore(state => ({ changeCustomEventColor: state.changeCustomEventColor, changeCourseColor: state.changeCourseColor }))
 
   function handleClick(event: React.MouseEvent<HTMLElement>) {
     event.stopPropagation();

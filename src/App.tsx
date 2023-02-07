@@ -1,7 +1,5 @@
-import { useEffect } from 'react';
-import ReactGA4 from 'react-ga4';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { undoDelete } from '$lib/AppStoreActions';
+import useGoogleAnalytics from '$hooks/useGoogleAnalytics';
 
 import AppThemeProvider from './providers/Theme';
 import AppQueryProvider from './providers/Query';
@@ -10,15 +8,7 @@ import Home from '$components/Home';
 import ColorPicker from '$components/ColorPicker';
 
 export default function App() {
-  useEffect(() => {
-    document.addEventListener('keydown', undoDelete, false);
-    ReactGA4.initialize('G-30HVJXC2Y4');
-    ReactGA4.send('pageview');
-    return () => {
-      document.removeEventListener('keydown', undoDelete, false);
-    };
-  }, []);
-
+  useGoogleAnalytics()
   return (
     <AppQueryProvider>
       <AppThemeProvider>

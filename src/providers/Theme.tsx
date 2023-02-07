@@ -1,34 +1,30 @@
 import { useEffect } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material';
-import { useAppStore } from '$lib/stores/global';
+import { useSettingsStore } from '$lib/stores/settings';
 
 interface Props {
   children: React.ReactNode;
 }
 
+/**
+ */
 export default function AppThemeProvider({ children }: Props) {
-  /**
-   * only get the state variables needed
-   */
-  const [appTheme, setTheme] = useAppStore((state) => [state.theme, state.setTheme]);
+  const { colorScheme, setColorScheme } = useSettingsStore();
 
   /**
    * dark mode reacts to the store's theme
    */
-  const darkMode = useAppStore((state) =>
-    state.theme === 'dark'
-      ? true
-      : state.theme === 'light'
-      ? false
-      : window.matchMedia('(prefers-color-scheme: dark)').matches
-  );
+  const darkMode = 
+    colorScheme === 'dark' ? true : 
+    colorScheme === 'light' ? false : 
+    window.matchMedia('(prefers-color-scheme: dark)').matches
 
   /**
    * set the store's theme when the media query changes
    */
   function handleMediaChange(e: MediaQueryListEvent) {
-    if (appTheme === 'auto') {
-      setTheme(e.matches ? 'dark' : 'light');
+    if (colorScheme === 'auto') {
+      setColorScheme(e.matches ? 'dark' : 'light');
     }
   }
 

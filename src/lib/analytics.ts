@@ -1,9 +1,7 @@
 import ReactGA4 from 'react-ga4';
 
 /**
- * This is an enum that stores all the
- * possible category names and associated actions
- * for Google Analytics
+ * all possible category names and associated actions for Google Analytics
  */
 const analyticsEnum = {
   calendar: {

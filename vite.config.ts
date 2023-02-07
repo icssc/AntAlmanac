@@ -10,6 +10,7 @@ export default defineConfig({
     alias: {
       $lib: resolve(__dirname, 'src/lib'),
       $components: resolve(__dirname, 'src/components'),
+      $hooks: resolve(__dirname, 'src/hooks'),
     },
   },
 });
