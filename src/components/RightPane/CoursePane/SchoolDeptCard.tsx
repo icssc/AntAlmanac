@@ -7,16 +7,24 @@ const styles: Styles<Theme, object> = (theme) => ({
     school: {
         display: 'flex',
         flexWrap: 'wrap',
-        // TODO: FIXME: gutters doesn't exist??
-        // ...theme.mixins.gutters(),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        [theme.breakpoints.up('sm')]: {
+            paddingLeft: theme.spacing(3),
+            paddingRight: theme.spacing(3),
+        },
         paddingTop: theme.spacing(),
         paddingBottom: theme.spacing(),
     },
     dept: {
         display: 'flex',
         flexWrap: 'wrap',
-        // TODO: FIXME: gutters doesn't exist??
-        // ...theme.mixins.gutters(),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        [theme.breakpoints.up('sm')]: {
+            paddingLeft: theme.spacing(3),
+            paddingRight: theme.spacing(3),
+        },
         paddingTop: theme.spacing(),
         paddingBottom: theme.spacing(),
     },
