@@ -84,6 +84,7 @@ class ColorPicker extends PureComponent<ColorPickerProps> {
                     onClick={(e) => {
                         this.handleClick(e);
                     }}
+                    size="large"
                 >
                     <ColorLens fontSize="small" />
                 </IconButton>
