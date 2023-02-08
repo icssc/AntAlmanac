@@ -21,7 +21,7 @@ import { analyticsEnum, logAnalytics } from '$lib/analytics';
 import { useScheduleStore } from '$lib/stores/schedule';
 import { SAVE_DATA_ENDPOINT, LOAD_DATA_ENDPOINT } from '$lib/endpoints';
 
-export interface CourseDetails {
+interface CourseDetails {
   deptCode: string;
   courseNumber: string;
   courseTitle: string;
