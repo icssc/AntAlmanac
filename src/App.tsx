@@ -1,9 +1,10 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import useGoogleAnalytics from '$hooks/useGoogleAnalytics';
 
+import { SnackbarProvider } from 'notistack';
 import AppThemeProvider from './providers/Theme';
 import AppQueryProvider from './providers/Query';
-import { SnackbarProvider } from 'notistack';
+
+import useGoogleAnalytics from '$hooks/useGoogleAnalytics';
 
 import Home from '$components/Home';
 

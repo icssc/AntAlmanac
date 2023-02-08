@@ -6,6 +6,11 @@ import Load from './Load';
 
 export default function ActionsBar() {
   const customEvents = useScheduleStore((state) => state.customEvents);
+  const addedCourses = useScheduleStore((state) => state.addedCourses);
+
+  useScheduleStore.subscribe(s => {
+    console.log(s)
+  })
 
   return (
     <AppBar position="static" sx={{ marginBottom: '4px' }}>
@@ -16,6 +21,7 @@ export default function ActionsBar() {
         <Load />
         <Import />
         {JSON.stringify(customEvents)}
+        {JSON.stringify(addedCourses)}
       </Toolbar>
     </AppBar>
   );
