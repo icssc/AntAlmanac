@@ -22,7 +22,7 @@ interface CourseInfo {
  * @returns a function that will invoke the handler to add multiple courses
  * @remarks uses the single useAddCourse hook
  */
-export function useAddCoursesMultiple() {
+export default function useAddCoursesMultiple() {
   // use the single add course hook
   const addCourse = useAddCourse();
 

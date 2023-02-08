@@ -454,3 +454,34 @@ function removeDuplicateMeetings(websocResp: WebsocResponse): WebsocResponse {
   });
   return websocResp;
 }
+
+export function combineSOCObjects(SOCObjects: WebsocResponse[]) {
+  const combined = SOCObjects.shift() as WebsocResponse;
+  for (const res of SOCObjects) {
+    for (const school of res.schools) {
+      const schoolIndex = combined.schools.findIndex((s) => s.schoolName === school.schoolName);
+      if (schoolIndex !== -1) {
+        for (const dept of school.departments) {
+          const deptIndex = combined.schools[schoolIndex].departments.findIndex((d) => d.deptCode === dept.deptCode);
+          if (deptIndex !== -1) {
+            const courses = new Set(combined.schools[schoolIndex].departments[deptIndex].courses);
+            for (const course of dept.courses) {
+              courses.add(course);
+            }
+            const coursesArray = Array.from(courses);
+            coursesArray.sort(
+              (left, right) =>
+                parseInt(left.courseNumber.replace(/\D/g, '')) - parseInt(right.courseNumber.replace(/\D/g, ''))
+            );
+            combined.schools[schoolIndex].departments[deptIndex].courses = coursesArray;
+          } else {
+            combined.schools[schoolIndex].departments.push(dept);
+          }
+        }
+      } else {
+        combined.schools.push(school);
+      }
+    }
+  }
+  return combined;
+}
