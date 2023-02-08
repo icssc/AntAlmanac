@@ -8,3 +8,9 @@
   - you should have a separate function called "handleImport" that handles importing
 
 - why do you need a global toggle for the snack bar??
+
+- ImportStudyList
+  - why the fuck did you add a keydown event listener to the DOM???????
+
+- AppStore and calendarize helpers
+  - THIS IS CIRCULAR
