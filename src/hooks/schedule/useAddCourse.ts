@@ -82,7 +82,7 @@ export default function useAddCourse() {
       if (course.section.sectionCode === section.sectionCode && term === course.term) {
         existingCourse = course;
         if (course.scheduleIndices.includes(scheduleIndex)) {
-          return course.color;
+          return course;
         } else {
           break;
         }
@@ -108,16 +108,18 @@ export default function useAddCourse() {
         section: { ...section, color: color },
       };
       addCourse(newCourse);
-    } else {
-      const newSection = {
-        ...existingCourse,
-        scheduleIndices:
-          scheduleIndex === scheduleNames.length
-            ? [...scheduleNames.keys()]
-            : existingCourse.scheduleIndices.concat(scheduleIndex),
-      };
-      addSection(newSection);
+      return newCourse;
     }
-    return color;
+
+    const newSection = {
+      ...existingCourse,
+      scheduleIndices:
+        scheduleIndex === scheduleNames.length
+          ? [...scheduleNames.keys()]
+          : existingCourse.scheduleIndices.concat(scheduleIndex),
+    };
+
+    addSection(newSection);
+    return newSection;
   };
 }

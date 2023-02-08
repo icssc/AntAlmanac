@@ -324,7 +324,7 @@ export async function getCoursesData(userData: UserData): Promise<CourseData> {
   };
 }
 
-export interface CourseDetails {
+interface CourseDetails {
   deptCode: string;
   courseNumber: string;
   courseTitle: string;
