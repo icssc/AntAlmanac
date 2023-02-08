@@ -1,7 +1,18 @@
-import React from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Notifications as NotificationsIcon } from '@mui/icons-material';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Tooltip } from '@mui/material';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  List,
+  ListItem,
+  Tooltip,
+} from '@mui/material';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '$lib/endpoints';
 
@@ -14,8 +25,11 @@ interface NotificationAPIResponse {
   smsNotificationList: NotificationItem[];
 }
 
+/**
+ * notification bell that opens a modal with notifications
+ */
 export default function NotificationHub() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const query = useQuery({
     queryKey: [LOOKUP_NOTIFICATIONS_ENDPOINT],
@@ -42,6 +56,9 @@ export default function NotificationHub() {
         };
       }
 
+      /**
+       * fallback return
+       */
       return {
         phoneNumber: '',
         smsNotificationList: [],
@@ -76,18 +93,16 @@ export default function NotificationHub() {
         <DialogContent dividers={true}>
           <DialogContentText>
             {query.data?.phoneNumber ? (
-              <div>
+              <Box>
                 Watchlist for {query.data.phoneNumber}:
-                <ul>
-                  {query.data.smsNotificationList.map((section, index) => {
-                    return (
-                      <li key={index}>
-                        {section.courseTitle}: {section.sectionCode}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
+                <List>
+                  {query.data.smsNotificationList.map((section, index) => (
+                    <ListItem key={index}>
+                      {section.courseTitle}: {section.sectionCode}
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
             ) : (
               'You have not registered for SMS notifications on this PC!'
             )}

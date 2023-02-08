@@ -3,7 +3,7 @@ import ReactGA4 from 'react-ga4';
 /**
  * all possible category names and associated actions for Google Analytics
  */
-const analyticsEnum = {
+export const analyticsEnum = {
   calendar: {
     title: 'Calendar Pane',
     actions: {
@@ -66,7 +66,7 @@ const analyticsEnum = {
       CLICK_PIN: 'Click on Pin',
     },
   },
-};
+} as const;
 
 export default analyticsEnum;
 
@@ -80,6 +80,6 @@ interface AnalyticsProps {
 /**
  * This is just a wrapper around ReactGA4.event so we don't have to import it everywhere
  */
-export function logAnalytics({ category, action, label, value }: AnalyticsProps) {
-  ReactGA4.event({ category, action, label, value });
+export function logAnalytics(props: AnalyticsProps) {
+  ReactGA4.event(props);
 }

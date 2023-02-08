@@ -1,6 +1,9 @@
 import { Button, Tooltip } from '@mui/material';
 import { Assignment as AssignmentIcon } from '@mui/icons-material';
 
+/**
+ * button that links to a feedback form
+ */
 export default function FeedbackButton() {
   return (
     <Tooltip title="Give Us Feedback">

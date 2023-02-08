@@ -3,12 +3,19 @@ import { Brightness4 as Brightness4Icon } from '@mui/icons-material';
 import { Button, FormControl, FormControlLabel, Paper, Popover, Radio, RadioGroup } from '@mui/material';
 import { useSettingsStore } from '$lib/stores/settings';
 
+/**
+ * button that opens a popover with a radio group to change the color scheme
+ */
 export default function SettingsMenu() {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  /**
+   * use the color scheme from the store
+   */
   const { colorScheme, setColorScheme } = useSettingsStore();
 
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
   /**
-   * update the global theme when a radio button is clicked
+   * update the global color scheme when a radio button is clicked
    */
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setColorScheme(e.target.value);

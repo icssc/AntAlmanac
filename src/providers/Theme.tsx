@@ -1,12 +1,48 @@
 import { useEffect } from 'react';
-import { createTheme, ThemeProvider } from '@mui/material';
+import { createTheme, ThemeProvider, ThemeOptions } from '@mui/material';
 import { useSettingsStore } from '$lib/stores/settings';
+
+/**
+ * dark color palette
+ */
+const darkPalette: ThemeOptions['palette'] = {
+  mode: 'dark',
+  primary: {
+    main: '#1E90FF',
+    contrastText: '#fff',
+  },
+  secondary: {
+    main: '#1E90FF',
+    contrastText: '#000',
+  },
+  background: {
+    default: '#303030',
+    paper: '#424242',
+  },
+  divider: '#AAA',
+};
+
+/**
+ * light color palette
+ */
+const lightPalette: ThemeOptions['palette'] = {
+  mode: 'light',
+  primary: {
+    main: '#305db7',
+    contrastText: '#fff',
+  },
+  secondary: {
+    main: '#00F',
+    contrastText: '#000',
+  },
+};
 
 interface Props {
   children: React.ReactNode;
 }
 
 /**
+ * provides a reactive MUI theme to the app
  */
 export default function AppThemeProvider({ children }: Props) {
   const { colorScheme, setColorScheme } = useSettingsStore();
@@ -24,7 +60,7 @@ export default function AppThemeProvider({ children }: Props) {
   /**
    * set the store's theme when the media query changes
    */
-  function handleMediaChange(e: MediaQueryListEvent) {
+  function handleChange(e: MediaQueryListEvent) {
     if (colorScheme === 'auto') {
       setColorScheme(e.matches ? 'dark' : 'light');
     }
@@ -34,9 +70,9 @@ export default function AppThemeProvider({ children }: Props) {
    * setup the media query listeners and return a function to remove them
    */
   useEffect(() => {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', handleMediaChange);
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', handleChange);
     return () => {
-      window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', handleMediaChange);
+      window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', handleChange);
     };
   }, []);
 
@@ -44,47 +80,7 @@ export default function AppThemeProvider({ children }: Props) {
    * theme changes based on global App state
    */
   const theme = createTheme({
-    typography: {
-      htmlFontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10),
-      fontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
-    },
-    palette: {
-      ...(darkMode
-        ? {
-            mode: 'dark',
-            primary: {
-              main: '#1E90FF',
-              contrastText: '#fff',
-            },
-            secondary: {
-              main: '#1E90FF',
-              contrastText: '#000',
-            },
-            background: {
-              default: '#303030',
-              paper: '#424242',
-            },
-            divider: '#AAA',
-
-            button: {
-              main: '#FFF',
-            },
-          }
-        : {
-            mode: 'light',
-            primary: {
-              main: '#305db7',
-              contrastText: '#fff',
-            },
-            secondary: {
-              main: '#00F',
-              contrastText: '#000',
-            },
-            button: {
-              main: 'rgba(0, 0, 0, 0.23)',
-            },
-          }),
-    },
+    palette: { ...(darkMode ? darkPalette : lightPalette) },
     spacing: 4,
     components: {
       MuiPaper: {

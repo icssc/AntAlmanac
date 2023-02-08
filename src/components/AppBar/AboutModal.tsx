@@ -3,6 +3,9 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import { Info } from '@mui/icons-material';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
+/**
+ * button that opens a modal with information about the app
+ */
 export default function AboutModal() {
   const [open, setOpen] = useState(false);
 
@@ -24,7 +27,7 @@ export default function AboutModal() {
       <Button onClick={openAbout} color="inherit" startIcon={<Info />}>
         About
       </Button>
-      <Dialog open={open || false}>
+      <Dialog open={open}>
         <DialogTitle>About</DialogTitle>
         <DialogContent>
           <DialogContentText>

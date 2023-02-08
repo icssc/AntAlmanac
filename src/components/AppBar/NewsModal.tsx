@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
 import { Fragment, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Badge, Box, Button, Divider, List, ListItem, Paper, Popover, Tooltip, Typography } from '@mui/material';
 import { RssFeed } from '@mui/icons-material';
 import { Skeleton } from '@mui/lab';
-import { Badge, Box, Button, Divider, List, ListItem, Paper, Popover, Tooltip, Typography } from '@mui/material';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { NEWS_ENDPOINT } from '$lib/endpoints';
 
@@ -26,7 +26,7 @@ interface NewsItem {
 }
 
 /**
- * News Modal
+ * button that opens a modal with news items
  */
 export default function NewsModal() {
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
@@ -40,7 +40,9 @@ export default function NewsModal() {
     queryKey: [NEWS_ENDPOINT],
     async queryFn() {
       const json = await fetch(NEWS_ENDPOINT).then((res) => res.json());
-      const sortedNewsItems = json.news.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? 1 : 0));
+      const sortedNewsItems = json.news.sort((a: NewsItem, b: NewsItem) =>
+        a.date < b.date ? 1 : a.date > b.date ? 1 : 0
+      );
       if (typeof Storage !== 'undefined' && sortedNewsItems.length !== 0) {
         const idOfLatestNewsItem = sortedNewsItems[0]['_id'];
         const idOfLatestCheckedNewsItem = window.localStorage.getItem('idOfLatestCheckedNewsItem');

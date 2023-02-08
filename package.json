@@ -22,7 +22,6 @@
         "@mui/material": "^5.11.7",
         "@tanstack/react-query": "^4.24.4",
         "dayjs": "^1.11.7",
-        "events": "^3.3.0",
         "notistack": "^2.0.8",
         "react": "^18.2.0",
         "react-color": "^2.19.3",
@@ -33,7 +32,6 @@
     },
     "devDependencies": {
         "@babel/core": "^7.20.12",
-        "@types/events": "^3.0.0",
         "@types/node": "^18.13.0",
         "@types/react": "^18.0.27",
         "@types/react-color": "^3.0.6",
@@ -48,7 +46,6 @@
         "husky": "^8.0.3",
         "lint-staged": "^13.1.1",
         "prettier": "^2.8.3",
-        "rollup-plugin-visualizer": "^5.9.0",
         "typescript": "^4.9.5",
         "vite": "^4.1.1",
         "vite-plugin-svgr": "^2.4.0"
