@@ -416,9 +416,22 @@ export const renameSchedule = (scheduleName: string, scheduleIndex: number) => {
     AppStore.renameSchedule(newScheduleNames);
 };
 
-// After a schedule is deleted, we need to update every course and
-// custom event in every schedule. In this case, we want to update the
-// scheduleIndices array so that each event appears in the correct schedule
+/**
+ * After a schedule is deleted, we need to update every course and
+ * custom event in every schedule. In this case, we want to update the
+ * scheduleIndices array so that each event appears in the correct schedule
+ *
+ * @remarks 
+ * T is a generic function param
+ * it will be inferred by whatever type you pass to the "events" param 
+ * the return type is inferred as T[]
+ *
+ * @example 
+ * if you pass AppStoreCourse[], the return type will be inferred as AppStoreCourse[]
+ * if you pass RepeatingCustomEvent[], the return type will be inferred as RepeatingCustomEvent[]
+ *
+ * @see {@link https://www.typescriptlang.org/docs/handbook/2/generics.html#generic-constraints}
+ */
 const getEventsAfterDeleteSchedule = <T extends AppStoreCourse| RepeatingCustomEvent>(events: T[]) => {
     const newEvents = [] as typeof events;
     const currentScheduleIndex = AppStore.getCurrentScheduleIndex();
