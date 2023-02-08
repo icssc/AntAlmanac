@@ -10,7 +10,8 @@ import {
 } from '../../types';
 
 /**
- * shared schedule store
+ * shared schedule store interface
+ * @remarks don't have to define parameter types in the function implementations; hover over them to see their types
  */
 export interface ScheduleStore {
   currentScheduleIndex: number;
@@ -26,12 +27,14 @@ export interface ScheduleStore {
   addCourse: (newCourse: AppStoreCourse) => void;
   addSection(newSection: AppStoreCourse): void;
   deleteCourse: (addedCourses: AppStoreCourse[], deletedCourses: AppStoreDeletedCourse[]) => void;
+  editCustomEvent: (customEvents: RepeatingCustomEvent[]) => void;
   undoDelete: (deletedCourses: AppStoreDeletedCourse[]) => void;
   addCustomEvent: (newCustomEvent: RepeatingCustomEvent) => void;
   deleteCustomEvent: (customEvents: RepeatingCustomEvent[]) => void;
-  changeCustomEventColor: (customEvents: RepeatingCustomEvent[], color: string) => void;
+  changeCustomEventColor: (customEvents: RepeatingCustomEvent[], customEventId: number, color: string) => void;
   saveSchedule: () => void;
   addSchedule: (scheduleNames: string[]) => void;
+  renameSchedule: (scheduleNames: string[]) => void;
   copySchedule: (addedCourses: AppStoreCourse[], customEvents: RepeatingCustomEvent[]) => void;
   loadSchedule: (userData: CourseData) => void;
   clearSchedule: (addedCourses: AppStoreCourse[], customEvents: RepeatingCustomEvent[]) => void;
@@ -58,7 +61,7 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
   unsavedChanges: false,
   scheduleNames: ['Schedule 1'],
 
-  addCourse(newCourse: AppStoreCourse) {
+  addCourse(newCourse) {
     const currentStoreValues = get();
 
     const currentAddedCourses = currentStoreValues.addedCourses;
@@ -82,7 +85,7 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
     }));
   },
 
-  addSection(newSection: AppStoreCourse) {
+  addSection(newSection) {
     const currentStoreValues = get();
 
     const addedCourses = currentStoreValues.addedCourses.map((course) =>
@@ -111,7 +114,7 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
     }));
   },
 
-  deleteCourse(addedCourses: AppStoreCourse[], deletedCourses: AppStoreDeletedCourse[]) {
+  deleteCourse(addedCourses, deletedCourses) {
     const currentStoreValues = get();
 
     const currentScheduleNames = currentStoreValues.scheduleNames;
@@ -136,14 +139,14 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
     }));
   },
 
-  undoDelete(deletedCourses: AppStoreDeletedCourse[]) {
+  undoDelete(deletedCourses) {
     set(() => ({
       deletedCourses,
       unsavedChanges: true,
     }));
   },
 
-  addCustomEvent(customEvent: RepeatingCustomEvent) {
+  addCustomEvent(customEvent) {
     const currentStoreValues = get();
 
     const currentCustomEvents = currentStoreValues.customEvents;
@@ -166,7 +169,27 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
     }));
   },
 
-  deleteCustomEvent(customEvents: RepeatingCustomEvent[]) {
+  editCustomEvent(customEvents) {
+    const currentStoreValues = get();
+    const currentAddedCourses = currentStoreValues.addedCourses;
+
+    const finalsEventsInCalendar = calendarizeFinals(currentAddedCourses);
+
+    const calendarCourseEvents = calendarizeCourseEvents(currentAddedCourses);
+    const calendarCustomEvents = calendarizeCustomEvents(customEvents);
+    const eventsInCalendar = [...calendarCourseEvents, ...calendarCustomEvents];
+
+    const unsavedChanges = true;
+
+    set(() => ({
+      customEvents,
+      finalsEventsInCalendar,
+      eventsInCalendar,
+      unsavedChanges,
+    }));
+  },
+
+  deleteCustomEvent(customEvents) {
     const currentStoreValues = get();
 
     const currentAddedCourses = currentStoreValues.addedCourses;
@@ -187,7 +210,7 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
     }));
   },
 
-  changeCustomEventColor(customEvents: RepeatingCustomEvent[], color: string) {
+  changeCustomEventColor(customEvents, customEventId, color) {
     const currentStoreValues = get();
 
     const currentAddedCourses = currentStoreValues.addedCourses;
@@ -201,7 +224,7 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
     const unsavedChanges = true;
 
     // TODO: change color
-    console.log(color, 'please implement me!');
+    console.log({ color, customEventId }, 'please implement me!');
 
     set(() => ({
       customEvents,
@@ -223,7 +246,7 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
    * 2) add another key/value pair to keep track of the section codes for that schedule,
    * 3) redirect the user to the new schedule
    */
-  addSchedule(scheduleNames: string[]) {
+  addSchedule(scheduleNames) {
     const currentSectionCodes = get().addedSectionCodes;
     const currentScheduleIndex = scheduleNames.length - 1;
     const addedSectionCodes = currentSectionCodes;
@@ -236,7 +259,13 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
     }));
   },
 
-  copySchedule(addedCourses: AppStoreCourse[], customEvents: RepeatingCustomEvent[]) {
+  renameSchedule(scheduleNames) {
+    set(() => ({
+      scheduleNames,
+    }));
+  },
+
+  copySchedule(addedCourses, customEvents) {
     const currentStoreValues = get();
 
     const currentScheduleNames = currentStoreValues.scheduleNames;
@@ -259,7 +288,7 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
     }));
   },
 
-  loadSchedule(userData: CourseData) {
+  loadSchedule(userData) {
     const addedCourses = userData.addedCourses;
     const scheduleNames = userData.scheduleNames;
     const customEvents = userData.customEvents;
@@ -279,7 +308,7 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
     }));
   },
 
-  clearSchedule(addedCourses: AppStoreCourse[], customEvents: RepeatingCustomEvent[]) {
+  clearSchedule(addedCourses, customEvents) {
     const currentStoreValues = get();
     const currentScheduleNames = currentStoreValues.scheduleNames;
 
@@ -302,12 +331,7 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
     }));
   },
 
-  deleteSchedule(
-    scheduleNames: string[],
-    addedCourses: AppStoreCourse[],
-    customEvents: RepeatingCustomEvent[],
-    currentScheduleIndex: number
-  ) {
+  deleteSchedule(scheduleNames, addedCourses, customEvents, currentScheduleIndex) {
     const addedSectionCodes = getSectionCodes(addedCourses, scheduleNames);
     const finalsEventsInCalendar = calendarizeFinals(addedCourses);
     const eventsInCalendar = [...calendarizeCourseEvents(addedCourses), ...calendarizeCustomEvents(customEvents)];
@@ -323,7 +347,7 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
     }));
   },
 
-  changeCourseColor(addedCoursesAfterColorChange: AppStoreCourse[], sectionCode: string, color: string) {
+  changeCourseColor(addedCoursesAfterColorChange, sectionCode, color) {
     const currentStoreValues = get();
     const currentScheduleNames = currentStoreValues.scheduleNames;
     const currentCustomEvents = currentStoreValues.customEvents;

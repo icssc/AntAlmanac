@@ -16,4 +16,5 @@
   - THIS IS CIRCULAR
 
 - actions
-  - guard clauses?? saveScheduleAsync
+  - guard clauses?? saveSchedule
+  - fixed the getEventsAfterDeleteSchedule
