@@ -22,16 +22,32 @@ interface SettingsStore {
    * @param scheme the new theme
    */
   setColorScheme: (scheme: string) => void;
+
+  /**
+   * reactive function to determine if the current color scheme is dark
+   */
+  isDarkMode: () => boolean;
 }
 
 /**
  * hook for accessing the shared theme store
  */
-export const useSettingsStore = create<SettingsStore>((set) => ({
+export const useSettingsStore = create<SettingsStore>((set, get) => ({
   colorScheme: getColorScheme(),
 
   setColorScheme(colorScheme: string) {
     window.localStorage.setItem('colorScheme', colorScheme);
     set(() => ({ colorScheme }));
+  },
+
+  isDarkMode() {
+    switch (get().colorScheme) {
+      case 'light':
+        return false;
+      case 'dark':
+        return true;
+      default:
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
   },
 }));

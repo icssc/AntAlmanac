@@ -3,6 +3,7 @@ import useGoogleAnalytics from '$hooks/useGoogleAnalytics';
 
 import AppThemeProvider from './providers/Theme';
 import AppQueryProvider from './providers/Query';
+import { SnackbarProvider } from 'notistack';
 
 import Home from '$components/Home';
 
@@ -11,12 +12,14 @@ export default function App() {
   return (
     <AppQueryProvider>
       <AppThemeProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/feedback" element={<h1>feedback</h1>} />
-          </Routes>
-        </BrowserRouter>
+        <SnackbarProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/feedback" element={<h1>feedback</h1>} />
+            </Routes>
+          </BrowserRouter>
+        </SnackbarProvider>
       </AppThemeProvider>
     </AppQueryProvider>
   );

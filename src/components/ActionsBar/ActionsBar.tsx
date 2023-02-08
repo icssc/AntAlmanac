@@ -1,6 +1,8 @@
 import { AppBar, Button, Toolbar } from '@mui/material';
 import { Assignment as AssignmentIcon } from '@mui/icons-material';
 import { useScheduleStore } from '$lib/stores/schedule';
+import Import from './Import';
+import Load from './Load';
 
 export default function ActionsBar() {
   const customEvents = useScheduleStore((state) => state.customEvents);
@@ -11,12 +13,8 @@ export default function ActionsBar() {
         <Button color="inherit" startIcon={<AssignmentIcon />}>
           Save
         </Button>
-        <Button color="inherit" startIcon={<AssignmentIcon />}>
-          Load
-        </Button>
-        <Button color="inherit" startIcon={<AssignmentIcon />}>
-          Import
-        </Button>
+        <Load />
+        <Import />
         {JSON.stringify(customEvents)}
       </Toolbar>
     </AppBar>
