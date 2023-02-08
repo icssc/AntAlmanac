@@ -419,7 +419,7 @@ export const renameSchedule = (scheduleName: string, scheduleIndex: number) => {
 // After a schedule is deleted, we need to update every course and
 // custom event in every schedule. In this case, we want to update the
 // scheduleIndices array so that each event appears in the correct schedule
-const getEventsAfterDeleteSchedule = (events: (AppStoreCourse | RepeatingCustomEvent)[]) => {
+const getEventsAfterDeleteSchedule = <T extends AppStoreCourse| RepeatingCustomEvent>(events: T[]) => {
     const newEvents = [] as typeof events;
     const currentScheduleIndex = AppStore.getCurrentScheduleIndex();
 
@@ -452,8 +452,8 @@ export const deleteSchedule = (scheduleIndex: number) => {
         newScheduleIndex--;
     }
 
-    const newAddedCourses = getEventsAfterDeleteSchedule(AppStore.getAddedCourses()) as AppStoreCourse[];
-    const newCustomEvents = getEventsAfterDeleteSchedule(AppStore.getCustomEvents()) as RepeatingCustomEvent[];
+    const newAddedCourses = getEventsAfterDeleteSchedule(AppStore.getAddedCourses())
+    const newCustomEvents = getEventsAfterDeleteSchedule(AppStore.getCustomEvents())
 
     AppStore.deleteSchedule(newScheduleNames, newAddedCourses, newCustomEvents, newScheduleIndex);
 };
