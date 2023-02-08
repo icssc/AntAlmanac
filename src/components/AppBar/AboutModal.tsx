@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@mui/material';
 import { Info } from '@mui/icons-material';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { analyticsEnum, logAnalytics } from '$lib/analytics';
 
 /**
  * button that opens a modal with information about the app

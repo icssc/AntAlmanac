@@ -13,7 +13,7 @@ import {
   ListItem,
   Tooltip,
 } from '@mui/material';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { analyticsEnum, logAnalytics } from '$lib/analytics';
 import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '$lib/endpoints';
 
 interface NotificationItem {

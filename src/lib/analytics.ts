@@ -68,8 +68,6 @@ export const analyticsEnum = {
   },
 } as const;
 
-export default analyticsEnum;
-
 interface AnalyticsProps {
   category: string;
   action: string;

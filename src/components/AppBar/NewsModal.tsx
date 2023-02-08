@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Badge, Box, Button, Divider, List, ListItem, Paper, Popover, Tooltip, Typography } from '@mui/material';
 import { RssFeed } from '@mui/icons-material';
 import { Skeleton } from '@mui/lab';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { analyticsEnum, logAnalytics } from '$lib/analytics';
 import { NEWS_ENDPOINT } from '$lib/endpoints';
 
 /**
