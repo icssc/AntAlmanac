@@ -14,3 +14,6 @@
 
 - AppStore and calendarize helpers
   - THIS IS CIRCULAR
+
+- actions
+  - guard clauses?? saveScheduleAsync

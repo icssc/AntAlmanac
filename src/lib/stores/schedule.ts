@@ -30,6 +30,7 @@ export interface ScheduleStore {
   addCustomEvent: (newCustomEvent: RepeatingCustomEvent) => void;
   deleteCustomEvent: (customEvents: RepeatingCustomEvent[]) => void;
   changeCustomEventColor: (customEvents: RepeatingCustomEvent[], color: string) => void;
+  saveSchedule: () => void;
   addSchedule: (scheduleNames: string[]) => void;
   copySchedule: (addedCourses: AppStoreCourse[], customEvents: RepeatingCustomEvent[]) => void;
   loadSchedule: (userData: CourseData) => void;
@@ -207,6 +208,12 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
       eventsInCalendar,
       unsavedChanges,
       finalsEventsInCalendar,
+    }));
+  },
+
+  saveSchedule() {
+    set(() => ({
+      unsavedChanges: false,
     }));
   },
 
