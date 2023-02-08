@@ -40,23 +40,29 @@ function getEventsAfterDeleteSchedule<T extends AnyEvent>(events: T[], currentSc
   return newEvents;
 }
 
-export function useDeleteSchedule(scheduleIndex: number) {
+/**
+ * hook that adds a handler to the schedule store
+ * @returns a function that will invoke the handler to clear schedules
+ */
+export default function useDeleteSchedule() {
   const scheduleNames = useScheduleStore((state) => state.scheduleNames);
   const currentScheduleIndex = useScheduleStore((state) => state.currentScheduleIndex);
   const addedCourses = useScheduleStore((state) => state.addedCourses);
   const customEvents = useScheduleStore((state) => state.customEvents);
   const deleteSchedule = useScheduleStore((state) => state.deleteSchedule);
 
-  const newScheduleNames = [...scheduleNames];
-  newScheduleNames.splice(scheduleIndex, 1);
+  return (scheduleIndex: number) => {
+    const newScheduleNames = [...scheduleNames];
+    newScheduleNames.splice(scheduleIndex, 1);
 
-  let newScheduleIndex = currentScheduleIndex;
-  if (newScheduleIndex === newScheduleNames.length) {
-    newScheduleIndex--;
-  }
+    let newScheduleIndex = currentScheduleIndex;
+    if (newScheduleIndex === newScheduleNames.length) {
+      newScheduleIndex--;
+    }
 
-  const newAddedCourses = getEventsAfterDeleteSchedule(addedCourses, currentScheduleIndex);
-  const newCustomEvents = getEventsAfterDeleteSchedule(customEvents, currentScheduleIndex);
+    const newAddedCourses = getEventsAfterDeleteSchedule(addedCourses, currentScheduleIndex);
+    const newCustomEvents = getEventsAfterDeleteSchedule(customEvents, currentScheduleIndex);
 
-  deleteSchedule(newScheduleNames, newAddedCourses, newCustomEvents, newScheduleIndex);
+    deleteSchedule(newScheduleNames, newAddedCourses, newCustomEvents, newScheduleIndex);
+  };
 }

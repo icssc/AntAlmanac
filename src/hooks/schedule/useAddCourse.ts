@@ -42,10 +42,14 @@ const arrayOfColors = [
   lime[500],
   amber[500],
   blueGrey[500],
-];
+] as const;
 
 const defaultColor = '#5ec8e0';
 
+/**
+ * hook that adds a handler to the schedule store
+ * @returns a function that will invoke the handler to add a course
+ */
 export default function useAddCourse() {
   // get values from the current state of the store
   const addedCourses = useScheduleStore((state) => state.addedCourses);
