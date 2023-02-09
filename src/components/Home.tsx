@@ -7,7 +7,9 @@ import Bar from './AppBar/CustomAppBar';
 import NotificationSnackbar from './AppBar/NotificationSnackbar';
 import Calendar from './Calendar/CalendarRoot';
 import MobileHome from './MobileHome';
+import PatchNotes from './PatchNotes';
 import DesktopTabs from './RightPane/RightPaneRoot';
+
 
 const Home = () => {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
@@ -15,6 +17,7 @@ const Home = () => {
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <CssBaseline />
+            <PatchNotes />
             <Bar />
             {isMobileScreen ? (
                 <MobileHome />
