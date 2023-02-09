@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Brightness4 as Brightness4Icon } from '@mui/icons-material';
 import { Button, FormControl, FormControlLabel, Paper, Popover, Radio, RadioGroup } from '@mui/material';
-import { useSettingsStore } from '$lib/stores/settings';
+import { useSettingsStore } from '$stores/settings';
 
 /**
  * button that opens a popover with a radio group to change the color scheme

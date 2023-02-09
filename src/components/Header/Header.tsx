@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, useMediaQuery } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
 
@@ -6,20 +6,20 @@ import { ReactComponent as Logo } from './logo.svg';
 import { ReactComponent as MobileLogo } from './logo.svg';
 
 import Settings from './Settings';
-import NotificationHub from './NotificationsHub';
-import FeedbackButton from './FeedbackButton';
-import NewsModal from './NewsModal';
-import AboutModal from './AboutModal';
+import Notifications from './Notifications';
+import Feedback from './Feedback';
+import News from './News';
+import About from './About';
 
 /**
- * all buttons to render for the app bar
+ * all buttons to render for the header
  */
-const AppBarButtons = [Settings, NotificationHub, FeedbackButton, NewsModal, AboutModal];
+const Buttons = [Settings, Notifications, Feedback, News, About];
 
 /**
- * main app bar, i.e. header
+ * main header at the top of the website
  */
-export default function CustomAppBar() {
+export default function Header() {
   const isMobileScreen = useMediaQuery('(max-width:750px)');
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
@@ -30,15 +30,6 @@ export default function CustomAppBar() {
   function handleClose() {
     setAnchorEl(null);
   }
-
-  /**
-   * close the menu whenever mobile screen is resized to desktop
-   */
-  useEffect(() => {
-    if (!isMobileScreen) {
-      handleClose();
-    }
-  }, [isMobileScreen]);
 
   return (
     <AppBar
@@ -60,7 +51,7 @@ export default function CustomAppBar() {
               <MenuIcon />
             </IconButton>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-              {AppBarButtons.map((AppBarButton, index) => (
+              {Buttons.map((AppBarButton, index) => (
                 <MenuItem key={index}>
                   <AppBarButton />
                 </MenuItem>
@@ -72,7 +63,7 @@ export default function CustomAppBar() {
             <Logo height={32} />
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              {AppBarButtons.map((AppBarButton, index) => (
+              {Buttons.map((AppBarButton, index) => (
                 <AppBarButton key={index} />
               ))}
             </Box>

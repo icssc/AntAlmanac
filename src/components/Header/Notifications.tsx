@@ -37,31 +37,25 @@ export default function NotificationHub() {
       let storedPhoneNumber = '';
 
       if (typeof Storage !== 'undefined') {
-        /**
-         * grep the project for `window\.localStorage\.setItem\('phoneNumber'` to find the source of this
-         */
         storedPhoneNumber = window.localStorage.getItem('phoneNumber');
       }
 
-      if (storedPhoneNumber) {
-        const response = (await fetch(LOOKUP_NOTIFICATIONS_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phoneNumber: storedPhoneNumber.replace(/ /g, '') }),
-        }).then((res) => res.json())) as NotificationAPIResponse;
-
+      if (!storedPhoneNumber) {
         return {
-          phoneNumber: storedPhoneNumber,
-          smsNotificationList: response.smsNotificationList,
+          phoneNumber: '',
+          smsNotificationList: [],
         };
       }
 
-      /**
-       * fallback return
-       */
+      const response = (await fetch(LOOKUP_NOTIFICATIONS_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber: storedPhoneNumber.replace(/ /g, '') }),
+      }).then((res) => res.json())) as NotificationAPIResponse;
+
       return {
-        phoneNumber: '',
-        smsNotificationList: [],
+        phoneNumber: storedPhoneNumber,
+        smsNotificationList: response.smsNotificationList,
       };
     },
   });

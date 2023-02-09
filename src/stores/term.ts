@@ -1,3 +1,7 @@
+/*
+ * shared store for the currently selected term
+ */
+
 import { create } from 'zustand';
 import { getDefaultTerm } from '$lib/termData';
 

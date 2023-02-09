@@ -7,9 +7,13 @@ export default defineConfig({
   plugins: [react(), svgr()],
   resolve: {
     alias: {
-      $lib: resolve(__dirname, 'src/lib'),
       $components: resolve(__dirname, 'src/components'),
       $hooks: resolve(__dirname, 'src/hooks'),
+      $lib: resolve(__dirname, 'src/lib'),
+      $providers: resolve(__dirname, 'src/providers'),
+      $routes: resolve(__dirname, 'src/routes'),
+      $store: resolve(__dirname, 'src/store'),
+      $types: resolve(__dirname, 'src/types'),
     },
   },
 });

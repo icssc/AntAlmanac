@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { createTheme, ThemeProvider, ThemeOptions } from '@mui/material';
-import { useSettingsStore } from '$lib/stores/settings';
+import { useSettingsStore } from '$stores/settings';
 
 /**
  * dark color palette
@@ -37,25 +37,11 @@ const lightPalette: ThemeOptions['palette'] = {
   },
 };
 
-interface Props {
-  children: React.ReactNode;
-}
-
 /**
  * provides a reactive MUI theme to the app
  */
-export default function AppThemeProvider({ children }: Props) {
-  const { colorScheme, setColorScheme } = useSettingsStore();
-
-  /**
-   * dark mode reacts to the store's theme
-   */
-  const darkMode =
-    colorScheme === 'dark'
-      ? true
-      : colorScheme === 'light'
-      ? false
-      : window.matchMedia('(prefers-color-scheme: dark)').matches;
+export default function AppThemeProvider(props: { children: React.ReactNode }) {
+  const { colorScheme, setColorScheme, isDarkMode } = useSettingsStore();
 
   /**
    * set the store's theme when the media query changes
@@ -77,25 +63,24 @@ export default function AppThemeProvider({ children }: Props) {
   }, []);
 
   /**
-   * theme changes based on global App state
+   * theme reacts to the settings store
    */
   const theme = createTheme({
-    palette: { ...(darkMode ? darkPalette : lightPalette) },
+    palette: { ...(isDarkMode() ? darkPalette : lightPalette) },
     spacing: 4,
     components: {
       MuiPaper: {
         styleOverrides: { root: { backgroundImage: 'unset' } }, // removes transparent gradient
       },
       MuiButton: {
-        //change outlined button variant
         variants: [
           {
             props: { variant: 'outlined', color: 'primary' },
             style: {
-              color: darkMode ? '#FFF' : '#000',
-              borderColor: darkMode ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
+              color: isDarkMode() ? '#FFF' : '#000',
+              borderColor: isDarkMode() ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
               '&:hover': {
-                borderColor: darkMode ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
+                borderColor: isDarkMode() ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
               },
             },
           },
@@ -104,5 +89,5 @@ export default function AppThemeProvider({ children }: Props) {
     },
   });
 
-  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
+  return <ThemeProvider theme={theme}>{props.children}</ThemeProvider>;
 }

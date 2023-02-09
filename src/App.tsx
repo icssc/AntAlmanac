@@ -1,12 +1,10 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-
 import { SnackbarProvider } from 'notistack';
-import AppThemeProvider from './providers/Theme';
-import AppQueryProvider from './providers/Query';
-
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import AppThemeProvider from '$providers/Theme';
+import AppQueryProvider from '$providers/Query';
 import useGoogleAnalytics from '$hooks/useGoogleAnalytics';
-
-import Home from '$components/Home';
+import Home from '$routes/Home';
+import Feedback from '$routes/feedback';
 
 export default function App() {
   useGoogleAnalytics();
@@ -17,7 +15,7 @@ export default function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/feedback" element={<h1>feedback</h1>} />
+              <Route path="/feedback" element={<Feedback />} />
             </Routes>
           </BrowserRouter>
         </SnackbarProvider>

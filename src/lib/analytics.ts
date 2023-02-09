@@ -1,5 +1,19 @@
 import ReactGA4 from 'react-ga4';
 
+interface AnalyticsProps {
+  category: string;
+  action: string;
+  label?: string;
+  value?: number;
+}
+
+/**
+ * wrapper around ReactGA4.event
+ */
+export function logAnalytics(props: AnalyticsProps) {
+  ReactGA4.event(props);
+}
+
 /**
  * all possible category names and associated actions for Google Analytics
  */
@@ -67,17 +81,3 @@ export const analyticsEnum = {
     },
   },
 } as const;
-
-interface AnalyticsProps {
-  category: string;
-  action: string;
-  label?: string;
-  value?: number;
-}
-
-/**
- * This is just a wrapper around ReactGA4.event so we don't have to import it everywhere
- */
-export function logAnalytics(props: AnalyticsProps) {
-  ReactGA4.event(props);
-}

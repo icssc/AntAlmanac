@@ -10,9 +10,13 @@
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "paths": {
-            "$lib/*": ["src/lib/*"],
             "$components/*": ["src/components/*"],
             "$hooks/*": ["src/hooks/*"],
+            "$lib/*": ["src/lib/*"],
+            "$providers/*": ["src/providers/*"],
+            "$stores/*": ["src/stores/*"],
+            "$types/*": ["src/types/*"],
+            "$routes/*": ["src/routes/*"],
         }
     }
 }

@@ -1,5 +1,5 @@
-/**
- * shared theme store
+/*
+ * shared store for website settings, e.g. color scheme
  */
 
 import { create } from 'zustand';
