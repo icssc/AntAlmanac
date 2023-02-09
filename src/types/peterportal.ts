@@ -1,16 +1,28 @@
-// Ripped straight from here: https://github.com/icssc/peterportal-public-api/blob/c539a62acfbfda1481152272582632a168f34302/types/websoc.types.ts
-// Some interfaces aren't straight from PeterPortal. The new interfaces are prefixed with AA
+/**
+ * @see {@link https://github.com/icssc/peterportal-public-api/blob/c539a62acfbfda1481152272582632a168f34302/types/websoc.types.ts}
+ * New interfaces are prefixed with AA, i.e. [A]nt[A]lmanac
+ * TODO: describe these interfaces better since I don't know what they're for
+ */
 
+/**
+ * response from websocket API endpoint
+ */
 export interface WebsocResponse {
   schools: School[];
 }
 
+/**
+ * school
+ */
 export interface School {
   schoolName: string;
   schoolComment: string;
   departments: Department[];
 }
 
+/**
+ * department
+ */
 export interface Department {
   deptName: string;
   deptCode: string;
@@ -20,6 +32,9 @@ export interface Department {
   courseNumberRangeComments: string[];
 }
 
+/**
+ * course
+ */
 export interface Course {
   courseNumber: string;
   courseTitle: string;
@@ -28,6 +43,9 @@ export interface Course {
   sections: Section[];
 }
 
+/**
+ * course response
+ */
 export interface CourseResponse {
   id: string;
   department: string;
@@ -57,6 +75,9 @@ export interface CourseResponse {
   course_offering?: CourseOffering[];
 }
 
+/**
+ * course offering
+ */
 export interface CourseOffering {
   year: string;
   quarter: string;
@@ -77,13 +98,16 @@ export interface CourseOffering {
 }
 
 /**
- * Same as Course, except includes a `deptCode` and sections contains AASection objects, which have colors.
+ * Same as Course; includes `deptCode` and sections contains AASection objects, which have colors.
  */
 export interface AACourse extends Course {
   sections: AASection[];
   deptCode: string;
 }
 
+/**
+ * section
+ */
 export interface Section {
   sectionCode: string;
   sectionType: string;
@@ -103,24 +127,35 @@ export interface Section {
 }
 
 /**
- * Same as Section, except also has a color
+ * Same as Section, has a color
  */
 export interface AASection extends Section {
-  /** A hex RGB string prefixed by #. Added since we inject this after receiving the API response. */
+  /**
+   * hex RGB string prefixed by #, injected after receiving the API response
+   */
   color: string;
 }
 
+/**
+ * meeting
+ */
 export interface Meeting {
   days: string;
   time: string;
   bldg: string;
 }
 
+/**
+ * enrollment count
+ */
 export interface EnrollmentCount {
   totalEnrolled: string;
   sectionEnrolled: string;
 }
 
+/**
+ * section returned by the GraphQL endpoint
+ */
 export interface SectionGQL {
   code: string;
   comment: string;
