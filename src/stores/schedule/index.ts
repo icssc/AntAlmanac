@@ -7,45 +7,7 @@ import { RepeatingCustomEvent } from '$types/event';
 import { AASection } from '$types/peterportal';
 
 /**
- * user's schedule
- */
-interface Schedule {
-  scheduleName: string;
-  courses: ScheduleCourse[];
-  customEvents: RepeatingCustomEvent[];
-}
-
-/**
- * shortened course for saving in DB
- */
-interface ShortCourse {
-  color: string;
-  term: string;
-  sectionCode: string;
-}
-
-/**
- * schedule undo state
- */
-interface ScheduleUndoState {
-  schedules: Schedule[];
-  scheduleIndex: number;
-}
-
-/**
- * the schedule store is shared state that defines some primitive operations
- * it should be extended by using the `setState` function
- */
-interface ScheduleStore {
-  schedules: Schedule[];
-  scheduleIndex: number;
-  previousStates: ScheduleUndoState[];
-  addUndoState: () => void;
-  revertState: () => void;
-}
-
-/**
- * Course as stored in schedule
+ * course stored in schedule
  */
 export interface ScheduleCourse {
   courseComment: string;
@@ -58,12 +20,32 @@ export interface ScheduleCourse {
 }
 
 /**
- * schedule of short courses that is saved to DB
+ * user's schedule
  */
-export interface ShortCourseSchedule {
+interface Schedule {
   scheduleName: string;
-  courses: ShortCourse[];
+  courses: ScheduleCourse[];
   customEvents: RepeatingCustomEvent[];
+}
+
+/**
+ * schedule undo state
+ */
+interface ScheduleUndoState {
+  schedules: Schedule[];
+  scheduleIndex: number;
+}
+
+/**
+ * the schedule store is shared state that defines some primitive operations
+ * it can be extended with functions that invoke its `getState` and `setState` methods
+ */
+interface ScheduleStore {
+  schedules: Schedule[];
+  scheduleIndex: number;
+  previousStates: ScheduleUndoState[];
+  addUndoState: () => void;
+  revertState: () => void;
 }
 
 /**

@@ -2,8 +2,27 @@
  * functions that manage the schedule store when loading/saving data
  */
 
-import { useScheduleStore, ShortCourseSchedule, ScheduleCourse } from '.';
+import { RepeatingCustomEvent } from '$types/event';
 import { CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
+import { useScheduleStore, ScheduleCourse } from '.';
+
+/**
+ * shortened course for saving in DB
+ */
+interface ShortCourse {
+  color: string;
+  term: string;
+  sectionCode: string;
+}
+
+/**
+ * schedule of short courses that is saved to DB
+ */
+interface ShortCourseSchedule {
+  scheduleName: string;
+  courses: ShortCourse[];
+  customEvents: RepeatingCustomEvent[];
+}
 
 /**
  * schedule save state
