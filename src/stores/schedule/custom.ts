@@ -35,14 +35,15 @@ export function addCustomEvent(newCustomEvent: RepeatingCustomEvent, scheduleInd
 /**
  * delete a custom event
  * @param customEventId custom event ID to delete
- * @param scheduleIndices indices of schedules to remove the custom event from
+ * @param removedIndices indices of schedules to remove the custom event from
  */
-export function deleteCustomEvent(
-  customEventId: number,
-  scheduleIndices: number[] = [useScheduleStore.getState().scheduleIndex]
-) {
+export function deleteCustomEvent(customEventId: number, removedIndices: number[]) {
   const { addUndoState, schedules } = useScheduleStore.getState();
+
   addUndoState();
+
+  const scheduleIndices = removedIndices || [useScheduleStore.getState().scheduleIndex];
+
   for (const scheduleIndex of scheduleIndices) {
     const customEvents = schedules[scheduleIndex].customEvents;
     const index = customEvents.findIndex((customEvent) => customEvent.customEventID === customEventId);
@@ -50,6 +51,7 @@ export function deleteCustomEvent(
       customEvents.splice(index, 1);
     }
   }
+
   useScheduleStore.setState({ schedules });
 }
 
@@ -65,15 +67,22 @@ export function editCustomEvent(editedCustomEvent: RepeatingCustomEvent, newIndi
   addUndoState();
 
   const customEvents = schedules[scheduleIndex].customEvents;
-  let customEvent = customEvents.find((event) => event.customEventID === editedCustomEvent.customEventID);
+  const customEvent = customEvents.find((event) => event.customEventID === editedCustomEvent.customEventID);
 
   if (customEvent === undefined) {
     addCustomEvent(editedCustomEvent, newIndices);
     return;
   }
 
-  // Modify the original custom event so all references are updated as well
-  customEvent = { ...customEvent, ...editedCustomEvent };
+  /**
+   * Modify the original custom event so all references are updated as well
+   */
+  Object.assign(customEvent, editedCustomEvent);
+
+  /**
+   * update the store before adding and deleting additional events
+   */
+  useScheduleStore.setState({ schedules });
 
   const currentIndices = [...schedules.keys()].filter((index) =>
     schedules[index].customEvents.some((event) => event.customEventID === editedCustomEvent.customEventID)
@@ -99,9 +108,12 @@ export function editCustomEvent(editedCustomEvent: RepeatingCustomEvent, newIndi
  */
 export function changeCustomEventColor(customEventId: number, newColor: string) {
   const { addUndoState, schedules, scheduleIndex } = useScheduleStore.getState();
+
   addUndoState();
+
   const customEvents = schedules[scheduleIndex].customEvents;
   const customEvent = customEvents.find((event) => event.customEventID === customEventId);
+
   if (customEvent) {
     customEvent.color = newColor;
     useScheduleStore.setState({ schedules });

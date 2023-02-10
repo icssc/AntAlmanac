@@ -17,7 +17,7 @@ import {
   red,
   teal,
 } from '@mui/material/colors';
-import { useScheduleStore, ScheduleCourse } from '.';
+import { useScheduleStore, Course } from '.';
 
 const arrayOfColors = [
   red[500],
@@ -63,7 +63,7 @@ export function doesCourseExistInSchedule(sectionCode: string, term: string, sch
  * add a course to a schedule
  */
 export function addCourse(
-  newCourse: ScheduleCourse,
+  newCourse: Course,
   scheduleIndex: number = useScheduleStore.getState().scheduleIndex,
   canUndo = true
 ) {
@@ -103,7 +103,7 @@ export function addCourse(
   }
 }
 
-export function addCourseToAllSchedules(newCourse: ScheduleCourse) {
+export function addCourseToAllSchedules(newCourse: Course) {
   const { addUndoState, schedules } = useScheduleStore.getState();
   addUndoState();
   for (let i = 0; i < schedules.length; ++i) {

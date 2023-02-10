@@ -7,9 +7,9 @@ import { RepeatingCustomEvent } from '$types/event';
 import { AASection } from '$types/peterportal';
 
 /**
- * course stored in schedule
+ * course
  */
-export interface ScheduleCourse {
+export interface Course {
   courseComment: string;
   courseNumber: string; // e.g. 122a
   courseTitle: string;
@@ -24,7 +24,7 @@ export interface ScheduleCourse {
  */
 interface Schedule {
   scheduleName: string;
-  courses: ScheduleCourse[];
+  courses: Course[];
   customEvents: RepeatingCustomEvent[];
 }
 
@@ -44,8 +44,11 @@ interface ScheduleStore {
   schedules: Schedule[];
   scheduleIndex: number;
   previousStates: ScheduleUndoState[];
+
   addUndoState: () => void;
   revertState: () => void;
+
+  currentSchedule: () => Schedule;
 }
 
 /**
@@ -66,6 +69,15 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
    * undo list
    */
   previousStates: [],
+
+  /**
+   * returns the current schedule
+   */
+  currentSchedule() {
+    const schedules = get().schedules;
+    const scheduleIndex = get().scheduleIndex;
+    return schedules[scheduleIndex];
+  },
 
   /**
    * add the current state into the undo array

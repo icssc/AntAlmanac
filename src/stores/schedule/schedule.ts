@@ -21,7 +21,7 @@ export function addSchedule(scheduleName: string) {
   addUndoState();
   useScheduleStore.setState({
     schedules: [...schedules, { scheduleName, courses: [], customEvents: [] }],
-    scheduleIndex: schedules.length - 1,
+    scheduleIndex: schedules.length,
   });
 }
 
@@ -55,7 +55,7 @@ export function deleteCurrentSchedule() {
   const { addUndoState, schedules, scheduleIndex } = useScheduleStore.getState();
   addUndoState();
   schedules.splice(scheduleIndex, 1);
-  useScheduleStore.setState({ schedules, scheduleIndex: Math.min(scheduleIndex, schedules.length - 1) });
+  useScheduleStore.setState({ schedules, scheduleIndex: Math.max(0, schedules.length - 1) });
 }
 
 /**

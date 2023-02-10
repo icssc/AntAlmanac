@@ -4,7 +4,7 @@
 
 import { RepeatingCustomEvent } from '$types/event';
 import { CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
-import { useScheduleStore, ScheduleCourse } from '.';
+import { useScheduleStore, Course } from '.';
 
 /**
  * shortened course for saving in DB
@@ -99,7 +99,7 @@ export async function fromScheduleSaveState(saveState: ScheduleSaveState) {
      * Map course info to courses and transform shortened schedule to normal schedule
      */
     for (const shortCourseSchedule of saveState.schedules) {
-      const courses: ScheduleCourse[] = [];
+      const courses: Course[] = [];
       for (const shortCourse of shortCourseSchedule.courses) {
         const courseInfoMap = courseInfoDict.get(shortCourse.term);
         if (courseInfoMap !== undefined) {
