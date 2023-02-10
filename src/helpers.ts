@@ -2,7 +2,6 @@ import React from 'react';
 
 import { addCourse, openSnackbar } from './actions/AppStoreActions';
 import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from './api/endpoints';
-import { RepeatingCustomEvent } from './components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { Meeting, Section, WebsocResponse } from './peterportal.types';
 import AppStore from './stores/AppStore';
 
