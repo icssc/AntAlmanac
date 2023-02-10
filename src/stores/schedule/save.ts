@@ -2,8 +2,16 @@
  * functions that manage the schedule store when loading/saving data
  */
 
-import { useScheduleStore, ScheduleSaveState, ScheduleCourse } from '.';
+import { useScheduleStore, ShortCourseSchedule, ScheduleCourse } from '.';
 import { CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
+
+/**
+ * schedule save state
+ */
+interface ScheduleSaveState {
+  schedules: ShortCourseSchedule[];
+  scheduleIndex: number;
+}
 
 /**
  * Convert schedule to shortened schedule (no course info) for saving.
