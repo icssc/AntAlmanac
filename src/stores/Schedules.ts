@@ -188,13 +188,14 @@ export class Schedules {
         if (courseToAdd === undefined) {
             const setOfUsedColors = new Set(this.getAllCourses().map((course) => course.section.color));
 
-            const color: string =
-                arrayOfColors.find((materialColor) => {
-                    if (!setOfUsedColors.has(materialColor)) return materialColor;
-                    else return undefined;
-                }) ?? '#5ec8e0';
-            courseToAdd = newCourse;
-            courseToAdd.section.color = color;
+const color: string = arrayOfColors.find((materialColor) => !setOfUsedColors.has(materialColor)) || '#5ec8e0';
+courseToAdd = {
+  ...newCourse,
+  section: {
+    ...newCourse.section,
+    color
+  }       
+};
         }
 
         if (!this.doesCourseExistInSchedule(newCourse.section.sectionCode, newCourse.term, scheduleIndex)) {
