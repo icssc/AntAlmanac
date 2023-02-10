@@ -1,3 +1,7 @@
+/**
+ * functions that manage courses in the schedule store
+ */
+
 import {
   amber,
   blue,
@@ -13,7 +17,7 @@ import {
   red,
   teal,
 } from '@mui/material/colors';
-import { useScheduleStore, ScheduleCourse } from './schedule';
+import { useScheduleStore, ScheduleCourse } from '.';
 
 const arrayOfColors = [
   red[500],
@@ -96,4 +100,42 @@ export function addCourse(
     schedules[scheduleIndex].courses.push(courseToAdd);
     useScheduleStore.setState({ schedules });
   }
+}
+
+export function addCourseToAllSchedules(newCourse: ScheduleCourse) {
+  const { addUndoState, schedules } = useScheduleStore.getState();
+  addUndoState();
+  for (let i = 0; i < schedules.length; ++i) {
+    addCourse(newCourse, i, false);
+  }
+}
+
+/**
+ * change a course's color
+ * @param sectionCode section code
+ * @param term term
+ * @param newColor color
+ */
+export function changeCourseColor(sectionCode: string, term: string, newColor: string) {
+  const { addUndoState, schedules } = useScheduleStore.getState();
+  addUndoState();
+  const course = getExistingCourse(sectionCode, term);
+  if (course) {
+    course.section.color = newColor;
+    useScheduleStore.setState({ schedules });
+  }
+}
+
+/**
+ * delete a course from schedule
+ * @param sectionCode section code
+ * @param term term
+ */
+export function deleteCourse(sectionCode: string, term: string) {
+  const { addUndoState, getCourses, schedules, scheduleIndex } = useScheduleStore.getState();
+  addUndoState();
+  schedules[scheduleIndex].courses = getCourses().filter(
+    (course) => !(course.section.sectionCode === sectionCode && course.term === term)
+  );
+  useScheduleStore.setState({ schedules });
 }
