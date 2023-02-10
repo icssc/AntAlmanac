@@ -12,7 +12,7 @@ export default defineConfig({
       $lib: resolve(__dirname, 'src/lib'),
       $providers: resolve(__dirname, 'src/providers'),
       $routes: resolve(__dirname, 'src/routes'),
-      $store: resolve(__dirname, 'src/store'),
+      $stores: resolve(__dirname, 'src/stores'),
       $types: resolve(__dirname, 'src/types'),
     },
   },
