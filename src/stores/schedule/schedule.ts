@@ -63,9 +63,9 @@ export function deleteCurrentSchedule() {
  * @param to index of the other schedule
  */
 export function copySchedule(to: number) {
-  const { addUndoState, schedules, getCourses } = useScheduleStore.getState();
+  const { addUndoState, schedules, scheduleIndex } = useScheduleStore.getState();
   addUndoState();
-  for (const course of getCourses()) {
+  for (const course of schedules[scheduleIndex].courses) {
     if (to === schedules.length) {
       addCourseToAllSchedules(course);
     } else {

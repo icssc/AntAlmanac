@@ -41,8 +41,9 @@ const arrayOfColors = [
  * @param term
  */
 export function getExistingCourse(sectionCode: string, term: string) {
-  const { getAllCourses } = useScheduleStore.getState();
-  return getAllCourses().find((course) => course.section.sectionCode === sectionCode && course.term === term);
+  const { schedules } = useScheduleStore.getState();
+  const allCourses = schedules.map((schedule) => schedule.courses).flat(1);
+  return allCourses.find((course) => course.section.sectionCode === sectionCode && course.term === term);
 }
 
 /**
@@ -132,9 +133,9 @@ export function changeCourseColor(sectionCode: string, term: string, newColor: s
  * @param term term
  */
 export function deleteCourse(sectionCode: string, term: string) {
-  const { addUndoState, getCourses, schedules, scheduleIndex } = useScheduleStore.getState();
+  const { addUndoState, schedules, scheduleIndex } = useScheduleStore.getState();
   addUndoState();
-  schedules[scheduleIndex].courses = getCourses().filter(
+  schedules[scheduleIndex].courses = schedules[scheduleIndex].courses.filter(
     (course) => !(course.section.sectionCode === sectionCode && course.term === term)
   );
   useScheduleStore.setState({ schedules });

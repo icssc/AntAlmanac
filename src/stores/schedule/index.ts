@@ -40,13 +40,6 @@ interface ScheduleStore {
   schedules: Schedule[];
   scheduleIndex: number;
   previousStates: ScheduleUndoState[];
-
-  getScheduleName: () => string;
-  getScheduleNames: () => string[];
-  getCourses: () => ScheduleCourse[];
-  getAllCourses: () => ScheduleCourse[];
-  getCustomEvents: () => RepeatingCustomEvent[];
-  getSectionCodes: () => Set<string>;
   addUndoState: () => void;
   revertState: () => void;
 }
@@ -73,6 +66,9 @@ export interface ShortCourseSchedule {
   customEvents: RepeatingCustomEvent[];
 }
 
+/**
+ * store (shared state) with info about the current schedules
+ */
 export const useScheduleStore = create<ScheduleStore>((set, get) => ({
   /**
    * currently loaded schedules
@@ -90,48 +86,8 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
   previousStates: [],
 
   /**
-   * names of all schedules
+   * add the current state into the undo array
    */
-  getScheduleNames() {
-    return get().schedules.map((schedule) => schedule.scheduleName);
-  },
-
-  /**
-   * name of current schedule
-   */
-  getScheduleName() {
-    const currentSchedules = get().schedules;
-    const currentScheduleIndex = get().scheduleIndex;
-    return currentSchedules[currentScheduleIndex].scheduleName;
-  },
-
-  /**
-   * courses in current schedule
-   */
-  getCourses() {
-    return get().schedules[get().scheduleIndex].courses;
-  },
-
-  /**
-   * all courses in all schedules
-   */
-  getAllCourses() {
-    const schedules = get().schedules;
-    return schedules.map((schedule) => schedule.courses).flat(1);
-  },
-
-  getCustomEvents() {
-    return get().schedules[get().scheduleIndex].customEvents;
-  },
-
-  /**
-   * section codes
-   */
-  getSectionCodes() {
-    const courses = get().getCourses();
-    return new Set(courses.map((course) => `${course.section.sectionCode} ${course.term}`));
-  },
-
   addUndoState() {
     const currentSchedules = get().schedules;
     const currentPreviousStates = get().previousStates;

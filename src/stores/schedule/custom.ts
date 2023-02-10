@@ -61,7 +61,9 @@ export function deleteCustomEvent(
  */
 export function editCustomEvent(editedCustomEvent: RepeatingCustomEvent, newIndices: number[]) {
   const { addUndoState, schedules, scheduleIndex } = useScheduleStore.getState();
+
   addUndoState();
+
   const customEvents = schedules[scheduleIndex].customEvents;
   let customEvent = customEvents.find((event) => event.customEventID === editedCustomEvent.customEventID);
 
