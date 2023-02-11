@@ -155,24 +155,25 @@ export const calendarizeFinals = (currentCourses: Course[]) =>
 /**
  * returns custom events as calendar events from custom events
  */
-export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[]) {
-  return currentCustomEvents.map((customEvent) => {
-    return customEvent.days
-      .map((_day, dayIndex) => {
-        const startHour = parseInt(customEvent.start.slice(0, 2), 10);
-        const startMin = parseInt(customEvent.start.slice(3, 5), 10);
-        const endHour = parseInt(customEvent.end.slice(0, 2), 10);
-        const endMin = parseInt(customEvent.end.slice(3, 5), 10);
+export const calendarizeCustomEvents = (currentCustomEvents: RepeatingCustomEvent[]) =>
+  currentCustomEvents
+    .map((customEvent) =>
+      customEvent.days
+        .map((_day, dayIndex) => {
+          const startHour = parseInt(customEvent.start.slice(0, 2), 10);
+          const startMin = parseInt(customEvent.start.slice(3, 5), 10);
+          const endHour = parseInt(customEvent.end.slice(0, 2), 10);
+          const endMin = parseInt(customEvent.end.slice(3, 5), 10);
 
-        return {
-          customEventID: customEvent.customEventID,
-          color: customEvent.color,
-          start: new Date(2018, 0, dayIndex, startHour, startMin),
-          isCustomEvent: true,
-          end: new Date(2018, 0, dayIndex, endHour, endMin),
-          title: customEvent.title,
-        };
-      })
-      .flat();
-  });
-}
+          return {
+            customEventID: customEvent.customEventID,
+            color: customEvent.color,
+            start: new Date(2018, 0, dayIndex, startHour, startMin),
+            isCustomEvent: true,
+            end: new Date(2018, 0, dayIndex, endHour, endMin),
+            title: customEvent.title,
+          };
+        })
+        .flat()
+    )
+    .flat();
