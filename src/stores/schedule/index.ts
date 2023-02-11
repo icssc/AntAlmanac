@@ -55,11 +55,42 @@ interface ScheduleUndoState {
 interface ScheduleStore {
   schedules: Schedule[];
   scheduleIndex: number;
+  events: CalendarEvent[];
+  finals: CourseEvent[];
   previousStates: ScheduleUndoState[];
+
   addUndoState: () => void;
   revertState: () => void;
   currentSchedule: () => Schedule;
 }
+
+interface CommonCalendarEvent {
+  color: string;
+  start: Date;
+  end: Date;
+  title: string;
+}
+
+interface CourseEvent extends CommonCalendarEvent {
+  bldg: string;
+  finalExam: string;
+  instructors: string[];
+  isCustomEvent: false;
+  sectionCode: string;
+  sectionType: string;
+  term: string;
+}
+
+/**
+ * There is another CustomEvent interface in CourseCalendarEvent and they are slightly different.  The this one represents only one day, like the event on Monday, and needs to be duplicated to be repeated across multiple days. The other one, `CustomEventDialog`'s `RepeatingCustomEvent`, encapsulates the occurences of an event on multiple days, like Monday Tuesday Wednesday all in the same object as specified by the `days` array.
+ * https://github.com/icssc/AntAlmanac/wiki/The-Great-AntAlmanac-TypeScript-Rewritening%E2%84%A2#duplicate-interface-names-%EF%B8%8F
+ */
+interface CustomEvent extends CommonCalendarEvent {
+  customEventID: number;
+  isCustomEvent: true;
+}
+
+type CalendarEvent = CourseEvent | CustomEvent;
 
 /**
  * store (shared state) with info about the current schedules
@@ -74,6 +105,16 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
    * array index of currently selected schedule
    */
   scheduleIndex: 0,
+
+  /**
+   * array of all calendar events
+   */
+  events: [],
+
+  /**
+   * array of calendar events for just finals
+   */
+  finals: [],
 
   /**
    * array of previous states
