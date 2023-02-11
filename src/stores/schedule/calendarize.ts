@@ -37,17 +37,16 @@ function meetingTimeToCalendarTimes(meetingTime: string) {
 export const calendarizeCourseEvents = (currentCourses: Course[]) =>
   currentCourses
     /**
-     * map each course to an array of calendar events representing all the meeting days
+     * map each course to an array of calendar event arrays,
+     * each calendar event array represents all the meetings as calendar events
      */
     .map((course) =>
-      /**
-       * each course maps to an array of calendar events
-       */
       course.section.meetings
         /**
-         * convert the meeting time to a version with removed whitespace
+         * convert all meeting times to a version with removed whitespace
          */
         .map((meeting) => ({ ...meeting, time: meeting.time.replace(/\s/g, '') }))
+
         /**
          * ignore TBA meetings
          */
@@ -86,15 +85,15 @@ export const calendarizeCourseEvents = (currentCourses: Course[]) =>
         })
 
         /**
-         * an array of calendar events was generated for each meeting
-         * flatten it into an array of calendar events of all meetings
+         * array of calendar events was generated for each meeting for each course
+         * flatten it into an array of calendar events of all meetings for each course
          */
         .flat()
     )
 
     /**
-     * an array of calendar events was generated for each course
-     * flatten it into an array of calendar events of all courses
+     * array of calendar events of all meetings was generated for each course
+     * flatten it into an array of calendar events of all meetings of all courses
      */
     .flat();
 
