@@ -1,3 +1,7 @@
+/**
+ * helpers to convert courses or events to calendar events
+ */
+
 import { Course, RepeatingCustomEvent } from '.';
 
 /**

@@ -3,7 +3,6 @@
  */
 
 import { useScheduleStore } from '.';
-import { addCourse, addCourseToAllSchedules } from './course';
 
 /**
  * set the schedule index of the store
@@ -56,20 +55,4 @@ export function deleteCurrentSchedule() {
   addUndoState();
   schedules.splice(scheduleIndex, 1);
   useScheduleStore.setState({ schedules, scheduleIndex: Math.max(0, schedules.length - 1) });
-}
-
-/**
- * copy the current schedule to another schedule
- * @param to index of the other schedule
- */
-export function copySchedule(to: number) {
-  const { addUndoState, schedules, scheduleIndex } = useScheduleStore.getState();
-  addUndoState();
-  for (const course of schedules[scheduleIndex].courses) {
-    if (to === schedules.length) {
-      addCourseToAllSchedules(course);
-    } else {
-      addCourse(course, to, false);
-    }
-  }
 }

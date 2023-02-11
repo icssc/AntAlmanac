@@ -140,3 +140,19 @@ export function deleteCourse(sectionCode: string, term: string) {
   );
   useScheduleStore.setState({ schedules });
 }
+
+/**
+ * copy the current schedule to another schedule
+ * @param toScheduleIndex index of the other schedule
+ */
+export function copyCoursesToSchedule(toScheduleIndex: number) {
+  const { addUndoState, schedules, scheduleIndex } = useScheduleStore.getState();
+  addUndoState();
+  for (const course of schedules[scheduleIndex].courses) {
+    if (toScheduleIndex === schedules.length) {
+      addCourseToAllSchedules(course);
+    } else {
+      addCourse(course, toScheduleIndex, false);
+    }
+  }
+}
