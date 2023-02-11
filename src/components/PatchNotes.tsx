@@ -40,9 +40,6 @@ const PatchNotes = () => {
                             <li>Fixed issues with displaying GE-III courses</li>
                             <li>Fixed courses with multiple locations appearing as independent events</li>
                         </ul>
-                        Other
-                        <ul>
-                        </ul>
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
