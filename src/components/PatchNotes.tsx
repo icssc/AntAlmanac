@@ -31,14 +31,17 @@ const PatchNotes = () => {
                     <DialogContentText>
                         Features
                         <ul>
-                            <li>Added a new feature</li>
-                            <li>Added a second new feature</li>
+                            <li>Added 2023 Spring Quarter courses</li>
+                            <li>Courses will now share colors when added to Calendar</li>
+                            <li>Added this changelog!</li>
                         </ul>
                         Bug Fixes
                         <ul>
-                            <li>Fixed a bug</li>
-                            <li>Fixed another bug</li>
-                            <li>Fixed a third bug (wow!)</li>
+                            <li>Fixed issues with displaying GE-III courses</li>
+                            <li>Fixed courses with multiple locations appearing as independent events</li>
+                        </ul>
+                        Other
+                        <ul>
                         </ul>
                     </DialogContentText>
                 </DialogContent>
