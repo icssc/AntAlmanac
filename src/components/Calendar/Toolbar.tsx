@@ -1,6 +1,7 @@
 import { AppBar, Toolbar } from '@mui/material';
 import ScreenshotButton from '$components/Buttons/Screenshot';
 import DownloadButton from '$components/Buttons/Download';
+import CustomEventButton from '$components/Buttons/CustomEvent';
 
 interface Props {
   /**
@@ -15,6 +16,7 @@ export default function CalendarToolbar(props: Props) {
       <Toolbar variant="dense" sx={{ justifyContent: 'space-evenly' }}>
         <ScreenshotButton imgRef={props.imgRef} />
         <DownloadButton />
+        <CustomEventButton />
       </Toolbar>
     </AppBar>
   );
