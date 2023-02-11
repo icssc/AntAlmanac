@@ -62,6 +62,7 @@ interface ScheduleStore {
   addUndoState: () => void;
   revertState: () => void;
   currentSchedule: () => Schedule;
+  currentCourses: () => Course[];
 }
 
 interface CommonCalendarEvent {
@@ -127,6 +128,11 @@ export const useScheduleStore = create<ScheduleStore>((set, get) => ({
   currentSchedule() {
     const { schedules, scheduleIndex } = get();
     return schedules[scheduleIndex];
+  },
+
+  currentCourses() {
+    const { schedules, scheduleIndex } = get();
+    return schedules[scheduleIndex].courses;
   },
 
   /**

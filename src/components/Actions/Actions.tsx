@@ -3,7 +3,7 @@ import { Assignment as AssignmentIcon } from '@mui/icons-material';
 
 export default function ActionsBar() {
   return (
-    <AppBar position="static" sx={{ marginBottom: '4px' }}>
+    <AppBar position="static">
       <Toolbar variant="dense" sx={{ justifyContent: 'space-evenly' }}>
         <Button color="inherit" startIcon={<AssignmentIcon />}>
           Save
