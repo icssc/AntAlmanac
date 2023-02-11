@@ -3,7 +3,7 @@
  */
 
 import { useScheduleStore } from '.';
-import { RepeatingCustomEvent } from '$types/event';
+import type { RepeatingCustomEvent } from '.';
 
 /**
  * Checks if a schedule contains the custom event ID

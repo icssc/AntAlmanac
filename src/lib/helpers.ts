@@ -1,6 +1,6 @@
 import { useSnackbar } from 'notistack';
 import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from '$lib/endpoints';
-import { Meeting, Section, WebsocResponse } from '$types/peterportal';
+import type { Meeting, Section, WebsocResponse } from '$types/peterportal';
 
 /**
  * grades returned by GraphQL endpoint

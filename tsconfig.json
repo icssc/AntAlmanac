@@ -9,6 +9,7 @@
         "outDir": "dist",
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
+        "importsNotUsedAsValues": "error",
         "paths": {
             "$components/*": ["src/components/*"],
             "$hooks/*": ["src/hooks/*"],

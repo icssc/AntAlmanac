@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { createTheme, ThemeProvider, ThemeOptions } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material';
+import type { ThemeOptions } from '@mui/material';
 import { useSettingsStore } from '$stores/settings';
 
 /**
@@ -38,7 +39,7 @@ const lightPalette: ThemeOptions['palette'] = {
 };
 
 /**
- * provides a reactive MUI theme to the app
+ * wraps the app with a reactive MUI theme
  */
 export default function AppThemeProvider(props: { children: React.ReactNode }) {
   const { colorScheme, setColorScheme, isDarkMode } = useSettingsStore();
@@ -63,7 +64,7 @@ export default function AppThemeProvider(props: { children: React.ReactNode }) {
   }, []);
 
   /**
-   * theme reacts to the settings store
+   * create theme that reacts to the settings store
    */
   const theme = createTheme({
     palette: { ...(isDarkMode() ? darkPalette : lightPalette) },
