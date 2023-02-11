@@ -8,7 +8,7 @@ interface Props {
   /**
    * provide a React ref to the element to screenshot
    */
-  ref: React.RefObject<HTMLElement>;
+  imgRef: React.RefObject<HTMLElement>;
 }
 
 export default function ScreenshotButton(props: Props) {
@@ -22,7 +22,7 @@ export default function ScreenshotButton(props: Props) {
       category: analyticsEnum.calendar.title,
       action: analyticsEnum.calendar.actions.SCREENSHOT,
     });
-    const canvas = await html2canvas(props.ref.current, { scale: 2.5 });
+    const canvas = await html2canvas(props.imgRef.current, { scale: 2.5 });
     const imgRaw = canvas.toDataURL('image/png');
     saveAs(imgRaw, 'Schedule.png');
   }
@@ -34,11 +34,13 @@ export default function ScreenshotButton(props: Props) {
   }
 
   return (
-    <Tooltip title="Get a screenshot of your schedule">
-      <Button onClick={handleClick} variant="outlined" size="small" startIcon={<PanoramaIcon fontSize="small" />}>
-        Screenshot
-        <Link sx={{ display: 'none' }} ref={ref} />
-      </Button>
-    </Tooltip>
+    <>
+      <Tooltip title="Get a screenshot of your schedule">
+        <Button onClick={handleClick} variant="outlined" size="small" startIcon={<PanoramaIcon fontSize="small" />}>
+          Screenshot
+        </Button>
+      </Tooltip>
+      <Link sx={{ display: 'none' }} ref={ref} />
+    </>
   );
 }

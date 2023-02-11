@@ -1,10 +1,11 @@
+import { useRef } from 'react';
 import { createEvents } from 'ics';
-import { useSnackbar } from 'notistack'
-import { Button, Tooltip } from '@mui/material';
+import { useSnackbar } from 'notistack';
+import { Button, Link, Tooltip } from '@mui/material';
 import { Today as TodayIcon } from '@mui/icons-material';
 import { termData } from '$lib/termData';
 import { analyticsEnum, logAnalytics } from '$lib/analytics';
-import { useScheduleStore } from '$stores/schedule'
+import { useScheduleStore } from '$stores/schedule';
 
 const quarterStartDates = Object.fromEntries(
   termData
@@ -231,14 +232,14 @@ function getRRule(bydays: ReturnType<typeof getByDays>, quarter: string) {
   return `FREQ=WEEKLY;BYDAY=${bydays.toString()};INTERVAL=1;COUNT=${count}`;
 }
 
-
 export default function Download() {
-  const { currentCourses } = useScheduleStore()
-  const { enqueueSnackbar } = useSnackbar()
+  const { currentCourses } = useScheduleStore();
+  const { enqueueSnackbar } = useSnackbar();
+  const ref = useRef<HTMLAnchorElement>(null);
 
   function exportCalendar() {
     // get courses for the current schedule
-    const courses = currentCourses()
+    const courses = currentCourses();
 
     // Construct an array of VEvents for each event
     const events = [];
@@ -291,13 +292,16 @@ export default function Download() {
       }
     }
 
-    // Convert the events into a vcalendar
-    // Callback function triggers a download of the .ics file
+    /**
+     * Convert the events into a vcalendar
+     * Callback function triggers a download of the .ics file
+     */
     createEvents(events, (err, val) => {
       logAnalytics({
         category: 'Calendar Pane',
         action: analyticsEnum.calendar.actions.DOWNLOAD,
       });
+
       if (!err) {
         // Add timezone information to start and end times for events
         const icsString = val
@@ -313,20 +317,30 @@ export default function Download() {
 
         enqueueSnackbar('Schedule downloaded!', {
           variant: 'success',
-        })
+        });
       } else {
         enqueueSnackbar('Something went wrong! Unable to download schedule.', {
           variant: 'error',
-        })
+        });
         console.log(err);
       }
     });
   }
+
+  function saveAs(uri: any, download: string) {
+    ref.current.href = uri;
+    ref.current.download = download;
+    ref.current.click();
+  }
+
   return (
-    <Tooltip title="Download Calendar as an .ics file">
-      <Button onClick={exportCalendar} variant="outlined" size="small" startIcon={<TodayIcon fontSize="small" />}>
-        Download
-      </Button>
-    </Tooltip>
+    <>
+      <Tooltip title="Download Calendar as an .ics file">
+        <Button onClick={exportCalendar} variant="outlined" size="small" startIcon={<TodayIcon fontSize="small" />}>
+          Download
+        </Button>
+      </Tooltip>
+      <Link ref={ref} sx={{ display: 'none' }} />
+    </>
   );
 }
