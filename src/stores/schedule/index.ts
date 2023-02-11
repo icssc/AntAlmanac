@@ -3,8 +3,20 @@
  */
 
 import { create } from 'zustand';
-import { RepeatingCustomEvent } from '$types/event';
 import { AASection } from '$types/peterportal';
+
+/* There is another CustomEvent interface in CourseCalendarEvent and they are slightly different.
+ * This one encapsulates the occurences of an event on multiple days, like Monday Tuesday Wednesday all in the same object as specified by the days array. The other one, `CustomEventDialog`'s CustomEvent, represents only one day, like the event on Monday, and needs to be duplicated to be repeated across multiple days.
+ * https://github.com/icssc/AntAlmanac/wiki/The-Great-AntAlmanac-TypeScript-Rewritening%E2%84%A2#duplicate-interface-names-%EF%B8%8F
+ */
+export interface RepeatingCustomEvent {
+  title: string;
+  start: string;
+  end: string;
+  days: boolean[];
+  customEventID: number;
+  color?: string;
+}
 
 /**
  * course
@@ -20,7 +32,7 @@ export interface Course {
 }
 
 /**
- * user's schedule
+ * schedule
  */
 interface Schedule {
   scheduleName: string;
@@ -44,10 +56,8 @@ interface ScheduleStore {
   schedules: Schedule[];
   scheduleIndex: number;
   previousStates: ScheduleUndoState[];
-
   addUndoState: () => void;
   revertState: () => void;
-
   currentSchedule: () => Schedule;
 }
 
@@ -56,51 +66,50 @@ interface ScheduleStore {
  */
 export const useScheduleStore = create<ScheduleStore>((set, get) => ({
   /**
-   * currently loaded schedules
+   * array of currently loaded schedules
    */
   schedules: [{ scheduleName: 'Schedule 1', courses: [], customEvents: [] }],
 
   /**
-   * index of current schedule
+   * array index of currently selected schedule
    */
   scheduleIndex: 0,
 
   /**
-   * undo list
+   * array of previous states
    */
   previousStates: [],
 
   /**
-   * returns the current schedule
+   * returns currently selected schedule
    */
   currentSchedule() {
-    const schedules = get().schedules;
-    const scheduleIndex = get().scheduleIndex;
+    const { schedules, scheduleIndex } = get();
     return schedules[scheduleIndex];
   },
 
   /**
-   * add the current state into the undo array
+   * append current state onto the undo array
    */
   addUndoState() {
-    const currentSchedules = get().schedules;
-    const currentPreviousStates = get().previousStates;
-    const currentScheduleIndex = get().scheduleIndex;
-    const newPreviousState = {
-      schedules: structuredClone(currentSchedules),
-      scheduleIndex: currentScheduleIndex,
-    };
-    const previousStates = [...currentPreviousStates, newPreviousState].slice(-50);
-    set({ previousStates });
+    const { schedules, scheduleIndex, previousStates } = get();
+    previousStates.push({
+      schedules,
+      scheduleIndex,
+    });
+
+    /**
+     * limit undo states to most recent 50
+     */
+    set({ previousStates: previousStates.slice(-50) });
   },
 
   /**
-   * pop a state entry from the undo array and set it as the current state
+   * pop a state from the undo array and set it as the current state
    */
   revertState() {
-    const state = get().previousStates.pop();
-    if (state !== undefined) {
-      set(state);
-    }
+    const { previousStates } = get();
+    const previousState = previousStates.pop();
+    set({ previousStates, ...previousState });
   },
 }));

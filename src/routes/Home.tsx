@@ -4,9 +4,9 @@ import Actions from '$components/Actions';
 import Calendar from '$components/Calendar';
 import { useScheduleStore } from '$stores/schedule';
 import { setScheduleIndex, addSchedule, deleteCurrentSchedule } from '$stores/schedule/schedule';
-import { addCourseToAllSchedules} from '$stores/schedule/course';
+import { addCourseToAllSchedules } from '$stores/schedule/course';
 
-let count = 0
+let count = 0;
 
 /**
  * home page
@@ -42,7 +42,7 @@ export default function Home() {
         sectionType: '',
         sectionNum: '',
         units: '',
-        instructors:[''],
+        instructors: [''],
         meetings: [],
         finalExam: '',
         maxCapacity: '',
@@ -56,10 +56,10 @@ export default function Home() {
         restrictions: '',
         status: '',
         sectionComment: '',
-        color: 'blue'
+        color: 'blue',
       },
       term: '',
-    })
+    });
   }
 
   return (
