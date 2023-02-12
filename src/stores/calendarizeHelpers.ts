@@ -63,7 +63,7 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[]) => {
 };
 
 export const calendarizeFinals = (currentCourses: ScheduleCourse[]) => {
-    const finalsEventsInCalendar = [] as CourseEvent[];
+    const finalsEventsInCalendar: CourseEvent[] = [];
 
     for (const course of currentCourses) {
         const finalExam = course.section.finalExam;
@@ -114,7 +114,7 @@ export const calendarizeFinals = (currentCourses: ScheduleCourse[]) => {
 };
 
 export const calendarizeCustomEvents = (currentCustomEvents: RepeatingCustomEvent[]) => {
-    const customEventsInCalendar = [];
+    const customEventsInCalendar: CustomEvent[] = [];
 
     for (const customEvent of currentCustomEvents) {
         for (let dayIndex = 0; dayIndex < customEvent.days.length; dayIndex++) {
@@ -126,7 +126,7 @@ export const calendarizeCustomEvents = (currentCustomEvents: RepeatingCustomEven
 
                 customEventsInCalendar.push({
                     customEventID: customEvent.customEventID,
-                    color: customEvent.color,
+                    color: customEvent.color ?? '#000000',
                     start: new Date(2018, 0, dayIndex, startHour, startMin),
                     isCustomEvent: true,
                     end: new Date(2018, 0, dayIndex, endHour, endMin),
@@ -136,5 +136,5 @@ export const calendarizeCustomEvents = (currentCustomEvents: RepeatingCustomEven
         }
     }
 
-    return customEventsInCalendar as CustomEvent[];
+    return customEventsInCalendar;
 };
