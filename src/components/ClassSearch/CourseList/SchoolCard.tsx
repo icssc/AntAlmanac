@@ -15,7 +15,7 @@ export default function SchoolDeptCard(props: Props) {
       <Paper elevation={1} square>
         <Accordion sx={{ padding: 0 }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>{props.name}</Typography>
+            <Typography variant="h5" fontWeight="semi-bold">{props.name}</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Typography>{status}</Typography>

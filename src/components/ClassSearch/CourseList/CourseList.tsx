@@ -11,6 +11,7 @@ import {
   InfoOutlined as InfoOutlinedIcon,
   RateReview as RateReviewIcon,
   Refresh as RefreshIcon,
+  ShowChart as ShowChartIcon,
 } from '@mui/icons-material';
 import { PETERPORTAL_REST_ENDPOINT, PETERPORTAL_GRAPHQL_ENDPOINT } from '$lib/endpoints';
 import { useSearchStore } from '$stores/search';
@@ -108,6 +109,7 @@ function DoSomething(props: { course: AnyThing }) {
    */
   if ('courseNumber' in info) {
     const courseId = info.deptCode.replaceAll(' ', '') + info.courseNumber;
+    const encodedDept = encodeURIComponent(info.deptCode);
     return (
       <Box>
         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', margin: 1 }}>
@@ -133,6 +135,12 @@ function DoSomething(props: { course: AnyThing }) {
           >
             <GradesPopup course={info} />
           </CourseInfoButton2>
+          <CourseInfoButton2
+            analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_ENROLLMENT}
+            title="Past Enrollment"
+            icon={<ShowChartIcon />}
+            href={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${info.courseNumber}&courseType=all`}
+          />
         </Box>
         <SectionTable course={info} />
       </Box>
@@ -185,8 +193,9 @@ function CourseInfoButton(props: { course: AACourse }) {
   return (
     <>
       <Button
-        onClick={handleClick}
         variant="contained"
+        size="small"
+        onClick={handleClick}
         startIcon={<InfoOutlinedIcon />}
       >{`${course?.deptCode} ${course?.courseNumber} | ${course?.courseTitle}`}</Button>
       <Popover
@@ -255,7 +264,12 @@ function CourseInfoButton2(props: CourseInfoButtonProps) {
 
   return (
     <>
-      <Button variant="contained" onClick={handleClick} startIcon={icon}>
+      <Button
+        variant="contained"
+        size="small"
+        onClick={handleClick}
+        startIcon={icon}
+      >
         {title}
       </Button>
       <Popover
