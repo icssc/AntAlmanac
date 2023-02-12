@@ -22,17 +22,17 @@ export default function Home() {
           <Tab label="Item Two" />
         </Tabs>
         {value === 0 && <Calendar />}
-        {value === 1 && <Box>1</Box>}
+        {value === 1 && <ClassSearch />}
       </>
     );
   }
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <Box sx={{ width: '50%', height: '90vh', overflow: 'auto' }}>
+      <Box sx={{ width: '50%', height: '90vh', overflowY: 'auto' }}>
         <Calendar />
       </Box>
-      <Box sx={{ width: '50%' }}>
+      <Box sx={{ width: '50%', height: '90vh', overflowY: 'auto' }}>
         <ClassSearch />
       </Box>
     </Box>

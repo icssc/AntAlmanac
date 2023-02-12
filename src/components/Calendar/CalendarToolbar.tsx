@@ -29,7 +29,7 @@ export default function CalendarToolbar(props: Props) {
 
   return (
     <AppBar position="static" color="transparent">
-      <Toolbar>
+      <Toolbar sx={{ '&.MuiToolbar-root': { padding: 0 } }}>
         <Box sx={{ display: 'flex', flexGrow: 1 }}>
           <EditScheduleButton />
           <SelectScheduleButton />
