@@ -6,10 +6,6 @@
     justify-content: center;
 }
 
-.rbc-header.dark-mode {
-    color: white;
-}
-
 .rbc-header + .rbc-header {
     border: none;
 }
@@ -38,10 +34,6 @@
 
 .rbc-label {
     font-size: 0.9rem;
-}
-
-.rbc-label.dark-mode {
-    color: white;
 }
 
 @media (min-resolution: 96dpi) {
