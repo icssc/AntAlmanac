@@ -9,7 +9,6 @@ import React, { PureComponent, SyntheticEvent } from 'react';
 import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
 import ReactDOM from 'react-dom';
 
-import { isDarkMode } from '../../helpers';
 import AppStore from '../../stores/AppStore';
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
@@ -204,57 +203,11 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
 
     handleTakeScreenshot = (html2CanvasScreenshot: () => void) => {
         // This function takes a screenshot of the user's schedule
-        // Before we take the screenshot, we need to make some adjustments to the canvas:
-        //  - Set the color to black, so that the weekdays/times still appear when Dark Mode is on
-        //  - Remove the right margin on the calendar header, so the extra area for the scrollbar is removed
 
-        // Fetch the canvas and calendarHeader
-        const canvas = document.getElementById('screenshot') as HTMLElement;
-
-        // this disable only works because this isn't a functional component. It's kinda a hack
-        // eslint-disable-next-line react/no-find-dom-node
-        const headerNode = ReactDOM.findDOMNode(this) as Element;
-        const calendarHeader = headerNode.getElementsByClassName('rbc-time-header')[0] as HTMLElement;
-
-        // Save the current styling, so we can add it back afterwards
-        const oldColor = canvas.style.color;
-        const oldMargin = calendarHeader.style.marginRight;
-
-        // Update the canvas and calendar header for the picture
-        canvas.style.color = 'black';
-        calendarHeader.style.marginRight = '0px';
-
-        // Set each rbc header and time slot text color to white if the theme is dark
-        const rbc_headers = document.getElementsByClassName('rbc-header');
-        const rbc_time_slots = document.getElementsByClassName('rbc-label');
-
-        if (isDarkMode()) {
-            for (let i = 0; i < rbc_headers.length; i++) {
-                rbc_headers[i].className = 'rbc-header dark-mode';
-            }
-            for (let i = 0; i < rbc_time_slots.length; i++) {
-                rbc_time_slots[i].className = 'rbc-label dark-mode';
-            }
-        }
         this.setState({ screenshotting: true }, () => {
             // Take the picture
             html2CanvasScreenshot();
 
-            // Revert the temporary changes to the canvas and calendar
-            canvas.style.color = oldColor;
-            calendarHeader.style.marginRight = oldMargin;
-
-            // Set text color back
-            if (isDarkMode()) {
-                for (let i = 0; i < rbc_headers.length; i++) {
-                    // delete rbc_headers[i].style;
-                    rbc_headers[i].className = 'rbc-header';
-                }
-                for (let i = 0; i < rbc_time_slots.length; i++) {
-                    // delete rbc_time_slots[i].style;
-                    rbc_time_slots[i].className = 'rbc-label';
-                }
-            }
             this.setState({ screenshotting: false });
         });
     };
