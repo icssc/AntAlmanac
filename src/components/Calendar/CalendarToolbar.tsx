@@ -28,7 +28,7 @@ export default function CalendarToolbar(props: Props) {
   }
 
   return (
-    <AppBar position="static" color="default">
+    <AppBar position="static" color="transparent">
       <Toolbar variant="dense" sx={{ justifyContent: 'space-evenly', flexWrap: 'wrap' }}>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
           <EditScheduleButton />
@@ -44,10 +44,10 @@ export default function CalendarToolbar(props: Props) {
             </IconButton>
             <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={handleClose}>
               <MenuItem>
+                <MenuItem>
+                  <DownloadButton />
+                </MenuItem>
                 <ScreenshotButton imgRef={props.imgRef} />
-              </MenuItem>
-              <MenuItem>
-                <DownloadButton />
               </MenuItem>
               <MenuItem>
                 <CustomEventButton />
@@ -56,8 +56,8 @@ export default function CalendarToolbar(props: Props) {
           </>
         ) : (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
-            <ScreenshotButton imgRef={props.imgRef} />
             <DownloadButton />
+            <ScreenshotButton imgRef={props.imgRef} />
             <CustomEventButton />
           </Box>
         )}

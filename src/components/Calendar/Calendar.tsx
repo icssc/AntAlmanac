@@ -1,5 +1,5 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import './calendar.css';
+import './Calendar.css';
 
 import dayjs from 'dayjs';
 import { useState, useRef } from 'react';
@@ -8,7 +8,7 @@ import type { EventProps } from 'react-big-calendar';
 import { Box, ClickAwayListener, Popper, Typography } from '@mui/material';
 import { useScheduleStore } from '$stores/schedule';
 import { calendarizeCustomEvents, calendarizeCourseEvents } from '$stores/schedule/calendarize';
-import Toolbar from './Toolbar';
+import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent from './CourseCalendarEvent';
 import CustomCalendarEvent from './CustomCalendarEvent';
 
@@ -70,14 +70,18 @@ function AntAlmanacEvent(props: EventProps & { event: CalendarEvent }) {
  * entire calendar
  */
 export default function AntAlamancCalendar() {
-  const { schedules } = useScheduleStore();
+  const { currentSchedule } = useScheduleStore();
   const ref = useRef<HTMLDivElement>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [courseInMoreInfo, setCourseInMoreInfo] = useState<CalendarEvent | null>(null);
   const [calendarEventKey, setCalendarEventKey] = useState(0);
 
-  const events = calendarizeCustomEvents(schedules[0].customEvents);
+  const schedule = currentSchedule();
+  const events = calendarizeCustomEvents(schedule.customEvents);
   const hasWeekendCourse = events.some((event) => event?.start.getDay() === 0 || event?.start.getDay() === 6);
+
+  const isCourseEvent = courseInMoreInfo && 'bldg' in courseInMoreInfo;
+  const isCustomEvent = courseInMoreInfo && 'customEventID' in courseInMoreInfo;
 
   function handleEventClick(calendarEvent: CalendarEvent, e: React.SyntheticEvent<HTMLElement, Event>) {
     e.stopPropagation();
@@ -94,7 +98,7 @@ export default function AntAlamancCalendar() {
 
   return (
     <Box>
-      <Toolbar imgRef={ref} />
+      <CalendarToolbar imgRef={ref} />
       <Box ref={ref}>
         <Calendar
           localizer={dayjsLocalizer(dayjs)}
@@ -131,12 +135,12 @@ export default function AntAlamancCalendar() {
         <Popper anchorEl={anchorEl} placement="right" open={!!anchorEl}>
           <ClickAwayListener onClickAway={handleClose}>
             <Box>
-              {courseInMoreInfo &&
-                ('bldg' in courseInMoreInfo ? (
-                  <CourseCalendarEvent key={calendarEventKey} event={courseInMoreInfo} closePopover={handleClose} />
-                ) : (
-                  <CustomCalendarEvent key={calendarEventKey} event={courseInMoreInfo} closePopover={handleClose} />
-                ))}
+              {isCourseEvent && (
+                <CourseCalendarEvent key={calendarEventKey} event={courseInMoreInfo} closePopover={handleClose} />
+              )}
+              {isCustomEvent && (
+                <CustomCalendarEvent key={calendarEventKey} event={courseInMoreInfo} closePopover={handleClose} />
+              )}
             </Box>
           </ClickAwayListener>
         </Popper>
