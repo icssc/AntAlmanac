@@ -83,6 +83,7 @@ export default function Home() {
         Add Course to All
       </Button>
       <Box>{JSON.stringify(schedules)}</Box>
+      <Box>{scheduleIndex}</Box>
     </>
   );
 }

@@ -176,7 +176,9 @@ export default function CustomEvent(props: Props) {
               {schedules.map((schedule, index) => (
                 <FormControlLabel
                   key={index}
-                  control={<Checkbox checked={selectedSchedules.includes(index)} onChange={handleCheckSchedule(index)} />}
+                  control={
+                    <Checkbox checked={selectedSchedules.includes(index)} onChange={handleCheckSchedule(index)} />
+                  }
                   label={schedule.scheduleName}
                 />
               ))}
