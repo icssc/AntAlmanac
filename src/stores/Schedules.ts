@@ -16,6 +16,7 @@ import {
 
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { CourseInfo, getCourseInfo, queryWebsoc } from '../helpers';
+import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 import { Schedule, ScheduleCourse, ScheduleSaveState, ScheduleUndoState, ShortCourseSchedule } from './schedule.types';
 
 const arrayOfColors = [
@@ -188,14 +189,15 @@ export class Schedules {
         if (courseToAdd === undefined) {
             const setOfUsedColors = new Set(this.getAllCourses().map((course) => course.section.color));
 
-const color: string = arrayOfColors.find((materialColor) => !setOfUsedColors.has(materialColor)) || '#5ec8e0';
-courseToAdd = {
-  ...newCourse,
-  section: {
-    ...newCourse.section,
-    color
-  }       
-};
+            const color: string =
+                arrayOfColors.find((materialColor) => !setOfUsedColors.has(materialColor)) || '#5ec8e0';
+            courseToAdd = {
+                ...newCourse,
+                section: {
+                    ...newCourse.section,
+                    color,
+                },
+            };
         }
 
         if (!this.doesCourseExistInSchedule(newCourse.section.sectionCode, newCourse.term, scheduleIndex)) {
@@ -379,6 +381,15 @@ courseToAdd = {
             }
         }
         return false;
+    }
+
+    // --- Calender related methods ---
+    toCalendarizedEvents() {
+        return [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
+    }
+
+    toCalendarizedFinals() {
+        return calendarizeFinals();
     }
 
     // --- Other methods ---
