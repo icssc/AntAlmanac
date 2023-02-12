@@ -8,6 +8,7 @@ import { Box, ClickAwayListener, Popper, Typography } from '@mui/material';
 import { useScheduleStore } from '$stores/schedule';
 import { calendarizeCustomEvents, calendarizeCourseEvents } from '$stores/schedule/calendarize';
 import Toolbar from './Toolbar';
+import CourseCalendarEvent from './CalendarEvent';
 
 type CalendarCourseEvent = ReturnType<typeof calendarizeCourseEvents>[number];
 type CalendarCustomEvent = ReturnType<typeof calendarizeCustomEvents>[number];
@@ -32,32 +33,6 @@ function eventPropGetter(event: CalendarEvent) {
       color: colorContrastSufficient(event.color || '') ? 'white' : 'black',
     },
   };
-}
-
-function noop() {}
-
-function AntAlmanacEvent(props: { event: CalendarEvent }) {
-  const event = props.event;
-  if (!event.isCustomEvent)
-    return (
-      <Box>
-        <Box>
-          <Typography>{event.title}</Typography>
-          <Typography>{'sectionType' in event && event.sectionType}</Typography>
-        </Box>
-        <Box>
-          <Typography>{'bldg' in event && event.bldg}</Typography>
-          <Typography>{'sectionCode' in event && event.sectionCode}</Typography>
-        </Box>
-      </Box>
-    );
-  else {
-    return (
-      <Box>
-        <Typography>{event.title}</Typography>
-      </Box>
-    );
-  }
 }
 
 /**
@@ -90,8 +65,32 @@ function colorContrastSufficient(bg: string) {
   return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff;
 }
 
+function AntAlmanacEvent(props: { event: CalendarEvent }) {
+  const event = props.event;
+  if (!event.isCustomEvent)
+    return (
+      <Box>
+        <Box>
+          <Typography>{event.title}</Typography>
+          <Typography>{'sectionType' in event && event.sectionType}</Typography>
+        </Box>
+        <Box>
+          <Typography>{'bldg' in event && event.bldg}</Typography>
+          <Typography>{'sectionCode' in event && event.sectionCode}</Typography>
+        </Box>
+      </Box>
+    );
+  else {
+    return (
+      <Box>
+        <Typography>{event.title}</Typography>
+      </Box>
+    );
+  }
+}
+
 export default function AntAlamancCalendar() {
-  const { schedules } = useScheduleStore();
+  const { schedules, scheduleIndex } = useScheduleStore();
   const ref = useRef<HTMLDivElement>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [courseInMoreInfo, setCourseInMoreInfo] = useState<CalendarEvent | null>(null);
@@ -124,7 +123,7 @@ export default function AntAlamancCalendar() {
           formats={formats}
           defaultView={Views.WORK_WEEK}
           views={[Views.WEEK, Views.WORK_WEEK]}
-          onView={noop}
+          onView={() => {}}
           view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
           step={15}
           timeslots={2}
@@ -139,16 +138,16 @@ export default function AntAlamancCalendar() {
         />
         <Popper anchorEl={anchorEl} placement="right" open={!!anchorEl}>
           <ClickAwayListener onClickAway={handleClose}>
-            <Box>Hehe</Box>
+            <Box>
+              <CourseCalendarEvent
+                key={calendarEventKey}
+                courseInMoreInfo={courseInMoreInfo}
+                scheduleNames={scheduleNames}
+                currentScheduleIndex={scheduleIndex}
+                closePopover={handleClose}
+              />
+            </Box>
           </ClickAwayListener>
-          {/*
-          <CourseCalendarEvent
-            key={this.state.calendarEventKey}
-            closePopover={this.handleClosePopover}
-            courseInMoreInfo={this.state.courseInMoreInfo as CalendarEvent}
-            scheduleNames={this.state.scheduleNames}
-          />
-            */}
         </Popper>
       </Box>
     </Box>

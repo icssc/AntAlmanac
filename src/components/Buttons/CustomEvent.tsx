@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Add as AddIcon } from '@mui/icons-material';
+import { Add as AddIcon, Edit as EditIcon } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -13,6 +13,7 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
+  IconButton,
   Input,
   InputLabel,
   TextField,
@@ -36,6 +37,7 @@ const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
 
 interface Props {
   event?: RepeatingCustomEvent;
+  onDialogClose?: () => void;
 }
 
 export default function CustomEvent(props: Props) {
@@ -94,6 +96,7 @@ export default function CustomEvent(props: Props) {
   function handleCancel() {
     setEvent(props.event || structuredClone(defaultCustomEvent));
     setOpen(false);
+    props.onDialogClose?.();
   }
 
   function handleSubmit() {
@@ -125,16 +128,22 @@ export default function CustomEvent(props: Props) {
 
   return (
     <>
-      <Tooltip title="Add custom events">
-        <Button
-          disableRipple={true}
-          onClick={handleOpen}
-          variant="outlined"
-          size="small"
-          startIcon={<AddIcon fontSize="small" />}
-        >
-          Add Custom
-        </Button>
+      <Tooltip title={`${props.event ? 'Rename Custom Event' : 'Add Custom Event'}`}>
+        {props.event ? (
+          <IconButton onClick={handleOpen}>
+            <EditIcon />
+          </IconButton>
+        ) : (
+          <Button
+            disableRipple={true}
+            onClick={handleOpen}
+            variant="outlined"
+            size="small"
+            startIcon={<AddIcon fontSize="small" />}
+          >
+            Add Custom
+          </Button>
+        )}
       </Tooltip>
       <Dialog open={open} maxWidth={'lg'}>
         <DialogTitle>{props.event ? 'Edit' : 'Create'} Custom Event</DialogTitle>
