@@ -5,6 +5,8 @@ import AppQueryProvider from '$providers/Query';
 import useGoogleAnalytics from '$hooks/useGoogleAnalytics';
 import Home from '$routes/Home';
 import Feedback from '$routes/feedback';
+import Header from '$components/Header';
+import ActionsBar from '$components/ActionsBar';
 
 export default function App() {
   useGoogleAnalytics();
@@ -12,6 +14,8 @@ export default function App() {
     <AppQueryProvider>
       <AppThemeProvider>
         <SnackbarProvider>
+          <Header />
+          <ActionsBar />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Home />} />

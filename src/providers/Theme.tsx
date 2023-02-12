@@ -68,7 +68,6 @@ export default function AppThemeProvider(props: { children: React.ReactNode }) {
    */
   const theme = createTheme({
     palette: { ...(isDarkMode() ? darkPalette : lightPalette) },
-    spacing: 4,
     components: {
       MuiPaper: {
         styleOverrides: { root: { backgroundImage: 'unset' } }, // removes transparent gradient

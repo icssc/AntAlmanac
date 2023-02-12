@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { Box, Grid, Tab, Tabs, useMediaQuery } from '@mui/material';
-import Header from '$components/Header';
-import Actions from '$components/Actions';
+import { useEffect, useRef, useState } from 'react';
+import { Box, Tab, Tabs, useMediaQuery } from '@mui/material';
 import Calendar from '$components/Calendar';
+import { ResizeContent, ResizePanel, ResizeHandleRight, ResizeHandleLeft } from 'react-hook-resize-panel';
 
 /**
  * home page
@@ -11,36 +10,52 @@ export default function Home() {
   const isMobileScreen = useMediaQuery('(max-width:750px)');
   const [value, setValue] = useState(0);
 
+  const [width, setWidth] = useState(0);
+
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    console.log(ref.current?.clientWidth);
+    setWidth(ref.current?.clientWidth ? ref.current?.clientWidth / 2 : 0);
+  }, []);
+
   function handleChange(_event: React.SyntheticEvent, newValue: number) {
     setValue(newValue);
   }
 
-  return (
-    <Box>
-      <Header />
-      <Actions />
-      {isMobileScreen && (
-        <>
-          <Tabs value={value} onChange={handleChange}>
-            <Tab label="Item One" />
-            <Tab label="Item Two" />
-          </Tabs>
-          {value === 0 && <Box>0</Box>}
-          {value === 1 && <Box>1</Box>}
-        </>
-      )}
+  if (isMobileScreen) {
+    return (
+      <>
+        <Tabs value={value} onChange={handleChange} variant="fullWidth">
+          <Tab label="Item One" />
+          <Tab label="Item Two" />
+        </Tabs>
+        {value === 0 && <Calendar />}
+        {value === 1 && <Box>1</Box>}
+      </>
+    );
+  }
 
-      {!isMobileScreen && (
-        <Grid container spacing={2} columns={2}>
-          <Grid item xs={1}>
-            <Box sx={{ height: '90vh', overflow: 'auto' }}>
+  return (
+    <Box sx={{ display: 'flex', flexFlow: 'row nowrap', flexGrow: 1 }} ref={ref}>
+      {width && (
+        <>
+          <ResizePanel initialWidth={width} maxWidth={10000}>
+            <ResizeContent>
               <Calendar />
-            </Box>
-          </Grid>
-          <Grid item xs={1} sx={{ height: '90vh', bgcolor: 'red' }}>
-            <Box>HEHE</Box>
-          </Grid>
-        </Grid>
+            </ResizeContent>
+            <ResizeHandleRight>
+              <Box sx={{ cursor: 'col-resize', width: 5, height: '100%', bgcolor: 'black' }} />
+            </ResizeHandleRight>
+          </ResizePanel>
+
+          <ResizePanel initialWidth={width} maxWidth={10000}>
+            <ResizeHandleLeft>
+              <Box sx={{ cursor: 'col-resize', width: 5, height: '100%', bgcolor: 'blue' }} />
+            </ResizeHandleLeft>
+            <ResizeContent />
+          </ResizePanel>
+        </>
       )}
     </Box>
   );

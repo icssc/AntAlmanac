@@ -29,8 +29,8 @@ export default function CalendarToolbar(props: Props) {
 
   return (
     <AppBar position="static" color="transparent">
-      <Toolbar variant="dense" sx={{ justifyContent: 'space-evenly', flexWrap: 'wrap' }}>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
+      <Toolbar>
+        <Box sx={{ display: 'flex', flexGrow: 1 }}>
           <EditScheduleButton />
           <SelectScheduleButton />
         </Box>
@@ -55,7 +55,7 @@ export default function CalendarToolbar(props: Props) {
             </Menu>
           </>
         ) : (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 2, margin: 2 }}>
             <DownloadButton />
             <ScreenshotButton imgRef={props.imgRef} />
             <CustomEventButton />
