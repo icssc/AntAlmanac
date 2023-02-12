@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Box, Tab, Tabs, useMediaQuery } from '@mui/material';
 import Calendar from '$components/Calendar';
-import ClassSearch from '$components/ClassSearch/ClassSearch';
+import CourseSearch from '$components/CourseSearch';
 
 /**
  * home page
@@ -22,7 +22,7 @@ export default function Home() {
           <Tab label="Item Two" />
         </Tabs>
         {value === 0 && <Calendar />}
-        {value === 1 && <ClassSearch />}
+        {value === 1 && <CourseSearch />}
       </>
     );
   }
@@ -33,7 +33,7 @@ export default function Home() {
         <Calendar />
       </Box>
       <Box sx={{ width: '50%', height: '90vh', overflowY: 'auto' }}>
-        <ClassSearch />
+        <CourseSearch />
       </Box>
     </Box>
   );

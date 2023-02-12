@@ -1,25 +1,27 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Grid, Paper, Typography } from '@mui/material';
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import type { School } from '$types/peterportal';
 
 interface Props {
-  name: string;
-  comment: string;
+  school: School;
 }
 
-export default function SchoolDeptCard(props: Props) {
-  const html = { __html: props.comment };
-  const status = props.comment ? 'Comments: ' : 'No comments found';
-
+/**
+ * renders a School for list of course search results
+ */
+export default function SchoolDeptCard({ school }: Props) {
   return (
     <Grid item xs={12}>
       <Paper elevation={1} square>
         <Accordion sx={{ padding: 0 }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>{props.name}</Typography>
+            <Typography variant="h5" fontWeight="semi-bold">
+              {school?.schoolName}
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>{status}</Typography>
-            <Box sx={{ fontSize: 12 }} dangerouslySetInnerHTML={html} />
+            <Typography>{school?.schoolComment ? 'Comments: ' : 'No comments found'}</Typography>
+            <Box sx={{ fontSize: 12 }} dangerouslySetInnerHTML={{ __html: school?.schoolComment }} />
           </AccordionDetails>
         </Accordion>
       </Paper>
