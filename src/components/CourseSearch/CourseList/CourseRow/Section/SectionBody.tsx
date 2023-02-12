@@ -40,7 +40,7 @@ const SectionStatusColors: Record<string, string> = {
   full: '#e53935',
 };
 
-function CourseActions(props: { section: AASection }) {
+function CourseActions(props: { section: AASection, course: AACourse }) {
   return (
     <Box sx={{ display: 'flex', flexWrap: 'nowrap' }}>
       <IconButton>
@@ -220,7 +220,7 @@ function SectionStatus(props: { section: AASection }) {
   );
 }
 
-export default function SectionTable(props: { course: AACourse }) {
+export default function SectionTable({ course }: { course: AACourse }) {
   return (
     <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
       <Table size="small" sx={{ '.MuiTableCell-root': { padding: 1 } }}>
@@ -252,13 +252,13 @@ export default function SectionTable(props: { course: AACourse }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {props.course.sections.map((section, index) => (
+          {course.sections.map((section, index) => (
             <TableRow
               sx={{ '&:nth-of-type(odd)': { bgcolor: 'action.hover' }, '.MuiTableCell-root': { padding: 0 } }}
               key={index}
             >
               <TableCell>
-                <CourseActions section={section} />
+                <CourseActions section={section} course={course} />
               </TableCell>
               <TableCell>
                 <SectionCode section={section} />

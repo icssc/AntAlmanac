@@ -2,6 +2,7 @@
  * functions that manage courses in the schedule store
  */
 
+import type { Section } from '$types/peterportal';
 import {
   amber,
   blue,
@@ -17,6 +18,7 @@ import {
   red,
   teal,
 } from '@mui/material/colors';
+import { useSearchStore } from '$stores/search';
 import { useScheduleStore, Course } from '.';
 
 const arrayOfColors = [
@@ -63,16 +65,29 @@ export function doesCourseExistInSchedule(sectionCode: string, term: string, sch
  * add a course to a schedule
  */
 export function addCourse(
-  newCourse: Course,
+  section: Section,
+  course: Course,
   scheduleIndex: number = useScheduleStore.getState().scheduleIndex,
   canUndo = true
 ) {
+  const { term } = useSearchStore.getState().form;
   const { addUndoState, schedules } = useScheduleStore.getState();
   if (canUndo) {
     addUndoState();
   }
 
   const allCourses = schedules.map((schedule) => schedule.courses).flat(1);
+
+  // The color will be set properly in Schedules
+  const newCourse = {
+    term: term,
+    deptCode: course.deptCode,
+    courseNumber: course.courseNumber,
+    courseTitle: course.courseTitle,
+    courseComment: course.courseComment,
+    prerequisiteLink: course.prerequisiteLink,
+    section: { ...section, color: '' },
+  };
 
   /**
    * attempt to find the course to add
@@ -103,11 +118,11 @@ export function addCourse(
   }
 }
 
-export function addCourseToAllSchedules(newCourse: Course) {
+export function addCourseToAllSchedules(section: Section, course: Course) {
   const { addUndoState, schedules } = useScheduleStore.getState();
   addUndoState();
   for (let i = 0; i < schedules.length; ++i) {
-    addCourse(newCourse, i, false);
+    addCourse(section, course, i, false);
   }
 }
 
@@ -148,11 +163,11 @@ export function deleteCourse(sectionCode: string, term: string) {
 export function copyCoursesToSchedule(toScheduleIndex: number) {
   const { addUndoState, schedules, scheduleIndex } = useScheduleStore.getState();
   addUndoState();
-  for (const course of schedules[scheduleIndex].courses) {
-    if (toScheduleIndex === schedules.length) {
-      addCourseToAllSchedules(course);
-    } else {
-      addCourse(course, toScheduleIndex, false);
-    }
-  }
+  // for (const course of schedules[scheduleIndex].courses) {
+  //   if (toScheduleIndex === schedules.length) {
+  //     addCourseToAllSchedules(course, schedules);
+  //   } else {
+  //     addCourse(course, toScheduleIndex, false);
+  //   }
+  // }
 }

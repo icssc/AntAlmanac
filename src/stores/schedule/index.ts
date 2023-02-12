@@ -3,7 +3,7 @@
  */
 
 import { create } from 'zustand';
-import type { AASection } from '$types/peterportal';
+import type { AASection, Course as PPCourse } from '$types/peterportal';
 
 /* There is another CustomEvent interface in CourseCalendarEvent and they are slightly different.
  * This one encapsulates the occurences of an event on multiple days, like Monday Tuesday Wednesday all in the same object as specified by the days array. The other one, `CustomEventDialog`'s CustomEvent, represents only one day, like the event on Monday, and needs to be duplicated to be repeated across multiple days.
@@ -21,12 +21,7 @@ export interface RepeatingCustomEvent {
 /**
  * course
  */
-export interface Course {
-  courseComment: string;
-  courseNumber: string; // e.g. 122a
-  courseTitle: string;
-  deptCode: string;
-  prerequisiteLink: string;
+export interface Course extends PPCourse {
   section: AASection;
   term: string;
 }
