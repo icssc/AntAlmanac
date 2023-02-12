@@ -15,7 +15,7 @@ const emojiMap = {
 const romanArr = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'] as const;
 
 export default function FuzzySearch() {
-  const { reset, setField, setShowResults } = useSearchStore();
+  const { resetFields, setField, setShowResults } = useSearchStore();
   const [results, setResults] = useState<Record<string, SearchResult>>({});
   const [cache, setCache] = useState<Record<string, Record<string, SearchResult>>>({});
 
@@ -67,7 +67,7 @@ export default function FuzzySearch() {
     /**
      * reset the form values whenever a new option is selected
      */
-    reset();
+    resetFields(['ge', 'instructor', 'deptValue', 'deptLabel', 'courseNumber']);
 
     switch (object.type) {
       case 'GE_CATEGORY':
@@ -112,7 +112,7 @@ export default function FuzzySearch() {
           deptLabel = deptSearch[v].name;
           setCache({ ...cache, [v.toLowerCase()]: deptSearch });
         }
-        setField('deptValue', v);
+        setField('deptValue', result?.metadata.department);
         setField('deptLabel', `${v}: ${deptLabel}`);
         setField('courseNumber', result?.metadata.number);
         break;
@@ -134,15 +134,13 @@ export default function FuzzySearch() {
   }
 
   return (
-    <>
-      <Autocomplete
-        options={Object.keys(results)}
-        renderInput={(params) => <TextField {...params} label="Search" />}
-        getOptionLabel={getOptionLabel}
-        noOptionsText="No results found! Try broadening your search."
-        onChange={handleChange}
-        onInputChange={handleInputChange}
-      />
-    </>
+    <Autocomplete
+      options={Object.keys(results)}
+      renderInput={(params) => <TextField {...params} label="Search" />}
+      getOptionLabel={getOptionLabel}
+      noOptionsText="No results found! Try broadening your search."
+      onChange={handleChange}
+      onInputChange={handleInputChange}
+    />
   );
 }

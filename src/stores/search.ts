@@ -58,6 +58,7 @@ interface SearchStore {
   setShowResults: (showResults: boolean) => void;
   reset: () => void;
   getParams: () => Params;
+  resetFields: (fields: (keyof FormValues)[]) => void;
 }
 
 export const useSearchStore = create<SearchStore>((set, get) => ({
@@ -76,6 +77,14 @@ export const useSearchStore = create<SearchStore>((set, get) => ({
 
   reset() {
     set({ form: structuredClone(defaultFormValues) });
+  },
+
+  resetFields(fields) {
+    const formData = get().form;
+    fields.forEach((field) => {
+      formData[field] = defaultFormValues[field];
+    });
+    set({ form: formData });
   },
 
   getValue() {
