@@ -384,12 +384,21 @@ export class Schedules {
     }
 
     // --- Calender related methods ---
+    /**
+     * Convert courses and custom events into calendar friendly format
+     */
     toCalendarizedEvents() {
-        return [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
+        return [
+            ...calendarizeCourseEvents(this.getCurrentCourses()),
+            ...calendarizeCustomEvents(this.getCurrentCustomEvents()),
+        ];
     }
 
+    /**
+     * Convert finals into calendar friendly format
+     */
     toCalendarizedFinals() {
-        return calendarizeFinals();
+        return calendarizeFinals(this.getCurrentCourses());
     }
 
     // --- Other methods ---

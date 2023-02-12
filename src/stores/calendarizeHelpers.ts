@@ -1,8 +1,8 @@
 import { CourseEvent, CustomEvent } from '../components/Calendar/CourseCalendarEvent';
-import AppStore from './AppStore';
+import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { ScheduleCourse } from './schedule.types';
 
-export const calendarizeCourseEvents = () => {
-    const currentCourses = AppStore.schedule.getCurrentCourses();
+export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[]) => {
     const courseEventsInCalendar: CourseEvent[] = [];
 
     for (const course of currentCourses) {
@@ -62,8 +62,7 @@ export const calendarizeCourseEvents = () => {
     return courseEventsInCalendar;
 };
 
-export const calendarizeFinals = () => {
-    const currentCourses = AppStore.schedule.getCurrentCourses();
+export const calendarizeFinals = (currentCourses: ScheduleCourse[]) => {
     const finalsEventsInCalendar = [] as CourseEvent[];
 
     for (const course of currentCourses) {
@@ -114,8 +113,7 @@ export const calendarizeFinals = () => {
     return finalsEventsInCalendar;
 };
 
-export const calendarizeCustomEvents = () => {
-    const currentCustomEvents = AppStore.schedule.getCurrentCustomEvents();
+export const calendarizeCustomEvents = (currentCustomEvents: RepeatingCustomEvent[]) => {
     const customEventsInCalendar = [];
 
     for (const customEvent of currentCustomEvents) {
