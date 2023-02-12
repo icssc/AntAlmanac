@@ -2,9 +2,6 @@ import { useState } from 'react';
 import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, useMediaQuery } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
 
-import { ReactComponent as Logo } from './logo.svg';
-import { ReactComponent as MobileLogo } from './logo.svg';
-
 import Settings from './Settings';
 import Notifications from './Notifications';
 import Feedback from './Feedback';
@@ -45,7 +42,7 @@ export default function Header() {
       <Toolbar variant="dense">
         {isMobileScreen ? (
           <>
-            <MobileLogo height={32} />
+            <img height={32} src="/mobile-logo.svg" />
             <Box sx={{ flexGrow: 1 }} />
             <IconButton onClick={handleClick} color="inherit">
               <MenuIcon />
@@ -60,7 +57,7 @@ export default function Header() {
           </>
         ) : (
           <>
-            <Logo height={32} />
+            <img height={32} src="/logo.svg" />
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               {Buttons.map((AppBarButton, index) => (
