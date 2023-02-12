@@ -132,19 +132,20 @@ export default function AntAlamancCalendar() {
           components={{ event: AntAlmanacEvent }}
           onSelectEvent={handleEventClick}
         />
-        <Popper anchorEl={anchorEl} placement="right" open={!!anchorEl}>
-          <ClickAwayListener onClickAway={handleClose}>
-            <Box>
-              {isCourseEvent && (
-                <CourseCalendarEvent key={calendarEventKey} event={courseInMoreInfo} closePopover={handleClose} />
-              )}
-              {isCustomEvent && (
-                <CustomCalendarEvent key={calendarEventKey} event={courseInMoreInfo} closePopover={handleClose} />
-              )}
-            </Box>
-          </ClickAwayListener>
-        </Popper>
       </Box>
+
+      <Popper anchorEl={anchorEl} placement="right" open={!!anchorEl}>
+        <ClickAwayListener onClickAway={handleClose}>
+          <Box>
+            {isCourseEvent && (
+              <CourseCalendarEvent key={calendarEventKey} event={courseInMoreInfo} closePopover={handleClose} />
+            )}
+            {isCustomEvent && (
+              <CustomCalendarEvent key={calendarEventKey} event={courseInMoreInfo} closePopover={handleClose} />
+            )}
+          </Box>
+        </ClickAwayListener>
+      </Popper>
     </Box>
   );
 }

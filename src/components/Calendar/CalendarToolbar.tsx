@@ -16,7 +16,7 @@ interface Props {
 }
 
 export default function CalendarToolbar(props: Props) {
-  const screenXs = useMediaQuery('(max-width: 600px)');
+  const screenXs = useMediaQuery('(max-width: 750px)');
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
@@ -44,9 +44,9 @@ export default function CalendarToolbar(props: Props) {
             </IconButton>
             <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={handleClose}>
               <MenuItem>
-                <MenuItem>
-                  <DownloadButton />
-                </MenuItem>
+                <DownloadButton />
+              </MenuItem>
+              <MenuItem>
                 <ScreenshotButton imgRef={props.imgRef} />
               </MenuItem>
               <MenuItem>
