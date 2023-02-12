@@ -91,7 +91,7 @@ interface CustomEvent extends CommonCalendarEvent {
   isCustomEvent: true;
 }
 
-type CalendarEvent = CourseEvent | CustomEvent;
+export type CalendarEvent = CourseEvent | CustomEvent;
 
 /**
  * store (shared state) with info about the current schedules

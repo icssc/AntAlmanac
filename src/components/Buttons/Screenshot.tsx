@@ -22,13 +22,25 @@ export default function ScreenshotButton(props: Props) {
       return;
     }
 
+    /*
+     * before screenshoting, make some adjustments to the calendar:
+     * - set color to black; screenshot is light mode
+     */
+
+    const prevColor = props.imgRef.current.style.color;
+
+    props.imgRef.current.style.color = 'black';
+
     logAnalytics({
       category: analyticsEnum.calendar.title,
       action: analyticsEnum.calendar.actions.SCREENSHOT,
     });
+
     const canvas = await html2canvas(props.imgRef.current, { scale: 2.5 });
     const imgRaw = canvas.toDataURL('image/png');
     saveAs(imgRaw, 'Schedule.png');
+
+    props.imgRef.current.style.color = prevColor;
   }
 
   function saveAs(uri: string, download: string) {

@@ -4,17 +4,21 @@ import './calendar.css';
 import dayjs from 'dayjs';
 import { useState, useRef } from 'react';
 import { Calendar, dayjsLocalizer, DateLocalizer, Views } from 'react-big-calendar';
-import { Box, Paper, Popper } from '@mui/material';
+import { Box, ClickAwayListener, Popper, Typography } from '@mui/material';
 import { useScheduleStore } from '$stores/schedule';
 import { calendarizeCustomEvents, calendarizeCourseEvents } from '$stores/schedule/calendarize';
 import Toolbar from './Toolbar';
 
-type CalendarEvent = (ReturnType<typeof calendarizeCourseEvents> | ReturnType<typeof calendarizeCustomEvents>)[number];
+type CalendarCourseEvent = ReturnType<typeof calendarizeCourseEvents>[number];
+type CalendarCustomEvent = ReturnType<typeof calendarizeCustomEvents>[number];
+type CalendarEvent = CalendarCourseEvent | CalendarCustomEvent;
 
 const localizer = dayjsLocalizer(dayjs);
+
 const formats = {
-  timeGutterFormat: (date: Date, culture?: string, localizer?: DateLocalizer) =>
-    date.getMinutes() > 0 || !localizer ? '' : localizer.format(date, 'h A', culture),
+  timeGutterFormat(date: Date, culture?: string, localizer?: DateLocalizer) {
+    return date.getMinutes() > 0 || !localizer ? '' : localizer.format(date, 'h A', culture);
+  },
   dayFormat: 'ddd',
 };
 
@@ -36,36 +40,45 @@ function AntAlmanacEvent(props: { event: CalendarEvent }) {
   const event = props.event;
   if (!event.isCustomEvent)
     return (
-      <div>
-        <div>
-          <div>{event.title}</div>
-          <div>{'sectionType' in event && event.sectionType}</div>
-        </div>
-        <div>
-          <div>{'bldg' in event && event.bldg}</div>
-          <div>{'sectionCode' in event && event.sectionCode}</div>
-        </div>
-      </div>
+      <Box>
+        <Box>
+          <Typography>{event.title}</Typography>
+          <Typography>{'sectionType' in event && event.sectionType}</Typography>
+        </Box>
+        <Box>
+          <Typography>{'bldg' in event && event.bldg}</Typography>
+          <Typography>{'sectionCode' in event && event.sectionCode}</Typography>
+        </Box>
+      </Box>
     );
   else {
     return (
-      <div>
-        <div>{event.title}</div>
-      </div>
+      <Box>
+        <Typography>{event.title}</Typography>
+      </Box>
     );
   }
 }
 
+/**
+ * equation taken from w3c, omits the colour difference part
+ * @see @link{https://www.w3.org/TR/WCAG20/#relativeluminancedef}
+ */
 function colorContrastSufficient(bg: string) {
-  // This equation is taken from w3c, does not use the colour difference part
   const minBrightnessDiff = 125;
 
-  const backgroundRegexResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(bg) as RegExpExecArray; // returns {hex, r, g, b}
+  const backgroundRegexResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(bg);
+
+  if (!backgroundRegexResult) {
+    return true;
+  }
+
   const backgroundRGB = {
     r: parseInt(backgroundRegexResult[1], 16),
     g: parseInt(backgroundRegexResult[2], 16),
     b: parseInt(backgroundRegexResult[3], 16),
-  } as const;
+  };
+
   const textRgb = { r: 255, g: 255, b: 255 }; // white text
 
   const getBrightness = (color: typeof backgroundRGB) => {
@@ -86,10 +99,10 @@ export default function AntAlamancCalendar() {
 
   const events = calendarizeCustomEvents(schedules[0].customEvents);
   const hasWeekendCourse = events.some((event) => event?.start.getDay() === 0 || event?.start.getDay() === 6);
+  const scheduleNames = schedules.map((s) => s.scheduleName);
 
   function handleEventClick(calendarEvent: CalendarEvent, e: React.SyntheticEvent<HTMLElement, Event>) {
     e.stopPropagation();
-
     if (calendarEvent.isCustomEvent || ('sectionType' in calendarEvent && calendarEvent.sectionType !== 'Fin')) {
       setAnchorEl(e.currentTarget);
       setCourseInMoreInfo(calendarEvent);
@@ -101,12 +114,10 @@ export default function AntAlamancCalendar() {
     setAnchorEl(null);
   }
 
-  const scheduleNames = schedules.map((s) => s.scheduleName);
-
   return (
     <Box>
       <Toolbar imgRef={ref} />
-      <Paper ref={ref}>
+      <Box ref={ref}>
         <Calendar
           localizer={localizer}
           toolbar={false}
@@ -127,6 +138,9 @@ export default function AntAlamancCalendar() {
           onSelectEvent={handleEventClick}
         />
         <Popper anchorEl={anchorEl} placement="right" open={!!anchorEl}>
+          <ClickAwayListener onClickAway={handleClose}>
+            <Box>Hehe</Box>
+          </ClickAwayListener>
           {/*
           <CourseCalendarEvent
             key={this.state.calendarEventKey}
@@ -136,7 +150,7 @@ export default function AntAlamancCalendar() {
           />
             */}
         </Popper>
-      </Paper>
+      </Box>
     </Box>
   );
 }

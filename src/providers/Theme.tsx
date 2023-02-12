@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { createTheme, ThemeProvider } from '@mui/material';
+import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
 import type { ThemeOptions } from '@mui/material';
 import { useSettingsStore } from '$stores/settings';
 
@@ -90,5 +90,10 @@ export default function AppThemeProvider(props: { children: React.ReactNode }) {
     },
   });
 
-  return <ThemeProvider theme={theme}>{props.children}</ThemeProvider>;
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      {props.children}
+    </ThemeProvider>
+  );
 }
