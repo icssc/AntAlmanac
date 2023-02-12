@@ -1,9 +1,7 @@
 import { Fragment } from 'react';
 import { useSnackbar } from 'notistack';
-import { Add as AddIcon, ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
 import {
   Box,
-  IconButton,
   Link,
   Paper,
   Table,
@@ -16,8 +14,15 @@ import {
   Typography,
 } from '@mui/material';
 import type { AACourse, AASection } from '$types/peterportal';
+import { useScheduleStore } from '$stores/schedule';
+import { useSearchStore } from '$stores/search';
 import locations from '$lib/locations';
 import restrictions from '$lib/restrictions';
+import AddCourseButton from '$components/Buttons/AddCourse';
+import AddCourseMenuButton from '$components/Buttons/AddCourseMenu';
+import DeleteCourseButton from '$components/Buttons/DeleteCourse';
+import ColorPicker from '$components/ColorPicker';
+import { analyticsEnum } from '$lib/analytics';
 
 const SectionTypeColors: Record<string, string> = {
   Act: '#c87137',
@@ -40,15 +45,25 @@ const SectionStatusColors: Record<string, string> = {
   full: '#e53935',
 };
 
-function CourseActions(props: { section: AASection, course: AACourse }) {
+function CourseActions(props: { section: AASection; course: AACourse }) {
+  const { currentCourses } = useScheduleStore();
+  const term = useSearchStore((store) => store.form.term);
+  const addedSectionCodes = new Set(currentCourses().map((course) => `${course.section.sectionCode} ${course.term}`));
+
+  const alreadyAdded = addedSectionCodes.has(`${props.section.sectionCode} ${term}`);
+
   return (
     <Box sx={{ display: 'flex', flexWrap: 'nowrap' }}>
-      <IconButton>
-        <AddIcon />
-      </IconButton>
-      <IconButton>
-        <ArrowDropDownIcon />
-      </IconButton>
+      {alreadyAdded ? <DeleteCourseButton {...props} /> : <AddCourseButton {...props} />}
+      {alreadyAdded ? (
+        <ColorPicker
+          color={props.section.color}
+          sectionCode={props.section.sectionCode}
+          analyticsCategory={analyticsEnum.addedClasses.title}
+        />
+      ) : (
+        <AddCourseMenuButton {...props} />
+      )}
     </Box>
   );
 }

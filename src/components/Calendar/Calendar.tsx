@@ -77,7 +77,8 @@ export default function AntAlamancCalendar() {
   const [calendarEventKey, setCalendarEventKey] = useState(0);
 
   const schedule = currentSchedule();
-  const events = calendarizeCustomEvents(schedule.customEvents);
+
+  const events = [...calendarizeCourseEvents(schedule.courses), ...calendarizeCustomEvents(schedule.customEvents)];
   const hasWeekendCourse = events.some((event) => event?.start.getDay() === 0 || event?.start.getDay() === 6);
 
   const isCourseEvent = courseInMoreInfo && 'bldg' in courseInMoreInfo;

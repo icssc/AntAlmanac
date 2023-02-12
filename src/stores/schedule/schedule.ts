@@ -27,7 +27,6 @@ export function addSchedule(scheduleName: string) {
 /**
  * rename a schedule
  * @param newScheduleName new name of the schedule
- * @param scheduleIndex index of the schedule
  */
 export function renameCurrentSchedule(newScheduleName: string) {
   const { addUndoState, schedules, scheduleIndex } = useScheduleStore.getState();

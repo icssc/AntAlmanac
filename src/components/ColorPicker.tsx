@@ -3,6 +3,7 @@ import { SketchPicker } from 'react-color';
 import type { ColorResult } from 'react-color';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover } from '@mui/material';
+import { useSearchStore } from '$stores/search';
 import { changeCourseColor } from '$stores/schedule/course';
 import { changeCustomEventColor } from '$stores/schedule/custom';
 import { analyticsEnum, logAnalytics } from '$lib/analytics';
@@ -14,17 +15,12 @@ interface Props {
   /**
    * If true, this object has a customEventID. If false, this object has a term and sectionCode.
    */
-  isCustomEvent: boolean;
+  isCustomEvent?: boolean;
 
   /**
    * Not undefined when isCustomEvent is true
    */
   customEventID?: number;
-
-  /**
-   * Not undefined  when isCustomEvent is false
-   */
-  term?: string;
 
   /**
    * Not undefined  when isCustomEvent is false
@@ -35,6 +31,7 @@ interface Props {
 export default function ColorPicker(props: Props) {
   const [color, setColor] = useState(props.color);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const term = useSearchStore((store) => store.form.term);
 
   // TODO: error checking if props.isCustomEvent == true and no props.customEventID
 
@@ -57,8 +54,8 @@ export default function ColorPicker(props: Props) {
     if (props.customEventID) {
       changeCustomEventColor(props.customEventID, e.hex);
     }
-    if (props.sectionCode && props.term) {
-      changeCourseColor(props.sectionCode, props.term, e.hex);
+    if (props.sectionCode && term) {
+      changeCourseColor(props.sectionCode, term, e.hex);
     }
   }
 

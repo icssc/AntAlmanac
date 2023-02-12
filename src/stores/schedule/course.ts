@@ -2,7 +2,7 @@
  * functions that manage courses in the schedule store
  */
 
-import type { Section } from '$types/peterportal';
+import type { AACourse, Section } from '$types/peterportal';
 import {
   amber,
   blue,
@@ -19,7 +19,7 @@ import {
   teal,
 } from '@mui/material/colors';
 import { useSearchStore } from '$stores/search';
-import { useScheduleStore, Course } from '.';
+import { useScheduleStore } from '.';
 
 const arrayOfColors = [
   red[500],
@@ -56,7 +56,7 @@ export function getExistingCourse(sectionCode: string, term: string) {
  */
 export function doesCourseExistInSchedule(sectionCode: string, term: string, scheduleIndex: number) {
   const { schedules } = useScheduleStore.getState();
-  return schedules[scheduleIndex].courses.some(
+  return schedules[scheduleIndex]?.courses.some(
     (course) => course.section.sectionCode === sectionCode && course.term === term
   );
 }
@@ -66,17 +66,18 @@ export function doesCourseExistInSchedule(sectionCode: string, term: string, sch
  */
 export function addCourse(
   section: Section,
-  course: Course,
+  course: AACourse,
   scheduleIndex: number = useScheduleStore.getState().scheduleIndex,
   canUndo = true
 ) {
   const { term } = useSearchStore.getState().form;
   const { addUndoState, schedules } = useScheduleStore.getState();
+
   if (canUndo) {
     addUndoState();
   }
 
-  const allCourses = schedules.map((schedule) => schedule.courses).flat(1);
+  const allCourses = schedules.map((schedule) => schedule?.courses).flat(1);
 
   // The color will be set properly in Schedules
   const newCourse = {
@@ -113,12 +114,12 @@ export function addCourse(
    * add the course to the current schedule if not present and update the store
    */
   if (!doesCourseExistInSchedule(newCourse.section.sectionCode, newCourse.term, scheduleIndex)) {
-    schedules[scheduleIndex].courses.push(courseToAdd);
+    schedules[scheduleIndex]?.courses.push(courseToAdd);
     useScheduleStore.setState({ schedules });
   }
 }
 
-export function addCourseToAllSchedules(section: Section, course: Course) {
+export function addCourseToAllSchedules(section: Section, course: AACourse) {
   const { addUndoState, schedules } = useScheduleStore.getState();
   addUndoState();
   for (let i = 0; i < schedules.length; ++i) {
