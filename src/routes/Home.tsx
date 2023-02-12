@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Box, Tab, Tabs, useMediaQuery } from '@mui/material';
 import Calendar from '$components/Calendar';
-import { ResizeContent, ResizePanel, ResizeHandleRight, ResizeHandleLeft } from 'react-hook-resize-panel';
 
 /**
  * home page
@@ -9,15 +8,6 @@ import { ResizeContent, ResizePanel, ResizeHandleRight, ResizeHandleLeft } from 
 export default function Home() {
   const isMobileScreen = useMediaQuery('(max-width:750px)');
   const [value, setValue] = useState(0);
-
-  const [width, setWidth] = useState(0);
-
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    console.log(ref.current?.clientWidth);
-    setWidth(ref.current?.clientWidth ? ref.current?.clientWidth / 2 : 0);
-  }, []);
 
   function handleChange(_event: React.SyntheticEvent, newValue: number) {
     setValue(newValue);
@@ -37,26 +27,12 @@ export default function Home() {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexFlow: 'row nowrap', flexGrow: 1 }} ref={ref}>
-      {width && (
-        <>
-          <ResizePanel initialWidth={width} maxWidth={10000}>
-            <ResizeContent>
-              <Calendar />
-            </ResizeContent>
-            <ResizeHandleRight>
-              <Box sx={{ cursor: 'col-resize', width: 5, height: '100%', bgcolor: 'black' }} />
-            </ResizeHandleRight>
-          </ResizePanel>
-
-          <ResizePanel initialWidth={width} maxWidth={10000}>
-            <ResizeHandleLeft>
-              <Box sx={{ cursor: 'col-resize', width: 5, height: '100%', bgcolor: 'blue' }} />
-            </ResizeHandleLeft>
-            <ResizeContent />
-          </ResizePanel>
-        </>
-      )}
+    <Box sx={{ display: 'flex' }}>
+      <Box sx={{ width: '50%', height: '90vh', overflow: 'auto' }}>
+        <Calendar />
+      </Box>
+      <Box sx={{ width: '50%' }}>
+      </Box>
     </Box>
   );
 }
