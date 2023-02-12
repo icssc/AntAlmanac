@@ -16,60 +16,34 @@ type CalendarCourseEvent = ReturnType<typeof calendarizeCourseEvents>[number];
 type CalendarCustomEvent = ReturnType<typeof calendarizeCustomEvents>[number];
 type CalendarEvent = CalendarCourseEvent | CalendarCustomEvent;
 
-const localizer = dayjsLocalizer(dayjs);
-
-const formats = {
-  timeGutterFormat(date: Date, culture?: string, localizer?: DateLocalizer) {
-    return date.getMinutes() > 0 || !localizer ? '' : localizer.format(date, 'h A', culture);
-  },
-  dayFormat: 'ddd',
-};
-
-function eventPropGetter(event: CalendarEvent) {
-  return {
-    style: {
-      backgroundColor: event.color,
-      cursor: 'pointer',
-      borderStyle: 'none',
-      borderRadius: '4px',
-      color: colorContrastSufficient(event.color || '') ? 'white' : 'black',
-    },
-  };
-}
-
 /**
  * equation taken from w3c, omits the colour difference part
  * @see @link{https://www.w3.org/TR/WCAG20/#relativeluminancedef}
  */
 function colorContrastSufficient(bg: string) {
   const minBrightnessDiff = 125;
-
   const backgroundRegexResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(bg);
-
   if (!backgroundRegexResult) {
     return true;
   }
-
   const backgroundRGB = {
     r: parseInt(backgroundRegexResult[1], 16),
     g: parseInt(backgroundRegexResult[2], 16),
     b: parseInt(backgroundRegexResult[3], 16),
   };
-
   const textRgb = { r: 255, g: 255, b: 255 }; // white text
-
   const getBrightness = (color: typeof backgroundRGB) => {
     return (color.r * 299 + color.g * 587 + color.b * 114) / 1000;
   };
-
   const bgBrightness = getBrightness(backgroundRGB);
   const textBrightness = getBrightness(textRgb);
   return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff;
 }
 
-type AntAlamancEventProps = EventProps & { event: CalendarEvent };
-
-function AntAlmanacEvent(props: AntAlamancEventProps) {
+/**
+ * single calendar event box
+ */
+function AntAlmanacEvent(props: EventProps & { event: CalendarEvent }) {
   if (!props.event.isCustomEvent && 'bldg' in props.event)
     return (
       <Box>
@@ -92,6 +66,9 @@ function AntAlmanacEvent(props: AntAlamancEventProps) {
   }
 }
 
+/**
+ * entire calendar
+ */
 export default function AntAlamancCalendar() {
   const { schedules } = useScheduleStore();
   const ref = useRef<HTMLDivElement>(null);
@@ -120,9 +97,14 @@ export default function AntAlamancCalendar() {
       <Toolbar imgRef={ref} />
       <Box ref={ref}>
         <Calendar
-          localizer={localizer}
+          localizer={dayjsLocalizer(dayjs)}
           toolbar={false}
-          formats={formats}
+          formats={{
+            timeGutterFormat(date: Date, culture?: string, localizer?: DateLocalizer) {
+              return date.getMinutes() > 0 || !localizer ? '' : localizer.format(date, 'h A', culture);
+            },
+            dayFormat: 'ddd',
+          }}
           defaultView={Views.WORK_WEEK}
           views={[Views.WEEK, Views.WORK_WEEK]}
           onView={() => {}}
@@ -133,7 +115,15 @@ export default function AntAlamancCalendar() {
           min={new Date(2018, 0, 1, 7)}
           max={new Date(2018, 0, 1, 23)}
           events={events}
-          eventPropGetter={eventPropGetter}
+          eventPropGetter={(event) => ({
+            style: {
+              backgroundColor: event.color,
+              cursor: 'pointer',
+              borderStyle: 'none',
+              borderRadius: '4px',
+              color: colorContrastSufficient(event.color || '') ? 'white' : 'black',
+            },
+          })}
           showMultiDayTimes={false}
           components={{ event: AntAlmanacEvent }}
           onSelectEvent={handleEventClick}
