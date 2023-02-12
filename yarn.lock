@@ -2540,6 +2540,11 @@ p-map@^4.0.0:
   dependencies:
     aggregate-error "^3.0.0"
 
+pako@^2.0.4:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/pako/-/pako-2.1.0.tgz#266cc37f98c7d883545d11335c00fbd4062c9a86"
+  integrity sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==
+
 parent-module@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/parent-module/-/parent-module-1.0.1.tgz#691d2709e78c79fae3a156622452d00762caaaa2"
@@ -3217,6 +3222,14 @@ warning@^4.0.3:
   integrity sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w==
   dependencies:
     loose-envify "^1.0.0"
+
+websoc-fuzzy-search@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/websoc-fuzzy-search/-/websoc-fuzzy-search-0.10.0.tgz#5781d48eaafab2b735a8e1f31c73df72b1e8b178"
+  integrity sha512-P9lbkccsRm0y1OghGsLkzyM9+/b6LsACoz6Y0VZhfA9rv+16fb3UWFoTe7ui4wnjkXMpcr9lkDfe1Cs0GszpZQ==
+  dependencies:
+    base64-arraybuffer "^1.0.2"
+    pako "^2.0.4"
 
 which-boxed-primitive@^1.0.2:
   version "1.0.2"

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Box, Tab, Tabs, useMediaQuery } from '@mui/material';
 import Calendar from '$components/Calendar';
+import ClassSearch from '$components/ClassSearch/ClassSearch';
 
 /**
  * home page
@@ -32,6 +33,7 @@ export default function Home() {
         <Calendar />
       </Box>
       <Box sx={{ width: '50%' }}>
+        <ClassSearch />
       </Box>
     </Box>
   );

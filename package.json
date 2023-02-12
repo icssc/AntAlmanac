@@ -31,6 +31,7 @@
         "react-dom": "^18.2.0",
         "react-ga4": "^2.0.0",
         "react-router-dom": "^6.8.1",
+        "websoc-fuzzy-search": "^0.10.0",
         "zustand": "^4.3.2"
     },
     "devDependencies": {
