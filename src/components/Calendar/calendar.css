@@ -1,0 +1,84 @@
+.rbc-header {
+    border-bottom: none;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rbc-header + .rbc-header {
+    border: none;
+}
+
+.rbc-header + .rbc-header {
+    border: none;
+}
+
+.rbc-time-view .rbc-allday-cell {
+    height: 0;
+    z-index: -1000;
+}
+
+.rbc-day-slot .rbc-time-slot {
+    border: 0;
+}
+
+.rbc-timeslot-group {
+    border-color: #80808080;
+    min-height: 25px;
+}
+
+.rbc-event-label {
+    font-size: 0.75rem;
+}
+
+.rbc-label {
+    font-size: 0.9rem;
+}
+
+@media (min-resolution: 96dpi) {
+    .rbc-timeslot-group {
+        min-height: 28px;
+    }
+}
+
+@media (min-resolution: 120dpi) {
+    .rbc-timeslot-group {
+        min-height: 25px;
+    }
+}
+
+@media (min-resolution: 144dpi) {
+    .rbc-timeslot-group {
+        min-height: 22px;
+    }
+}
+
+*:focus {
+    outline: none;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1c0;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #808080;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/*.menu-button:hover,*/
+/*.menu-button:focus {*/
+/*    background-color: unset !important;*/
+/*}*/
