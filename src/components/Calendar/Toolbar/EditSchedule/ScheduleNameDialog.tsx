@@ -28,6 +28,7 @@ interface ScheduleNameDialogProps {
 const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
     const { classes, onOpen, onClose, scheduleNames, scheduleRenameIndex, scheduleNotes } = props;
     const rename = scheduleRenameIndex !== undefined;
+    const NOTE_MAX_LEN = 5000;
 
     const [isOpen, setIsOpen] = useState(false);
     const [scheduleName, setScheduleName] = useState(
@@ -127,6 +128,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
                         placeholder="This schedule is for..."
                         onChange={handleNoteChange}
                         value={scheduleNote}
+                        inputProps={{ maxLength: NOTE_MAX_LEN }}
                         fullWidth
                         multiline
                     />
