@@ -49,7 +49,11 @@ const ScheduleNote = ({ classes }: ScheduleNoteProps) => {
     return (
         <Paper variant="outlined" className={classes.container}>
             <h2 className={classes.heading}>{scheduleNames[scheduleIndex]} Notes</h2>
-            <div style={{ whiteSpace: 'pre-line' }}>{scheduleNotes[scheduleIndex] === '' ? 'This schedule does not have any notes! To add notes to this schedule, click on the "Edit schedule" button in the top left corner!' : scheduleNotes[scheduleIndex]}</div>
+            <div style={{ whiteSpace: 'pre-line' }}>
+                {scheduleNotes[scheduleIndex] === ''
+                    ? 'This schedule does not have any notes! To add notes to this schedule, click on the "Edit schedule" button in the top left corner!'
+                    : scheduleNotes[scheduleIndex]}
+            </div>
         </Paper>
     );
 };
