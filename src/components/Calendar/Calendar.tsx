@@ -4,11 +4,13 @@ import './calendar.css';
 import dayjs from 'dayjs';
 import { useState, useRef } from 'react';
 import { Calendar, dayjsLocalizer, DateLocalizer, Views } from 'react-big-calendar';
+import type { EventProps } from 'react-big-calendar';
 import { Box, ClickAwayListener, Popper, Typography } from '@mui/material';
 import { useScheduleStore } from '$stores/schedule';
 import { calendarizeCustomEvents, calendarizeCourseEvents } from '$stores/schedule/calendarize';
 import Toolbar from './Toolbar';
-import CourseCalendarEvent from './CalendarEvent';
+import CourseCalendarEvent from './CourseCalendarEvent';
+import CustomCalendarEvent from './CustomCalendarEvent';
 
 type CalendarCourseEvent = ReturnType<typeof calendarizeCourseEvents>[number];
 type CalendarCustomEvent = ReturnType<typeof calendarizeCustomEvents>[number];
@@ -65,32 +67,33 @@ function colorContrastSufficient(bg: string) {
   return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff;
 }
 
-function AntAlmanacEvent(props: { event: CalendarEvent }) {
-  const event = props.event;
-  if (!event.isCustomEvent)
+type AntAlamancEventProps = EventProps & { event: CalendarEvent };
+
+function AntAlmanacEvent(props: AntAlamancEventProps) {
+  if (!props.event.isCustomEvent && 'bldg' in props.event)
     return (
       <Box>
         <Box>
-          <Typography>{event.title}</Typography>
-          <Typography>{'sectionType' in event && event.sectionType}</Typography>
+          <Typography>{props.event.title}</Typography>
+          <Typography>{props.event.sectionType}</Typography>
         </Box>
         <Box>
-          <Typography>{'bldg' in event && event.bldg}</Typography>
-          <Typography>{'sectionCode' in event && event.sectionCode}</Typography>
+          <Typography>{props.event.bldg}</Typography>
+          <Typography>{props.event.sectionCode}</Typography>
         </Box>
       </Box>
     );
   else {
     return (
       <Box>
-        <Typography>{event.title}</Typography>
+        <Typography>{props.event.title}</Typography>
       </Box>
     );
   }
 }
 
 export default function AntAlamancCalendar() {
-  const { schedules, scheduleIndex } = useScheduleStore();
+  const { schedules } = useScheduleStore();
   const ref = useRef<HTMLDivElement>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [courseInMoreInfo, setCourseInMoreInfo] = useState<CalendarEvent | null>(null);
@@ -98,7 +101,6 @@ export default function AntAlamancCalendar() {
 
   const events = calendarizeCustomEvents(schedules[0].customEvents);
   const hasWeekendCourse = events.some((event) => event?.start.getDay() === 0 || event?.start.getDay() === 6);
-  const scheduleNames = schedules.map((s) => s.scheduleName);
 
   function handleEventClick(calendarEvent: CalendarEvent, e: React.SyntheticEvent<HTMLElement, Event>) {
     e.stopPropagation();
@@ -139,13 +141,12 @@ export default function AntAlamancCalendar() {
         <Popper anchorEl={anchorEl} placement="right" open={!!anchorEl}>
           <ClickAwayListener onClickAway={handleClose}>
             <Box>
-              <CourseCalendarEvent
-                key={calendarEventKey}
-                courseInMoreInfo={courseInMoreInfo}
-                scheduleNames={scheduleNames}
-                currentScheduleIndex={scheduleIndex}
-                closePopover={handleClose}
-              />
+              {courseInMoreInfo &&
+                ('bldg' in courseInMoreInfo ? (
+                  <CourseCalendarEvent key={calendarEventKey} event={courseInMoreInfo} closePopover={handleClose} />
+                ) : (
+                  <CustomCalendarEvent key={calendarEventKey} event={courseInMoreInfo} closePopover={handleClose} />
+                ))}
             </Box>
           </ClickAwayListener>
         </Popper>
