@@ -34,11 +34,7 @@ export default function NotificationHub() {
   const query = useQuery({
     queryKey: [LOOKUP_NOTIFICATIONS_ENDPOINT],
     async queryFn() {
-      let storedPhoneNumber = '';
-
-      if (typeof Storage !== 'undefined') {
-        storedPhoneNumber = window.localStorage.getItem('phoneNumber');
-      }
+      let storedPhoneNumber = typeof Storage !== 'undefined' ? localStorage.getItem('phoneNumber') : null;
 
       if (!storedPhoneNumber) {
         return {

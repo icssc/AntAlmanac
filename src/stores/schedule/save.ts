@@ -58,8 +58,8 @@ export function getScheduleAsSaveState() {
  * @param saveState the save state to load
  */
 export async function fromScheduleSaveState(saveState: ScheduleSaveState) {
-  const { addUndoState, revertState } = useScheduleStore.getState();
-  const schedules = [];
+  const { addUndoState, revertState, schedules } = useScheduleStore.getState();
+  schedules.length = 0;
   const scheduleIndex = saveState.scheduleIndex;
 
   addUndoState();

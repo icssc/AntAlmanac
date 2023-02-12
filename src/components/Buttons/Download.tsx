@@ -328,6 +328,9 @@ export default function Download() {
   }
 
   function saveAs(uri: any, download: string) {
+    if (!ref.current) {
+      return;
+    }
     ref.current.href = uri;
     ref.current.download = download;
     ref.current.click();

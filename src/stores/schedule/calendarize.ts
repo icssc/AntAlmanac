@@ -16,7 +16,7 @@ export function calendarizeCourseEvents(currentCourses: Course[]) {
       .map((meeting) => {
         const [, startHrStr, startMinStr, endHrStr, endMinStr, ampm] = meeting.time.match(
           /(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/
-        );
+        ) as RegExpMatchArray;
 
         let startHr = parseInt(startHrStr, 10);
         const startMin = parseInt(startMinStr, 10);
@@ -66,7 +66,7 @@ export function calendarizeFinals(currentCourses: Course[]) {
     .map((course) => {
       const [, date, , , startStr, startMinStr, endStr, endMinStr, ampm] = course.section.finalExam.match(
         /([A-za-z]+) ([A-Za-z]+) *(\d{1,2}) *(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(am|pm)/
-      );
+      ) as RegExpMatchArray;
 
       let startHour = parseInt(startStr, 10);
       const startMin = parseInt(startMinStr, 10);
@@ -103,27 +103,35 @@ export function calendarizeFinals(currentCourses: Course[]) {
   return flatFinalsForAllCourses;
 }
 
+function notNull<T>(x: T): x is NonNullable<T> {
+  return x !== null;
+}
+
 /**
  * returns custom events as calendar events from custom events
  */
 export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[]) {
   const calendarEventsForAllCustom = currentCustomEvents.map((customEvent) => {
-    const calendarEventsForCustom = customEvent.days.map((_day, dayIndex) => {
-      const startHour = parseInt(customEvent.start.slice(0, 2), 10);
-      const startMin = parseInt(customEvent.start.slice(3, 5), 10);
-      const endHour = parseInt(customEvent.end.slice(0, 2), 10);
-      const endMin = parseInt(customEvent.end.slice(3, 5), 10);
+    const calendarEventsForCustom = customEvent.days
+      .map((day, dayIndex) => {
+        if (day) {
+          const startHour = parseInt(customEvent.start.slice(0, 2), 10);
+          const startMin = parseInt(customEvent.start.slice(3, 5), 10);
+          const endHour = parseInt(customEvent.end.slice(0, 2), 10);
+          const endMin = parseInt(customEvent.end.slice(3, 5), 10);
 
-      const newCalendarEvent = {
-        customEventID: customEvent.customEventID,
-        color: customEvent.color,
-        start: new Date(2018, 0, dayIndex, startHour, startMin),
-        isCustomEvent: true,
-        end: new Date(2018, 0, dayIndex, endHour, endMin),
-        title: customEvent.title,
-      };
-      return newCalendarEvent;
-    });
+          const newCalendarEvent = {
+            customEventID: customEvent.customEventID,
+            color: customEvent.color,
+            start: new Date(2018, 0, dayIndex, startHour, startMin),
+            isCustomEvent: true,
+            end: new Date(2018, 0, dayIndex, endHour, endMin),
+            title: customEvent.title,
+          };
+          return newCalendarEvent;
+        }
+      })
+      .filter(notNull);
     return calendarEventsForCustom;
   });
   const flatCalendarEventsForAllCustom = calendarEventsForAllCustom.flat();

@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "strict": true,
         "jsx": "react-jsx",
         "target": "esnext",
         "module": "esnext",

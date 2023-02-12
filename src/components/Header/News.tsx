@@ -105,9 +105,9 @@ export default function NewsModal() {
                   <Skeleton variant="text" animation="wave" width="20%" />
                 </Box>
               </Box>
-            ) : query.data.length ? (
+            ) : query.data?.length ? (
               // LOADED and DATA
-              query.data.map((newsItem, index) => (
+              query.data?.map((newsItem, index) => (
                 <Fragment key={index}>
                   <ListItem alignItems="flex-start" sx={{ display: 'flex', flexDirection: 'column' }} dense>
                     <Typography variant="body1">{newsItem.title}</Typography>

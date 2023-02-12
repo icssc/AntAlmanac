@@ -18,6 +18,10 @@ export default function ScreenshotButton(props: Props) {
   const ref = useRef<HTMLAnchorElement>(null);
 
   async function handleClick() {
+    if (!props.imgRef.current) {
+      return;
+    }
+
     logAnalytics({
       category: analyticsEnum.calendar.title,
       action: analyticsEnum.calendar.actions.SCREENSHOT,
@@ -28,6 +32,9 @@ export default function ScreenshotButton(props: Props) {
   }
 
   function saveAs(uri: string, download: string) {
+    if (!ref.current) {
+      return;
+    }
     ref.current.href = uri;
     ref.current.download = download;
     ref.current.click();

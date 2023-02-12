@@ -32,7 +32,7 @@ const defaultCustomEvent: RepeatingCustomEvent = {
   customEventID: 0,
 };
 
-const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 interface Props {
   event?: RepeatingCustomEvent;
