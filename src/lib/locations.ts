@@ -111,4 +111,4 @@ export default {
   'MS-E': 83149,
   APS: 363932,
   HH: 83161,
-} as const;
+} as Record<string, number>;

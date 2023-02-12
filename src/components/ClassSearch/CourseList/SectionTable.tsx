@@ -1,8 +1,10 @@
 import { Fragment } from 'react';
-import { Add as AddIcon, ArrowDropDown as ArrowDropDownIcon, Help as HelpIcon } from '@mui/icons-material';
+import { useSnackbar } from 'notistack';
+import { Add as AddIcon, ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
 import {
   Box,
   IconButton,
+  Link,
   Paper,
   Table,
   TableBody,
@@ -12,11 +14,12 @@ import {
   TableRow,
   Tooltip,
   Typography,
-  useMediaQuery,
 } from '@mui/material';
 import type { AACourse, AASection } from '$types/peterportal';
+import locations from '$lib/locations';
+import restrictions from '$lib/restrictions';
 
-const colors: Record<string, string> = {
+const SectionTypeColors: Record<string, string> = {
   Act: '#c87137',
   Col: '#ff40b5',
   Dis: '#8d63f0',
@@ -29,6 +32,12 @@ const colors: Record<string, string> = {
   Stu: '#179523',
   Tap: '#8d2df0',
   Tut: '#ffc705',
+};
+
+const SectionStatusColors: Record<string, string> = {
+  open: '#00c853',
+  waitl: '#1c44b2',
+  full: '#e53935',
 };
 
 function CourseActions(props: { section: AASection }) {
@@ -48,41 +57,67 @@ function SectionDetails(props: { section: AASection }) {
   const { section } = props;
   return (
     <Box>
-      <Box>
-        <Typography variant="caption" whiteSpace="nowrap" color={colors[section.sectionType]}>
-          {section.sectionType}
-        </Typography>
-      </Box>
-      <Box>
-        <Typography variant="caption" whiteSpace="nowrap">
-          Sec: {section.sectionNum}
-        </Typography>
-      </Box>
-      <Box>
-        <Typography variant="caption" whiteSpace="nowrap">
-          Units: {section.units}
-        </Typography>
-      </Box>
+      <Typography variant="caption" whiteSpace="nowrap" color={SectionTypeColors[section.sectionType]}>
+        {section.sectionType}
+      </Typography>
+      <br />
+      <Typography variant="caption" whiteSpace="nowrap">
+        Sec: {section.sectionNum}
+      </Typography>
+      <br />
+      <Typography variant="caption" whiteSpace="nowrap">
+        Units: {section.units}
+      </Typography>
     </Box>
   );
 }
 
 function SectionCode(props: { section: AASection }) {
+  const { enqueueSnackbar } = useSnackbar();
   const { section } = props;
-  return <Typography variant="caption">{section.sectionCode}</Typography>;
+
+  function handleClick(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
+    e.preventDefault();
+    if (window.isSecureContext) {
+      navigator.clipboard.writeText(section.sectionCode.toString());
+      enqueueSnackbar('Section code copied to clipboard', { variant: 'success' });
+    }
+  }
+
+  return (
+    <Link onClick={handleClick} underline="hover" href="#" variant="caption">
+      {section.sectionCode}
+    </Link>
+  );
 }
 
 function SectionInstructors(props: { section: AASection }) {
   const { section } = props;
   return (
     <Box>
-      {section.instructors.map((instructor, index) => (
-        <Box key={index}>
-          <Typography variant="caption" whiteSpace="nowrap">
-            {instructor}
-          </Typography>
-        </Box>
-      ))}
+      {section.instructors.map((instructor, index) => {
+        const lastName = instructor.substring(0, instructor.indexOf(','));
+        if (!lastName || lastName === 'STAFF') {
+          return (
+            <Typography key={index} variant="caption">
+              {instructor}
+            </Typography>
+          );
+        }
+        return (
+          <Box key={index}>
+            <Link
+              href={`https://www.ratemyprofessors.com/search/teachers?sid=U2Nob29sLTEwNzQ=&query=${lastName}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="caption"
+              whiteSpace="nowrap"
+            >
+              {instructor}
+            </Link>
+          </Box>
+        );
+      })}
     </Box>
   );
 }
@@ -93,8 +128,8 @@ function SectionTimes(props: { section: AASection }) {
     <Box>
       {section.meetings.map((meeting, index) => (
         <Fragment key={index}>
-          <Typography variant="caption" whiteSpace="nowrap" key={index}>
-            {meeting.bldg}
+          <Typography variant="caption" key={index}>
+            {`${meeting.days} ${meeting.time.replace(/\s/g, '').split('-').join(' - ')}`}
           </Typography>
           <br />
         </Fragment>
@@ -107,12 +142,28 @@ function SectionPlaces(props: { section: AASection }) {
   const { section } = props;
   return (
     <Box>
-      {section.meetings.map((meeting, index) => (
-        <Fragment key={index}>
-          <Typography variant="caption">{meeting.bldg}</Typography>
-          <br />
-        </Fragment>
-      ))}
+      {section.meetings.map((meeting, index) => {
+        if (!meeting || meeting.bldg === 'TBA') {
+          return (
+            <Fragment key={index}>
+              <Typography variant="caption">{meeting.bldg}</Typography>
+              <br />
+            </Fragment>
+          );
+        }
+        const location_id = locations[meeting.bldg.split(' ')[0] as keyof typeof locations];
+        const href = location_id
+          ? `https://map.uci.edu/?id=463#!m/${location_id}`
+          : 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034';
+        return (
+          <Fragment key={index}>
+            <Link variant="caption" href={href} target="_blank" rel="noopener noreferrer" underline="hover">
+              {meeting.bldg}
+            </Link>
+            <br />
+          </Fragment>
+        );
+      })}
     </Box>
   );
 }
@@ -140,12 +191,31 @@ function SectionEnrollment(props: { section: AASection }) {
 
 function SectionRestrictions(props: { section: AASection }) {
   const { section } = props;
-  return <Typography variant="caption">{section.restrictions}</Typography>;
+  return (
+    <Box>
+      <Tooltip
+        title={section.restrictions
+          .split(' ')
+          .filter((r) => r !== 'and' && r !== 'or')
+          .map((r, index) => (
+            <Fragment key={index}>
+              <Typography>{restrictions[r]}</Typography>
+            </Fragment>
+          ))}
+      >
+        <Link href="https://www.reg.uci.edu/enrollment/restrict_codes.html" target="_blank" rel="noopener noreferrer">
+          {section.restrictions}
+        </Link>
+      </Tooltip>
+    </Box>
+  );
 }
 
 function SectionStatus(props: { section: AASection }) {
   const { section } = props;
-  return <Typography variant="caption">{section.status}</Typography>;
+  return (
+    <Typography variant="caption" color={SectionStatusColors[section.status?.toLowerCase()]}>{section.status}</Typography>
+  );
 }
 
 export default function SectionTable(props: { course: AACourse }) {
@@ -161,22 +231,19 @@ export default function SectionTable(props: { course: AACourse }) {
             <TableCell>Times</TableCell>
             <TableCell>Places</TableCell>
             <TableCell>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Tooltip
+                title={
+                  <Typography>
+                    Enrolled / Capacity
+                    <br />
+                    Waitlist
+                    <br />
+                    New-Only Reserved
+                  </Typography>
+                }
+              >
                 <Typography>Enrollment</Typography>
-                <Tooltip
-                  title={
-                    <Typography>
-                      Enrolled / Capacity
-                      <br />
-                      Waitlist
-                      <br />
-                      New-Only Reserved
-                    </Typography>
-                  }
-                >
-                  <HelpIcon fontSize="small" />
-                </Tooltip>
-              </Box>
+              </Tooltip>
             </TableCell>
             <TableCell>Rstr</TableCell>
             <TableCell>Status</TableCell>
