@@ -214,7 +214,9 @@ function SectionRestrictions(props: { section: AASection }) {
 function SectionStatus(props: { section: AASection }) {
   const { section } = props;
   return (
-    <Typography variant="caption" color={SectionStatusColors[section.status?.toLowerCase()]}>{section.status}</Typography>
+    <Typography variant="caption" color={SectionStatusColors[section.status?.toLowerCase()]}>
+      {section.status}
+    </Typography>
   );
 }
 
