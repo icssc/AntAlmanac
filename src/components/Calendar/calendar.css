@@ -7,11 +7,7 @@
 }
 
 .rbc-header.dark-mode {
-    border-bottom: none;
     color: white;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .rbc-header + .rbc-header {
@@ -45,7 +41,6 @@
 }
 
 .rbc-label.dark-mode {
-    font-size: 0.9rem;
     color: white;
 }
 
