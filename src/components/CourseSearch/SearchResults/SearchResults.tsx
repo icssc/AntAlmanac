@@ -77,12 +77,12 @@ export default function CourseList() {
           <RefreshIcon />
         </IconButton>
       </Box>
-      {query.isFetching && (
+      {!query.isFetched && (
         <Box sx={{ height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <img src={loadingSrc} alt="Loading!" />
         </Box>
       )}
-      {!query.isLoading &&
+      {query.isFetched &&
         (transformedData.length ? (
           <Box>
             {transformedData.map((data, index) => (

@@ -16,6 +16,16 @@ function getColorScheme() {
  */
 interface SettingsStore {
   /**
+   * whether the website is currently displaying finals
+   */
+  showFinals: boolean;
+
+  /**
+   * control whether the website is currently displaying finals
+   */
+  setShowFinals: (showFinals: boolean) => void;
+
+  /**
    * current color scheme
    */
   colorScheme: string;
@@ -36,6 +46,12 @@ interface SettingsStore {
  * hook for accessing the shared settings store
  */
 export const useSettingsStore = create<SettingsStore>((set, get) => ({
+  showFinals: false,
+
+  setShowFinals(showFinals: boolean) {
+    set({ showFinals });
+  },
+
   colorScheme: getColorScheme(),
 
   setColorScheme(colorScheme: string) {

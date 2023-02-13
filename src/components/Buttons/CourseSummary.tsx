@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Chart as ChartJS, registerables } from 'chart.js';
 import { useQuery } from '@tanstack/react-query';
 import { Box, Button, Popover, Typography } from '@mui/material';
 import { InfoOutlined as InfoOutlinedIcon } from '@mui/icons-material';
@@ -61,7 +60,7 @@ export default function CourseSummaryButton(props: { course: AACourse }) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <Box sx={{ maxWidth: 500, padding: 4 }}>
+        <Box sx={{ maxWidth: 500, padding: 2 }}>
           <Typography fontWeight="bold">{query.data?.title}</Typography>
           <br />
           <Typography variant="body2">{query.data?.description}</Typography>

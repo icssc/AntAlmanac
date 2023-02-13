@@ -3,7 +3,7 @@
  * TIP: hover over variables within map functions to see their types
  */
 
-import type { Course, RepeatingCustomEvent } from '.';
+import { useScheduleStore } from '.';
 
 /**
  * type guard to assert that the returned value isn't null or undefined
@@ -13,9 +13,12 @@ function notNull<T>(x: T): x is NonNullable<T> {
 }
 
 /**
- * converts courses to calendar events
+ * converts current schedule's courses to calendar events
  */
-export function calendarizeCourseEvents(currentCourses: Course[] = []) {
+export function getCourseCalendarEvents() {
+  const { schedules, scheduleIndex } = useScheduleStore.getState();
+  const currentCourses = schedules[scheduleIndex].courses;
+
   const calendarEventsForAllCourses = currentCourses.map((course) => {
     const calendarEventsForCourse = course.section.meetings
       .map((meeting) => ({ ...meeting, time: meeting.time.replace(/\s/g, '') }))
@@ -66,9 +69,12 @@ export function calendarizeCourseEvents(currentCourses: Course[] = []) {
 }
 
 /**
- * converts course final times to calendar events
+ * converts current schedule's course finals to calendar events
  */
-export function calendarizeFinals(currentCourses: Course[] = []) {
+export function getFinalsCalendarEvents() {
+  const { schedules, scheduleIndex } = useScheduleStore.getState();
+  const currentCourses = schedules[scheduleIndex].courses;
+
   const finalsForAllCourses = currentCourses
     .filter((course) => course.section.finalExam.length > 5)
     .map((course) => {
@@ -87,26 +93,24 @@ export function calendarizeFinals(currentCourses: Course[] = []) {
         if (startHour > endHour) startHour -= 12;
       }
 
-      const finalsForCourse = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
-        .filter((weekday) => date.includes(weekday))
-        .map((day, index) => {
-          if (date.includes(day)) {
-            const newCalendarEvent = {
-              title: `${course.deptCode} ${course.courseNumber}`,
-              sectionCode: course.section.sectionCode,
-              sectionType: 'Fin',
-              bldg: course.section.meetings[0].bldg,
-              color: course.section.color,
-              start: new Date(2018, 0, index - 1, startHour, startMin),
-              end: new Date(2018, 0, index - 1, endHour, endMin),
-              finalExam: course.section.finalExam,
-              instructors: course.section.instructors,
-              term: course.term,
-              isCustomEvent: false,
-            };
-            return newCalendarEvent;
-          }
-        });
+      const finalsForCourse = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((day, index) => {
+        if (date.includes(day)) {
+          const newCalendarEvent = {
+            title: `${course.deptCode} ${course.courseNumber}`,
+            sectionCode: course.section.sectionCode,
+            sectionType: 'Fin',
+            bldg: course.section.meetings[0].bldg,
+            color: course.section.color,
+            start: new Date(2018, 0, index - 1, startHour, startMin),
+            end: new Date(2018, 0, index - 1, endHour, endMin),
+            finalExam: course.section.finalExam,
+            instructors: course.section.instructors,
+            term: course.term,
+            isCustomEvent: false,
+          };
+          return newCalendarEvent;
+        }
+      });
       const definedFinalsForCourse = finalsForCourse.filter(notNull);
       return definedFinalsForCourse;
     });
@@ -115,9 +119,12 @@ export function calendarizeFinals(currentCourses: Course[] = []) {
 }
 
 /**
- * transforms custom events to calendar events
+ * converts current schedule's custom events to calendar events
  */
-export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []) {
+export function getCustomCalendarEvents() {
+  const { schedules, scheduleIndex } = useScheduleStore.getState();
+  const currentCustomEvents = schedules[scheduleIndex].customEvents;
+
   const calendarEventsForAllCustom = currentCustomEvents.map((customEvent) => {
     const calendarEventsForCustom = customEvent.days
       .map((day, dayIndex) => {

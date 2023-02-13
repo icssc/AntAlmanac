@@ -33,15 +33,15 @@ export default function Home() {
     return (
       <>
         <Tabs value={mobileTab} onChange={handleMobileTabChange} variant="fullWidth">
-          <Tab label="Item One" />
-          <Tab label="Item Two" />
+          <Tab label="Calendar" />
+          <Tab label="Courses" />
         </Tabs>
         {mobileTab === 0 && <Calendar />}
         {mobileTab === 1 && (
           <Box>
             <Tabs value={tab} onChange={handleTabChange} variant="fullWidth">
               <Tab label="Course Search" />
-              <Tab label="Added Classes" />
+              <Tab label="Added Courses" />
               <Tab label="Map" />
             </Tabs>
             {tab === 0 && <CourseSearch />}
@@ -63,7 +63,7 @@ export default function Home() {
       <Box sx={{ width: '50%', height: '90vh', overflowY: 'auto' }}>
         <Tabs value={tab} onChange={handleTabChange} variant="fullWidth">
           <Tab label="Course Search" />
-          <Tab label="Added Classes" />
+          <Tab label="Added Courses" />
           <Tab label="Map" />
         </Tabs>
         {tab === 0 && <CourseSearch />}

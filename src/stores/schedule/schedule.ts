@@ -54,6 +54,14 @@ export function deleteCurrentSchedule() {
   const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState();
   previousStates.push({ schedules, scheduleIndex });
   schedules.splice(scheduleIndex, 1);
+
+  /**
+   * create an empty schedule if the last one was deleted
+   */
+  if (!schedules.length) {
+    schedules.push({ scheduleName: 'Schedule 1', courses: [], customEvents: [] });
+  }
+
   useScheduleStore.setState({
     schedules,
     scheduleIndex: Math.min(scheduleIndex, schedules.length - 1),

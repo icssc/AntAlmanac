@@ -7,6 +7,7 @@ import DownloadButton from '$components/Buttons/Download';
 import CustomEventButton from '$components/Buttons/CustomEvent';
 import EditScheduleButton from '$components/Buttons/EditSchedule';
 import SelectScheduleButton from '$components/Buttons/SelectSchedule';
+import ToggleFinalsButton from '$components/Buttons/ToggleFinals';
 
 interface Props {
   /**
@@ -30,9 +31,10 @@ export default function CalendarToolbar(props: Props) {
   return (
     <AppBar position="static" color="transparent">
       <Toolbar sx={{ '&.MuiToolbar-root': { padding: 0 } }}>
-        <Box sx={{ display: 'flex', flexGrow: 1 }}>
+        <Box sx={{ mx: 1, display: 'flex', alignItems: 'center', flexGrow: 1, gap: 2 }}>
           <EditScheduleButton />
           <SelectScheduleButton />
+          <ToggleFinalsButton />
         </Box>
 
         <Box flexGrow="1" />

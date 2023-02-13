@@ -67,11 +67,6 @@ interface ScheduleStore {
   scheduleIndex: number;
 
   /**
-   * courses of current schedule
-   */
-  courses: Course[];
-
-  /**
    * undo tree
    */
   previousStates: ScheduleUndoState[];
@@ -84,8 +79,6 @@ export const useScheduleStore = create<ScheduleStore>((_set, _get) => ({
   schedules: [{ scheduleName: 'Schedule 1', courses: [], customEvents: [] }],
 
   scheduleIndex: 0,
-
-  courses: [],
 
   previousStates: [],
 }));
