@@ -13,7 +13,7 @@ import type { WebsocResponse, School, Department, AACourse, AASection } from '$t
 function flattenSOCObject(SOCObject: WebsocResponse) {
   const { schedules, scheduleIndex } = useScheduleStore.getState();
 
-  const courses = schedules[scheduleIndex].courses;
+  const courses = schedules[scheduleIndex]?.courses || [];
 
   const courseColors = courses.reduce((accumulator, { section }) => {
     accumulator[section.sectionCode] = section.color;

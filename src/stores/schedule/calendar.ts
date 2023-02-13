@@ -4,6 +4,7 @@
  */
 
 import { useScheduleStore } from '.';
+import type { Course, RepeatingCustomEvent } from '.';
 
 /**
  * type guard to assert that the returned value isn't null or undefined
@@ -15,9 +16,9 @@ function notNull<T>(x: T): x is NonNullable<T> {
 /**
  * converts current schedule's courses to calendar events
  */
-export function getCourseCalendarEvents() {
+export function getCourseCalendarEvents(provided?: Course[]) {
   const { schedules, scheduleIndex } = useScheduleStore.getState();
-  const currentCourses = schedules[scheduleIndex].courses;
+  const currentCourses = provided ?? schedules[scheduleIndex].courses;
 
   const calendarEventsForAllCourses = currentCourses.map((course) => {
     const calendarEventsForCourse = course.section.meetings
@@ -71,9 +72,9 @@ export function getCourseCalendarEvents() {
 /**
  * converts current schedule's course finals to calendar events
  */
-export function getFinalsCalendarEvents() {
+export function getFinalsCalendarEvents(provided?: Course[]) {
   const { schedules, scheduleIndex } = useScheduleStore.getState();
-  const currentCourses = schedules[scheduleIndex].courses;
+  const currentCourses = provided ?? schedules[scheduleIndex].courses;
 
   const finalsForAllCourses = currentCourses
     .filter((course) => course.section.finalExam.length > 5)
@@ -122,9 +123,9 @@ export function getFinalsCalendarEvents() {
 /**
  * converts current schedule's custom events to calendar events
  */
-export function getCustomCalendarEvents() {
+export function getCustomCalendarEvents(provided?: RepeatingCustomEvent[]) {
   const { schedules, scheduleIndex } = useScheduleStore.getState();
-  const currentCustomEvents = schedules[scheduleIndex].customEvents;
+  const currentCustomEvents = provided ?? schedules[scheduleIndex].customEvents;
 
   const calendarEventsForAllCustom = currentCustomEvents.map((customEvent) => {
     const calendarEventsForCustom = customEvent.days

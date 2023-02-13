@@ -4,17 +4,16 @@ import {
   WEBSOC_ENDPOINT,
   LOAD_DATA_ENDPOINT,
   LOAD_LEGACY_DATA_ENDPOINT,
-  SAVE_DATA_ENDPOINT,
 } from '$lib/endpoints';
 import type { Meeting, Section, WebsocResponse } from '$types/peterportal';
 import { analyticsEnum, logAnalytics } from '$lib/analytics';
 import { useScheduleStore } from '.';
-import type { Course, RepeatingCustomEvent } from '.';
+import type { Course, RepeatingCustomEvent, Schedule } from '.';
 
 /**
  * course details
  */
-export interface CourseDetails {
+interface CourseDetails {
   deptCode: string;
   courseNumber: string;
   courseTitle: string;
@@ -25,7 +24,7 @@ export interface CourseDetails {
 /**
  * course info
  */
-export interface CourseInfo {
+interface CourseInfo {
   courseDetails: CourseDetails;
   section: Section;
 }
@@ -33,7 +32,7 @@ export interface CourseInfo {
 /**
  * get course info from a websocket response
  */
-export function getCourseInfo(SOCObject: WebsocResponse) {
+function getCourseInfo(SOCObject: WebsocResponse) {
   const courseInfo: { [sectionCode: string]: CourseInfo } = {};
   for (const school of SOCObject.schools) {
     for (const department of school.departments) {
@@ -119,7 +118,7 @@ const websocCache: { [key: string]: CacheEntry } = {};
 /**
  * query the websocket endpoint
  */
-export async function queryWebsoc(params: Record<string, string>): Promise<WebsocResponse> {
+async function queryWebsoc(params: Record<string, string>): Promise<WebsocResponse> {
   const url = new URL(PETERPORTAL_WEBSOC_ENDPOINT);
   const searchString = new URLSearchParams(params).toString();
   if (websocCache[searchString]?.timestamp > Date.now() - 30 * 60 * 1000) {
@@ -182,7 +181,7 @@ interface LegacyShortCourseInfo {
   scheduleIndices: number[];
 }
 
-export interface LegacyRepeatingCustomEvent {
+interface LegacyRepeatingCustomEvent {
   title: string;
   start: string;
   end: string;
@@ -192,7 +191,7 @@ export interface LegacyRepeatingCustomEvent {
   scheduleIndices: number[];
 }
 
-export interface LegacyUserData {
+interface LegacyUserData {
   addedCourses: LegacyShortCourseInfo[];
   scheduleNames: string[];
   customEvents: LegacyRepeatingCustomEvent[];
@@ -232,6 +231,7 @@ export function useLoadSchedule() {
           if (response_data.ok) {
             const json = (await response_data.json()) as { userData: ScheduleSaveState };
             scheduleSaveState = json.userData;
+
             if (!scheduleSaveState) {
               return;
             }
@@ -330,16 +330,18 @@ async function fromScheduleSaveState(saveState: ScheduleSaveState) {
         ...shortCourseSchedule,
         courses,
       });
+
       useScheduleStore.setState({ schedules, scheduleIndex });
       return true;
     }
   } catch (e) {
+    console.log(e);
     // revertState();
     return false;
   }
 }
 
-export function convertLegacySchedule(legacyUserData: LegacyUserData) {
+function convertLegacySchedule(legacyUserData: LegacyUserData) {
   const scheduleSaveState: ScheduleSaveState = { schedules: [], scheduleIndex: 0 };
   for (const scheduleName of legacyUserData.scheduleNames) {
     scheduleSaveState.schedules.push({ scheduleName: scheduleName, courses: [], customEvents: [] });
@@ -357,47 +359,22 @@ export function convertLegacySchedule(legacyUserData: LegacyUserData) {
   return scheduleSaveState;
 }
 
-export function useSaveSchedule() {
-  const { enqueueSnackbar } = useSnackbar();
-
-  return async (userID: string, rememberMe: boolean) => {
-    const { previousStates } = useScheduleStore.getState();
-
-    logAnalytics({
-      category: analyticsEnum.nav.title,
-      action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
-      label: userID,
-      value: rememberMe ? 1 : 0,
-    });
-
-    if (!userID) {
-      return;
-    }
-    userID = userID.replace(/\s+/g, '');
-    if (userID.length > 0) {
-      if (rememberMe) {
-        window.localStorage.setItem('userID', userID);
-      } else {
-        window.localStorage.removeItem('userID');
-      }
-
-      try {
-        await fetch(SAVE_DATA_ENDPOINT, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userID, userData: previousStates.pop() }),
-        });
-
-        enqueueSnackbar(`Schedule saved under username ${userID}. Don't forget to sign up for classes on WebReg!`, {
-          variant: 'success',
-        });
-
-        // AppStore.saveSchedule();
-      } catch (e) {
-        enqueueSnackbar(`Schedule could not be saved under username "${userID}`, { variant: 'error' });
-      }
-    }
-  };
+/*
+ * Convert schedule to shortened schedule (no course info) for saving.
+ */
+export function convertSchedulesToSave(schedule: Schedule[]) {
+  const shortSchedules: ShortCourseSchedule[] = schedule.map((schedule) => {
+    return {
+      scheduleName: schedule.scheduleName,
+      customEvents: schedule.customEvents,
+      courses: schedule.courses.map((course) => {
+        return {
+          color: course.section.color,
+          term: course.term,
+          sectionCode: course.section.sectionCode,
+        };
+      }),
+    };
+  });
+  return { schedules: shortSchedules, scheduleIndex: 0 };
 }

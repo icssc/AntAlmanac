@@ -38,7 +38,7 @@ export interface Course {
 /**
  * schedule
  */
-interface Schedule {
+export interface Schedule {
   scheduleName: string;
   courses: Course[];
   customEvents: RepeatingCustomEvent[];
@@ -47,7 +47,7 @@ interface Schedule {
 /**
  * schedule undo state
  */
-interface ScheduleUndoState {
+export interface ScheduleUndoState {
   schedules: Schedule[];
   scheduleIndex: number;
 }

@@ -33,8 +33,6 @@ export default function ColorPicker(props: Props) {
   const [color, setColor] = useState(props.color);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  // TODO: error checking if props.isCustomEvent == true and no props.customEventID
-
   function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     e.stopPropagation();
     setAnchorEl(e?.currentTarget);

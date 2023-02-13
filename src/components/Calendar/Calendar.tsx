@@ -6,6 +6,7 @@ import { useState, useRef } from 'react';
 import { Calendar, dayjsLocalizer, DateLocalizer, Views } from 'react-big-calendar';
 import type { EventProps } from 'react-big-calendar';
 import { Box, ClickAwayListener, Popper } from '@mui/material';
+import { useScheduleStore } from '$stores/schedule';
 import { useSettingsStore } from '$stores/settings';
 import { getCourseCalendarEvents, getFinalsCalendarEvents, getCustomCalendarEvents } from '$stores/schedule/calendar';
 import { isContrastSufficient } from '$lib/utils';
@@ -49,7 +50,7 @@ function AntAlmanacEvent(props: EventProps & { event: CalendarEvent }) {
  */
 export default function AntAlamancCalendar() {
   const showFinals = useSettingsStore((state) => state.showFinals);
-
+  const { schedules, scheduleIndex } = useScheduleStore();
   const ref = useRef<HTMLDivElement>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [courseInMoreInfo, setCourseInMoreInfo] = useState<CalendarEvent | null>(null);
@@ -59,7 +60,12 @@ export default function AntAlamancCalendar() {
    * if showing finals, get the finals calendar events;
    * otherwise join the two arrays of course and custom calendar events
    */
-  const events = showFinals ? getFinalsCalendarEvents() : [...getCourseCalendarEvents(), ...getCustomCalendarEvents()];
+  const currentSchedule = schedules[scheduleIndex];
+  const courses = currentSchedule?.courses;
+  const customEvents = currentSchedule?.customEvents;
+  const events = showFinals
+    ? getFinalsCalendarEvents(courses)
+    : [...getCourseCalendarEvents(courses), ...getCustomCalendarEvents(customEvents)];
 
   const hasWeekendCourse = events.some((event) => event?.start.getDay() === 0 || event?.start.getDay() === 6);
 

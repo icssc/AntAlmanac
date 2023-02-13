@@ -10,19 +10,19 @@ import {
   FormControlLabel,
   TextField,
 } from '@mui/material';
-import { CloudDownload as CloudDownloadIcon } from '@mui/icons-material';
+import { Save as SaveIcon } from '@mui/icons-material';
 import { useSettingsStore } from '$stores/settings';
-import { useLoadSchedule } from '$stores/schedule/load';
+import { useSaveSchedule } from '$stores/schedule/save';
 
-export default function LoadScheduleButton() {
+export default function SaveScheduleButton() {
   const [open, setOpen] = useState(false);
   const [userId, setUserId] = useState('');
   const [remember, setRemember] = useState(false);
-  const loadSchedule = useLoadSchedule();
+  const saveSchedule = useSaveSchedule();
   const isDarkMode = useSettingsStore((store) => store.isDarkMode);
 
   async function handleSubmit() {
-    await loadSchedule(userId, remember);
+    await saveSchedule(userId, remember);
     setOpen(false);
   }
 
@@ -44,13 +44,13 @@ export default function LoadScheduleButton() {
 
   return (
     <>
-      <Button color="inherit" startIcon={<CloudDownloadIcon />} onClick={handleClick}>
-        Load
+      <Button color="inherit" startIcon={<SaveIcon />} onClick={handleClick}>
+        Save
       </Button>
       <Dialog open={open}>
-        <DialogTitle>Load Schedule</DialogTitle>
+        <DialogTitle>Save Schedule</DialogTitle>
         <DialogContent>
-          <DialogContentText>Enter your username here to load your schedule.</DialogContentText>
+          <DialogContentText>Enter your username here to save your schedule.</DialogContentText>
           <TextField
             fullWidth
             onChange={handleChange}
