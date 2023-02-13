@@ -353,13 +353,7 @@ export const warnMultipleTerms = (terms: Set<string>) => {
 
 export function clickToCopy(event: React.MouseEvent<HTMLElement, MouseEvent>, sectionCode: string) {
     event.stopPropagation();
-
-    const tempEventTarget = document.createElement('input');
-    document.body.appendChild(tempEventTarget);
-    tempEventTarget.setAttribute('value', sectionCode);
-    tempEventTarget.select();
-    document.execCommand('copy');
-    document.body.removeChild(tempEventTarget);
+    void navigator.clipboard.writeText(sectionCode);
     openSnackbar('success', 'Section code copied to clipboard');
 }
 
