@@ -1,43 +1,69 @@
-import { useState } from 'react'
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormLabel, TextField } from '@mui/material';
+import { useState } from 'react';
+import {
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControlLabel,
+  TextField,
+} from '@mui/material';
 import { CloudDownload as CloudDownloadIcon } from '@mui/icons-material';
-import { useSettingsStore } from '$stores/settings'
-import { useLoadSchedule } from '$stores/schedule/load'
+import { useSettingsStore } from '$stores/settings';
+import { useLoadSchedule } from '$stores/schedule/load';
 
 export default function LoadButton() {
-  const [open, setOpen] = useState(false)
-  const [value, setValue] = useState('')
-  const loadSchedule = useLoadSchedule()
-  const isDarkMode = useSettingsStore(store => store.isDarkMode)
+  const [open, setOpen] = useState(false);
+  const [userId, setUserId] = useState('');
+  const [remember, setRemember] = useState(false);
+  const loadSchedule = useLoadSchedule();
+  const isDarkMode = useSettingsStore((store) => store.isDarkMode);
 
-  function handleSubmit() {
-    loadSchedule(value)
+  async function handleSubmit() {
+    await loadSchedule(userId, remember);
+    setOpen(false);
   }
 
   function handleCancel() {
-    setOpen(false)
+    setOpen(false);
   }
 
   function handleClick() {
-    setOpen(true)
+    setOpen(true);
   }
 
   function handleChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
-    setValue(e.target.value)
+    setUserId(e.target.value);
+  }
+
+  function handleChecked(e: React.ChangeEvent<HTMLInputElement>) {
+    setRemember(e.target.checked);
   }
 
   return (
     <>
-    <Button color="inherit" startIcon={<CloudDownloadIcon />} onClick={handleClick}>
-      Load
-    </Button>
+      <Button color="inherit" startIcon={<CloudDownloadIcon />} onClick={handleClick}>
+        Load
+      </Button>
       <Dialog open={open}>
         <DialogTitle>Load Schedule</DialogTitle>
         <DialogContent>
-          <FormControl>
-            <FormLabel>User ID</FormLabel>
-            <TextField onChange={handleChange} />
-          </FormControl>
+          <DialogContentText>Enter your username here to load your schedule.</DialogContentText>
+          <TextField
+            fullWidth
+            onChange={handleChange}
+            autoFocus
+            margin="dense"
+            label="User ID"
+            type="text"
+            placeholder="Enter here"
+          />
+          <FormControlLabel
+            control={<Checkbox defaultChecked onChange={handleChecked} />}
+            label="Remember Me (Uncheck on shared computers)"
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancel} color={isDarkMode() ? 'inherit' : 'primary'}>
@@ -49,5 +75,5 @@ export default function LoadButton() {
         </DialogActions>
       </Dialog>
     </>
-  )
+  );
 }
