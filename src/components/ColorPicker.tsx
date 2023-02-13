@@ -11,6 +11,8 @@ interface Props {
   color: string;
   analyticsCategory: string;
 
+  term?: string;
+
   /**
    * If true, this object has a customEventID. If false, this object has a term and sectionCode.
    */
@@ -52,8 +54,8 @@ export default function ColorPicker(props: Props) {
     if (props.customEventID) {
       changeCustomEventColor(props.customEventID, e.hex);
     }
-    if (props.sectionCode) {
-      changeCourseColor(props.sectionCode, e.hex);
+    if (props.sectionCode && props.term) {
+      changeCourseColor(props.sectionCode, props.term, e.hex);
     }
   }
 

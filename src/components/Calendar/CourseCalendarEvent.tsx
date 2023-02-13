@@ -113,6 +113,7 @@ export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
                   isCustomEvent={props.event.isCustomEvent}
                   sectionCode={props.event.sectionCode}
                   analyticsCategory={analyticsEnum.calendar.title}
+                  term={term}
                 />
               </TableCell>
             </TableRow>
