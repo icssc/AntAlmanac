@@ -7,10 +7,10 @@ const PatchNotes = () => {
 
     // show modal only on first visit    
     useEffect(() => {
-        if (localStorage.getItem('visitedcount')) {
+        if (localStorage.getItem('visitedCount') == 'y') {
             setIsOpen(false);
         } else {
-            localStorage.setItem('visitedcount', '1');
+            localStorage.setItem('visitedCount', 'y');
         }
     }, []);
         
@@ -23,7 +23,7 @@ const PatchNotes = () => {
                 or by clicking outside the dialog 
                 */
                 if(reason == 'backdropClick' || reason == 'escapeKeyDown') {
-                setIsOpen(false);
+                    setIsOpen(false);
                 }
             }} open={isOpen}>
                 <DialogTitle>{"What's New - February 2023"}</DialogTitle>
