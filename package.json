@@ -59,6 +59,7 @@
         "@types/recharts": "^1.8.23",
         "@typescript-eslint/eslint-plugin": "^5.48.2",
         "@typescript-eslint/parser": "^5.48.2",
+        "@vitejs/plugin-react": "^3.1.0",
         "eslint": "^8.32.0",
         "eslint-import-resolver-typescript": "^3.5.3",
         "eslint-plugin-import": "^2.27.5",
@@ -70,7 +71,9 @@
         "husky": "^4.3.6",
         "lint-staged": "^10.5.3",
         "prettier": "^2.2.1",
-        "typescript": "^4.7.4"
+        "typescript": "^4.7.4",
+        "vite": "^4.1.1",
+        "vite-plugin-svgr": "^2.4.0"
     },
     "husky": {
         "hooks": {
