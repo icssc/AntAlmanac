@@ -2,7 +2,6 @@
  * functions that manage courses in the schedule store
  */
 
-import type { AACourse, Section } from '$types/peterportal';
 import {
   amber,
   blue,
@@ -19,6 +18,7 @@ import {
   teal,
 } from '@mui/material/colors';
 import { useSearchStore } from '$stores/search';
+import type { AACourse, Section } from '$types/peterportal';
 import { useScheduleStore } from '.';
 
 const arrayOfColors = [
@@ -38,50 +38,29 @@ const arrayOfColors = [
 ];
 
 /**
- * @return Reference of the course that matches the params.
- * @param sectionCode
- * @param term
+ * doesn't require the "sections" property from AACourse
  */
-export function getExistingCourse(sectionCode: string, term: string) {
-  const { schedules } = useScheduleStore.getState();
-  const allCourses = schedules.map((schedule) => schedule.courses).flat(1);
-  return allCourses.find((course) => course.section.sectionCode === sectionCode && course.term === term);
-}
-
-/**
- * Checks if a course has already been added to a schedule
- * @param sectionCode
- * @param term
- * @param scheduleIndex
- */
-export function doesCourseExistInSchedule(sectionCode: string, term: string, scheduleIndex: number) {
-  const { schedules } = useScheduleStore.getState();
-  return schedules[scheduleIndex]?.courses.some(
-    (course) => course.section.sectionCode === sectionCode && course.term === term
-  );
-}
+type SimpleAACourse = Omit<AACourse, 'sections'>;
 
 /**
  * add a course to a schedule
+ * @param section
+ * @param course
+ * @param addScheduleIndex index of schedule in the array to target
+ * @param undo whether we can undo the changes
  */
-export function addCourse(
-  section: Section,
-  course: AACourse,
-  scheduleIndex: number = useScheduleStore.getState().scheduleIndex,
-  canUndo = true
-) {
-  const { term } = useSearchStore.getState().form;
-  const { addUndoState, schedules } = useScheduleStore.getState();
+export function addCourse(section: Section, course: SimpleAACourse, addScheduleIndex?: number, undo = true) {
+  const { form } = useSearchStore.getState();
+  const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState();
 
-  if (canUndo) {
-    addUndoState();
-  }
-
+  const targetScheduleIndex = addScheduleIndex ?? scheduleIndex;
   const allCourses = schedules.map((schedule) => schedule?.courses).flat(1);
 
-  // The color will be set properly in Schedules
+  /**
+   * The color will be set properly in Schedules
+   */
   const newCourse = {
-    term: term,
+    term: form.term,
     deptCode: course.deptCode,
     courseNumber: course.courseNumber,
     courseTitle: course.courseTitle,
@@ -93,12 +72,14 @@ export function addCourse(
   /**
    * attempt to find the course to add
    */
-  let courseToAdd = getExistingCourse(newCourse.section.sectionCode, newCourse.term);
+  let courseToAdd = allCourses.find(
+    (course) => course.section.sectionCode === section.sectionCode && course.term === form.term
+  );
 
   /**
    * create a new course if it didn't exist
    */
-  if (courseToAdd === undefined) {
+  if (!courseToAdd) {
     const setOfUsedColors = new Set(allCourses.map((course) => course.section.color));
     const color = arrayOfColors.find((materialColor) => !setOfUsedColors.has(materialColor)) || '#5ec8e0';
     courseToAdd = {
@@ -110,21 +91,46 @@ export function addCourse(
     };
   }
 
-  /**
-   * add the course to the current schedule if not present and update the store
-   */
-  if (!doesCourseExistInSchedule(newCourse.section.sectionCode, newCourse.term, scheduleIndex)) {
-    schedules[scheduleIndex]?.courses.push(courseToAdd);
-    useScheduleStore.setState({ schedules });
+  const courseAlreadyExists = schedules[targetScheduleIndex]?.courses.some(
+    (course) => course.section.sectionCode === section.sectionCode && course.term === form.term
+  );
+
+  if (!courseAlreadyExists) {
+    if (undo) {
+      previousStates.push({ schedules, scheduleIndex });
+    }
+
+    schedules[targetScheduleIndex]?.courses.push(courseToAdd);
+
+    /**
+     * if the changes can be undone, commit them to the store and update the state,
+     */
+    if (undo) {
+      useScheduleStore.setState({ schedules, previousStates });
+    }
   }
+  return {
+    schedules,
+    previousStates,
+    schedule: schedules[targetScheduleIndex],
+    course: courseToAdd,
+  };
 }
 
-export function addCourseToAllSchedules(section: Section, course: AACourse) {
-  const { addUndoState, schedules } = useScheduleStore.getState();
-  addUndoState();
-  for (let i = 0; i < schedules.length; ++i) {
-    addCourse(section, course, i, false);
+/**
+ * save a course to all schedules
+ * @param section
+ * @param course
+ * @param save whether to immediately commit these changes
+ */
+export function addCourseToAllSchedules(section: Section, course: SimpleAACourse, save = true) {
+  const { schedules } = useScheduleStore.getState();
+  const allChanges = schedules.map((_schedule, index) => addCourse(section, course, index, false));
+  const newSchedules = allChanges.map((change) => change.schedule);
+  if (save) {
+    useScheduleStore.setState({ schedules: newSchedules });
   }
+  return { schedules: newSchedules };
 }
 
 /**
@@ -134,9 +140,9 @@ export function addCourseToAllSchedules(section: Section, course: AACourse) {
  * @param newColor color
  */
 export function changeCourseColor(sectionCode: string, term: string, newColor: string) {
-  const { addUndoState, schedules } = useScheduleStore.getState();
-  addUndoState();
-  const course = getExistingCourse(sectionCode, term);
+  const { schedules } = useScheduleStore.getState();
+  const allCourses = schedules.map((schedule) => schedule.courses).flat(1);
+  const course = allCourses.find((course) => course.section.sectionCode === sectionCode && course.term === term);
   if (course) {
     course.section.color = newColor;
     useScheduleStore.setState({ schedules });
@@ -149,12 +155,12 @@ export function changeCourseColor(sectionCode: string, term: string, newColor: s
  * @param term term
  */
 export function deleteCourse(sectionCode: string, term: string) {
-  const { addUndoState, schedules, scheduleIndex } = useScheduleStore.getState();
-  addUndoState();
+  const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState();
+  previousStates.push({ schedules, scheduleIndex });
   schedules[scheduleIndex].courses = schedules[scheduleIndex].courses.filter(
     (course) => !(course.section.sectionCode === sectionCode && course.term === term)
   );
-  useScheduleStore.setState({ schedules });
+  useScheduleStore.setState({ schedules, previousStates });
 }
 
 /**
@@ -162,13 +168,34 @@ export function deleteCourse(sectionCode: string, term: string) {
  * @param toScheduleIndex index of the other schedule
  */
 export function copyCoursesToSchedule(toScheduleIndex: number) {
-  const { addUndoState, schedules, scheduleIndex } = useScheduleStore.getState();
-  addUndoState();
-  // for (const course of schedules[scheduleIndex].courses) {
-  //   if (toScheduleIndex === schedules.length) {
-  //     addCourseToAllSchedules(course, schedules);
-  //   } else {
-  //     addCourse(course, toScheduleIndex, false);
-  //   }
-  // }
+  const { schedules, scheduleIndex } = useScheduleStore.getState();
+
+  const targetSchedule = schedules[toScheduleIndex];
+
+  if (toScheduleIndex === schedules.length) {
+    /**
+     * TODO: somehow convert this to a batch update like below
+     */
+    schedules[scheduleIndex].courses.map((course) => addCourseToAllSchedules(course.section, course));
+  } else {
+    const results = schedules[scheduleIndex].courses.map((course) =>
+      addCourse(course.section, course, toScheduleIndex, false)
+    );
+
+    const resultCourses = results.map((result) => result.course);
+
+    /**
+     * add any that don't exist to the current schedule's courses array
+     */
+    resultCourses.forEach((course) => {
+      if (targetSchedule.courses.find((c) => c.section.sectionCode === course.section.sectionCode)) {
+        targetSchedule.courses.push(course);
+      }
+    });
+
+    /**
+     * commit the changes into the store
+     */
+    useScheduleStore.setState({ schedules });
+  }
 }

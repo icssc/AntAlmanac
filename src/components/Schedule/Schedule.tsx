@@ -6,7 +6,7 @@ import CourseCard from './Course';
 
 interface Props {
   course: School | Department | AACourse;
-  term?: string
+  term?: string;
 }
 
 /**

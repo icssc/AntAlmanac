@@ -1,6 +1,13 @@
+/**
+ * shared state for the course search
+ */
+
 import { create } from 'zustand';
 import { getDefaultTerm } from '$lib/termData';
 
+/**
+ * all form values
+ */
 interface FormValues {
   deptValue: string;
   deptLabel: string;
@@ -20,7 +27,7 @@ interface FormValues {
 /**
  * params needed to query websoc
  */
-interface Params {
+interface WebsocParams {
   department: FormValues['deptValue'];
   term: FormValues['term'];
   ge: FormValues['ge'];
@@ -35,6 +42,9 @@ interface Params {
   room: FormValues['room'];
 }
 
+/**
+ * empty form
+ */
 const defaultFormValues: FormValues = {
   deptValue: 'ALL',
   deptLabel: 'ALL: Include All Departments',
@@ -51,16 +61,49 @@ const defaultFormValues: FormValues = {
   room: '',
 };
 
+/**
+ * interface for the search store
+ */
 interface SearchStore {
+  /**
+   * current form values
+   */
   form: FormValues;
+
+  /**
+   * set a field in the form
+   */
   setField: (field: keyof FormValues, value: string) => void;
+
+  /**
+   * whether the website should render the search results
+   */
   showResults: boolean;
+
+  /**
+   * set whether the website should render the search results
+   */
   setShowResults: (showResults: boolean) => void;
+
+  /**
+   * convert the form values to appropriate websoc params
+   */
+  getParams: () => WebsocParams;
+
+  /**
+   * reset the entire form
+   */
   reset: () => void;
-  getParams: () => Params;
+
+  /**
+   * reset only provided fields of the form
+   */
   resetFields: (fields: (keyof FormValues)[]) => void;
 }
 
+/**
+ * hook to access the shared search store
+ */
 export const useSearchStore = create<SearchStore>((set, get) => ({
   form: structuredClone(defaultFormValues),
 
@@ -71,7 +114,8 @@ export const useSearchStore = create<SearchStore>((set, get) => ({
   },
 
   setField(field, value) {
-    const currentFormValues = get().form;
+    const currentState = get();
+    const currentFormValues = currentState.form;
     set({ form: { ...currentFormValues, [field]: value } });
   },
 
@@ -80,32 +124,30 @@ export const useSearchStore = create<SearchStore>((set, get) => ({
   },
 
   resetFields(fields) {
-    const formData = get().form;
+    const currentState = get();
+    const { form } = currentState;
     fields.forEach((field) => {
-      formData[field] = defaultFormValues[field];
+      form[field] = defaultFormValues[field];
     });
-    set({ form: formData });
-  },
-
-  getValue() {
-    return get();
+    set({ form: form });
   },
 
   getParams() {
-    const formData = get().form;
+    const currentState = get();
+    const { form } = currentState;
     const params = {
-      department: formData.deptValue,
-      term: formData.term,
-      ge: formData.ge,
-      courseNumber: formData.courseNumber,
-      sectionCodes: formData.sectionCode,
-      instructorName: formData.instructor,
-      units: formData.units,
-      endTime: formData.endTime,
-      startTime: formData.startTime,
-      fullCourses: formData.coursesFull,
-      building: formData.building,
-      room: formData.room,
+      department: form.deptValue,
+      term: form.term,
+      ge: form.ge,
+      courseNumber: form.courseNumber,
+      sectionCodes: form.sectionCode,
+      instructorName: form.instructor,
+      units: form.units,
+      endTime: form.endTime,
+      startTime: form.startTime,
+      fullCourses: form.coursesFull,
+      building: form.building,
+      room: form.room,
     };
     return params;
   },

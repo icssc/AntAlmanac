@@ -19,9 +19,12 @@ import { deleteCurrentSchedule, renameCurrentSchedule } from '$stores/schedule/s
 
 export default function EditScheduleButton() {
   const { isDarkMode } = useSettingsStore();
-  const { currentSchedule } = useScheduleStore();
+  const { schedules, scheduleIndex } = useScheduleStore();
+
+  const schedule = schedules[scheduleIndex];
+
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [scheduleName, setScheduleName] = useState(currentSchedule()?.scheduleName || '');
+  const [scheduleName, setScheduleName] = useState(schedule?.scheduleName || '');
   const [open, setOpen] = useState(false);
 
   function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {

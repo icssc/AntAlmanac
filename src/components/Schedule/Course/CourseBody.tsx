@@ -46,10 +46,12 @@ const SectionStatusColors: Record<string, string> = {
 };
 
 function CourseActions(props: { section: AASection; course: AACourse; term?: string }) {
-  const { currentCourses } = useScheduleStore();
-  const addedSectionCodes = new Set(currentCourses().map((course) => `${course.section.sectionCode} ${course.term}`));
+  const { schedules, scheduleIndex } = useScheduleStore();
+  const courses = schedules[scheduleIndex].courses
+  const addedSectionCodes = new Set(courses.map((course) => `${course.section.sectionCode} ${course.term}`));
   const term = props.term || useSearchStore.getState()?.form?.term;
   const alreadyAdded = addedSectionCodes.has(`${props.section.sectionCode} ${term}`);
+
   return (
     <Box sx={{ display: 'flex', flexWrap: 'nowrap' }}>
       {alreadyAdded ? <DeleteCourseButton {...props} /> : <AddCourseButton {...props} />}

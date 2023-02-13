@@ -7,9 +7,9 @@ function inferredReducer<T>(array: T[], func: (acc: T[], curr: T) => T[]) {
 }
 
 export default function AddedCourses() {
-  const { schedules, scheduleIndex, } = useScheduleStore()
-  const schedule = schedules[scheduleIndex]
-  const currentCourses = schedule.courses
+  const { schedules, scheduleIndex } = useScheduleStore();
+  const schedule = schedules[scheduleIndex];
+  const currentCourses = schedule.courses;
   const coursesWithSections = currentCourses.map((course) => {
     return {
       ...course,

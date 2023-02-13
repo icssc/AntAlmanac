@@ -15,8 +15,10 @@ interface CourseCalendarEventProps {
 }
 
 export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
-  const { scheduleIndex, currentSchedule } = useScheduleStore();
-  const customEvent = currentSchedule().customEvents.find((c) => c.customEventID === props.event.customEventID);
+  const { schedules, scheduleIndex } = useScheduleStore();
+
+  const schedule = schedules[scheduleIndex];
+  const customEvent = schedule.customEvents.find((c) => c.customEventID === props.event.customEventID);
 
   function handleDelete() {
     props.closePopover();

@@ -12,25 +12,34 @@ export default function Home() {
   const [mobileTab, setMobileTab] = useState(0);
   const [tab, setTab] = useState(0);
 
-  function handleMobileChange(_event: React.SyntheticEvent, newValue: number) {
+  /**
+   * on mobile, switch between calendar and classes panel
+   */
+  function handleMobileTabChange(_event: React.SyntheticEvent, newValue: number) {
     setMobileTab(newValue);
   }
 
-  function handleChange(_event: React.SyntheticEvent, newValue: number) {
+  /**
+   * switch between tabs within the classes panel
+   */
+  function handleTabChange(_event: React.SyntheticEvent, newValue: number) {
     setTab(newValue);
   }
 
+  /**
+   * on mobile screen, only either the calendar or class panel can be visible at once
+   */
   if (isMobileScreen) {
     return (
       <>
-        <Tabs value={mobileTab} onChange={handleMobileChange} variant="fullWidth">
+        <Tabs value={mobileTab} onChange={handleMobileTabChange} variant="fullWidth">
           <Tab label="Item One" />
           <Tab label="Item Two" />
         </Tabs>
         {mobileTab === 0 && <Calendar />}
         {mobileTab === 1 && (
           <Box>
-            <Tabs value={tab} onChange={handleChange} variant="fullWidth">
+            <Tabs value={tab} onChange={handleTabChange} variant="fullWidth">
               <Tab label="Course Search" />
               <Tab label="Added Classes" />
               <Tab label="Map" />
@@ -43,13 +52,16 @@ export default function Home() {
     );
   }
 
+  /**
+   * on larger than mobile, both panels are split
+   */
   return (
     <Box sx={{ display: 'flex' }}>
       <Box sx={{ width: '50%', height: '90vh', overflowY: 'auto' }}>
         <Calendar />
       </Box>
       <Box sx={{ width: '50%', height: '90vh', overflowY: 'auto' }}>
-        <Tabs value={tab} onChange={handleChange} variant="fullWidth">
+        <Tabs value={tab} onChange={handleTabChange} variant="fullWidth">
           <Tab label="Course Search" />
           <Tab label="Added Classes" />
           <Tab label="Map" />

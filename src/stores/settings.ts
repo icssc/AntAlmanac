@@ -1,16 +1,19 @@
-/*
- * shared store for website settings, e.g. color scheme
+/**
+ * shared state for website settings, e.g. color scheme
  */
 
 import { create } from 'zustand';
 
 /**
- * get the color scheme
+ * retrive the color scheme
  */
 function getColorScheme() {
   return typeof Storage === 'undefined' ? 'auto' : window.localStorage.getItem('colorScheme') || 'auto';
 }
 
+/**
+ * currently enabled settings and helpers
+ */
 interface SettingsStore {
   /**
    * current color scheme
@@ -24,20 +27,20 @@ interface SettingsStore {
   setColorScheme: (scheme: string) => void;
 
   /**
-   * reactive function to determine if the current color scheme is dark
+   * function to determine if the current color scheme is dark
    */
   isDarkMode: () => boolean;
 }
 
 /**
- * hook for accessing the shared theme store
+ * hook for accessing the shared settings store
  */
 export const useSettingsStore = create<SettingsStore>((set, get) => ({
   colorScheme: getColorScheme(),
 
   setColorScheme(colorScheme: string) {
     window.localStorage.setItem('colorScheme', colorScheme);
-    set(() => ({ colorScheme }));
+    set({ colorScheme });
   },
 
   isDarkMode() {

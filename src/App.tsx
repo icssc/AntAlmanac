@@ -4,10 +4,13 @@ import AppThemeProvider from '$providers/Theme';
 import AppQueryProvider from '$providers/Query';
 import useGoogleAnalytics from '$hooks/useGoogleAnalytics';
 import Home from '$routes/Home';
-import Feedback from '$routes/feedback';
+import Feedback from '$routes/Feedback';
 import Header from '$components/Header';
 import ActionsBar from '$components/ActionsBar';
 
+/**
+ * renders the entire single page application
+ */
 export default function App() {
   useGoogleAnalytics();
   return (

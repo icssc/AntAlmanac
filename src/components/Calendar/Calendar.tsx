@@ -76,13 +76,13 @@ function AntAlmanacEvent(props: EventProps & { event: CalendarEvent }) {
  * entire calendar
  */
 export default function AntAlamancCalendar() {
-  const { currentSchedule } = useScheduleStore();
+  const { schedules, scheduleIndex } = useScheduleStore();
   const ref = useRef<HTMLDivElement>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [courseInMoreInfo, setCourseInMoreInfo] = useState<CalendarEvent | null>(null);
   const [calendarEventKey, setCalendarEventKey] = useState(0);
 
-  const schedule = currentSchedule();
+  const schedule = schedules[scheduleIndex];
 
   const events = [...calendarizeCourseEvents(schedule?.courses), ...calendarizeCustomEvents(schedule?.customEvents)];
   const hasWeekendCourse = events.some((event) => event?.start.getDay() === 0 || event?.start.getDay() === 6);

@@ -5,12 +5,15 @@
 
 import type { Course, RepeatingCustomEvent } from '.';
 
-function NotNull<T>(x: T): x is NonNullable<T> {
+/**
+ * type guard to assert that the returned value isn't null or undefined
+ */
+function notNull<T>(x: T): x is NonNullable<T> {
   return x != null;
 }
 
 /**
- * returns course meeting days as calendar events from courses
+ * converts courses to calendar events
  */
 export function calendarizeCourseEvents(currentCourses: Course[] = []) {
   const calendarEventsForAllCourses = currentCourses.map((course) => {
@@ -52,7 +55,7 @@ export function calendarizeCourseEvents(currentCourses: Course[] = []) {
             return newCalendarEvent;
           }
         });
-        const definedCalendarEventsMeetings = calendarEventsMeeting.filter(NotNull);
+        const definedCalendarEventsMeetings = calendarEventsMeeting.filter(notNull);
         return definedCalendarEventsMeetings;
       });
     const flatCalendarEventsForCourse = calendarEventsForCourse.flat();
@@ -63,7 +66,7 @@ export function calendarizeCourseEvents(currentCourses: Course[] = []) {
 }
 
 /**
- * returns finals as calendar events from courses
+ * converts course final times to calendar events
  */
 export function calendarizeFinals(currentCourses: Course[] = []) {
   const finalsForAllCourses = currentCourses
@@ -111,12 +114,8 @@ export function calendarizeFinals(currentCourses: Course[] = []) {
   return flatFinalsForAllCourses;
 }
 
-function notNull<T>(x: T): x is NonNullable<T> {
-  return x !== null;
-}
-
 /**
- * returns custom events as calendar events from custom events
+ * transforms custom events to calendar events
  */
 export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []) {
   const calendarEventsForAllCustom = currentCustomEvents.map((customEvent) => {

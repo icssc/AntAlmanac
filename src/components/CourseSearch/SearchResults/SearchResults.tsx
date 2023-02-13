@@ -1,7 +1,7 @@
 import { Box, IconButton } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import { useSearchStore } from '$stores/search';
-import useWebsocQuery from '$hooks/useQueryWebsoc';
+import useWebsocQuery from '$hooks/useWebsocQuery';
 import { useScheduleStore } from '$stores/schedule';
 import type { WebsocResponse, School, Department, AACourse, AASection } from '$types/peterportal';
 import Schedule from '$components/Schedule';
@@ -10,13 +10,15 @@ import Schedule from '$components/Schedule';
  * flattens the websoc response
  */
 function flattenSOCObject(SOCObject: WebsocResponse) {
-  const courseColors = useScheduleStore
-    .getState()
-    .currentCourses()
-    .reduce((accumulator, { section }) => {
-      accumulator[section.sectionCode] = section.color;
-      return accumulator;
-    }, {} as { [key: string]: string });
+  const { schedules, scheduleIndex } = useScheduleStore.getState();
+
+  const courses = schedules[scheduleIndex].courses;
+
+  const courseColors = courses.reduce((accumulator, { section }) => {
+    accumulator[section.sectionCode] = section.color;
+    return accumulator;
+  }, {} as { [key: string]: string });
+
   const reduced = SOCObject.schools.reduce((accumulator, school) => {
     accumulator.push(school);
     school.departments.forEach((dept) => {
@@ -30,6 +32,7 @@ function flattenSOCObject(SOCObject: WebsocResponse) {
     });
     return accumulator;
   }, [] as (School | Department | AACourse)[]);
+
   return reduced;
 }
 

@@ -16,11 +16,12 @@ export function setScheduleIndex(scheduleIndex: number) {
  * @param scheduleName name of the new schedule
  */
 export function addSchedule(scheduleName: string) {
-  const { schedules, addUndoState } = useScheduleStore.getState();
-  addUndoState();
+  const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState();
+  previousStates.push({ schedules, scheduleIndex });
   useScheduleStore.setState({
     schedules: [...schedules, { scheduleName, courses: [], customEvents: [] }],
     scheduleIndex: schedules.length,
+    previousStates,
   });
 }
 
@@ -29,29 +30,33 @@ export function addSchedule(scheduleName: string) {
  * @param newScheduleName new name of the schedule
  */
 export function renameCurrentSchedule(newScheduleName: string) {
-  const { addUndoState, schedules, scheduleIndex } = useScheduleStore.getState();
-  addUndoState();
+  const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState();
+  previousStates.push({ schedules, scheduleIndex });
   schedules[scheduleIndex].scheduleName = newScheduleName;
-  useScheduleStore.setState({ schedules });
+  useScheduleStore.setState({ schedules, previousStates });
 }
 
 /**
  * clear all events on the current schedule
  */
 export function clearCurrentSchedule() {
-  const { addUndoState, schedules, scheduleIndex } = useScheduleStore.getState();
-  addUndoState();
+  const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState();
+  previousStates.push({ schedules, scheduleIndex });
   schedules[scheduleIndex].courses = [];
   schedules[scheduleIndex].customEvents = [];
-  useScheduleStore.setState({ schedules });
+  useScheduleStore.setState({ schedules, previousStates });
 }
 
 /**
  * remove the current schedule from the schedules array
  */
 export function deleteCurrentSchedule() {
-  const { addUndoState, schedules, scheduleIndex } = useScheduleStore.getState();
-  addUndoState();
+  const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState();
+  previousStates.push({ schedules, scheduleIndex });
   schedules.splice(scheduleIndex, 1);
-  useScheduleStore.setState({ schedules, scheduleIndex: Math.max(0, schedules.length - 1) });
+  useScheduleStore.setState({
+    schedules,
+    scheduleIndex: Math.min(scheduleIndex, schedules.length - 1),
+    previousStates,
+  });
 }

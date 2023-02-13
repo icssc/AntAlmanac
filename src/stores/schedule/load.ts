@@ -278,8 +278,10 @@ export function useLoadSchedule() {
  * @param saveState
  */
 async function fromScheduleSaveState(saveState: ScheduleSaveState) {
-  const { addUndoState, revertState, schedules } = useScheduleStore.getState();
-  addUndoState();
+  const { schedules } = useScheduleStore.getState();
+
+  // addUndoState();
+
   try {
     schedules.length = 0;
     const scheduleIndex = saveState.scheduleIndex;
@@ -332,7 +334,7 @@ async function fromScheduleSaveState(saveState: ScheduleSaveState) {
       return true;
     }
   } catch (e) {
-    revertState();
+    // revertState();
     return false;
   }
 }

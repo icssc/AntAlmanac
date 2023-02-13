@@ -233,14 +233,13 @@ function getRRule(bydays: ReturnType<typeof getByDays>, quarter: string) {
 }
 
 export default function Download() {
-  const { currentCourses } = useScheduleStore();
+  const { schedules, scheduleIndex } = useScheduleStore();
   const { enqueueSnackbar } = useSnackbar();
   const ref = useRef<HTMLAnchorElement>(null);
 
-  function exportCalendar() {
-    // get courses for the current schedule
-    const courses = currentCourses();
+  const courses = schedules[scheduleIndex].courses;
 
+  function exportCalendar() {
     // Construct an array of VEvents for each event
     const events = [];
     for (const course of courses) {
