@@ -130,11 +130,11 @@ export function addCourseToAllSchedules(section: Section, course: AACourse) {
 /**
  * change a course's color
  * @param sectionCode section code
- * @param term term
  * @param newColor color
  */
-export function changeCourseColor(sectionCode: string, term: string, newColor: string) {
+export function changeCourseColor(sectionCode: string, newColor: string) {
   const { addUndoState, schedules } = useScheduleStore.getState();
+  const term = useSearchStore.getState().form.term;
   addUndoState();
   const course = getExistingCourse(sectionCode, term);
   if (course) {

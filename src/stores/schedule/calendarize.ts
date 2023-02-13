@@ -5,10 +5,14 @@
 
 import type { Course, RepeatingCustomEvent } from '.';
 
+function NotNull<T>(x: T): x is NonNullable<T> {
+  return x != null;
+}
+
 /**
  * returns course meeting days as calendar events from courses
  */
-export function calendarizeCourseEvents(currentCourses: Course[]) {
+export function calendarizeCourseEvents(currentCourses: Course[] = []) {
   const calendarEventsForAllCourses = currentCourses.map((course) => {
     const calendarEventsForCourse = course.section.meetings
       .map((meeting) => ({ ...meeting, time: meeting.time.replace(/\s/g, '') }))
@@ -29,9 +33,8 @@ export function calendarizeCourseEvents(currentCourses: Course[]) {
           if (startHr > endHr) startHr -= 12;
         }
 
-        const calendarEventsMeeting = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa']
-          .filter((day) => meeting.days.includes(day))
-          .map((_, index) => {
+        const calendarEventsMeeting = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'].map((day, index) => {
+          if (meeting.days.includes(day)) {
             const newCalendarEvent = {
               color: course.section.color,
               term: course.term,
@@ -47,8 +50,10 @@ export function calendarizeCourseEvents(currentCourses: Course[]) {
               isCustomEvent: false as const,
             };
             return newCalendarEvent;
-          });
-        return calendarEventsMeeting;
+          }
+        });
+        const definedCalendarEventsMeetings = calendarEventsMeeting.filter(NotNull);
+        return definedCalendarEventsMeetings;
       });
     const flatCalendarEventsForCourse = calendarEventsForCourse.flat();
     return flatCalendarEventsForCourse;
@@ -60,7 +65,7 @@ export function calendarizeCourseEvents(currentCourses: Course[]) {
 /**
  * returns finals as calendar events from courses
  */
-export function calendarizeFinals(currentCourses: Course[]) {
+export function calendarizeFinals(currentCourses: Course[] = []) {
   const finalsForAllCourses = currentCourses
     .filter((course) => course.section.finalExam.length > 5)
     .map((course) => {
@@ -81,23 +86,26 @@ export function calendarizeFinals(currentCourses: Course[]) {
 
       const finalsForCourse = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
         .filter((weekday) => date.includes(weekday))
-        .map((_day, index) => {
-          const newCalendarEvent = {
-            title: `${course.deptCode} ${course.courseNumber}`,
-            sectionCode: course.section.sectionCode,
-            sectionType: 'Fin',
-            bldg: course.section.meetings[0].bldg,
-            color: course.section.color,
-            start: new Date(2018, 0, index - 1, startHour, startMin),
-            end: new Date(2018, 0, index - 1, endHour, endMin),
-            finalExam: course.section.finalExam,
-            instructors: course.section.instructors,
-            term: course.term,
-            isCustomEvent: false,
-          };
-          return newCalendarEvent;
+        .map((day, index) => {
+          if (date.includes(day)) {
+            const newCalendarEvent = {
+              title: `${course.deptCode} ${course.courseNumber}`,
+              sectionCode: course.section.sectionCode,
+              sectionType: 'Fin',
+              bldg: course.section.meetings[0].bldg,
+              color: course.section.color,
+              start: new Date(2018, 0, index - 1, startHour, startMin),
+              end: new Date(2018, 0, index - 1, endHour, endMin),
+              finalExam: course.section.finalExam,
+              instructors: course.section.instructors,
+              term: course.term,
+              isCustomEvent: false,
+            };
+            return newCalendarEvent;
+          }
         });
-      return finalsForCourse;
+      const definedFinalsForCourse = finalsForCourse.filter(notNull);
+      return definedFinalsForCourse;
     });
   const flatFinalsForAllCourses = finalsForAllCourses.flat();
   return flatFinalsForAllCourses;
@@ -110,7 +118,7 @@ function notNull<T>(x: T): x is NonNullable<T> {
 /**
  * returns custom events as calendar events from custom events
  */
-export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[]) {
+export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []) {
   const calendarEventsForAllCustom = currentCustomEvents.map((customEvent) => {
     const calendarEventsForCustom = customEvent.days
       .map((day, dayIndex) => {

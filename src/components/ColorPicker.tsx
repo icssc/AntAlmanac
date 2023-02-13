@@ -3,7 +3,6 @@ import { SketchPicker } from 'react-color';
 import type { ColorResult } from 'react-color';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover } from '@mui/material';
-import { useSearchStore } from '$stores/search';
 import { changeCourseColor } from '$stores/schedule/course';
 import { changeCustomEventColor } from '$stores/schedule/custom';
 import { analyticsEnum, logAnalytics } from '$lib/analytics';
@@ -31,7 +30,6 @@ interface Props {
 export default function ColorPicker(props: Props) {
   const [color, setColor] = useState(props.color);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const term = useSearchStore((store) => store.form.term);
 
   // TODO: error checking if props.isCustomEvent == true and no props.customEventID
 
@@ -54,8 +52,8 @@ export default function ColorPicker(props: Props) {
     if (props.customEventID) {
       changeCustomEventColor(props.customEventID, e.hex);
     }
-    if (props.sectionCode && term) {
-      changeCourseColor(props.sectionCode, term, e.hex);
+    if (props.sectionCode) {
+      changeCourseColor(props.sectionCode, e.hex);
     }
   }
 

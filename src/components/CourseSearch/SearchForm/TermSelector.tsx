@@ -8,7 +8,6 @@ export default function TermSelector() {
   const setField = useSearchStore((store) => store.setField);
 
   function handleChange(e: SelectChangeEvent<string>) {
-    console.log(e.target.value);
     setField('term', e.target.value);
   }
 

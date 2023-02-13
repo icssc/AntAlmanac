@@ -1,5 +1,6 @@
 import { AppBar, Button, Toolbar } from '@mui/material';
 import { Assignment as AssignmentIcon } from '@mui/icons-material';
+import LoadButton from '$components/Buttons/Load';
 
 export default function ActionsBar() {
   return (
@@ -8,9 +9,7 @@ export default function ActionsBar() {
         <Button color="inherit" startIcon={<AssignmentIcon />}>
           Save
         </Button>
-        <Button color="inherit" startIcon={<AssignmentIcon />}>
-          Load
-        </Button>
+        <LoadButton />
         <Button color="inherit" startIcon={<AssignmentIcon />}>
           Import
         </Button>

@@ -59,15 +59,19 @@ export default function CourseList() {
 
   return (
     <Box>
-      <IconButton onClick={handleBack}>
-        <ArrowBackIcon />
-      </IconButton>
-      <IconButton onClick={handleRefresh}>
-        <RefreshIcon />
-      </IconButton>
-      {transformedData.map((data, index) => (
-        <CourseRow key={index} course={data} />
-      ))}
+      <Box sx={{ padding: 1 }}>
+        <IconButton onClick={handleBack} size="large">
+          <ArrowBackIcon />
+        </IconButton>
+        <IconButton onClick={handleRefresh} size="large">
+          <RefreshIcon />
+        </IconButton>
+      </Box>
+      <Box>
+        {transformedData.map((data, index) => (
+          <CourseRow key={index} course={data} />
+        ))}
+      </Box>
     </Box>
   );
 }

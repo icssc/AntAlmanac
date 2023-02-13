@@ -331,7 +331,8 @@ export default function Download() {
     if (!ref.current) {
       return;
     }
-    ref.current.href = uri;
+    const href = URL.createObjectURL(uri);
+    ref.current.href = href;
     ref.current.download = download;
     ref.current.click();
   }
