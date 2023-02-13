@@ -45,13 +45,11 @@ const SectionStatusColors: Record<string, string> = {
   full: '#e53935',
 };
 
-function CourseActions(props: { section: AASection; course: AACourse }) {
+function CourseActions(props: { section: AASection; course: AACourse; term?: string }) {
   const { currentCourses } = useScheduleStore();
-  const term = useSearchStore((store) => store.form.term);
   const addedSectionCodes = new Set(currentCourses().map((course) => `${course.section.sectionCode} ${course.term}`));
-
+  const term = props.term || useSearchStore.getState()?.form?.term;
   const alreadyAdded = addedSectionCodes.has(`${props.section.sectionCode} ${term}`);
-
   return (
     <Box sx={{ display: 'flex', flexWrap: 'nowrap' }}>
       {alreadyAdded ? <DeleteCourseButton {...props} /> : <AddCourseButton {...props} />}
@@ -60,6 +58,7 @@ function CourseActions(props: { section: AASection; course: AACourse }) {
           color={props.section.color}
           sectionCode={props.section.sectionCode}
           analyticsCategory={analyticsEnum.addedClasses.title}
+          term={term}
         />
       ) : (
         <AddCourseMenuButton {...props} />
@@ -235,7 +234,7 @@ function SectionStatus(props: { section: AASection }) {
   );
 }
 
-export default function SectionTable({ course }: { course: AACourse }) {
+export default function SectionBody({ course, term }: { course: AACourse; term?: string }) {
   return (
     <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
       <Table size="small" sx={{ '.MuiTableCell-root': { padding: 1 } }}>
@@ -273,7 +272,7 @@ export default function SectionTable({ course }: { course: AACourse }) {
               key={index}
             >
               <TableCell>
-                <CourseActions section={section} course={course} />
+                <CourseActions section={section} course={course} term={term} />
               </TableCell>
               <TableCell>
                 <SectionCode section={section} />

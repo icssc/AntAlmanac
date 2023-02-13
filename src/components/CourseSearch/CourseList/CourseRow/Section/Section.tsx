@@ -5,16 +5,17 @@ import SectionBody from './SectionBody';
 
 interface Props {
   course: AACourse;
+  term?: string;
 }
 
 /**
  * renders an AACourse for list of course search results
  */
-export default function Section({ course }: Props) {
+export default function Section({ course, term }: Props) {
   return (
     <Box>
-      <SectionHead course={course} />
-      <SectionBody course={course} />
+      <SectionHead course={course} term={term} />
+      <SectionBody course={course} term={term} />
     </Box>
   );
 }

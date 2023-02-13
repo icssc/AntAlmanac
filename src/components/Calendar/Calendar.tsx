@@ -17,15 +17,33 @@ type CalendarCustomEvent = ReturnType<typeof calendarizeCustomEvents>[number];
 type CalendarEvent = CalendarCourseEvent | CalendarCustomEvent;
 
 /**
- * inverts a hex color to the exact opposite color on the colorwheel
- * @remarks thanks GitHub Copilot
+ * equation taken from w3c, omits the colour difference part
+ * @see @link{https://www.w3.org/TR/WCAG20/#relativeluminancedef}
  */
-function invertHexColor(hexColor: string = '#000000') {
-  const hex = hexColor.replace('#', '');
-  const r = (255 - parseInt(hex.substring(0, 2), 16)).toString(16).padStart(2, '0');
-  const g = (255 - parseInt(hex.substring(2, 4), 16)).toString(16).padStart(2, '0');
-  const b = (255 - parseInt(hex.substring(4, 6), 16)).toString(16).padStart(2, '0');
-  return `#${r}${g}${b}`;
+function colorContrastSufficient(bg: string) {
+  const minBrightnessDiff = 125;
+
+  const backgroundRegexResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(bg);
+
+  if (!backgroundRegexResult) {
+    return true;
+  }
+
+  const backgroundRGB = {
+    r: parseInt(backgroundRegexResult[1], 16),
+    g: parseInt(backgroundRegexResult[2], 16),
+    b: parseInt(backgroundRegexResult[3], 16),
+  };
+
+  const textRgb = { r: 255, g: 255, b: 255 }; // white text
+
+  const getBrightness = (color: typeof backgroundRGB) => {
+    return (color.r * 299 + color.g * 587 + color.b * 114) / 1000;
+  };
+
+  const bgBrightness = getBrightness(backgroundRGB);
+  const textBrightness = getBrightness(textRgb);
+  return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff;
 }
 
 /**
@@ -114,7 +132,7 @@ export default function AntAlamancCalendar() {
               cursor: 'pointer',
               borderStyle: 'none',
               borderRadius: '4px',
-              color: invertHexColor(event.color),
+              color: colorContrastSufficient(event.color || '') ? 'white' : 'black',
             },
           })}
           showMultiDayTimes={false}

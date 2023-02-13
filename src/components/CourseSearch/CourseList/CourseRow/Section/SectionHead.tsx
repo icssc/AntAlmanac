@@ -11,7 +11,7 @@ import CourseSummaryButton from '$components/Buttons/CourseSummary';
 import CourseReferenceButton from '$components/Buttons/CourseReference';
 import GradesPopup from '$components/GradesPopup';
 
-export default function SectionHead(props: { course: AACourse }) {
+export default function SectionHead(props: { course: AACourse; term?: string }) {
   const { course } = props;
   const courseId = course.deptCode.replaceAll(' ', '') + course.courseNumber;
   const encodedDept = encodeURIComponent(course.deptCode);
