@@ -123,7 +123,7 @@ export default function AntAlamancCalendar() {
         />
       </Box>
 
-      <Popper anchorEl={anchorEl} placement="right" open={!!anchorEl}>
+      <Popper anchorEl={anchorEl} placement="right" open={!!anchorEl} sx={{ zIndex: 1 }}>
         <ClickAwayListener onClickAway={handleClose}>
           <Box>
             {isCourseEvent && (
