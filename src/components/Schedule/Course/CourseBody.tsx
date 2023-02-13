@@ -21,7 +21,7 @@ import restrictions from '$lib/restrictions';
 import AddCourseButton from '$components/Buttons/AddCourse';
 import AddCourseMenuButton from '$components/Buttons/AddCourseMenu';
 import DeleteCourseButton from '$components/Buttons/DeleteCourse';
-import ColorPicker from '$components/ColorPicker';
+import ColorPicker from '$components/Buttons/ColorPicker';
 import { analyticsEnum } from '$lib/analytics';
 
 const SectionTypeColors: Record<string, string> = {

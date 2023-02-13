@@ -16,7 +16,7 @@ import {
 import { analyticsEnum, logAnalytics } from '$lib/analytics';
 import { deleteCourse } from '$stores/schedule/course';
 import type { calendarizeCourseEvents } from '$stores/schedule/calendarize';
-import ColorPicker from '$components/ColorPicker';
+import ColorPicker from '$components/Buttons/ColorPicker';
 import locations from '$lib/locations';
 
 function genMapLink(location: string) {

@@ -5,7 +5,7 @@ import { useScheduleStore } from '$stores/schedule';
 import { deleteCustomEvent } from '$stores/schedule/custom';
 import type { calendarizeCustomEvents } from '$stores/schedule/calendarize';
 import CustomEventButton from '$components/Buttons/CustomEvent';
-import ColorPicker from '$components/ColorPicker';
+import ColorPicker from '$components/Buttons/ColorPicker';
 
 type CalendarCustomEvent = ReturnType<typeof calendarizeCustomEvents>[number];
 
