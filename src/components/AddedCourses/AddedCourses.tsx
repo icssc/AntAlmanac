@@ -35,8 +35,8 @@ export default function AddedCourses() {
       <Typography variant="h5" padding={2}>
         {schedule.scheduleName} ({totalUnits} units)
       </Typography>
-      {courses.map((course) => (
-        <Section course={course} term={course.term} />
+      {courses.map((course, index) => (
+        <Section key={index} course={course} term={course.term} />
       ))}
     </Box>
   );
