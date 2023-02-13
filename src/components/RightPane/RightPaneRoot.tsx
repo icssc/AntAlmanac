@@ -7,9 +7,10 @@ import AddedCoursePane from './AddedCourses/AddedCoursePane';
 import CoursePane from './CoursePane/CoursePaneRoot';
 import darkModeLoadingGif from './CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './CoursePane/SearchForm/Gifs/loading.gif';
-import RightPaneStore from './RightPaneStore';
+import UCIMap from './Map/UCIMap';
+import RightPaneStore, { BuildingFocusInfo } from './RightPaneStore';
+// const UCIMap = React.lazy(() => import('./Map/UCIMap'));
 
-const UCIMap = React.lazy(() => import('./Map/UCIMap'));
 
 const styles = {
     fallback: {
@@ -35,8 +36,7 @@ class DesktopTabs extends PureComponent<DesktopTabsProps> {
     };
 
 
-    // TODO: See if the type's actually correct
-    focusOnBuilding(buildingInfo: { name: string }) {
+    focusOnBuilding(buildingInfo: BuildingFocusInfo) {
         // If the Map tab isn't already active
         if (RightPaneStore.getActiveTab() !== 2) {
             // Switch to Map tab

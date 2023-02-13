@@ -10,7 +10,7 @@ import analyticsEnum, { logAnalytics } from '../../analytics';
 import { clickToCopy, isDarkMode  } from '../../helpers';
 import AppStore from '../../stores/AppStore';
 import ColorPicker from '../ColorPicker';
-import RightPaneStore from '../RightPane/RightPaneStore';
+import RightPaneStore, { BuildingFocusInfo } from '../RightPane/RightPaneStore';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 
 const styles: Styles<Theme, object> = {
@@ -75,27 +75,10 @@ const styles: Styles<Theme, object> = {
     },
 };
 
-const selectBuilding = (buildingName: string) => {
-    if (buildingName !== 'TBA') {
-        RightPaneStore.emit('focusOnBuilding', { name: buildingName });
+const selectBuilding = (buildingFocusInfo: BuildingFocusInfo) => {
+    if (buildingFocusInfo.location !== 'TBA') {
+        RightPaneStore.focusOnBuilding(buildingFocusInfo);
     }
-
-    /** Explanation of what happens when 'focusOnBuilding' is emitted:
-     *
-     *  If desktop:
-     *  1) RightPaneRoot recieves 'focusOnBuilding'.
-     *  2a) If the Map tab is selected already, it passes the args down to UCIMap with 'selectBuilding'.
-     *  2b) If the Map tab is not selected, it switches to the Map tab, waits for it to load, and does 2a.
-     *  3) UCIMap recieves 'selectBuilding' and focuses on that building.
-     *
-     *  If mobile (MobileHome.js is being displayed):
-     *  1a) If the "SEARCH" tab is selected, (and, therefore, RighPaneRoot is loaded), it can listen to 'focusOnBuilding' itself.
-     *  1b) If the "SEARCH" tab is not selected (and, therefore, RighPaneRoot is unloaded), switch to it,
-     *      wait for it to load and emit 'RightPaneRootLoaded', and re-emit 'focusOnBuilding'
-     *
-     *  The choice was between prop-drilling from Home and having cascading listeners, and
-     *  I think the latter is reasonable.
-     */
 };
 
 interface CommonCalendarEvent extends Event {
@@ -107,7 +90,7 @@ interface CommonCalendarEvent extends Event {
 }
 
 export interface CourseEvent extends CommonCalendarEvent {
-    bldg: string;
+    bldg: string; // E.g., ICS 174, which is actually building + room
     finalExam: string;
     instructors: string[];
     isCustomEvent: false;
@@ -191,7 +174,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             <td className={classes.alignToTop}>Location</td>
                             {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
                             <td
-                                onClick={() => selectBuilding(bldg)}
+                                onClick={() => selectBuilding({ location: bldg, courseName: title})}
                                 className={`${classes.multiline} ${classes.rightCells} ${
                                     bldg !== 'TBA'
                                         ? isDarkMode()

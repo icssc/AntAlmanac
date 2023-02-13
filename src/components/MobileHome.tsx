@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 
 import Calendar from './Calendar/CalendarRoot';
 import DesktopTabs from './RightPane/RightPaneRoot';
-import RightPaneStore from './RightPane/RightPaneStore';
+import RightPaneStore, { BuildingFocusInfo } from './RightPane/RightPaneStore';
 
 const MobileHome = () => {
     const [selectedTab, setSelectedTab] = useState(0);
@@ -11,15 +11,8 @@ const MobileHome = () => {
     const components = [
     <Calendar isMobile={true} key="calendar"/>, 
     <DesktopTabs style={{ height: 'calc(100% - 50px' }} key="desktop"/>];
-    
-    interface FocusOnBuildingArgs {
-        lat: number
-        lng: number
-        name: string
-        acronym: string
-        imgURL: string
-    }
-    const focusOnBuilding = (buildingInfo: FocusOnBuildingArgs) => {
+
+    const focusOnBuilding = (buildingInfo: BuildingFocusInfo) => {
         // Since MobileHome doesn't have DesktopTabs permanently loaded,
         // we need to switch over to it, get a confirmation that it's loaded,
         // then re-emit 'focusOnBuilding'
@@ -28,7 +21,7 @@ const MobileHome = () => {
             const reEmitFocus = () => {
                 // This doesn't cause an infinite loop because after the first time it runs, it sets selectedTab
                 // to 1 (SEARCH), which causes the above condition to be false.
-                RightPaneStore.emit('focusOnBuilding', buildingInfo);
+                RightPaneStore.focusOnBuilding(buildingInfo);
                 RightPaneStore.removeListener('RightPaneRootLoaded', reEmitFocus);
             };
 
