@@ -12,8 +12,7 @@ import AppStore from '../../stores/AppStore';
 import ColorPicker from '../ColorPicker';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const locations = require('../RightPane/SectionTable/static/locations.json') as Record<string, string>;
+import locations from '../RightPane/SectionTable/static/locations.json';
 
 const styles: Styles<Theme, object> = {
     courseContainer: {
@@ -70,7 +69,7 @@ const styles: Styles<Theme, object> = {
 
 const genMapLink = (location: string) => {
     try {
-        const location_id = locations[location.split(' ')[0]];
+        const location_id = locations[location.split(' ')[0] as keyof typeof locations];
         return 'https://map.uci.edu/?id=463#!m/' + location_id;
     } catch (err) {
         return 'https://map.uci.edu/';
