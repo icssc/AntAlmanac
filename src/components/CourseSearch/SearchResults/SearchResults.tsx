@@ -4,7 +4,7 @@ import { useSearchStore } from '$stores/search';
 import useWebsocQuery from '$hooks/useQueryWebsoc';
 import { useScheduleStore } from '$stores/schedule';
 import type { WebsocResponse, School, Department, AACourse, AASection } from '$types/peterportal';
-import CourseRow from './CourseRow';
+import Schedule from '$components/Schedule';
 
 /**
  * flattens the websoc response
@@ -69,7 +69,7 @@ export default function CourseList() {
       </Box>
       <Box>
         {transformedData.map((data, index) => (
-          <CourseRow key={index} course={data} />
+          <Schedule key={index} course={data} />
         ))}
       </Box>
     </Box>

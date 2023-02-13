@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import { useScheduleStore } from '$stores/schedule';
-import Section from '$components/CourseSearch/CourseList/CourseRow/Section';
+import Schedule from '$components/Schedule';
 
 function inferredReducer<T>(array: T[], func: (acc: T[], curr: T) => T[]) {
   return array.reduce(func, []);
@@ -36,7 +36,7 @@ export default function AddedCourses() {
         {schedule.scheduleName} ({totalUnits} units)
       </Typography>
       {courses.map((course, index) => (
-        <Section key={index} course={course} term={course.term} />
+        <Schedule key={index} course={course} term={course.term} />
       ))}
     </Box>
   );

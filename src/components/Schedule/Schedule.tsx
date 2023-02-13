@@ -1,37 +1,37 @@
 import { Typography } from '@mui/material';
 import type { School, Department, AACourse } from '$types/peterportal';
-import SchoolCard from './SchoolCard';
-import DeptCard from './DeptCard';
-import Section from './Section';
+import SchoolCard from './School';
+import DepartmentCard from './Department';
+import CourseCard from './Course';
 
 interface Props {
   course: School | Department | AACourse;
+  term?: string
 }
 
 /**
  * renders a row in the list of course search results;
  */
-export default function CourseRow({ course }: Props) {
+export default function Schedule({ course, term }: Props) {
   /**
-   * course is a School
+   * course is School
    */
   if ('departments' in course) {
     return <SchoolCard school={course} />;
   }
 
   /**
-   * course is a Department
+   * course is Department
    */
   if ('deptName' in course) {
-    return <DeptCard department={course} />;
+    return <DepartmentCard department={course} />;
   }
 
   /**
-   * course is AACourse,
-   * TODO: maybe name the component something besides "Section" ?
+   * course is AACourse
    */
   if ('courseNumber' in course) {
-    return <Section course={course} />;
+    return <CourseCard course={course} term={term} />;
   }
 
   /**

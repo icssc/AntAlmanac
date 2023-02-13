@@ -9,8 +9,8 @@ import { Box, ClickAwayListener, Popper } from '@mui/material';
 import { useScheduleStore } from '$stores/schedule';
 import { calendarizeCustomEvents, calendarizeCourseEvents } from '$stores/schedule/calendarize';
 import CalendarToolbar from './CalendarToolbar';
-import CourseCalendarEvent from './CourseCalendarEvent';
-import CustomCalendarEvent from './CustomCalendarEvent';
+import CourseCalendarEvent from './CalendarEvent/Course';
+import CustomCalendarEvent from './CalendarEvent/Custom';
 
 type CalendarCourseEvent = ReturnType<typeof calendarizeCourseEvents>[number];
 type CalendarCustomEvent = ReturnType<typeof calendarizeCustomEvents>[number];
