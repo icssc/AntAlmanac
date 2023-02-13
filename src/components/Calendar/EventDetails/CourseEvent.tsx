@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { analyticsEnum, logAnalytics } from '$lib/analytics';
 import { deleteCourse } from '$stores/schedule/course';
-import type { calendarizeCourseEvents } from '$stores/schedule/calendarize';
+import type { getCourseCalendarEvents } from '$stores/schedule/calendar';
 import ColorPicker from '$components/Buttons/ColorPicker';
 import locations from '$lib/locations';
 
@@ -28,7 +28,7 @@ function genMapLink(location: string) {
   }
 }
 
-type CalendarCourseEvent = ReturnType<typeof calendarizeCourseEvents>[number];
+type CalendarCourseEvent = ReturnType<typeof getCourseCalendarEvents>[number];
 
 interface CourseCalendarEventProps {
   event: CalendarCourseEvent;

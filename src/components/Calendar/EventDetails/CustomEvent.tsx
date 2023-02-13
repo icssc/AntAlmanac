@@ -3,11 +3,11 @@ import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import { analyticsEnum, logAnalytics } from '$lib/analytics';
 import { useScheduleStore } from '$stores/schedule';
 import { deleteCustomEvent } from '$stores/schedule/custom';
-import type { calendarizeCustomEvents } from '$stores/schedule/calendarize';
+import type { getCustomCalendarEvents } from '$stores/schedule/calendar';
 import CustomEventButton from '$components/Buttons/CustomEvent';
 import ColorPicker from '$components/Buttons/ColorPicker';
 
-type CalendarCustomEvent = ReturnType<typeof calendarizeCustomEvents>[number];
+type CalendarCustomEvent = ReturnType<typeof getCustomCalendarEvents>[number];
 
 interface CourseCalendarEventProps {
   event: CalendarCustomEvent;

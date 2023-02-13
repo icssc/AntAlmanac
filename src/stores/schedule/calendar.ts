@@ -107,6 +107,7 @@ export function getFinalsCalendarEvents() {
             instructors: course.section.instructors,
             term: course.term,
             isCustomEvent: false,
+            customEventID: 0,
           };
           return newCalendarEvent;
         }

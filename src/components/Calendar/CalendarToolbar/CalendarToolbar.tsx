@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, useMediaQuery } from '@mui/material';
 import { MoreHoriz as MoreHorizIcon } from '@mui/icons-material';
-
 import ScreenshotButton from '$components/Buttons/Screenshot';
 import DownloadButton from '$components/Buttons/Download';
 import CustomEventButton from '$components/Buttons/CustomEvent';
@@ -11,7 +10,8 @@ import ToggleFinalsButton from '$components/Buttons/ToggleFinals';
 
 interface Props {
   /**
-   * provide a React ref to the element to screenshot
+   * provide a React ref to the element to screenshot; this is prop-drilled down to the ScreenshotButton
+   * TODO: put this in a shared store as well?
    */
   imgRef: React.RefObject<HTMLElement>;
 }
@@ -30,8 +30,8 @@ export default function CalendarToolbar(props: Props) {
 
   return (
     <AppBar position="static" color="transparent">
-      <Toolbar sx={{ '&.MuiToolbar-root': { padding: 0 } }}>
-        <Box sx={{ mx: 1, display: 'flex', alignItems: 'center', flexGrow: 1, gap: 2 }}>
+      <Toolbar sx={{ '&.MuiToolbar-root': { padding: 1 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, gap: 2 }}>
           <EditScheduleButton />
           <SelectScheduleButton />
           <ToggleFinalsButton />

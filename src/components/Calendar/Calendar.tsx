@@ -13,9 +13,10 @@ import CalendarToolbar from './CalendarToolbar';
 import CourseEventDetails from './EventDetails/CourseEvent';
 import CustomEventDetails from './EventDetails/CustomEvent';
 
-type CalendarCourseEvent = ReturnType<typeof getCourseCalendarEvents>[number];
-type CalendarCustomEvent = ReturnType<typeof getCustomCalendarEvents>[number];
-type CalendarEvent = CalendarCourseEvent | CalendarCustomEvent;
+type CourseCalendarEvent = ReturnType<typeof getCourseCalendarEvents>[number];
+type CustomCalendarEvent = ReturnType<typeof getCustomCalendarEvents>[number];
+type FinalsCalendarEvent = ReturnType<typeof getCustomCalendarEvents>[number];
+type CalendarEvent = CourseCalendarEvent | CustomCalendarEvent | FinalsCalendarEvent;
 
 /**
  * single calendar event box
