@@ -47,7 +47,7 @@ const SectionStatusColors: Record<string, string> = {
 
 function CourseActions(props: { section: AASection; course: AACourse; term?: string }) {
   const { schedules, scheduleIndex } = useScheduleStore();
-  const courses = schedules[scheduleIndex].courses
+  const courses = schedules[scheduleIndex].courses;
   const addedSectionCodes = new Set(courses.map((course) => `${course.section.sectionCode} ${course.term}`));
   const term = props.term || useSearchStore.getState()?.form?.term;
   const alreadyAdded = addedSectionCodes.has(`${props.section.sectionCode} ${term}`);

@@ -42,7 +42,7 @@ export default function Header() {
       <Toolbar variant="dense">
         {isMobileScreen ? (
           <>
-            <img height={32} src="/mobile-logo.svg" />
+            <img height={32} src="/logo/mobile.svg" />
             <Box sx={{ flexGrow: 1 }} />
             <IconButton onClick={handleClick} color="inherit">
               <MenuIcon />
@@ -57,7 +57,7 @@ export default function Header() {
           </>
         ) : (
           <>
-            <img height={32} src="/logo.svg" />
+            <img height={32} src="/logo/desktop.svg" />
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               {Buttons.map((AppBarButton, index) => (

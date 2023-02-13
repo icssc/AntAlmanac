@@ -2,6 +2,7 @@ import { Box, IconButton } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import { useSearchStore } from '$stores/search';
 import useWebsocQuery from '$hooks/useWebsocQuery';
+import { useSettingsStore } from '$stores/settings';
 import { useScheduleStore } from '$stores/schedule';
 import type { WebsocResponse, School, Department, AACourse, AASection } from '$types/peterportal';
 import Schedule from '$components/Schedule';
@@ -41,6 +42,9 @@ function flattenSOCObject(SOCObject: WebsocResponse) {
  */
 export default function CourseList() {
   const { getParams, showResults, setShowResults } = useSearchStore();
+  const isDarkMode = useSettingsStore((store) => store.isDarkMode);
+
+  const darkMode = isDarkMode();
 
   function handleRefresh() {
     query.refetch();
@@ -60,8 +64,11 @@ export default function CourseList() {
   const rawData = query.data;
   const transformedData = rawData ? flattenSOCObject(rawData) : [];
 
+  const noResultsSrc = darkMode ? '/no_results/dark.png' : '/no_results/light.png';
+  const loadingSrc = darkMode ? '/loading/dark.gif' : '/loading/light.gif';
+
   return (
-    <Box>
+    <Box sx={{ height: '100%', width: '100%' }}>
       <Box sx={{ padding: 1 }}>
         <IconButton onClick={handleBack} size="large">
           <ArrowBackIcon />
@@ -70,11 +77,23 @@ export default function CourseList() {
           <RefreshIcon />
         </IconButton>
       </Box>
-      <Box>
-        {transformedData.map((data, index) => (
-          <Schedule key={index} course={data} />
+      {query.isFetching && (
+        <Box sx={{ height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <img src={loadingSrc} alt="Loading!" />
+        </Box>
+      )}
+      {!query.isLoading &&
+        (transformedData.length ? (
+          <Box>
+            {transformedData.map((data, index) => (
+              <Schedule key={index} course={data} />
+            ))}
+          </Box>
+        ) : (
+          <Box sx={{ height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src={noResultsSrc} alt="No results found :(" />
+          </Box>
         ))}
-      </Box>
     </Box>
   );
 }
