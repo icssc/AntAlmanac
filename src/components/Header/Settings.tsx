@@ -47,7 +47,7 @@ export default function SettingsMenu() {
           horizontal: 'center',
         }}
       >
-        <Paper sx={{ padding: '0.5rem', minWidth: '12.5rem' }}>
+        <Paper sx={{ padding: 2, width: 150 }}>
           <FormControl>
             <RadioGroup aria-label="theme" name="theme" value={colorScheme} onChange={handleChange}>
               <FormControlLabel value="light" control={<Radio color="primary" />} label="Light" />

@@ -1,11 +1,11 @@
 import { Box, IconButton } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import { useSearchStore } from '$stores/search';
-import useWebsocQuery from '$hooks/useWebsocQuery';
 import { useSettingsStore } from '$stores/settings';
 import { useScheduleStore } from '$stores/schedule';
-import type { WebsocResponse, School, Department, AACourse, AASection } from '$types/peterportal';
+import useWebsocQuery from '$hooks/useWebsocQuery';
 import Schedule from '$components/Schedule';
+import type { WebsocResponse, School, Department, AACourse, AASection } from '$types/peterportal';
 
 /**
  * flattens the websoc response
@@ -46,14 +46,6 @@ export default function CourseList() {
 
   const darkMode = isDarkMode();
 
-  function handleRefresh() {
-    query.refetch();
-  }
-
-  function handleBack() {
-    setShowResults(false);
-  }
-
   /**
    * when the store's value changes, getParams triggers a new query
    */
@@ -66,6 +58,14 @@ export default function CourseList() {
 
   const noResultsSrc = darkMode ? '/no_results/dark.png' : '/no_results/light.png';
   const loadingSrc = darkMode ? '/loading/dark.gif' : '/loading/light.gif';
+
+  function handleRefresh() {
+    query.refetch();
+  }
+
+  function handleBack() {
+    setShowResults(false);
+  }
 
   return (
     <Box sx={{ height: '100%', width: '100%' }}>

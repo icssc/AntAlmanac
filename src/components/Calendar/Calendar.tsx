@@ -8,43 +8,14 @@ import type { EventProps } from 'react-big-calendar';
 import { Box, ClickAwayListener, Popper } from '@mui/material';
 import { useScheduleStore } from '$stores/schedule';
 import { calendarizeCustomEvents, calendarizeCourseEvents } from '$stores/schedule/calendarize';
+import { isContrastSufficient } from '$lib/utils'
 import CalendarToolbar from './CalendarToolbar';
-import CourseCalendarEvent from './CalendarEvent/Course';
-import CustomCalendarEvent from './CalendarEvent/Custom';
+import CourseEventDetails from './EventDetails/CourseEvent';
+import CustomEventDetails from './EventDetails/CustomEvent';
 
 type CalendarCourseEvent = ReturnType<typeof calendarizeCourseEvents>[number];
 type CalendarCustomEvent = ReturnType<typeof calendarizeCustomEvents>[number];
 type CalendarEvent = CalendarCourseEvent | CalendarCustomEvent;
-
-/**
- * equation taken from w3c, omits the colour difference part
- * @see @link{https://www.w3.org/TR/WCAG20/#relativeluminancedef}
- */
-function colorContrastSufficient(bg: string) {
-  const minBrightnessDiff = 125;
-
-  const backgroundRegexResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(bg);
-
-  if (!backgroundRegexResult) {
-    return true;
-  }
-
-  const backgroundRGB = {
-    r: parseInt(backgroundRegexResult[1], 16),
-    g: parseInt(backgroundRegexResult[2], 16),
-    b: parseInt(backgroundRegexResult[3], 16),
-  };
-
-  const textRgb = { r: 255, g: 255, b: 255 }; // white text
-
-  const getBrightness = (color: typeof backgroundRGB) => {
-    return (color.r * 299 + color.g * 587 + color.b * 114) / 1000;
-  };
-
-  const bgBrightness = getBrightness(backgroundRGB);
-  const textBrightness = getBrightness(textRgb);
-  return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff;
-}
 
 /**
  * single calendar event box
@@ -132,7 +103,7 @@ export default function AntAlamancCalendar() {
               cursor: 'pointer',
               borderStyle: 'none',
               borderRadius: '4px',
-              color: colorContrastSufficient(event.color || '') ? 'white' : 'black',
+              color: isContrastSufficient(event.color || '') ? 'white' : 'black',
             },
           })}
           showMultiDayTimes={false}
@@ -145,10 +116,10 @@ export default function AntAlamancCalendar() {
         <ClickAwayListener onClickAway={handleClose}>
           <Box>
             {isCourseEvent && (
-              <CourseCalendarEvent key={calendarEventKey} event={courseInMoreInfo} closePopover={handleClose} />
+              <CourseEventDetails key={calendarEventKey} event={courseInMoreInfo} closePopover={handleClose} />
             )}
             {isCustomEvent && (
-              <CustomCalendarEvent key={calendarEventKey} event={courseInMoreInfo} closePopover={handleClose} />
+              <CustomEventDetails key={calendarEventKey} event={courseInMoreInfo} closePopover={handleClose} />
             )}
           </Box>
         </ClickAwayListener>
