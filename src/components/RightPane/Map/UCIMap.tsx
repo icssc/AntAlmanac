@@ -262,26 +262,43 @@ export default class UCIMap extends PureComponent {
         return buildingCatalogue[id];
     }
 
-    pinBuilding = (args: {name: string, lat: number, lng: number, imageURL: string | null}) => {
-        const {name, lat, lng, imageURL } = args;
+    pinBuilding = (args: {
+        buildingName: string,
+        lat: number,
+        lng: number,
+        imageURL: string | null,
+        courseName?: string | null,
+    }) => {
+        console.log(args);
+
+        const {buildingName, lat, lng, imageURL, courseName } = args;
 
         // Acronym, if it exists, is in between parentheses
-        const acronym = name.substring(
-            name.indexOf('(') + 1,
-            name.indexOf(')')
+        const acronym = buildingName.substring(
+            buildingName.indexOf('(') + 1,
+            buildingName.indexOf(')')
         );
 
         const marker = (
             <MapMarker
                 image={imageURL ? imageURL : undefined}
-                location={name}
+                location={buildingName}
                 lat={lat}
                 lng={lng}
                 acronym={acronym}
                 markerColor="#FF0000"
                 index="!"
                 stackIndex={acronym in this.state.pins ? -1 : 0}
-            />
+            >
+                {courseName ? (
+                    <>
+                        <hr />
+                        <>
+                            Class: {courseName}
+                        </>
+                    </>
+                ) : <></>}
+            </MapMarker>
         )
 
         this.setState({
@@ -303,10 +320,11 @@ export default class UCIMap extends PureComponent {
         const locationData = this.locationDataFromBuildingCode(buildingCode);
 
         this.pinBuilding({
-            name: locationData.name,
+            buildingName: locationData.name,
             lat: locationData.lat,
             lng: locationData.lng,
             imageURL: locationData.imageURLs.length > 0 ? locationData.imageURLs[0] : null,
+            courseName: buildingFocusInfo.courseName,
         });
     }
 
@@ -419,7 +437,7 @@ export default class UCIMap extends PureComponent {
     handleSearch = (event: React.ChangeEvent<unknown>, searchValue: Building | null) => {
         if (searchValue) {
             this.pinBuilding({
-                name: searchValue.name,
+                buildingName: searchValue.name,
                 lat: searchValue.lat,
                 lng: searchValue.lng,
                 imageURL: searchValue.imageURLs.length > 0 ? searchValue.imageURLs[0] : null,
