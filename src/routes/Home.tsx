@@ -4,8 +4,6 @@ import Calendar from '$components/Calendar';
 import CourseSearch from '$components/CourseSearch';
 import AddedCourses from '$components/AddedCourses';
 import Map from '$components/Map';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
 
 /**
  * home page

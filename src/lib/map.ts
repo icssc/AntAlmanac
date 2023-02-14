@@ -4,6 +4,9 @@ import type { Course } from '$stores/schedule';
 import locations from '$lib/locations';
 import buildingCatalogue from '$lib/buildingCatalogue';
 
+/**
+ * extracts all metadata from courses to the top level in preparation to use in the map
+ */
 export function getMarkersFromCourses(courses: Course[]) {
   const events = getCourseCalendarEvents(courses);
 
