@@ -269,8 +269,6 @@ export default class UCIMap extends PureComponent {
         imageURL: string | null,
         courseName?: string | null,
     }) => {
-        console.log(args);
-
         const {buildingName, lat, lng, imageURL, courseName } = args;
 
         // Acronym, if it exists, is in between parentheses
@@ -289,6 +287,7 @@ export default class UCIMap extends PureComponent {
                 markerColor="#FF0000"
                 index="!"
                 stackIndex={acronym in this.state.pins ? -1 : 0}
+                openPopup={true}
             >
                 {courseName ? (
                     <>
@@ -302,9 +301,9 @@ export default class UCIMap extends PureComponent {
         )
 
         this.setState({
-            lat: lat,
+            lat: lat + 0.001, // Off-centered to show the popup
             lng: lng,
-            zoom: 18,
+            zoom: 17,
             selectedMarker: marker,
         });
     }

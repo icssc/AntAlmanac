@@ -81,28 +81,26 @@ const MapMarker = ({
     const [markerRef, updateMarkerRef] = useState(useRef(null));
 
     function _openPopup(_markerRef: MarkerRef) {
-        console.log('open popup', _markerRef?.current);
+        console.log('openPopup', _markerRef?.current);
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        _markerRef?.current?.openPopup();
+        // To give the map time to pan
+        setTimeout(() => {
+            _markerRef?.current?.fireLeafletEvent('click', null);
+        }, 300)
+
     }
 
     useEffect(() => {
-        console.log('markerRef', markerRef);
-        if (openPopup) {
-            _openPopup(markerRef);
-        }
-    }, []);
+        _openPopup(markerRef);
+    }, [markerRef, openPopup, lat, lng, location]);
 
     return (
         <Marker
             position={[lat, lng]}
             icon={getMarkerIcon(markerColor)}
             zIndexOffset={-stackIndex} // alter ZIndex so markers show above other markers in order of stack
+            ref={markerRef}
             onClick={() => {
-                console.log(markerRef);
                 logAnalytics({
                     category: analyticsEnum.map.title,
                     action: analyticsEnum.map.actions.CLICK_PIN,
