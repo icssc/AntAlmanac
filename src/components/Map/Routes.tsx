@@ -9,7 +9,7 @@ const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ
 
 interface Props {
   /**
-   * waypoints needs to be L.Routing.Waypoint [] or LatLng[] when given L.Routing.plan
+   * waypoints needs to be L.Routing.Waypoint [] or LatLng[] when creating a L.Routing.plan
    * for ease of use from outside, pass in a valid LatLngTuple[], and convert to LatLng inside
    * @example [[33.6405, -117.8443], [33.6405, -117.8443]]
    */
@@ -36,27 +36,16 @@ export default function CourseRoutes(props: Props) {
 
   useEffect(() => {
     /**
-     * create a new plan with the waypoints
-     */
-    const plan = L.Routing.plan(waypoints, {
-      addWaypoints: false,
-      createMarker: () => false,
-    });
-
-    /**
-     * plug the plan into a new router
+     * create a new router that can calculate and render the walking paths to the map
      */
     const router = L.Routing.control({
-      plan,
-      routeWhileDragging: true,
-      router: L.Routing.mapbox(ACCESS_TOKEN, {
-        profile: 'mapbox/walking',
+      router: L.Routing.mapbox(ACCESS_TOKEN, { profile: 'mapbox/walking' }),
 
-        // default API settings for reference:
-        // serviceUrl: 'https://api.mapbox.com/directions/v5',
-        // profile: 'mapbox/driving', <-- this is wrong; we want walking
-        // useHints: false
+      plan: L.Routing.plan(waypoints, {
+        addWaypoints: false,
+        createMarker: () => false,
       }),
+
       routeLine(route) {
         const line = L.Routing.line(route, {
           addWaypoints: false,
@@ -68,6 +57,9 @@ export default function CourseRoutes(props: Props) {
       },
     });
 
+    /**
+     * add the router and all of its lines to the map
+     */
     router.addTo(map);
 
     /**
@@ -77,8 +69,8 @@ export default function CourseRoutes(props: Props) {
 
     return () => {
       /**
-       * the map will live on after this component dies;
-       * make sure the router (with all of the paths/lines) is removed with the component
+       * the map will continue to live after this component dies;
+       * make sure the router with all of its lines is removed with the component
        */
       router.remove();
     };
