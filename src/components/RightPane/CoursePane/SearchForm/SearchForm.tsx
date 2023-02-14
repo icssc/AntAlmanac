@@ -1,6 +1,6 @@
 import { IconButton, Theme, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { ClassNameMap , Styles } from '@material-ui/core/styles/withStyles';
 import { Tune } from '@material-ui/icons';
 import React, { FormEvent, useState } from 'react';
 
@@ -48,7 +48,8 @@ const styles: Styles<Theme, object> = {
 const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) => {
     const { classes, toggleSearch } = props;
 
-    const [showLegacySearch, setShowLegacySearch] = useState(false);
+    const urlParamValue = new URLSearchParams(document.location.search).get("courseCode");
+    const [showLegacySearch, setShowLegacySearch] = useState(urlParamValue!=""&&urlParamValue!=null ? true : false);
 
     const toggleShowLegacySearch = () => {
         setShowLegacySearch(!showLegacySearch);
@@ -64,10 +65,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
             <form onSubmit={onFormSubmit} className={classes.form}>
                 <div className={classes.container}>
                     <div className={classes.margin}>
-                        <TermSelector
-                            changeState={(field: string, value: string) => RightPaneStore.updateFormValue(field, value)}
-                            fieldName={'term'}
-                        />
+                        <TermSelector changeState={(field: string,  value: string)=>RightPaneStore.updateFormValue(field,value)} fieldName={'term'} />
                     </div>
 
                     <div className={classes.container}>
@@ -88,6 +86,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                                     category: analyticsEnum.classSearch.title,
                                     action: analyticsEnum.classSearch.actions.MANUAL_SEARCH,
                                 });
+                                toggleSearch();
                             }}
                             onReset={RightPaneStore.resetFormValues}
                         />
