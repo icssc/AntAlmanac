@@ -49,9 +49,8 @@ interface UCIMapState {
     lng: number;
     zoom: number;
     day: number;
+    selectedMarker: Marker | null;
     selected: string | null;
-    selected_img: string;
-    selected_acronym: string;
     eventsInCalendar: CalendarEvent[];
     poly: Polyline[];
     info_markers: [string[], string, string][];
@@ -64,9 +63,8 @@ export default class UCIMap extends PureComponent {
         lng: -117.842717,
         zoom: 16,
         day: 0,
+        selectedMarker: null,
         selected: null,
-        selected_img: '',
-        selected_acronym: '',
         eventsInCalendar: AppStore.getEventsInCalendar(),
         poly: [],
         info_markers: [],
@@ -264,9 +262,7 @@ export default class UCIMap extends PureComponent {
         return buildingCatalogue[id];
     }
 
-    highlightBuilding = (args: {name: string, lat: number, lng: number, imageURL: string | null}) => {
-        console.log(args);
-
+    pinBuilding = (args: {name: string, lat: number, lng: number, imageURL: string | null}) => {
         const {name, lat, lng, imageURL } = args;
 
         // Acronym, if it exists, is in between parentheses
@@ -275,19 +271,28 @@ export default class UCIMap extends PureComponent {
             name.indexOf(')')
         );
 
+        const marker = (
+            <MapMarker
+                image={imageURL ? imageURL : undefined}
+                location={name}
+                lat={lat}
+                lng={lng}
+                acronym={acronym}
+                markerColor="#FF0000"
+                index="!"
+                stackIndex={acronym in this.state.pins ? -1 : 0}
+            />
+        )
+
         this.setState({
             lat: lat,
             lng: lng,
-            selected: name,
-            selected_acronym: acronym,
             zoom: 18,
-            selected_img: imageURL,
+            selectedMarker: marker,
         });
     }
 
     selectBuilding = (buildingFocusInfo: BuildingFocusInfo) => {
-        console.log(buildingFocusInfo);
-
         const buildingCodeMatch = buildingFocusInfo.location.match(/[^\d\s]+/);
         if (!buildingCodeMatch) {
             console.warn("Building code could not be parsed from: ", buildingFocusInfo.location);
@@ -297,7 +302,7 @@ export default class UCIMap extends PureComponent {
         const buildingCode = buildingCodeMatch[0];
         const locationData = this.locationDataFromBuildingCode(buildingCode);
 
-        this.highlightBuilding({
+        this.pinBuilding({
             name: locationData.name,
             lat: locationData.lat,
             lng: locationData.lng,
@@ -413,7 +418,7 @@ export default class UCIMap extends PureComponent {
 
     handleSearch = (event: React.ChangeEvent<unknown>, searchValue: Building | null) => {
         if (searchValue) {
-            this.highlightBuilding({
+            this.pinBuilding({
                 name: searchValue.name,
                 lat: searchValue.lat,
                 lng: searchValue.lng,
@@ -457,18 +462,7 @@ export default class UCIMap extends PureComponent {
 
                 {this.drawMarkers()}
 
-                {this.state.selected ? (
-                    <MapMarker
-                        image={this.state.selected_img}
-                        location={this.state.selected}
-                        lat={this.state.lat}
-                        lng={this.state.lng}
-                        acronym={this.state.selected_acronym}
-                        markerColor="#FF0000"
-                        index="!"
-                        stackIndex={this.state.selected_acronym in this.state.pins ? -1 : 0}
-                    />
-                ) : null}
+                {this.state.selectedMarker}
             </Map>
         );
     }
