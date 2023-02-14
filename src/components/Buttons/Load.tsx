@@ -14,6 +14,9 @@ import { CloudDownload as CloudDownloadIcon } from '@mui/icons-material';
 import { useSettingsStore } from '$stores/settings';
 import { useLoadSchedule } from '$stores/schedule/load';
 
+/**
+ * button that opens up a dialog to load a schedule
+ */
 export default function LoadScheduleButton() {
   const [open, setOpen] = useState(false);
   const [userId, setUserId] = useState('');

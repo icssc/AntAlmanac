@@ -40,6 +40,9 @@ interface Props {
   onDialogClose?: () => void;
 }
 
+/**
+ * button that opens up a dialog to add or edit a custom event
+ */
 export default function CustomEvent(props: Props) {
   const { schedules, scheduleIndex } = useScheduleStore();
   const { isDarkMode } = useSettingsStore();
@@ -100,14 +103,14 @@ export default function CustomEvent(props: Props) {
   }
 
   function handleSubmit() {
+    if (!event.days.some((day) => day) || selectedSchedules.length === 0) {
+      return;
+    }
+
     logAnalytics({
       category: analyticsEnum.calendar.title,
       action: analyticsEnum.calendar.actions.ADD_CUSTOM_EVENT,
     });
-
-    if (!event.days.some((day) => day) || selectedSchedules.length === 0) {
-      return;
-    }
 
     const newCustomEvent = {
       color: props.event ? props.event.color : '#551a8b',

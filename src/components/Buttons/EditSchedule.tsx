@@ -17,17 +17,17 @@ import { useSettingsStore } from '$stores/settings';
 import { useScheduleStore } from '$stores/schedule';
 import { deleteCurrentSchedule, renameCurrentSchedule } from '$stores/schedule/schedule';
 
+/**
+ * button that opens up a dialog to edit a schedule
+ */
 export default function EditScheduleButton() {
   const { isDarkMode } = useSettingsStore();
   const { schedules, scheduleIndex } = useScheduleStore();
-
-  const schedule = schedules[scheduleIndex];
-
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [scheduleName, setScheduleName] = useState(schedule?.scheduleName || '');
+  const [scheduleName, setScheduleName] = useState(schedules[scheduleIndex]?.scheduleName || '');
   const [open, setOpen] = useState(false);
 
-  function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+  function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     setAnchorEl(e.currentTarget);
   }
 
@@ -41,7 +41,7 @@ export default function EditScheduleButton() {
     setAnchorEl(null);
   }
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setScheduleName(e.target.value);
   }
 
@@ -70,7 +70,7 @@ export default function EditScheduleButton() {
       <Dialog open={open} fullWidth>
         <DialogTitle>Rename Schedule</DialogTitle>
         <DialogContent>
-          <FormGroup sx={{ my: 2 }}>
+          <FormGroup sx={{ marginY: 2 }}>
             <TextField label="Name" onChange={handleChange} value={scheduleName} fullWidth />
           </FormGroup>
         </DialogContent>

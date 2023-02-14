@@ -11,6 +11,9 @@ interface Props {
   imgRef: React.RefObject<HTMLElement>;
 }
 
+/**
+ * button that downloads a screenshot of the element referenced by imgRef
+ */
 export default function ScreenshotButton(props: Props) {
   /**
    * ref to an invisible link used to download the screenshot
@@ -18,7 +21,7 @@ export default function ScreenshotButton(props: Props) {
   const ref = useRef<HTMLAnchorElement>(null);
 
   async function handleClick() {
-    if (!props.imgRef.current) {
+    if (!props.imgRef.current || !ref.current) {
       return;
     }
 
@@ -37,19 +40,12 @@ export default function ScreenshotButton(props: Props) {
     });
 
     const canvas = await html2canvas(props.imgRef.current, { scale: 2.5 });
-    const imgRaw = canvas.toDataURL('image/png');
-    saveAs(imgRaw, 'Schedule.png');
+
+    ref.current.href = canvas.toDataURL('image/png');
+    ref.current.download = 'Schedule.png';
+    ref.current.click();
 
     props.imgRef.current.style.color = prevColor;
-  }
-
-  function saveAs(uri: string, download: string) {
-    if (!ref.current) {
-      return;
-    }
-    ref.current.href = uri;
-    ref.current.download = download;
-    ref.current.click();
   }
 
   return (

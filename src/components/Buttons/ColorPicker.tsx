@@ -14,7 +14,8 @@ interface Props {
   term?: string;
 
   /**
-   * If true, this object has a customEventID. If false, this object has a term and sectionCode.
+   * true: this object has a customEventID
+   * false: this object has a term and sectionCode.
    */
   isCustomEvent?: boolean;
 
@@ -29,11 +30,14 @@ interface Props {
   sectionCode?: string;
 }
 
+/**
+ * color picker button that changes the color of the provided course or custom event
+ */
 export default function ColorPicker(props: Props) {
   const [color, setColor] = useState(props.color);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+  function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
     setAnchorEl(e?.currentTarget);
     logAnalytics({
@@ -42,19 +46,19 @@ export default function ColorPicker(props: Props) {
     });
   }
 
-  function handleClose(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+  function handleClose(e: React.MouseEvent) {
     e.stopPropagation();
     setAnchorEl(null);
   }
 
   function handleColorChange(e: ColorResult) {
-    setColor(e.hex);
     if (props.customEventID) {
       changeCustomEventColor(props.customEventID, e.hex);
     }
     if (props.sectionCode && props.term) {
       changeCourseColor(props.sectionCode, props.term, e.hex);
     }
+    setColor(e.hex);
   }
 
   return (
@@ -62,20 +66,12 @@ export default function ColorPicker(props: Props) {
       <IconButton sx={{ color }} onClick={handleClick} size="large">
         <ColorLens fontSize="small" />
       </IconButton>
-
       <Popover
         open={!!anchorEl}
         anchorEl={anchorEl}
         onClose={handleClose}
-        onClick={(e) => e.stopPropagation()}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
       >
         <SketchPicker color={color} onChange={handleColorChange} />
       </Popover>

@@ -5,54 +5,56 @@ import { InfoOutlined as InfoOutlinedIcon } from '@mui/icons-material';
 import { PETERPORTAL_REST_ENDPOINT } from '$lib/endpoints';
 import type { AACourse, CourseResponse } from '$types/peterportal';
 
-const noCourseInfo = {
-  title: 'No description available',
-  prerequisite_text: '',
-  prerequisite_for: '',
-  description: '',
-  ge_list: '',
-};
-
+/**
+ * button that opens a popup with all summary info about the course,
+ * e.g. course description, prerequistes, etc.
+ */
 export default function CourseSummaryButton(props: { course: AACourse }) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
     setAnchorEl(event.currentTarget);
-  };
+  }
 
-  const handleClose = () => {
+  function handleClose() {
     setAnchorEl(null);
-  };
+  }
 
-  const { course } = props;
-  const courseId = encodeURIComponent(`${course.deptCode.replace(/\s/g, '')}${course.courseNumber.replace(/\s/g, '')}`);
+  const courseId = encodeURIComponent(
+    `${props.course.deptCode.replace(/\s/g, '')}${props.course.courseNumber.replace(/\s/g, '')}`
+  );
+
   const query = useQuery([PETERPORTAL_REST_ENDPOINT, courseId], {
     async queryFn() {
       const response = await fetch(`${PETERPORTAL_REST_ENDPOINT}/courses/${courseId}`);
       if (response.ok) {
         const jsonResp = (await response.json()) as CourseResponse;
-        const courseInfo = {
+        return {
           title: jsonResp.title,
           prerequisite_text: jsonResp.prerequisite_text,
           prerequisite_for: jsonResp.prerequisite_for.join(', '),
           description: jsonResp.description,
           ge_list: jsonResp.ge_list.join(', '),
         };
-        return courseInfo;
       } else {
-        return noCourseInfo;
+        return {
+          title: 'No description available',
+          prerequisite_text: '',
+          prerequisite_for: '',
+          description: '',
+          ge_list: '',
+        };
       }
     },
   });
 
+  const title = `${props.course?.deptCode} ${props.course?.courseNumber} | ${props.course?.courseTitle}`;
+
   return (
     <>
-      <Button
-        variant="contained"
-        size="small"
-        onClick={handleClick}
-        startIcon={<InfoOutlinedIcon />}
-      >{`${course?.deptCode} ${course?.courseNumber} | ${course?.courseTitle}`}</Button>
+      <Button variant="contained" size="small" onClick={handleClick} startIcon={<InfoOutlinedIcon />}>
+        {title}
+      </Button>
       <Popover
         open={!!anchorEl}
         anchorEl={anchorEl}

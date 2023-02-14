@@ -8,9 +8,12 @@ interface Props {
   course: AACourse;
 }
 
-export default function AddCourseButton({ section, course }: Props) {
+/**
+ * button that adds the provided course to the schedule
+ */
+export default function AddCourseButton(props: Props) {
   function handleClick() {
-    addCourse(section, course);
+    addCourse(props.section, props.course);
   }
 
   return (

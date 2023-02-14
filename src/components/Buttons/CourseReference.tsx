@@ -2,39 +2,41 @@ import { useState } from 'react';
 import { Button, Popover } from '@mui/material';
 import { analyticsEnum, logAnalytics } from '$lib/analytics';
 
-interface CourseInfoButtonProps {
+interface Props {
   title: string;
-  icon: React.ReactElement;
-  analyticsAction: string;
   href?: string;
+  icon: React.ReactElement;
   children?: React.ReactElement;
+  analyticsAction: string;
 }
 
-export default function CourseReferenceButton(props: CourseInfoButtonProps) {
-  const { title, icon, href, children, analyticsAction } = props;
+/**
+ * button that can open a popup with additional specific info about the course,
+ * or link to another page with more info (if href is provided)
+ */
+export default function CourseReferenceButton(props: Props) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
     logAnalytics({
       category: analyticsEnum.classSearch.title,
-      action: analyticsAction,
+      action: props.analyticsAction,
     });
-
-    if (href) {
-      window.open(href);
+    if (props.href) {
+      window.open(props.href);
     } else {
       setAnchorEl(event.currentTarget);
     }
-  };
+  }
 
-  const handleClose = () => {
+  function handleClose() {
     setAnchorEl(null);
-  };
+  }
 
   return (
     <>
-      <Button variant="contained" size="small" onClick={handleClick} startIcon={icon}>
-        {title}
+      <Button variant="contained" size="small" onClick={handleClick} startIcon={props.icon}>
+        {props.title}
       </Button>
       <Popover
         open={!!anchorEl}
@@ -43,7 +45,7 @@ export default function CourseReferenceButton(props: CourseInfoButtonProps) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        {children}
+        {props.children}
       </Popover>
     </>
   );

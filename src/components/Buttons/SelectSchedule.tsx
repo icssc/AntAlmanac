@@ -18,6 +18,9 @@ import { useSettingsStore } from '$stores/settings';
 import { useScheduleStore } from '$stores/schedule';
 import { setScheduleIndex, addSchedule } from '$stores/schedule/schedule';
 
+/**
+ * button (select form) that can switch between schedules or add a new schedule
+ */
 export default function SelectScheduleButton() {
   const { isDarkMode } = useSettingsStore();
   const { schedules, scheduleIndex } = useScheduleStore();
@@ -48,7 +51,7 @@ export default function SelectScheduleButton() {
 
   return (
     <>
-      <Select size="small" value={`${scheduleIndex}`} onChange={handleSelect}>
+      <Select size="small" value={scheduleIndex.toString()} onChange={handleSelect}>
         {schedules.map((schedule, index) => (
           <MenuItem key={index} value={index}>
             {schedule.scheduleName}
