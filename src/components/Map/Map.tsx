@@ -1,4 +1,5 @@
-import { MapContainer, Marker, TileLayer } from 'react-leaflet';
+import { MapContainer, TileLayer } from 'react-leaflet';
+import { Typography } from '@mui/material'
 import { useScheduleStore } from '$stores/schedule';
 import { getMarkersFromCourses } from '$lib/map';
 import MapMarker from './Marker';
@@ -17,7 +18,15 @@ export default function CourseMap() {
     <MapContainer center={[33.6459, -117.842717]} zoom={16} maxZoom={19} style={{ height: '100%' }}>
       <TileLayer attribution={attribution} url={url} tileSize={512} zoomOffset={-1} />
       {markers.map((marker, index) => (
-        <MapMarker {...marker} key={index} stackIndex={0} />
+        <MapMarker {...marker} key={index} stackIndex={0}>
+          <hr />
+          <Typography variant="body2">
+            Class: {`${marker.title} ${marker.sectionType}`}
+          </Typography>
+          <Typography variant="body2">
+            Room: {marker.bldg.split(' ').slice(-1)}
+          </Typography>
+        </MapMarker>
       ))}
     </MapContainer>
   );

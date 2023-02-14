@@ -35,6 +35,7 @@ export function getMarkersFromCourses(courses: Course[]) {
           markerColor: event.color,
           location: locationData.name,
           ...locationData,
+          ...event,
         };
       });
       const flatEventLocationData = eventLocationData.flat();
