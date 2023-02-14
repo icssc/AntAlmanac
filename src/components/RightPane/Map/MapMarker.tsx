@@ -81,8 +81,6 @@ const MapMarker = ({
     const [markerRef, updateMarkerRef] = useState(useRef(null));
 
     function _openPopup(_markerRef: MarkerRef) {
-        console.log('openPopup', _markerRef?.current);
-
         // To give the map time to pan
         setTimeout(() => {
             _markerRef?.current?.fireLeafletEvent('click', null);
