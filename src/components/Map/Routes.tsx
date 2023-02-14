@@ -39,7 +39,12 @@ export default function CourseRoutes(props: Props) {
      * create a new router that can calculate and render the walking paths to the map
      */
     const router = L.Routing.control({
-      router: L.Routing.mapbox(ACCESS_TOKEN, { profile: 'mapbox/walking' }),
+      router: L.Routing.mapbox(ACCESS_TOKEN, {
+        /**
+         * default is mapbox/driving, more options: {@link https://docs.mapbox.com/api/navigation/directions/#routing-profiles}
+         */
+        profile: 'mapbox/walking' 
+      }),
 
       plan: L.Routing.plan(waypoints, {
         addWaypoints: false,
