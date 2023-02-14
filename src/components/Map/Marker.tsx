@@ -47,7 +47,7 @@ function getMarkerIcon(color: string, stackIndex: number, index?: number) {
                          top: -0.75rem;
                          text-align: center; 
                          color: white" >
-                   ${index}
+                   ${index || ''}
              </div>
            </div>`,
   });

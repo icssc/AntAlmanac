@@ -44,7 +44,7 @@ export default function CourseMap() {
    * creates unique array of markers that occur today
    */
   const uniqueMarkers = markersToday.filter(
-    (marker, index, self) => self.findIndex((foundMarker) => marker.key === foundMarker.key) === index
+    (marker, index, self) => self.findIndex((foundMarker) => marker.lat === foundMarker.lat && marker.lng === foundMarker.lng) === index
   );
 
   /**
@@ -78,8 +78,8 @@ export default function CourseMap() {
           return <CourseRoutes key={key} latLngTuples={latLngTuples} color={color} />;
         })}
 
-        {markersToday.map((marker, index) => (
-          <CourseMarker {...marker} key={index} index={index + 1} stackIndex={0}>
+        {uniqueMarkers.map((marker, index) => (
+          <CourseMarker {...marker} key={index} index={today ? index + 1 : undefined} stackIndex={index}>
             <hr />
             <Typography variant="body2">Class: {`${marker.title} ${marker.sectionType}`}</Typography>
             <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
