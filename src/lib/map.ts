@@ -43,5 +43,6 @@ export function getMarkersFromCourses(courses: Course[]) {
     });
 
   const markers = result.flat();
-  return markers;
+  const markersByTime = markers.sort((a, b) => a.start.getTime() - b.start.getTime());
+  return markersByTime;
 }
