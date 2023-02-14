@@ -1,41 +1,10 @@
 import { Box, IconButton } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Refresh as RefreshIcon } from '@mui/icons-material';
+import { flattenSOCObject } from '$lib/websoc'
 import { useSearchStore } from '$stores/search';
 import { useSettingsStore } from '$stores/settings';
-import { useScheduleStore } from '$stores/schedule';
 import useWebsocQuery from '$hooks/useWebsocQuery';
 import Schedule from '$components/Schedule';
-import type { WebsocResponse, School, Department, AACourse, AASection } from '$types/peterportal';
-
-/**
- * flattens the websoc response
- */
-function flattenSOCObject(SOCObject: WebsocResponse) {
-  const { schedules, scheduleIndex } = useScheduleStore.getState();
-
-  const courses = schedules[scheduleIndex]?.courses || [];
-
-  const courseColors = courses.reduce((accumulator, { section }) => {
-    accumulator[section.sectionCode] = section.color;
-    return accumulator;
-  }, {} as { [key: string]: string });
-
-  const reduced = SOCObject.schools.reduce((accumulator, school) => {
-    accumulator.push(school);
-    school.departments.forEach((dept) => {
-      accumulator.push(dept);
-      dept.courses.forEach((course) => {
-        for (const section of course.sections) {
-          (section as AASection).color = courseColors[section.sectionCode];
-        }
-        accumulator.push(course as AACourse);
-      });
-    });
-    return accumulator;
-  }, [] as (School | Department | AACourse)[]);
-
-  return reduced;
-}
 
 /**
  * renders the list of course search results
