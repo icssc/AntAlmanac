@@ -9,7 +9,7 @@ const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId
 /**
  * returns a leaflet DivIcon that can replace the marker's default blue icon
  */
-function getMarkerIcon(color: string, stackIndex: number) {
+function getMarkerIcon(color: string, stackIndex: number, index?: number) {
   return Leaflet.divIcon({
     /**
      * Adds offset for marker for stacking markers
@@ -47,6 +47,7 @@ function getMarkerIcon(color: string, stackIndex: number) {
                          top: -0.75rem;
                          text-align: center; 
                          color: white" >
+                   ${index}
              </div>
            </div>`,
   });
@@ -60,6 +61,7 @@ interface Props {
   lng: number;
   acronym: string;
   stackIndex: number;
+  index?: number
   children?: React.ReactNode;
 }
 
@@ -70,7 +72,7 @@ export default function CourseMarker(props: Props) {
   return (
     <Marker
       position={[props.lat, props.lng]}
-      icon={getMarkerIcon(props.markerColor, props.stackIndex)}
+      icon={getMarkerIcon(props.markerColor, props.stackIndex, props.index)}
       zIndexOffset={props.stackIndex}
     >
       <Popup>

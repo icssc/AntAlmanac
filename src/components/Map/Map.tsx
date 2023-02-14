@@ -79,7 +79,7 @@ export default function CourseMap() {
         })}
 
         {markersToday.map((marker, index) => (
-          <CourseMarker {...marker} key={index} stackIndex={0}>
+          <CourseMarker {...marker} key={index} index={index + 1} stackIndex={0}>
             <hr />
             <Typography variant="body2">Class: {`${marker.title} ${marker.sectionType}`}</Typography>
             <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
