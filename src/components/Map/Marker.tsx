@@ -66,7 +66,7 @@ interface Props {
 /**
  * returns a custom map marker + popup with course info
  */
-export default function MapMarker(props: Props) {
+export default function CourseMarker(props: Props) {
   return (
     <Marker
       position={[props.lat, props.lng]}

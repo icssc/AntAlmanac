@@ -5,14 +5,17 @@ import 'leaflet-routing-machine';
 import { Tab, Tabs, Typography } from '@mui/material';
 import { useScheduleStore } from '$stores/schedule';
 import { getMarkersFromCourses } from '$lib/map';
-import MapMarker from './Marker';
-import PathMaker from './PathMaker';
+import CourseMarker from './Marker';
+import CourseRoutes from './Routes';
 
 const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+
 const attribution =
   '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
+
 const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`;
-const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+
+const days = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
 export default function CourseMap() {
   const { schedules, scheduleIndex } = useScheduleStore();
@@ -29,6 +32,9 @@ export default function CourseMap() {
    */
   const markers = getMarkersFromCourses(schedules[scheduleIndex].courses);
 
+  /**
+   * only get markers for courses happening today
+   */
   const markersToday = markers.filter((marker) => marker.start.toString().includes(today));
 
   /**
@@ -53,29 +59,30 @@ export default function CourseMap() {
     <>
       <Tabs value={tab} onChange={handleChange} variant="fullWidth">
         {days.map((day, index) => (
-          <Tab key={index} label={day} />
+          <Tab key={index} label={day || 'All'} />
         ))}
       </Tabs>
       <MapContainer center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
         <TileLayer attribution={attribution} url={url} tileSize={512} maxZoom={21} zoomOffset={-1} />
-        {startDestPairs.map((startDestPair) => {
+
+        {today !== '' && startDestPairs.map((startDestPair) => {
           const latLngTuples = startDestPair.map((marker) => [marker.lat, marker.lng] as LatLngTuple);
           const color = startDestPair[0]?.color;
 
           /**
-           * fuck this shit; the one time the key actually matters because the map
-           * won't re-render properly without it: it will leave behind ghost lines if not unique
+           * previous renders of the routes will be left behind if the keys aren't unique
            */
           const key = Math.random().toString(36).substring(7);
 
-          return <PathMaker key={key} latLngTuples={latLngTuples} color={color} />;
+          return <CourseRoutes key={key} latLngTuples={latLngTuples} color={color} />;
         })}
+
         {markersToday.map((marker, index) => (
-          <MapMarker {...marker} key={index} stackIndex={0}>
+          <CourseMarker {...marker} key={index} stackIndex={0}>
             <hr />
             <Typography variant="body2">Class: {`${marker.title} ${marker.sectionType}`}</Typography>
             <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
-          </MapMarker>
+          </CourseMarker>
         ))}
       </MapContainer>
     </>

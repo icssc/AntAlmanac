@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import L from 'leaflet';
 import type { LatLngTuple } from 'leaflet';
-import { useMap, Polyline } from 'react-leaflet';
+import { useMap } from 'react-leaflet';
 import 'leaflet-routing-machine';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 
@@ -24,12 +24,7 @@ interface Props {
 /**
  * given waypoints of a route and a color for the route, draw a route to the map
  */
-export default function PathMaker(props: Props) {
-  /**
-   * if you wanted to manually calculate and render routes
-   */
-  const [routes, setRoutes] = useState<L.Routing.IRoute[]>([]);
-
+export default function CourseRoutes(props: Props) {
   const map = useMap();
 
   const latLngTuples = props.latLngTuples || [];
@@ -49,7 +44,7 @@ export default function PathMaker(props: Props) {
     });
 
     /**
-     * plug in the plan into a new router
+     * plug the plan into a new router
      */
     const router = L.Routing.control({
       plan,
@@ -57,9 +52,9 @@ export default function PathMaker(props: Props) {
       router: L.Routing.mapbox(ACCESS_TOKEN, {
         profile: 'mapbox/walking',
 
-        // default for reference:
+        // default API settings for reference:
         // serviceUrl: 'https://api.mapbox.com/directions/v5',
-        // profile: 'mapbox/driving',
+        // profile: 'mapbox/driving', <-- this is wrong; we want walking
         // useHints: false
       }),
       routeLine(route) {
@@ -72,27 +67,6 @@ export default function PathMaker(props: Props) {
         return line;
       },
     });
-
-    /**
-     * example of how to generate the route yourself and handle it
-     */
-    if (waypoints.length >= 2) {
-      const manualRoute = L.Routing.mapbox(ACCESS_TOKEN, {
-        serviceUrl: 'https://api.mapbox.com/directions/v5',
-        profile: 'mapbox/walking',
-      });
-
-      manualRoute.route(
-        waypoints.map((w) => new L.Routing.Waypoint(w, 'no', {})),
-        (...args: any) => {
-          const [err, route] = args as [Error | null, L.Routing.IRoute | null];
-          if (!err && route) {
-            console.log('here');
-            setRoutes((prevRoutes) => [...prevRoutes, route]);
-          }
-        }
-      );
-    }
 
     router.addTo(map);
 
