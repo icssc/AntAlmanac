@@ -48,12 +48,10 @@ export default function CourseSummaryButton(props: { course: AACourse }) {
     },
   });
 
-  const title = `${props.course?.deptCode} ${props.course?.courseNumber} | ${props.course?.courseTitle}`;
-
   return (
     <>
       <Button variant="contained" size="small" onClick={handleClick} startIcon={<InfoOutlinedIcon />}>
-        {title}
+        {`${props.course?.deptCode} ${props.course?.courseNumber} | ${props.course?.courseTitle}`}
       </Button>
       <Popover
         open={!!anchorEl}

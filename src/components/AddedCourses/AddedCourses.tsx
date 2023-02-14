@@ -2,21 +2,20 @@ import { Box, Typography } from '@mui/material';
 import { useScheduleStore } from '$stores/schedule';
 import Schedule from '$components/Schedule';
 
-function inferredReducer<T>(array: T[], func: (acc: T[], curr: T) => T[]) {
-  return array.reduce(func, []);
-}
-
+/**
+ * manage all currently added courses here
+ */
 export default function AddedCourses() {
   const { schedules, scheduleIndex } = useScheduleStore();
-  const schedule = schedules[scheduleIndex];
-  const currentCourses = schedule.courses;
-  const coursesWithSections = currentCourses.map((course) => {
+
+  const coursesWithSections = schedules[scheduleIndex]?.courses.map((course) => {
     return {
       ...course,
       sections: [course.section],
     };
   });
-  const courses = inferredReducer(coursesWithSections, (accumulated, current) => {
+
+  const courses = coursesWithSections.reduce((accumulated, current) => {
     const found = accumulated.find(
       (existing) => existing.courseNumber === current.courseNumber && existing.deptCode === current.deptCode
     );
@@ -26,14 +25,16 @@ export default function AddedCourses() {
     } else {
       return [...accumulated, current];
     }
-  });
+  }, [] as typeof coursesWithSections);
+
   const totalUnits = courses.reduce((accumulated, current) => {
     return accumulated + parseInt(current.section.units, 10);
   }, 0);
+
   return (
     <Box>
       <Typography variant="h5" padding={2}>
-        {schedule.scheduleName} ({totalUnits} units)
+        {schedules[scheduleIndex].scheduleName} ({totalUnits} units)
       </Typography>
       {courses.map((course, index) => (
         <Schedule key={index} course={course} term={course.term} />
