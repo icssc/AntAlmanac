@@ -1,7 +1,7 @@
 import { Button } from '@material-ui/core';
 import WalkIcon from '@material-ui/icons/DirectionsWalk';
 import Leaflet from 'leaflet';
-import React, { ReactElement } from 'react';
+import React, {ReactElement, useEffect, useRef, useState} from 'react';
 import { Marker, Popup } from 'react-leaflet';
 
 import analyticsEnum, { logAnalytics } from '../../../analytics';
@@ -19,9 +19,23 @@ interface MapMarkerProps {
     markerColor: string;
     image?: string;
     children?: ReactElement;
+    openPopup?: boolean;
 }
 
-const MapMarker = ({ index, markerColor, stackIndex, image, location, lat, lng, acronym, children }: MapMarkerProps) => {
+type MarkerRef = React.MutableRefObject<Marker|null>;
+
+const MapMarker = ({
+    index,
+    markerColor,
+    stackIndex,
+    image,
+    location,
+    lat,
+    lng,
+    acronym,
+    children,
+    openPopup
+}: MapMarkerProps) => {
     /**@param color rgb hex color string */
     const getMarkerIcon = (color: string) => {
         return Leaflet.divIcon({
@@ -64,12 +78,31 @@ const MapMarker = ({ index, markerColor, stackIndex, image, location, lat, lng, 
         locationString = location;
     }
 
+    const [markerRef, updateMarkerRef] = useState(useRef(null));
+
+    function _openPopup(_markerRef: MarkerRef) {
+        console.log('open popup', _markerRef?.current);
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        _markerRef?.current?.openPopup();
+    }
+
+    useEffect(() => {
+        console.log('markerRef', markerRef);
+        if (openPopup) {
+            _openPopup(markerRef);
+        }
+    }, []);
+
     return (
         <Marker
             position={[lat, lng]}
             icon={getMarkerIcon(markerColor)}
             zIndexOffset={-stackIndex} // alter ZIndex so markers show above other markers in order of stack
             onClick={() => {
+                console.log(markerRef);
                 logAnalytics({
                     category: analyticsEnum.map.title,
                     action: analyticsEnum.map.actions.CLICK_PIN,
