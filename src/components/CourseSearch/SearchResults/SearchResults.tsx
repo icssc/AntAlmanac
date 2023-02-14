@@ -1,6 +1,6 @@
 import { Box, IconButton } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Refresh as RefreshIcon } from '@mui/icons-material';
-import { flattenSOCObject } from '$lib/websoc'
+import { flattenSOCObject } from '$lib/websoc';
 import { useSearchStore } from '$stores/search';
 import { useSettingsStore } from '$stores/settings';
 import useWebsocQuery from '$hooks/useWebsocQuery';
@@ -17,10 +17,10 @@ export default function CourseList() {
 
   /**
    * when the store's value changes, getParams triggers a new query
+   * FIXME: this isn't fully reactive since it's a function, not a top level property;
+   * reactivity is triggered when properties change; functions don't change so they don't trigger re-renders
    */
-  const query = useWebsocQuery(getParams(), {
-    enabled: showResults,
-  });
+  const query = useWebsocQuery(getParams(), { enabled: showResults });
 
   const rawData = query.data;
   const transformedData = rawData ? flattenSOCObject(rawData) : [];
