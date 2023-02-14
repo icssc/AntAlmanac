@@ -1,18 +1,20 @@
 import '../../../../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js';
 
-import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
-import React, { PureComponent } from 'react';
-import { LeafletContext,Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
+import Leaflet, {Control, LeafletMouseEvent} from 'leaflet';
+import React, {PureComponent} from 'react';
+import {LeafletContext, Map, Marker, Polyline, TileLayer, withLeaflet} from 'react-leaflet';
 
-import analyticsEnum, { logAnalytics } from '../../../analytics';
+import analyticsEnum, {logAnalytics} from '../../../analytics';
 import AppStore from '../../../stores/AppStore';
-import { CalendarEvent, CourseEvent } from '../../Calendar/CourseCalendarEvent';
+import {CalendarEvent, CourseEvent} from '../../Calendar/CourseCalendarEvent';
+import RightPaneStore, {BuildingFocusInfo} from "../RightPaneStore";
 import locations from '../SectionTable/static/locations.json';
 import MapMarker from './MapMarker';
 import MapMenu from './MapMenu';
 import Building from './static/building';
 import buildingCatalogue from './static/buildingCatalogue';
-import { Coord, MapBoxResponse } from './static/mapbox';
+import {Coord, MapBoxResponse} from './static/mapbox';
+
 // TODO investigate less jank ways of doing this if at all possible
 
 class LocateControl extends PureComponent<{ leaflet: LeafletContext }> {
@@ -254,6 +256,55 @@ export default class UCIMap extends PureComponent {
         }
     };
 
+    locationDataFromBuildingCode = (buildingCode: string): {
+        name: string, lat: number, lng: number, imageURLs: string[]
+    } => {
+        // Get building code, get id of building code, which will get us the building data from buildingCatalogue
+        const id = locations[buildingCode as keyof typeof locations] as keyof typeof buildingCatalogue;
+        return buildingCatalogue[id];
+    }
+
+    highlightBuilding = (args: {name: string, lat: number, lng: number, imageURL: string | null}) => {
+        console.log(args);
+
+        const {name, lat, lng, imageURL } = args;
+
+        // Acronym, if it exists, is in between parentheses
+        const acronym = name.substring(
+            name.indexOf('(') + 1,
+            name.indexOf(')')
+        );
+
+        this.setState({
+            lat: lat,
+            lng: lng,
+            selected: name,
+            selected_acronym: acronym,
+            zoom: 18,
+            selected_img: imageURL,
+        });
+    }
+
+    selectBuilding = (buildingFocusInfo: BuildingFocusInfo) => {
+        console.log(buildingFocusInfo);
+
+        const buildingCodeMatch = buildingFocusInfo.location.match(/[^\d\s]+/);
+        if (!buildingCodeMatch) {
+            console.warn("Building code could not be parsed from: ", buildingFocusInfo.location);
+            return;
+        }
+
+        const buildingCode = buildingCodeMatch[0];
+        const locationData = this.locationDataFromBuildingCode(buildingCode);
+
+        this.highlightBuilding({
+            name: locationData.name,
+            lat: locationData.lat,
+            lng: locationData.lng,
+            imageURL: locationData.imageURLs.length > 0 ? locationData.imageURLs[0] : null,
+        });
+    }
+
     updateCurrentScheduleIndex = () => {
         this.createMarkers(this.state.day);
         void this.generateRoute(this.state.day);
@@ -275,11 +326,15 @@ export default class UCIMap extends PureComponent {
         this.createMarkers(this.state.day);
         AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.on('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
+
+        RightPaneStore.on('selectBuilding', this.selectBuilding);
+        RightPaneStore.emit('mapLoaded');
     };
 
     componentWillUnmount = () => {
         AppStore.removeListener('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.removeListener('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
+        RightPaneStore.removeListener('selectBuilding', this.selectBuilding);
     };
 
     createMarkers = (day: number) => {
@@ -318,9 +373,7 @@ export default class UCIMap extends PureComponent {
         const markers = [];
         const pins = this.state.pins;
         for (const buildingCode in pins) {
-            // Get building code, get id of building code, which will get us the building data from buildingCatalogue
-            const id = locations[buildingCode as keyof typeof locations] as keyof typeof buildingCatalogue;
-            const locationData = buildingCatalogue[id];
+            const locationData = this.locationDataFromBuildingCode(buildingCode);
             const courses = pins[buildingCode];
             for (let index = courses.length - 1; index >= 0; index--) {
                 const [event, eventIndex] = courses[index];
@@ -360,23 +413,11 @@ export default class UCIMap extends PureComponent {
 
     handleSearch = (event: React.ChangeEvent<unknown>, searchValue: Building | null) => {
         if (searchValue) {
-            // Acronym, if it exists, is in between parentheses
-            const acronym = searchValue.name.substring(
-                searchValue.name.indexOf('(') + 1,
-                searchValue.name.indexOf(')')
-            );
-
-            this.setState({
+            this.highlightBuilding({
+                name: searchValue.name,
                 lat: searchValue.lat,
                 lng: searchValue.lng,
-                selected: searchValue.name,
-                selected_acronym: acronym,
-                zoom: 18,
-            });
-
-            // If there is an image, add the image and url
-            this.setState({
-                selected_img: searchValue.imageURLs.length !== 0 ? searchValue.imageURLs[0] : null,
+                imageURL: searchValue.imageURLs.length > 0 ? searchValue.imageURLs[0] : null,
             });
         } else {
             this.setState({ selected: null, selected_img: null, selected_acronym: null });
