@@ -13,6 +13,8 @@ function notNull<T>(x: T): x is NonNullable<T> {
   return x != null;
 }
 
+export type CourseCalendarEvent = ReturnType<typeof getCourseCalendarEvents>;
+
 /**
  * converts current schedule's courses to calendar events
  */

@@ -3,6 +3,9 @@ import { Box, Tab, Tabs, useMediaQuery } from '@mui/material';
 import Calendar from '$components/Calendar';
 import CourseSearch from '$components/CourseSearch';
 import AddedCourses from '$components/AddedCourses';
+import Map from '$components/Map';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
 /**
  * home page
@@ -46,6 +49,7 @@ export default function Home() {
             </Tabs>
             {tab === 0 && <CourseSearch />}
             {tab === 1 && <AddedCourses />}
+            {tab === 2 && <Map />}
           </Box>
         )}
       </>
@@ -68,6 +72,7 @@ export default function Home() {
         </Tabs>
         {tab === 0 && <CourseSearch />}
         {tab === 1 && <AddedCourses />}
+        {tab === 2 && <Map />}
       </Box>
     </Box>
   );
