@@ -17,6 +17,9 @@ const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{
 
 const days = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
+/**
+ * map of all course locations on UCI campus
+ */
 export default function CourseMap() {
   const { schedules, scheduleIndex } = useScheduleStore();
   const [tab, setTab] = useState(0);
@@ -68,12 +71,10 @@ export default function CourseMap() {
         {today !== '' && startDestPairs.map((startDestPair) => {
           const latLngTuples = startDestPair.map((marker) => [marker.lat, marker.lng] as LatLngTuple);
           const color = startDestPair[0]?.color;
-
           /**
            * previous renders of the routes will be left behind if the keys aren't unique
            */
           const key = Math.random().toString(36).substring(7);
-
           return <CourseRoutes key={key} latLngTuples={latLngTuples} color={color} />;
         })}
 
