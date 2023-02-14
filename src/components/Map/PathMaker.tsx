@@ -44,9 +44,9 @@ export default function PathMaker(props: Props) {
     });
 
     /**
-     * plug in the plan into a router to draw
+     * plug in the plan into a new router
      */
-    const route = L.Routing.control({
+    const router = L.Routing.control({
       plan,
       routeWhileDragging: true,
       router: L.Routing.mapbox(ACCESS_TOKEN, {
@@ -65,15 +65,21 @@ export default function PathMaker(props: Props) {
           styles: [{ color: props.color }],
         });
       },
-    }).addTo(map);
+    })
+
+    router.addTo(map);
 
     /**
      * hides the textbox with the steps to navigate, e.g. {@link https://i.stack.imgur.com/4e6EJ.png}
      */
-    route.hide();
+    router.hide();
 
     return () => {
-      map.removeControl(route);
+      /**
+       * the map will live on after this component dies; 
+       * make sure the router (with all of the paths/lines) is removed with the component
+       */
+      router.remove()
     };
   }, []);
 
