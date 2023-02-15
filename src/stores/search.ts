@@ -8,7 +8,7 @@ import { getDefaultTerm } from '$lib/termData'
 /**
  * all form values
  */
-interface FormValues {
+export interface FormValues {
   deptValue: string
   deptLabel: string
   ge: string
