@@ -1,24 +1,57 @@
 {
-    "compilerOptions": {
-        "strict": true,
-        "jsx": "react-jsx",
-        "target": "esnext",
-        "module": "esnext",
-        "moduleResolution": "node",
-        "skipLibCheck": true,
-        "baseUrl": ".",
-        "outDir": "dist",
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true,
-        "importsNotUsedAsValues": "error",
-        "paths": {
-            "$components/*": ["src/components/*"],
-            "$hooks/*": ["src/hooks/*"],
-            "$lib/*": ["src/lib/*"],
-            "$providers/*": ["src/providers/*"],
-            "$stores/*": ["src/stores/*"],
-            "$types/*": ["src/types/*"],
-            "$routes/*": ["src/routes/*"],
-        }
-    }
+  "compilerOptions": {
+    "strict": true,
+    "jsx": "preserve",
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "outDir": "dist",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "importsNotUsedAsValues": "error",
+    "paths": {
+      "$components/*": [
+        "src/components/*"
+      ],
+      "$hooks/*": [
+        "src/hooks/*"
+      ],
+      "$lib/*": [
+        "src/lib/*"
+      ],
+      "$providers/*": [
+        "src/providers/*"
+      ],
+      "$stores/*": [
+        "src/stores/*"
+      ],
+      "$types/*": [
+        "src/types/*"
+      ],
+      "$routes/*": [
+        "src/routes/*"
+      ]
+    },
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "incremental": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

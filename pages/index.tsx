@@ -1,17 +1,10 @@
-/**
- * import all stylesheets here for the Vite React app
- * so that the rest of the app is compatible with NextJS
- */
-import 'react-big-calendar/lib/css/react-big-calendar.css'
-import 'leaflet-routing-machine/dist/leaflet-routing-machine.css'
-import '../components/Calendar/Calendar.css'
-
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { Box, Tab, Tabs, useMediaQuery } from '@mui/material'
-import Calendar from '$components/Calendar'
-import CourseSearch from '$components/CourseSearch'
-import AddedCourses from '$components/AddedCourses'
-import Map from '$components/Map'
+const Calendar = dynamic(() => import('$components/Calendar'), { ssr: false })
+const CourseSearch = dynamic(() => import('$components/CourseSearch'), { ssr: false })
+const AddedCourses = dynamic(() => import('$components/AddedCourses'), { ssr: false })
+const Map = dynamic(() => import('$components/Map'), { ssr: false })
 
 /**
  * home page

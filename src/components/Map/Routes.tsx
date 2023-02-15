@@ -3,7 +3,6 @@ import L from 'leaflet'
 import type { LatLngTuple } from 'leaflet'
 import { useMap } from 'react-leaflet'
 import 'leaflet-routing-machine'
-import 'leaflet-routing-machine/dist/leaflet-routing-machine.css'
 
 const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'
 

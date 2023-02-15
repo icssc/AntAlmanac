@@ -1,6 +1,3 @@
-import 'react-big-calendar/lib/css/react-big-calendar.css'
-import './Calendar.css'
-
 import dayjs from 'dayjs'
 import { useState, useRef } from 'react'
 import { Calendar, dayjsLocalizer, DateLocalizer, Views } from 'react-big-calendar'

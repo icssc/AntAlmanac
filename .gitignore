@@ -4,6 +4,7 @@ node_modules/
 # production
 build/
 dist/
+.next
 
 # OS configs
 .DS_Store

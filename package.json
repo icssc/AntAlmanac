@@ -11,7 +11,7 @@
         "build": "vite build",
         "preview": "vite preview",
         "start": "serve dist",
-        "format": "prettier --write src",
+        "format": "prettier --write src pages",
         "lint": "eslint src/**/*.tsx"
     },
     "dependencies": {
@@ -28,6 +28,7 @@
         "leaflet": "^1.9.3",
         "leaflet-routing-machine": "^3.2.12",
         "leaflet.locatecontrol": "^0.79.0",
+        "next": "^13.1.6",
         "notistack": "^2.0.8",
         "react": "^18.2.0",
         "react-big-calendar": "^1.6.4",
