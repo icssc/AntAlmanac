@@ -4,9 +4,9 @@ import React, { PureComponent } from 'react';
 import ReactGA4 from 'react-ga4';
 import { BrowserRouter, Route,Routes } from 'react-router-dom';
 
-import { undoDelete } from '../actions/AppStoreActions';
+import { undoDelete } from '$actions/AppStoreActions';
 import { isDarkMode } from '../helpers';
-import AppStore from '../stores/AppStore';
+import AppStore from '$stores/AppStore';
 import Home from './Home';
 
 class App extends PureComponent {
