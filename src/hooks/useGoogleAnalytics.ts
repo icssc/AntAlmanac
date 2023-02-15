@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
-import ReactGA4 from 'react-ga4';
+import { useEffect } from 'react'
+import ReactGA4 from 'react-ga4'
 
 /**
  * initializes ReactGA4
  */
 export default function useGoogleAnalytics() {
   useEffect(() => {
-    ReactGA4.initialize('G-30HVJXC2Y4');
-    ReactGA4.send('pageview');
-  }, []);
+    ReactGA4.initialize('G-30HVJXC2Y4')
+    ReactGA4.send('pageview')
+  }, [])
 }

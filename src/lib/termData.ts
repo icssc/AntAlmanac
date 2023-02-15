@@ -1,14 +1,14 @@
 // The index of the default term in termData, as per WebSOC
-const defaultTerm = 0;
+const defaultTerm = 0
 
 class Term {
-  shortName: `${string} ${string}`;
-  longName: string;
-  startDate?: [number, number, number];
+  shortName: `${string} ${string}`
+  longName: string
+  startDate?: [number, number, number]
   constructor(shortName: `${string} ${string}`, longName: string, startDate?: [number, number, number]) {
-    this.shortName = shortName;
-    this.longName = longName;
-    this.startDate = startDate;
+    this.shortName = shortName
+    this.longName = longName
+    this.startDate = startDate
   }
 }
 
@@ -66,11 +66,11 @@ const termData = [
   new Term('2015 Spring', '2015 Spring Quarter'),
   new Term('2015 Winter', '2015 Winter Quarter'),
   new Term('2014 Fall', '2014 Fall Quarter'),
-];
+]
 
 //returns the default term
 function getDefaultTerm() {
-  return termData[defaultTerm];
+  return termData[defaultTerm]
 }
 
-export { defaultTerm, getDefaultTerm, termData };
+export { defaultTerm, getDefaultTerm, termData }

@@ -1,5 +1,5 @@
-import { useSnackbar } from 'notistack';
-import { Delete as DeleteIcon } from '@mui/icons-material';
+import { useSnackbar } from 'notistack'
+import { Delete as DeleteIcon } from '@mui/icons-material'
 import {
   Box,
   IconButton,
@@ -12,50 +12,50 @@ import {
   TableRow,
   Tooltip,
   Typography,
-} from '@mui/material';
-import { analyticsEnum, logAnalytics } from '$lib/analytics';
-import { deleteCourse } from '$stores/schedule/course';
-import type { getCourseCalendarEvents } from '$stores/schedule/calendar';
-import ColorPicker from '$components/Buttons/ColorPicker';
-import locations from '$lib/locations';
+} from '@mui/material'
+import { analyticsEnum, logAnalytics } from '$lib/analytics'
+import { deleteCourse } from '$stores/schedule/course'
+import type { getCourseCalendarEvents } from '$stores/schedule/calendar'
+import ColorPicker from '$components/Buttons/ColorPicker'
+import locations from '$lib/locations'
 
 function genMapLink(location: string) {
   try {
-    const location_id = locations[location.split(' ')[0] as keyof typeof locations];
-    return `https://map.uci.edu/?id=463#!m/${location_id}`;
+    const location_id = locations[location.split(' ')[0] as keyof typeof locations]
+    return `https://map.uci.edu/?id=463#!m/${location_id}`
   } catch (err) {
-    return 'https://map.uci.edu/';
+    return 'https://map.uci.edu/'
   }
 }
 
-type CalendarCourseEvent = ReturnType<typeof getCourseCalendarEvents>[number];
+type CalendarCourseEvent = ReturnType<typeof getCourseCalendarEvents>[number]
 
 interface CourseCalendarEventProps {
-  event: CalendarCourseEvent;
-  closePopover: () => void;
+  event: CalendarCourseEvent
+  closePopover: () => void
 }
 
 export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
-  const { term, instructors, sectionCode, title, finalExam, bldg } = props.event;
-  const { enqueueSnackbar } = useSnackbar();
+  const { term, instructors, sectionCode, title, finalExam, bldg } = props.event
+  const { enqueueSnackbar } = useSnackbar()
 
   function handleClickCopy(e: React.MouseEvent<HTMLElement, MouseEvent>) {
-    e.stopPropagation();
-    e.preventDefault();
+    e.stopPropagation()
+    e.preventDefault()
     logAnalytics({
       category: analyticsEnum.calendar.title,
       action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
-    });
-    navigator.clipboard.writeText(sectionCode);
-    enqueueSnackbar('Section code copied to clipboard', { variant: 'success' });
+    })
+    navigator.clipboard.writeText(sectionCode)
+    enqueueSnackbar('Section code copied to clipboard', { variant: 'success' })
   }
 
   function handleDelete() {
-    deleteCourse(sectionCode, term);
+    deleteCourse(sectionCode, term)
     logAnalytics({
       category: analyticsEnum.calendar.title,
       action: analyticsEnum.calendar.actions.DELETE_COURSE,
-    });
+    })
   }
 
   return (
@@ -121,5 +121,5 @@ export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
         </Table>
       </TableContainer>
     </Paper>
-  );
+  )
 }

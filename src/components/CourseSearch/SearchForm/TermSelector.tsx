@@ -1,14 +1,14 @@
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-import type { SelectChangeEvent } from '@mui/material';
-import { useSearchStore } from '$stores/search';
-import { termData } from '$lib/termData';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material'
+import type { SelectChangeEvent } from '@mui/material'
+import { useSearchStore } from '$stores/search'
+import { termData } from '$lib/termData'
 
 export default function TermSelector() {
-  const term = useSearchStore((store) => store.form.term);
-  const setField = useSearchStore((store) => store.setField);
+  const term = useSearchStore((store) => store.form.term)
+  const setField = useSearchStore((store) => store.setField)
 
   function handleChange(e: SelectChangeEvent<string>) {
-    setField('term', e.target.value);
+    setField('term', e.target.value)
   }
 
   return (
@@ -22,5 +22,5 @@ export default function TermSelector() {
         ))}
       </Select>
     </FormControl>
-  );
+  )
 }

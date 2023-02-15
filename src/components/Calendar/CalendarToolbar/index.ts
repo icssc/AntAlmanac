@@ -1,1 +1,1 @@
-export { default } from './CalendarToolbar';
+export { default } from './CalendarToolbar'

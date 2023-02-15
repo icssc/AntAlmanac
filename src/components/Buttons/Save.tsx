@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   Button,
   Checkbox,
@@ -9,40 +9,40 @@ import {
   DialogTitle,
   FormControlLabel,
   TextField,
-} from '@mui/material';
-import { Save as SaveIcon } from '@mui/icons-material';
-import { useSettingsStore } from '$stores/settings';
-import { useSaveSchedule } from '$stores/schedule/save';
+} from '@mui/material'
+import { Save as SaveIcon } from '@mui/icons-material'
+import { useSettingsStore } from '$stores/settings'
+import { useSaveSchedule } from '$stores/schedule/save'
 
 /**
  * button that opens up a dialog to save a schedule
  */
 export default function SaveScheduleButton() {
-  const [open, setOpen] = useState(false);
-  const [userId, setUserId] = useState('');
-  const [remember, setRemember] = useState(false);
-  const saveSchedule = useSaveSchedule();
-  const isDarkMode = useSettingsStore((store) => store.isDarkMode);
+  const [open, setOpen] = useState(false)
+  const [userId, setUserId] = useState('')
+  const [remember, setRemember] = useState(false)
+  const saveSchedule = useSaveSchedule()
+  const isDarkMode = useSettingsStore((store) => store.isDarkMode)
 
   async function handleSubmit() {
-    await saveSchedule(userId, remember);
-    setOpen(false);
+    await saveSchedule(userId, remember)
+    setOpen(false)
   }
 
   function handleCancel() {
-    setOpen(false);
+    setOpen(false)
   }
 
   function handleClick() {
-    setOpen(true);
+    setOpen(true)
   }
 
   function handleChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
-    setUserId(e.target.value);
+    setUserId(e.target.value)
   }
 
   function handleChecked(e: React.ChangeEvent<HTMLInputElement>) {
-    setRemember(e.target.checked);
+    setRemember(e.target.checked)
   }
 
   return (
@@ -78,5 +78,5 @@ export default function SaveScheduleButton() {
         </DialogActions>
       </Dialog>
     </>
-  );
+  )
 }

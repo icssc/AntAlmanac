@@ -1,7 +1,7 @@
-import { AppBar, Button, Toolbar } from '@mui/material';
-import { Assignment as AssignmentIcon } from '@mui/icons-material';
-import LoadButton from '$components/Buttons/Load';
-import SaveScheduleButton from '$components/Buttons/Save';
+import { AppBar, Button, Toolbar } from '@mui/material'
+import { Assignment as AssignmentIcon } from '@mui/icons-material'
+import LoadButton from '$components/Buttons/Load'
+import SaveScheduleButton from '$components/Buttons/Save'
 
 export default function ActionsBar() {
   return (
@@ -14,5 +14,5 @@ export default function ActionsBar() {
         </Button>
       </Toolbar>
     </AppBar>
-  );
+  )
 }

@@ -1,6 +1,6 @@
-import { Box } from '@mui/material';
-import TermSelector from './TermSelector';
-import FuzzySearch from './FuzzySearch';
+import { Box } from '@mui/material'
+import TermSelector from './TermSelector'
+import FuzzySearch from './FuzzySearch'
 
 export default function SearchForm() {
   return (
@@ -8,5 +8,5 @@ export default function SearchForm() {
       <TermSelector />
       <FuzzySearch />
     </Box>
-  );
+  )
 }

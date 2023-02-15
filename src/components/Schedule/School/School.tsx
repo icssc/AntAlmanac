@@ -1,9 +1,9 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Grid, Paper, Typography } from '@mui/material';
-import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
-import type { School } from '$types/peterportal';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Grid, Paper, Typography } from '@mui/material'
+import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material'
+import type { School } from '$types/peterportal'
 
 interface Props {
-  school: School;
+  school: School
 }
 
 /**
@@ -26,5 +26,5 @@ export default function SchoolDeptCard({ school }: Props) {
         </Accordion>
       </Paper>
     </Grid>
-  );
+  )
 }

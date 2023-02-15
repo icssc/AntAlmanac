@@ -2,8 +2,8 @@
  * basic schedule store with primitive accessors
  */
 
-import { create } from 'zustand';
-import type { AASection } from '$types/peterportal';
+import { create } from 'zustand'
+import type { AASection } from '$types/peterportal'
 
 /** There is another CustomEvent interface in CourseCalendarEvent and they are slightly different.
  * This one encapsulates the occurences of an event on multiple days,
@@ -14,42 +14,42 @@ import type { AASection } from '$types/peterportal';
  */
 
 export interface RepeatingCustomEvent {
-  title: string;
-  start: string;
-  end: string;
-  days: boolean[];
-  customEventID: number;
-  color?: string;
+  title: string
+  start: string
+  end: string
+  days: boolean[]
+  customEventID: number
+  color?: string
 }
 
 /**
  * course
  */
 export interface Course {
-  courseComment: string;
-  courseNumber: string; //i.e. 122a
-  courseTitle: string;
-  deptCode: string;
-  prerequisiteLink: string;
-  section: AASection;
-  term: string;
+  courseComment: string
+  courseNumber: string //i.e. 122a
+  courseTitle: string
+  deptCode: string
+  prerequisiteLink: string
+  section: AASection
+  term: string
 }
 
 /**
  * schedule
  */
 export interface Schedule {
-  scheduleName: string;
-  courses: Course[];
-  customEvents: RepeatingCustomEvent[];
+  scheduleName: string
+  courses: Course[]
+  customEvents: RepeatingCustomEvent[]
 }
 
 /**
  * schedule undo state
  */
 export interface ScheduleUndoState {
-  schedules: Schedule[];
-  scheduleIndex: number;
+  schedules: Schedule[]
+  scheduleIndex: number
 }
 
 /**
@@ -59,17 +59,17 @@ interface ScheduleStore {
   /**
    * all schedules
    */
-  schedules: Schedule[];
+  schedules: Schedule[]
 
   /**
    * index of currently selected schedule
    */
-  scheduleIndex: number;
+  scheduleIndex: number
 
   /**
    * undo tree
    */
-  previousStates: ScheduleUndoState[];
+  previousStates: ScheduleUndoState[]
 }
 
 /**
@@ -81,4 +81,4 @@ export const useScheduleStore = create<ScheduleStore>((_set, _get) => ({
   scheduleIndex: 0,
 
   previousStates: [],
-}));
+}))

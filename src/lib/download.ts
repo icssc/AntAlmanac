@@ -1,36 +1,36 @@
-import { termData } from '$lib/termData';
-import type { Course } from '$stores/schedule';
+import { termData } from '$lib/termData'
+import type { Course } from '$stores/schedule'
 
 const quarterStartDates = Object.fromEntries(
   termData
     .filter((term) => term.startDate !== undefined)
     .map((term) => [term.shortName, term.startDate as [number, number, number]])
-);
+)
 
-const months: Record<string, number> = { Mar: 3, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Dec: 12 };
+const months: Record<string, number> = { Mar: 3, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Dec: 12 }
 
-const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
+const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const
 
-const daysOffset: Record<string, number> = { SU: -1, MO: 0, TU: 1, WE: 2, TH: 3, FR: 4, SA: 5 };
+const daysOffset: Record<string, number> = { SU: -1, MO: 0, TU: 1, WE: 2, TH: 3, FR: 4, SA: 5 }
 
-const fallDaysOffset: Record<string, number> = { TH: 0, FR: 1, SA: 2, SU: 3, MO: 4, TU: 5, WE: 6 };
+const fallDaysOffset: Record<string, number> = { TH: 0, FR: 1, SA: 2, SU: 3, MO: 4, TU: 5, WE: 6 }
 
-const translateDaysForIcs = { Su: 'SU', M: 'MO', Tu: 'TU', W: 'WE', Th: 'TH', F: 'FR', Sa: 'SA' };
+const translateDaysForIcs = { Su: 'SU', M: 'MO', Tu: 'TU', W: 'WE', Th: 'TH', F: 'FR', Sa: 'SA' }
 
 /**
  * [YEAR, MONTH, DAY, HOUR, MINUTE]
  */
-type DateTimeArray = [number, number, number, number, number];
+type DateTimeArray = [number, number, number, number, number]
 
 /**
  * [YEAR, MONTH, DAY]
  */
-type YearMonthDay = [number, number, number];
+type YearMonthDay = [number, number, number]
 
 /**
  * [HOUR, MINUTE]
  */
-type HourMinute = [number, number];
+type HourMinute = [number, number]
 
 /**
  * convert Date to ICS format [YYYY, MM, DD]
@@ -40,8 +40,8 @@ function dateToIcs(date: Date) {
     date.getFullYear(),
     date.getMonth() + 1, // Month is 0-indexed; add 1
     date.getDate(),
-  ];
-  return icsDate;
+  ]
+  return icsDate
 }
 
 /**
@@ -51,7 +51,7 @@ function dateToIcs(date: Date) {
  */
 
 function getByDays(days: string) {
-  return daysOfWeek.filter((day) => days.includes(day)).map((day) => translateDaysForIcs[day]);
+  return daysOfWeek.filter((day) => days.includes(day)).map((day) => translateDaysForIcs[day])
 }
 
 /**
@@ -59,8 +59,8 @@ function getByDays(days: string) {
  * @example "2019 Fall" -> "Fall"
  */
 const getQuarter = (term: string) => {
-  return term.split(' ')[1];
-};
+  return term.split(' ')[1]
+}
 
 /**
  * getClassStartDate returns the start date of a class
@@ -71,7 +71,7 @@ function getClassStartDate(term: string, bydays: string[]) {
   /**
    * start date of the quarter (Monday)
    */
-  const quarterStartDate = new Date(...quarterStartDates[term]);
+  const quarterStartDate = new Date(...quarterStartDates[term])
 
   /**
    * number of days since the start of the quarter
@@ -79,15 +79,15 @@ function getClassStartDate(term: string, bydays: string[]) {
   const dayOffset =
     getQuarter(term) === 'Fall'
       ? fallDaysOffset[bydays.sort((day1, day2) => fallDaysOffset[day1] - fallDaysOffset[day2])[0]]
-      : daysOffset[bydays[0]];
+      : daysOffset[bydays[0]]
 
   /**
    * add the dayOffset to the quarterStartDate
    * Date object will handle potential overflow into the next month
    */
-  quarterStartDate.setDate(quarterStartDate.getDate() + dayOffset);
+  quarterStartDate.setDate(quarterStartDate.getDate() + dayOffset)
 
-  return dateToIcs(quarterStartDate);
+  return dateToIcs(quarterStartDate)
 }
 
 /**
@@ -97,15 +97,15 @@ function getClassStartDate(term: string, bydays: string[]) {
  */
 function parseTimes(time: string) {
   // Determine whether the time is in the afternoon (PM)
-  let pm = false;
+  let pm = false
   if (time.slice(-1) === 'p') {
     // Course time strings would end with a 'p'
-    time = time.substring(0, time.length - 1); // Remove 'p' from the end
-    pm = true;
+    time = time.substring(0, time.length - 1) // Remove 'p' from the end
+    pm = true
   } else if (time.slice(-2) === 'pm') {
     // Final Exam time strings would end with a 'pm'
-    time = time.substring(0, time.length - 2); // Remove 'pm' from the end
-    pm = true;
+    time = time.substring(0, time.length - 2) // Remove 'pm' from the end
+    pm = true
   }
 
   // Get the [start, end] times in [hour, minute] format
@@ -116,7 +116,7 @@ function parseTimes(time: string) {
         timeString
           .split(':') // Ex: [[" 4", "00"], ["4", "50"]]
           .map((val) => parseInt(val)) as HourMinute // Ex: [[4, 0], [4, 50]]
-    );
+    )
 
   // Add 12 hours if the time is PM
   // However don't add 12 if it is noon
@@ -126,22 +126,22 @@ function parseTimes(time: string) {
     //  E.g. 11:00-12:00 => don't add 12 to start
     //  E.g. 1:00-2:00 => add 12 to start
     if (start[0] <= end[0]) {
-      start[0] += 12;
+      start[0] += 12
     }
-    end[0] += 12;
+    end[0] += 12
   }
 
-  return [start, end] as const;
+  return [start, end] as const
 }
 
 function getExamTime(exam: string, year: number) {
-  const [, month, day, time] = exam.split(' ');
-  const [examStartTime, examEndTime] = parseTimes(time);
+  const [, month, day, time] = exam.split(' ')
+  const [examStartTime, examEndTime] = parseTimes(time)
 
   return [
     [year, months[month], parseInt(day), ...examStartTime],
     [year, months[month], parseInt(day), ...examEndTime],
-  ];
+  ]
 }
 
 /**
@@ -149,7 +149,7 @@ function getExamTime(exam: string, year: number) {
  * @example "2019 Fall" -> "2019"
  */
 function getYear(term: string) {
-  return parseInt(term.split(' ')[0]);
+  return parseInt(term.split(' ')[0])
 }
 
 /**
@@ -158,7 +158,7 @@ function getYear(term: string) {
  * and 5 for Summer Sessions I and II
  */
 function getTermLength(quarter: string) {
-  return quarter.startsWith('Summer') && quarter !== 'Summer10wk' ? 5 : 10;
+  return quarter.startsWith('Summer') && quarter !== 'Summer10wk' ? 5 : 10
 }
 
 /**
@@ -166,11 +166,11 @@ function getTermLength(quarter: string) {
  * @example ([2021, 3, 30], " 4:00-4:50p") -> [[2021, 3, 30, 16, 0], [2021, 3, 30, 16, 50]]
  */
 function getFirstClass(date: YearMonthDay, time: string): [DateTimeArray, DateTimeArray] {
-  const [classStartTime, classEndTime] = parseTimes(time);
+  const [classStartTime, classEndTime] = parseTimes(time)
   return [
     [...date, ...classStartTime],
     [...date, ...classEndTime],
-  ];
+  ]
 }
 
 /**
@@ -178,7 +178,7 @@ function getFirstClass(date: YearMonthDay, time: string): [DateTimeArray, DateTi
  * @example ["TU", "TH"] -> "FREQ=WEEKLY;BYDAY=TU,TH;INTERVAL=1;COUNT=20"
  */
 function getRRule(bydays: ReturnType<typeof getByDays>, quarter: string) {
-  let count = getTermLength(quarter) * bydays.length; // Number of occurences in the quarter
+  let count = getTermLength(quarter) * bydays.length // Number of occurences in the quarter
   switch (quarter) {
     case 'Fall':
       for (const byday of bydays) {
@@ -186,28 +186,28 @@ function getRRule(bydays: ReturnType<typeof getByDays>, quarter: string) {
           case 'TH':
           case 'FR':
           case 'SA':
-            count += 1; // account for Week 0 course meetings
-            break;
+            count += 1 // account for Week 0 course meetings
+            break
           default:
-            break;
+            break
         }
       }
-      break;
+      break
     case 'Summer1':
-      if (bydays.includes('MO')) count += 1; // instruction ends Monday of Week 6
-      break;
+      if (bydays.includes('MO')) count += 1 // instruction ends Monday of Week 6
+      break
     case 'Summer10wk':
-      if (bydays.includes('FR')) count -= 1; // instruction ends Thursday of Week 10
-      break;
+      if (bydays.includes('FR')) count -= 1 // instruction ends Thursday of Week 10
+      break
     default:
-      break;
+      break
   }
-  return `FREQ=WEEKLY;BYDAY=${bydays.toString()};INTERVAL=1;COUNT=${count}`;
+  return `FREQ=WEEKLY;BYDAY=${bydays.toString()};INTERVAL=1;COUNT=${count}`
 }
 
 export function getEventsFromCourses(courses: Course[]) {
   // Construct an array of VEvents for each event
-  const events = [];
+  const events = []
   for (const course of courses) {
     const {
       term,
@@ -215,18 +215,18 @@ export function getEventsFromCourses(courses: Course[]) {
       courseNumber,
       courseTitle,
       section: { sectionType, instructors, meetings, finalExam },
-    } = course;
+    } = course
 
     // Create a VEvent for each meeting
     for (const meeting of meetings) {
       if (meeting.time === 'TBA') {
         // Skip this meeting if there is no meeting time
-        continue;
+        continue
       }
-      const bydays = getByDays(meeting.days);
-      const classStartDate = getClassStartDate(term, bydays);
-      const [firstClassStart, firstClassEnd] = getFirstClass(classStartDate, meeting.time);
-      const rrule = getRRule(bydays, getQuarter(term));
+      const bydays = getByDays(meeting.days)
+      const classStartDate = getClassStartDate(term, bydays)
+      const [firstClassStart, firstClassEnd] = getFirstClass(classStartDate, meeting.time)
+      const rrule = getRRule(bydays, getQuarter(term))
 
       // Add VEvent to events array
       events.push({
@@ -239,12 +239,12 @@ export function getEventsFromCourses(courses: Course[]) {
         start: firstClassStart as DateTimeArray,
         end: firstClassEnd as DateTimeArray,
         recurrenceRule: rrule,
-      });
+      })
     }
 
     // Add Final to events
     if (finalExam && finalExam !== 'TBA') {
-      const [examStart, examEnd] = getExamTime(finalExam, getYear(term));
+      const [examStart, examEnd] = getExamTime(finalExam, getYear(term))
       events.push({
         productId: 'antalmanac/ics',
         startOutputType: 'local' as const,
@@ -253,10 +253,10 @@ export function getEventsFromCourses(courses: Course[]) {
         description: `Final Exam for ${courseTitle}`,
         start: examStart as DateTimeArray,
         end: examEnd as DateTimeArray,
-      });
+      })
     }
   }
-  return events;
+  return events
 }
 
 export const vTimeZoneSection =
@@ -278,4 +278,4 @@ export const vTimeZoneSection =
   'RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU\n' +
   'END:STANDARD\n' +
   'END:VTIMEZONE\n' +
-  'BEGIN:VEVENT';
+  'BEGIN:VEVENT'

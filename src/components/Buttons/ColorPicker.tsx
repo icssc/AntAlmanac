@@ -1,64 +1,64 @@
-import { useState } from 'react';
-import { SketchPicker } from 'react-color';
-import type { ColorResult } from 'react-color';
-import { ColorLens } from '@mui/icons-material';
-import { IconButton, Popover } from '@mui/material';
-import { changeCourseColor } from '$stores/schedule/course';
-import { changeCustomEventColor } from '$stores/schedule/custom';
-import { analyticsEnum, logAnalytics } from '$lib/analytics';
+import { useState } from 'react'
+import { SketchPicker } from 'react-color'
+import type { ColorResult } from 'react-color'
+import { ColorLens } from '@mui/icons-material'
+import { IconButton, Popover } from '@mui/material'
+import { changeCourseColor } from '$stores/schedule/course'
+import { changeCustomEventColor } from '$stores/schedule/custom'
+import { analyticsEnum, logAnalytics } from '$lib/analytics'
 
 interface Props {
-  color: string;
-  analyticsCategory: string;
+  color: string
+  analyticsCategory: string
 
-  term?: string;
+  term?: string
 
   /**
    * true: this object has a customEventID
    * false: this object has a term and sectionCode.
    */
-  isCustomEvent?: boolean;
+  isCustomEvent?: boolean
 
   /**
    * Not undefined when isCustomEvent is true
    */
-  customEventID?: number;
+  customEventID?: number
 
   /**
    * Not undefined  when isCustomEvent is false
    */
-  sectionCode?: string;
+  sectionCode?: string
 }
 
 /**
  * color picker button that changes the color of the provided course or custom event
  */
 export default function ColorPicker(props: Props) {
-  const [color, setColor] = useState(props.color);
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [color, setColor] = useState(props.color)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
-    e.stopPropagation();
-    setAnchorEl(e?.currentTarget);
+    e.stopPropagation()
+    setAnchorEl(e?.currentTarget)
     logAnalytics({
       category: props.analyticsCategory,
       action: analyticsEnum.calendar.actions.CHANGE_COURSE_COLOR,
-    });
+    })
   }
 
   function handleClose(e: React.MouseEvent) {
-    e.stopPropagation();
-    setAnchorEl(null);
+    e.stopPropagation()
+    setAnchorEl(null)
   }
 
   function handleColorChange(e: ColorResult) {
     if (props.customEventID) {
-      changeCustomEventColor(props.customEventID, e.hex);
+      changeCustomEventColor(props.customEventID, e.hex)
     }
     if (props.sectionCode && props.term) {
-      changeCourseColor(props.sectionCode, props.term, e.hex);
+      changeCourseColor(props.sectionCode, props.term, e.hex)
     }
-    setColor(e.hex);
+    setColor(e.hex)
   }
 
   return (
@@ -76,5 +76,5 @@ export default function ColorPicker(props: Props) {
         <SketchPicker color={color} onChange={handleColorChange} />
       </Popover>
     </>
-  );
+  )
 }

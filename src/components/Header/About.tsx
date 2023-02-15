@@ -1,25 +1,25 @@
-import { useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@mui/material';
-import { Info } from '@mui/icons-material';
-import { analyticsEnum, logAnalytics } from '$lib/analytics';
+import { useState } from 'react'
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@mui/material'
+import { Info } from '@mui/icons-material'
+import { analyticsEnum, logAnalytics } from '$lib/analytics'
 
 /**
  * button that opens a modal with information about the app
  */
 export default function AboutModal() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
   function openAbout() {
-    setOpen(true);
+    setOpen(true)
     logAnalytics({
       category: analyticsEnum.nav.title,
       action: analyticsEnum.nav.actions.CLICK_ABOUT,
-    });
+    })
   }
 
   function closeAbout(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    e.stopPropagation();
-    setOpen(false);
+    e.stopPropagation()
+    setOpen(false)
   }
 
   return (
@@ -68,5 +68,5 @@ export default function AboutModal() {
         </DialogActions>
       </Dialog>
     </>
-  );
+  )
 }

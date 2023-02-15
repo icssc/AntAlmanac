@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { Button, Popover } from '@mui/material';
-import { analyticsEnum, logAnalytics } from '$lib/analytics';
+import { useState } from 'react'
+import { Button, Popover } from '@mui/material'
+import { analyticsEnum, logAnalytics } from '$lib/analytics'
 
 interface Props {
-  title: string;
-  href?: string;
-  icon: React.ReactElement;
-  children?: React.ReactElement;
-  analyticsAction: string;
+  title: string
+  href?: string
+  icon: React.ReactElement
+  children?: React.ReactElement
+  analyticsAction: string
 }
 
 /**
@@ -15,22 +15,22 @@ interface Props {
  * or link to another page with more info (if href is provided)
  */
 export default function CourseReferenceButton(props: Props) {
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
     logAnalytics({
       category: analyticsEnum.classSearch.title,
       action: props.analyticsAction,
-    });
+    })
     if (props.href) {
-      window.open(props.href);
+      window.open(props.href)
     } else {
-      setAnchorEl(event.currentTarget);
+      setAnchorEl(event.currentTarget)
     }
   }
 
   function handleClose() {
-    setAnchorEl(null);
+    setAnchorEl(null)
   }
 
   return (
@@ -48,5 +48,5 @@ export default function CourseReferenceButton(props: Props) {
         {props.children}
       </Popover>
     </>
-  );
+  )
 }

@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Brightness4 as Brightness4Icon } from '@mui/icons-material';
-import { Button, FormControl, FormControlLabel, Paper, Popover, Radio, RadioGroup } from '@mui/material';
-import { useSettingsStore } from '$stores/settings';
+import { useState } from 'react'
+import { Brightness4 as Brightness4Icon } from '@mui/icons-material'
+import { Button, FormControl, FormControlLabel, Paper, Popover, Radio, RadioGroup } from '@mui/material'
+import { useSettingsStore } from '$stores/settings'
 
 /**
  * button that opens a popover with a radio group to change the color scheme
@@ -10,23 +10,23 @@ export default function SettingsMenu() {
   /**
    * use the color scheme from the store
    */
-  const { colorScheme, setColorScheme } = useSettingsStore();
+  const { colorScheme, setColorScheme } = useSettingsStore()
 
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
   /**
    * update the global color scheme when a radio button is clicked
    */
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setColorScheme(e.target.value);
+    setColorScheme(e.target.value)
   }
 
   function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    setAnchorEl(e.currentTarget);
+    setAnchorEl(e.currentTarget)
   }
 
   function handleClose() {
-    setAnchorEl(null);
+    setAnchorEl(null)
   }
 
   return (
@@ -58,5 +58,5 @@ export default function SettingsMenu() {
         </Paper>
       </Popover>
     </>
-  );
+  )
 }

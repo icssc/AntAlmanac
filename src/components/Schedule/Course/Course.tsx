@@ -1,11 +1,11 @@
-import { Box } from '@mui/material';
-import type { AACourse } from '$types/peterportal';
-import CourseHead from './CourseHead';
-import CourseBody from './CourseBody';
+import { Box } from '@mui/material'
+import type { AACourse } from '$types/peterportal'
+import CourseHead from './CourseHead'
+import CourseBody from './CourseBody'
 
 interface Props {
-  course: AACourse;
-  term?: string;
+  course: AACourse
+  term?: string
 }
 
 /**
@@ -17,5 +17,5 @@ export default function Course({ course, term }: Props) {
       <CourseHead course={course} term={term} />
       <CourseBody course={course} term={term} />
     </Box>
-  );
+  )
 }

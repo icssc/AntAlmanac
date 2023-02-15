@@ -17,4 +17,4 @@ export default {
   S: 'S: Satisfactory/Unsatisfactory only',
   B: 'B: Authorization code required',
   L: 'L: Major only',
-} as Record<string, string>;
+} as Record<string, string>

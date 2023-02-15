@@ -1,30 +1,30 @@
-import { useState } from 'react';
-import { Box, Tab, Tabs, useMediaQuery } from '@mui/material';
-import Calendar from '$components/Calendar';
-import CourseSearch from '$components/CourseSearch';
-import AddedCourses from '$components/AddedCourses';
-import Map from '$components/Map';
+import { useState } from 'react'
+import { Box, Tab, Tabs, useMediaQuery } from '@mui/material'
+import Calendar from '$components/Calendar'
+import CourseSearch from '$components/CourseSearch'
+import AddedCourses from '$components/AddedCourses'
+import Map from '$components/Map'
 
 /**
  * home page
  */
 export default function Home() {
-  const isMobileScreen = useMediaQuery('(max-width:750px)');
-  const [mobileTab, setMobileTab] = useState(0);
-  const [tab, setTab] = useState(0);
+  const isMobileScreen = useMediaQuery('(max-width:750px)')
+  const [mobileTab, setMobileTab] = useState(0)
+  const [tab, setTab] = useState(0)
 
   /**
    * on mobile, switch between calendar and classes panel
    */
   function handleMobileTabChange(_event: React.SyntheticEvent, newValue: number) {
-    setMobileTab(newValue);
+    setMobileTab(newValue)
   }
 
   /**
    * switch between tabs within the classes panel
    */
   function handleTabChange(_event: React.SyntheticEvent, newValue: number) {
-    setTab(newValue);
+    setTab(newValue)
   }
 
   /**
@@ -53,7 +53,7 @@ export default function Home() {
           )}
         </Box>
       </>
-    );
+    )
   }
 
   /**
@@ -76,5 +76,5 @@ export default function Home() {
         {tab === 2 && <Map />}
       </Box>
     </Box>
-  );
+  )
 }

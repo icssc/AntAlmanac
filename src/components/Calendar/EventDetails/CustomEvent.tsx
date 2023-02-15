@@ -1,32 +1,32 @@
-import { Delete as DeleteIcon } from '@mui/icons-material';
-import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material';
-import { analyticsEnum, logAnalytics } from '$lib/analytics';
-import { useScheduleStore } from '$stores/schedule';
-import { deleteCustomEvent } from '$stores/schedule/custom';
-import type { getCustomCalendarEvents } from '$stores/schedule/calendar';
-import CustomEventButton from '$components/Buttons/CustomEvent';
-import ColorPicker from '$components/Buttons/ColorPicker';
+import { Delete as DeleteIcon } from '@mui/icons-material'
+import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material'
+import { analyticsEnum, logAnalytics } from '$lib/analytics'
+import { useScheduleStore } from '$stores/schedule'
+import { deleteCustomEvent } from '$stores/schedule/custom'
+import type { getCustomCalendarEvents } from '$stores/schedule/calendar'
+import CustomEventButton from '$components/Buttons/CustomEvent'
+import ColorPicker from '$components/Buttons/ColorPicker'
 
-type CalendarCustomEvent = ReturnType<typeof getCustomCalendarEvents>[number];
+type CalendarCustomEvent = ReturnType<typeof getCustomCalendarEvents>[number]
 
 interface CourseCalendarEventProps {
-  event: CalendarCustomEvent;
-  closePopover: () => void;
+  event: CalendarCustomEvent
+  closePopover: () => void
 }
 
 export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
-  const { schedules, scheduleIndex } = useScheduleStore();
+  const { schedules, scheduleIndex } = useScheduleStore()
 
-  const schedule = schedules[scheduleIndex];
-  const customEvent = schedule.customEvents.find((c) => c.customEventID === props.event.customEventID);
+  const schedule = schedules[scheduleIndex]
+  const customEvent = schedule.customEvents.find((c) => c.customEventID === props.event.customEventID)
 
   function handleDelete() {
-    props.closePopover();
-    deleteCustomEvent(props.event.customEventID, [scheduleIndex]);
+    props.closePopover()
+    deleteCustomEvent(props.event.customEventID, [scheduleIndex])
     logAnalytics({
       category: analyticsEnum.calendar.title,
       action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
-    });
+    })
   }
 
   return (
@@ -47,5 +47,5 @@ export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
         </Tooltip>
       </Box>
     </Paper>
-  );
+  )
 }

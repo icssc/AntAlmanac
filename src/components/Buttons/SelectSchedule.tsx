@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   Button,
   Dialog,
@@ -11,42 +11,42 @@ import {
   MenuItem,
   Select,
   TextField,
-} from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
-import type { SelectChangeEvent } from '@mui/material';
-import { useSettingsStore } from '$stores/settings';
-import { useScheduleStore } from '$stores/schedule';
-import { setScheduleIndex, addSchedule } from '$stores/schedule/schedule';
+} from '@mui/material'
+import { Add as AddIcon } from '@mui/icons-material'
+import type { SelectChangeEvent } from '@mui/material'
+import { useSettingsStore } from '$stores/settings'
+import { useScheduleStore } from '$stores/schedule'
+import { setScheduleIndex, addSchedule } from '$stores/schedule/schedule'
 
 /**
  * button (select form) that can switch between schedules or add a new schedule
  */
 export default function SelectScheduleButton() {
-  const { isDarkMode } = useSettingsStore();
-  const { schedules, scheduleIndex } = useScheduleStore();
-  const [open, setOpen] = useState(false);
-  const [scheduleName, setScheduleName] = useState('');
+  const { isDarkMode } = useSettingsStore()
+  const { schedules, scheduleIndex } = useScheduleStore()
+  const [open, setOpen] = useState(false)
+  const [scheduleName, setScheduleName] = useState('')
 
   function handleSelect(e: SelectChangeEvent<string>) {
-    setScheduleIndex(parseInt(e.target.value, 10));
+    setScheduleIndex(parseInt(e.target.value, 10))
   }
 
   function handleOpen() {
-    setOpen(true);
+    setOpen(true)
   }
 
   function handleClose() {
-    setOpen(false);
+    setOpen(false)
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    setScheduleName(e.target.value);
+    setScheduleName(e.target.value)
   }
 
   function handleAddSchedule() {
-    addSchedule(scheduleName);
-    setScheduleName('');
-    handleClose();
+    addSchedule(scheduleName)
+    setScheduleName('')
+    handleClose()
   }
 
   return (
@@ -82,5 +82,5 @@ export default function SelectScheduleButton() {
         </DialogActions>
       </Dialog>
     </>
-  );
+  )
 }

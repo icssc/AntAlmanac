@@ -2,45 +2,45 @@
 // with some fields omitted for simplicity since we don't use them.
 // see below for a complete response object
 
-export type Coord = [number, number];
+export type Coord = [number, number]
 
 /**
  * Response from mapbox API. This interface omits some fields. Read the top
  * of the file this is defined in for more details.
  */
 export interface MapBoxResponse {
-  routes: MapBoxRoute[];
-  waypoints: MapBoxWaypoint[];
-  code: string;
-  uuid: string;
+  routes: MapBoxRoute[]
+  waypoints: MapBoxWaypoint[]
+  code: string
+  uuid: string
 }
 
 interface MapBoxRoute {
-  country_crossed: boolean;
-  weight_name: string;
-  weight: number;
-  duration: number;
-  distance: number;
-  legs: MapBoxLeg[];
-  geometry: MapBoxGeometry;
+  country_crossed: boolean
+  weight_name: string
+  weight: number
+  duration: number
+  distance: number
+  legs: MapBoxLeg[]
+  geometry: MapBoxGeometry
 }
 
 interface MapBoxLeg {
-  weight: number;
-  duration: number;
-  distance: number;
-  summary: string;
+  weight: number
+  duration: number
+  distance: number
+  summary: string
 }
 
 interface MapBoxGeometry {
-  coordinates: Coord[];
-  type: 'LineString' | string;
+  coordinates: Coord[]
+  type: 'LineString' | string
 }
 
 interface MapBoxWaypoint {
-  distance: number;
-  name: string;
-  location: Coord;
+  distance: number
+  name: string
+  location: Coord
 }
 
 /**

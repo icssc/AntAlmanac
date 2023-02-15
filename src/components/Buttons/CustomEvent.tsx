@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Add as AddIcon, Edit as EditIcon } from '@mui/icons-material';
+import { useState, useEffect } from 'react'
+import { Add as AddIcon, Edit as EditIcon } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -18,12 +18,12 @@ import {
   InputLabel,
   TextField,
   Tooltip,
-} from '@mui/material';
-import { analyticsEnum, logAnalytics } from '$lib/analytics';
-import { addCustomEvent, editCustomEvent } from '$stores/schedule/custom';
-import { useSettingsStore } from '$stores/settings';
-import { useScheduleStore } from '$stores/schedule';
-import type { RepeatingCustomEvent } from '$stores/schedule';
+} from '@mui/material'
+import { analyticsEnum, logAnalytics } from '$lib/analytics'
+import { addCustomEvent, editCustomEvent } from '$stores/schedule/custom'
+import { useSettingsStore } from '$stores/settings'
+import { useScheduleStore } from '$stores/schedule'
+import type { RepeatingCustomEvent } from '$stores/schedule'
 
 const defaultCustomEvent: RepeatingCustomEvent = {
   start: '10:30',
@@ -31,50 +31,50 @@ const defaultCustomEvent: RepeatingCustomEvent = {
   title: '',
   days: [false, false, false, false, false, false, false],
   customEventID: 0,
-};
+}
 
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
 interface Props {
-  event?: RepeatingCustomEvent;
-  onDialogClose?: () => void;
+  event?: RepeatingCustomEvent
+  onDialogClose?: () => void
 }
 
 /**
  * button that opens up a dialog to add or edit a custom event
  */
 export default function CustomEvent(props: Props) {
-  const { schedules, scheduleIndex } = useScheduleStore();
-  const { isDarkMode } = useSettingsStore();
-  const [disabled, setDisabled] = useState('');
-  const [open, setOpen] = useState(false);
-  const [event, setEvent] = useState<RepeatingCustomEvent>(props.event || structuredClone(defaultCustomEvent));
-  const [selectedSchedules, setSelectedSchedules] = useState([scheduleIndex]);
+  const { schedules, scheduleIndex } = useScheduleStore()
+  const { isDarkMode } = useSettingsStore()
+  const [disabled, setDisabled] = useState('')
+  const [open, setOpen] = useState(false)
+  const [event, setEvent] = useState<RepeatingCustomEvent>(props.event || structuredClone(defaultCustomEvent))
+  const [selectedSchedules, setSelectedSchedules] = useState([scheduleIndex])
 
   useEffect(() => {
     if (!event.title) {
-      setDisabled('Please enter a title');
+      setDisabled('Please enter a title')
     } else if (!event?.start) {
-      setDisabled('Please enter a start time');
+      setDisabled('Please enter a start time')
     } else if (!event?.end) {
-      setDisabled('Please enter an end time');
+      setDisabled('Please enter an end time')
     } else if (!event?.days.some(Boolean)) {
-      setDisabled('Please select a day');
+      setDisabled('Please select a day')
     } else if (!selectedSchedules.length) {
-      setDisabled('Please select a schedule');
+      setDisabled('Please select a schedule')
     } else {
-      setDisabled('');
+      setDisabled('')
     }
-  }, [event.title, event.start, event.end, event.days, selectedSchedules]);
+  }, [event.title, event.start, event.end, event.days, selectedSchedules])
 
   function handleOpen() {
-    setOpen(true);
+    setOpen(true)
   }
 
   function handleTextChange(key: keyof typeof event) {
     return (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-      setEvent({ ...event, [key]: e.target.value });
-    };
+      setEvent({ ...event, [key]: e.target.value })
+    }
   }
 
   function handleCheckDay(index: number) {
@@ -82,51 +82,51 @@ export default function CustomEvent(props: Props) {
       setEvent((prevEvent) => ({
         ...prevEvent,
         days: prevEvent.days.map((day, i) => (i === index ? e.target.checked : day)),
-      }));
-    };
+      }))
+    }
   }
 
   function handleCheckSchedule(index: number) {
     return () => {
       if (selectedSchedules.includes(index)) {
-        setSelectedSchedules((schedules) => schedules.filter((schedule) => schedule !== index));
+        setSelectedSchedules((schedules) => schedules.filter((schedule) => schedule !== index))
       } else {
-        setSelectedSchedules((schedules) => [...schedules, index]);
+        setSelectedSchedules((schedules) => [...schedules, index])
       }
-    };
+    }
   }
 
   function handleCancel() {
-    setEvent(props.event || structuredClone(defaultCustomEvent));
-    setOpen(false);
-    props.onDialogClose?.();
+    setEvent(props.event || structuredClone(defaultCustomEvent))
+    setOpen(false)
+    props.onDialogClose?.()
   }
 
   function handleSubmit() {
     if (!event.days.some((day) => day) || selectedSchedules.length === 0) {
-      return;
+      return
     }
 
     logAnalytics({
       category: analyticsEnum.calendar.title,
       action: analyticsEnum.calendar.actions.ADD_CUSTOM_EVENT,
-    });
+    })
 
     const newCustomEvent = {
       color: props.event ? props.event.color : '#551a8b',
       ...event,
       customEventID: props.event ? props.event.customEventID : Date.now(),
-    };
-
-    if (props.event) {
-      editCustomEvent(newCustomEvent, selectedSchedules);
-    } else {
-      addCustomEvent(newCustomEvent, selectedSchedules);
     }
 
-    setEvent(props.event || structuredClone(defaultCustomEvent));
-    setSelectedSchedules([scheduleIndex]);
-    setOpen(false);
+    if (props.event) {
+      editCustomEvent(newCustomEvent, selectedSchedules)
+    } else {
+      addCustomEvent(newCustomEvent, selectedSchedules)
+    }
+
+    setEvent(props.event || structuredClone(defaultCustomEvent))
+    setSelectedSchedules([scheduleIndex])
+    setOpen(false)
   }
 
   return (
@@ -208,5 +208,5 @@ export default function CustomEvent(props: Props) {
         </DialogActions>
       </Dialog>
     </>
-  );
+  )
 }

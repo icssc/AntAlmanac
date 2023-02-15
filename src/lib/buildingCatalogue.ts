@@ -1,8 +1,8 @@
 interface Building {
-  imageURLs: string[];
-  lat: number;
-  lng: number;
-  name: string;
+  imageURLs: string[]
+  lat: number
+  lng: number
+  name: string
 }
 
 export default {
@@ -1962,4 +1962,4 @@ export default {
     lng: -117.843788,
     imageURLs: ['463/1R7A7978.jpg'],
   },
-} as Record<number, Building>;
+} as Record<number, Building>

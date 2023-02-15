@@ -1,31 +1,31 @@
-import { useState } from 'react';
-import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, useMediaQuery } from '@mui/material';
-import { Menu as MenuIcon } from '@mui/icons-material';
+import { useState } from 'react'
+import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, useMediaQuery } from '@mui/material'
+import { Menu as MenuIcon } from '@mui/icons-material'
 
-import Settings from './Settings';
-import Notifications from './Notifications';
-import Feedback from './Feedback';
-import News from './News';
-import About from './About';
+import Settings from './Settings'
+import Notifications from './Notifications'
+import Feedback from './Feedback'
+import News from './News'
+import About from './About'
 
 /**
  * all buttons to render for the header
  */
-const Buttons = [Settings, Notifications, Feedback, News, About];
+const Buttons = [Settings, Notifications, Feedback, News, About]
 
 /**
  * main header at the top of the website
  */
 export default function Header() {
-  const isMobileScreen = useMediaQuery('(max-width:750px)');
-  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
+  const isMobileScreen = useMediaQuery('(max-width:750px)')
+  const [anchorEl, setAnchorEl] = useState<Element | null>(null)
 
   function handleClick(event: React.MouseEvent<Element, MouseEvent>) {
-    setAnchorEl(event.currentTarget);
+    setAnchorEl(event.currentTarget)
   }
 
   function handleClose() {
-    setAnchorEl(null);
+    setAnchorEl(null)
   }
 
   return (
@@ -68,5 +68,5 @@ export default function Header() {
         )}
       </Toolbar>
     </AppBar>
-  );
+  )
 }

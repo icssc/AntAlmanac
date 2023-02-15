@@ -1,10 +1,10 @@
-import Leaflet from 'leaflet';
-import { Marker, Popup } from 'react-leaflet';
-import { Button, Link, Typography } from '@mui/material';
-import { DirectionsWalk as DirectionsWalkIcon } from '@mui/icons-material';
+import Leaflet from 'leaflet'
+import { Marker, Popup } from 'react-leaflet'
+import { Button, Link, Typography } from '@mui/material'
+import { DirectionsWalk as DirectionsWalkIcon } from '@mui/icons-material'
 
-const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';
-const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId=463&image=';
+const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination='
+const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId=463&image='
 
 /**
  * returns a leaflet DivIcon that can replace the marker's default blue icon
@@ -50,19 +50,19 @@ function getMarkerIcon(color: string = '', stackIndex: number = 1, label: any = 
                    ${label || ''}
              </div>
            </div>`,
-  });
+  })
 }
 
 interface Props {
-  lat: number;
-  lng: number;
-  color?: string;
-  image?: string;
-  location?: string;
-  acronym?: string;
-  stackIndex?: number;
-  label?: any;
-  children?: React.ReactNode;
+  lat: number
+  lng: number
+  color?: string
+  image?: string
+  location?: string
+  acronym?: string
+  stackIndex?: number
+  label?: any
+  children?: React.ReactNode
 }
 
 /**
@@ -107,5 +107,5 @@ export default function CourseMarker(props: Props) {
         </Button>
       </Popup>
     </Marker>
-  );
+  )
 }

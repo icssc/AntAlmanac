@@ -1,1 +1,1 @@
-export { default } from './CourseSearch';
+export { default } from './CourseSearch'

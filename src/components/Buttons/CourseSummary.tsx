@@ -1,41 +1,41 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Box, Button, Popover, Typography } from '@mui/material';
-import { InfoOutlined as InfoOutlinedIcon } from '@mui/icons-material';
-import { PETERPORTAL_REST_ENDPOINT } from '$lib/endpoints';
-import type { AACourse, CourseResponse } from '$types/peterportal';
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Box, Button, Popover, Typography } from '@mui/material'
+import { InfoOutlined as InfoOutlinedIcon } from '@mui/icons-material'
+import { PETERPORTAL_REST_ENDPOINT } from '$lib/endpoints'
+import type { AACourse, CourseResponse } from '$types/peterportal'
 
 /**
  * button that opens a popup with all summary info about the course,
  * e.g. course description, prerequistes, etc.
  */
 export default function CourseSummaryButton(props: { course: AACourse }) {
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
-    setAnchorEl(event.currentTarget);
+    setAnchorEl(event.currentTarget)
   }
 
   function handleClose() {
-    setAnchorEl(null);
+    setAnchorEl(null)
   }
 
   const courseId = encodeURIComponent(
     `${props.course.deptCode.replace(/\s/g, '')}${props.course.courseNumber.replace(/\s/g, '')}`
-  );
+  )
 
   const query = useQuery([PETERPORTAL_REST_ENDPOINT, courseId], {
     async queryFn() {
-      const response = await fetch(`${PETERPORTAL_REST_ENDPOINT}/courses/${courseId}`);
+      const response = await fetch(`${PETERPORTAL_REST_ENDPOINT}/courses/${courseId}`)
       if (response.ok) {
-        const jsonResp = (await response.json()) as CourseResponse;
+        const jsonResp = (await response.json()) as CourseResponse
         return {
           title: jsonResp.title,
           prerequisite_text: jsonResp.prerequisite_text,
           prerequisite_for: jsonResp.prerequisite_for.join(', '),
           description: jsonResp.description,
           ge_list: jsonResp.ge_list.join(', '),
-        };
+        }
       } else {
         return {
           title: 'No description available',
@@ -43,10 +43,10 @@ export default function CourseSummaryButton(props: { course: AACourse }) {
           prerequisite_for: '',
           description: '',
           ge_list: '',
-        };
+        }
       }
     },
-  });
+  })
 
   return (
     <>
@@ -85,5 +85,5 @@ export default function CourseSummaryButton(props: { course: AACourse }) {
         </Box>
       </Popover>
     </>
-  );
+  )
 }

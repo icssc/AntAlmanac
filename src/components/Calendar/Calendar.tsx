@@ -1,23 +1,23 @@
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import './Calendar.css';
+import 'react-big-calendar/lib/css/react-big-calendar.css'
+import './Calendar.css'
 
-import dayjs from 'dayjs';
-import { useState, useRef } from 'react';
-import { Calendar, dayjsLocalizer, DateLocalizer, Views } from 'react-big-calendar';
-import type { EventProps } from 'react-big-calendar';
-import { Box, ClickAwayListener, Popper } from '@mui/material';
-import { useScheduleStore } from '$stores/schedule';
-import { useSettingsStore } from '$stores/settings';
-import { getCourseCalendarEvents, getFinalsCalendarEvents, getCustomCalendarEvents } from '$stores/schedule/calendar';
-import { isContrastSufficient } from '$lib/utils';
-import CalendarToolbar from './CalendarToolbar';
-import CourseEventDetails from './EventDetails/CourseEvent';
-import CustomEventDetails from './EventDetails/CustomEvent';
+import dayjs from 'dayjs'
+import { useState, useRef } from 'react'
+import { Calendar, dayjsLocalizer, DateLocalizer, Views } from 'react-big-calendar'
+import type { EventProps } from 'react-big-calendar'
+import { Box, ClickAwayListener, Popper } from '@mui/material'
+import { useScheduleStore } from '$stores/schedule'
+import { useSettingsStore } from '$stores/settings'
+import { getCourseCalendarEvents, getFinalsCalendarEvents, getCustomCalendarEvents } from '$stores/schedule/calendar'
+import { isContrastSufficient } from '$lib/utils'
+import CalendarToolbar from './CalendarToolbar'
+import CourseEventDetails from './EventDetails/CourseEvent'
+import CustomEventDetails from './EventDetails/CustomEvent'
 
-type CourseCalendarEvent = ReturnType<typeof getCourseCalendarEvents>[number];
-type CustomCalendarEvent = ReturnType<typeof getCustomCalendarEvents>[number];
-type FinalsCalendarEvent = ReturnType<typeof getCustomCalendarEvents>[number];
-type CalendarEvent = CourseCalendarEvent | CustomCalendarEvent | FinalsCalendarEvent;
+type CourseCalendarEvent = ReturnType<typeof getCourseCalendarEvents>[number]
+type CustomCalendarEvent = ReturnType<typeof getCustomCalendarEvents>[number]
+type FinalsCalendarEvent = ReturnType<typeof getCustomCalendarEvents>[number]
+type CalendarEvent = CourseCalendarEvent | CustomCalendarEvent | FinalsCalendarEvent
 
 /**
  * single calendar event box
@@ -35,13 +35,13 @@ function AntAlmanacEvent(props: EventProps & { event: CalendarEvent }) {
           <Box sx={{ fontSize: '0.8rem' }}>{props.event.sectionCode}</Box>
         </Box>
       </Box>
-    );
+    )
   else {
     return (
       <Box sx={{ my: 2, fontSize: '0.85rem', fontWeight: 690 }}>
         <Box>{props.event.title}</Box>
       </Box>
-    );
+    )
   }
 }
 
@@ -49,40 +49,40 @@ function AntAlmanacEvent(props: EventProps & { event: CalendarEvent }) {
  * entire calendar
  */
 export default function AntAlamancCalendar() {
-  const showFinals = useSettingsStore((state) => state.showFinals);
-  const { schedules, scheduleIndex } = useScheduleStore();
-  const ref = useRef<HTMLDivElement>(null);
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [courseInMoreInfo, setCourseInMoreInfo] = useState<CalendarEvent | null>(null);
-  const [calendarEventKey, setCalendarEventKey] = useState(0);
+  const showFinals = useSettingsStore((state) => state.showFinals)
+  const { schedules, scheduleIndex } = useScheduleStore()
+  const ref = useRef<HTMLDivElement>(null)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const [courseInMoreInfo, setCourseInMoreInfo] = useState<CalendarEvent | null>(null)
+  const [calendarEventKey, setCalendarEventKey] = useState(0)
 
   /**
    * if showing finals, get the finals calendar events;
    * otherwise join the two arrays of course and custom calendar events
    */
-  const currentSchedule = schedules[scheduleIndex];
-  const courses = currentSchedule?.courses;
-  const customEvents = currentSchedule?.customEvents;
+  const currentSchedule = schedules[scheduleIndex]
+  const courses = currentSchedule?.courses
+  const customEvents = currentSchedule?.customEvents
   const events = showFinals
     ? getFinalsCalendarEvents(courses)
-    : [...getCourseCalendarEvents(courses), ...getCustomCalendarEvents(customEvents)];
+    : [...getCourseCalendarEvents(courses), ...getCustomCalendarEvents(customEvents)]
 
-  const hasWeekendCourse = events.some((event) => event?.start.getDay() === 0 || event?.start.getDay() === 6);
+  const hasWeekendCourse = events.some((event) => event?.start.getDay() === 0 || event?.start.getDay() === 6)
 
-  const isCourseEvent = courseInMoreInfo && 'bldg' in courseInMoreInfo;
-  const isCustomEvent = courseInMoreInfo && 'customEventID' in courseInMoreInfo;
+  const isCourseEvent = courseInMoreInfo && 'bldg' in courseInMoreInfo
+  const isCustomEvent = courseInMoreInfo && 'customEventID' in courseInMoreInfo
 
   function handleEventClick(calendarEvent: CalendarEvent, e: React.SyntheticEvent<HTMLElement, Event>) {
-    e.stopPropagation();
+    e.stopPropagation()
     if (calendarEvent.isCustomEvent || ('sectionType' in calendarEvent && calendarEvent.sectionType !== 'Fin')) {
-      setAnchorEl(e.currentTarget);
-      setCourseInMoreInfo(calendarEvent);
-      setCalendarEventKey((c) => c + 1);
+      setAnchorEl(e.currentTarget)
+      setCourseInMoreInfo(calendarEvent)
+      setCalendarEventKey((c) => c + 1)
     }
   }
 
   function handleClose() {
-    setAnchorEl(null);
+    setAnchorEl(null)
   }
 
   return (
@@ -94,7 +94,7 @@ export default function AntAlamancCalendar() {
           toolbar={false}
           formats={{
             timeGutterFormat(date: Date, culture?: string, localizer?: DateLocalizer) {
-              return date.getMinutes() > 0 || !localizer ? '' : localizer.format(date, 'h A', culture);
+              return date.getMinutes() > 0 || !localizer ? '' : localizer.format(date, 'h A', culture)
             },
             dayFormat: 'ddd',
           }}
@@ -136,5 +136,5 @@ export default function AntAlamancCalendar() {
         </ClickAwayListener>
       </Popper>
     </Box>
-  );
+  )
 }

@@ -1,12 +1,12 @@
-import { Typography } from '@mui/material';
-import type { School, Department, AACourse } from '$types/peterportal';
-import SchoolCard from './School';
-import DepartmentCard from './Department';
-import CourseCard from './Course';
+import { Typography } from '@mui/material'
+import type { School, Department, AACourse } from '$types/peterportal'
+import SchoolCard from './School'
+import DepartmentCard from './Department'
+import CourseCard from './Course'
 
 interface Props {
-  course: School | Department | AACourse;
-  term?: string;
+  course: School | Department | AACourse
+  term?: string
 }
 
 /**
@@ -17,25 +17,25 @@ export default function Schedule({ course, term }: Props) {
    * course is School
    */
   if ('departments' in course) {
-    return <SchoolCard school={course} />;
+    return <SchoolCard school={course} />
   }
 
   /**
    * course is Department
    */
   if ('deptName' in course) {
-    return <DepartmentCard department={course} />;
+    return <DepartmentCard department={course} />
   }
 
   /**
    * course is AACourse
    */
   if ('courseNumber' in course) {
-    return <CourseCard course={course} term={term} />;
+    return <CourseCard course={course} term={term} />
   }
 
   /**
    * shouldn't ever get here
    */
-  return <Typography color="error">Error!</Typography>;
+  return <Typography color="error">Error!</Typography>
 }

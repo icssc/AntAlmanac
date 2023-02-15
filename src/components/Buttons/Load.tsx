@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   Button,
   Checkbox,
@@ -9,40 +9,40 @@ import {
   DialogTitle,
   FormControlLabel,
   TextField,
-} from '@mui/material';
-import { CloudDownload as CloudDownloadIcon } from '@mui/icons-material';
-import { useSettingsStore } from '$stores/settings';
-import { useLoadSchedule } from '$stores/schedule/load';
+} from '@mui/material'
+import { CloudDownload as CloudDownloadIcon } from '@mui/icons-material'
+import { useSettingsStore } from '$stores/settings'
+import { useLoadSchedule } from '$stores/schedule/load'
 
 /**
  * button that opens up a dialog to load a schedule
  */
 export default function LoadScheduleButton() {
-  const [open, setOpen] = useState(false);
-  const [userId, setUserId] = useState('');
-  const [remember, setRemember] = useState(false);
-  const loadSchedule = useLoadSchedule();
-  const isDarkMode = useSettingsStore((store) => store.isDarkMode);
+  const [open, setOpen] = useState(false)
+  const [userId, setUserId] = useState('')
+  const [remember, setRemember] = useState(false)
+  const loadSchedule = useLoadSchedule()
+  const isDarkMode = useSettingsStore((store) => store.isDarkMode)
 
   async function handleSubmit() {
-    await loadSchedule(userId, remember);
-    setOpen(false);
+    await loadSchedule(userId, remember)
+    setOpen(false)
   }
 
   function handleCancel() {
-    setOpen(false);
+    setOpen(false)
   }
 
   function handleClick() {
-    setOpen(true);
+    setOpen(true)
   }
 
   function handleChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
-    setUserId(e.target.value);
+    setUserId(e.target.value)
   }
 
   function handleChecked(e: React.ChangeEvent<HTMLInputElement>) {
-    setRemember(e.target.checked);
+    setRemember(e.target.checked)
   }
 
   return (
@@ -78,5 +78,5 @@ export default function LoadScheduleButton() {
         </DialogActions>
       </Dialog>
     </>
-  );
+  )
 }

@@ -1,28 +1,28 @@
-import { useState } from 'react';
-import { IconButton, Menu, MenuItem } from '@mui/material';
-import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
-import type { AASection, AACourse } from '$types/peterportal';
-import { useScheduleStore } from '$stores/schedule';
-import { addCourse, addCourseToAllSchedules } from '$stores/schedule/course';
+import { useState } from 'react'
+import { IconButton, Menu, MenuItem } from '@mui/material'
+import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material'
+import type { AASection, AACourse } from '$types/peterportal'
+import { useScheduleStore } from '$stores/schedule'
+import { addCourse, addCourseToAllSchedules } from '$stores/schedule/course'
 
 interface Props {
-  section: AASection;
-  course: AACourse;
+  section: AASection
+  course: AACourse
 }
 
 /**
  * button that opens a dropdown to add the provided course to a target schedule(s)
  */
 export default function AddCourseMenuButton(props: Props) {
-  const schedules = useScheduleStore((store) => store.schedules);
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const schedules = useScheduleStore((store) => store.schedules)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
   function handleClick(event: React.MouseEvent<HTMLElement>) {
-    setAnchorEl(event.currentTarget);
+    setAnchorEl(event.currentTarget)
   }
 
   function handleClose() {
-    setAnchorEl(null);
+    setAnchorEl(null)
   }
 
   /**
@@ -30,12 +30,12 @@ export default function AddCourseMenuButton(props: Props) {
    */
   function handleAdd(index: number) {
     return () => {
-      addCourse(props.section, props.course, index);
-    };
+      addCourse(props.section, props.course, index)
+    }
   }
 
   function handleAddAll() {
-    addCourseToAllSchedules(props.section, props.course);
+    addCourseToAllSchedules(props.section, props.course)
   }
 
   return (
@@ -52,5 +52,5 @@ export default function AddCourseMenuButton(props: Props) {
         <MenuItem onClick={handleAddAll}>Add to all schedules</MenuItem>
       </Menu>
     </>
-  );
+  )
 }

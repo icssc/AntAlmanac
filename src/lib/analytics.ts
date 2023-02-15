@@ -1,17 +1,17 @@
-import ReactGA4 from 'react-ga4';
+import ReactGA4 from 'react-ga4'
 
 interface AnalyticsProps {
-  category: string;
-  action: string;
-  label?: string;
-  value?: number;
+  category: string
+  action: string
+  label?: string
+  value?: number
 }
 
 /**
  * wrapper around ReactGA4.event
  */
 export function logAnalytics(props: AnalyticsProps) {
-  ReactGA4.event(props);
+  ReactGA4.event(props)
 }
 
 /**
@@ -80,4 +80,4 @@ export const analyticsEnum = {
       CLICK_PIN: 'Click on Pin',
     },
   },
-} as const;
+} as const

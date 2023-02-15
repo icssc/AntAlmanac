@@ -1,70 +1,70 @@
-import dayjs from 'dayjs';
-import { Fragment, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Badge, Box, Button, Divider, List, ListItem, Paper, Popover, Tooltip, Typography } from '@mui/material';
-import { RssFeed } from '@mui/icons-material';
-import { Skeleton } from '@mui/lab';
-import { analyticsEnum, logAnalytics } from '$lib/analytics';
-import { NEWS_ENDPOINT } from '$lib/endpoints';
+import dayjs from 'dayjs'
+import { Fragment, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Badge, Box, Button, Divider, List, ListItem, Paper, Popover, Tooltip, Typography } from '@mui/material'
+import { RssFeed } from '@mui/icons-material'
+import { Skeleton } from '@mui/lab'
+import { analyticsEnum, logAnalytics } from '$lib/analytics'
+import { NEWS_ENDPOINT } from '$lib/endpoints'
 
 /**
  * a news item returned by the API
  */
 interface NewsItem {
-  title: string;
-  body: string;
+  title: string
+  body: string
 
   /**
    * TODO: what format is this in?
    */
-  date: string;
+  date: string
 
   /**
    * mongoose object id
    */
-  _id: string;
+  _id: string
 }
 
 /**
  * button that opens a modal with news items
  */
 export default function NewsModal() {
-  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
-  const [showDot, setShowDot] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<Element | null>(null)
+  const [showDot, setShowDot] = useState(false)
 
   function closePopper() {
-    setAnchorEl(null);
+    setAnchorEl(null)
   }
 
   const query = useQuery({
     queryKey: [NEWS_ENDPOINT],
     async queryFn() {
-      const json = await fetch(NEWS_ENDPOINT).then((res) => res.json());
+      const json = await fetch(NEWS_ENDPOINT).then((res) => res.json())
       const sortedNewsItems = json.news.sort((a: NewsItem, b: NewsItem) =>
         a.date < b.date ? 1 : a.date > b.date ? 1 : 0
-      );
+      )
       if (typeof Storage !== 'undefined' && sortedNewsItems.length !== 0) {
-        const idOfLatestNewsItem = sortedNewsItems[0]['_id'];
-        const idOfLatestCheckedNewsItem = window.localStorage.getItem('idOfLatestCheckedNewsItem');
+        const idOfLatestNewsItem = sortedNewsItems[0]['_id']
+        const idOfLatestCheckedNewsItem = window.localStorage.getItem('idOfLatestCheckedNewsItem')
         if (idOfLatestCheckedNewsItem === null || idOfLatestNewsItem !== idOfLatestCheckedNewsItem) {
-          setShowDot(true);
+          setShowDot(true)
         }
       }
-      return sortedNewsItems as NewsItem[];
+      return sortedNewsItems as NewsItem[]
     },
-  });
+  })
 
   function openPopup(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     logAnalytics({
       category: analyticsEnum.nav.title,
       action: analyticsEnum.nav.actions.CLICK_NEWS,
-    });
+    })
 
-    setAnchorEl(e.currentTarget);
+    setAnchorEl(e.currentTarget)
 
     if (typeof Storage !== 'undefined' && query.data?.length) {
-      window.localStorage.setItem('idOfLatestCheckedNewsItem', query.data[0]['_id']);
-      setShowDot(false);
+      window.localStorage.setItem('idOfLatestCheckedNewsItem', query.data[0]['_id'])
+      setShowDot(false)
     }
   }
 
@@ -131,5 +131,5 @@ export default function NewsModal() {
         </Paper>
       </Popover>
     </div>
-  );
+  )
 }

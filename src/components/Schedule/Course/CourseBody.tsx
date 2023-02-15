@@ -1,4 +1,4 @@
-import { useSnackbar } from 'notistack';
+import { useSnackbar } from 'notistack'
 import {
   Box,
   Link,
@@ -11,17 +11,17 @@ import {
   TableRow,
   Tooltip,
   Typography,
-} from '@mui/material';
-import locations from '$lib/locations';
-import restrictions from '$lib/restrictions';
-import { analyticsEnum } from '$lib/analytics';
-import { useSearchStore } from '$stores/search';
-import { useScheduleStore } from '$stores/schedule';
-import AddCourseButton from '$components/Buttons/AddCourse';
-import AddCourseMenuButton from '$components/Buttons/AddCourseMenu';
-import DeleteCourseButton from '$components/Buttons/DeleteCourse';
-import ColorPicker from '$components/Buttons/ColorPicker';
-import type { AACourse, AASection } from '$types/peterportal';
+} from '@mui/material'
+import locations from '$lib/locations'
+import restrictions from '$lib/restrictions'
+import { analyticsEnum } from '$lib/analytics'
+import { useSearchStore } from '$stores/search'
+import { useScheduleStore } from '$stores/schedule'
+import AddCourseButton from '$components/Buttons/AddCourse'
+import AddCourseMenuButton from '$components/Buttons/AddCourseMenu'
+import DeleteCourseButton from '$components/Buttons/DeleteCourse'
+import ColorPicker from '$components/Buttons/ColorPicker'
+import type { AACourse, AASection } from '$types/peterportal'
 
 const SectionTypeColors: Record<string, string> = {
   Act: '#c87137',
@@ -36,24 +36,24 @@ const SectionTypeColors: Record<string, string> = {
   Stu: '#179523',
   Tap: '#8d2df0',
   Tut: '#ffc705',
-};
+}
 
 const SectionStatusColors: Record<string, string> = {
   open: '#00c853',
   waitl: '#1c44b2',
   full: '#e53935',
-};
+}
 
 /**
  * column 0
  * actions for managing the course, e.g. add, delete, change color, add to schedule #
  */
 function CourseActions(props: { section: AASection; course: AACourse; term?: string }) {
-  const { schedules, scheduleIndex } = useScheduleStore();
-  const courses = schedules[scheduleIndex].courses;
-  const addedSectionCodes = new Set(courses.map((course) => `${course.section.sectionCode} ${course.term}`));
-  const term = props.term || useSearchStore.getState()?.form?.term;
-  const alreadyAdded = addedSectionCodes.has(`${props.section.sectionCode} ${term}`);
+  const { schedules, scheduleIndex } = useScheduleStore()
+  const courses = schedules[scheduleIndex].courses
+  const addedSectionCodes = new Set(courses.map((course) => `${course.section.sectionCode} ${course.term}`))
+  const term = props.term || useSearchStore.getState()?.form?.term
+  const alreadyAdded = addedSectionCodes.has(`${props.section.sectionCode} ${term}`)
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'nowrap' }}>
@@ -69,7 +69,7 @@ function CourseActions(props: { section: AASection; course: AACourse; term?: str
         <AddCourseMenuButton {...props} />
       )}
     </Box>
-  );
+  )
 }
 
 /**
@@ -77,14 +77,14 @@ function CourseActions(props: { section: AASection; course: AACourse; term?: str
  * section code that can be copied to clipboard on click
  */
 function SectionCode(props: { section: AASection }) {
-  const { enqueueSnackbar } = useSnackbar();
-  const { section } = props;
+  const { enqueueSnackbar } = useSnackbar()
+  const { section } = props
 
   function handleClick(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
-    e.preventDefault();
+    e.preventDefault()
     if (window.isSecureContext) {
-      navigator.clipboard.writeText(section.sectionCode.toString());
-      enqueueSnackbar('Section code copied to clipboard', { variant: 'success' });
+      navigator.clipboard.writeText(section.sectionCode.toString())
+      enqueueSnackbar('Section code copied to clipboard', { variant: 'success' })
     }
   }
 
@@ -92,7 +92,7 @@ function SectionCode(props: { section: AASection }) {
     <Link onClick={handleClick} underline="hover" href="#" variant="body2">
       {section.sectionCode}
     </Link>
-  );
+  )
 }
 
 /**
@@ -100,7 +100,7 @@ function SectionCode(props: { section: AASection }) {
  * information about the course type, units, etc.
  */
 function CourseDetails(props: { section: AASection }) {
-  const { section } = props;
+  const { section } = props
   return (
     <Box>
       <Typography variant="body2" whiteSpace="nowrap" color={SectionTypeColors[section.sectionType]}>
@@ -113,7 +113,7 @@ function CourseDetails(props: { section: AASection }) {
         Units: {section.units}
       </Typography>
     </Box>
-  );
+  )
 }
 
 /**
@@ -121,17 +121,17 @@ function CourseDetails(props: { section: AASection }) {
  * course instructors
  */
 function CourseInstructors(props: { section: AASection }) {
-  const { section } = props;
+  const { section } = props
   return (
     <Box>
       {section.instructors.map((instructor, index) => {
-        const lastName = instructor.substring(0, instructor.indexOf(','));
+        const lastName = instructor.substring(0, instructor.indexOf(','))
         if (!lastName || lastName === 'STAFF') {
           return (
             <Typography key={index} variant="body2">
               {instructor}
             </Typography>
-          );
+          )
         }
         return (
           <Box key={index}>
@@ -145,10 +145,10 @@ function CourseInstructors(props: { section: AASection }) {
               {instructor}
             </Link>
           </Box>
-        );
+        )
       })}
     </Box>
-  );
+  )
 }
 
 /**
@@ -156,7 +156,7 @@ function CourseInstructors(props: { section: AASection }) {
  * course meeting days/times
  */
 function CourseTimes(props: { section: AASection }) {
-  const { section } = props;
+  const { section } = props
   return (
     <Box>
       {section.meetings.map((meeting, index) => (
@@ -165,7 +165,7 @@ function CourseTimes(props: { section: AASection }) {
         </Typography>
       ))}
     </Box>
-  );
+  )
 }
 
 /**
@@ -173,7 +173,7 @@ function CourseTimes(props: { section: AASection }) {
  * meeting locations and links to the map
  */
 function CoursePlaces(props: { section: AASection }) {
-  const { section } = props;
+  const { section } = props
   return (
     <Box>
       {section.meetings.map((meeting, index) => {
@@ -182,20 +182,20 @@ function CoursePlaces(props: { section: AASection }) {
             <Typography key={index} variant="body2">
               {meeting.bldg}
             </Typography>
-          );
+          )
         }
-        const location_id = locations[meeting.bldg.split(' ')[0] as keyof typeof locations];
+        const location_id = locations[meeting.bldg.split(' ')[0] as keyof typeof locations]
         const href = location_id
           ? `https://map.uci.edu/?id=463#!m/${location_id}`
-          : 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034';
+          : 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034'
         return (
           <Link key={index} variant="body2" href={href} target="_blank" rel="noopener noreferrer" underline="hover">
             {meeting.bldg}
           </Link>
-        );
+        )
       })}
     </Box>
-  );
+  )
 }
 
 /**
@@ -203,7 +203,7 @@ function CoursePlaces(props: { section: AASection }) {
  * course's current enrollment data
  */
 function CourseEnrollment(props: { section: AASection }) {
-  const { section } = props;
+  const { section } = props
   return (
     <Box>
       <Typography variant="body2">
@@ -218,7 +218,7 @@ function CourseEnrollment(props: { section: AASection }) {
         {section.numNewOnlyReserved}
       </Typography>
     </Box>
-  );
+  )
 }
 
 /**
@@ -226,7 +226,7 @@ function CourseEnrollment(props: { section: AASection }) {
  * course's restrictions
  */
 function CourseRestrictions(props: { section: AASection }) {
-  const { section } = props;
+  const { section } = props
   return (
     <Box>
       <Tooltip
@@ -242,7 +242,7 @@ function CourseRestrictions(props: { section: AASection }) {
         </Link>
       </Tooltip>
     </Box>
-  );
+  )
 }
 
 /**
@@ -250,12 +250,12 @@ function CourseRestrictions(props: { section: AASection }) {
  * course's current status, e.g. full, open
  */
 function CourseStatus(props: { section: AASection }) {
-  const { section } = props;
+  const { section } = props
   return (
     <Typography variant="body2" color={SectionStatusColors[section.status?.toLowerCase() || '']}>
       {section.status}
     </Typography>
-  );
+  )
 }
 
 /**
@@ -329,5 +329,5 @@ export default function CourseBody({ course, term }: { course: AACourse; term?: 
         </TableBody>
       </Table>
     </TableContainer>
-  );
+  )
 }

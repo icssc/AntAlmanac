@@ -1,31 +1,31 @@
-import { useState } from 'react';
-import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, useMediaQuery } from '@mui/material';
-import { MoreHoriz as MoreHorizIcon } from '@mui/icons-material';
-import ScreenshotButton from '$components/Buttons/Screenshot';
-import DownloadButton from '$components/Buttons/Download';
-import CustomEventButton from '$components/Buttons/CustomEvent';
-import EditScheduleButton from '$components/Buttons/EditSchedule';
-import SelectScheduleButton from '$components/Buttons/SelectSchedule';
-import ToggleFinalsButton from '$components/Buttons/ToggleFinals';
+import { useState } from 'react'
+import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, useMediaQuery } from '@mui/material'
+import { MoreHoriz as MoreHorizIcon } from '@mui/icons-material'
+import ScreenshotButton from '$components/Buttons/Screenshot'
+import DownloadButton from '$components/Buttons/Download'
+import CustomEventButton from '$components/Buttons/CustomEvent'
+import EditScheduleButton from '$components/Buttons/EditSchedule'
+import SelectScheduleButton from '$components/Buttons/SelectSchedule'
+import ToggleFinalsButton from '$components/Buttons/ToggleFinals'
 
 interface Props {
   /**
    * provide a React ref to the element to screenshot; this is prop-drilled down to the ScreenshotButton
    * TODO: put this in a shared store as well?
    */
-  imgRef: React.RefObject<HTMLElement>;
+  imgRef: React.RefObject<HTMLElement>
 }
 
 export default function CalendarToolbar(props: Props) {
-  const screenXs = useMediaQuery('(max-width: 750px)');
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const screenXs = useMediaQuery('(max-width: 750px)')
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
-    setAnchorEl(event.currentTarget);
+    setAnchorEl(event.currentTarget)
   }
 
   function handleClose() {
-    setAnchorEl(null);
+    setAnchorEl(null)
   }
 
   return (
@@ -65,5 +65,5 @@ export default function CalendarToolbar(props: Props) {
         )}
       </Toolbar>
     </AppBar>
-  );
+  )
 }

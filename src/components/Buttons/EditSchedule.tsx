@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   Button,
   Dialog,
@@ -11,47 +11,47 @@ import {
   MenuItem,
   TextField,
   Tooltip,
-} from '@mui/material';
-import { Edit as EditIcon } from '@mui/icons-material';
-import { useSettingsStore } from '$stores/settings';
-import { useScheduleStore } from '$stores/schedule';
-import { deleteCurrentSchedule, renameCurrentSchedule } from '$stores/schedule/schedule';
+} from '@mui/material'
+import { Edit as EditIcon } from '@mui/icons-material'
+import { useSettingsStore } from '$stores/settings'
+import { useScheduleStore } from '$stores/schedule'
+import { deleteCurrentSchedule, renameCurrentSchedule } from '$stores/schedule/schedule'
 
 /**
  * button that opens up a dialog to edit a schedule
  */
 export default function EditScheduleButton() {
-  const { isDarkMode } = useSettingsStore();
-  const { schedules, scheduleIndex } = useScheduleStore();
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [scheduleName, setScheduleName] = useState(schedules[scheduleIndex]?.scheduleName || '');
-  const [open, setOpen] = useState(false);
+  const { isDarkMode } = useSettingsStore()
+  const { schedules, scheduleIndex } = useScheduleStore()
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const [scheduleName, setScheduleName] = useState(schedules[scheduleIndex]?.scheduleName || '')
+  const [open, setOpen] = useState(false)
 
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
-    setAnchorEl(e.currentTarget);
+    setAnchorEl(e.currentTarget)
   }
 
   function handleOpen() {
-    setOpen(true);
+    setOpen(true)
   }
 
   function handleClose() {
-    setScheduleName('');
-    setOpen(false);
-    setAnchorEl(null);
+    setScheduleName('')
+    setOpen(false)
+    setAnchorEl(null)
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setScheduleName(e.target.value);
+    setScheduleName(e.target.value)
   }
 
   function handleRename() {
-    renameCurrentSchedule(scheduleName);
-    handleClose();
+    renameCurrentSchedule(scheduleName)
+    handleClose()
   }
 
   function handleDelete() {
-    deleteCurrentSchedule();
+    deleteCurrentSchedule()
   }
 
   return (
@@ -84,5 +84,5 @@ export default function EditScheduleButton() {
         </DialogActions>
       </Dialog>
     </>
-  );
+  )
 }
