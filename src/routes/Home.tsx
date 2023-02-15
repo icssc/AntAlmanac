@@ -37,19 +37,21 @@ export default function Home() {
           <Tab label="Calendar" />
           <Tab label="Courses" />
         </Tabs>
-        {mobileTab === 0 && <Calendar />}
-        {mobileTab === 1 && (
-          <Box>
-            <Tabs value={tab} onChange={handleTabChange} variant="fullWidth">
-              <Tab label="Course Search" />
-              <Tab label="Added Courses" />
-              <Tab label="Map" />
-            </Tabs>
-            {tab === 0 && <CourseSearch />}
-            {tab === 1 && <AddedCourses />}
-            {tab === 2 && <Map />}
-          </Box>
-        )}
+        <Box sx={{ height: 'calc(100vh - 150px)', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+          {mobileTab === 0 && <Calendar />}
+          {mobileTab === 1 && (
+            <>
+              <Tabs value={tab} onChange={handleTabChange} variant="fullWidth">
+                <Tab label="Course Search" />
+                <Tab label="Added Courses" />
+                <Tab label="Map" />
+              </Tabs>
+              {tab === 0 && <CourseSearch />}
+              {tab === 1 && <AddedCourses />}
+              {tab === 2 && <Map />}
+            </>
+          )}
+        </Box>
       </>
     );
   }
@@ -58,11 +60,12 @@ export default function Home() {
    * on larger than mobile, both panels are split
    */
   return (
-    <Box sx={{ display: 'flex' }}>
-      <Box sx={{ width: '50%', height: '90vh', overflowY: 'auto' }}>
+    <Box sx={{ display: 'flex', height: 'calc(100vh - 100px)' }}>
+      <Box sx={{ width: '50%', overflowY: 'auto' }}>
         <Calendar />
       </Box>
-      <Box sx={{ width: '50%', height: '90vh', overflowY: 'auto' }}>
+      {/** the box housing the Map MUST be flexed; since the Map's container uses flexGrow to size its height */}
+      <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
         <Tabs value={tab} onChange={handleTabChange} variant="fullWidth">
           <Tab label="Course Search" />
           <Tab label="Added Courses" />

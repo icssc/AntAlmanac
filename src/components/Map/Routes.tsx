@@ -43,7 +43,7 @@ export default function CourseRoutes(props: Props) {
         /**
          * default is mapbox/driving, more options: {@link https://docs.mapbox.com/api/navigation/directions/#routing-profiles}
          */
-        profile: 'mapbox/walking' 
+        profile: 'mapbox/walking',
       }),
 
       plan: L.Routing.plan(waypoints, {

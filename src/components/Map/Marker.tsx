@@ -61,7 +61,7 @@ interface Props {
   lng: number;
   acronym: string;
   stackIndex: number;
-  index?: number
+  index?: number;
   children?: React.ReactNode;
 }
 
