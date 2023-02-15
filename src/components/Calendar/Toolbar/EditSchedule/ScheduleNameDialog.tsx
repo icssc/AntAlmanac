@@ -4,8 +4,8 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Add } from '@material-ui/icons';
 import React, { useState } from 'react';
 
-import { addSchedule, renameSchedule } from '../../../../actions/AppStoreActions';
-import { isDarkMode } from '../../../../helpers';
+import { addSchedule, renameSchedule } from '$actions/AppStoreActions';
+import { isDarkMode } from '$lib/helpers';
 
 const styles = () => ({
     addButton: {
