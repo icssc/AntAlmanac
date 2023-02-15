@@ -23,7 +23,7 @@ export default function UserLocator() {
     return () => {
       // do we have to remove the control from the map?
       // it throws an error if I try to;
-      // it works fine without removing, but in dev mode it'll show up twice 
+      // it works fine without removing, but in dev mode it'll show up twice
       // because strict mode will run useEffect twice
       // lc.remove()
     }

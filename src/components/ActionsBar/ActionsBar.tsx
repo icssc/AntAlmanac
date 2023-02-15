@@ -1,7 +1,7 @@
-import { AppBar, Button, Toolbar } from '@mui/material'
-import { Assignment as AssignmentIcon } from '@mui/icons-material'
+import { AppBar, Toolbar } from '@mui/material'
 import LoadButton from '$components/Buttons/Load'
 import SaveScheduleButton from '$components/Buttons/Save'
+import ImportScheduleButton from '$components/Buttons/Import'
 
 export default function ActionsBar() {
   return (
@@ -9,9 +9,7 @@ export default function ActionsBar() {
       <Toolbar variant="dense" sx={{ justifyContent: 'space-evenly' }}>
         <SaveScheduleButton />
         <LoadButton />
-        <Button color="inherit" startIcon={<AssignmentIcon />}>
-          Import
-        </Button>
+        <ImportScheduleButton />
       </Toolbar>
     </AppBar>
   )
