@@ -3,7 +3,7 @@ import L from 'leaflet'
 import type { Map, LatLngTuple } from 'leaflet'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import 'leaflet-routing-machine'
-import { Autocomplete, Box, Tab, Tabs, TextField, Typography } from '@mui/material'
+import { Autocomplete, Box, Paper, Tab, Tabs, TextField, Typography } from '@mui/material'
 import { useScheduleStore } from '$stores/schedule'
 import { getMarkersFromCourses } from '$lib/map'
 import buildingCatalogue from '$lib/buildingCatalogue'
@@ -84,57 +84,50 @@ export default function CourseMap() {
 
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-      <Box>
-        <Tabs value={tab} onChange={handleChange} variant="fullWidth" centered>
-          {days.map((day, index) => (
-            <Tab key={index} label={day || 'All'} />
-          ))}
-        </Tabs>
-        <Autocomplete
-          options={uniqueBuildings}
-          getOptionLabel={(option) => option.name || ''}
-          onChange={handleSearch}
-          renderInput={(params) => <TextField {...params} label="Search for a place" variant="filled" />}
-        />
-      </Box>
+      <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
+        {/** menu floats above the map */}
+        <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.9420 }}>
+          <Tabs value={tab} onChange={handleChange} variant="fullWidth" scrollButtons="auto" sx={{ minHeight: 0 }}>
+            {days.map((day, index) => (
+              <Tab key={index} label={day || 'All'} sx={{ padding: 1, minHeight: 'auto' }} />
+            ))}
+          </Tabs>
+          <Autocomplete
+            options={uniqueBuildings}
+            getOptionLabel={(option) => option.name || ''}
+            onChange={handleSearch}
+            renderInput={(params) => <TextField {...params} label="Search for a place" variant="filled" />}
+          />
+        </Paper>
 
-      <Box sx={{ flexGrow: 1, width: '100%' }}>
-        <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
-          <TileLayer attribution={attribution} url={url} tileSize={512} maxZoom={21} zoomOffset={-1} />
+        <TileLayer attribution={attribution} url={url} tileSize={512} maxZoom={21} zoomOffset={-1} />
 
-          {/* draw out routes if the user is viewing a specific day */}
-          {today !== '' &&
-            startDestPairs.map((startDestPair) => {
-              const latLngTuples = startDestPair.map((marker) => [marker.lat, marker.lng] as LatLngTuple)
-              const color = startDestPair[0]?.color
-              /**
-               * previous renders of the routes will be left behind if the keys aren't unique
-               */
-              const key = Math.random().toString(36).substring(7)
-              return <CourseRoutes key={key} latLngTuples={latLngTuples} color={color} />
-            })}
+        {/* draw out routes if the user is viewing a specific day */}
+        {today !== '' &&
+          startDestPairs.map((startDestPair) => {
+            const latLngTuples = startDestPair.map((marker) => [marker.lat, marker.lng] as LatLngTuple)
+            const color = startDestPair[0]?.color
+            /**
+             * previous renders of the routes will be left behind if the keys aren't unique
+             */
+            const key = Math.random().toString(36).substring(7)
+            return <CourseRoutes key={key} latLngTuples={latLngTuples} color={color} />
+          })}
 
-          {/* draw a marker for each class */}
-          {uniqueMarkers.map((marker, index) => (
-            <CourseMarker {...marker} key={index} label={today ? index + 1 : undefined} stackIndex={index}>
-              <hr />
-              <Typography variant="body2">Class: {`${marker.title} ${marker.sectionType}`}</Typography>
-              <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
-            </CourseMarker>
-          ))}
+        {/* draw a marker for each class */}
+        {uniqueMarkers.map((marker, index) => (
+          <CourseMarker {...marker} key={index} label={today ? index + 1 : undefined} stackIndex={index}>
+            <hr />
+            <Typography variant="body2">Class: {`${marker.title} ${marker.sectionType}`}</Typography>
+            <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
+          </CourseMarker>
+        ))}
 
-          {/* render an additional marker if the user searched up a location */}
-          {selected && (
-            <CourseMarker
-              {...selected}
-              label="!"
-              color="red"
-              location={selected.name}
-              image={selected.imageURLs?.[0]}
-            />
-          )}
-        </MapContainer>
-      </Box>
+        {/* render an additional marker if the user searched up a location */}
+        {selected && (
+          <CourseMarker {...selected} label="!" color="red" location={selected.name} image={selected.imageURLs?.[0]} />
+        )}
+      </MapContainer>
     </Box>
   )
 }
