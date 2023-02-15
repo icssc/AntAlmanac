@@ -822,6 +822,13 @@
   dependencies:
     "@types/leaflet" "*"
 
+"@types/leaflet.locatecontrol@^0.74.1":
+  version "0.74.1"
+  resolved "https://registry.yarnpkg.com/@types/leaflet.locatecontrol/-/leaflet.locatecontrol-0.74.1.tgz#1a1074cd720a68655ffdb70d8104539a71416615"
+  integrity sha512-4rqWfKadQ+Rksv4uq7Ab68CdOlaDt8z5bP+EMbXk5Ea82XMV9yLzQpAvVZ2xdARa8fpF2Atk+fheQ04Lik6ziA==
+  dependencies:
+    "@types/leaflet" "*"
+
 "@types/leaflet@*", "@types/leaflet@^1.9.0":
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-1.9.0.tgz#8caf452255e16cb15e0eabcb0d2a26793da0a6a2"
@@ -2264,6 +2271,11 @@ leaflet-routing-machine@^3.2.12:
     "@mapbox/corslite" "0.0.7"
     "@mapbox/polyline" "^0.2.0"
     osrm-text-instructions "^0.13.2"
+
+leaflet.locatecontrol@^0.79.0:
+  version "0.79.0"
+  resolved "https://registry.yarnpkg.com/leaflet.locatecontrol/-/leaflet.locatecontrol-0.79.0.tgz#0236b87c699a49f9ddb2f289941fbc0d3c3f8b62"
+  integrity sha512-h64QIHFkypYdr90lkSfjKvPvvk8/b8UnP3m9WuoWdp5p2AaCWC0T1NVwyuj4rd5U4fBW3tQt4ppmZ2LceHMIDg==
 
 leaflet@^1.9.3:
   version "1.9.3"

@@ -31,7 +31,7 @@ export default function CalendarToolbar(props: Props) {
   return (
     <AppBar position="static" color="transparent" sx={{ '&.MuiAppBar-root': { boxShadow: 'none' } }}>
       <Toolbar sx={{ '&.MuiToolbar-root': { padding: 1 } }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, gap: 0.5 }}>
           <EditScheduleButton />
           <SelectScheduleButton />
           <ToggleFinalsButton />
@@ -57,7 +57,7 @@ export default function CalendarToolbar(props: Props) {
             </Menu>
           </>
         ) : (
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 2, margin: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 0.5 }}>
             <DownloadButton />
             <ScreenshotButton imgRef={props.imgRef} />
             <CustomEventButton />

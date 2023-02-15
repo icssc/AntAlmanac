@@ -10,6 +10,7 @@ import buildingCatalogue from '$lib/buildingCatalogue'
 import type Building from '$lib/building'
 import CourseMarker from './Marker'
 import CourseRoutes from './Routes'
+import UserLocator from './UserLocator'
 
 const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'
 
@@ -86,7 +87,7 @@ export default function CourseMap() {
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
       <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
         {/** menu floats above the map */}
-        <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.9420 }}>
+        <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.942 }}>
           <Tabs value={tab} onChange={handleChange} variant="fullWidth" scrollButtons="auto" sx={{ minHeight: 0 }}>
             {days.map((day, index) => (
               <Tab key={index} label={day || 'All'} sx={{ padding: 1, minHeight: 'auto' }} />
@@ -101,6 +102,8 @@ export default function CourseMap() {
         </Paper>
 
         <TileLayer attribution={attribution} url={url} tileSize={512} maxZoom={21} zoomOffset={-1} />
+
+        <UserLocator />
 
         {/* draw out routes if the user is viewing a specific day */}
         {today !== '' &&
