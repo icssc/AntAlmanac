@@ -1,14 +1,20 @@
 import html2canvas from 'html2canvas'
 import { useRef } from 'react'
 import { Button, Link, Tooltip, useTheme } from '@mui/material'
-import { Panorama as PanoramaIcon } from '@mui/icons-material'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
 
-interface Props {
+/**
+ * you can give it any component that accepts an onClick prop;
+ * any additional props are forwarded to this component
+ */
+interface Props extends Record<string, any> {
   /**
    * provide a React ref to the element to screenshot
    */
   imgRef: React.RefObject<HTMLElement>
+
+  component?: React.ComponentType
+  children?: React.ReactNode
 }
 
 /**
@@ -22,8 +28,11 @@ export default function ScreenshotButton(props: Props) {
    */
   const ref = useRef<HTMLAnchorElement>(null)
 
+  const { component, children, imgRef, ...$$restProps } = props
+  const ComponentToUse = component ?? Button
+
   async function handleClick() {
-    if (!props.imgRef.current || !ref.current) {
+    if (!imgRef.current || !ref.current) {
       return
     }
 
@@ -32,7 +41,7 @@ export default function ScreenshotButton(props: Props) {
       action: analyticsEnum.calendar.actions.SCREENSHOT,
     })
 
-    const canvas = await html2canvas(props.imgRef.current, {
+    const canvas = await html2canvas(imgRef.current, {
       scale: 2.5,
       backgroundColor: theme.palette.background.paper,
     })
@@ -45,9 +54,9 @@ export default function ScreenshotButton(props: Props) {
   return (
     <>
       <Tooltip title="Get a screenshot of your schedule">
-        <Button onClick={handleClick} variant="outlined" size="small" startIcon={<PanoramaIcon fontSize="small" />}>
-          Screenshot
-        </Button>
+        <ComponentToUse onClick={handleClick} {...$$restProps}>
+          {children || 'Screenshot'}
+        </ComponentToUse>
       </Tooltip>
       <Link sx={{ display: 'none' }} ref={ref} />
     </>

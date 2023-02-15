@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Add as AddIcon, Edit as EditIcon } from '@mui/icons-material'
+import { Edit as EditIcon } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -35,51 +35,61 @@ const defaultCustomEvent: RepeatingCustomEvent = {
 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
-interface Props {
+/**
+ * you can give it any component that accepts an onClick prop;
+ * any additional props are forwarded to this component
+ */
+interface Props extends Record<string, any> {
   event?: RepeatingCustomEvent
   onDialogClose?: () => void
+
+  component?: React.ComponentType
+  children?: React.ReactNode
 }
 
 /**
  * button that opens up a dialog to add or edit a custom event
  */
 export default function CustomEvent(props: Props) {
+  const { component, children, event, onDialogClose, ...$$restProps } = props
+  const ComponentToUse = component ?? Button
+
   const { schedules, scheduleIndex } = useScheduleStore()
   const { isDarkMode } = useSettingsStore()
   const [disabled, setDisabled] = useState('')
   const [open, setOpen] = useState(false)
-  const [event, setEvent] = useState<RepeatingCustomEvent>(props.event || structuredClone(defaultCustomEvent))
+  const [currentEvent, setCurrentEvent] = useState<RepeatingCustomEvent>(event || structuredClone(defaultCustomEvent))
   const [selectedSchedules, setSelectedSchedules] = useState([scheduleIndex])
 
   useEffect(() => {
-    if (!event.title) {
+    if (!currentEvent.title) {
       setDisabled('Please enter a title')
-    } else if (!event?.start) {
+    } else if (!currentEvent?.start) {
       setDisabled('Please enter a start time')
-    } else if (!event?.end) {
+    } else if (!currentEvent?.end) {
       setDisabled('Please enter an end time')
-    } else if (!event?.days.some(Boolean)) {
+    } else if (!currentEvent?.days.some(Boolean)) {
       setDisabled('Please select a day')
     } else if (!selectedSchedules.length) {
       setDisabled('Please select a schedule')
     } else {
       setDisabled('')
     }
-  }, [event.title, event.start, event.end, event.days, selectedSchedules])
+  }, [currentEvent.title, currentEvent.start, currentEvent.end, currentEvent.days, selectedSchedules])
 
   function handleOpen() {
     setOpen(true)
   }
 
-  function handleTextChange(key: keyof typeof event) {
+  function handleTextChange(key: keyof typeof currentEvent) {
     return (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-      setEvent({ ...event, [key]: e.target.value })
+      setCurrentEvent({ ...currentEvent, [key]: e.target.value })
     }
   }
 
   function handleCheckDay(index: number) {
     return (e: React.ChangeEvent<HTMLInputElement>) => {
-      setEvent((prevEvent) => ({
+      setCurrentEvent((prevEvent) => ({
         ...prevEvent,
         days: prevEvent.days.map((day, i) => (i === index ? e.target.checked : day)),
       }))
@@ -97,13 +107,13 @@ export default function CustomEvent(props: Props) {
   }
 
   function handleCancel() {
-    setEvent(props.event || structuredClone(defaultCustomEvent))
+    setCurrentEvent(props.event || structuredClone(defaultCustomEvent))
     setOpen(false)
     props.onDialogClose?.()
   }
 
   function handleSubmit() {
-    if (!event.days.some((day) => day) || selectedSchedules.length === 0) {
+    if (!currentEvent.days.some((day) => day) || selectedSchedules.length === 0) {
       return
     }
 
@@ -114,7 +124,7 @@ export default function CustomEvent(props: Props) {
 
     const newCustomEvent = {
       color: props.event ? props.event.color : '#551a8b',
-      ...event,
+      ...currentEvent,
       customEventID: props.event ? props.event.customEventID : Date.now(),
     }
 
@@ -124,7 +134,7 @@ export default function CustomEvent(props: Props) {
       addCustomEvent(newCustomEvent, selectedSchedules)
     }
 
-    setEvent(props.event || structuredClone(defaultCustomEvent))
+    setCurrentEvent(props.event || structuredClone(defaultCustomEvent))
     setSelectedSchedules([scheduleIndex])
     setOpen(false)
   }
@@ -137,15 +147,9 @@ export default function CustomEvent(props: Props) {
             <EditIcon />
           </IconButton>
         ) : (
-          <Button
-            disableRipple={true}
-            onClick={handleOpen}
-            variant="outlined"
-            size="small"
-            startIcon={<AddIcon fontSize="small" />}
-          >
-            Add Custom
-          </Button>
+          <ComponentToUse onClick={handleOpen} {...$$restProps}>
+            {children || 'Add Custom'}
+          </ComponentToUse>
         )}
       </Tooltip>
       <Dialog open={open} maxWidth={'lg'}>
@@ -154,17 +158,17 @@ export default function CustomEvent(props: Props) {
           <Box component="form" noValidate sx={{ display: 'flex', flexDirection: 'column', gap: 4, my: 2 }}>
             <FormControl>
               <InputLabel>Event Name</InputLabel>
-              <Input required={true} value={event?.title} onChange={handleTextChange('title')} />
+              <Input required={true} value={currentEvent?.title} onChange={handleTextChange('title')} />
             </FormControl>
 
             <FormGroup row sx={{ gap: 4 }}>
               <FormControl>
                 <FormLabel>Start Time</FormLabel>
-                <TextField onChange={handleTextChange('start')} type="time" value={event.start} />
+                <TextField onChange={handleTextChange('start')} type="time" value={currentEvent.start} />
               </FormControl>
               <FormControl>
                 <FormLabel>End Time</FormLabel>
-                <TextField onChange={handleTextChange('end')} type="time" value={event.end} />
+                <TextField onChange={handleTextChange('end')} type="time" value={currentEvent.end} />
               </FormControl>
             </FormGroup>
 
@@ -175,7 +179,7 @@ export default function CustomEvent(props: Props) {
               {days.map((day, index) => (
                 <FormControlLabel
                   key={index}
-                  control={<Checkbox checked={event.days[index]} onChange={handleCheckDay(index)} />}
+                  control={<Checkbox checked={currentEvent.days[index]} onChange={handleCheckDay(index)} />}
                   label={day}
                 />
               ))}

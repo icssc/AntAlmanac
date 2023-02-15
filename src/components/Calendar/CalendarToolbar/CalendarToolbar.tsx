@@ -1,6 +1,21 @@
 import { useState } from 'react'
-import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, useMediaQuery } from '@mui/material'
-import { MoreHoriz as MoreHorizIcon } from '@mui/icons-material'
+import {
+  AppBar,
+  Box,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Toolbar,
+  useMediaQuery,
+} from '@mui/material'
+import {
+  Add as AddIcon,
+  MoreHoriz as MoreHorizIcon,
+  Panorama as PanoramaIcon,
+  Today as TodayIcon,
+} from '@mui/icons-material'
 import UndoDeleteButton from '$components/Buttons/UndoDelete'
 import ClearCurrentSchedule from '$components/Buttons/ClearCurrentSchedule'
 import DownloadButton from '$components/Buttons/Download'
@@ -43,34 +58,46 @@ export default function CalendarToolbar(props: Props) {
 
         {screenXs ? (
           <>
+            <UndoDeleteButton />
+            <ClearCurrentSchedule />
             <IconButton onClick={handleClick}>
               <MoreHorizIcon />
             </IconButton>
             <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={handleClose}>
-              <MenuItem>
-                <UndoDeleteButton />
-              </MenuItem>
-              <MenuItem>
-                <ClearCurrentSchedule />
-              </MenuItem>
-              <MenuItem>
-                <DownloadButton />
-              </MenuItem>
-              <MenuItem>
-                <ScreenshotButton imgRef={props.imgRef} />
-              </MenuItem>
-              <MenuItem>
-                <CustomEventButton />
-              </MenuItem>
+              <DownloadButton component={MenuItem}>
+                <ListItemIcon>
+                  <TodayIcon />
+                </ListItemIcon>
+                <ListItemText>Download</ListItemText>
+              </DownloadButton>
+
+              <ScreenshotButton imgRef={props.imgRef} component={MenuItem}>
+                <ListItemIcon>
+                  <PanoramaIcon />
+                </ListItemIcon>
+                <ListItemText>Screenshot</ListItemText>
+              </ScreenshotButton>
+
+              <CustomEventButton component={MenuItem}>
+                <ListItemIcon>
+                  <AddIcon />
+                </ListItemIcon>
+                <ListItemText>Add Custom</ListItemText>
+              </CustomEventButton>
             </Menu>
           </>
         ) : (
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 0.5 }}>
             <UndoDeleteButton />
             <ClearCurrentSchedule />
-            <DownloadButton />
-            <ScreenshotButton imgRef={props.imgRef} />
-            <CustomEventButton />
+            <DownloadButton variant="outlined" size="small" startIcon={<TodayIcon fontSize="small" />} />
+            <ScreenshotButton
+              imgRef={props.imgRef}
+              variant="outlined"
+              size="small"
+              startIcon={<PanoramaIcon fontSize="small" />}
+            />
+            <CustomEventButton variant="outlined" size="small" startIcon={<AddIcon fontSize="small" />} />
           </Box>
         )}
       </Toolbar>

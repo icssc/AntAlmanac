@@ -2,18 +2,29 @@ import { useRef } from 'react'
 import { createEvents } from 'ics'
 import { useSnackbar } from 'notistack'
 import { Button, Link, Tooltip } from '@mui/material'
-import { Today as TodayIcon } from '@mui/icons-material'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { useScheduleStore } from '$stores/schedule'
 import { getEventsFromCourses, vTimeZoneSection } from '$lib/download'
 
 /**
+ * you can give it any component that accepts an onClick prop;
+ * any additional props are forwarded to this component
+ */
+interface Props extends Record<string, any> {
+  component?: React.ComponentType
+  children?: React.ReactNode
+}
+
+/**
  * button that downloads the current schedule as an .ics file
  */
-export default function DownloadButton() {
+export default function DownloadButton(props: Props) {
   const { schedules, scheduleIndex } = useScheduleStore()
   const { enqueueSnackbar } = useSnackbar()
   const ref = useRef<HTMLAnchorElement>(null)
+
+  const { component, children, ...$$restProps } = props
+  const ComponentToUse = component ?? Button
 
   function exportCalendar() {
     const events = getEventsFromCourses(schedules[scheduleIndex].courses)
@@ -51,9 +62,9 @@ export default function DownloadButton() {
   return (
     <>
       <Tooltip title="Download Calendar as an .ics file">
-        <Button onClick={exportCalendar} variant="outlined" size="small" startIcon={<TodayIcon fontSize="small" />}>
-          Download
-        </Button>
+        <ComponentToUse onClick={exportCalendar} {...$$restProps}>
+          {children || 'Download'}
+        </ComponentToUse>
       </Tooltip>
       <Link ref={ref} sx={{ display: 'none' }} />
     </>
