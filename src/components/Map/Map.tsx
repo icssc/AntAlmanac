@@ -1,10 +1,13 @@
 import { useRef, useState } from 'react';
+import L from 'leaflet';
 import type { Map, LatLngTuple } from 'leaflet';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet-routing-machine';
-import { Box, Slider, Tab, Tabs, Typography } from '@mui/material';
+import { Autocomplete, Box, Tab, Tabs, TextField, Typography } from '@mui/material';
 import { useScheduleStore } from '$stores/schedule';
 import { getMarkersFromCourses } from '$lib/map';
+import buildingCatalogue from '$lib/buildingCatalogue';
+import type Building from '$lib/building';
 import CourseMarker from './Marker';
 import CourseRoutes from './Routes';
 
@@ -48,8 +51,7 @@ export default function CourseMap() {
    * creates unique array of markers that occur today
    */
   const uniqueMarkers = markersToday.filter(
-    (marker, index, self) =>
-      self.findIndex((foundMarker) => marker.key === foundMarker.key) === index
+    (marker, index, self) => self.findIndex((foundMarker) => marker.key === foundMarker.key) === index
   );
 
   /**
@@ -63,12 +65,17 @@ export default function CourseMap() {
     return acc;
   }, [] as (typeof uniqueMarkers)[]);
 
-  function handleZoom(_e: Event, newZoom: number | number[]) {
-    if (Array.isArray(newZoom)) {
+  function handleSearch(_event: React.SyntheticEvent, value: Building | null) {
+    if (!value) {
       return
     }
-    map.current?.setView(map.current.getCenter(), newZoom);
+    const location = L.latLng(value.lat, value.lng);
+    map.current?.setView(location, 18);
   }
+
+  const autocompleteOptions = Object.values(buildingCatalogue).filter(
+    (building, index, self) => self.findIndex((foundBuilding) => building.name === foundBuilding.name) === index
+  );
 
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
@@ -77,7 +84,12 @@ export default function CourseMap() {
           <Tab key={index} label={day || 'All'} />
         ))}
       </Tabs>
-      <Slider onChange={handleZoom} />
+      <Autocomplete
+        options={autocompleteOptions}
+        getOptionLabel={(option) => option.name}
+        onChange={handleSearch}
+        renderInput={(params) => <TextField {...params} label="Search for a place" variant="filled" />}
+      />
       <Box sx={{ flexGrow: 1, width: '100%' }}>
         <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
           <TileLayer attribution={attribution} url={url} tileSize={512} maxZoom={21} zoomOffset={-1} />
