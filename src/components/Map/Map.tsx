@@ -30,12 +30,29 @@ export default function CourseMap() {
   const { schedules, scheduleIndex } = useScheduleStore();
   const map = useRef<Map | null>(null);
   const [tab, setTab] = useState(0);
+  const [selected, setSelected] = useState<Building | null>(null);
 
   const today = days[tab];
 
   function handleChange(_event: React.SyntheticEvent, newValue: number) {
     setTab(newValue);
   }
+
+  function handleSearch(_event: React.SyntheticEvent, value: Building | null) {
+    if (!value) {
+      return;
+    }
+    setSelected(value);
+    const location = L.latLng(value.lat, value.lng);
+    map.current?.setView(location, 18);
+  }
+
+  /**
+   * unique buildings
+   */
+  const uniqueBuildings = Object.values(buildingCatalogue).filter(
+    (building, index, self) => self.findIndex((foundBuilding) => building.name === foundBuilding.name) === index
+  );
 
   /**
    * extract a bunch of relevant metadata from courses into a top-level object for MapMarkers
@@ -48,7 +65,7 @@ export default function CourseMap() {
   const markersToday = markers.filter((marker) => marker.start.toString().includes(today));
 
   /**
-   * creates unique array of markers that occur today
+   * unique array of markers that occur today
    */
   const uniqueMarkers = markersToday.filter(
     (marker, index, self) => self.findIndex((foundMarker) => marker.key === foundMarker.key) === index
@@ -65,35 +82,27 @@ export default function CourseMap() {
     return acc;
   }, [] as (typeof uniqueMarkers)[]);
 
-  function handleSearch(_event: React.SyntheticEvent, value: Building | null) {
-    if (!value) {
-      return
-    }
-    const location = L.latLng(value.lat, value.lng);
-    map.current?.setView(location, 18);
-  }
-
-  const autocompleteOptions = Object.values(buildingCatalogue).filter(
-    (building, index, self) => self.findIndex((foundBuilding) => building.name === foundBuilding.name) === index
-  );
-
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-      <Tabs value={tab} onChange={handleChange} variant="fullWidth" centered>
-        {days.map((day, index) => (
-          <Tab key={index} label={day || 'All'} />
-        ))}
-      </Tabs>
-      <Autocomplete
-        options={autocompleteOptions}
-        getOptionLabel={(option) => option.name}
-        onChange={handleSearch}
-        renderInput={(params) => <TextField {...params} label="Search for a place" variant="filled" />}
-      />
+      <Box>
+        <Tabs value={tab} onChange={handleChange} variant="fullWidth" centered>
+          {days.map((day, index) => (
+            <Tab key={index} label={day || 'All'} />
+          ))}
+        </Tabs>
+        <Autocomplete
+          options={uniqueBuildings}
+          getOptionLabel={(option) => option.name || ''}
+          onChange={handleSearch}
+          renderInput={(params) => <TextField {...params} label="Search for a place" variant="filled" />}
+        />
+      </Box>
+
       <Box sx={{ flexGrow: 1, width: '100%' }}>
         <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
           <TileLayer attribution={attribution} url={url} tileSize={512} maxZoom={21} zoomOffset={-1} />
 
+          {/* draw out routes if the user is viewing a specific day */}
           {today !== '' &&
             startDestPairs.map((startDestPair) => {
               const latLngTuples = startDestPair.map((marker) => [marker.lat, marker.lng] as LatLngTuple);
@@ -105,13 +114,25 @@ export default function CourseMap() {
               return <CourseRoutes key={key} latLngTuples={latLngTuples} color={color} />;
             })}
 
+          {/* draw a marker for each class */}
           {uniqueMarkers.map((marker, index) => (
-            <CourseMarker {...marker} key={index} index={today ? index + 1 : undefined} stackIndex={index}>
+            <CourseMarker {...marker} key={index} label={today ? index + 1 : undefined} stackIndex={index}>
               <hr />
               <Typography variant="body2">Class: {`${marker.title} ${marker.sectionType}`}</Typography>
               <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
             </CourseMarker>
           ))}
+
+          {/* render an additional marker if the user searched up a location */}
+          {selected && (
+            <CourseMarker
+              {...selected}
+              label="!"
+              color="red"
+              location={selected.name}
+              image={selected.imageURLs?.[0]}
+            />
+          )}
         </MapContainer>
       </Box>
     </Box>
