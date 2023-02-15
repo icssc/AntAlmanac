@@ -144,7 +144,6 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
 
     toggleImportSource(radioGroupEvent: React.ChangeEvent<HTMLInputElement>) {
         this.setState({ importSource: radioGroupEvent.target.value });
-        console.log(this.state.importSource);
     }
 
     render() {
