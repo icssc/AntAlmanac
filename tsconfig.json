@@ -16,7 +16,10 @@
         "jsx": "react",
         "baseUrl": ".",
         "paths": {
-            "$/*": ["src/*"]
+            "$actions/*": ["src/actions/*"],
+            "$api/*": ["src/api/*"],
+            "$components/*": ["src/components/*"],
+            "$stores/*": ["src/stores/*"],
         }
     },
     "include": ["src"]
