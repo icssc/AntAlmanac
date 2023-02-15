@@ -64,7 +64,7 @@ export default function Home() {
       <Box sx={{ width: '50%', overflowY: 'auto' }}>
         <Calendar />
       </Box>
-      {/** the box housing the Map MUST be flexed; since the Map's container uses flexGrow to size its height */}
+      {/** the Box with Map MUST be flexed; since the Map uses flexGrow to size its height */}
       <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
         <Tabs value={tab} onChange={handleTabChange} variant="fullWidth">
           <Tab label="Course Search" />
