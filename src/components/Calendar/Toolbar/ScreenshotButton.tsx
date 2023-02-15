@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
 import React, { PureComponent } from 'react';
 
-import analyticsEnum, { logAnalytics } from '../../../analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 interface ScreenshotButtonProps {
     onTakeScreenshot: (html2CanvasScreenshot: () => void) => void; // the function in an ancestor component that wraps ScreenshotButton.handleClick to perform canvas transformations before and after downloading the screenshot.
