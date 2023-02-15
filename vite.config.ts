@@ -10,6 +10,7 @@ export default defineConfig({
       '$actions': resolve(__dirname, './src/actions'),
       '$api': resolve(__dirname, './src/api'),
       '$components': resolve(__dirname, './src/components'),
+      '$lib': resolve(__dirname, './src/lib'),
       '$stores': resolve(__dirname, './src/stores'),
     }
   },
