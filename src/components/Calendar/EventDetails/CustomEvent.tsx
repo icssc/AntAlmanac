@@ -27,6 +27,7 @@ export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
       category: analyticsEnum.calendar.title,
       action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
     })
+    props.closePopover()
   }
 
   return (

@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, useMediaQuery } from '@mui/material'
 import { MoreHoriz as MoreHorizIcon } from '@mui/icons-material'
-import ScreenshotButton from '$components/Buttons/Screenshot'
+import UndoDeleteButton from '$components/Buttons/UndoDelete'
 import DownloadButton from '$components/Buttons/Download'
+import ScreenshotButton from '$components/Buttons/Screenshot'
 import CustomEventButton from '$components/Buttons/CustomEvent'
 import EditScheduleButton from '$components/Buttons/EditSchedule'
 import SelectScheduleButton from '$components/Buttons/SelectSchedule'
@@ -46,6 +47,9 @@ export default function CalendarToolbar(props: Props) {
             </IconButton>
             <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={handleClose}>
               <MenuItem>
+                <UndoDeleteButton />
+              </MenuItem>
+              <MenuItem>
                 <DownloadButton />
               </MenuItem>
               <MenuItem>
@@ -58,6 +62,7 @@ export default function CalendarToolbar(props: Props) {
           </>
         ) : (
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 0.5 }}>
+            <UndoDeleteButton />
             <DownloadButton />
             <ScreenshotButton imgRef={props.imgRef} />
             <CustomEventButton />

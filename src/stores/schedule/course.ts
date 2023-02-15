@@ -1,5 +1,7 @@
 /**
  * functions that manage courses in the schedule store
+ * @remarks be careful with previousStates;
+ * structuredClone is used to deep clone the object so it doesn't get affected by mutations to the original
  */
 
 import {
@@ -97,7 +99,7 @@ export function addCourse(section: Section, course: SimpleAACourse, addScheduleI
 
   if (!courseAlreadyExists) {
     if (undo) {
-      previousStates.push({ schedules, scheduleIndex })
+      previousStates.push({ schedules: structuredClone(schedules), scheduleIndex })
     }
 
     schedules[targetScheduleIndex]?.courses.push(courseToAdd)
@@ -156,11 +158,14 @@ export function changeCourseColor(sectionCode: string, term: string, newColor: s
  */
 export function deleteCourse(sectionCode: string, term: string) {
   const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
-  previousStates.push({ schedules, scheduleIndex })
+
+  previousStates.push({ schedules: structuredClone(schedules), scheduleIndex })
+
   schedules[scheduleIndex].courses = schedules[scheduleIndex].courses.filter(
     (course) => !(course.section.sectionCode === sectionCode && course.term === term)
   )
-  useScheduleStore.setState({ schedules, previousStates })
+
+  useScheduleStore.setState({ schedules: structuredClone(schedules), previousStates })
 }
 
 /**
@@ -174,7 +179,7 @@ export function copyCoursesToSchedule(toScheduleIndex: number) {
 
   if (toScheduleIndex === schedules.length) {
     /**
-     * TODO: somehow convert this to a batch update like below
+     * TODO: convert this to a batch update like below
      */
     schedules[scheduleIndex].courses.map((course) => addCourseToAllSchedules(course.section, course))
   } else {
@@ -197,5 +202,13 @@ export function copyCoursesToSchedule(toScheduleIndex: number) {
      * commit the changes into the store
      */
     useScheduleStore.setState({ schedules })
+  }
+}
+
+export function undoDelete() {
+  const { previousStates } = useScheduleStore.getState()
+  const lastState = previousStates.pop()
+  if (lastState) {
+    useScheduleStore.setState({ schedules: lastState.schedules, previousStates })
   }
 }
