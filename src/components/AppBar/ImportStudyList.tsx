@@ -5,6 +5,10 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
+    FormControl,
+    FormControlLabel,
+    Radio,
+    RadioGroup,
     TextField,
 } from '@material-ui/core';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -34,6 +38,7 @@ interface ImportStudyListState {
     isOpen: boolean;
     selectedTerm: string;
     studyListText: string;
+    importSource: string;
 }
 
 class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyListState> {
@@ -41,6 +46,7 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         isOpen: false,
         selectedTerm: RightPaneStore.getFormData().term,
         studyListText: '',
+        importSource: 'studylist',
     };
 
     onTermSelectorChange = (field: string, value: string) => {
@@ -136,6 +142,11 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         }
     }
 
+    toggleImportSource(radioGroupEvent: React.ChangeEvent<HTMLInputElement>) {
+        this.setState({ importSource: radioGroupEvent.target.value });
+        console.log(this.state.importSource);
+    }
+
     render() {
         const { classes } = this.props;
         return (
@@ -147,14 +158,35 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                 <Dialog open={this.state.isOpen}>
                     <DialogTitle>Import Schedule</DialogTitle>
                     <DialogContent>
+                        <FormControl>
+                            <RadioGroup
+                                name="changeImportSource"
+                                aria-label="changeImportSource"
+                                value={this.state.importSource}
+                                onChange={(event) => {
+                                    this.toggleImportSource(event);
+                                }}
+                            >
+                                <FormControlLabel
+                                    value="studylist"
+                                    control={<Radio color="primary" />}
+                                    label="From Study List"
+                                />
+                                <FormControlLabel
+                                    value="zotcourse"
+                                    control={<Radio color="primary" />}
+                                    label="From Zotcourse"
+                                />
+                            </RadioGroup>
+                        </FormControl>
                         <DialogContentText>
                             Paste the contents of your Study List below to import it into AntAlmanac.
                             <br />
                             To find your Study List, go to{' '}
                             <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>WebReg</a> or{' '}
                             <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>, and click on
-                            Study List once you&apos;ve logged in. Copy everything below the column names (Code, Dept, etc.)
-                            under the Enrolled Classes section. 
+                            Study List once you&apos;ve logged in. Copy everything below the column names (Code, Dept,
+                            etc.) under the Enrolled Classes section.
                             {/* &apos; is an apostrophe (') */}
                         </DialogContentText>
                         <InputLabel className={classes.inputLabel}>Study List</InputLabel>
