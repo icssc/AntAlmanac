@@ -1,3 +1,4 @@
+import LazyLoad from 'react-lazyload';
 import { Box, IconButton } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import { flattenSOCObject } from '$lib/websoc';
@@ -54,9 +55,15 @@ export default function CourseList() {
       {query.isFetched &&
         (transformedData.length ? (
           <Box>
-            {transformedData.map((data, index) => (
-              <Schedule key={index} course={data} />
-            ))}
+            {transformedData.map((data, index) => {
+              const current = transformedData[index];
+              const height = 'sections' in current && current.sections ? current.sections.length * 60 + 60 : 200;
+              return (
+                <LazyLoad once key={index} height={height} offset={500} overflow>
+                  <Schedule course={data} />
+                </LazyLoad>
+              );
+            })}
           </Box>
         ) : (
           <Box sx={{ height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
