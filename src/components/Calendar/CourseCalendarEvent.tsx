@@ -5,10 +5,10 @@ import { Delete } from '@material-ui/icons';
 import React from 'react';
 import { Event } from 'react-big-calendar';
 
-import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '../../analytics';
-import { clickToCopy } from '../../helpers';
-import AppStore from '../../stores/AppStore';
+import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { clickToCopy } from '$lib/helpers';
+import AppStore from '$stores/AppStore';
 import ColorPicker from '../ColorPicker';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 

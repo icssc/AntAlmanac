@@ -9,7 +9,7 @@ import React, { PureComponent, SyntheticEvent } from 'react';
 import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
 import ReactDOM from 'react-dom';
 
-import AppStore from '../../stores/AppStore';
+import AppStore from '$stores/AppStore';
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
 
