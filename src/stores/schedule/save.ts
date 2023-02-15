@@ -8,7 +8,7 @@ export function useSaveSchedule() {
   const { enqueueSnackbar } = useSnackbar()
 
   return async (userID: string, rememberMe: boolean) => {
-    const { previousStates } = useScheduleStore.getState()
+    const { schedules } = useScheduleStore.getState()
 
     logAnalytics({
       category: analyticsEnum.nav.title,
@@ -29,13 +29,13 @@ export function useSaveSchedule() {
       }
 
       try {
-        const latestSchedule = previousStates.pop()
+        const latestSchedule = schedules
 
         if (!latestSchedule) {
           throw new Error('No schedule to save')
         }
 
-        const userData = convertSchedulesToSave(latestSchedule.schedules)
+        const userData = convertSchedulesToSave(latestSchedule)
 
         await fetch(SAVE_DATA_ENDPOINT, {
           method: 'POST',

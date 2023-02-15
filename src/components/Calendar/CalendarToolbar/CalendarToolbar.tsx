@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, useMediaQuery } from '@mui/material'
 import { MoreHoriz as MoreHorizIcon } from '@mui/icons-material'
 import UndoDeleteButton from '$components/Buttons/UndoDelete'
+import ClearCurrentSchedule from '$components/Buttons/ClearCurrentSchedule'
 import DownloadButton from '$components/Buttons/Download'
 import ScreenshotButton from '$components/Buttons/Screenshot'
 import CustomEventButton from '$components/Buttons/CustomEvent'
@@ -50,6 +51,9 @@ export default function CalendarToolbar(props: Props) {
                 <UndoDeleteButton />
               </MenuItem>
               <MenuItem>
+                <ClearCurrentSchedule />
+              </MenuItem>
+              <MenuItem>
                 <DownloadButton />
               </MenuItem>
               <MenuItem>
@@ -63,6 +67,7 @@ export default function CalendarToolbar(props: Props) {
         ) : (
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 0.5 }}>
             <UndoDeleteButton />
+            <ClearCurrentSchedule />
             <DownloadButton />
             <ScreenshotButton imgRef={props.imgRef} />
             <CustomEventButton />
