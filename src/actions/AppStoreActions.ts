@@ -463,3 +463,9 @@ export const deleteSchedule = (scheduleIndex: number) => {
 
     AppStore.deleteSchedule(newScheduleNames, newAddedCourses, newCustomEvents, newScheduleIndex, newScheduleNotes);
 };
+
+export const editScheduleNote = (scheduleNote: string, scheduleIndex: number) => {
+    const newScheduleNotes = [...AppStore.getScheduleNotes()];
+    newScheduleNotes[scheduleIndex] = scheduleNote;
+    AppStore.editScheduleNote(newScheduleNotes);
+};

@@ -385,6 +385,11 @@ class AppStore extends EventEmitter {
         this.emit('themeToggle');
         window.localStorage.setItem('theme', theme);
     }
+
+    editScheduleNote(newScheduleNotes: string[]) {
+        this.scheduleNotes = newScheduleNotes;
+        this.emit('scheduleNotesChange');
+    }
 }
 
 const store = new AppStore();
