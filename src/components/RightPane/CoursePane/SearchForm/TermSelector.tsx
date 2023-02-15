@@ -4,7 +4,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import React, { ChangeEvent, PureComponent } from 'react';
 
-import { termData } from '../../../../termData';
+import { termData } from '$lib/termData';
 import RightPaneStore from '../../RightPaneStore';
 
 interface TermSelectorProps {

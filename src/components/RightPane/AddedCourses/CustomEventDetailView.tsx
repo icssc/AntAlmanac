@@ -5,8 +5,8 @@ import { Delete } from '@material-ui/icons';
 import moment from 'moment';
 import React from 'react';
 
-import { deleteCustomEvent } from '../../../actions/AppStoreActions';
-import analyticsEnum from '../../../analytics';
+import { deleteCustomEvent } from '$actions/AppStoreActions';
+import analyticsEnum from '$lib/analytics';
 import CustomEventDialog, { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '../../ColorPicker';
 
