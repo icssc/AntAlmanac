@@ -4,8 +4,8 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import React, { PureComponent } from 'react';
 
-import { toggleTheme } from '../../actions/AppStoreActions';
-import AppStore from '../../stores/AppStore';
+import { toggleTheme } from '$actions/AppStoreActions';
+import AppStore from '$stores/AppStore';
 
 const styles = {
     container: {

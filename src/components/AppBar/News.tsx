@@ -17,8 +17,8 @@ import { Skeleton } from '@material-ui/lab';
 import moment from 'moment-timezone';
 import React, { Fragment, MouseEventHandler,PureComponent } from 'react';
 
-import analyticsEnum, { logAnalytics } from '../../analytics';
-import { NEWS_ENDPOINT } from '../../api/endpoints';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { NEWS_ENDPOINT } from '$api/endpoints';
 
 const styles: Styles<Theme, object> = (theme) => ({
     list: {

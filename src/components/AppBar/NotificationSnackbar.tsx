@@ -7,7 +7,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import { ProviderContext, withSnackbar } from 'notistack';
 import React, { PureComponent } from 'react';
 
-import AppStore from '../../stores/AppStore';
+import AppStore from '$stores/AppStore';
 
 const styles: Styles<Theme, object> = (theme) => ({
     success: {

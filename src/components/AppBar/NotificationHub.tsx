@@ -10,8 +10,8 @@ import {
 import { Notifications } from '@material-ui/icons';
 import React, { PureComponent } from 'react';
 
-import analyticsEnum, { logAnalytics } from '../../analytics';
-import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '../../api/endpoints';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '$api/endpoints';
 
 interface NotificationItem {
     courseTitle: string;
