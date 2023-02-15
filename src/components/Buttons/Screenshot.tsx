@@ -34,7 +34,7 @@ export default function ScreenshotButton(props: Props) {
 
     const canvas = await html2canvas(props.imgRef.current, {
       scale: 2.5,
-      backgroundColor: theme.palette.background.paper
+      backgroundColor: theme.palette.background.paper,
     })
 
     ref.current.href = canvas.toDataURL('image/png')

@@ -136,6 +136,7 @@ export default function FuzzySearch() {
   return (
     <Autocomplete
       options={Object.keys(results)}
+      filterOptions={(x) => x}
       renderInput={(params) => <TextField {...params} label="Search" />}
       getOptionLabel={getOptionLabel}
       noOptionsText="No results found! Try broadening your search."
