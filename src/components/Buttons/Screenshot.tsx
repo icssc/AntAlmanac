@@ -1,6 +1,6 @@
 import html2canvas from 'html2canvas'
 import { useRef } from 'react'
-import { Button, Link, Tooltip } from '@mui/material'
+import { Button, Link, Tooltip, useTheme } from '@mui/material'
 import { Panorama as PanoramaIcon } from '@mui/icons-material'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
 
@@ -15,6 +15,8 @@ interface Props {
  * button that downloads a screenshot of the element referenced by imgRef
  */
 export default function ScreenshotButton(props: Props) {
+  const theme = useTheme()
+
   /**
    * ref to an invisible link used to download the screenshot
    */
@@ -25,27 +27,19 @@ export default function ScreenshotButton(props: Props) {
       return
     }
 
-    /*
-     * before screenshoting, make some adjustments to the calendar:
-     * - set color to black; screenshot is light mode
-     */
-
-    const prevColor = props.imgRef.current.style.color
-
-    props.imgRef.current.style.color = 'black'
-
     logAnalytics({
       category: analyticsEnum.calendar.title,
       action: analyticsEnum.calendar.actions.SCREENSHOT,
     })
 
-    const canvas = await html2canvas(props.imgRef.current, { scale: 2.5 })
+    const canvas = await html2canvas(props.imgRef.current, {
+      scale: 2.5,
+      backgroundColor: theme.palette.background.paper
+    })
 
     ref.current.href = canvas.toDataURL('image/png')
     ref.current.download = 'Schedule.png'
     ref.current.click()
-
-    props.imgRef.current.style.color = prevColor
   }
 
   return (
