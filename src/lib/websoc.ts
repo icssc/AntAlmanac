@@ -14,7 +14,7 @@ export function flattenSOCObject(SOCObject: WebsocResponse) {
     return accumulator
   }, {} as { [key: string]: string })
 
-  const reduced = SOCObject.schools.reduce((accumulator, school) => {
+  const reduced = SOCObject?.schools?.reduce((accumulator, school) => {
     accumulator.push(school)
     school.departments.forEach((dept) => {
       accumulator.push(dept)
@@ -28,5 +28,5 @@ export function flattenSOCObject(SOCObject: WebsocResponse) {
     return accumulator
   }, [] as (School | Department | AACourse)[])
 
-  return reduced
+  return reduced || []
 }

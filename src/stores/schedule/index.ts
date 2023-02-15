@@ -70,6 +70,11 @@ interface ScheduleStore {
    * undo tree
    */
   previousStates: ScheduleUndoState[]
+
+  /**
+   * whether the schedule's been saved
+   */
+  saved: boolean
 }
 
 /**
@@ -81,4 +86,6 @@ export const useScheduleStore = create<ScheduleStore>((_set, _get) => ({
   scheduleIndex: 0,
 
   previousStates: [],
+
+  saved: false,
 }))

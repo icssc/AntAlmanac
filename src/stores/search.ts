@@ -32,7 +32,7 @@ interface WebsocParams {
   term: FormValues['term']
   ge: FormValues['ge']
   courseNumber: FormValues['courseNumber']
-  sectionCodes: FormValues['sectionCode']
+  sectionCode: FormValues['sectionCode']
   instructorName: FormValues['instructor']
   units: FormValues['units']
   endTime: FormValues['endTime']
@@ -140,7 +140,7 @@ export const useSearchStore = create<SearchStore>((set, get) => ({
       term: form.term,
       ge: form.ge,
       courseNumber: form.courseNumber,
-      sectionCodes: form.sectionCode,
+      sectionCode: form.sectionCode,
       instructorName: form.instructor,
       units: form.units,
       endTime: form.endTime,
