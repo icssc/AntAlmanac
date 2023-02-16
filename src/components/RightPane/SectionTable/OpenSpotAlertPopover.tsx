@@ -5,7 +5,7 @@ import React, { PureComponent } from 'react';
 import InputMask from 'react-input-mask';
 
 import { openSnackbar } from '../../../actions/AppStoreActions';
-import { REGISTER_NOTIFICATIONS_ENDPOINT } from '../../../api/endpoints';
+import { REGISTER_NOTIFICATIONS_ENDPOINT } from '$lib/api/endpoints';
 import RightPaneStore from '../RightPaneStore';
 
 const phoneNumberRegex = RegExp(/\d{10}/);
