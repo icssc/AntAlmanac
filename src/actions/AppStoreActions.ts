@@ -1,3 +1,4 @@
+import { VariantType } from 'notistack';
 import {
     amber,
     blue,
@@ -13,15 +14,13 @@ import {
     red,
     teal,
 } from '@material-ui/core/colors';
-import { VariantType } from 'notistack';
-
-import analyticsEnum, { logAnalytics } from '../analytics';
-import { LOAD_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '../api/endpoints';
-import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
-import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { CourseDetails, courseNumAsDecimal, getCoursesData, termsInSchedule, warnMultipleTerms } from '../helpers';
-import { Section } from '../peterportal.types';
-import AppStore, { AppStoreCourse, ShortCourseInfo, UserData } from '../stores/AppStore';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { LOAD_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '$lib/api/endpoints';
+import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
+import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { CourseDetails, courseNumAsDecimal, getCoursesData, termsInSchedule, warnMultipleTerms } from '$lib/helpers';
+import { Section } from '$lib/peterportal.types';
+import AppStore, { AppStoreCourse, ShortCourseInfo, UserData } from '$stores/AppStore';
 
 const arrayOfColors = [
     red[500],
