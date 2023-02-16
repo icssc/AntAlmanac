@@ -68,6 +68,7 @@
         "@types/react-big-calendar": "^1.6.0",
         "@types/react-color": "^3.0.6",
         "@types/react-dom": "^18.0.10",
+        "@types/react-input-mask": "^3.0.2",
         "@types/react-lazyload": "^3.2.0",
         "@typescript-eslint/eslint-plugin": "^5.51.0",
         "@typescript-eslint/parser": "^5.51.0",
