@@ -1,4 +1,4 @@
-import { CourseEvent, CustomEvent } from '../components/Calendar/CourseCalendarEvent';
+import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import AppStore from './AppStore';
 
 export const calendarizeCourseEvents = () => {
