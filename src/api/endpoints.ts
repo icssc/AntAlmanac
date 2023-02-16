@@ -18,3 +18,5 @@ export const NEWS_ENDPOINT = endpointTransform('/api/news');
 export const PETERPORTAL_GRAPHQL_ENDPOINT = 'https://api.peterportal.org/graphql';
 export const PETERPORTAL_REST_ENDPOINT = 'https://api.peterportal.org/rest/v0';
 export const PETERPORTAL_WEBSOC_ENDPOINT = `${PETERPORTAL_REST_ENDPOINT}/schedule/soc`;
+
+export const ZOTCOURSE_ENDPOINT = 'https://zotcourse.appspot.com/schedule/load?username=';
