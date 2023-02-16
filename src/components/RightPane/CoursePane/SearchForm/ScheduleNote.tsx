@@ -2,54 +2,43 @@ import { Paper, TextField, withStyles } from '@material-ui/core';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import React, { useEffect, useState } from 'react';
 
-import { editScheduleNote  } from '../../../../actions/AppStoreActions';
-import AppStore from '../../../../stores/AppStore';
+import { editScheduleNote } from '../../../../actions/AppStoreActions';
 
 const styles = {
     container: {
-        padding: 10,
+        padding: '10px',
         marginLeft: '8px',
         marginRight: '8px',
         width: '100%',
     }
 };
+
 interface ScheduleNoteProps {
     classes: ClassNameMap;
+    note: string;
+    scheduleIndex: number;
 }
 
-const ScheduleNote = ({ classes }: ScheduleNoteProps) => {
-    const [scheduleNotes, setScheduleNotes] = useState(AppStore.getScheduleNotes());
-    const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
-    const [scheduleNote, setScheduleNote] = useState(scheduleNotes[scheduleIndex]);
+const ScheduleNote = ({ classes, note, scheduleIndex }: ScheduleNoteProps) => {
+    const [scheduleNote, setScheduleNote] = useState(note);
     const NOTE_MAX_LEN = 5000;
-
-    const updateScheduleNotes = () => {
-        setScheduleNotes(AppStore.getScheduleNotes());
-    };
-
-    const updateScheduleIndex = () => {
-        setScheduleIndex(AppStore.getCurrentScheduleIndex());
-    };
 
     const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setScheduleNote(event.target.value);
         editScheduleNote(event.target.value, scheduleIndex);
     };
 
+    // If the user changes the note in another place (like the Edit Schedule modal),
+    // reflect those changes
     useEffect(() => {
-        AppStore.on('scheduleNotesChange', updateScheduleNotes);
-        AppStore.on('currentScheduleIndexChange', updateScheduleIndex);
-        return () => {
-            AppStore.removeListener('scheduleNotesChange', updateScheduleNotes);
-            AppStore.removeListener('currentScheduleIndexChange', updateScheduleIndex);
-        };
-    }, []);
+        setScheduleNote(note);
+    }, [note]);
 
     return (
         <Paper className={classes.container}>
             <TextField
                 type="text"
-                placeholder="This schedule does not have any notes! Click here to type a note!"
+                placeholder="This schedule does not have any notes! Click here to start typing!"
                 onChange={handleNoteChange}
                 value={scheduleNote}
                 inputProps={{ maxLength: NOTE_MAX_LEN }}
@@ -57,11 +46,6 @@ const ScheduleNote = ({ classes }: ScheduleNoteProps) => {
                 fullWidth
                 multiline
             />
-            {/* <div style={{ whiteSpace: 'pre-line' }}>
-                {scheduleNotes[scheduleIndex] === ''
-                    ? 'This schedule does not have any notes! To add notes to this schedule, click on the "Edit schedule" button in the top left corner!'
-                    : scheduleNotes[scheduleIndex]}
-            </div> */}
         </Paper>
     );
 };

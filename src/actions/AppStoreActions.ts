@@ -467,5 +467,6 @@ export const deleteSchedule = (scheduleIndex: number) => {
 export const editScheduleNote = (scheduleNote: string, scheduleIndex: number) => {
     const newScheduleNotes = [...AppStore.getScheduleNotes()];
     newScheduleNotes[scheduleIndex] = scheduleNote;
+
     AppStore.editScheduleNote(newScheduleNotes);
 };

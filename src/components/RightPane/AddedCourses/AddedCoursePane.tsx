@@ -45,6 +45,7 @@ interface AddedCoursePaneState {
     customEvents: RepeatingCustomEvent[];
     totalUnits: number;
     scheduleNames: string[];
+    scheduleNotes: string[];
 }
 
 class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePaneState> {
@@ -53,6 +54,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         customEvents: [],
         totalUnits: 0,
         scheduleNames: AppStore.getScheduleNames(),
+        scheduleNotes: AppStore.getScheduleNotes(),
     };
 
     componentDidMount = () => {
@@ -63,6 +65,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         AppStore.on('currentScheduleIndexChange', this.loadCourses);
         AppStore.on('currentScheduleIndexChange', this.loadCustomEvents);
         AppStore.on('scheduleNamesChange', this.loadScheduleNames);
+        AppStore.on('scheduleNotesChange', this.loadScheduleNotes);
         logAnalytics({
             category: analyticsEnum.addedClasses.title,
             action: analyticsEnum.addedClasses.actions.OPEN,
@@ -75,6 +78,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         AppStore.removeListener('currentScheduleIndexChange', this.loadCourses);
         AppStore.removeListener('currentScheduleIndexChange', this.loadCustomEvents);
         AppStore.removeListener('scheduleNamesChange', this.loadScheduleNames);
+        AppStore.removeListener('scheduleNotesChange', this.loadScheduleNotes);
     }
 
     loadCourses = () => {
@@ -131,6 +135,10 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
     loadScheduleNames = () => {
         this.setState({ scheduleNames: AppStore.getScheduleNames() });
     };
+
+    loadScheduleNotes = () => {
+        this.setState({ scheduleNotes: AppStore.getScheduleNotes() });
+    }
 
     getGrid = () => {
         const scheduleName = this.state.scheduleNames[AppStore.getCurrentScheduleIndex()];
@@ -231,7 +239,10 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                     return null;
                 })}
                 <Typography variant="h6">{`${scheduleName} Notes`}</Typography>
-                <ScheduleNote />
+                <ScheduleNote
+                    note={this.state.scheduleNotes[AppStore.getCurrentScheduleIndex()]}
+                    scheduleIndex={AppStore.getCurrentScheduleIndex()}
+                />
             </>
         );
     };
