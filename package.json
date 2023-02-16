@@ -43,7 +43,8 @@
         "react-router-dom": "^6.2.1",
         "react-scripts": "^5.0.1",
         "recharts": "^1.8.5",
-        "websoc-fuzzy-search": "^0.10.0"
+        "websoc-fuzzy-search": "^0.10.0",
+        "zustand": "^4.3.3"
     },
     "devDependencies": {
         "@types/file-saver": "^2.0.5",
