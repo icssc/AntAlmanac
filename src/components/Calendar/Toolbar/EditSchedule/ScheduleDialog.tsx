@@ -16,7 +16,7 @@ const styles = () => ({
     },
 });
 
-interface ScheduleNameDialogProps {
+interface ScheduleDialogProps {
     classes: ClassNameMap;
     onOpen?: () => void;
     onClose: () => void;
@@ -25,7 +25,7 @@ interface ScheduleNameDialogProps {
     scheduleNotes: string[];
 }
 
-const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
+const ScheduleDialog = (props: ScheduleDialogProps) => {
     const { classes, onOpen, onClose, scheduleNames, scheduleRenameIndex, scheduleNotes } = props;
     const rename = scheduleRenameIndex !== undefined;
     const NOTE_MAX_LEN = 5000;
@@ -151,4 +151,4 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
     );
 };
 
-export default withStyles(styles)(ScheduleNameDialog);
+export default withStyles(styles)(ScheduleDialog);

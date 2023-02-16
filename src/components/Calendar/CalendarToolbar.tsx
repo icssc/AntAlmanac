@@ -11,7 +11,7 @@ import analyticsEnum, { logAnalytics } from '../../analytics';
 import ConditionalWrapper from '../ConditionalWrapper';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import EditSchedule from './Toolbar/EditSchedule/EditSchedule';
-import ScheduleNameDialog from './Toolbar/EditSchedule/ScheduleNameDialog';
+import ScheduleDialog from './Toolbar/EditSchedule/ScheduleDialog';
 import ExportCalendar from './Toolbar/ExportCalendar';
 import ScreenshotButton from './Toolbar/ScreenshotButton';
 
@@ -107,7 +107,7 @@ const CalendarPaneToolbar = ({
                         {name}
                     </MenuItem>
                 ))}
-                <ScheduleNameDialog
+                <ScheduleDialog
                     onOpen={() => setOpenSchedules(true)}
                     onClose={() => setOpenSchedules(false)}
                     scheduleNames={scheduleNames}

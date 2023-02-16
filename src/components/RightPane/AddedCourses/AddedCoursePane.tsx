@@ -10,8 +10,8 @@ import { AACourse } from '../../../peterportal.types';
 import AppStore from '../../../stores/AppStore';
 import { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
-import ScheduleNote from './ScheduleNote';
 import CustomEventDetailView from './CustomEventDetailView';
+import ScheduleNote from './ScheduleNote';
 
 const styles = {
     container: {
