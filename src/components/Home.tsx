@@ -1,8 +1,6 @@
 import DateFnsUtils from '@date-io/date-fns';
 import { CssBaseline, Grid, useMediaQuery } from '@material-ui/core';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import React from 'react';
-
 import Bar from './AppBar/CustomAppBar';
 import NotificationSnackbar from './AppBar/NotificationSnackbar';
 import Calendar from './Calendar/CalendarRoot';
