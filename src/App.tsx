@@ -1,13 +1,12 @@
+import { PureComponent } from 'react';
+import { BrowserRouter, Route,Routes } from 'react-router-dom';
 import { createTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
-import React, { PureComponent } from 'react';
 import ReactGA4 from 'react-ga4';
-import { BrowserRouter, Route,Routes } from 'react-router-dom';
-
-import { undoDelete } from '../actions/AppStoreActions';
-import { isDarkMode } from '../helpers';
-import AppStore from '../stores/AppStore';
-import Home from './Home';
+import { undoDelete } from './actions/AppStoreActions';
+import { isDarkMode } from './helpers';
+import AppStore from './stores/AppStore';
+import Home from './components/Home';
 
 class App extends PureComponent {
     state = {

@@ -1,7 +1,7 @@
 import { render } from 'react-dom';
 import { SnackbarProvider } from 'notistack';
 import { createTheme, MuiThemeProvider } from '@material-ui/core/styles';
-import App from './components/App';
+import App from './App';
 import { unregister } from './registerServiceWorker';
 
 const theme = createTheme({
