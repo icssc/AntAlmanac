@@ -2,7 +2,7 @@ import { Paper, TextField, withStyles } from '@material-ui/core';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import React, { useEffect, useState } from 'react';
 
-import { editScheduleNote } from '../../../../actions/AppStoreActions';
+import { editScheduleNote } from '../../../actions/AppStoreActions';
 
 const styles = {
     container: {

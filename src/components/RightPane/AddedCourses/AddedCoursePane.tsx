@@ -9,8 +9,8 @@ import analyticsEnum, { logAnalytics } from '../../../analytics';
 import { AACourse } from '../../../peterportal.types';
 import AppStore from '../../../stores/AppStore';
 import { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import ScheduleNote from '../CoursePane/SearchForm/ScheduleNote';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
+import ScheduleNote from './ScheduleNote';
 import CustomEventDetailView from './CustomEventDetailView';
 
 const styles = {
