@@ -5,7 +5,7 @@ import ReactGA4 from 'react-ga4';
 import { BrowserRouter, Route,Routes } from 'react-router-dom';
 
 import { undoDelete } from '$actions/AppStoreActions';
-import { isDarkMode } from '../helpers';
+import { isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import Home from './Home';
 
