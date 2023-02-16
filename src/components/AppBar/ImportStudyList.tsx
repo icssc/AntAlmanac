@@ -19,7 +19,7 @@ import React, { PureComponent } from 'react';
 
 import { openSnackbar } from '../../actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '../../analytics';
-import { addCoursesMultiple, combineSOCObjects, getCourseInfo, queryWebsoc } from '../../helpers';
+import { addCoursesMultiple, combineSOCObjects, getCourseInfo, queryWebsoc, queryZotCourse } from '../../helpers';
 import AppStore from '../../stores/AppStore';
 import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '../RightPane/RightPaneStore';
@@ -134,7 +134,8 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
     };
 
     importFromZotCourse = async () => {
-        return null;
+        // TODO: Not Finished
+        await queryZotCourse(this.state.zotcourseScheduleName);
     };
 
     enterEvent = (event: KeyboardEvent) => {

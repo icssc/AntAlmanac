@@ -1,7 +1,12 @@
 import React from 'react';
 
 import { addCourse, openSnackbar } from './actions/AppStoreActions';
-import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from './api/endpoints';
+import {
+    PETERPORTAL_GRAPHQL_ENDPOINT,
+    PETERPORTAL_WEBSOC_ENDPOINT,
+    WEBSOC_ENDPOINT,
+    ZOTCOURSE_ENDPOINT,
+} from './api/endpoints';
 import { RepeatingCustomEvent } from './components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { Meeting, Section, WebsocResponse } from './peterportal.types';
 import AppStore, { AppStoreCourse, ShortCourseInfo, UserData } from './stores/AppStore';
@@ -137,6 +142,17 @@ export function getCourseInfo(SOCObject: WebsocResponse) {
         }
     }
     return courseInfo;
+}
+
+export async function queryZotCourse(schedule_name: string) {
+    // TODO: Try fetch successfully. Now it doesn't work.
+    const url = new URL(ZOTCOURSE_ENDPOINT + schedule_name);
+    const response = (await fetch(url, {
+        headers: {
+            'sec-fetch-site': 'none',
+        },
+    }).then((r) => r.json())) as string;
+    console.log(response);
 }
 
 interface CacheEntry extends WebsocResponse {
