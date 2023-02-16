@@ -23,7 +23,7 @@ module.exports = {
         'plugin:react-hooks/recommended',
         'plugin:jsx-a11y/recommended',
     ],
-    ignorePatterns: ['tools/*', '.eslintrc.js', 'prettier.config.js', 'package.json'],
+    ignorePatterns: ['tools/*', '.eslintrc.js', 'prettier.config.js', 'package.json', 'vite.config.ts', 'index.html'],
     rules: {
         'simple-import-sort/imports': 'error',
         'simple-import-sort/exports': 'error',

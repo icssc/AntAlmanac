@@ -1,8 +1,8 @@
 import '../../../../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js';
 
-import Leaflet, {Control, LeafletMouseEvent} from 'leaflet';
-import React, {PureComponent} from 'react';
-import {LeafletContext, Map, Marker, Polyline, TileLayer, withLeaflet} from 'react-leaflet';
+import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
+import React, { PureComponent } from 'react';
+import { LeafletContext, Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
 
 import analyticsEnum, {logAnalytics} from '../../../analytics';
 import AppStore from '../../../stores/AppStore';
@@ -18,7 +18,7 @@ import {Coord, MapBoxResponse} from './static/mapbox';
 // TODO investigate less jank ways of doing this if at all possible
 
 class LocateControl extends PureComponent<{ leaflet: LeafletContext }> {
-    componentDidMount() {
+    addLocateControl() {
         const { map } = this.props.leaflet;
 
         const lc = new Control.Locate({
@@ -29,6 +29,15 @@ class LocateControl extends PureComponent<{ leaflet: LeafletContext }> {
             flyTo: true,
         });
         lc.addTo(map as Leaflet.Map);
+    }
+
+    componentDidMount() {
+        // This allows the page not to crash when the map is loaded
+        // But the locate button does not appear with error `Control.Locate is not a constructor`
+        setTimeout(
+            () => this.addLocateControl(),
+            0
+        )
     }
 
     render() {
@@ -43,6 +52,7 @@ const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ
 const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
 const DIRECTIONS_ENDPOINT = 'https://api.mapbox.com/directions/v5/mapbox/walking/';
+const FAKE_LOCATIONS = ['VRTL REMOTE', 'ON LINE', 'TBA'];
 
 interface UCIMapState {
     lat: number;
@@ -131,7 +141,7 @@ export default class UCIMap extends PureComponent {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
                 });
-                const obj = await response.json() as MapBoxResponse;
+                const obj = (await response.json()) as MapBoxResponse;
                 const coordinates = obj['routes'][0]['geometry']['coordinates']; // The coordinates for the lines of the routes
                 const waypoints = obj['waypoints']; // The waypoints we specified in the request
                 let waypointIndex = 0;
@@ -363,7 +373,6 @@ export default class UCIMap extends PureComponent {
         const pins: typeof this.state.pins = {};
         const courses = new Set();
         // Tracks courses that have already been pinned on the map, so there are no duplicates
-
         // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
         this.state.eventsInCalendar
             .filter(
@@ -374,7 +383,8 @@ export default class UCIMap extends PureComponent {
                             !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
                             !event.start.toString().includes(DAYS[day]) ||
                             courses.has(event.sectionCode) || // Remove duplicate courses that appear in the calendar
-                            !courses.add(event.sectionCode)
+                            !courses.add(event.sectionCode) ||
+                            FAKE_LOCATIONS.includes(event.bldg)
                         ) // Adds to the set and return false
                     )
             )
