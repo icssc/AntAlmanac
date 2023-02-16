@@ -1,41 +1,34 @@
-import { PureComponent } from 'react';
-import { BrowserRouter, Route,Routes } from 'react-router-dom';
+import { useEffect } from 'react';
 import ReactGA4 from 'react-ga4';
+import { BrowserRouter, Route,Routes } from 'react-router-dom';
 import { undoDelete } from './actions/AppStoreActions';
-import { isDarkMode } from './helpers';
 import Home from './components/Home';
 import AppThemeProvider from './providers/Theme'
 
-class App extends PureComponent {
-    state = {
-        darkMode: isDarkMode(),
-    };
-
-    componentDidMount = () => {
+/**
+ * renders the single page application
+ */
+export default function App() {
+    useEffect(() => {
         document.addEventListener('keydown', undoDelete, false);
         ReactGA4.initialize('G-30HVJXC2Y4');
         ReactGA4.send('pageview');
-    };
+        return () => {
+            document.removeEventListener('keydown', undoDelete, false);
+        }
+    }, [])
 
-    componentWillUnmount() {
-        document.removeEventListener('keydown', undoDelete, false);
-    }
-
-    render() {
-        return (
-            <AppThemeProvider>
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route
-                            path="/feedback"
-                            element={() => window.location.replace('https://forms.gle/k81f2aNdpdQYeKK8A')}
-                        />
-                    </Routes>
-                </BrowserRouter>
-            </AppThemeProvider>
-        );
-    }
+    return (
+        <AppThemeProvider>
+             <BrowserRouter>
+                 <Routes>
+                     <Route path="/" element={<Home />} />
+                     <Route
+                         path="/feedback"
+                         element={() => window.location.replace('https://forms.gle/k81f2aNdpdQYeKK8A')}
+                     />
+                 </Routes>
+         </BrowserRouter>
+     </AppThemeProvider>
+    );
 }
-
-export default App;
