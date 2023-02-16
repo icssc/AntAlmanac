@@ -7,11 +7,11 @@ import { unregister } from './registerServiceWorker';
 const rootElement = document.getElementById('root');
 
 render(
-        <Mui4ThemeProvider>
-            <SnackbarProvider>
-                <App />
-            </SnackbarProvider>
-        </Mui4ThemeProvider>,
+    <Mui4ThemeProvider>
+        <SnackbarProvider>
+            <App />
+        </SnackbarProvider>
+    </Mui4ThemeProvider>,
     rootElement
 );
 
