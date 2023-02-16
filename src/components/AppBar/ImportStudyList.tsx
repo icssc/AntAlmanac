@@ -38,6 +38,7 @@ interface ImportStudyListState {
     isOpen: boolean;
     selectedTerm: string;
     studyListText: string;
+    zotcourseScheduleName: string;
     importSource: string;
 }
 
@@ -46,6 +47,7 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         isOpen: false,
         selectedTerm: RightPaneStore.getFormData().term,
         studyListText: '',
+        zotcourseScheduleName: '',
         importSource: 'studylist',
     };
 
@@ -66,63 +68,73 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         this.setState({ isOpen: false }, async () => {
             document.removeEventListener('keydown', this.enterEvent, false);
             if (doImport) {
-                const sectionCodes = this.state.studyListText.match(/\d{5}/g);
-                if (!sectionCodes) {
-                    openSnackbar('error', 'Cannot import an empty/invalid Study List.');
-                    return;
-                }
-                const currSchedule = AppStore.getCurrentScheduleIndex();
-                try {
-                    const sectionsAdded = addCoursesMultiple(
-                        getCourseInfo(
-                            combineSOCObjects(
-                                await Promise.all(
-                                    sectionCodes
-                                        .reduce((result: string[][], item, index) => {
-                                            // WebSOC queries can have a maximum of 10 course codes in tandem
-                                            const chunkIndex = Math.floor(index / 10);
-                                            result[chunkIndex]
-                                                ? result[chunkIndex].push(item)
-                                                : (result[chunkIndex] = [item]);
-                                            return result;
-                                        }, []) // https://stackoverflow.com/a/37826698
-                                        .map((sectionCode: string[]) =>
-                                            queryWebsoc({
-                                                term: this.state.selectedTerm,
-                                                sectionCodes: sectionCode.join(','),
-                                            })
-                                        )
-                                )
-                            )
-                        ),
-                        this.state.selectedTerm,
-                        currSchedule
-                    );
-                    logAnalytics({
-                        category: analyticsEnum.nav.title,
-                        action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
-                        value: sectionsAdded / (sectionCodes.length || 1),
-                    });
-                    if (sectionsAdded === sectionCodes.length) {
-                        openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
-                    } else if (sectionsAdded !== 0) {
-                        openSnackbar(
-                            'warning',
-                            `Successfully imported ${sectionsAdded} of ${sectionCodes.length} classes. 
-                        Please make sure that you selected the correct term and that none of your classes are missing.`
-                        );
-                    } else {
-                        openSnackbar(
-                            'error',
-                            'Failed to import any classes! Please make sure that you pasted the correct Study List.'
-                        );
-                    }
-                } catch (e) {
-                    if (e instanceof Error) this.handleError(e);
+                if (this.state.importSource === 'studylist') {
+                    await this.importFromStudyList();
+                } else {
+                    await this.importFromZotCourse();
                 }
             }
             this.setState({ studyListText: '' });
         });
+    };
+
+    importFromStudyList = async () => {
+        const sectionCodes = this.state.studyListText.match(/\d{5}/g);
+        if (!sectionCodes) {
+            openSnackbar('error', 'Cannot import an empty/invalid Study List.');
+            return;
+        }
+        const currSchedule = AppStore.getCurrentScheduleIndex();
+        try {
+            const sectionsAdded = addCoursesMultiple(
+                getCourseInfo(
+                    combineSOCObjects(
+                        await Promise.all(
+                            sectionCodes
+                                .reduce((result: string[][], item, index) => {
+                                    // WebSOC queries can have a maximum of 10 course codes in tandem
+                                    const chunkIndex = Math.floor(index / 10);
+                                    result[chunkIndex] ? result[chunkIndex].push(item) : (result[chunkIndex] = [item]);
+                                    return result;
+                                }, []) // https://stackoverflow.com/a/37826698
+                                .map((sectionCode: string[]) =>
+                                    queryWebsoc({
+                                        term: this.state.selectedTerm,
+                                        sectionCodes: sectionCode.join(','),
+                                    })
+                                )
+                        )
+                    )
+                ),
+                this.state.selectedTerm,
+                currSchedule
+            );
+            logAnalytics({
+                category: analyticsEnum.nav.title,
+                action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
+                value: sectionsAdded / (sectionCodes.length || 1),
+            });
+            if (sectionsAdded === sectionCodes.length) {
+                openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
+            } else if (sectionsAdded !== 0) {
+                openSnackbar(
+                    'warning',
+                    `Successfully imported ${sectionsAdded} of ${sectionCodes.length} classes. 
+                Please make sure that you selected the correct term and that none of your classes are missing.`
+                );
+            } else {
+                openSnackbar(
+                    'error',
+                    'Failed to import any classes! Please make sure that you pasted the correct Study List.'
+                );
+            }
+        } catch (e) {
+            if (e instanceof Error) this.handleError(e);
+        }
+    };
+
+    importFromZotCourse = async () => {
+        return null;
     };
 
     enterEvent = (event: KeyboardEvent) => {
@@ -148,6 +160,7 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
 
     render() {
         const { classes } = this.props;
+
         return (
             <>
                 {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
@@ -178,29 +191,54 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                                 />
                             </RadioGroup>
                         </FormControl>
-                        <DialogContentText>
-                            Paste the contents of your Study List below to import it into AntAlmanac.
-                            <br />
-                            To find your Study List, go to{' '}
-                            <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>WebReg</a> or{' '}
-                            <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>, and click on
-                            Study List once you&apos;ve logged in. Copy everything below the column names (Code, Dept,
-                            etc.) under the Enrolled Classes section.
-                            {/* &apos; is an apostrophe (') */}
-                        </DialogContentText>
-                        <InputLabel className={classes.inputLabel}>Study List</InputLabel>
-                        <TextField
-                            // eslint-disable-next-line jsx-a11y/no-autofocus
-                            autoFocus
-                            fullWidth
-                            multiline
-                            margin="dense"
-                            type="text"
-                            placeholder="Paste here"
-                            value={this.state.studyListText}
-                            onChange={(event) => this.setState({ studyListText: event.target.value })}
-                        />
-                        <br />
+                        {this.state.importSource === 'studylist' ? (
+                            <div>
+                                <DialogContentText>
+                                    Paste the contents of your Study List below to import it into AntAlmanac.
+                                    <br />
+                                    To find your Study List, go to{' '}
+                                    <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>WebReg</a> or{' '}
+                                    <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>, and
+                                    click on Study List once you&apos;ve logged in. Copy everything below the column
+                                    names (Code, Dept, etc.) under the Enrolled Classes section.
+                                    {/* &apos; is an apostrophe (') */}
+                                </DialogContentText>
+                                <InputLabel className={classes.inputLabel}>Study List</InputLabel>
+                                <TextField
+                                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                                    autoFocus
+                                    fullWidth
+                                    multiline
+                                    margin="dense"
+                                    type="text"
+                                    placeholder="Paste here"
+                                    value={this.state.studyListText}
+                                    onChange={(event) => this.setState({ studyListText: event.target.value })}
+                                />
+                                <br />
+                            </div>
+                        ) : (
+                            <div>
+                                <DialogContentText>
+                                    Paste your Zotcourse schedule name below to import it into AntAlmanac.
+                                    {/* &apos; is an apostrophe (') */}
+                                </DialogContentText>
+                                <InputLabel className={classes.inputLabel}>Zotcourse Schedule</InputLabel>
+                                <TextField
+                                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                                    autoFocus
+                                    fullWidth
+                                    multiline
+                                    margin="dense"
+                                    type="text"
+                                    placeholder="Paste here"
+                                    value={this.state.zotcourseScheduleName}
+                                    onChange={(event) => this.setState({ zotcourseScheduleName: event.target.value })}
+                                />
+                                <br />
+                            </div>
+                        )}
+
                         <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
                         <TermSelector changeState={this.onTermSelectorChange} fieldName={'selectedTerm'} />
                     </DialogContent>
