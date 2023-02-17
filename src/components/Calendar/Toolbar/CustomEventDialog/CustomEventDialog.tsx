@@ -135,7 +135,7 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
         return (
             <>
                 {this.props.customEvent !== undefined ? (
-                    // Dumb ternary added to get rid of TypeScript possibly undefined compile error
+                    // Dumb ternary below added to get rid of TypeScript possibly undefined compile error
                     <IconButton onClick={() => this.setState({open: true, scheduleIndices: AppStore.schedule.getIndexesOfCustomEvent(this.props.customEvent ? this.props.customEvent.customEventID : 0)})}>
                         <Edit fontSize="small" />
                     </IconButton>
