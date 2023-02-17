@@ -91,7 +91,7 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
     };
 
     const closeCopyAndAlert = () => {
-        const url = new URL(document.location.href)
+        const url = new URL(window.location.href)
         const urlParam = new URLSearchParams(url.search);
         urlParam.delete('courseCode');
         urlParam.append('courseCode', String(section.sectionCode));
