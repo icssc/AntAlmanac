@@ -5,7 +5,7 @@ import AppStore from '../stores/AppStore';
 import { isDarkMode } from '../helpers';
 
 interface Props {
-    children?: JSX.Element;
+    children?: React.ReactNode;
 }
 
 /**
@@ -18,6 +18,7 @@ export default function AppThemeProvider(props: Props) {
         AppStore.on('themeToggle', () => {
             setDarkMode(isDarkMode());
         });
+
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
             if (AppStore.getTheme() === 'auto') {
                 setDarkMode(e.matches);
@@ -35,15 +36,26 @@ export default function AppThemeProvider(props: Props) {
                 },
             },
         },
+        typography: {
+            htmlFontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10),
+            fontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
+        },
         palette: {
             type: darkMode ? 'dark' : 'light',
             primary: {
-                main: '#305db7',
+                light: '#5191d6',
+                main: '#0064a4',
+                dark: '#003a75',
+                contrastText: '#fff',
             },
             secondary: {
-                main: '#ffffff',
+                light: '#ffff52',
+                main: '#ffd200',
+                dark: '#c7a100',
+                contrastText: '#000',
             },
         },
+        spacing: 4,
     });
 
     return <ThemeProvider theme={theme}>{props.children}</ThemeProvider>;
