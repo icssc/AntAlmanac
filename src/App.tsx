@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import ReactGA4 from 'react-ga4';
 import { BrowserRouter, Route,Routes } from 'react-router-dom';
+import { SnackbarProvider } from 'notistack'
 import { undoDelete } from './actions/AppStoreActions';
 import Home from './components/Home';
 import AppThemeProvider from './providers/Theme'
@@ -22,15 +23,17 @@ export default function App() {
     return (
         <AppQueryProvider>
             <AppThemeProvider>
-                 <BrowserRouter>
-                     <Routes>
-                         <Route path="/" element={<Home />} />
-                         <Route
-                             path="/feedback"
-                             element={() => window.location.replace('https://forms.gle/k81f2aNdpdQYeKK8A')}
-                         />
-                     </Routes>
-                 </BrowserRouter>
+                 <SnackbarProvider>
+                     <BrowserRouter>
+                         <Routes>
+                             <Route path="/" element={<Home />} />
+                             <Route
+                                 path="/feedback"
+                                 element={() => window.location.replace('https://forms.gle/k81f2aNdpdQYeKK8A')}
+                             />
+                         </Routes>
+                     </BrowserRouter>
+                 </SnackbarProvider>
             </AppThemeProvider>
         </AppQueryProvider>
     );
