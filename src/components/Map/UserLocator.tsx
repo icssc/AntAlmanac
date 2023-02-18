@@ -1,31 +1,40 @@
-import { useEffect } from 'react'
-import { useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet.locatecontrol'
+import { useEffect } from 'react'
+import { createElementHook, createElementObject, useLeafletContext } from '@react-leaflet/core'
+import type { LeafletContextInterface } from '@react-leaflet/core'
 
-/**
- * initializes leaflet locator to locate the user
- */
-export default function UserLocator() {
-  const map = useMap()
-
-  useEffect(() => {
-    const lc = L.control.locate({
+function createUserLocator(_props: any, context: LeafletContextInterface) {
+  const userLocator = createElementObject(
+    L.control.locate({
       position: 'topleft',
       flyTo: true,
       strings: {
         title: 'Look for your lost soul',
       },
-    })
+    }),
+    context)
 
-    lc.addTo(map)
+    return userLocator
+}
 
+/**
+ * we use react-leaflet's core API to manage lifecycle of leaflet elements properly
+ * @see {@link https://react-leaflet.js.org/docs/core-architecture/#element-hook-factory}
+ */
+const useUserLocator = createElementHook(createUserLocator)
+
+/**
+ * initializes leaflet locator to locate the user
+ */
+export default function UserLocator() {
+  const context = useLeafletContext()
+  const elementRef = useUserLocator(null, context)
+
+  useEffect(() => {
+    elementRef.current.instance.addTo(context.map)
     return () => {
-      // do we have to remove the control from the map?
-      // it throws an error if I try to;
-      // it works fine without removing, but in dev mode it'll show up twice
-      // because strict mode will run useEffect twice
-      // lc.remove()
+      elementRef.current.instance.remove()
     }
   }, [])
 

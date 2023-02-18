@@ -3,6 +3,48 @@ import L from 'leaflet'
 import type { LatLngTuple } from 'leaflet'
 import { useMap } from 'react-leaflet'
 import 'leaflet-routing-machine'
+import { createElementHook, createElementObject, useLeafletContext } from '@react-leaflet/core'
+import type { LeafletContextInterface } from '@react-leaflet/core'
+
+function createCourseRoutes(props: Props, context: LeafletContextInterface) {
+  const latLngTuples = props.latLngTuples || []
+
+  /**
+   * convert each tuple to an actual LatLng object
+   */
+  const waypoints = latLngTuples.map((latLngTuple) => L.latLng(latLngTuple))
+
+  /**
+   * create a new router that can calculate and render the walking paths to the map
+   */
+  const router = L.Routing.control({
+    router: L.Routing.mapbox(ACCESS_TOKEN, {
+      /**
+       * default is mapbox/driving, more options: {@link https://docs.mapbox.com/api/navigation/directions/#routing-profiles}
+       */
+      profile: 'mapbox/walking',
+    }),
+
+    plan: L.Routing.plan(waypoints, {
+      addWaypoints: false,
+      createMarker: () => false,
+    }),
+
+    routeLine(route) {
+      const line = L.Routing.line(route, {
+        addWaypoints: false,
+        extendToWaypoints: true,
+        missingRouteTolerance: 0,
+        styles: [{ color: props.color }],
+      })
+      return line
+    },
+  })
+
+  return createElementObject(router, context)
+}
+
+const useCourseRoutes = createElementHook((props, context) => createElementObject(L.Routing.control(props), context))
 
 const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'
 
