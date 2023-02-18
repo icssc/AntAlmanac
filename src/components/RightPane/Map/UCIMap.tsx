@@ -91,7 +91,6 @@ export default class UCIMap extends PureComponent {
                         !(
                             (
                                 event.isCustomEvent ||
-                                !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
                                 !event.start.toString().includes(DAYS[day]) ||
                                 courses.has(event.sectionCode) || // Remove duplicate courses that appear in the calendar
                                 !courses.add(event.sectionCode)
@@ -294,7 +293,6 @@ export default class UCIMap extends PureComponent {
                     !(
                         (
                             event.isCustomEvent ||
-                            !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
                             !event.start.toString().includes(DAYS[day]) ||
                             courses.has(event.sectionCode) || // Remove duplicate courses that appear in the calendar
                             !courses.add(event.sectionCode) ||

@@ -17,6 +17,7 @@ import React, { PureComponent } from 'react';
 import { addCustomEvent, editCustomEvent } from '../../../../actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
 import { isDarkMode } from '../../../../helpers';
+import AppStore from "../../../../stores/AppStore";
 import DaySelector from './DaySelector';
 import ScheduleSelector from './ScheduleSelector';
 
@@ -35,7 +36,6 @@ export interface RepeatingCustomEvent {
     start: string;
     end: string;
     days: boolean[];
-    scheduleIndices: number[];
     customEventID: number;
     color?: string;
 }
@@ -43,12 +43,12 @@ export interface RepeatingCustomEvent {
 interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
     onDialogClose?: () => void;
-    currentScheduleIndex: number;
     scheduleNames: string[];
 }
 
 interface CustomEventDialogState extends RepeatingCustomEvent {
     open: boolean;
+    scheduleIndices: number[]
 }
 
 const defaultCustomEvent: RepeatingCustomEvent = {
@@ -56,7 +56,6 @@ const defaultCustomEvent: RepeatingCustomEvent = {
     end: '15:30',
     title: '',
     days: [false, false, false, false, false, false, false],
-    scheduleIndices: [],
     customEventID: 0,
 };
 
@@ -64,10 +63,12 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
     state: CustomEventDialogState = {
         open: false,
         ...(this.props.customEvent || defaultCustomEvent),
+        scheduleIndices: []
     };
 
     handleOpen = () => {
-        this.setState({ open: true, scheduleIndices: [this.props.currentScheduleIndex] });
+        this.setState({ open: true, scheduleIndices: [AppStore.schedule.getCurrentScheduleIndex()]});
+
         logAnalytics({
             category: analyticsEnum.calendar.title,
             action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
@@ -113,14 +114,13 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
             color: this.props.customEvent ? this.props.customEvent.color : '#551a8b',
             title: this.state.title,
             days: this.state.days,
-            scheduleIndices: this.state.scheduleIndices,
             start: this.state.start,
             end: this.state.end,
             customEventID: this.props.customEvent ? this.props.customEvent.customEventID : Date.now(),
         };
 
-        if (this.props.customEvent) editCustomEvent(newCustomEvent);
-        else addCustomEvent(newCustomEvent);
+        if (this.props.customEvent) editCustomEvent(newCustomEvent, this.state.scheduleIndices);
+        else addCustomEvent(newCustomEvent, this.state.scheduleIndices);
     };
 
     handleSelectScheduleIndices = (scheduleIndices: number[]) => {
@@ -134,8 +134,9 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
     render() {
         return (
             <>
-                {this.props.customEvent ? (
-                    <IconButton onClick={() => this.setState({ open: true })}>
+                {this.props.customEvent !== undefined ? (
+                    // Dumb ternary below added to get rid of TypeScript possibly undefined compile error
+                    <IconButton onClick={() => this.setState({open: true, scheduleIndices: AppStore.schedule.getIndexesOfCustomEvent(this.props.customEvent ? this.props.customEvent.customEventID : 0)})}>
                         <Edit fontSize="small" />
                     </IconButton>
                 ) : (
