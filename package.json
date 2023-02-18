@@ -1,0 +1,17 @@
+{
+  "name": "antalmanac",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "turbo start --filter=antalmanac",
+    "start:all": "turbo start",
+    "build": "turbo build --filter=antalmanac",
+    "build:all": "turbo build",
+    "deploy": "turbo deploy --filter=antalmanac",
+    "deploy:cdk": "turbo deploy --filter=cdk",
+    "deploy:all": "turbo deploy"
+  },
+  "workspaces": [
+    "apps/*"
+  ]
+}

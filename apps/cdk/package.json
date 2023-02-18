@@ -6,9 +6,7 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "lint": "eslint . --ext .ts",
-    "backend-install": "npm install --prefix ./functions/antalmanac-backend",
-    "postinstall": "npm run backend-install"
+    "lint": "eslint . --ext .ts"
   },
   "devDependencies": {
     "@types/jest": "^26.0.10",
