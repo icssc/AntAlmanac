@@ -339,7 +339,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
     useEffect(() => {
         const toggleHighlight = () => {
-            const doAdd = AppStore.getAddedSectionCodes()[AppStore.getCurrentScheduleIndex()].has(
+            const doAdd = AppStore.getAddedSectionCodes().has(
                 `${section.sectionCode} ${term}`
             );
             setAddedCourse(doAdd);

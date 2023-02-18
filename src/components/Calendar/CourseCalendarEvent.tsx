@@ -77,7 +77,6 @@ interface CommonCalendarEvent extends Event {
     color: string;
     start: Date;
     end: Date;
-    scheduleIndices: number[];
     title: string;
 }
 
@@ -105,13 +104,12 @@ export type CalendarEvent = CourseEvent | CustomEvent;
 interface CourseCalendarEventProps {
     classes: ClassNameMap;
     courseInMoreInfo: CalendarEvent;
-    currentScheduleIndex: number;
     scheduleNames: string[];
     closePopover: () => void;
 }
 
 const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
-    const { classes, courseInMoreInfo, currentScheduleIndex } = props;
+    const { classes, courseInMoreInfo } = props;
     if (!courseInMoreInfo.isCustomEvent) {
         const { term, instructors, sectionCode, title, finalExam, bldg } = courseInMoreInfo;
 
@@ -123,7 +121,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         <IconButton
                             size="small"
                             onClick={() => {
-                                deleteCourse(sectionCode, currentScheduleIndex, term);
+                                deleteCourse(sectionCode, term);
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_COURSE,
@@ -195,7 +193,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             </Paper>
         );
     } else {
-        const { title, customEventID } = courseInMoreInfo;
+            const { title, customEventID } = courseInMoreInfo;
         return (
             <Paper className={classes.customEventContainer} onClick={(event) => event.stopPropagation()}>
                 <div className={classes.title}>{title}</div>
@@ -210,18 +208,15 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                     </div>
                     <CustomEventDialog
                         onDialogClose={props.closePopover}
-                        customEvent={AppStore.getCustomEvents().find(
-                            (customEvent) => customEvent.customEventID === customEventID
-                        )}
+                        customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
                         scheduleNames={props.scheduleNames}
-                        currentScheduleIndex={currentScheduleIndex}
                     />
 
                     <Tooltip title="Delete">
                         <IconButton
                             onClick={() => {
                                 props.closePopover();
-                                deleteCustomEvent(customEventID, currentScheduleIndex);
+                                deleteCustomEvent(customEventID);
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,

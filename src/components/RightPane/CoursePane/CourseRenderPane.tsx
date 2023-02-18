@@ -76,8 +76,8 @@ const styles: Styles<Theme, object> = (theme) => ({
 });
 
 const flattenSOCObject = (SOCObject: WebsocResponse): (School | Department | AACourse)[] => {
-    const courseColors = AppStore.getAddedCourses().reduce((accumulator, { color, section }) => {
-        accumulator[section.sectionCode] = color;
+    const courseColors = AppStore.getAddedCourses().reduce((accumulator, { section }) => {
+        accumulator[section.sectionCode] = section.color;
         return accumulator;
     }, {} as { [key: string]: string });
     return SOCObject.schools.reduce((accumulator: (School | Department | AACourse)[], school) => {
