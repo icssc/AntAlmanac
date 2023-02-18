@@ -1,10 +1,9 @@
 import React from 'react';
-
-import { addCourse, openSnackbar } from './actions/AppStoreActions';
-import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from './api/endpoints';
-import { RepeatingCustomEvent } from './components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { addCourse, openSnackbar } from '$actions/AppStoreActions';
+import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from '$lib/api/endpoints';
+import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import AppStore, { AppStoreCourse, ShortCourseInfo, UserData } from '$stores/AppStore';
 import { Meeting, Section, WebsocResponse } from './peterportal.types';
-import AppStore, { AppStoreCourse, ShortCourseInfo, UserData } from './stores/AppStore';
 
 interface GradesGraphQLResponse {
     data: {

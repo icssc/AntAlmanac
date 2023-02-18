@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { createTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
-import AppStore from '../stores/AppStore';
-import { isDarkMode } from '../helpers';
+import AppStore from '$stores/AppStore';
+import { isDarkMode } from '$lib/helpers';
 
 interface Props {
     children?: React.ReactNode;
@@ -18,7 +18,6 @@ export default function AppThemeProvider(props: Props) {
         AppStore.on('themeToggle', () => {
             setDarkMode(isDarkMode());
         });
-
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
             if (AppStore.getTheme() === 'auto') {
                 setDarkMode(e.matches);

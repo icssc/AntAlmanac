@@ -1,3 +1,4 @@
+import { ChangeEvent, PureComponent } from 'react';
 import {
     Collapse,
     FormControl,
@@ -13,8 +14,6 @@ import {
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap , Styles } from '@material-ui/core/styles/withStyles';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import React, { ChangeEvent, PureComponent } from 'react';
-
 import RightPaneStore from '../../RightPaneStore';
 
 const styles: Styles<Theme, object> = {

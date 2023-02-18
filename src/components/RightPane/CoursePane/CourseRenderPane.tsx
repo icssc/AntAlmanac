@@ -1,14 +1,13 @@
+import React, { PureComponent } from 'react';
+import LazyLoad from 'react-lazyload';
 import { Button, Grid, Paper, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { PureComponent } from 'react';
-import LazyLoad from 'react-lazyload';
-
-import analyticsEnum from '../../../analytics';
-import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '../../../helpers';
-import { AACourse, AASection, Department, School, WebsocResponse } from '../../../peterportal.types';
-import AppStore from '../../../stores/AppStore';
+import analyticsEnum from '$lib/analytics';
+import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '$lib/helpers';
+import { AACourse, AASection, Department, School, WebsocResponse } from '$lib/peterportal.types';
+import AppStore from '$stores/AppStore';
 import RightPaneStore from '../RightPaneStore';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';

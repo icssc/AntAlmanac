@@ -1,3 +1,4 @@
+import React, { PureComponent } from 'react';
 import {
     Button,
     Dialog,
@@ -12,11 +13,9 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { Add, Edit } from '@material-ui/icons';
-import React, { PureComponent } from 'react';
-
-import { addCustomEvent, editCustomEvent } from '../../../../actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '../../../../analytics';
-import { isDarkMode } from '../../../../helpers';
+import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { isDarkMode } from '$lib/helpers';
 import DaySelector from './DaySelector';
 import ScheduleSelector from './ScheduleSelector';
 

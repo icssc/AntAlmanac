@@ -1,11 +1,10 @@
 import { EventEmitter } from 'events';
 import { VariantType } from 'notistack';
-
-import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
-import { CalendarEvent, CourseEvent } from '../components/Calendar/CourseCalendarEvent';
-import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { CourseData } from '../helpers';
-import { AASection } from '../peterportal.types';
+import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
+import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { CourseData } from '$lib/helpers';
+import { AASection } from '$lib/peterportal.types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calenderizeHelpers';
 
 export interface ShortCourseInfo {

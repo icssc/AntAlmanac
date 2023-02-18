@@ -1,17 +1,14 @@
+import { Event } from 'react-big-calendar';
 import { IconButton, Paper, Tooltip } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
-import React from 'react';
-import { Event } from 'react-big-calendar';
-
-import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '../../analytics';
-import { clickToCopy } from '../../helpers';
-import AppStore from '../../stores/AppStore';
-import ColorPicker from '../ColorPicker';
+import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { clickToCopy } from '$lib/helpers';
+import AppStore from '$stores/AppStore';
+import ColorPicker from '$components/ColorPicker';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
-
 import locations from '../RightPane/SectionTable/static/locations.json';
 
 const styles: Styles<Theme, object> = {

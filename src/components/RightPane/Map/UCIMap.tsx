@@ -3,9 +3,8 @@ import '../../../../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min
 import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
 import React, { PureComponent } from 'react';
 import { LeafletContext, Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
-
-import analyticsEnum, { logAnalytics } from '../../../analytics';
-import AppStore from '../../../stores/AppStore';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import AppStore from '$stores/AppStore';
 import { CalendarEvent, CourseEvent } from '../../Calendar/CourseCalendarEvent';
 import locations from '../SectionTable/static/locations.json';
 import MapMarker from './MapMarker';
