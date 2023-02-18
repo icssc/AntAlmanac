@@ -3,6 +3,12 @@ import React, { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
 
+const urlParamValue = new URLSearchParams(window.location.search).get("courseCode");
+console.log(String(urlParamValue))
+if (String(urlParamValue) != "null" && String(urlParamValue) != ""){
+    RightPaneStore.updateFormValue("sectionCode",String(urlParamValue))
+}
+
 class SectionCodeSearchBar extends PureComponent {
     state = {
         sectionCode: RightPaneStore.getFormData().sectionCode,

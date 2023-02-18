@@ -90,6 +90,20 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
         }
     };
 
+    const closeCopyAndAlert = () => {
+        const url = new URL(window.location.href)
+        const urlParam = new URLSearchParams(url.search);
+        urlParam.delete('courseCode');
+        urlParam.append('courseCode', String(section.sectionCode));
+        const new_url = `${url.origin.toString()}?${urlParam.toString()}`;
+        navigator.clipboard.writeText(new_url.toString()).then(function() {
+            openSnackbar('success', 'Course Link Copied!');
+        }, function() {
+            openSnackbar('error', 'Fail to copy the link!');
+        });
+        popupState.close();
+    };
+
     return (
         <TableCell padding="none">
             <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
@@ -107,6 +121,9 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
                     ))}
                     <MenuItem onClick={() => closeAndAddCourse(scheduleNames.length, true)}>
                         Add to All Schedules
+                    </MenuItem>
+                    <MenuItem onClick={() => closeCopyAndAlert()}>
+                         Share
                     </MenuItem>
                 </Menu>
             </div>

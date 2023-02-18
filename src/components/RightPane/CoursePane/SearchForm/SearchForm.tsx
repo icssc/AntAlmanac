@@ -48,7 +48,8 @@ const styles: Styles<Theme, object> = {
 const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) => {
     const { classes, toggleSearch } = props;
 
-    const [showLegacySearch, setShowLegacySearch] = useState(false);
+    const urlParamValue = new URLSearchParams(window.location.search).get("courseCode");
+    const [showLegacySearch, setShowLegacySearch] = useState(urlParamValue!=""&&urlParamValue!=null ? true : false);
 
     const toggleShowLegacySearch = () => {
         setShowLegacySearch(!showLegacySearch);
