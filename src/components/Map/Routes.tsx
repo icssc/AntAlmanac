@@ -52,7 +52,10 @@ function createRouter(props: Props, context: LeafletContextInterface) {
         addWaypoints: false,
         extendToWaypoints: true,
         missingRouteTolerance: 0,
-        styles: [{ color: props.color }],
+        styles: [
+          { color: 'skyblue', opacity: 0.5, weight: 30 },  // invisble line extends the range of click/hover events
+          { color: props.color, weight: 3 },
+        ],
       })
 
       const totalTime = route.summary?.totalTime || 0
@@ -61,37 +64,42 @@ function createRouter(props: Props, context: LeafletContextInterface) {
       const duration = totalTime > 30 ? Math.round(totalTime / 60) + ' min' : '<1 min'
       const miles = Math.floor(totalDistance / 1.609 / 10) / 100 + ' mi'
 
-      const popup = L.DomUtil.create('div')
-      popup.innerHTML = `
+      const content = `
        <div style="position:relative; 
-                   top:-200%;
-                   left:2px;
-                   pointer-events: none;
-                   background-color: white;
-                   border-left-color: ${props.color};
-                   border-left-style: solid;
-                   width: fit-content;
-                   border-left-width: 5px;
-                   padding-left: 10px;
-                   padding-right: 10px;
-                   padding-top: 4px;
-                   padding-bottom: 4px;"
+                  top: -200%;
+                  left:2px;
+                  pointer-events: none;
+                  background-color: white;
+                  border-left-color: ${props.color};
+                  border-left-style: solid;
+                  width: fit-content;
+                  border-left-width: 5px;
+                  padding-left: 10px;
+                  padding-right: 10px;
+                  padding-top: 4px;
+                  padding-bottom: 4px;"
        />
        <span style="color:${props.color}">${duration}</span>
        <br>
        <span style="color:#888888">${miles}</span>
       `
+      const popup = L.popup({ content })
+
       /** 
        * @see {@link https://github.com/perliedman/leaflet-routing-machine/issues/117}
        */
-      line.eachLayer((l) => {
-        l.on('click', (e) => {
-          L.popup().setContent(popup).setLatLng(e.latlng).openOn(context.map)
+      line.eachLayer((lineLayer) => {
+        lineLayer.on('click', (leafletMouseEvent) => {
+          popup.setLatLng(leafletMouseEvent.latlng).openOn(context.map)
         })
-        l.on('mouseover', (e) => {
-          L.popup().setContent(popup).setLatLng(e.latlng).openOn(context.map)
+        lineLayer.on('mouseover', (leafletMouseEvent) => {
+          popup.setLatLng(leafletMouseEvent.latlng).openOn(context.map)
+        })
+        lineLayer.on('mousemove', (leafletMouseEvent) => {
+          popup.setLatLng(leafletMouseEvent.latlng).openOn(context.map)
         })
       })
+
       return line
     },
   })
