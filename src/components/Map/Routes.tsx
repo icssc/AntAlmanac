@@ -6,7 +6,27 @@ import 'leaflet-routing-machine'
 import { createElementHook, createElementObject, useLeafletContext } from '@react-leaflet/core'
 import type { LeafletContextInterface } from '@react-leaflet/core'
 
-function createCourseRoutes(props: Props, context: LeafletContextInterface) {
+const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'
+
+interface Props {
+  /**
+   * waypoints needs to be L.Routing.Waypoint [] or LatLng[] when creating a L.Routing.plan
+   * for ease of use from outside, pass in a valid LatLngTuple[], and convert to LatLng inside
+   * @example [[33.6405, -117.8443], [33.6405, -117.8443]]
+   */
+  latLngTuples: LatLngTuple[]
+
+  /**
+   * color of line for this route
+   */
+  color?: string
+}
+
+/**
+ * use react-leaflet's core API to manage lifecycle of leaflet elements properly
+ * @see {@link https://react-leaflet.js.org/docs/core-architecture/#element-hook-factory}
+ */
+function createRouter(props: Props, context: LeafletContextInterface) {
   const latLngTuples = props.latLngTuples || []
 
   /**
@@ -14,10 +34,7 @@ function createCourseRoutes(props: Props, context: LeafletContextInterface) {
    */
   const waypoints = latLngTuples.map((latLngTuple) => L.latLng(latLngTuple))
 
-  /**
-   * create a new router that can calculate and render the walking paths to the map
-   */
-  const router = L.Routing.control({
+  const routerControl = L.Routing.control({
     router: L.Routing.mapbox(ACCESS_TOKEN, {
       /**
        * default is mapbox/driving, more options: {@link https://docs.mapbox.com/api/navigation/directions/#routing-profiles}
@@ -37,93 +54,73 @@ function createCourseRoutes(props: Props, context: LeafletContextInterface) {
         missingRouteTolerance: 0,
         styles: [{ color: props.color }],
       })
+
+      const totalTime = route.summary?.totalTime || 0
+      const totalDistance = route.summary?.totalDistance || 0
+
+      const duration = totalTime > 30 ? Math.round(totalTime / 60) + ' min' : '<1 min'
+      const miles = Math.floor(totalDistance / 1.609 / 10) / 100 + ' mi'
+
+      const popup = L.DomUtil.create('div')
+      popup.innerHTML = `
+       <div style="position:relative; 
+                   top:-200%;
+                   left:2px;
+                   pointer-events: none;
+                   background-color: white;
+                   border-left-color: ${props.color};
+                   border-left-style: solid;
+                   width: fit-content;
+                   border-left-width: 5px;
+                   padding-left: 10px;
+                   padding-right: 10px;
+                   padding-top: 4px;
+                   padding-bottom: 4px;"
+       />
+       <span style="color:${props.color}">${duration}</span>
+       <br>
+       <span style="color:#888888">${miles}</span>
+      `
+      /** 
+       * @see {@link https://github.com/perliedman/leaflet-routing-machine/issues/117}
+       */
+      line.eachLayer((l) => {
+        l.on('click', (e) => {
+          L.popup().setContent(popup).setLatLng(e.latlng).openOn(context.map)
+        })
+        l.on('mouseover', (e) => {
+          L.popup().setContent(popup).setLatLng(e.latlng).openOn(context.map)
+        })
+      })
       return line
     },
   })
 
-  return createElementObject(router, context)
-}
-
-const useCourseRoutes = createElementHook((props, context) => createElementObject(L.Routing.control(props), context))
-
-const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'
-
-interface Props {
-  /**
-   * waypoints needs to be L.Routing.Waypoint [] or LatLng[] when creating a L.Routing.plan
-   * for ease of use from outside, pass in a valid LatLngTuple[], and convert to LatLng inside
-   * @example [[33.6405, -117.8443], [33.6405, -117.8443]]
-   */
-  latLngTuples: LatLngTuple[]
-
-  /**
-   * color of line for this route
-   */
-  color?: string
+  const router = createElementObject(routerControl, context)
+  return router
 }
 
 /**
+ * turn the createRouter function into a hook for the main component
+ */
+const useRouter = createElementHook(createRouter)
+
+/**
  * given waypoints of a route and a color for the route, draw a route to the map
+ * forward the props to a custom hook that manages the leaflet element's lifecycle
  */
 export default function CourseRoutes(props: Props) {
   const map = useMap()
-
-  const latLngTuples = props.latLngTuples || []
-
-  /**
-   * convert each tuple to an actual LatLng object
-   */
-  const waypoints = latLngTuples.map((latLngTuple) => L.latLng(latLngTuple))
+  const context = useLeafletContext()
+  const routerRef = useRouter(props, context)
 
   useEffect(() => {
-    /**
-     * create a new router that can calculate and render the walking paths to the map
-     */
-    const router = L.Routing.control({
-      router: L.Routing.mapbox(ACCESS_TOKEN, {
-        /**
-         * default is mapbox/driving, more options: {@link https://docs.mapbox.com/api/navigation/directions/#routing-profiles}
-         */
-        profile: 'mapbox/walking',
-      }),
-
-      plan: L.Routing.plan(waypoints, {
-        addWaypoints: false,
-        createMarker: () => false,
-      }),
-
-      routeLine(route) {
-        const line = L.Routing.line(route, {
-          addWaypoints: false,
-          extendToWaypoints: true,
-          missingRouteTolerance: 0,
-          styles: [{ color: props.color }],
-        })
-        return line
-      },
-    })
-
-    /**
-     * add the router and all of its lines to the map
-     */
-    router.addTo(map)
-
-    /**
-     * hides the textbox with the steps to navigate, e.g. {@link https://i.stack.imgur.com/4e6EJ.png}
-     */
-    router.hide()
-
+    routerRef.current.instance.addTo(map)
+    routerRef.current.instance.hide()
     return () => {
-      /**
-       * the map will continue to live after this component dies;
-       * make sure the router with all of its lines is removed with the component
-       */
-      router.remove()
+      routerRef.current.instance.remove()
     }
   }, [])
 
-  /**
-   * doesn't need to render any UI
-   */
   return null
 }

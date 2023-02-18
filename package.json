@@ -11,7 +11,7 @@
         "build": "vite build",
         "preview": "vite preview",
         "start": "serve dist",
-        "format": "prettier --write src pages",
+        "format": "prettier --write src",
         "lint": "eslint src/**/*.tsx"
     },
     "dependencies": {
