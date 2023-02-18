@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Edit as EditIcon } from '@mui/icons-material'
+import { Add as AddIcon, Edit as EditIcon } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -136,7 +136,14 @@ export default function CustomEvent(props: Props) {
             <EditIcon />
           </IconButton>
         ) : (
-          <Button onClick={handleOpen}>Add Custom</Button>
+          <Button 
+            onClick={handleOpen}
+            variant="outlined" 
+            size="small" 
+            startIcon={<AddIcon fontSize="small" />}
+          >
+          Add Custom
+          </Button>
         )}
       </Tooltip>
       <Dialog open={open} maxWidth={'lg'}>

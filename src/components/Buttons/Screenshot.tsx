@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import html2canvas from 'html2canvas'
 import { Button, Link, Tooltip, useTheme } from '@mui/material'
+import { Panorama as PanoramaIcon } from '@mui/icons-material'
 import analyticsEnum, { logAnalytics } from '$lib/analytics'
 
 interface Props { 
@@ -44,7 +45,14 @@ export default function ScreenshotButton(props: Props) {
   return (
     <>
       <Tooltip title="Get a screenshot of your schedule">
-        <Button onClick={handleClick}>Screenshot</Button>
+        <Button 
+          onClick={handleClick} 
+          variant="outlined" 
+          size="small" 
+          startIcon={<PanoramaIcon fontSize="small" />}
+        >
+        Screenshot
+      </Button>
       </Tooltip>
       <Link sx={{ display: 'none' }} ref={ref} />
     </>
