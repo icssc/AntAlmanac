@@ -44,13 +44,13 @@ export default function AppThemeProvider(props: Props) {
             type: darkMode ? 'dark' : 'light',
             primary: {
                 light: '#5191d6',
-                main: '#0064a4',
+                main: '#305db7',
                 dark: '#003a75',
                 contrastText: '#fff',
             },
             secondary: {
                 light: '#ffff52',
-                main: '#ffd200',
+                main: '#ffffff',
                 dark: '#c7a100',
                 contrastText: '#000',
             },
