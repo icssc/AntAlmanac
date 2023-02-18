@@ -59,8 +59,6 @@ const EditSchedule = (props: EditScheduleProps) => {
                     onClose={handleClose}
                 />
                 <DeleteScheduleDialog
-                    scheduleNames={scheduleNames}
-                    scheduleIndex={scheduleIndex}
                     onClose={handleClose}
                 />
             </Menu>
