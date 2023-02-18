@@ -5,7 +5,7 @@ import AppStore from '$stores/AppStore';
 import { isDarkMode } from '$lib/helpers';
 
 interface Props {
-    children?: JSX.Element;
+    children?: React.ReactNode;
 }
 
 /**
@@ -35,15 +35,26 @@ export default function AppThemeProvider(props: Props) {
                 },
             },
         },
+        typography: {
+            htmlFontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10),
+            fontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
+        },
         palette: {
             type: darkMode ? 'dark' : 'light',
             primary: {
+                light: '#5191d6',
                 main: '#305db7',
+                dark: '#003a75',
+                contrastText: '#fff',
             },
             secondary: {
+                light: '#ffff52',
                 main: '#ffffff',
+                dark: '#c7a100',
+                contrastText: '#000',
             },
         },
+        spacing: 4,
     });
 
     return <ThemeProvider theme={theme}>{props.children}</ThemeProvider>;
