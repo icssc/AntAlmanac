@@ -1,7 +1,7 @@
 import LazyLoad from 'react-lazyload'
 import { Box, IconButton } from '@mui/material'
 import { ArrowBack as ArrowBackIcon, Refresh as RefreshIcon } from '@mui/icons-material'
-import { flattenSOCObject } from '$lib/websoc'
+import { flattenSOCObject } from '$lib/helpers'
 import { useSearchStore } from '$stores/search'
 import { useSettingsStore } from '$stores/settings'
 import useWebsocQuery from '$hooks/useWebsocQuery'

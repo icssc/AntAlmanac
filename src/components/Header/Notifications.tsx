@@ -14,7 +14,7 @@ import {
   Tooltip,
 } from '@mui/material'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
-import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '$lib/endpoints'
+import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '$lib/api/endpoints'
 
 interface NotificationItem {
   courseTitle: string

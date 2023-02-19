@@ -1,32 +1,25 @@
-import { useSnackbar } from 'notistack'
-import {
-  PETERPORTAL_WEBSOC_ENDPOINT,
-  WEBSOC_ENDPOINT,
-  LOAD_DATA_ENDPOINT,
-  LOAD_LEGACY_DATA_ENDPOINT,
-} from '$lib/endpoints'
-import type { Meeting, Section, WebsocResponse } from '$types/peterportal'
+/**
+ * functions for getting saved schedules
+ */
+
+import { PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT, LOAD_DATA_ENDPOINT } from '$lib/api/endpoints'
+import type { Meeting, WebsocResponse } from '$lib/peterportal.types'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { useScheduleStore } from '.'
-import type { Course, RepeatingCustomEvent, Schedule } from '.'
+import type { Course, CourseInfo, RepeatingCustomEvent, ScheduleSaveState, ShortCourse } from '.'
 
-/**
- * course details
- */
-interface CourseDetails {
-  deptCode: string
-  courseNumber: string
-  courseTitle: string
-  courseComment: string
-  prerequisiteLink: string
+interface LegacyShortCourseInfo extends ShortCourse {
+  scheduleIndices: number[]
 }
 
-/**
- * course info
- */
-interface CourseInfo {
-  courseDetails: CourseDetails
-  section: Section
+interface LegacyRepeatingCustomEvent extends RepeatingCustomEvent {
+  scheduleIndices: number[]
+}
+
+interface LegacyUserData {
+  addedCourses: LegacyShortCourseInfo[]
+  scheduleNames: string[]
+  customEvents: LegacyRepeatingCustomEvent[]
 }
 
 /**
@@ -55,21 +48,20 @@ function getCourseInfo(SOCObject: WebsocResponse) {
   return courseInfo
 }
 
-// Removes duplicate meetings as a result of multiple locations from WebsocResponse.
-// See queryWebsoc for more info
-// NOTE: The separator is currently an ampersand. Maybe it should be refactored to be an array
-// TODO: Remove if and when API is fixed
-// Maybe put this into CourseRenderPane.tsx -> flattenSOCObject()
+/**
+ * Removes duplicate meetings as a result of multiple locations from WebsocResponse.
+ * See queryWebsoc for more info
+ * NOTE: The separator is currently an ampersand. Maybe it should be refactored to be an array
+ * TODO: Remove if and when API is fixed
+ */
 function removeDuplicateMeetings(websocResp: WebsocResponse): WebsocResponse {
   websocResp.schools.forEach((school, schoolIndex) => {
     school.departments.forEach((department, departmentIndex) => {
       department.courses.forEach((course, courseIndex) => {
         course.sections.forEach((section, sectionIndex) => {
           // Merge meetings that have the same meeting day and time
-
           const existingMeetings: Meeting[] = []
 
-          // I know that this is n^2, but a section can't have *that* many locations
           for (const meeting of section.meetings) {
             let isNewMeeting = true
 
@@ -78,7 +70,7 @@ function removeDuplicateMeetings(websocResp: WebsocResponse): WebsocResponse {
                 meeting.days === existingMeetings[i].days && meeting.time === existingMeetings[i].time
               const sameBuilding = meeting.bldg === existingMeetings[i].bldg
 
-              //This shouldn't be possible because there shouldn't be duplicate locations in a section
+              // This shouldn't be possible because there shouldn't be duplicate locations in a section
               if (sameDayAndTime && sameBuilding) {
                 console.warn('Found two meetings with same days, time, and bldg', websocResp)
                 break
@@ -109,23 +101,12 @@ function removeDuplicateMeetings(websocResp: WebsocResponse): WebsocResponse {
   return websocResp
 }
 
-interface CacheEntry extends WebsocResponse {
-  timestamp: number
-}
-
-const websocCache: { [key: string]: CacheEntry } = {}
-
 /**
  * query the websocket endpoint
  */
 async function queryWebsoc(params: Record<string, string>): Promise<WebsocResponse> {
   const url = new URL(PETERPORTAL_WEBSOC_ENDPOINT)
   const searchString = new URLSearchParams(params).toString()
-  if (websocCache[searchString]?.timestamp > Date.now() - 30 * 60 * 1000) {
-    // NOTE: Check out how caching works
-    // if cache hit and less than 30 minutes old
-    return websocCache[searchString]
-  }
   url.search = searchString
 
   // The data from the API will duplicate a section if it has multiple locations.
@@ -135,7 +116,6 @@ async function queryWebsoc(params: Record<string, string>): Promise<WebsocRespon
 
   try {
     const response = (await fetch(url).then((r) => r.json())) as WebsocResponse
-    websocCache[searchString] = { ...response, timestamp: Date.now() }
     return removeDuplicateMeetings(response)
   } catch {
     const backupResponse = (await fetch(WEBSOC_ENDPOINT, {
@@ -143,144 +123,89 @@ async function queryWebsoc(params: Record<string, string>): Promise<WebsocRespon
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(params),
     }).then((res) => res.json())) as WebsocResponse
-    websocCache[searchString] = { ...backupResponse, timestamp: Date.now() }
     return removeDuplicateMeetings(backupResponse)
   }
 }
 
 /**
- * shortened course for saving in DB
+ * load schedule
  */
-interface ShortCourse {
-  color: string
-  term: string
-  sectionCode: string
-}
+export async function loadSchedule(userID: string, rememberMe?: boolean) {
+  const { saved } = useScheduleStore.getState()
 
-/**
- * schedule of short courses that is saved to DB
- */
-interface ShortCourseSchedule {
-  scheduleName: string
-  courses: ShortCourse[]
-  customEvents: RepeatingCustomEvent[]
-}
+  logAnalytics({
+    category: analyticsEnum.nav.title,
+    action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
+    label: userID,
+    value: rememberMe ? 1 : 0,
+  })
 
-/**
- * schedule save state
- */
-interface ScheduleSaveState {
-  schedules: ShortCourseSchedule[]
-  scheduleIndex: number
-}
+  if (
+    userID != null &&
+    (!saved || window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
+  ) {
+    userID = userID.replace(/\s+/g, '')
+    if (!userID) {
+      return
+    }
+    if (rememberMe) {
+      window.localStorage.setItem('userID', userID)
+    } else {
+      window.localStorage.removeItem('userID')
+    }
 
-interface LegacyShortCourseInfo {
-  color: string
-  term: string
-  sectionCode: string
-  scheduleIndices: number[]
-}
+    try {
+      let response_data = await fetch(LOAD_DATA_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userID: userID }),
+      })
 
-interface LegacyRepeatingCustomEvent {
-  title: string
-  start: string
-  end: string
-  days: boolean[]
-  customEventID: number
-  color?: string
-  scheduleIndices: number[]
-}
+      const json = (await response_data.json()) as { userData: ScheduleSaveState }
+      const scheduleSaveState = json.userData
 
-interface LegacyUserData {
-  addedCourses: LegacyShortCourseInfo[]
-  scheduleNames: string[]
-  customEvents: LegacyRepeatingCustomEvent[]
-}
-
-const confirmationMessage = `Are you sure you want to load a different schedule? You have unsaved changes!`
-
-export function useLoadSchedule() {
-  const { enqueueSnackbar } = useSnackbar()
-
-  return async (userID: string, rememberMe?: boolean) => {
-    const unsavedChanges = false
-
-    logAnalytics({
-      category: analyticsEnum.nav.title,
-      action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
-      label: userID,
-      value: rememberMe ? 1 : 0,
-    })
-    if (userID != null && (!unsavedChanges || window.confirm(confirmationMessage))) {
-      userID = userID.replace(/\s+/g, '')
-      if (userID.length > 0) {
-        if (rememberMe) {
-          window.localStorage.setItem('userID', userID)
-        } else {
-          window.localStorage.removeItem('userID')
-        }
-
-        try {
-          let scheduleSaveState
-          let response_data = await fetch(LOAD_DATA_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userID: userID }),
-          })
-
-          if (response_data.ok) {
-            const json = (await response_data.json()) as { userData: ScheduleSaveState }
-            scheduleSaveState = json.userData
-
-            if (!scheduleSaveState) {
-              return
-            }
-            if (await fromScheduleSaveState(scheduleSaveState)) {
-              enqueueSnackbar(`Schedule for user ${userID} loaded!`, { variant: 'success' })
-              return
-            }
-            if (await fromScheduleSaveState(convertLegacySchedule(scheduleSaveState as any))) {
-              enqueueSnackbar(`Schedule for user ${userID} loaded!`, { variant: 'success' })
-              return
-            }
-          }
-
-          // Finally try getting and loading from legacy if none of the above works
-          response_data = await fetch(LOAD_LEGACY_DATA_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userID: userID }),
-          })
-          if (response_data.ok) {
-            const json = (await response_data.json()) as { userData: LegacyUserData }
-            const legacyUserData = json.userData
-            if (!legacyUserData) {
-              return
-            }
-            if (await fromScheduleSaveState(convertLegacySchedule(legacyUserData))) {
-              enqueueSnackbar(`Legacy schedule for user ${userID} loaded!`, { variant: 'success' })
-              return
-            }
-          }
-
-          // If none of the above works
-          enqueueSnackbar(`Couldn't find schedules for username "${userID}".`, { variant: 'error' })
-        } catch (e) {
-          enqueueSnackbar('Encountered network error while loading schedules.', { variant: 'error' })
-        }
+      if (!scheduleSaveState) {
+        return
       }
+
+      if (await fromScheduleSaveState(scheduleSaveState)) {
+        // enqueueSnackbar(`Schedule for user ${userID} loaded!`, { variant: 'success' })
+        return
+      }
+      if (await fromScheduleSaveState(convertLegacySchedule(scheduleSaveState as any))) {
+        // enqueueSnackbar(`Schedule for user ${userID} loaded!`, { variant: 'success' })
+        return
+      }
+      /**
+       * Finally try getting and loading from legacy if none of the above works
+       * TODO: should be legacy endpoint
+       */
+      response_data = await fetch(LOAD_DATA_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userID: userID }),
+      })
+
+      const json2 = (await response_data.json()) as { userData: LegacyUserData }
+      const legacyUserData = json2.userData
+      if (!legacyUserData || (await fromScheduleSaveState(convertLegacySchedule(legacyUserData)))) {
+        // enqueueSnackbar(`Legacy schedule for user ${userID} loaded!`, { variant: 'success' })
+        return
+      }
+      // enqueueSnackbar(`Couldn't find schedules for username "${userID}".`, { variant: 'error' })
+    } catch (e) {
+      // enqueueSnackbar('Encountered network error while loading schedules.', { variant: 'error' })
     }
   }
 }
 
 /**
- * Overwrites the current schedule with the input save state.
- * @param saveState
+ * overwrite the current schedule with the provided save state.
  */
 async function fromScheduleSaveState(saveState: ScheduleSaveState) {
-  const { schedules } = useScheduleStore.getState()
+  const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
 
-  // addUndoState();
+  previousStates.push({ schedules: structuredClone(schedules), scheduleIndex })
 
   try {
     schedules.length = 0
@@ -331,16 +256,18 @@ async function fromScheduleSaveState(saveState: ScheduleSaveState) {
         courses,
       })
 
-      useScheduleStore.setState({ schedules, scheduleIndex })
+      useScheduleStore.setState({ schedules, scheduleIndex, previousStates })
       return true
     }
   } catch (e) {
     console.log(e)
-    // revertState();
     return false
   }
 }
 
+/**
+ * convert a legacy schedule
+ */
 function convertLegacySchedule(legacyUserData: LegacyUserData) {
   const scheduleSaveState: ScheduleSaveState = { schedules: [], scheduleIndex: 0 }
   for (const scheduleName of legacyUserData.scheduleNames) {
@@ -357,24 +284,4 @@ function convertLegacySchedule(legacyUserData: LegacyUserData) {
     }
   }
   return scheduleSaveState
-}
-
-/*
- * Convert schedule to shortened schedule (no course info) for saving.
- */
-export function convertSchedulesToSave(schedule: Schedule[]) {
-  const shortSchedules: ShortCourseSchedule[] = schedule.map((schedule) => {
-    return {
-      scheduleName: schedule.scheduleName,
-      customEvents: schedule.customEvents,
-      courses: schedule.courses.map((course) => {
-        return {
-          color: course.section.color,
-          term: course.term,
-          sectionCode: course.section.sectionCode,
-        }
-      }),
-    }
-  })
-  return { schedules: shortSchedules, scheduleIndex: 0 }
 }

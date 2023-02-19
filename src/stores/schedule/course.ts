@@ -4,118 +4,60 @@
  * structuredClone is used to deep clone the object so it doesn't get affected by mutations to the original
  */
 
-import {
-  amber,
-  blue,
-  blueGrey,
-  cyan,
-  deepPurple,
-  green,
-  indigo,
-  lightGreen,
-  lime,
-  pink,
-  purple,
-  red,
-  teal,
-} from '@mui/material/colors'
+import * as colors from '@mui/material/colors'
 import { useSearchStore } from '$stores/search'
-import type { AACourse, Section } from '$types/peterportal'
+import type { AACourse, Section } from '$lib/peterportal.types'
 import { useScheduleStore } from '.'
+import type { Course } from '.'
 
-const arrayOfColors = [
-  red[500],
-  pink[500],
-  purple[500],
-  indigo[500],
-  deepPurple[500],
-  blue[500],
-  green[500],
-  cyan[500],
-  teal[500],
-  lightGreen[500],
-  lime[500],
-  amber[500],
-  blueGrey[500],
-]
+const arrayOfColors = Object.values(colors).map((c) => ('black' in c ? c.black : c[500]))
 
 /**
- * doesn't require the "sections" property from AACourse
+ * AACourse without the "sections" property
  */
 type SimpleAACourse = Omit<AACourse, 'sections'>
 
 /**
  * add a course to a schedule
  * @param section
- * @param course
+ * @param course AACourse with missing properties
  * @param addScheduleIndex index of schedule in the array to target
- * @param undo whether we can undo the changes
+ * @param save whether we can undo the changes
  */
-export function addCourse(section: Section, course: SimpleAACourse, addScheduleIndex?: number, undo = true) {
+export function addCourse(section: Section, course: SimpleAACourse, addScheduleIndex?: number, save = true) {
   const { form } = useSearchStore.getState()
   const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
 
   const targetScheduleIndex = addScheduleIndex ?? scheduleIndex
   const allCourses = schedules.map((schedule) => schedule?.courses).flat(1)
 
-  /**
-   * The color will be set properly in Schedules
-   */
-  const newCourse = {
+  const existingCourse = allCourses.find(
+    (course) => course.section.sectionCode === section.sectionCode && course.term === form.term
+  )
+
+  if (existingCourse) {
+    return
+  }
+
+  const setOfUsedColors = new Set(allCourses.map((course) => course.section.color))
+  const color = arrayOfColors.find((materialColor) => !setOfUsedColors.has(materialColor)) || '#5ec8e0'
+
+  const newCourse: Course = {
     term: form.term,
     deptCode: course.deptCode,
     courseNumber: course.courseNumber,
     courseTitle: course.courseTitle,
     courseComment: course.courseComment,
     prerequisiteLink: course.prerequisiteLink,
-    section: { ...section, color: '' },
+    section: { ...section, color },
   }
 
-  /**
-   * attempt to find the course to add
-   */
-  let courseToAdd = allCourses.find(
-    (course) => course.section.sectionCode === section.sectionCode && course.term === form.term
-  )
+  const oldSchedules = structuredClone(schedules)
+  schedules[targetScheduleIndex]?.courses.push(newCourse)
 
-  /**
-   * create a new course if it didn't exist
-   */
-  if (!courseToAdd) {
-    const setOfUsedColors = new Set(allCourses.map((course) => course.section.color))
-    const color = arrayOfColors.find((materialColor) => !setOfUsedColors.has(materialColor)) || '#5ec8e0'
-    courseToAdd = {
-      ...newCourse,
-      section: {
-        ...newCourse.section,
-        color,
-      },
-    }
-  }
-
-  const courseAlreadyExists = schedules[targetScheduleIndex]?.courses.some(
-    (course) => course.section.sectionCode === section.sectionCode && course.term === form.term
-  )
-
-  if (!courseAlreadyExists) {
-    if (undo) {
-      previousStates.push({ schedules: structuredClone(schedules), scheduleIndex })
-    }
-
-    schedules[targetScheduleIndex]?.courses.push(courseToAdd)
-
-    /**
-     * if the changes can be undone, commit them to the store and update the state,
-     */
-    if (undo) {
-      useScheduleStore.setState({ schedules, previousStates })
-    }
-  }
-  return {
-    schedules,
-    previousStates,
-    schedule: schedules[targetScheduleIndex],
-    course: courseToAdd,
+  if (save) {
+    previousStates.push({ schedules: oldSchedules, scheduleIndex })
+    useScheduleStore.setState({ schedules, previousStates })
   }
 }
 
@@ -125,14 +67,9 @@ export function addCourse(section: Section, course: SimpleAACourse, addScheduleI
  * @param course
  * @param save whether to immediately commit these changes
  */
-export function addCourseToAllSchedules(section: Section, course: SimpleAACourse, save = true) {
+export function addCourseToAllSchedules(section: Section, course: SimpleAACourse) {
   const { schedules } = useScheduleStore.getState()
-  const allChanges = schedules.map((_schedule, index) => addCourse(section, course, index, false))
-  const newSchedules = allChanges.map((change) => change.schedule)
-  if (save) {
-    useScheduleStore.setState({ schedules: newSchedules })
-  }
-  return { schedules: newSchedules }
+  schedules.forEach((_schedule, index) => addCourse(section, course, index))
 }
 
 /**
@@ -158,57 +95,35 @@ export function changeCourseColor(sectionCode: string, term: string, newColor: s
  */
 export function deleteCourse(sectionCode: string, term: string) {
   const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
-
   previousStates.push({ schedules: structuredClone(schedules), scheduleIndex })
-
   schedules[scheduleIndex].courses = schedules[scheduleIndex].courses.filter(
     (course) => !(course.section.sectionCode === sectionCode && course.term === term)
   )
-
   useScheduleStore.setState({ schedules: structuredClone(schedules), previousStates })
 }
 
 /**
- * copy the current schedule to another schedule
+ * if schedule index is equal to the length, add all current courses to all other schedules
+ * otherwise add all current courses to the target schedule
  * @param toScheduleIndex index of the other schedule
  */
 export function copyCoursesToSchedule(toScheduleIndex: number) {
   const { schedules, scheduleIndex } = useScheduleStore.getState()
 
-  const targetSchedule = schedules[toScheduleIndex]
-
   if (toScheduleIndex === schedules.length) {
-    /**
-     * TODO: convert this to a batch update like below
-     */
-    schedules[scheduleIndex].courses.map((course) => addCourseToAllSchedules(course.section, course))
-  } else {
-    const results = schedules[scheduleIndex].courses.map((course) =>
-      addCourse(course.section, course, toScheduleIndex, false)
-    )
-
-    const resultCourses = results.map((result) => result.course)
-
-    /**
-     * add any that don't exist to the current schedule's courses array
-     */
-    resultCourses.forEach((course) => {
-      if (targetSchedule.courses.find((c) => c.section.sectionCode === course.section.sectionCode)) {
-        targetSchedule.courses.push(course)
-      }
+    schedules[scheduleIndex].courses.forEach((course) => {
+      addCourseToAllSchedules(course.section, course)
     })
-
-    /**
-     * commit the changes into the store
-     */
-    useScheduleStore.setState({ schedules })
+  } else {
+    schedules[scheduleIndex].courses.forEach((course) => addCourse(course.section, course, toScheduleIndex))
   }
 }
 
-export function undoDelete() {
-  const { previousStates } = useScheduleStore.getState()
-  const lastState = previousStates.pop()
-  if (lastState) {
-    useScheduleStore.setState({ schedules: lastState.schedules, previousStates })
-  }
+/**
+ * restore the latest state from the saved states
+ */
+export function undo() {
+  const { scheduleIndex, previousStates } = useScheduleStore.getState()
+  const lastState = previousStates.pop() || { schedules: [], scheduleIndex }
+  useScheduleStore.setState({ schedules: lastState.schedules, previousStates })
 }

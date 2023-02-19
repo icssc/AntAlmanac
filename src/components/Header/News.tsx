@@ -5,7 +5,7 @@ import { Badge, Box, Button, Divider, List, ListItem, Paper, Popover, Tooltip, T
 import { RssFeed } from '@mui/icons-material'
 import { Skeleton } from '@mui/lab'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
-import { NEWS_ENDPOINT } from '$lib/endpoints'
+import { NEWS_ENDPOINT } from '$lib/api/endpoints'
 
 /**
  * a news item returned by the API

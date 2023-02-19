@@ -17,11 +17,12 @@ import { PostAdd as PostAddIcon } from '@mui/icons-material'
 import { useSettingsStore } from '$stores/settings'
 import { useScheduleStore } from '$stores/schedule'
 import { addCourse } from '$stores/schedule/course'
-import { combineSOCObjects, getCourseInfo, queryWebsoc } from '$stores/schedule/import'
+import { combineSOCObjects, getCourseInfo } from '$stores/schedule/import'
+import { queryWebsoc } from '$lib/helpers'
 import { termData } from '$lib/termData'
 
 /**
- * button that opens up a dialog to save a schedule
+ * opens up dialog to save a schedule
  */
 export default function ImportScheduleButton() {
   const [open, setOpen] = useState(false)

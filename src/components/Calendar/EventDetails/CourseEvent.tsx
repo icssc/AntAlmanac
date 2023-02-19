@@ -15,23 +15,21 @@ import {
 } from '@mui/material'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { deleteCourse } from '$stores/schedule/course'
-import type { getCourseCalendarEvents } from '$stores/schedule/calendar'
+import type { CourseCalendarEvent } from '$stores/schedule/calendar'
 import ColorPicker from '$components/Buttons/ColorPicker'
-import locations from '$lib/locations'
+import location_ids from '$lib/location_ids'
 
 function genMapLink(location: string) {
   try {
-    const location_id = locations[location.split(' ')[0] as keyof typeof locations]
+    const location_id = location_ids[location.split(' ')[0] as keyof typeof location_ids]
     return `https://map.uci.edu/?id=463#!m/${location_id}`
   } catch (err) {
     return 'https://map.uci.edu/'
   }
 }
 
-type CalendarCourseEvent = ReturnType<typeof getCourseCalendarEvents>[number]
-
 interface CourseCalendarEventProps {
-  event: CalendarCourseEvent
+  event: CourseCalendarEvent
   closePopover: () => void
 }
 

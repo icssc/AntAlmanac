@@ -1,7 +1,7 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material'
 import { useSearchStore } from '$stores/search'
-import depts from '$lib/depts'
+import departments from '$lib/departments'
 
 export default function DepartmentSelect() {
   const dept = useSearchStore((store) => store.form.deptValue)
@@ -16,7 +16,7 @@ export default function DepartmentSelect() {
     <FormControl fullWidth>
       <InputLabel>Department</InputLabel>
       <Select value={dept} onChange={handleChange} label="Department">
-        {depts.map((dept) => (
+        {departments.map((dept) => (
           <MenuItem key={dept.deptValue} value={dept.deptValue}>
             {dept.deptLabel}
           </MenuItem>

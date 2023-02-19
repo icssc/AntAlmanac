@@ -6,15 +6,46 @@ import { Box, ClickAwayListener, Popper } from '@mui/material'
 import { useScheduleStore } from '$stores/schedule'
 import { useSettingsStore } from '$stores/settings'
 import { getCourseCalendarEvents, getFinalsCalendarEvents, getCustomCalendarEvents } from '$stores/schedule/calendar'
-import { isContrastSufficient } from '$lib/utils'
+import type { CalendarEvent } from '$stores/schedule/calendar'
 import CalendarToolbar from './CalendarToolbar'
 import CourseEventDetails from './EventDetails/CourseEvent'
 import CustomEventDetails from './EventDetails/CustomEvent'
 
-type CourseCalendarEvent = ReturnType<typeof getCourseCalendarEvents>[number]
-type CustomCalendarEvent = ReturnType<typeof getCustomCalendarEvents>[number]
-type FinalsCalendarEvent = ReturnType<typeof getCustomCalendarEvents>[number]
-type CalendarEvent = CourseCalendarEvent | CustomCalendarEvent | FinalsCalendarEvent
+interface rgbColor {
+  r: number
+  g: number
+  b: number
+}
+
+function getBrightness(color: rgbColor) {
+  return (color.r * 299 + color.g * 587 + color.b * 114) / 1000
+}
+
+/**
+ * equation taken from w3c, omits the colour difference part
+ * @see @link{https://www.w3.org/TR/WCAG20/#relativeluminancedef}
+ */
+function isContrastSufficient(color: string) {
+  const minBrightnessDiff = 125
+
+  const backgroundRegexResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color)
+
+  if (!backgroundRegexResult) {
+    return true
+  }
+
+  const backgroundRGB = {
+    r: parseInt(backgroundRegexResult[1], 16),
+    g: parseInt(backgroundRegexResult[2], 16),
+    b: parseInt(backgroundRegexResult[3], 16),
+  }
+  const textRgb = { r: 255, g: 255, b: 255 } // white text
+
+  const bgBrightness = getBrightness(backgroundRGB)
+  const textBrightness = getBrightness(textRgb)
+
+  return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff
+}
 
 /**
  * single calendar event box
@@ -46,20 +77,22 @@ function AntAlmanacEvent(props: EventProps & { event: CalendarEvent }) {
  * entire calendar
  */
 export default function AntAlamancCalendar() {
-  const showFinals = useSettingsStore((state) => state.showFinals)
+  const { showFinals } = useSettingsStore()
   const { schedules, scheduleIndex } = useScheduleStore()
   const ref = useRef<HTMLDivElement>(null)
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const [courseInMoreInfo, setCourseInMoreInfo] = useState<CalendarEvent | null>(null)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement>()
+  const [courseInMoreInfo, setCourseInMoreInfo] = useState<CalendarEvent>()
   const [calendarEventKey, setCalendarEventKey] = useState(0)
+
+  const currentSchedule = schedules[scheduleIndex]
+
+  const courses = currentSchedule?.courses
+  const customEvents = currentSchedule?.customEvents
 
   /**
    * if showing finals, get the finals calendar events;
    * otherwise join the two arrays of course and custom calendar events
    */
-  const currentSchedule = schedules[scheduleIndex]
-  const courses = currentSchedule?.courses
-  const customEvents = currentSchedule?.customEvents
   const events = showFinals
     ? getFinalsCalendarEvents(courses)
     : [...getCourseCalendarEvents(courses), ...getCustomCalendarEvents(customEvents)]
@@ -79,7 +112,7 @@ export default function AntAlamancCalendar() {
   }
 
   function handleClose() {
-    setAnchorEl(null)
+    setAnchorEl(undefined)
   }
 
   return (
@@ -120,7 +153,7 @@ export default function AntAlamancCalendar() {
         />
       </Box>
 
-      <Popper anchorEl={anchorEl} placement="right" open={!!anchorEl} sx={{ zIndex: 400 }}>
+      <Popper anchorEl={anchorEl} placement="right" open={!!anchorEl} sx={{ zIndex: 1 }}>
         <ClickAwayListener onClickAway={handleClose}>
           <Box>
             {isCourseEvent && (

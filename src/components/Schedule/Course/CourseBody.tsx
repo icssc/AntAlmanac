@@ -12,8 +12,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import locations from '$lib/locations'
-import restrictions from '$lib/restrictions'
+import locations from '$lib/location_ids'
 import { analyticsEnum } from '$lib/analytics'
 import { useSearchStore } from '$stores/search'
 import { useScheduleStore } from '$stores/schedule'
@@ -21,7 +20,28 @@ import AddCourseButton from '$components/Buttons/AddCourse'
 import AddCourseMenuButton from '$components/Buttons/AddCourseMenu'
 import DeleteCourseButton from '$components/Buttons/DeleteCourse'
 import ColorPicker from '$components/Buttons/ColorPicker'
-import type { AACourse, AASection } from '$types/peterportal'
+import type { AACourse, AASection } from '$lib/peterportal.types'
+
+const restrictions: Record<string, string> = {
+  A: 'A: Prerequisite required',
+  M: 'M: Non-major only',
+  E: 'E: Freshmen only',
+  G: 'G: Lower-division only',
+  I: 'I: Seniors only',
+  N: 'N: School major only',
+  F: 'F: Sophomores only',
+  O: 'O: Non-school major only',
+  H: 'H: Juniors only',
+  J: 'J: Upper-division only',
+  C: 'C: Fee required',
+  D: 'D: Pass/Not Pass option only',
+  X: 'X: Separate authorization codes required to add, drop, or change enrollment',
+  R: 'R: Biomedical Pass/Fail course (School of Medicine only)',
+  K: 'K: Graduate only',
+  S: 'S: Satisfactory/Unsatisfactory only',
+  B: 'B: Authorization code required',
+  L: 'L: Major only',
+}
 
 const SectionTypeColors: Record<string, string> = {
   Act: '#c87137',

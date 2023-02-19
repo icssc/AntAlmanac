@@ -12,7 +12,7 @@ import {
 } from '@mui/material'
 import { Save as SaveIcon } from '@mui/icons-material'
 import { useSettingsStore } from '$stores/settings'
-import { useSaveSchedule } from '$stores/schedule/save'
+import { saveSchedule } from '$stores/schedule/save'
 
 /**
  * button that opens up a dialog to save a schedule
@@ -21,8 +21,7 @@ export default function SaveScheduleButton() {
   const [open, setOpen] = useState(false)
   const [userId, setUserId] = useState('')
   const [remember, setRemember] = useState(false)
-  const saveSchedule = useSaveSchedule()
-  const isDarkMode = useSettingsStore((store) => store.isDarkMode)
+  const { isDarkMode } = useSettingsStore()
 
   async function handleSubmit() {
     await saveSchedule(userId, remember)

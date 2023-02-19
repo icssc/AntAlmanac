@@ -5,16 +5,6 @@
 import { useScheduleStore } from '.'
 import type { RepeatingCustomEvent } from '.'
 
-// /**
-//  * Checks if a schedule contains the custom event ID
-//  * @param customEventId
-//  * @param scheduleIndex
-//  */
-// export function doesCustomEventExistInSchedule(customEventId: number, scheduleIndex: number) {
-//   const { schedules } = useScheduleStore.getState();
-//   return schedules[scheduleIndex].customEvents.some((customEvent) => customEvent.customEventID === customEventId);
-// }
-
 /**
  * add a custom event to multiple schedules
  * @param newCustomEvent custom event
@@ -24,13 +14,14 @@ export function addCustomEvent(newCustomEvent: RepeatingCustomEvent, scheduleInd
   const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
   const customEvents = schedules[scheduleIndex].customEvents
 
-  previousStates.push({ schedules, scheduleIndex })
+  previousStates.push({ schedules: structuredClone(schedules), scheduleIndex })
 
   for (const scheduleIndex of scheduleIndices) {
     if (!customEvents.some((customEvent) => customEvent.customEventID === newCustomEvent.customEventID)) {
       schedules[scheduleIndex].customEvents.push(newCustomEvent)
     }
   }
+
   useScheduleStore.setState({ schedules, previousStates })
 }
 
@@ -39,16 +30,16 @@ export function addCustomEvent(newCustomEvent: RepeatingCustomEvent, scheduleInd
  * @param customEventId custom event ID to delete
  * @param removedIndices indices of schedules to remove the custom event from
  */
-export function deleteCustomEvent(customEventId: number, removedIndices: number[]) {
+export function deleteCustomEvent(customEventId: number, removedIndices?: number[]) {
   const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
-  const scheduleIndices = removedIndices || [useScheduleStore.getState().scheduleIndex]
+  const scheduleIndices = removedIndices || [scheduleIndex]
 
-  previousStates.push({ schedules, scheduleIndex })
+  previousStates.push({ schedules: structuredClone(schedules), scheduleIndex })
 
   for (const scheduleIndex of scheduleIndices) {
     const customEvents = schedules[scheduleIndex].customEvents
     const index = customEvents.findIndex((customEvent) => customEvent.customEventID === customEventId)
-    if (index !== undefined) {
+    if (index != null) {
       customEvents.splice(index, 1)
     }
   }
@@ -70,13 +61,13 @@ export function editCustomEvent(editedCustomEvent: RepeatingCustomEvent, newIndi
   const customEvents = schedules[scheduleIndex].customEvents
   const customEvent = customEvents.find((event) => event.customEventID === editedCustomEvent.customEventID)
 
-  if (customEvent === undefined) {
+  if (!customEvent) {
     addCustomEvent(editedCustomEvent, newIndices)
     return
   }
 
   /**
-   * Modify the original custom event so all references are updated as well
+   * Modify the original custom event reference so all references are updated as well
    */
   Object.assign(customEvent, editedCustomEvent)
 

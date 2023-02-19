@@ -4,13 +4,62 @@ import type { Map, LatLngTuple } from 'leaflet'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import 'leaflet-routing-machine'
 import { Autocomplete, Box, Paper, Tab, Tabs, TextField, Typography } from '@mui/material'
+import type { Course } from '$stores/schedule'
 import { useScheduleStore } from '$stores/schedule'
-import { getMarkersFromCourses } from '$lib/map'
+import { getCourseCalendarEvents } from '$stores/schedule/calendar'
+import type { CourseCalendarEvent } from '$stores/schedule/calendar'
+import locationIds from '$lib/location_ids'
 import buildingCatalogue from '$lib/buildingCatalogue'
-import type Building from '$lib/building'
+import type { Building } from '$lib/buildingCatalogue'
 import CourseMarker from './Marker'
 import CourseRoutes from './Routes'
 import UserLocator from './UserLocator'
+
+/**
+ * extracts all metadata from courses to the top level in preparation to use in the map
+ */
+export function getMarkersFromCourses(courses: Course[]) {
+  const events = getCourseCalendarEvents(courses)
+
+  const uniqueBuildingCodes = new Set(events.map((event) => event.bldg.split(' ').slice(0, -1).join(' ')))
+
+  const pins: Record<string, CourseCalendarEvent[]> = {}
+
+  /**
+   * associate each building code to courses that have a matching building code
+   */
+  uniqueBuildingCodes.forEach((buildingCode) => {
+    pins[buildingCode] = events.filter((event) => {
+      const eventBuildingCode = event.bldg.split(' ').slice(0, -1).join(' ')
+      return eventBuildingCode === buildingCode
+    })
+  })
+
+  const result = Object.entries(pins)
+    .filter(([buildingCode]) => !!buildingCatalogue[locationIds[buildingCode]])
+    .map(([buildingCode, events]) => {
+      const locationData = buildingCatalogue[locationIds[buildingCode]]
+      const eventLocationData = events.map((event) => {
+        const key = `${event.title} ${event.sectionType} @ ${event.bldg}`
+        const acronym = locationData.name.substring(locationData.name.indexOf('(') + 1, locationData.name.indexOf(')'))
+        return {
+          key,
+          image: locationData.imageURLs[0],
+          acronym,
+          markerColor: event.color,
+          location: locationData.name,
+          ...locationData,
+          ...event,
+        }
+      })
+      const flatEventLocationData = eventLocationData.flat()
+      return flatEventLocationData
+    })
+
+  const markers = result.flat()
+  const markersByTime = markers.sort((a, b) => a.start.getTime() - b.start.getTime())
+  return markersByTime
+}
 
 const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'
 

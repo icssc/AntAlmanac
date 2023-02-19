@@ -59,7 +59,7 @@ function createRouter(props: Props, context: LeafletContextInterface) {
         extendToWaypoints: true,
         missingRouteTolerance: 0,
         styles: [
-          { color: 'skyblue', opacity: 0.5, weight: 30 },  // invisble line extends the range of click/hover events
+          { color: 'skyblue', opacity: 0.5, weight: 30 }, // invisble line extends the range of click/hover events
           { color: props.color, weight: 3 },
         ],
       })
@@ -91,7 +91,7 @@ function createRouter(props: Props, context: LeafletContextInterface) {
       `
       const popup = L.popup({ content })
 
-      /** 
+      /**
        * @see {@link https://github.com/perliedman/leaflet-routing-machine/issues/117}
        */
       line.eachLayer((lineLayer) => {
