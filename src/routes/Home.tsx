@@ -1,11 +1,3 @@
-/**
- * import all stylesheets here for the Vite React app
- * so that the rest of the app is compatible with NextJS
- */
-import 'react-big-calendar/lib/css/react-big-calendar.css'
-import 'leaflet-routing-machine/dist/leaflet-routing-machine.css'
-import '../components/Calendar/Calendar.css'
-
 import { useState } from 'react'
 import { Box, Tab, Tabs, useMediaQuery } from '@mui/material'
 import Calendar from '$components/Calendar'

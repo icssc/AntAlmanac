@@ -3,9 +3,14 @@ import { createRoot } from 'react-dom/client'
 import App from './App'
 
 /**
- * get a reference to an existing DOM element
+ * target element ID
  */
-const element = document.getElementById('root')
+const elementId = 'root'
+
+/**
+ * try to get a reference to an existing DOM element
+ */
+const element = document.getElementById(elementId)
 
 /**
  * if the element exists, attach the virtual DOM to the real DOM via that element
@@ -17,5 +22,5 @@ if (element) {
     </StrictMode>
   )
 } else {
-  throw new Error(`No element with id "root" found in index.html! Please check and add one.`)
+  throw new Error(`No element with id ${elementId} found in index.html! Please check and add one.`)
 }
