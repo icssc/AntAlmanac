@@ -13,7 +13,6 @@ import {
   TextField,
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material'
-import { PostAdd as PostAddIcon } from '@mui/icons-material'
 import { useSettingsStore } from '$stores/settings'
 import { useScheduleStore } from '$stores/schedule'
 import { addCourse } from '$stores/schedule/course'
@@ -22,11 +21,16 @@ import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { queryWebsoc } from '$lib/helpers'
 import { termData } from '$lib/termData'
 
+interface Props {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
+
 /**
- * opens up dialog to save a schedule
+ * dialog to import a schedule
  */
-export default function ImportScheduleButton() {
-  const [open, setOpen] = useState(false)
+export default function ImportDialog(props: Props) {
+  const { open, setOpen } = props
   const [term, setTerm] = useState('')
   const [studyList, setStudyList] = useState('')
   const { scheduleIndex } = useScheduleStore()
@@ -75,10 +79,6 @@ export default function ImportScheduleButton() {
     setOpen(false)
   }
 
-  function handleClick() {
-    setOpen(true)
-  }
-
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setStudyList(e.target.value)
   }
@@ -88,52 +88,47 @@ export default function ImportScheduleButton() {
   }
 
   return (
-    <>
-      <Button color="inherit" startIcon={<PostAddIcon />} onClick={handleClick}>
-        Import
-      </Button>
-      <Dialog open={open}>
-        <DialogTitle>Import Schedule</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Paste the contents of your Study List below to import it into AntAlmanac.
-            <br />
-            To find your Study List, go to <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>
-              WebReg
-            </a> or <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>, and click on Study
-            List once you&apos;ve logged in. Copy everything below the column names (Code, Dept, etc.) under the
-            Enrolled Classes section.
-            {/* &apos; is an apostrophe (') */}
-          </DialogContentText>
-          <TextField
-            fullWidth
-            onChange={handleChange}
-            autoFocus
-            margin="dense"
-            type="text"
-            placeholder="Paste here"
-            label="Study List"
-          />
-          <FormControl fullWidth>
-            <InputLabel>Term</InputLabel>
-            <Select value={term} onChange={handleTerm} label="Term">
-              {termData.map((term, index) => (
-                <MenuItem key={index} value={term.shortName}>
-                  {term.longName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancel} color={isDarkMode() ? 'inherit' : 'primary'}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} variant="contained" color="primary">
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+    <Dialog open={open}>
+      <DialogTitle>Import Schedule</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Paste the contents of your Study List below to import it into AntAlmanac.
+          <br />
+          To find your Study List, go to <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>
+            WebReg
+          </a> or <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>, and click on Study List
+          once you&apos;ve logged in. Copy everything below the column names (Code, Dept, etc.) under the Enrolled
+          Classes section.
+          {/* &apos; is an apostrophe (') */}
+        </DialogContentText>
+        <TextField
+          fullWidth
+          onChange={handleChange}
+          autoFocus
+          margin="dense"
+          type="text"
+          placeholder="Paste here"
+          label="Study List"
+        />
+        <FormControl fullWidth>
+          <InputLabel>Term</InputLabel>
+          <Select value={term} onChange={handleTerm} label="Term">
+            {termData.map((term, index) => (
+              <MenuItem key={index} value={term.shortName}>
+                {term.longName}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCancel} color={isDarkMode() ? 'inherit' : 'primary'}>
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} variant="contained" color="primary">
+          Submit
+        </Button>
+      </DialogActions>
+    </Dialog>
   )
 }

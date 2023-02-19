@@ -288,13 +288,13 @@ export default function CourseBody({ course, term }: { course: AACourse; term?: 
       <Table size="small" sx={{ '.MuiTableCell-root': { padding: 1 } }}>
         <TableHead>
           <TableRow>
-            <TableCell />
-            <TableCell>Code</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell>Instructors</TableCell>
-            <TableCell>Times</TableCell>
-            <TableCell>Places</TableCell>
-            <TableCell>
+            <TableCell width="8%" />
+            <TableCell width="8%">Code</TableCell>
+            <TableCell width="8%">Type</TableCell>
+            <TableCell width="15%">Instructors</TableCell>
+            <TableCell width="12%">Times</TableCell>
+            <TableCell width="10%">Places</TableCell>
+            <TableCell width="10%">
               <Tooltip
                 title={
                   <Box>
@@ -307,8 +307,8 @@ export default function CourseBody({ course, term }: { course: AACourse; term?: 
                 <Typography>Enrollment</Typography>
               </Tooltip>
             </TableCell>
-            <TableCell>Rstr</TableCell>
-            <TableCell>Status</TableCell>
+            <TableCell width="8%">Rstr</TableCell>
+            <TableCell width="8%">Status</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

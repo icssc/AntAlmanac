@@ -18,7 +18,7 @@ import useHotkeys from '$hooks/useHotkeys'
 import Home from '$routes/Home'
 import Feedback from '$routes/Feedback'
 import Header from '$components/Header'
-import ActionsBar from '$components/ActionsBar'
+import Actions from '$components/Actions'
 
 /**
  * the single page application
@@ -31,7 +31,7 @@ export default function App() {
       <AppThemeProvider>
         <SnackbarProvider>
           <Header />
-          <ActionsBar />
+          <Actions />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Home />} />
