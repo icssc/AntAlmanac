@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material'
-import { ChevronRight as ChevronRightIcon, ClearAll as ClearAllIcon, FileCopy as FileCopyIcon } from '@mui/icons-material'
+import {
+  ChevronRight as ChevronRightIcon,
+  ClearAll as ClearAllIcon,
+  FileCopy as FileCopyIcon,
+} from '@mui/icons-material'
 import { useScheduleStore } from '$stores/schedule'
 import { clearCurrentSchedule } from '$stores/schedule/schedule'
 import { copyCoursesToSchedule } from '$stores/schedule/course'
@@ -50,46 +54,37 @@ export default function CourseMenu() {
 
   return (
     <>
-      <MenuItem onClick={handleClick} disableRipple>
+      <MenuItem onClick={handleClick} disableRipple dense>
         <ListItemText>Course</ListItemText>
         <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={handleClose} transitionDuration={0}>
-          <MenuItem onClick={handleClearCourses}>
+          <MenuItem onClick={handleClearCourses} divider dense>
             <ListItemIcon>
               <ClearAllIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>Clear Courses</ListItemText>
           </MenuItem>
-          <MenuItem onClick={handleCopyClick}>
+          <MenuItem dense disabled>
             <ListItemIcon>
               <FileCopyIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>Copy Courses to</ListItemText>
+          </MenuItem>
+          {schedules.map((schedule, index) => (
+            <MenuItem key={index} onClick={handleAdd(index)} dense>
+              <ListItemIcon>
+                <ChevronRightIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>{schedule.scheduleName}</ListItemText>
+            </MenuItem>
+          ))}
+          <MenuItem onClick={handleAddAll} dense>
             <ListItemIcon>
               <ChevronRightIcon fontSize="small" />
             </ListItemIcon>
+            <ListItemText>All schedules</ListItemText>
           </MenuItem>
         </Menu>
       </MenuItem>
-      <Menu
-        open={!!copyEl}
-        anchorEl={copyEl}
-        onClose={handleCopyClose}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-      >
-        {schedules.map((schedule, index) => (
-          <MenuItem key={index} onClick={handleAdd(index)}>
-            {schedule.scheduleName}
-          </MenuItem>
-        ))}
-        <MenuItem onClick={handleAddAll}>Add to all schedules</MenuItem>
-      </Menu>
     </>
   )
 }

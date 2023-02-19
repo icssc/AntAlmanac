@@ -90,19 +90,19 @@ export default function ExportMenu(props: Props) {
       <MenuItem onClick={handleClick} disableRipple>
         <ListItemText>Export</ListItemText>
         <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={handleClose} transitionDuration={0}>
-          <MenuItem onClick={exportCalendar}>
+          <MenuItem onClick={exportCalendar} dense>
             <ListItemIcon>
               <DownloadIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>Download (.ics)</ListItemText>
           </MenuItem>
-          <MenuItem onClick={handleScreenshot}>
+          <MenuItem onClick={handleScreenshot} dense>
             <ListItemIcon>
               <PanoramaIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>Screenshot</ListItemText>
           </MenuItem>
-          <MenuItem onClick={handleClose}>
+          <MenuItem onClick={handleClose} dense>
             <ListItemIcon>
               <ShareIcon fontSize="small" />
             </ListItemIcon>

@@ -50,13 +50,11 @@ export async function saveSchedule(userID: string, rememberMe: boolean) {
     }
 
     try {
-      const latestSchedules = schedules
-
-      if (!latestSchedules) {
+      if (!schedules) {
         throw new Error('No schedule to save')
       }
 
-      const userData = convertSchedulesToSave(latestSchedules)
+      const userData = convertSchedulesToSave(schedules)
 
       await fetch(SAVE_DATA_ENDPOINT, {
         method: 'POST',

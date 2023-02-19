@@ -41,19 +41,19 @@ export default function ScheduleMenu() {
       <MenuItem onClick={handleClick} disableRipple>
         <ListItemText>Schedule</ListItemText>
         <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={handleClose} transitionDuration={0}>
-          <MenuItem onClick={handleSaveOpen}>
+          <MenuItem onClick={handleSaveOpen} dense>
             <ListItemIcon>
               <SaveIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>Save</ListItemText>
           </MenuItem>
-          <MenuItem onClick={handleLoadOpen}>
+          <MenuItem onClick={handleLoadOpen} dense>
             <ListItemIcon>
               <CloudDownloadIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>Load</ListItemText>
           </MenuItem>
-          <MenuItem onClick={handleImportOpen} sx={{ width: 200 }}>
+          <MenuItem onClick={handleImportOpen} sx={{ width: 200 }} dense>
             <ListItemIcon>
               <PostAddIcon fontSize="small" />
             </ListItemIcon>

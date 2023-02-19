@@ -28,7 +28,10 @@ export default function SelectScheduleButton() {
   const [scheduleName, setScheduleName] = useState('')
 
   function handleSelect(e: SelectChangeEvent<string>) {
-    setScheduleIndex(parseInt(e.target.value, 10))
+    const index = parseInt(e.target.value, 10)
+    if (index < schedules.length) {
+      setScheduleIndex(index)
+    }
   }
 
   function handleOpen() {
@@ -57,7 +60,7 @@ export default function SelectScheduleButton() {
             {schedule.scheduleName}
           </MenuItem>
         ))}
-        <MenuItem onClick={handleOpen}>
+        <MenuItem onClick={handleOpen} value={schedules.length}>
           <ListItemIcon>
             <AddIcon />
           </ListItemIcon>
@@ -66,7 +69,7 @@ export default function SelectScheduleButton() {
       </Select>
 
       <Dialog open={open} fullWidth>
-        <DialogTitle>Rename Schedule</DialogTitle>
+        <DialogTitle>Add Schedule</DialogTitle>
         <DialogContent>
           <FormGroup sx={{ my: 2 }}>
             <TextField label="Name" onChange={handleChange} value={scheduleName} fullWidth />
@@ -77,7 +80,7 @@ export default function SelectScheduleButton() {
             Cancel
           </Button>
           <Button onClick={handleAddSchedule} variant="contained" color="primary" disabled={!scheduleName}>
-            Rename Schedule
+            Add Schedule
           </Button>
         </DialogActions>
       </Dialog>

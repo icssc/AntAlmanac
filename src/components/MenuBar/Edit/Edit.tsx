@@ -34,14 +34,14 @@ export default function EditMenu() {
     <MenuItem onClick={handleClick} disableRipple>
       <ListItemText>Edit</ListItemText>
       <Menu anchorEl={el2} open={!!el2} onClose={handleClose} transitionDuration={0}>
-        <MenuItem onClick={handleUndo} sx={{ width: 200 }} disabled={!previousStates.length}>
+        <MenuItem onClick={handleUndo} sx={{ width: 200 }} disabled={!previousStates.length} dense>
           <ListItemIcon>
             <UndoIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>Undo</ListItemText>
           <Typography variant="body2">⌘+Z</Typography>
         </MenuItem>
-        <MenuItem onClick={handleRedo} disabled={!nextStates.length}>
+        <MenuItem onClick={handleRedo} disabled={!nextStates.length} dense>
           <ListItemIcon>
             <RedoIcon fontSize="small" />
           </ListItemIcon>

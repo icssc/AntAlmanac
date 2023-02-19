@@ -255,10 +255,10 @@ async function fromScheduleSaveState(saveState: ScheduleSaveState) {
         ...shortCourseSchedule,
         courses,
       })
-
-      useScheduleStore.setState({ schedules, scheduleIndex, previousStates })
-      return true
     }
+
+    useScheduleStore.setState({ schedules, scheduleIndex, previousStates })
+    return true
   } catch (e) {
     console.log(e)
     return false
