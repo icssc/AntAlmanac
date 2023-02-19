@@ -122,7 +122,7 @@ export default function NewsModal() {
             ) : (
               // LOADED and NO DATA
               <ListItem alignItems="flex-start" sx={{ display: 'flex', flexDirection: 'column' }} dense>
-                <Typography variant="body2" gutterBottom>
+                <Typography variant="body2">
                   No new announcements!
                 </Typography>
               </ListItem>

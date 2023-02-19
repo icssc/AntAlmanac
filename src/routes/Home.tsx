@@ -37,7 +37,7 @@ export default function Home() {
           <Tab label="Calendar" />
           <Tab label="Courses" />
         </Tabs>
-        <Box sx={{ height: 'calc(100vh - 150px)', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+        <Box sx={{ height: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
           {mobileTab === 0 && <Calendar />}
           {mobileTab === 1 && (
             <>
@@ -60,7 +60,7 @@ export default function Home() {
    * on larger than mobile, both panels are split
    */
   return (
-    <Box sx={{ display: 'flex', height: 'calc(100vh - 100px)' }}>
+    <Box sx={{ display: 'flex', height: 'calc(100vh - 50px)' }}>
       <Box sx={{ width: '50%', overflowY: 'auto' }}>
         <Calendar />
       </Box>

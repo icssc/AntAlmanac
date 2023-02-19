@@ -41,6 +41,9 @@ export function renameCurrentSchedule(newScheduleName: string) {
  */
 export function clearCurrentSchedule() {
   const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
+  if (schedules[scheduleIndex].courses.length === 0 && schedules[scheduleIndex].customEvents.length === 0) {
+    return
+  }
   previousStates.push({ schedules: structuredClone(schedules), scheduleIndex })
   schedules[scheduleIndex].courses = []
   schedules[scheduleIndex].customEvents = []

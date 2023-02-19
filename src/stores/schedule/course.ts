@@ -39,7 +39,7 @@ export function addCourse(section: Section, course: SimpleAACourse, addScheduleI
   const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
 
   const targetScheduleIndex = addScheduleIndex ?? scheduleIndex
-  const allCourses = schedules.map((schedule) => schedule?.courses).flat(1)
+  const allCourses = schedules[targetScheduleIndex].courses
 
   const existingCourse = allCourses.find(
     (course) => course.section.sectionCode === section.sectionCode && course.term === form.term
