@@ -6,7 +6,11 @@
       "dependsOn": [
         "^build"
       ],
-      "outputs": ["build/**"]
-    }
+      "outputs": [
+        "build/**"
+      ]
+    },
+    "lint": {},
+    "format": {"dependsOn": ["lint"]}
   }
 }

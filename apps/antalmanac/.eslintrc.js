@@ -3,27 +3,19 @@
 // setup: npm install --save-dev eslint eslint-plugin-simple-import-sort eslint-plugin-import @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-jsx-a11y eslint-import-resolver-typescript
 module.exports = {
     root: true,
-    parser: '@typescript-eslint/parser',
-    parserOptions: {
-        tsconfigRootDir: __dirname,
-        project: ['./tsconfig.json'],
-        ecmaVersion: 'latest',
-    },
-    env: {
-        browser: true,
-        node: true,
-        es6: true,
-    },
     plugins: ['import', 'simple-import-sort', '@typescript-eslint'],
-    extends: [
-        'eslint:recommended',
-        'plugin:@typescript-eslint/recommended',
-        'plugin:@typescript-eslint/recommended-requiring-type-checking',
-        'plugin:react/recommended',
-        'plugin:react-hooks/recommended',
-        'plugin:jsx-a11y/recommended',
+    parserOptions: {
+        project: './tsconfig.json',
+    },
+    extends: ['custom', 'plugin:react/recommended', 'plugin:react-hooks/recommended', 'plugin:jsx-a11y/recommended'],
+    ignorePatterns: [
+        'build/',
+        'tools/',
+        '.eslintrc.js',
+        'prettier.config.js',
+        'vite.config.ts',
+        'registerServiceWorker.js',
     ],
-    ignorePatterns: ['tools/*', '.eslintrc.js', 'prettier.config.js', 'package.json'],
     rules: {
         'simple-import-sort/imports': 'error',
         'simple-import-sort/exports': 'error',

@@ -13,5 +13,8 @@
   },
   "workspaces": [
     "apps/*"
-  ]
+  ],
+  "devDependencies": {
+    "turbo": "^1.8.1"
+  }
 }
