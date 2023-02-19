@@ -5,6 +5,8 @@
  */
 
 import * as colors from '@mui/material/colors'
+import { analyticsEnum, logAnalytics } from '$lib/analytics'
+import { courseNumAsDecimal } from '$lib/helpers'
 import { useSearchStore } from '$stores/search'
 import type { AACourse, Section } from '$lib/peterportal.types'
 import { useScheduleStore } from '.'
@@ -18,13 +20,21 @@ const arrayOfColors = Object.values(colors).map((c) => ('black' in c ? c.black :
 type SimpleAACourse = Omit<AACourse, 'sections'>
 
 /**
+ * after the function runs, it can execute the appropriate callbck if provided
+ */
+interface Options {
+  onSuccess?: (course: Course | undefined, index: number) => void
+  onError?: (error: Error) => void
+}
+
+/**
  * add a course to a schedule
  * @param section
  * @param course AACourse with missing properties
  * @param addScheduleIndex index of schedule in the array to target
  * @param save whether we can undo the changes
  */
-export function addCourse(section: Section, course: SimpleAACourse, addScheduleIndex?: number, save = true) {
+export function addCourse(section: Section, course: SimpleAACourse, addScheduleIndex?: number, options?: Options) {
   const { form } = useSearchStore.getState()
   const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
 
@@ -36,6 +46,7 @@ export function addCourse(section: Section, course: SimpleAACourse, addScheduleI
   )
 
   if (existingCourse) {
+    options?.onError?.(new Error('Course already exists in schedule'))
     return
   }
 
@@ -55,10 +66,17 @@ export function addCourse(section: Section, course: SimpleAACourse, addScheduleI
   const oldSchedules = structuredClone(schedules)
   schedules[targetScheduleIndex]?.courses.push(newCourse)
 
-  if (save) {
-    previousStates.push({ schedules: oldSchedules, scheduleIndex })
-    useScheduleStore.setState({ schedules, previousStates })
-  }
+  previousStates.push({ schedules: oldSchedules, scheduleIndex })
+  useScheduleStore.setState({ schedules, previousStates })
+
+  options?.onSuccess?.(newCourse, scheduleIndex)
+
+  logAnalytics({
+    category: analyticsEnum.classSearch.title,
+    action: analyticsEnum.classSearch.actions.ADD_COURSE,
+    label: course.deptCode,
+    value: courseNumAsDecimal(course.courseNumber),
+  })
 }
 
 /**
@@ -67,13 +85,14 @@ export function addCourse(section: Section, course: SimpleAACourse, addScheduleI
  * @param course
  * @param save whether to immediately commit these changes
  */
-export function addCourseToAllSchedules(section: Section, course: SimpleAACourse) {
+export function addCourseToAllSchedules(section: Section, course: SimpleAACourse, options?: Options) {
   const { schedules } = useScheduleStore.getState()
-  schedules.forEach((_schedule, index) => addCourse(section, course, index))
+  schedules.forEach((_schedule, index) => addCourse(section, course, index, options))
 }
 
 /**
  * change a course's color
+ * @remarks logging Google Analytics will be done from the component
  * @param sectionCode section code
  * @param term
  * @param newColor color
@@ -93,13 +112,26 @@ export function changeCourseColor(sectionCode: string, term: string, newColor: s
  * @param sectionCode section code
  * @param term term
  */
-export function deleteCourse(sectionCode: string, term: string) {
+export function deleteCourse(sectionCode: string, term: string, options?: Options) {
   const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
   previousStates.push({ schedules: structuredClone(schedules), scheduleIndex })
+
+  const foundCourse = schedules[scheduleIndex].courses.find(
+    (c) => c.section.sectionCode === sectionCode && c.term === term
+  )
+
   schedules[scheduleIndex].courses = schedules[scheduleIndex].courses.filter(
     (course) => !(course.section.sectionCode === sectionCode && course.term === term)
   )
+
   useScheduleStore.setState({ schedules: structuredClone(schedules), previousStates })
+
+  logAnalytics({
+    category: analyticsEnum.addedClasses.title,
+    action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
+  })
+
+  options?.onSuccess?.(foundCourse, scheduleIndex)
 }
 
 /**
@@ -107,9 +139,8 @@ export function deleteCourse(sectionCode: string, term: string) {
  * otherwise add all current courses to the target schedule
  * @param toScheduleIndex index of the other schedule
  */
-export function copyCoursesToSchedule(toScheduleIndex: number) {
+export function copyCoursesToSchedule(toScheduleIndex: number, options?: Options) {
   const { schedules, scheduleIndex } = useScheduleStore.getState()
-
   if (toScheduleIndex === schedules.length) {
     schedules[scheduleIndex].courses.forEach((course) => {
       addCourseToAllSchedules(course.section, course)
@@ -117,13 +148,27 @@ export function copyCoursesToSchedule(toScheduleIndex: number) {
   } else {
     schedules[scheduleIndex].courses.forEach((course) => addCourse(course.section, course, toScheduleIndex))
   }
+
+  logAnalytics({
+    category: analyticsEnum.addedClasses.title,
+    action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
+  })
+
+  options?.onSuccess?.(schedules[scheduleIndex].courses[0], toScheduleIndex)
 }
 
 /**
  * restore the latest state from the saved states
  */
-export function undo() {
+export function undo(options?: Options) {
   const { scheduleIndex, previousStates } = useScheduleStore.getState()
   const lastState = previousStates.pop() || { schedules: [], scheduleIndex }
   useScheduleStore.setState({ schedules: lastState.schedules, previousStates })
+
+  logAnalytics({
+    category: analyticsEnum.calendar.title,
+    action: analyticsEnum.calendar.actions.UNDO,
+  })
+
+  options?.onSuccess?.(lastState.schedules[lastState.scheduleIndex].courses[0], scheduleIndex)
 }

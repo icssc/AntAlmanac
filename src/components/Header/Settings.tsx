@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Brightness4 as Brightness4Icon } from '@mui/icons-material'
 import { Button, FormControl, FormControlLabel, Paper, Popover, Radio, RadioGroup } from '@mui/material'
+import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { useSettingsStore } from '$stores/settings'
 
 /**
@@ -17,8 +18,13 @@ export default function SettingsMenu() {
   /**
    * update the global color scheme when a radio button is clicked
    */
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setColorScheme(e.target.value)
+  function handleChange(_e: React.ChangeEvent<HTMLInputElement>, value: string) {
+    setColorScheme(value)
+    logAnalytics({
+      category: analyticsEnum.nav.title,
+      action: analyticsEnum.nav.actions.CHANGE_THEME,
+      label: value
+    })
   }
 
   function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {

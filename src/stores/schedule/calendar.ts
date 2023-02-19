@@ -3,7 +3,7 @@
  *
  * "satisfies" is used to ensure that the internal CalendarEvent types
  * we define are compatible with the types that FullCalendar expects,
- * but without unsafe type assertions of generalizing of the type itself
+ * but without unsafe type assertions or coerced generalizing of the type itself
  * @see {@link https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator}
  */
 

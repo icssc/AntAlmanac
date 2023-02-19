@@ -18,6 +18,7 @@ import { useSettingsStore } from '$stores/settings'
 import { useScheduleStore } from '$stores/schedule'
 import { addCourse } from '$stores/schedule/course'
 import { combineSOCObjects, getCourseInfo } from '$stores/schedule/import'
+import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { queryWebsoc } from '$lib/helpers'
 import { termData } from '$lib/termData'
 
@@ -55,9 +56,18 @@ export default function ImportScheduleButton() {
         )
       )
     )
-    Object.values(sectionsAdded).forEach((section) => {
+    const coursesAdded = Object.values(sectionsAdded)
+
+    coursesAdded.forEach((section) => {
       addCourse(section.section, section.courseDetails, scheduleIndex)
     })
+
+    logAnalytics({
+      category: analyticsEnum.nav.title,
+      action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
+      value: coursesAdded.length / (sectionCodes.length || 1)
+    })
+
     setOpen(false)
   }
 

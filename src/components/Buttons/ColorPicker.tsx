@@ -35,7 +35,7 @@ interface Props {
  */
 export default function ColorPicker(props: Props) {
   const [color, setColor] = useState(props.color)
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement>()
 
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
@@ -48,17 +48,26 @@ export default function ColorPicker(props: Props) {
 
   function handleClose(e: React.MouseEvent) {
     e.stopPropagation()
-    setAnchorEl(null)
+    setAnchorEl(undefined)
   }
 
-  function handleColorChange(e: ColorResult) {
+  /**
+   * while the color picker is being moved around, only update this component's color
+   */
+  function handleChange(e: ColorResult) {
+    setColor(e.hex)
+  }
+
+  /**
+   * when the color is done being picked, save it to the store
+   */
+  function handleChangeComplete(e: ColorResult) {
     if (props.customEventID) {
       changeCustomEventColor(props.customEventID, e.hex)
     }
     if (props.sectionCode && props.term) {
       changeCourseColor(props.sectionCode, props.term, e.hex)
     }
-    setColor(e.hex)
   }
 
   return (
@@ -73,7 +82,7 @@ export default function ColorPicker(props: Props) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
       >
-        <SketchPicker color={color} onChange={handleColorChange} />
+        <SketchPicker color={color} onChange={handleChange} onChangeComplete={handleChangeComplete} />
       </Popover>
     </>
   )

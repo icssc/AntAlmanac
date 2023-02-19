@@ -5,13 +5,6 @@
 import { create } from 'zustand'
 
 /**
- * retrive the color scheme
- */
-function getColorScheme() {
-  return typeof Storage === 'undefined' ? 'auto' : window.localStorage.getItem('colorScheme') || 'auto'
-}
-
-/**
  * currently enabled settings and helpers
  */
 interface SettingsStore {
@@ -52,7 +45,7 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
     set({ showFinals })
   },
 
-  colorScheme: getColorScheme(),
+  colorScheme: typeof Storage === 'undefined' ? 'auto' : window.localStorage.getItem('colorScheme') || 'auto',
 
   setColorScheme(colorScheme: string) {
     window.localStorage.setItem('colorScheme', colorScheme)
