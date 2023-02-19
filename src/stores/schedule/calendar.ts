@@ -58,7 +58,7 @@ function notNull<T>(x: T): x is NonNullable<T> {
 /**
  * converts courses to calendar events
  */
-export function getCourseCalendarEvents(courses: Course[]): CourseCalendarEvent[] {
+export function getCourseCalendarEvents(courses: Course[] = []): CourseCalendarEvent[] {
   const calendarEventsForAllCourses = courses.map((course) => {
     const calendarEventsForCourse = course.section.meetings
       .map((meeting) => ({ ...meeting, time: meeting.time.replace(/\s/g, '') }))
@@ -114,7 +114,7 @@ export function getCourseCalendarEvents(courses: Course[]): CourseCalendarEvent[
 /**
  * converts course finals to calendar events
  */
-export function getFinalsCalendarEvents(courses: Course[]): CourseCalendarEvent[] {
+export function getFinalsCalendarEvents(courses: Course[] = []): CourseCalendarEvent[] {
   const finalsForAllCourses = courses
     .filter((course) => course.section.finalExam.length > 5)
     .map((course) => {
@@ -164,7 +164,7 @@ export function getFinalsCalendarEvents(courses: Course[]): CourseCalendarEvent[
 /**
  * converts custom events to calendar events
  */
-export function getCustomCalendarEvents(customEvents: RepeatingCustomEvent[]): CustomCalendarEvent[] {
+export function getCustomCalendarEvents(customEvents: RepeatingCustomEvent[] = []): CustomCalendarEvent[] {
   const allCustomCalendarEvents = customEvents.map((customEvent) => {
     const calendarEventsSingleCustom = customEvent.days.map((day, dayIndex) => {
       if (day) {

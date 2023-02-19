@@ -88,6 +88,11 @@ export interface ScheduleStore {
   previousStates: ScheduleUndoState[]
 
   /**
+   * redo tree
+   */
+  nextStates: ScheduleUndoState[]
+
+  /**
    * whether the schedule's been saved
    */
   saved: boolean
@@ -100,5 +105,6 @@ export const useScheduleStore = create<ScheduleStore>(() => ({
   schedules: [{ scheduleName: 'Schedule 1', courses: [], customEvents: [] }],
   scheduleIndex: 0,
   previousStates: [],
+  nextStates: [],
   saved: false,
 }))

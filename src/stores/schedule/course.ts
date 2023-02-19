@@ -161,8 +161,8 @@ export function copyCoursesToSchedule(toScheduleIndex: number, options?: Options
  * restore the latest state from the saved states
  */
 export function undo(options?: Options) {
-  const { scheduleIndex, previousStates } = useScheduleStore.getState()
-  const lastState = previousStates.pop() || { schedules: [], scheduleIndex }
+  const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
+  const lastState = previousStates.pop() || { schedules, scheduleIndex }
   useScheduleStore.setState({ schedules: lastState.schedules, previousStates })
 
   logAnalytics({

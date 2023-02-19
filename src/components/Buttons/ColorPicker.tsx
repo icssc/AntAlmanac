@@ -10,7 +10,6 @@ import { analyticsEnum, logAnalytics } from '$lib/analytics'
 interface Props {
   color: string
   analyticsCategory: string
-
   term?: string
 
   /**
@@ -51,23 +50,14 @@ export default function ColorPicker(props: Props) {
     setAnchorEl(undefined)
   }
 
-  /**
-   * while the color picker is being moved around, only update this component's color
-   */
   function handleChange(e: ColorResult) {
-    setColor(e.hex)
-  }
-
-  /**
-   * when the color is done being picked, save it to the store
-   */
-  function handleChangeComplete(e: ColorResult) {
     if (props.customEventID) {
       changeCustomEventColor(props.customEventID, e.hex)
     }
     if (props.sectionCode && props.term) {
       changeCourseColor(props.sectionCode, props.term, e.hex)
     }
+    setColor(e.hex)
   }
 
   return (
@@ -82,7 +72,7 @@ export default function ColorPicker(props: Props) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
       >
-        <SketchPicker color={color} onChange={handleChange} onChangeComplete={handleChangeComplete} />
+        <SketchPicker color={color} onChange={handleChange} />
       </Popover>
     </>
   )

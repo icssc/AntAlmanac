@@ -15,14 +15,14 @@ interface Props {
  */
 export default function AddCourseMenuButton(props: Props) {
   const schedules = useScheduleStore((store) => store.schedules)
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement>()
 
   function handleClick(event: React.MouseEvent<HTMLElement>) {
     setAnchorEl(event.currentTarget)
   }
 
   function handleClose() {
-    setAnchorEl(null)
+    setAnchorEl(undefined)
   }
 
   /**

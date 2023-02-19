@@ -1,22 +1,7 @@
 import { useState } from 'react'
-import {
-  AppBar,
-  Box,
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Toolbar,
-  useMediaQuery,
-} from '@mui/material'
-import {
-  Add as AddIcon,
-  MoreHoriz as MoreHorizIcon,
-  Panorama as PanoramaIcon,
-  Today as TodayIcon,
-} from '@mui/icons-material'
-import UndoDeleteButton from '$components/Buttons/UndoDelete'
+import { AppBar, Box, IconButton, Menu, Toolbar, useMediaQuery } from '@mui/material'
+import { MoreHoriz as MoreHorizIcon } from '@mui/icons-material'
+import UndoDeleteButton from '$components/Buttons/Undo'
 import ClearCurrentSchedule from '$components/Buttons/ClearCurrentSchedule'
 import DownloadButton from '$components/Buttons/Download'
 import ScreenshotButton from '$components/Buttons/Screenshot'
@@ -28,21 +13,20 @@ import ToggleFinalsButton from '$components/Buttons/ToggleFinals'
 interface Props {
   /**
    * provide a React ref to the element to screenshot; this is prop-drilled down to the ScreenshotButton
-   * TODO: put this in a shared store as well?
    */
   imgRef: React.RefObject<HTMLElement>
 }
 
 export default function CalendarToolbar(props: Props) {
   const screenXs = useMediaQuery('(max-width: 750px)')
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement>()
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
     setAnchorEl(event.currentTarget)
   }
 
   function handleClose() {
-    setAnchorEl(null)
+    setAnchorEl(undefined)
   }
 
   return (

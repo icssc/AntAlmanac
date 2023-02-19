@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { ComponentProps } from 'react'
 import {
   Button,
   Checkbox,
@@ -15,13 +16,28 @@ import { useSettingsStore } from '$stores/settings'
 import { loadSchedule } from '$stores/schedule/load'
 
 /**
+ * default props for the component
+ */
+interface Props<T> {
+  component?: T
+  children?: React.ReactNode
+}
+
+type InferredProps<T> = 
+  Props<T>['component'] extends React.ComponentType ? 
+  Props<T> & React.ComponentPropsWithoutRef<Props<T>['component']> : Props<T>
+
+/**
  * button that opens up a dialog to load a schedule
  */
-export default function LoadScheduleButton() {
+export default function LoadScheduleButton<T>(props?: InferredProps<T>) {
   const [open, setOpen] = useState(false)
   const [userId, setUserId] = useState('')
   const [remember, setRemember] = useState(false)
   const { isDarkMode } = useSettingsStore()
+
+  const { component, ...$$restProps } = props || {}
+  const Component = component as React.ComponentType<{ children?: React.ReactNode, onClick: () => void }> || Button
 
   async function handleSubmit() {
     await loadSchedule(userId, remember)
@@ -46,9 +62,9 @@ export default function LoadScheduleButton() {
 
   return (
     <>
-      <Button color="inherit" startIcon={<CloudDownloadIcon />} onClick={handleClick}>
+      <Component onClick={handleClick} {...$$restProps}>
         Load
-      </Button>
+      </Component>
       <Dialog open={open}>
         <DialogTitle>Load Schedule</DialogTitle>
         <DialogContent>

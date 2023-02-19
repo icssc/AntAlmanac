@@ -65,7 +65,7 @@ export default function ImportScheduleButton() {
     logAnalytics({
       category: analyticsEnum.nav.title,
       action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
-      value: coursesAdded.length / (sectionCodes.length || 1)
+      value: coursesAdded.length / (sectionCodes.length || 1),
     })
 
     setOpen(false)

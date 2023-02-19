@@ -23,7 +23,7 @@ export default function SettingsMenu() {
     logAnalytics({
       category: analyticsEnum.nav.title,
       action: analyticsEnum.nav.actions.CHANGE_THEME,
-      label: value
+      label: value,
     })
   }
 
