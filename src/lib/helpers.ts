@@ -1,6 +1,6 @@
 import { useScheduleStore } from '$stores/schedule'
 import { WEBSOC_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT } from '$lib/api/endpoints'
-import type { AACourse, AASection, Department, Meeting, Section, School, WebsocResponse } from '$types/peterportal'
+import type { AACourse, AASection, Department, Meeting, Section, School, WebsocResponse } from '$lib/peterportal.types'
 
 export interface CourseDetails {
   deptCode: string

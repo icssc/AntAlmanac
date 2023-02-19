@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { IconButton, Menu, MenuItem } from '@mui/material'
 import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material'
-import type { AASection, AACourse } from '$types/peterportal'
+import type { AASection, AACourse } from '$lib/peterportal.types'
 import { useScheduleStore } from '$stores/schedule'
 import { addCourse, addCourseToAllSchedules } from '$stores/schedule/course'
 

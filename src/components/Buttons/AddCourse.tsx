@@ -1,6 +1,6 @@
 import { IconButton } from '@mui/material'
 import { Add as AddIcon } from '@mui/icons-material'
-import type { AASection, AACourse } from '$types/peterportal'
+import type { AASection, AACourse } from '$lib/peterportal.types'
 import { addCourse } from '$stores/schedule/course'
 
 interface Props {

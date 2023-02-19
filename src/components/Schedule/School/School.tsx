@@ -1,6 +1,6 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Grid, Paper, Typography } from '@mui/material'
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material'
-import type { School } from '$types/peterportal'
+import type { School } from '$lib/peterportal.types'
 
 interface Props {
   school: School

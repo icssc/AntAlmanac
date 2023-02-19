@@ -1,5 +1,5 @@
 import { Box } from '@mui/material'
-import type { AACourse } from '$types/peterportal'
+import type { AACourse } from '$lib/peterportal.types'
 import CourseHead from './CourseHead'
 import CourseBody from './CourseBody'
 

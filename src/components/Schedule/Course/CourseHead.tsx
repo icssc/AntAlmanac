@@ -5,11 +5,11 @@ import {
   RateReview as RateReviewIcon,
   ShowChart as ShowChartIcon,
 } from '@mui/icons-material'
-import type { AACourse } from '$types/peterportal'
 import { analyticsEnum } from '$lib/analytics'
 import CourseSummaryButton from '$components/Buttons/CourseSummary'
 import CourseReferenceButton from '$components/Buttons/CourseReference'
 import GradesPopup from '$components/GradesPopup'
+import type { AACourse } from '$lib/peterportal.types'
 
 interface Props {
   course: AACourse

@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material'
-import type { School, Department, AACourse } from '$types/peterportal'
+import type { School, Department, AACourse } from '$lib/peterportal.types'
 import SchoolCard from './School'
 import DepartmentCard from './Department'
 import CourseCard from './Course'

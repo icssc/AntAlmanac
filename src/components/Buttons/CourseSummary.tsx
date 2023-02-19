@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Box, Button, Popover, Typography } from '@mui/material'
 import { InfoOutlined as InfoOutlinedIcon } from '@mui/icons-material'
 import { PETERPORTAL_REST_ENDPOINT } from '$lib/api/endpoints'
-import type { AACourse, CourseResponse } from '$types/peterportal'
+import type { AACourse, CourseResponse } from '$lib/peterportal.types'
 
 /**
  * button that opens a popup with all summary info about the course,

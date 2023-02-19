@@ -4,8 +4,8 @@ import { Bar } from 'react-chartjs-2'
 import { useQuery } from '@tanstack/react-query'
 import { Box, Link, Skeleton, useMediaQuery } from '@mui/material'
 import { PETERPORTAL_GRAPHQL_ENDPOINT } from '$lib/api/endpoints'
-import type { AACourse } from '$types/peterportal'
 import { useSettingsStore } from '$stores/settings'
+import type { AACourse } from '$lib/peterportal.types'
 
 ChartJS.register(...registerables)
 

@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import type { UseQueryOptions } from '@tanstack/react-query'
 import { PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from '$lib/api/endpoints'
-import type { WebsocResponse } from '$types/peterportal'
+import type { WebsocResponse } from '$lib/peterportal.types'
 
 type WebsocQueryOptions = UseQueryOptions<WebsocResponse, any, WebsocResponse, any>
 
-export default function useWebsocQuery(params: Record<string, string>, options?: WebsocQueryOptions) {
+export default function useWebsocQuery(params: any, options?: WebsocQueryOptions) {
   const query = useQuery([PETERPORTAL_WEBSOC_ENDPOINT, ...Object.keys(params), ...Object.values(params)], {
     ...options,
     async queryFn() {
