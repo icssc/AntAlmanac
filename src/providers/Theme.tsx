@@ -68,25 +68,6 @@ export default function AppThemeProvider(props: { children: React.ReactNode }) {
    */
   const theme = createTheme({
     palette: { ...(isDarkMode() ? darkPalette : lightPalette) },
-    components: {
-      MuiPaper: {
-        styleOverrides: { root: { backgroundImage: 'unset' } }, // removes transparent gradient
-      },
-      MuiButton: {
-        variants: [
-          {
-            props: { variant: 'outlined', color: 'primary' },
-            style: {
-              color: isDarkMode() ? '#FFF' : '#000',
-              borderColor: isDarkMode() ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
-              '&:hover': {
-                borderColor: isDarkMode() ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
-              },
-            },
-          },
-        ],
-      },
-    },
   })
 
   return (

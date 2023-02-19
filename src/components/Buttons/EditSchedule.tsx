@@ -57,7 +57,7 @@ export default function EditScheduleButton() {
   return (
     <>
       <Tooltip title="Edit schedule">
-        <IconButton onClick={handleClick} color="inherit" size="small">
+        <IconButton onClick={handleClick} color="inherit">
           <EditIcon />
         </IconButton>
       </Tooltip>

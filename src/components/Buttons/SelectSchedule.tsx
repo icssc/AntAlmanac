@@ -51,7 +51,7 @@ export default function SelectScheduleButton() {
 
   return (
     <>
-      <Select size="small" value={scheduleIndex.toString()} onChange={handleSelect}>
+      <Select size="small" value={scheduleIndex.toString()} onChange={handleSelect} fullWidth>
         {schedules.map((schedule, index) => (
           <MenuItem key={index} value={index}>
             {schedule.scheduleName}

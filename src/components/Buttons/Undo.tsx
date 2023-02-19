@@ -1,6 +1,6 @@
 import { IconButton } from '@mui/material'
 import { Undo as UndoIcon } from '@mui/icons-material'
-import { undo } from '$stores/schedule/course'
+import { undo } from '$stores/schedule/commands'
 
 export default function UndoDeleteButton() {
   function handleClick() {

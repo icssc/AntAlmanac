@@ -114,15 +114,16 @@ export function changeCourseColor(sectionCode: string, term: string, newColor: s
  */
 export function deleteCourse(sectionCode: string, term: string, options?: Options) {
   const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
+
   previousStates.push({ schedules: structuredClone(schedules), scheduleIndex })
 
-  const foundCourse = schedules[scheduleIndex].courses.find(
+  const index = schedules[scheduleIndex].courses.findIndex(
     (c) => c.section.sectionCode === sectionCode && c.term === term
   )
 
-  schedules[scheduleIndex].courses = schedules[scheduleIndex].courses.filter(
-    (course) => !(course.section.sectionCode === sectionCode && course.term === term)
-  )
+  const foundCourse = structuredClone(schedules[scheduleIndex].courses[index])
+
+  schedules[scheduleIndex].courses.splice(index, 1)
 
   useScheduleStore.setState({ schedules: structuredClone(schedules), previousStates })
 
@@ -155,20 +156,4 @@ export function copyCoursesToSchedule(toScheduleIndex: number, options?: Options
   })
 
   options?.onSuccess?.(schedules[scheduleIndex].courses[0], toScheduleIndex)
-}
-
-/**
- * restore the latest state from the saved states
- */
-export function undo(options?: Options) {
-  const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
-  const lastState = previousStates.pop() || { schedules, scheduleIndex }
-  useScheduleStore.setState({ schedules: lastState.schedules, previousStates })
-
-  logAnalytics({
-    category: analyticsEnum.calendar.title,
-    action: analyticsEnum.calendar.actions.UNDO,
-  })
-
-  options?.onSuccess?.(lastState.schedules[lastState.scheduleIndex].courses[0], scheduleIndex)
 }
