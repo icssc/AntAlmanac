@@ -1,12 +1,12 @@
-import { Environment, Stack, StackProps } from 'aws-cdk-lib'
-import { Construct } from 'constructs'
+import { Stack, StackProps } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 
 interface CloudwatchProps extends StackProps {
-    stage: string
+    stage: string;
 }
 
 export default class CloudwatchStack extends Stack {
     constructor(scope: Construct, id: string, props?: CloudwatchProps) {
-        super(scope, id, props)
+        super(scope, id, props);
     }
 }

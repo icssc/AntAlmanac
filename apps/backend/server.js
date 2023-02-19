@@ -25,6 +25,6 @@ const setup = (corsEnabled) => {
 
     app.use('/api', routes);
     return app;
-}
+};
 
-module.exports = setup
+module.exports = setup;
