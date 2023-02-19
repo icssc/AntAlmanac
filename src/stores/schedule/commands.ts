@@ -7,16 +7,20 @@ import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { useScheduleStore } from '.'
 
 /**
- * restore the latest state from the saved states
+ * undo change by restore the latest state from "previousStates"
+ * saves un-done states to the "nextStates" stack
  */
 export function undo() {
   const { schedules, scheduleIndex, previousStates, nextStates } = useScheduleStore.getState()
   const lastState = previousStates.pop()
+
   if (!lastState) {
     return
   }
+
   nextStates.push({ schedules, scheduleIndex })
-  useScheduleStore.setState({ schedules: lastState.schedules, previousStates, nextStates })
+  useScheduleStore.setState({ ...lastState, previousStates, nextStates })
+
   logAnalytics({
     category: analyticsEnum.calendar.title,
     action: analyticsEnum.calendar.actions.UNDO,
@@ -24,14 +28,17 @@ export function undo() {
 }
 
 /**
- * experimental function to redo previous undo commands
+ * redo previous undo command by restoring the latest state from "nextStates"
+ * saves the re-done states to the "previousStates" stack
  */
 export function redo() {
   const { schedules, scheduleIndex, nextStates, previousStates } = useScheduleStore.getState()
   const nextState = nextStates.pop()
+
   if (!nextState) {
     return
   }
+
   previousStates.push({ schedules, scheduleIndex })
-  useScheduleStore.setState({ schedules: nextState.schedules, previousStates, nextStates })
+  useScheduleStore.setState({ ...nextState, previousStates, nextStates })
 }
