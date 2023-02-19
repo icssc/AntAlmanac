@@ -42,6 +42,12 @@ function createRouter(props: Props, context: LeafletContextInterface) {
       profile: 'mapbox/walking',
     }),
 
+    /**
+     * when searching a location, it yanks control of the map;
+     * not turning this off will screw that up since it refuses to allow the routes to go offscreen
+     */
+    fitSelectedRoutes: false,
+
     plan: L.Routing.plan(waypoints, {
       addWaypoints: false,
       createMarker: () => false,
