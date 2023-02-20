@@ -1,7 +1,7 @@
 import { IconButton, Theme, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap , Styles } from '@material-ui/core/styles/withStyles';
-import { Tune } from '@material-ui/icons';
+import { FormatListNumberedTwoTone, Tune } from '@material-ui/icons';
 import React, { FormEvent, useState } from 'react';
 
 import analyticsEnum, { logAnalytics } from '../../../../analytics';
@@ -59,6 +59,9 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
         toggleSearch();
     };
 
+    const current = new Date();
+    const month = current.getMonth();
+
     return (
         <div className={classes.rightPane}>
             <form onSubmit={onFormSubmit} className={classes.form}>
@@ -92,8 +95,8 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                     )}
                 </div>
             </form>
-
-            <HelpBox />
+            
+            {(month === 8 || month === 9) && <HelpBox />}
             <PrivacyPolicyBanner />
         </div>
     );

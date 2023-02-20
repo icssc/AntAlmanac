@@ -28,42 +28,35 @@ interface HelpBoxProps {
 }
 
 const HelpBox = ({ classes }: HelpBoxProps) => {
-    const current = new Date();
-    const month = current.getMonth();
-
-    if (month === 8 || month === 9) {
-        return (
-            <Paper variant="outlined" className={classes.container}>
-                <h2 className={classes.heading}>Need help planning your schedule?</h2>
-                <ol className={classes.list}>
-                    <li>
-                        Browse undergraduate majors on the{' '}
-                        <a href="https://catalogue.uci.edu/undergraduatedegrees/" target="_blank" rel="noopener noreferrer">
-                            UCI Catalogue
-                        </a>
-                        .
-                    </li>
-                    <li>Select your major.</li>
-                    <li>View the &quot;REQUIREMENTS&quot; and &quot;SAMPLE PROGRAM&quot; tabs to see what classes you should take.</li>
-                </ol>
-                <div className={classes.images}>
-                    <img
-                        className={classes.image}
-                        src="/helpbox1.png"
-                        alt='UCI General Catalogue with "Explore Undergraduate Programs" button highlighted'
-                    />
-                    <img className={classes.image} src="/helpbox2.png" alt="Undergraduate Majors and Minors page" />
-                    <img
-                        className={classes.image}
-                        src="/helpbox3.png"
-                        alt='Electrical Engineering page with "REQUIREMENTS" and "SAMPLE PROGRAM" tabs highlighted'
-                    />
-                </div>
-            </Paper>
-        );
-    } else{
-        return null;
-    }
+    return (
+        <Paper variant="outlined" className={classes.container}>
+            <h2 className={classes.heading}>Need help planning your schedule?</h2>
+            <ol className={classes.list}>
+                <li>
+                    Browse undergraduate majors on the{' '}
+                    <a href="https://catalogue.uci.edu/undergraduatedegrees/" target="_blank" rel="noopener noreferrer">
+                        UCI Catalogue
+                    </a>
+                    .
+                </li>
+                <li>Select your major.</li>
+                <li>View the &quot;REQUIREMENTS&quot; and &quot;SAMPLE PROGRAM&quot; tabs to see what classes you should take.</li>
+            </ol>
+            <div className={classes.images}>
+                <img
+                    className={classes.image}
+                    src="/helpbox1.png"
+                    alt='UCI General Catalogue with "Explore Undergraduate Programs" button highlighted'
+                />
+                <img className={classes.image} src="/helpbox2.png" alt="Undergraduate Majors and Minors page" />
+                <img
+                    className={classes.image}
+                    src="/helpbox3.png"
+                    alt='Electrical Engineering page with "REQUIREMENTS" and "SAMPLE PROGRAM" tabs highlighted'
+                />
+            </div>
+        </Paper>
+    );
 };
 
 export default withStyles(styles)(HelpBox);
