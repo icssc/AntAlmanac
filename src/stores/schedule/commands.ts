@@ -14,7 +14,11 @@ export function undo() {
   const { schedules, scheduleIndex, previousStates, nextStates } = useScheduleStore.getState()
   const lastState = previousStates.pop()
 
-  if (!lastState) {
+  if (!lastState?.schedules?.length) {
+    useScheduleStore.setState({
+      schedules: [{ scheduleName: 'Schedule 1', courses: [], customEvents: [] }],
+      scheduleIndex: 0,
+    })
     return
   }
 
@@ -35,7 +39,7 @@ export function redo() {
   const { schedules, scheduleIndex, nextStates, previousStates } = useScheduleStore.getState()
   const nextState = nextStates.pop()
 
-  if (!nextState) {
+  if (!nextState?.schedules?.length) {
     return
   }
 

@@ -27,15 +27,15 @@ export default function LoadDialog(props: Props) {
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)
   const { open, setOpen } = props
-  const [userId, setUserId] = useState('')
+  const [userID, setUserId] = useState('')
   const [remember, setRemember] = useState(false)
   const { isDarkMode } = useSettingsStore()
 
   async function handleSubmit() {
     setLoading(true)
-    await loadSchedule(userId, remember, {
+    await loadSchedule(userID, remember, {
       onSuccess() {
-        enqueueSnackbar(`Schedule for user ${userId} loaded!`, { variant: 'success' })
+        enqueueSnackbar(`Schedule for user ${userID} loaded!`, { variant: 'success' })
       },
       onError(error) {
         enqueueSnackbar(error.message, { variant: 'error' })
@@ -72,7 +72,7 @@ export default function LoadDialog(props: Props) {
           placeholder="Enter here"
         />
         <FormControlLabel
-          control={<Checkbox defaultChecked onChange={handleChecked} />}
+          control={<Checkbox checked={remember} onChange={handleChecked} />}
           label="Remember Me (Uncheck on shared computers)"
         />
       </DialogContent>

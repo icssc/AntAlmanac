@@ -266,7 +266,7 @@ async function fromScheduleSaveState(saveState: ScheduleSaveState) {
       })
     }
 
-    useScheduleStore.setState({ schedules, scheduleIndex, previousStates, saved: false })
+    useScheduleStore.setState({ schedules, scheduleIndex, previousStates })
     return true
   } catch (e) {
     console.log(e)

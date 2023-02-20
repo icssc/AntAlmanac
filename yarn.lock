@@ -2830,10 +2830,10 @@ queue-microtask@^1.2.2:
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
-react-big-calendar@^1.6.4:
-  version "1.6.4"
-  resolved "https://registry.yarnpkg.com/react-big-calendar/-/react-big-calendar-1.6.4.tgz#c3bacebbe56093d6ec570f59f1a064a273c3d708"
-  integrity sha512-IcCze+8Zb6IrTNaXFFQJcGrt/qJdMpyOFSCEVRmki/N8CmkM3fCRAB57+2IWMXL7nLNQO8zoFIuMO6tiN5v+sQ==
+react-big-calendar@^1.6.8:
+  version "1.6.8"
+  resolved "https://registry.yarnpkg.com/react-big-calendar/-/react-big-calendar-1.6.8.tgz#0c793527cd403ebd52e85dcb51102c1bdc90f8b5"
+  integrity sha512-uDuHoqH5/Wnk3tBxXnrXQD5w9FEofd1Ch1vMpLuv2LRBqrF2u7FcIruc80urizrkxcDWrTGxa7bsr0a9bby4Mw==
   dependencies:
     "@babel/runtime" "^7.20.7"
     clsx "^1.2.1"
