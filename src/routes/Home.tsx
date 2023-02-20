@@ -47,10 +47,6 @@ export default function Home() {
   if (isMobile) {
     return (
       <>
-        <Head>
-          <title>AntAlamanc</title>
-        </Head>
-
         <Tabs value={mobileTab} onChange={handleMobileTabChange} variant="fullWidth">
           <Tab label="Calendar" />
           <Tab label="Courses" />
