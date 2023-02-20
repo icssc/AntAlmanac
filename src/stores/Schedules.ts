@@ -15,7 +15,7 @@ import {
 } from '@material-ui/core/colors';
 
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { CourseInfo, getCourseInfo, queryWebsoc } from '../helpers';
+import { combineSOCObjects,CourseInfo, getCourseInfo, queryWebsoc } from '../helpers';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 import { Schedule, ScheduleCourse, ScheduleSaveState, ScheduleUndoState, ShortCourseSchedule } from './schedule.types';
 
@@ -436,8 +436,28 @@ export class Schedules {
                     term: term,
                     sectionCodes: Array.from(courseSet).join(','),
                 };
-                const jsonResp = await queryWebsoc(params);
-                courseInfoDict.set(term, getCourseInfo(jsonResp));
+                const sectionCodes = Array.from(courseSet);
+                // Code from ImportStudyList
+                const courseInfo = getCourseInfo(
+                    combineSOCObjects(
+                        await Promise.all(
+                            sectionCodes
+                                .reduce((result: string[][], item, index) => {
+                                    // WebSOC queries can have a maximum of 10 course codes in tandem
+                                    const chunkIndex = Math.floor(index / 10);
+                                    result[chunkIndex] ? result[chunkIndex].push(item) : (result[chunkIndex] = [item]);
+                                    return result;
+                                }, []) // https://stackoverflow.com/a/37826698
+                                .map((sectionCode: string[]) =>
+                                    queryWebsoc({
+                                        term: term,
+                                        sectionCodes: sectionCode.join(','),
+                                    })
+                                )
+                        )
+                    )
+                );
+                courseInfoDict.set(term, courseInfo);
             }
 
             // Map course info to courses and transform shortened schedule to normal schedule
@@ -447,6 +467,10 @@ export class Schedules {
                     const courseInfoMap = courseInfoDict.get(shortCourse.term);
                     if (courseInfoMap !== undefined) {
                         const courseInfo = courseInfoMap[shortCourse.sectionCode];
+                        if (courseInfo === undefined) {
+                            // Class doesn't exist/was cancelled
+                            continue;
+                        }
                         courses.push({
                             ...shortCourse,
                             ...courseInfo.courseDetails,
