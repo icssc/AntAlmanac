@@ -1,9 +1,10 @@
+import LazyLoad from 'react-lazyload'
 import { Box, Typography } from '@mui/material'
 import { useScheduleStore } from '$stores/schedule'
 import Schedule from '$components/Schedule'
 
 /**
- * manage all currently added courses here
+ * manage all currently added courses
  */
 export default function AddedCourses() {
   const { schedules, scheduleIndex } = useScheduleStore()
@@ -36,9 +37,15 @@ export default function AddedCourses() {
       <Typography variant="h5" padding={2}>
         {schedules[scheduleIndex].scheduleName} ({totalUnits} units)
       </Typography>
-      {courses.map((course, index) => (
-        <Schedule key={index} course={course} term={course.term} />
-      ))}
+      {courses.map((course, index) => {
+        const current = courses[index]
+        const height = 'sections' in current && current.sections ? current.sections.length * 60 + 60 : 200
+        return (
+          <LazyLoad once key={index} height={height} offset={500} overflow>
+            <Schedule key={index} course={course} term={course.term} />
+          </LazyLoad>
+        )
+      })}
     </Box>
   )
 }

@@ -63,11 +63,38 @@ export default function AppThemeProvider(props: { children: React.ReactNode }) {
     }
   }, [])
 
+  const darkMode = isDarkMode()
+
   /**
    * create theme that reacts to the settings store
    */
   const theme = createTheme({
-    palette: { ...(isDarkMode() ? darkPalette : lightPalette) },
+    typography: {
+      htmlFontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10),
+      fontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
+    },
+    spacing: 4,
+    palette: { ...(darkMode ? darkPalette : lightPalette) },
+    components: {
+      MuiPaper: {
+        styleOverrides: { root: { backgroundImage: 'unset' } }, // removes transparent gradient
+      },
+      MuiButton: {
+        //change outlined button variant
+        variants: [
+          {
+            props: { variant: 'outlined', color: 'inherit' },
+            style: {
+              color: darkMode ? '#FFF' : '#000',
+              borderColor: darkMode ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
+              '&:hover': {
+                borderColor: darkMode ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
+              },
+            },
+          },
+        ],
+      },
+    },
   })
 
   return (

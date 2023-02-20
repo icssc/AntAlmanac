@@ -38,12 +38,17 @@ const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
 interface Props {
   event?: RepeatingCustomEvent
   onDialogClose?: () => void
+
+  /**
+   * whether to only render an icon
+   */
+  iconOnly?: boolean
 }
 
 /**
  * button that opens up a dialog to add or edit a custom event
  */
-export default function CustomEvent(props: Props) {
+export default function CustomEventButton(props: Props) {
   const { schedules, scheduleIndex } = useScheduleStore()
   const { isDarkMode } = useSettingsStore()
   const [disabled, setDisabled] = useState('')
@@ -71,12 +76,22 @@ export default function CustomEvent(props: Props) {
     setOpen(true)
   }
 
-  function handleTextChange(key: keyof typeof event) {
+  function handleClose() {
+    setOpen(false)
+  }
+
+  /**
+   * returns text input event handler to change start/end time
+   */
+  function handleTextTime(key: keyof typeof event) {
     return (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
       setEvent({ ...event, [key]: e.target.value })
     }
   }
 
+  /**
+   * returns checkbox event handler to change the occurrance days
+   */
   function handleCheckDay(index: number) {
     return (e: React.ChangeEvent<HTMLInputElement>) => {
       setEvent((prevEvent) => ({
@@ -86,6 +101,9 @@ export default function CustomEvent(props: Props) {
     }
   }
 
+  /**
+   * returns checkbox event handler to change the schedule indices to add the event to
+   */
   function handleCheckSchedule(index: number) {
     return () => {
       if (selectedSchedules.includes(index)) {
@@ -129,12 +147,14 @@ export default function CustomEvent(props: Props) {
     setOpen(false)
   }
 
+  const Icon = props.event ? EditIcon : AddIcon
+
   return (
     <>
       <Tooltip title={`${props.event ? 'Rename Custom Event' : 'Add Custom Event'}`}>
-        {props.event ? (
+        {props.event || props.iconOnly ? (
           <IconButton onClick={handleOpen}>
-            <EditIcon />
+            <Icon />
           </IconButton>
         ) : (
           <Button
@@ -148,23 +168,23 @@ export default function CustomEvent(props: Props) {
           </Button>
         )}
       </Tooltip>
-      <Dialog open={open} maxWidth={'lg'}>
+      <Dialog open={open} maxWidth={'lg'} onClose={handleClose}>
         <DialogTitle>{props.event ? 'Edit' : 'Create'} Custom Event</DialogTitle>
         <DialogContent>
           <Box component="form" noValidate sx={{ display: 'flex', flexDirection: 'column', gap: 4, my: 2 }}>
             <FormControl>
               <InputLabel>Event Name</InputLabel>
-              <Input required={true} value={event?.title} onChange={handleTextChange('title')} />
+              <Input required={true} value={event?.title} onChange={handleTextTime('title')} />
             </FormControl>
 
             <FormGroup row sx={{ gap: 4 }}>
               <FormControl>
                 <FormLabel>Start Time</FormLabel>
-                <TextField onChange={handleTextChange('start')} type="time" value={event.start} />
+                <TextField onChange={handleTextTime('start')} type="time" value={event.start} />
               </FormControl>
               <FormControl>
                 <FormLabel>End Time</FormLabel>
-                <TextField onChange={handleTextChange('end')} type="time" value={event.end} />
+                <TextField onChange={handleTextTime('end')} type="time" value={event.end} />
               </FormControl>
             </FormGroup>
 

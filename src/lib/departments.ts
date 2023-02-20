@@ -1,4 +1,4 @@
-export default [
+const departments = [
   { deptLabel: 'ALL: Include All Departments', deptValue: 'ALL' },
   { deptLabel: 'AC ENG: Academic English and ESL', deptValue: 'AC ENG' },
   { deptLabel: 'AFAM: African American Studies', deptValue: 'AFAM' },
@@ -142,3 +142,5 @@ export default [
   { deptLabel: 'VIS STD: Visual Studies', deptValue: 'VIS STD' },
   { deptLabel: 'WRITING: Writing', deptValue: 'WRITING' },
 ]
+
+export default departments

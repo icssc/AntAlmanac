@@ -23,7 +23,6 @@ type SimpleAACourse = Omit<AACourse, 'sections'>
  * after the function runs, it can execute the appropriate callbck if provided
  */
 interface Options {
-  onSuccess?: (course: Course | undefined, index: number) => void
   onError?: (error: Error) => void
 }
 
@@ -67,9 +66,7 @@ export function addCourse(section: Section, course: SimpleAACourse, addScheduleI
   schedules[targetScheduleIndex]?.courses.push(newCourse)
 
   previousStates.push({ schedules: oldSchedules, scheduleIndex })
-  useScheduleStore.setState({ schedules, previousStates })
-
-  options?.onSuccess?.(newCourse, scheduleIndex)
+  useScheduleStore.setState({ schedules, previousStates, saved: false })
 
   logAnalytics({
     category: analyticsEnum.classSearch.title,
@@ -112,7 +109,7 @@ export function changeCourseColor(sectionCode: string, term: string, newColor: s
  * @param sectionCode section code
  * @param term term
  */
-export function deleteCourse(sectionCode: string, term: string, options?: Options) {
+export function deleteCourse(sectionCode: string, term: string) {
   const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
 
   previousStates.push({ schedules: structuredClone(schedules), scheduleIndex })
@@ -121,18 +118,14 @@ export function deleteCourse(sectionCode: string, term: string, options?: Option
     (c) => c.section.sectionCode === sectionCode && c.term === term
   )
 
-  const foundCourse = structuredClone(schedules[scheduleIndex].courses[index])
-
   schedules[scheduleIndex].courses.splice(index, 1)
 
-  useScheduleStore.setState({ schedules: structuredClone(schedules), previousStates })
+  useScheduleStore.setState({ schedules: structuredClone(schedules), previousStates, saved: false })
 
   logAnalytics({
     category: analyticsEnum.addedClasses.title,
     action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
   })
-
-  options?.onSuccess?.(foundCourse, scheduleIndex)
 }
 
 /**
@@ -144,16 +137,14 @@ export function copyCoursesToSchedule(toScheduleIndex: number, options?: Options
   const { schedules, scheduleIndex } = useScheduleStore.getState()
   if (toScheduleIndex === schedules.length) {
     schedules[scheduleIndex].courses.forEach((course) => {
-      addCourseToAllSchedules(course.section, course)
+      addCourseToAllSchedules(course.section, course, options)
     })
   } else {
-    schedules[scheduleIndex].courses.forEach((course) => addCourse(course.section, course, toScheduleIndex))
+    schedules[scheduleIndex].courses.forEach((course) => addCourse(course.section, course, toScheduleIndex, options))
   }
 
   logAnalytics({
     category: analyticsEnum.addedClasses.title,
     action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
   })
-
-  options?.onSuccess?.(schedules[scheduleIndex].courses[0], toScheduleIndex)
 }

@@ -22,6 +22,7 @@ export function addSchedule(scheduleName: string) {
     schedules: [...schedules, { scheduleName, courses: [], customEvents: [] }],
     scheduleIndex: schedules.length,
     previousStates,
+    saved: false,
   })
 }
 
@@ -33,7 +34,7 @@ export function renameCurrentSchedule(newScheduleName: string) {
   const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
   previousStates.push({ schedules: structuredClone(schedules), scheduleIndex })
   schedules[scheduleIndex].scheduleName = newScheduleName
-  useScheduleStore.setState({ schedules, previousStates })
+  useScheduleStore.setState({ schedules, previousStates, saved: false })
 }
 
 /**
@@ -47,7 +48,7 @@ export function clearCurrentSchedule() {
   previousStates.push({ schedules: structuredClone(schedules), scheduleIndex })
   schedules[scheduleIndex].courses = []
   schedules[scheduleIndex].customEvents = []
-  useScheduleStore.setState({ schedules, previousStates })
+  useScheduleStore.setState({ schedules, previousStates, saved: false })
 }
 
 /**
@@ -69,5 +70,6 @@ export function deleteCurrentSchedule() {
     schedules,
     scheduleIndex: Math.min(scheduleIndex, schedules.length - 1),
     previousStates,
+    saved: false,
   })
 }

@@ -7,7 +7,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css'
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css'
 import '$components/Calendar/Calendar.css'
-import './App.css'
+import '$components/Map/Map.css'
 
 import { SnackbarProvider } from 'notistack'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'

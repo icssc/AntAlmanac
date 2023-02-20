@@ -59,7 +59,7 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
       case 'dark':
         return true
       default:
-        return window.matchMedia('(prefers-color-scheme: dark)').matches
+        return typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
     }
   },
 }))

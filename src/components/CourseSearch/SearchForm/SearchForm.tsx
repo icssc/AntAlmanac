@@ -38,7 +38,7 @@ export default function SearchForm() {
 
   return (
     <Box sx={{ height: '100%', padding: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <FormGroup sx={{ display: 'flex', gap: 2 }}>
+      <FormGroup sx={{ display: 'flex', gap: 2, my: 2 }}>
         <TermSelect />
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
           <FuzzySearch />

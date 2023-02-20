@@ -19,7 +19,7 @@ export function undo() {
   }
 
   nextStates.push({ schedules, scheduleIndex })
-  useScheduleStore.setState({ ...lastState, previousStates, nextStates })
+  useScheduleStore.setState({ ...lastState, previousStates, nextStates, saved: false })
 
   logAnalytics({
     category: analyticsEnum.calendar.title,
@@ -40,5 +40,5 @@ export function redo() {
   }
 
   previousStates.push({ schedules, scheduleIndex })
-  useScheduleStore.setState({ ...nextState, previousStates, nextStates })
+  useScheduleStore.setState({ ...nextState, previousStates, nextStates, saved: false })
 }

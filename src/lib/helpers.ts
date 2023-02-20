@@ -16,7 +16,7 @@ interface CourseInfo {
 }
 
 export function getCourseInfo(SOCObject: WebsocResponse) {
-  const courseInfo: { [sectionCode: string]: CourseInfo } = {}
+  const courseInfo: Record<string, CourseInfo> = {}
   for (const school of SOCObject.schools) {
     for (const department of school.departments) {
       for (const course of department.courses) {
@@ -175,7 +175,7 @@ export function flattenSOCObject(SOCObject: WebsocResponse) {
   const courseColors = courses.reduce((accumulator, { section }) => {
     accumulator[section.sectionCode] = section.color
     return accumulator
-  }, {} as { [key: string]: string })
+  }, {} as Record<string, string>)
 
   const reduced = SOCObject?.schools?.reduce((accumulator, school) => {
     accumulator.push(school)

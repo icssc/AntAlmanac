@@ -285,36 +285,27 @@ function CourseStatus(props: { section: AASection }) {
 export default function CourseBody({ course, term }: { course: AACourse; term?: string }) {
   return (
     <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
-      <Table size="small" sx={{ '.MuiTableCell-root': { padding: 1 } }}>
+      <Table size="small" sx={{ '.MuiTableCell-root': { paddingX: 0, paddingY: 0.5 } }}>
         <TableHead>
           <TableRow>
-            <TableCell width="8%" />
-            <TableCell width="8%">Code</TableCell>
-            <TableCell width="8%">Type</TableCell>
+            <TableCell width="4%" />
+            <TableCell width="10%">Code</TableCell>
+            <TableCell width="10%">Type</TableCell>
             <TableCell width="15%">Instructors</TableCell>
             <TableCell width="12%">Times</TableCell>
             <TableCell width="10%">Places</TableCell>
-            <TableCell width="10%">
-              <Tooltip
-                title={
-                  <Box>
-                    <Typography>Enrolled / Capacity</Typography>
-                    <Typography>Waitlist</Typography>
-                    <Typography>New-Only Reserved</Typography>
-                  </Box>
-                }
-              >
-                <Typography>Enrollment</Typography>
-              </Tooltip>
-            </TableCell>
+            <TableCell width="10%">Enrollment</TableCell>
             <TableCell width="8%">Rstr</TableCell>
             <TableCell width="8%">Status</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>
+        <TableBody sx={{ padding: 0 }}>
           {course.sections.map((section, index) => (
             <TableRow
-              sx={{ '&:nth-of-type(odd)': { bgcolor: 'action.hover' }, '.MuiTableCell-root': { padding: 0 } }}
+              sx={{
+                '&:nth-of-type(odd)': { bgcolor: 'action.hover' },
+                '& .MuiTableCell-root': { padding: 0 },
+              }}
               key={index}
             >
               <TableCell>

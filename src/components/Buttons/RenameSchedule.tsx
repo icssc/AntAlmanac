@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Edit as EditIcon } from '@mui/icons-material'
 import {
   Button,
   Dialog,
@@ -7,67 +8,45 @@ import {
   DialogTitle,
   FormGroup,
   IconButton,
-  Menu,
-  MenuItem,
   TextField,
   Tooltip,
 } from '@mui/material'
-import { Edit as EditIcon } from '@mui/icons-material'
 import { useSettingsStore } from '$stores/settings'
 import { useScheduleStore } from '$stores/schedule'
-import { deleteCurrentSchedule, renameCurrentSchedule } from '$stores/schedule/schedule'
+import { renameCurrentSchedule } from '$stores/schedule/schedule'
 
-/**
- * button that opens up a dialog to edit a schedule
- */
-export default function EditScheduleButton() {
-  const { isDarkMode } = useSettingsStore()
-  const { schedules, scheduleIndex } = useScheduleStore()
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const [scheduleName, setScheduleName] = useState(schedules[scheduleIndex]?.scheduleName || '')
+export default function RenameScheduleButton() {
   const [open, setOpen] = useState(false)
-
-  function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
-    setAnchorEl(e.currentTarget)
-  }
+  const { schedules, scheduleIndex } = useScheduleStore()
+  const { isDarkMode } = useSettingsStore()
+  const [scheduleName, setScheduleName] = useState(schedules[scheduleIndex]?.scheduleName || '')
 
   function handleOpen() {
     setOpen(true)
   }
 
+  function handleRename() {
+    renameCurrentSchedule(scheduleName)
+    setOpen(false)
+  }
+
   function handleClose() {
     setScheduleName('')
     setOpen(false)
-    setAnchorEl(null)
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setScheduleName(e.target.value)
   }
 
-  function handleRename() {
-    renameCurrentSchedule(scheduleName)
-    handleClose()
-  }
-
-  function handleDelete() {
-    deleteCurrentSchedule()
-  }
-
   return (
     <>
-      <Tooltip title="Edit schedule">
-        <IconButton onClick={handleClick} color="inherit">
+      <Tooltip title="Rename Schedule">
+        <IconButton onClick={handleOpen}>
           <EditIcon />
         </IconButton>
       </Tooltip>
-
-      <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={handleClose}>
-        <MenuItem onClick={handleOpen}>Rename schedule</MenuItem>
-        <MenuItem onClick={handleDelete}>Delete schedule</MenuItem>
-      </Menu>
-
-      <Dialog open={open} fullWidth>
+      <Dialog open={open} fullWidth onClose={handleClose}>
         <DialogTitle>Rename Schedule</DialogTitle>
         <DialogContent>
           <FormGroup sx={{ marginY: 2 }}>

@@ -1,15 +1,38 @@
-import { useState } from 'react'
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@mui/material'
-import { Info } from '@mui/icons-material'
+import { Fragment, useState } from 'react'
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Link,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
+  Tooltip,
+} from '@mui/material'
+import { Info as InfoIcon } from '@mui/icons-material'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
+
+interface Props {
+  /**
+   * whether this button is in a MUI List; otherwise assumed to be in Menu
+   */
+  list?: boolean
+}
 
 /**
  * button that opens a modal with information about the app
  */
-export default function AboutModal() {
+export default function About(props?: Props) {
   const [open, setOpen] = useState(false)
 
-  function openAbout() {
+  function handleOpen(e: React.MouseEvent<HTMLElement, MouseEvent>) {
+    e.preventDefault()
+    e.stopPropagation()
     setOpen(true)
     logAnalytics({
       category: analyticsEnum.nav.title,
@@ -17,16 +40,26 @@ export default function AboutModal() {
     })
   }
 
-  function closeAbout(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+  function handleClose(e: React.MouseEvent<HTMLElement, MouseEvent>) {
+    e.preventDefault()
     e.stopPropagation()
     setOpen(false)
   }
 
+  const WrapperElement = props?.list ? ListItem : Fragment
+  const ClickElement = props?.list ? ListItemButton : MenuItem
+
   return (
-    <>
-      <Button onClick={openAbout} color="inherit" startIcon={<Info />}>
-        About
-      </Button>
+    <WrapperElement>
+      <Tooltip title="About Us">
+        <ClickElement onClick={handleOpen} dense={!props?.list} href="">
+          <ListItemIcon>
+            <InfoIcon />
+          </ListItemIcon>
+          <ListItemText>About</ListItemText>
+        </ClickElement>
+      </Tooltip>
+
       <Dialog open={open}>
         <DialogTitle>About</DialogTitle>
         <DialogContent>
@@ -62,11 +95,11 @@ export default function AboutModal() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeAbout} color="secondary">
+          <Button onClick={handleClose} color="secondary">
             Close
           </Button>
         </DialogActions>
       </Dialog>
-    </>
+    </WrapperElement>
   )
 }

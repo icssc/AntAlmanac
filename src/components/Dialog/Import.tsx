@@ -99,7 +99,6 @@ export default function ImportDialog(props: Props) {
           </a> or <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>, and click on Study List
           once you&apos;ve logged in. Copy everything below the column names (Code, Dept, etc.) under the Enrolled
           Classes section.
-          {/* &apos; is an apostrophe (') */}
         </DialogContentText>
         <TextField
           fullWidth

@@ -1,135 +1,152 @@
-import dayjs from 'dayjs'
 import { Fragment, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { Badge, Box, Button, Divider, List, ListItem, Paper, Popover, Tooltip, Typography } from '@mui/material'
-import { RssFeed } from '@mui/icons-material'
+import {
+  Badge,
+  Box,
+  Divider,
+  MenuItem,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  Popover,
+  Tooltip,
+  Typography,
+} from '@mui/material'
 import { Skeleton } from '@mui/lab'
-import { analyticsEnum, logAnalytics } from '$lib/analytics'
+import { RssFeed as RssFeedIcon } from '@mui/icons-material'
+import { useQuery } from '@tanstack/react-query'
 import { NEWS_ENDPOINT } from '$lib/api/endpoints'
+import { analyticsEnum, logAnalytics } from '$lib/analytics'
 
-/**
- * a news item returned by the API
- */
 interface NewsItem {
   title: string
   body: string
-
-  /**
-   * TODO: what format is this in?
-   */
   date: string
-
-  /**
-   * mongoose object id
-   */
   _id: string
+}
+
+interface Props {
+  /**
+   * whether this button is in a MUI List; otherwise assumed to be in Menu
+   */
+  list?: boolean
 }
 
 /**
  * button that opens a modal with news items
  */
-export default function NewsModal() {
-  const [anchorEl, setAnchorEl] = useState<Element | null>(null)
+export default function News(props?: Props) {
+  const [anchorEl, setAnchorEl] = useState<Element>()
   const [showDot, setShowDot] = useState(false)
-
-  function closePopper() {
-    setAnchorEl(null)
-  }
 
   const query = useQuery({
     queryKey: [NEWS_ENDPOINT],
+
     async queryFn() {
-      const json = await fetch(NEWS_ENDPOINT).then((res) => res.json())
-      const sortedNewsItems = json.news.sort((a: NewsItem, b: NewsItem) =>
+      const newsItems = await fetch(NEWS_ENDPOINT).then((res) => res.json())
+      const sortedNewsItems: NewsItem[] = newsItems.news.sort((a: NewsItem, b: NewsItem) =>
         a.date < b.date ? 1 : a.date > b.date ? 1 : 0
       )
-      if (typeof Storage !== 'undefined' && sortedNewsItems.length !== 0) {
-        const idOfLatestNewsItem = sortedNewsItems[0]['_id']
-        const idOfLatestCheckedNewsItem = window.localStorage.getItem('idOfLatestCheckedNewsItem')
-        if (idOfLatestCheckedNewsItem === null || idOfLatestNewsItem !== idOfLatestCheckedNewsItem) {
-          setShowDot(true)
-        }
+      return sortedNewsItems
+    },
+
+    onSuccess(data) {
+      if (typeof Storage == 'undefined' || !data.length) {
+        return
       }
-      return sortedNewsItems as NewsItem[]
+      const latestNewsId = data[0]['_id']
+      const latestNewsIdChecked = window.localStorage.getItem('latestNewsIdChecked')
+      if (latestNewsIdChecked == null || latestNewsIdChecked != latestNewsId) {
+        setShowDot(true)
+      }
+      window.localStorage.setItem('latestNewsIdChecked', latestNewsId)
+    },
+
+    // TODO: add error handling
+    onError(err) {
+      console.log(err)
     },
   })
 
-  function openPopup(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+  function handleOpen(e: React.MouseEvent<HTMLElement, MouseEvent>) {
+    e.preventDefault()
+    e.stopPropagation()
+    setAnchorEl(e.currentTarget)
     logAnalytics({
       category: analyticsEnum.nav.title,
       action: analyticsEnum.nav.actions.CLICK_NEWS,
     })
-
-    setAnchorEl(e.currentTarget)
-
-    if (typeof Storage !== 'undefined' && query.data?.length) {
-      window.localStorage.setItem('idOfLatestCheckedNewsItem', query.data[0]['_id'])
-      setShowDot(false)
-    }
   }
 
+  function handleClose(e: React.MouseEvent<HTMLElement, MouseEvent>) {
+    e.preventDefault()
+    e.stopPropagation()
+    setAnchorEl(undefined)
+  }
+
+  const WrapperElement = props?.list ? ListItem : Fragment
+  const ClickElement = props?.list ? ListItemButton : MenuItem
+
   return (
-    <div>
-      <Tooltip title="See latest updates">
-        <Badge variant="dot" overlap="circular" color="error" invisible={!showDot} sx={{ right: '5%' }}>
-          <Button onClick={openPopup} color="inherit" startIcon={<RssFeed />}>
-            News
-          </Button>
-        </Badge>
+    <WrapperElement>
+      <Tooltip title="See Latest Updates">
+        <ClickElement onClick={handleOpen} dense={!props?.list} href="">
+          <ListItemIcon>
+            <Badge variant="dot" overlap="circular" color="error" invisible={!showDot}>
+              <RssFeedIcon />
+            </Badge>
+          </ListItemIcon>
+          <ListItemText>News</ListItemText>
+        </ClickElement>
       </Tooltip>
+
       <Popover
-        open={Boolean(anchorEl)}
+        open={!!anchorEl}
         anchorEl={anchorEl}
-        onClose={closePopper}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Paper>
-          <List sx={{ maxWidth: 300, maxHeight: 300 }} disablePadding dense>
-            {query.isLoading ? (
-              // LOADING
-              <Box sx={{ padding: '4px' }}>
-                <Box>
-                  <Skeleton variant="text" animation="wave" height={30} width="50%" />
-                </Box>
-                <Box>
-                  <Skeleton variant="text" animation="wave" />
-                </Box>
-                <Box>
-                  <Skeleton variant="text" animation="wave" width="20%" />
-                </Box>
-              </Box>
-            ) : query.data?.length ? (
-              // LOADED and DATA
-              query.data?.map((newsItem, index) => (
+        <Paper sx={{ width: 300 }}>
+          {query.isLoading ? (
+            // LOADING
+            <Box sx={{ padding: 2 }}>
+              <Skeleton variant="text" animation="wave" width="69.420%" />
+              <Skeleton variant="text" animation="wave" />
+              <Skeleton variant="text" animation="wave" width="42.069%" />
+            </Box>
+          ) : query.data?.length ? (
+            // LOADED and DATA
+            <List sx={{ width: 300, height: 300, overflowY: 'auto' }} disablePadding dense>
+              {query.data?.map((newsItem, index) => (
                 <Fragment key={index}>
-                  <ListItem alignItems="flex-start" sx={{ display: 'flex', flexDirection: 'column' }} dense>
-                    <Typography variant="body1">{newsItem.title}</Typography>
-                    <Typography variant="body2">{newsItem.body}</Typography>
-                    <Typography variant="caption" gutterBottom color="textSecondary">
-                      {dayjs(newsItem.date, 'MMMM Do YYYY', 'en-us').toString()}
-                    </Typography>
+                  <ListItem>
+                    <ListItemText
+                      primary={newsItem.title}
+                      secondary={
+                        <>
+                          <Typography variant="body2">{newsItem.body}</Typography>
+                          <Typography variant="caption" color="textSecondary">
+                            {newsItem.date}
+                          </Typography>
+                        </>
+                      }
+                    />
                   </ListItem>
-                  {index < query.data.length - 1 ? <Divider /> : null}
+                  <Divider />
                 </Fragment>
-              ))
-            ) : (
-              // LOADED and NO DATA
-              <ListItem alignItems="flex-start" sx={{ display: 'flex', flexDirection: 'column' }} dense>
-                <Typography variant="body2" padding={2}>
-                  No new announcements!
-                </Typography>
-              </ListItem>
-            )}
-          </List>
+              ))}
+            </List>
+          ) : (
+            // LOADED and NO DATA
+            <Typography variant="body2" padding={2}>
+              No new announcements!
+            </Typography>
+          )}
         </Paper>
       </Popover>
-    </div>
+    </WrapperElement>
   )
 }

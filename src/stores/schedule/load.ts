@@ -127,10 +127,15 @@ async function queryWebsoc(params: Record<string, string>): Promise<WebsocRespon
   }
 }
 
+interface Options {
+  onSuccess?: () => void
+  onError?: (error: Error) => void
+}
+
 /**
  * load schedule
  */
-export async function loadSchedule(userID: string, rememberMe?: boolean) {
+export async function loadSchedule(userID: string, rememberMe?: boolean, options?: Options) {
   const { saved } = useScheduleStore.getState()
 
   logAnalytics({
@@ -169,11 +174,12 @@ export async function loadSchedule(userID: string, rememberMe?: boolean) {
       }
 
       if (await fromScheduleSaveState(scheduleSaveState)) {
-        // enqueueSnackbar(`Schedule for user ${userID} loaded!`, { variant: 'success' })
+        options?.onSuccess?.()
         return
       }
+
       if (await fromScheduleSaveState(convertLegacySchedule(scheduleSaveState as any))) {
-        // enqueueSnackbar(`Schedule for user ${userID} loaded!`, { variant: 'success' })
+        options?.onSuccess?.()
         return
       }
       /**
@@ -189,12 +195,12 @@ export async function loadSchedule(userID: string, rememberMe?: boolean) {
       const json2 = (await response_data.json()) as { userData: LegacyUserData }
       const legacyUserData = json2.userData
       if (!legacyUserData || (await fromScheduleSaveState(convertLegacySchedule(legacyUserData)))) {
-        // enqueueSnackbar(`Legacy schedule for user ${userID} loaded!`, { variant: 'success' })
+        options?.onSuccess?.()
         return
       }
-      // enqueueSnackbar(`Couldn't find schedules for username "${userID}".`, { variant: 'error' })
+      options?.onError?.(new Error(`Couldn't find schedules for username "${userID}".`))
     } catch (e) {
-      // enqueueSnackbar('Encountered network error while loading schedules.', { variant: 'error' })
+      options?.onError?.(new Error('Encountered network error while loading schedules.'))
     }
   }
 }
@@ -257,7 +263,7 @@ async function fromScheduleSaveState(saveState: ScheduleSaveState) {
       })
     }
 
-    useScheduleStore.setState({ schedules, scheduleIndex, previousStates })
+    useScheduleStore.setState({ schedules, scheduleIndex, previousStates, saved: false })
     return true
   } catch (e) {
     console.log(e)

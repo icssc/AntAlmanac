@@ -1,15 +1,17 @@
-import { IconButton } from '@mui/material'
+import { IconButton, Tooltip } from '@mui/material'
 import { Undo as UndoIcon } from '@mui/icons-material'
 import { undo } from '$stores/schedule/commands'
 
-export default function UndoDeleteButton() {
+export default function UndoButton() {
   function handleClick() {
     undo()
   }
 
   return (
-    <IconButton onClick={handleClick} size="small">
-      <UndoIcon />
-    </IconButton>
+    <Tooltip title="Undo (Ctrl+Z)">
+      <IconButton onClick={handleClick}>
+        <UndoIcon />
+      </IconButton>
+    </Tooltip>
   )
 }

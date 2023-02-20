@@ -85,6 +85,10 @@ export default function ExportMenu(props: Props) {
     ref.current.click()
   }
 
+  function handleShare() {
+    window.alert('Work in Progress')
+  }
+
   return (
     <>
       <MenuItem onClick={handleClick} disableRipple>
@@ -102,7 +106,7 @@ export default function ExportMenu(props: Props) {
             </ListItemIcon>
             <ListItemText>Screenshot</ListItemText>
           </MenuItem>
-          <MenuItem onClick={handleClose} dense>
+          <MenuItem onClick={handleShare} dense>
             <ListItemIcon>
               <ShareIcon fontSize="small" />
             </ListItemIcon>

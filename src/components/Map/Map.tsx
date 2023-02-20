@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { Fragment, useRef, useState } from 'react'
 import L from 'leaflet'
 import type { Map, LatLngTuple } from 'leaflet'
 import { MapContainer, TileLayer } from 'react-leaflet'
@@ -80,7 +80,7 @@ export default function CourseMap() {
   const { schedules, scheduleIndex } = useScheduleStore()
   const map = useRef<Map | null>(null)
   const [tab, setTab] = useState(0)
-  const [selected, setSelected] = useState<Building | null>(null)
+  const [selected, setSelected] = useState<Building>()
 
   const today = days[tab]
 
@@ -90,11 +90,12 @@ export default function CourseMap() {
 
   function handleSearch(_event: React.SyntheticEvent, value: Building | null) {
     if (!value) {
-      return
+      setSelected(undefined)
+    } else {
+      setSelected(value)
+      const location = L.latLng(value.lat, value.lng)
+      map.current?.setView(location, 18)
     }
-    setSelected(value)
-    const location = L.latLng(value.lat, value.lng)
-    map.current?.setView(location, 18)
   }
 
   /**
@@ -136,10 +137,10 @@ export default function CourseMap() {
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
       <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
         {/** menu floats above the map */}
-        <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.942 }}>
-          <Tabs value={tab} onChange={handleChange} variant="fullWidth" scrollButtons="auto" sx={{ minHeight: 0 }}>
+        <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.942, marginX: '15%', marginY: 8 }}>
+          <Tabs value={tab} onChange={handleChange} variant="fullWidth" sx={{ minHeight: 0 }}>
             {days.map((day, index) => (
-              <Tab key={index} label={day || 'All'} sx={{ padding: 1, minHeight: 'auto' }} />
+              <Tab key={index} label={day || 'All'} sx={{ padding: 1, minHeight: 'auto', minWidth: '10%', p: 1 }} />
             ))}
           </Tabs>
           <Autocomplete
@@ -168,11 +169,13 @@ export default function CourseMap() {
 
         {/* draw a marker for each class */}
         {uniqueMarkers.map((marker, index) => (
-          <CourseMarker {...marker} key={index} label={today ? index + 1 : undefined} stackIndex={index}>
-            <hr />
-            <Typography variant="body2">Class: {`${marker.title} ${marker.sectionType}`}</Typography>
-            <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
-          </CourseMarker>
+          <Fragment key={index}>
+            <CourseMarker {...marker} label={today ? index + 1 : undefined} stackIndex={index}>
+              <hr />
+              <Typography variant="body2">Class: {`${marker.title} ${marker.sectionType}`}</Typography>
+              <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
+            </CourseMarker>
+          </Fragment>
         ))}
 
         {/* render an additional marker if the user searched up a location */}

@@ -64,6 +64,7 @@ export async function saveSchedule(userID: string, rememberMe: boolean) {
         body: JSON.stringify({ userID, userData }),
       })
 
+      useScheduleStore.setState({ saved: true })
       // enqueueSnackbar(`Schedule saved under username ${userID}. Don't forget to sign up for classes on WebReg!`, {
       //   variant: 'success',
       // })

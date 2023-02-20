@@ -11,9 +11,7 @@ import { copyCoursesToSchedule } from '$stores/schedule/course'
 
 export default function CourseMenu() {
   const { schedules } = useScheduleStore()
-
   const [anchorEl, setAnchorEl] = useState<HTMLElement>()
-  const [copyEl, setCopyEl] = useState<HTMLElement>()
 
   function handleClick(e: React.MouseEvent<HTMLLIElement, MouseEvent>) {
     e.stopPropagation()
@@ -25,18 +23,10 @@ export default function CourseMenu() {
     setAnchorEl(undefined)
   }
 
-  function handleCopyClick(e: React.MouseEvent<HTMLLIElement, MouseEvent>) {
-    e.stopPropagation()
-    setCopyEl(e.currentTarget)
-  }
-
-  function handleCopyClose(e: React.MouseEvent<HTMLLIElement, MouseEvent>) {
-    e.stopPropagation()
-    setCopyEl(undefined)
-  }
-
   function handleClearCourses() {
-    clearCurrentSchedule()
+    if (window.confirm('Are you sure you want to clear this schedule?')) {
+      clearCurrentSchedule()
+    }
   }
 
   /**

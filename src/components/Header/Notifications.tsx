@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Notifications as NotificationsIcon } from '@mui/icons-material'
 import {
@@ -11,6 +11,10 @@ import {
   DialogTitle,
   List,
   ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
   Tooltip,
 } from '@mui/material'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
@@ -25,14 +29,22 @@ interface NotificationAPIResponse {
   smsNotificationList: NotificationItem[]
 }
 
+interface Props {
+  /**
+   * whether this button is in a MUI List; otherwise assumed to be in Menu
+   */
+  list?: boolean
+}
+
 /**
  * notification bell that opens a modal with notifications
  */
-export default function NotificationHub() {
+export default function Notifications(props?: Props) {
   const [open, setOpen] = useState(false)
 
   const query = useQuery({
     queryKey: [LOOKUP_NOTIFICATIONS_ENDPOINT],
+    enabled: false,
     async queryFn() {
       let storedPhoneNumber = typeof Storage !== 'undefined' ? localStorage.getItem('phoneNumber') : null
 
@@ -56,7 +68,7 @@ export default function NotificationHub() {
     },
   })
 
-  function handleClick() {
+  function handleOpen(_e: React.MouseEvent<HTMLElement, MouseEvent>) {
     setOpen(true)
     query.refetch()
     logAnalytics({
@@ -65,21 +77,26 @@ export default function NotificationHub() {
     })
   }
 
-  function handleClose() {
+  function handleClose(_e: React.MouseEvent<HTMLElement, MouseEvent>) {
     setOpen(false)
   }
 
+  const WrapperElement = props?.list ? ListItem : Fragment
+  const ClickElement = props?.list ? ListItemButton : MenuItem
+
   return (
-    <>
+    <WrapperElement>
       <Tooltip title="Notifications Registered">
-        <Button onClick={handleClick} color="inherit" startIcon={<NotificationsIcon />}>
-          Notifications
-        </Button>
+        <ClickElement onClick={handleOpen} dense={!props?.list} href="">
+          <ListItemIcon>
+            <NotificationsIcon />
+          </ListItemIcon>
+          <ListItemText>Notifications</ListItemText>
+        </ClickElement>
       </Tooltip>
 
       <Dialog open={open} onClose={handleClose} scroll="paper">
         <DialogTitle>Notifications You&apos;ve Registered For</DialogTitle>
-
         <DialogContent dividers={true}>
           <DialogContentText>
             {query.data?.phoneNumber ? (
@@ -103,6 +120,6 @@ export default function NotificationHub() {
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
-    </>
+    </WrapperElement>
   )
 }

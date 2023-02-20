@@ -19,20 +19,13 @@ import { useScheduleStore } from '$stores/schedule'
 import { setScheduleIndex, addSchedule } from '$stores/schedule/schedule'
 
 /**
- * button (select form) that can switch between schedules or add a new schedule
+ * select form that can switch between schedules or add a new schedule
  */
 export default function SelectScheduleButton() {
   const { isDarkMode } = useSettingsStore()
   const { schedules, scheduleIndex } = useScheduleStore()
   const [open, setOpen] = useState(false)
   const [scheduleName, setScheduleName] = useState('')
-
-  function handleSelect(e: SelectChangeEvent<string>) {
-    const index = parseInt(e.target.value, 10)
-    if (index < schedules.length) {
-      setScheduleIndex(index)
-    }
-  }
 
   function handleOpen() {
     setOpen(true)
@@ -42,7 +35,14 @@ export default function SelectScheduleButton() {
     setOpen(false)
   }
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+  function handleSelectChange(e: SelectChangeEvent<string>) {
+    const index = parseInt(e.target.value, 10)
+    if (index < schedules.length) {
+      setScheduleIndex(index)
+    }
+  }
+
+  function handleTextChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setScheduleName(e.target.value)
   }
 
@@ -54,7 +54,7 @@ export default function SelectScheduleButton() {
 
   return (
     <>
-      <Select size="small" value={scheduleIndex.toString()} onChange={handleSelect} fullWidth>
+      <Select size="small" value={scheduleIndex.toString()} onChange={handleSelectChange} fullWidth>
         {schedules.map((schedule, index) => (
           <MenuItem key={index} value={index}>
             {schedule.scheduleName}
@@ -72,7 +72,7 @@ export default function SelectScheduleButton() {
         <DialogTitle>Add Schedule</DialogTitle>
         <DialogContent>
           <FormGroup sx={{ my: 2 }}>
-            <TextField label="Name" onChange={handleChange} value={scheduleName} fullWidth />
+            <TextField label="Name" onChange={handleTextChange} value={scheduleName} fullWidth />
           </FormGroup>
         </DialogContent>
         <DialogActions>

@@ -1,71 +1,78 @@
 import { useState } from 'react'
-import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, useMediaQuery } from '@mui/material'
+import {
+  AppBar,
+  Box,
+  Button,
+  Drawer,
+  IconButton,
+  List,
+  MenuList,
+  Toolbar,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material'
 import { Menu as MenuIcon } from '@mui/icons-material'
-
 import Settings from './Settings'
 import Notifications from './Notifications'
 import Feedback from './Feedback'
 import News from './News'
 import About from './About'
+import AccountButton from './Account'
 
 /**
- * all buttons to render for the header
+ * header buttons will either be MenuItems (desktop) or ListItemButtons (mobile)
  */
-const Buttons = [Settings, Notifications, Feedback, News, About]
+const HeaderButtons = [Settings, Notifications, Feedback, News, About]
 
-/**
- * main header at the top of the website
- */
 export default function Header() {
-  const isMobileScreen = useMediaQuery('(max-width:750px)')
-  const [anchorEl, setAnchorEl] = useState<Element | null>(null)
+  const [open, setOpen] = useState(false)
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
-  function handleClick(event: React.MouseEvent<Element, MouseEvent>) {
-    setAnchorEl(event.currentTarget)
+  function handleOpen() {
+    setOpen(true)
   }
 
   function handleClose() {
-    setAnchorEl(null)
+    setOpen(false)
   }
 
   return (
-    <AppBar
-      position="static"
-      sx={{
-        paddingLeft: '12px',
-        boxShadow: 'none',
-        minHeight: 0,
-        height: '50px',
-        backgroundColor: '#305db7',
-      }}
-    >
-      <Toolbar variant="dense">
-        {isMobileScreen ? (
-          <>
-            <img height={32} src="/logo/mobile.svg" />
-            <Box sx={{ flexGrow: 1 }} />
-            <IconButton onClick={handleClick} color="inherit">
-              <MenuIcon />
-            </IconButton>
-            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-              {Buttons.map((AppBarButton, index) => (
-                <MenuItem key={index}>
-                  <AppBarButton />
-                </MenuItem>
-              ))}
-            </Menu>
-          </>
-        ) : (
-          <>
-            <img height={32} src="/logo/desktop.svg" />
-            <Box sx={{ flexGrow: 1 }} />
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              {Buttons.map((AppBarButton, index) => (
-                <AppBarButton key={index} />
-              ))}
-            </Box>
-          </>
+    <AppBar position="static" sx={{ bgcolor: '#305db7', '& .MuiListItemIcon-root': { color: 'inherit' } }}>
+      <Toolbar disableGutters>
+        <Button href="/">
+          <Box component="img" src="/logo/desktop.svg" height={32} />
+        </Button>
+
+        <Box sx={{ flex: 1 }}></Box>
+
+        {/* horizontal menu buttons for desktop */}
+        {!isMobile && (
+          <MenuList sx={{ display: 'flex' }}>
+            {HeaderButtons.map((HeaderButton, index) => (
+              <HeaderButton key={index} />
+            ))}
+          </MenuList>
         )}
+
+        {/* menu icon to toggle the drawer for mobile */}
+        {isMobile && (
+          <IconButton onClick={handleOpen} color="inherit">
+            <MenuIcon />
+          </IconButton>
+        )}
+
+        {/* drawer with list item buttons for mobile */}
+        {isMobile && (
+          <Drawer open={open} onClose={handleClose}>
+            <List>
+              {HeaderButtons.map((HeaderButton, index) => (
+                <HeaderButton list key={index} />
+              ))}
+            </List>
+          </Drawer>
+        )}
+        <AccountButton />
       </Toolbar>
     </AppBar>
   )

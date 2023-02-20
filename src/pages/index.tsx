@@ -1,9 +1,11 @@
+import dynamic from 'next/dynamic'
+import Head from 'next/head'
 import { useRef, useState } from 'react'
 import { Box, Tab, Tabs, useMediaQuery, useTheme } from '@mui/material'
 import Calendar from '$components/Calendar'
 import CourseSearch from '$components/CourseSearch'
 import AddedCourses from '$components/AddedCourses'
-import Map from '$components/Map'
+const Map = dynamic(() => import('$components/Map'), { ssr: false })
 
 /**
  * home page

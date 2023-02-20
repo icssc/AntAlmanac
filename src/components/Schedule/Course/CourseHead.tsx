@@ -8,8 +8,8 @@ import {
 import { analyticsEnum } from '$lib/analytics'
 import CourseSummaryButton from '$components/Buttons/CourseSummary'
 import CourseReferenceButton from '$components/Buttons/CourseReference'
-import GradesPopup from '$components/GradesPopup'
 import type { AACourse } from '$lib/peterportal.types'
+import GradesPopup from './GradesPopup'
 
 interface Props {
   course: AACourse

@@ -22,7 +22,7 @@ export function addCustomEvent(newCustomEvent: RepeatingCustomEvent, scheduleInd
     }
   }
 
-  useScheduleStore.setState({ schedules, previousStates })
+  useScheduleStore.setState({ schedules, previousStates, saved: false })
 }
 
 /**
@@ -44,7 +44,7 @@ export function deleteCustomEvent(customEventId: number, removedIndices?: number
     }
   }
 
-  useScheduleStore.setState({ schedules })
+  useScheduleStore.setState({ schedules, saved: false })
 }
 
 /**
@@ -74,7 +74,7 @@ export function editCustomEvent(editedCustomEvent: RepeatingCustomEvent, newIndi
   /**
    * update the store before adding and deleting additional events
    */
-  useScheduleStore.setState({ schedules })
+  useScheduleStore.setState({ schedules, saved: false })
 
   const currentIndices = [...schedules.keys()].filter((index) =>
     schedules[index].customEvents.some((event) => event.customEventID === editedCustomEvent.customEventID)

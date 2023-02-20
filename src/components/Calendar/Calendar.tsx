@@ -2,50 +2,14 @@ import dayjs from 'dayjs'
 import { useState, useRef } from 'react'
 import { Calendar, dayjsLocalizer, DateLocalizer, Views } from 'react-big-calendar'
 import type { EventProps } from 'react-big-calendar'
-import { Box, ClickAwayListener, Popper } from '@mui/material'
+import { Box, ClickAwayListener, Paper, Popper, useTheme } from '@mui/material'
 import { useScheduleStore } from '$stores/schedule'
 import { useSettingsStore } from '$stores/settings'
 import { getCourseCalendarEvents, getFinalsCalendarEvents, getCustomCalendarEvents } from '$stores/schedule/calendar'
 import type { CalendarEvent } from '$stores/schedule/calendar'
-import CalendarToolbar from './CalendarToolbar'
-import CourseEventDetails from './EventDetails/CourseEvent'
-import CustomEventDetails from './EventDetails/CustomEvent'
-
-interface rgbColor {
-  r: number
-  g: number
-  b: number
-}
-
-function getBrightness(color: rgbColor) {
-  return (color.r * 299 + color.g * 587 + color.b * 114) / 1000
-}
-
-/**
- * equation taken from w3c, omits the colour difference part
- * @see @link{https://www.w3.org/TR/WCAG20/#relativeluminancedef}
- */
-function isContrastSufficient(color: string) {
-  const minBrightnessDiff = 125
-
-  const backgroundRegexResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color)
-
-  if (!backgroundRegexResult) {
-    return true
-  }
-
-  const backgroundRGB = {
-    r: parseInt(backgroundRegexResult[1], 16),
-    g: parseInt(backgroundRegexResult[2], 16),
-    b: parseInt(backgroundRegexResult[3], 16),
-  }
-  const textRgb = { r: 255, g: 255, b: 255 } // white text
-
-  const bgBrightness = getBrightness(backgroundRGB)
-  const textBrightness = getBrightness(textRgb)
-
-  return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff
-}
+import CalendarToolbar from './Toolbar'
+import CourseEventDetails from './Details/CourseEvent'
+import CustomEventDetails from './Details/CustomEvent'
 
 /**
  * single calendar event box
@@ -79,6 +43,7 @@ function AntAlmanacEvent(props: EventProps & { event: CalendarEvent }) {
 export default function AntAlamancCalendar() {
   const { showFinals } = useSettingsStore()
   const { schedules, scheduleIndex } = useScheduleStore()
+  const theme = useTheme()
   const ref = useRef<HTMLDivElement>(null)
   const [anchorEl, setAnchorEl] = useState<HTMLElement>()
   const [courseInMoreInfo, setCourseInMoreInfo] = useState<CalendarEvent>()
@@ -117,7 +82,9 @@ export default function AntAlamancCalendar() {
 
   return (
     <Box>
-      <CalendarToolbar imgRef={ref} />
+      <Paper sx={{ position: 'sticky', top: 0, zIndex: 1 }}>
+        <CalendarToolbar imgRef={ref} />
+      </Paper>
       <Box ref={ref}>
         <Calendar
           localizer={dayjsLocalizer(dayjs)}
@@ -144,7 +111,7 @@ export default function AntAlamancCalendar() {
               cursor: 'pointer',
               borderStyle: 'none',
               borderRadius: '4px',
-              color: isContrastSufficient(event.color || '') ? 'white' : 'black',
+              color: theme.palette.getContrastText(event.color),
             },
           })}
           showMultiDayTimes={false}
