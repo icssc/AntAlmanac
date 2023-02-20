@@ -1,5 +1,10 @@
 import { useRef, useState } from 'react'
 import { Box, Tab, Tabs, useMediaQuery, useTheme } from '@mui/material'
+import {
+  FormatListBulleted as BulletListIcon,
+  MyLocation as MyLocationIcon,
+  Search as SearchIcon,
+} from '@mui/icons-material'
 import Calendar from '$components/Calendar'
 import CourseSearch from '$components/CourseSearch'
 import AddedCourses from '$components/AddedCourses'
@@ -62,10 +67,20 @@ export default function Home() {
           {mobileTab === 0 && <Calendar />}
           {mobileTab === 1 && (
             <>
-              <Tabs value={tab} onChange={handleTabChange} variant="fullWidth">
-                <Tab label="Course Search" />
-                <Tab label="Added Courses" />
-                <Tab label="Map" />
+              <Tabs value={tab} onChange={handleTabChange} variant="fullWidth" sx={{ height: 48 }}>
+                <Tab
+                  label="Course Search"
+                  icon={<SearchIcon />}
+                  iconPosition="start"
+                  sx={{ minHeight: 0, height: 48 }}
+                />
+                <Tab
+                  label="Added Courses"
+                  icon={<BulletListIcon />}
+                  iconPosition="start"
+                  sx={{ minHeight: 0, height: 48 }}
+                />
+                <Tab label="Map" icon={<MyLocationIcon />} iconPosition="start" sx={{ minHeight: 0, height: 48 }} />
               </Tabs>
               {tab === 0 && <CourseSearch />}
               {tab === 1 && <AddedCourses />}
@@ -105,10 +120,10 @@ export default function Home() {
         sx={{ width: right, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}
         onDragOver={(e) => e.preventDefault()}
       >
-        <Tabs value={tab} onChange={handleTabChange} variant="fullWidth">
-          <Tab label="Course Search" />
-          <Tab label="Added Courses" />
-          <Tab label="Map" />
+        <Tabs value={tab} onChange={handleTabChange} variant="fullWidth" sx={{ height: 48 }}>
+          <Tab label="Course Search" icon={<SearchIcon />} iconPosition="start" sx={{ minHeight: 0, height: 48 }} />
+          <Tab label="Added Courses" icon={<BulletListIcon />} iconPosition="start" sx={{ minHeight: 0, height: 48 }} />
+          <Tab label="Map" icon={<MyLocationIcon />} iconPosition="start" sx={{ minHeight: 0, height: 48 }} />
         </Tabs>
         {tab === 0 && <CourseSearch />}
         {tab === 1 && <AddedCourses />}

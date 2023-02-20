@@ -106,5 +106,5 @@ export const useScheduleStore = create<ScheduleStore>(() => ({
   scheduleIndex: 0,
   previousStates: [],
   nextStates: [],
-  saved: false,
+  saved: true,
 }))

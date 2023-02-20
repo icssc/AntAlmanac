@@ -67,6 +67,7 @@ export default function AppThemeProvider(props: { children: React.ReactNode }) {
 
   /**
    * create theme that reacts to the settings store
+   * copied from {@link https://github.com/icssc/AntAlmanac/blob/mui5/src/components/App.js}
    */
   const theme = createTheme({
     typography: {
@@ -74,7 +75,16 @@ export default function AppThemeProvider(props: { children: React.ReactNode }) {
       fontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
     },
     spacing: 4,
-    palette: { ...(darkMode ? darkPalette : lightPalette) },
+    palette: {
+      ...(darkMode ? darkPalette : lightPalette),
+      white: {
+        main: '#d5d5d5',
+        contrastText: '#000',
+      },
+      clearButton: {
+        main: '#f50057',
+      },
+    },
     components: {
       MuiPaper: {
         styleOverrides: { root: { backgroundImage: 'unset' } }, // removes transparent gradient
@@ -83,7 +93,7 @@ export default function AppThemeProvider(props: { children: React.ReactNode }) {
         //change outlined button variant
         variants: [
           {
-            props: { variant: 'outlined', color: 'inherit' },
+            props: { variant: 'outlined', color: 'white' },
             style: {
               color: darkMode ? '#FFF' : '#000',
               borderColor: darkMode ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
@@ -103,4 +113,38 @@ export default function AppThemeProvider(props: { children: React.ReactNode }) {
       {props.children}
     </ThemeProvider>
   )
+}
+
+/**
+ * @see {@link https://mui.com/material-ui/customization/palette/#adding-new-colors}
+ */
+declare module '@mui/material/styles' {
+  interface Palette {
+    white: {
+      main: string
+      contrastText: string
+    }
+    clearButton: {
+      main: string
+    }
+  }
+
+  interface PaletteOptions {
+    white?: {
+      main: string
+      contrastText: string
+    }
+    clearButton?: {
+      main: string
+    }
+  }
+}
+
+/**
+ * @see {@link https://mui.com/material-ui/customization/theme-components/#creating-new-component-variants}
+ */
+declare module '@mui/material/Button' {
+  interface ButtonPropsColorOverrides {
+    white: true
+  }
 }

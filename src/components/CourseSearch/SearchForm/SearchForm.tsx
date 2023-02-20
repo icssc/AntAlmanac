@@ -38,13 +38,13 @@ export default function SearchForm() {
 
   return (
     <Box sx={{ height: '100%', padding: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <FormGroup sx={{ display: 'flex', gap: 2, my: 2 }}>
+      <FormGroup sx={{ display: 'flex', gap: 2, my: 2, flexGrow: 2 }}>
         <TermSelect />
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
           <FuzzySearch />
           <Tooltip title="Manual Search">
             <IconButton onClick={toggleShowLegacySearch}>
-              <TuneIcon></TuneIcon>
+              <TuneIcon />
             </IconButton>
           </Tooltip>
         </Box>
@@ -52,7 +52,7 @@ export default function SearchForm() {
 
       {showLegacySearch && (
         <>
-          <FormGroup sx={{ display: 'flex', gap: 2 }}>
+          <FormGroup sx={{ display: 'flex', gap: 4, my: 4 }}>
             <DepartmentSelect />
             <GeSelect />
             <CourseNumberInput />
@@ -67,18 +67,17 @@ export default function SearchForm() {
               <AdvancedSearch />
             </AccordionDetails>
           </Accordion>
-          <Box sx={{ display: 'flex', gap: 4, my: 2 }}>
-            <Button onClick={handleClick} variant="contained" sx={{ width: '50%' }}>
-              Search
-            </Button>
+
+          <Box sx={{ display: 'flex', gap: 4, my: 3 }}>
             <Button onClick={reset} sx={{ width: '50%' }} color="error" variant="contained">
               Reset
+            </Button>
+            <Button onClick={handleClick} variant="contained" sx={{ width: '50%' }}>
+              Search
             </Button>
           </Box>
         </>
       )}
-
-      <Box sx={{ flex: 1 }} />
 
       <HelpBox />
       <PrivacyBanner />

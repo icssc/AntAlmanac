@@ -35,7 +35,16 @@ export default function CourseReferenceButton(props: Props) {
 
   return (
     <>
-      <Button variant="contained" size="small" onClick={handleClick} startIcon={props.icon}>
+      <Button
+        variant="contained"
+        size="small"
+        onClick={handleClick}
+        startIcon={props.icon}
+        sx={{
+          backgroundColor: '#385EB1',
+          color: '#fff',
+        }}
+      >
         {props.title}
       </Button>
       <Popover

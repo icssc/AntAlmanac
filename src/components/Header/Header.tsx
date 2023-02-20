@@ -38,7 +38,7 @@ export default function Header() {
   }
 
   return (
-    <AppBar position="static" sx={{ bgcolor: '#305db7', '& .MuiListItemIcon-root': { color: 'inherit' } }}>
+    <AppBar position="static" sx={{ backgroundColor: '#305db7', '& .MuiListItemIcon-root': { color: 'inherit' } }}>
       <Toolbar disableGutters>
         <Button href="/">
           <Box component="img" src="/logo/desktop.svg" height={32} />
