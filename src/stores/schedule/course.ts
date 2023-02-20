@@ -24,6 +24,7 @@ type SimpleAACourse = Omit<AACourse, 'sections'>
  */
 interface Options {
   onError?: (error: Error) => void
+  onWarn?: (message: string) => void
 }
 
 /**
@@ -40,6 +41,15 @@ export function addCourse(section: Section, course: SimpleAACourse, addScheduleI
   const targetScheduleIndex = addScheduleIndex ?? scheduleIndex
   const allCourses = schedules[targetScheduleIndex].courses
 
+  const term = form.term
+  const termsInSchedule = new Set([term, ...allCourses.map((c) => c.term)])
+
+  if (termsInSchedule.size > 1) {
+    options?.onWarn?.(
+      `Course added from different term. Schedule now contains courses from ${[...termsInSchedule].sort().join(', ')}.`
+    )
+  }
+
   const existingCourse = allCourses.find(
     (course) => course.section.sectionCode === section.sectionCode && course.term === form.term
   )
@@ -53,7 +63,7 @@ export function addCourse(section: Section, course: SimpleAACourse, addScheduleI
   const color = arrayOfColors.find((materialColor) => !setOfUsedColors.has(materialColor)) || '#5ec8e0'
 
   const newCourse: Course = {
-    term: form.term,
+    term,
     deptCode: course.deptCode,
     courseNumber: course.courseNumber,
     courseTitle: course.courseTitle,

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSnackbar } from 'notistack'
 import {
   Button,
   Checkbox,
@@ -10,6 +11,7 @@ import {
   FormControlLabel,
   TextField,
 } from '@mui/material'
+import { LoadingButton } from '@mui/lab'
 import { useSettingsStore } from '$stores/settings'
 import { saveSchedule } from '$stores/schedule/save'
 
@@ -22,13 +24,26 @@ interface Props {
  * dialog to save a schedule
  */
 export default function SaveDialog(props: Props) {
+  const { enqueueSnackbar } = useSnackbar()
   const { open, setOpen } = props
+  const [loading, setLoading] = useState(false)
   const [userId, setUserId] = useState('')
   const [remember, setRemember] = useState(false)
   const { isDarkMode } = useSettingsStore()
 
   async function handleSubmit() {
-    await saveSchedule(userId, remember)
+    setLoading(true)
+    await saveSchedule(userId, remember, {
+      onSuccess() {
+        enqueueSnackbar(`Schedule saved under username ${userId}. Don't forget to sign up for classes on WebReg!`, {
+          variant: 'success',
+        })
+      },
+      onError() {
+        enqueueSnackbar(`Schedule could not be saved under username "${userId}`, { variant: 'error' })
+      },
+    })
+    setLoading(false)
     setOpen(false)
   }
 
@@ -67,9 +82,9 @@ export default function SaveDialog(props: Props) {
         <Button onClick={handleCancel} color={isDarkMode() ? 'inherit' : 'primary'}>
           Cancel
         </Button>
-        <Button onClick={handleSubmit} variant="contained" color="primary">
+        <LoadingButton onClick={handleSubmit} variant="contained" color="primary" loading={loading}>
           Submit
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   )

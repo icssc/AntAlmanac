@@ -146,33 +146,35 @@ export async function loadSchedule(userID: string, rememberMe?: boolean, options
   })
 
   if (
-    userID != null &&
-    (!saved || window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
+    userID == null ||
+    (!saved && !window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
   ) {
-    userID = userID.replace(/\s+/g, '')
-    if (!userID) {
-      return
-    }
-    if (rememberMe) {
-      window.localStorage.setItem('userID', userID)
-    } else {
-      window.localStorage.removeItem('userID')
-    }
+    return
+  }
 
-    try {
-      let response_data = await fetch(LOAD_DATA_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userID: userID }),
-      })
+  userID = userID.replace(/\s+/g, '')
 
-      const json = (await response_data.json()) as { userData: ScheduleSaveState }
-      const scheduleSaveState = json.userData
+  if (!userID) {
+    return
+  }
 
-      if (!scheduleSaveState) {
-        return
-      }
+  if (rememberMe) {
+    window.localStorage.setItem('userID', userID)
+  } else {
+    window.localStorage.removeItem('userID')
+  }
 
+  try {
+    let response_data = await fetch(LOAD_DATA_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userID: userID }),
+    })
+
+    const json = (await response_data.json()) as { userData: ScheduleSaveState }
+    const scheduleSaveState = json.userData
+
+    if (scheduleSaveState) {
       if (await fromScheduleSaveState(scheduleSaveState)) {
         options?.onSuccess?.()
         return
@@ -182,6 +184,7 @@ export async function loadSchedule(userID: string, rememberMe?: boolean, options
         options?.onSuccess?.()
         return
       }
+
       /**
        * Finally try getting and loading from legacy if none of the above works
        * TODO: should be legacy endpoint
@@ -192,16 +195,16 @@ export async function loadSchedule(userID: string, rememberMe?: boolean, options
         body: JSON.stringify({ userID: userID }),
       })
 
-      const json2 = (await response_data.json()) as { userData: LegacyUserData }
-      const legacyUserData = json2.userData
+      const legacyResponse = (await response_data.json()) as { userData: LegacyUserData }
+      const legacyUserData = legacyResponse.userData
+
       if (!legacyUserData || (await fromScheduleSaveState(convertLegacySchedule(legacyUserData)))) {
         options?.onSuccess?.()
-        return
       }
-      options?.onError?.(new Error(`Couldn't find schedules for username "${userID}".`))
-    } catch (e) {
-      options?.onError?.(new Error('Encountered network error while loading schedules.'))
     }
+    options?.onError?.(new Error(`Couldn't find schedules for username "${userID}".`))
+  } catch (e) {
+    options?.onError?.(new Error('Encountered network error while loading schedules.'))
   }
 }
 

@@ -23,10 +23,15 @@ export function convertSchedulesToSave(schedules: Schedule[]) {
   return { schedules: shortSchedules, scheduleIndex: 0 }
 }
 
+interface Options {
+  onSuccess?: () => void
+  onError?: () => void
+}
+
 /**
  * saves the current schedule
  */
-export async function saveSchedule(userID: string, rememberMe: boolean) {
+export async function saveSchedule(userID: string, rememberMe: boolean, options?: Options) {
   const { schedules } = useScheduleStore.getState()
 
   logAnalytics({
@@ -65,13 +70,10 @@ export async function saveSchedule(userID: string, rememberMe: boolean) {
       })
 
       useScheduleStore.setState({ saved: true })
-      // enqueueSnackbar(`Schedule saved under username ${userID}. Don't forget to sign up for classes on WebReg!`, {
-      //   variant: 'success',
-      // })
-      // AppStore.saveSchedule();
+      options?.onSuccess?.()
     } catch (e) {
       console.log(e)
-      // enqueueSnackbar(`Schedule could not be saved under username "${userID}`, { variant: 'error' })
+      options?.onError?.()
     }
   }
 }
