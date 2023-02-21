@@ -38,7 +38,7 @@ function flattenSOCObject(SOCObject: WebsocResponse, courses: Course[] = []) {
  * renders the list of course search results
  */
 export default function CourseList() {
-  const { getParams, showResults, setShowResults } = useSearchStore()
+  const { form, getParams, showResults, setShowResults } = useSearchStore()
   const { schedules, scheduleIndex } = useScheduleStore()
   const { isDarkMode } = useSettingsStore()
 
@@ -49,6 +49,12 @@ export default function CourseList() {
   const darkMode = isDarkMode()
   const noResultsSrc = darkMode ? '/no_results/dark.png' : '/no_results/light.png'
   const loadingSrc = darkMode ? '/loading/dark.gif' : '/loading/light.gif'
+
+  /**
+   * whether course body needs to manually search for more info
+   * @remarks prop drilling goes brrr
+   */
+  const supplemental = form.ge !== 'ANY'
 
   function handleRefresh() {
     query.refetch()
@@ -89,7 +95,7 @@ export default function CourseList() {
               const height = 'sections' in current && current.sections ? current.sections.length * 60 + 60 : 200
               return (
                 <LazyLoad once key={index} height={height} offset={500} overflow>
-                  <Schedule course={data} />
+                  <Schedule course={data} supplemental={supplemental} />
                 </LazyLoad>
               )
             })}

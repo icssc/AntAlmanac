@@ -21,10 +21,14 @@ export default function AddedCourses() {
       (existing) => existing.courseNumber === current.courseNumber && existing.deptCode === current.deptCode
     )
     if (found) {
-      found.sections.push(current.section)
+      found.sections.push({ ...current.section })
       return accumulated
     } else {
-      return [...accumulated, current]
+      const seggs = {
+        ...current,
+        sections: [{ ...current.section }]
+      }
+      return [...accumulated, seggs]
     }
   }, [] as typeof coursesWithSections)
 
@@ -42,7 +46,7 @@ export default function AddedCourses() {
         const height = 'sections' in current && current.sections ? current.sections.length * 60 + 60 : 200
         return (
           <LazyLoad once key={index} height={height} offset={500} overflow>
-            <Schedule key={index} course={course} term={course.term} />
+            <Schedule key={index} course={course} term={course.term} supplemental={false} />
           </LazyLoad>
         )
       })}

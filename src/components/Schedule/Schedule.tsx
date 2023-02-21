@@ -7,12 +7,17 @@ import CourseCard from './Course'
 interface Props {
   course: School | Department | AACourse
   term?: string
+
+  /**
+   * whether course body needs to manually search for more info
+   */
+  supplemental?: boolean
 }
 
 /**
  * renders a row in the list of course search results;
  */
-export default function Schedule({ course, term }: Props) {
+export default function Schedule({ course, term, supplemental }: Props) {
   /**
    * course is School
    */
@@ -31,7 +36,7 @@ export default function Schedule({ course, term }: Props) {
    * course is AACourse
    */
   if ('courseNumber' in course) {
-    return <CourseCard course={course} term={term} />
+    return <CourseCard course={course} term={term} supplemental={supplemental} />
   }
 
   /**

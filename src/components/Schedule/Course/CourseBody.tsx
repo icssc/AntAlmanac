@@ -281,31 +281,40 @@ function CourseStatus(props: { section: AASection }) {
   )
 }
 
+interface Props {
+  course: AACourse
+  term?: string
+
+  /**
+   * whether additional data must be fetched manually
+   */
+  supplemental?: boolean
+}
+
 /**
  * renders a table showing everything about the course,
  * e.g. section code, instructors, times, enrollment status, etc.
  */
-export default function CourseBody({ course, term }: { course: AACourse; term?: string }) {
-  const { form } = useSearchStore()
-
+export default function CourseBody({ course, term, supplemental }: Props) {
   /**
-   * if the form's GE input was "ANY", enable an additional query for more data
+   * after the supplemental prop has been prop-drilled down several layers,
+   * it determines whether this query is enabled and should override the provided course data
    */
   const query = useWebsocQuery(
     {
       department: course.deptCode,
-      term: form.term,
+      term,
       ge: 'ANY',
       courseNumber: course.courseNumber,
       courseTitle: course.courseTitle,
     },
     {
-      enabled: form.ge !== 'ANY',
+      enabled: supplemental
     }
   )
 
   const queryData = query.data?.schools[0]?.departments[0]?.courses?.[0] as AACourse
-  const courseDetails = form.ge !== 'any' ? queryData : course
+  const courseDetails = supplemental ? queryData : course
 
   return (
     <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
