@@ -11,7 +11,7 @@ export default function ScheduleMenu() {
   const [saveOpen, setSaveOpen] = useState(false)
   const [loadOpen, setLoadOpen] = useState(false)
 
-  function handleClick(e: React.MouseEvent<HTMLLIElement, MouseEvent>) {
+  function handleOpen(e: React.MouseEvent<HTMLLIElement, MouseEvent>) {
     e.stopPropagation()
     setAnchorEl(e.currentTarget)
   }
@@ -38,8 +38,9 @@ export default function ScheduleMenu() {
 
   return (
     <>
-      <MenuItem onClick={handleClick} disableRipple>
+      <MenuItem onClick={handleOpen} disableRipple>
         <ListItemText>Schedule</ListItemText>
+
         <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={handleClose} transitionDuration={0}>
           <MenuItem onClick={handleSaveOpen} dense>
             <ListItemIcon>
@@ -47,12 +48,14 @@ export default function ScheduleMenu() {
             </ListItemIcon>
             <ListItemText>Save</ListItemText>
           </MenuItem>
+
           <MenuItem onClick={handleLoadOpen} dense>
             <ListItemIcon>
               <CloudDownloadIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>Load</ListItemText>
           </MenuItem>
+
           <MenuItem onClick={handleImportOpen} sx={{ width: 200 }} dense>
             <ListItemIcon>
               <PostAddIcon fontSize="small" />

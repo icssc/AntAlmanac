@@ -7,6 +7,7 @@ import { renameCurrentSchedule } from '$stores/schedule/schedule'
 interface Props {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  index?: number
 }
 
 /**
@@ -16,7 +17,12 @@ export default function RenameScheduleDialog(props: Props) {
   const { open, setOpen } = props
   const { schedules, scheduleIndex } = useScheduleStore()
   const { isDarkMode } = useSettingsStore()
-  const [scheduleName, setScheduleName] = useState(schedules[scheduleIndex]?.scheduleName || '')
+
+  const index = props.index ?? scheduleIndex
+  const originalName = schedules[index]?.scheduleName || ''
+  const title = originalName ? 'Rename Schedule' : 'Add a New Schedule'
+  const action = originalName ? 'Rename Schedule' : 'Add Schedule'
+  const [scheduleName, setScheduleName] = useState(originalName)
 
   function handleRename() {
     renameCurrentSchedule(scheduleName)
@@ -24,7 +30,7 @@ export default function RenameScheduleDialog(props: Props) {
   }
 
   function handleClose() {
-    setScheduleName('')
+    setScheduleName(originalName)
     setOpen(false)
   }
 
@@ -34,18 +40,20 @@ export default function RenameScheduleDialog(props: Props) {
 
   return (
     <Dialog open={open} fullWidth onClose={handleClose}>
-      <DialogTitle>Rename Schedule</DialogTitle>
+      <DialogTitle>{title}</DialogTitle>
+
       <DialogContent>
         <FormGroup sx={{ marginY: 2 }}>
           <TextField label="Name" onChange={handleChange} value={scheduleName} fullWidth />
         </FormGroup>
       </DialogContent>
+
       <DialogActions>
         <Button onClick={handleClose} color={isDarkMode() ? 'inherit' : 'primary'}>
           Cancel
         </Button>
         <Button onClick={handleRename} variant="contained" color="primary" disabled={!scheduleName}>
-          Rename Schedule
+          {action}
         </Button>
       </DialogActions>
     </Dialog>

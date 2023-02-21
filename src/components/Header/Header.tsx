@@ -67,7 +67,7 @@ export default function Header() {
           <Drawer open={open} onClose={handleClose}>
             <List>
               {HeaderButtons.map((HeaderButton, index) => (
-                <HeaderButton list key={index} />
+                <HeaderButton listItem key={index} />
               ))}
             </List>
           </Drawer>

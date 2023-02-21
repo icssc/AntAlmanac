@@ -16,6 +16,7 @@ import locations from '$lib/location_ids'
 import { analyticsEnum } from '$lib/analytics'
 import { useSearchStore } from '$stores/search'
 import { useScheduleStore } from '$stores/schedule'
+import { useWebsocQuery } from '$hooks/useWebsocQuery'
 import AddCourseButton from '$components/Buttons/AddCourse'
 import AddCourseMenuButton from '$components/Buttons/AddCourseMenu'
 import DeleteCourseButton from '$components/Buttons/DeleteCourse'
@@ -70,7 +71,7 @@ const SectionStatusColors: Record<string, string> = {
  */
 function CourseActions(props: { section: AASection; course: AACourse; term?: string }) {
   const { schedules, scheduleIndex } = useScheduleStore()
-  const courses = schedules[scheduleIndex].courses
+  const courses = schedules[scheduleIndex]?.courses
   const addedSectionCodes = new Set(courses.map((course) => `${course.section.sectionCode} ${course.term}`))
   const term = props.term || useSearchStore.getState()?.form?.term
   const alreadyAdded = addedSectionCodes.has(`${props.section.sectionCode} ${term}`)
@@ -109,9 +110,11 @@ function SectionCode(props: { section: AASection }) {
   }
 
   return (
-    <Link onClick={handleClick} underline="hover" href="#" variant="body2">
-      {section.sectionCode}
-    </Link>
+    <Tooltip title="Click to Copy Course Code">
+      <Link onClick={handleClick} underline="hover" href="#" variant="body2">
+        {section.sectionCode}
+      </Link>
+    </Tooltip>
   )
 }
 
@@ -283,28 +286,75 @@ function CourseStatus(props: { section: AASection }) {
  * e.g. section code, instructors, times, enrollment status, etc.
  */
 export default function CourseBody({ course, term }: { course: AACourse; term?: string }) {
+  const { form } = useSearchStore()
+
+  /**
+   * if the form's GE input was "ANY", enable an additional query for more data
+   */
+  const query = useWebsocQuery(
+    {
+      department: course.deptCode,
+      term: form.term,
+      ge: 'ANY',
+      courseNumber: course.courseNumber,
+      courseTitle: course.courseTitle,
+    },
+    {
+      enabled: form.ge !== 'ANY',
+    }
+  )
+
+  const queryData = query.data?.schools[0]?.departments[0]?.courses?.[0] as AACourse
+  const courseDetails = form.ge !== 'any' ? queryData : course
+
   return (
     <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
-      <Table size="small" sx={{ '.MuiTableCell-root': { paddingX: 0, paddingY: 0.5 } }}>
+      <Table size="small" sx={{ '& .MuiTableCell-root': { padding: 0.5 } }}>
         <TableHead>
           <TableRow>
             <TableCell width="4%" />
-            <TableCell width="10%">Code</TableCell>
-            <TableCell width="10%">Type</TableCell>
-            <TableCell width="15%">Instructors</TableCell>
-            <TableCell width="12%">Times</TableCell>
-            <TableCell width="10%">Places</TableCell>
-            <TableCell width="10%">Enrollment</TableCell>
-            <TableCell width="8%">Rstr</TableCell>
-            <TableCell width="8%">Status</TableCell>
+            <Tooltip title="Course Code">
+              <TableCell width="10%">Code</TableCell>
+            </Tooltip>
+            <Tooltip title="Course Type">
+              <TableCell width="10%">Type</TableCell>
+            </Tooltip>
+            <Tooltip title="Course Instructors">
+              <TableCell width="15%">Instructors</TableCell>
+            </Tooltip>
+            <Tooltip title="Course Meeting Times">
+              <TableCell width="12%">Times</TableCell>
+            </Tooltip>
+            <Tooltip title="Location of Meetings">
+              <TableCell width="10%">Places</TableCell>
+            </Tooltip>
+            <Tooltip
+              title={
+                <Typography>
+                  Enrolled/Capacity
+                  <br />
+                  Waitlist
+                  <br />
+                  New-Only Reserved
+                </Typography>
+              }
+            >
+              <TableCell width="10%">Enrollment</TableCell>
+            </Tooltip>
+            <Tooltip title="Restrictions">
+              <TableCell width="8%">Rstr</TableCell>
+            </Tooltip>
+            <Tooltip title="Current Status">
+              <TableCell width="8%">Status</TableCell>
+            </Tooltip>
           </TableRow>
         </TableHead>
+
         <TableBody sx={{ padding: 0 }}>
-          {course.sections.map((section, index) => (
+          {courseDetails?.sections.map((section, index) => (
             <TableRow
               sx={{
                 '&:nth-of-type(odd)': { bgcolor: 'action.hover' },
-                '& .MuiTableCell-root': { padding: 0 },
               }}
               key={index}
             >

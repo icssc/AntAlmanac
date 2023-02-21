@@ -58,8 +58,9 @@ export default function LoadDialog(props: Props) {
   }
 
   return (
-    <Dialog open={open || false}>
+    <Dialog open={open}>
       <DialogTitle>Load Schedule</DialogTitle>
+
       <DialogContent>
         <DialogContentText>Enter your username here to load your schedule.</DialogContentText>
         <TextField
@@ -76,6 +77,7 @@ export default function LoadDialog(props: Props) {
           label="Remember Me (Uncheck on shared computers)"
         />
       </DialogContent>
+
       <DialogActions>
         <Button onClick={handleCancel} color={isDarkMode() ? 'inherit' : 'primary'}>
           Cancel

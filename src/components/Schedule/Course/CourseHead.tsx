@@ -24,7 +24,7 @@ export default function CourseHead(props: Props) {
   const encodedDept = encodeURIComponent(props.course.deptCode)
 
   return (
-    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', margin: 1 }}>
+    <Box sx={{ display: 'flex', gap: 1, overflowX: 'auto', marginY: 2 }}>
       <CourseSummaryButton {...props} />
       {props.course.prerequisiteLink && (
         <CourseReferenceButton

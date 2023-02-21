@@ -41,10 +41,15 @@ function AntAlmanacEvent(props: EventProps & { event: CalendarEvent }) {
  * entire calendar
  */
 export default function AntAlamancCalendar() {
+  const theme = useTheme()
+
+  /**
+   * this ref is important! pass it to the screenshot button to take a picture of the calendar
+   */
+  const ref = useRef<HTMLDivElement>(null)
+
   const { showFinals } = useSettingsStore()
   const { schedules, scheduleIndex } = useScheduleStore()
-  const theme = useTheme()
-  const ref = useRef<HTMLDivElement>(null)
   const [anchorEl, setAnchorEl] = useState<HTMLElement>()
   const [courseInMoreInfo, setCourseInMoreInfo] = useState<CalendarEvent>()
   const [calendarEventKey, setCalendarEventKey] = useState(0)
@@ -67,7 +72,7 @@ export default function AntAlamancCalendar() {
   const isCourseEvent = courseInMoreInfo && 'bldg' in courseInMoreInfo
   const isCustomEvent = courseInMoreInfo && 'customEventID' in courseInMoreInfo
 
-  function handleEventClick(calendarEvent: CalendarEvent, e: React.SyntheticEvent<HTMLElement, Event>) {
+  function handleSelectEvent(calendarEvent: CalendarEvent, e: React.SyntheticEvent<HTMLElement, Event>) {
     e.stopPropagation()
     if (calendarEvent.isCustomEvent || ('sectionType' in calendarEvent && calendarEvent.sectionType !== 'Fin')) {
       setAnchorEl(e.currentTarget)
@@ -85,6 +90,7 @@ export default function AntAlamancCalendar() {
       <Paper sx={{ position: 'sticky', top: 0, zIndex: 1 }}>
         <CalendarToolbar imgRef={ref} />
       </Paper>
+
       <Box ref={ref}>
         <Calendar
           localizer={dayjsLocalizer(dayjs)}
@@ -116,10 +122,11 @@ export default function AntAlamancCalendar() {
           })}
           showMultiDayTimes={false}
           components={{ event: AntAlmanacEvent }}
-          onSelectEvent={handleEventClick}
+          onSelectEvent={handleSelectEvent}
         />
       </Box>
 
+      {/* additional info about event in a popper when event is clicked */}
       <Popper anchorEl={anchorEl} placement="right" open={!!anchorEl} sx={{ zIndex: 1 }}>
         <ClickAwayListener onClickAway={handleClose}>
           <Box>

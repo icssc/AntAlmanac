@@ -1,42 +1,16 @@
 import { useState } from 'react'
+import { IconButton, Tooltip } from '@mui/material'
 import { Edit as EditIcon } from '@mui/icons-material'
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormGroup,
-  IconButton,
-  TextField,
-  Tooltip,
-} from '@mui/material'
-import { useSettingsStore } from '$stores/settings'
-import { useScheduleStore } from '$stores/schedule'
-import { renameCurrentSchedule } from '$stores/schedule/schedule'
+import RenameScheduleDialog from '$components/Dialog/RenameSchedule'
 
+/**
+ * button that opens up the rename schedule dialog
+ */
 export default function RenameScheduleButton() {
   const [open, setOpen] = useState(false)
-  const { schedules, scheduleIndex } = useScheduleStore()
-  const { isDarkMode } = useSettingsStore()
-  const [scheduleName, setScheduleName] = useState(schedules[scheduleIndex]?.scheduleName || '')
 
   function handleOpen() {
     setOpen(true)
-  }
-
-  function handleRename() {
-    renameCurrentSchedule(scheduleName)
-    setOpen(false)
-  }
-
-  function handleClose() {
-    setScheduleName('')
-    setOpen(false)
-  }
-
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setScheduleName(e.target.value)
   }
 
   return (
@@ -46,22 +20,8 @@ export default function RenameScheduleButton() {
           <EditIcon />
         </IconButton>
       </Tooltip>
-      <Dialog open={open} fullWidth onClose={handleClose}>
-        <DialogTitle>Rename Schedule</DialogTitle>
-        <DialogContent>
-          <FormGroup sx={{ marginY: 2 }}>
-            <TextField label="Name" onChange={handleChange} value={scheduleName} fullWidth />
-          </FormGroup>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color={isDarkMode() ? 'inherit' : 'primary'}>
-            Cancel
-          </Button>
-          <Button onClick={handleRename} variant="contained" color="primary" disabled={!scheduleName}>
-            Rename Schedule
-          </Button>
-        </DialogActions>
-      </Dialog>
+
+      <RenameScheduleDialog open={open} setOpen={setOpen} />
     </>
   )
 }

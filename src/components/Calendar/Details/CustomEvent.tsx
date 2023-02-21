@@ -9,7 +9,7 @@ import ColorPicker from '$components/Buttons/ColorPicker'
 
 interface CourseCalendarEventProps {
   event: CustomCalendarEvent
-  closePopover: () => void
+  closePopover?: () => void
 }
 
 export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
@@ -19,13 +19,12 @@ export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
   const customEvent = schedule.customEvents.find((c) => c.customEventID === props.event.customEventID)
 
   function handleDelete() {
-    props.closePopover()
     deleteCustomEvent(props.event.customEventID, [scheduleIndex])
     logAnalytics({
       category: analyticsEnum.calendar.title,
       action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
     })
-    props.closePopover()
+    props.closePopover?.()
   }
 
   return (
@@ -39,7 +38,7 @@ export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
           analyticsCategory={analyticsEnum.calendar.title}
         />
         <CustomEventButton onDialogClose={props.closePopover} event={customEvent} />
-        <Tooltip title="Delete">
+        <Tooltip title="Delete Custom Event">
           <IconButton onClick={handleDelete} size="large">
             <DeleteIcon fontSize="small" />
           </IconButton>

@@ -27,7 +27,14 @@ export default function CourseSummaryButton(props: { course: AACourse }) {
 
   return (
     <>
-      <Button variant="contained" color="white" size="small" onClick={handleClick} startIcon={<InfoOutlinedIcon />}>
+      <Button
+        variant="contained"
+        color="white"
+        size="small"
+        onClick={handleClick}
+        startIcon={<InfoOutlinedIcon />}
+        sx={{ flexShrink: 0 }}
+      >
         {`${props.course?.deptCode} ${props.course?.courseNumber} | ${props.course?.courseTitle}`}
       </Button>
       <Popover

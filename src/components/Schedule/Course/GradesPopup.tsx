@@ -29,7 +29,7 @@ export default function GradesPopup(props: Props) {
   const href = `https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${course.courseNumber}&code=&submit=Submit`
 
   const color = theme.palette.getContrastText(theme.palette.background.paper)
-  const title = `Grade Distribution | Average GPA: ${query.data?.grades?.average_gpa.toFixed(3)}`
+  const title = `Grade Distribution | Average GPA: ${query.data?.grades?.average_gpa?.toFixed(3)}`
   const width = isMobileScreen ? 300 : 500
   const height = isMobileScreen ? 200 : 300
 

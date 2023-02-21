@@ -1,5 +1,4 @@
 import { Fragment, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { Notifications as NotificationsIcon } from '@mui/icons-material'
 import {
   Box,
@@ -18,22 +17,14 @@ import {
   Tooltip,
 } from '@mui/material'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
-import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '$lib/api/endpoints'
-
-interface NotificationItem {
-  courseTitle: string
-  sectionCode: string
-}
-
-interface NotificationAPIResponse {
-  smsNotificationList: NotificationItem[]
-}
+import useNotificationsQuery from '$hooks/useNoticationsQuery'
 
 interface Props {
   /**
-   * whether this button is in a MUI List; otherwise assumed to be in Menu
+   * whether this button is in a MUI List and should be a ListItem;
+   * otherwise assumed to be in Menu and renders as MenuItem
    */
-  list?: boolean
+  listItem?: boolean
 }
 
 /**
@@ -41,32 +32,7 @@ interface Props {
  */
 export default function Notifications(props?: Props) {
   const [open, setOpen] = useState(false)
-
-  const query = useQuery({
-    queryKey: [LOOKUP_NOTIFICATIONS_ENDPOINT],
-    enabled: false,
-    async queryFn() {
-      let storedPhoneNumber = typeof Storage !== 'undefined' ? localStorage.getItem('phoneNumber') : null
-
-      if (!storedPhoneNumber) {
-        return {
-          phoneNumber: '',
-          smsNotificationList: [],
-        }
-      }
-
-      const response = (await fetch(LOOKUP_NOTIFICATIONS_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber: storedPhoneNumber.replace(/ /g, '') }),
-      }).then((res) => res.json())) as NotificationAPIResponse
-
-      return {
-        phoneNumber: storedPhoneNumber,
-        smsNotificationList: response.smsNotificationList,
-      }
-    },
-  })
+  const query = useNotificationsQuery()
 
   function handleOpen(_e: React.MouseEvent<HTMLElement, MouseEvent>) {
     setOpen(true)
@@ -81,13 +47,13 @@ export default function Notifications(props?: Props) {
     setOpen(false)
   }
 
-  const WrapperElement = props?.list ? ListItem : Fragment
-  const ClickElement = props?.list ? ListItemButton : MenuItem
+  const WrapperElement = props?.listItem ? ListItem : Fragment
+  const ClickElement = props?.listItem ? ListItemButton : MenuItem
 
   return (
     <WrapperElement>
       <Tooltip title="Notifications Registered">
-        <ClickElement onClick={handleOpen} dense={!props?.list} href="">
+        <ClickElement onClick={handleOpen} dense={!props?.listItem} href="">
           <ListItemIcon>
             <NotificationsIcon />
           </ListItemIcon>
@@ -97,6 +63,7 @@ export default function Notifications(props?: Props) {
 
       <Dialog open={open} onClose={handleClose} scroll="paper">
         <DialogTitle>Notifications You&apos;ve Registered For</DialogTitle>
+
         <DialogContent dividers={true}>
           <DialogContentText>
             {query.data?.phoneNumber ? (

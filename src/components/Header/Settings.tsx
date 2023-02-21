@@ -22,13 +22,14 @@ import { useSettingsStore } from '$stores/settings'
 
 interface Props {
   /**
-   * whether this button is in a MUI List; otherwise assumed to be in Menu
+   * whether this button is in a MUI List and should be a ListItem;
+   * otherwise assumed to be in Menu and renders as MenuItem
    */
-  list?: boolean
+  listItem?: boolean
 }
 
 /**
- * button that opens a popover with a radio group to change the color scheme
+ * button that opens a popover with a toggle button group to change the color scheme
  */
 export default function Settings(props?: Props) {
   const { colorScheme, setColorScheme } = useSettingsStore()
@@ -46,37 +47,38 @@ export default function Settings(props?: Props) {
     })
   }
 
-  function handleOpen(e: React.MouseEvent<HTMLElement, MouseEvent>) {
-    e.preventDefault()
-    e.stopPropagation()
-    setAnchorEl(e.currentTarget)
+  function handleOpen(event: React.MouseEvent<HTMLElement, MouseEvent>) {
+    setAnchorEl(event.currentTarget)
   }
 
-  function handleClose(_e: React.MouseEvent<HTMLElement, MouseEvent>) {
+  function handleClose() {
     setAnchorEl(undefined)
   }
 
-  const WrapperElement = props?.list ? ListItem : Fragment
-  const ClickElement = props?.list ? ListItemButton : MenuItem
+  const WrapperElement = props?.listItem ? ListItem : Fragment
+  const ClickElement = props?.listItem ? ListItemButton : MenuItem
 
   return (
-    <WrapperElement>
-      <Tooltip title="Edit Theme">
-        <ClickElement onClick={handleOpen} dense={!props?.list} href="">
-          <ListItemIcon>
-            <Brightness4Icon />
-          </ListItemIcon>
-          <ListItemText>Theme</ListItemText>
-        </ClickElement>
-      </Tooltip>
+    <>
+      <WrapperElement>
+        <Tooltip title="Edit Theme">
+          <ClickElement onClick={handleOpen} dense={!props?.listItem} href="">
+            <ListItemIcon>
+              <Brightness4Icon />
+            </ListItemIcon>
+            <ListItemText>Theme</ListItemText>
+          </ClickElement>
+        </Tooltip>
+      </WrapperElement>
+
       <Popover
-        open={Boolean(anchorEl)}
+        open={!!anchorEl}
         anchorEl={anchorEl}
         onClose={handleClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Paper sx={{ padding: 2, width: 200 }}>
+        <Paper sx={{ padding: '0.5rem', minWidth: '12.25rem' }}>
           <ToggleButtonGroup orientation="vertical" exclusive fullWidth value={colorScheme} onChange={handleChange}>
             <ToggleButton value="light" sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
               <LightModeIcon />
@@ -93,6 +95,6 @@ export default function Settings(props?: Props) {
           </ToggleButtonGroup>
         </Paper>
       </Popover>
-    </WrapperElement>
+    </>
   )
 }

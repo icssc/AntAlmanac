@@ -11,7 +11,7 @@ interface Props {
  */
 export default function DeptCard({ department }: Props) {
   return (
-    <Grid item xs={12}>
+    <Grid item xs={12} marginY={1}>
       <Paper elevation={1} square>
         <Accordion sx={{ padding: 0 }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>

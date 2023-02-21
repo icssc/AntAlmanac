@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { SketchPicker } from 'react-color'
 import type { ColorResult } from 'react-color'
 import { ColorLens } from '@mui/icons-material'
-import { IconButton, Popover } from '@mui/material'
+import { IconButton, Popover, Tooltip } from '@mui/material'
 import { changeCourseColor } from '$stores/schedule/course'
 import { changeCustomEventColor } from '$stores/schedule/custom'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
@@ -62,9 +62,11 @@ export default function ColorPicker(props: Props) {
 
   return (
     <>
-      <IconButton sx={{ color }} onClick={handleClick} size="large">
-        <ColorLens fontSize="small" />
-      </IconButton>
+      <Tooltip title="Change Event Color">
+        <IconButton sx={{ color }} onClick={handleClick} size="large">
+          <ColorLens fontSize="small" />
+        </IconButton>
+      </Tooltip>
       <Popover
         open={!!anchorEl}
         anchorEl={anchorEl}

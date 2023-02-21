@@ -43,6 +43,7 @@ export default function CourseReferenceButton(props: Props) {
         sx={{
           backgroundColor: '#385EB1',
           color: '#fff',
+          flexShrink: 0,
         }}
       >
         {props.title}

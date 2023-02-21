@@ -16,7 +16,7 @@ export default function AddedCourses() {
     }
   })
 
-  const courses = coursesWithSections.reduce((accumulated, current) => {
+  const courses = coursesWithSections?.reduce((accumulated, current) => {
     const found = accumulated.find(
       (existing) => existing.courseNumber === current.courseNumber && existing.deptCode === current.deptCode
     )
@@ -28,16 +28,16 @@ export default function AddedCourses() {
     }
   }, [] as typeof coursesWithSections)
 
-  const totalUnits = courses.reduce((accumulated, current) => {
+  const totalUnits = courses?.reduce((accumulated, current) => {
     return accumulated + parseInt(current.section.units, 10)
   }, 0)
 
   return (
-    <Box>
+    <Box sx={{ padding: 2 }}>
       <Typography variant="h5" padding={2}>
-        {schedules[scheduleIndex].scheduleName} ({totalUnits} units)
+        {schedules[scheduleIndex]?.scheduleName} ({totalUnits} units)
       </Typography>
-      {courses.map((course, index) => {
+      {courses?.map((course, index) => {
         const current = courses[index]
         const height = 'sections' in current && current.sections ? current.sections.length * 60 + 60 : 200
         return (

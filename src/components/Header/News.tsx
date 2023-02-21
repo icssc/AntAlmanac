@@ -29,9 +29,10 @@ interface NewsItem {
 
 interface Props {
   /**
-   * whether this button is in a MUI List; otherwise assumed to be in Menu
+   * whether this button is in a MUI List and should be a ListItem;
+   * otherwise assumed to be in Menu and renders as MenuItem
    */
-  list?: boolean
+  listItem?: boolean
 }
 
 /**
@@ -86,13 +87,13 @@ export default function News(props?: Props) {
     setAnchorEl(undefined)
   }
 
-  const WrapperElement = props?.list ? ListItem : Fragment
-  const ClickElement = props?.list ? ListItemButton : MenuItem
+  const WrapperElement = props?.listItem ? ListItem : Fragment
+  const ClickElement = props?.listItem ? ListItemButton : MenuItem
 
   return (
     <WrapperElement>
       <Tooltip title="See Latest Updates">
-        <ClickElement onClick={handleOpen} dense={!props?.list} href="">
+        <ClickElement onClick={handleOpen} dense={!props?.listItem} href="">
           <ListItemIcon>
             <Badge variant="dot" overlap="circular" color="error" invisible={!showDot}>
               <RssFeedIcon />

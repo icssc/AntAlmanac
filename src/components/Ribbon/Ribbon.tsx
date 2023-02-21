@@ -1,8 +1,10 @@
 import { Box, MenuList, Toolbar } from '@mui/material'
+import ClearCurrentSchedule from '$components/Buttons/ClearSchedule'
 import UndoButton from '$components/Buttons/Undo'
 import RedoButton from '$components/Buttons/Redo'
 import CustomEventButton from '$components/Buttons/CustomEvent'
 import DownloadButton from '$components/Buttons/Download'
+import ScreenshotButton from '$components/Buttons/Screenshot'
 import ScheduleMenu from './Schedule'
 import EditMenu from './Edit'
 import ExportMenu from './Export/Export'
@@ -32,7 +34,9 @@ export default function Ribbon(props: Props) {
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, paddingX: 1 }}>
           <UndoButton />
           <RedoButton />
+          <ClearCurrentSchedule />
           <DownloadButton />
+          <ScreenshotButton {...props} iconOnly />
           <CustomEventButton iconOnly />
         </Box>
       </Box>

@@ -11,7 +11,7 @@ import type { AACourse, AASection, Department, School, WebsocResponse } from '$l
 /**
  * flattens the websoc response
  */
-function flattenSOCObject(SOCObject: WebsocResponse, courses: Course[]) {
+function flattenSOCObject(SOCObject: WebsocResponse, courses: Course[] = []) {
   const courseColors = courses.reduce((accumulator, { section }) => {
     accumulator[section.sectionCode] = section.color
     return accumulator
@@ -42,7 +42,7 @@ export default function CourseList() {
   const { schedules, scheduleIndex } = useScheduleStore()
   const { isDarkMode } = useSettingsStore()
 
-  const courses = schedules[scheduleIndex].courses
+  const courses = schedules[scheduleIndex]?.courses
   const query = useWebsocQuery(getParams(), { enabled: showResults })
   const transformedData = query?.data ? flattenSOCObject(query.data, courses) : []
 
@@ -59,7 +59,7 @@ export default function CourseList() {
   }
 
   return (
-    <Box sx={{ height: '100%', width: '100%' }}>
+    <Box sx={{ padding: 2 }}>
       <Box sx={{ padding: 1 }}>
         <IconButton onClick={handleBack} size="large">
           <ArrowBackIcon />

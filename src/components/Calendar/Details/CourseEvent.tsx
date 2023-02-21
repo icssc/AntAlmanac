@@ -30,7 +30,7 @@ function genMapLink(location: string) {
 
 interface CourseCalendarEventProps {
   event: CourseCalendarEvent
-  closePopover: () => void
+  closePopover?: () => void
 }
 
 export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
@@ -54,24 +54,25 @@ export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
       category: analyticsEnum.calendar.title,
       action: analyticsEnum.calendar.actions.DELETE_COURSE,
     })
-    props.closePopover()
+    props.closePopover?.()
   }
 
   return (
     <Paper sx={{ padding: 2 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography>{title}</Typography>
-        <Tooltip title="Delete">
+        <Tooltip title="Delete Course">
           <IconButton size="small" onClick={handleDelete}>
             <DeleteIcon fontSize="inherit" />
           </IconButton>
         </Tooltip>
       </Box>
+
       <TableContainer>
         <Table size="small" sx={{ '.MuiTableCell-root': { paddingX: 0, paddingY: 0.5, border: 'none' }, padding: 0 }}>
           <TableBody>
             <TableRow>
-              <TableCell>Section code</TableCell>
+              <TableCell sx={{ verticalAlign: 'top' }}>Section code</TableCell>
               <Tooltip title="Click to copy course code" placement="right">
                 <TableCell align="right">
                   <Link href="#" onClick={handleClickCopy}>
@@ -80,30 +81,37 @@ export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
                 </TableCell>
               </Tooltip>
             </TableRow>
+
             <TableRow>
-              <TableCell>Term</TableCell>
+              <TableCell sx={{ verticalAlign: 'top' }}>Term</TableCell>
               <TableCell align="right">{term}</TableCell>
             </TableRow>
+
             <TableRow>
-              <TableCell>Instructors</TableCell>
-              <TableCell align="right">{instructors.join('\n')}</TableCell>
+              <TableCell sx={{ verticalAlign: 'top' }}>Instructors</TableCell>
+              <TableCell align="right" sx={{ whiteSpace: 'pre' }}>
+                {instructors.join('\n')}
+              </TableCell>
             </TableRow>
+
             <TableRow>
-              <TableCell>Location</TableCell>
-              <TableCell align="right">
+              <TableCell sx={{ verticalAlign: 'top' }}>Location</TableCell>
+              <TableCell align="right" sx={{ whiteSpace: 'pre' }}>
                 {bldg !== 'TBA' ? (
                   <Link href={genMapLink(bldg)} target="_blank" rel="noopener noreferrer">
                     {bldg}
                   </Link>
                 ) : (
-                  <Typography>bldg</Typography>
+                  bldg
                 )}
               </TableCell>
             </TableRow>
+
             <TableRow>
               <TableCell>Final</TableCell>
               <TableCell align="right">{finalExam}</TableCell>
             </TableRow>
+
             <TableRow>
               <TableCell>Color</TableCell>
               <TableCell align="right">

@@ -8,6 +8,7 @@ import {
   DialogTitle,
   FormControl,
   InputLabel,
+  Link,
   MenuItem,
   Select,
   TextField,
@@ -90,15 +91,17 @@ export default function ImportDialog(props: Props) {
   return (
     <Dialog open={open}>
       <DialogTitle>Import Schedule</DialogTitle>
+
       <DialogContent>
         <DialogContentText>
           Paste the contents of your Study List below to import it into AntAlmanac.
           <br />
-          To find your Study List, go to <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>
+          To find your Study List, go to <Link href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>
             WebReg
-          </a> or <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>, and click on Study List
-          once you&apos;ve logged in. Copy everything below the column names (Code, Dept, etc.) under the Enrolled
-          Classes section.
+          </Link>{' '}
+          or <Link href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</Link>,{'  '}
+          and click on Study List once you&apos;ve logged in. Copy everything below the column names (Code, Dept, etc.)
+          under the Enrolled Classes section.
         </DialogContentText>
         <TextField
           fullWidth
@@ -120,6 +123,7 @@ export default function ImportDialog(props: Props) {
           </Select>
         </FormControl>
       </DialogContent>
+
       <DialogActions>
         <Button onClick={handleCancel} color={isDarkMode() ? 'inherit' : 'primary'}>
           Cancel

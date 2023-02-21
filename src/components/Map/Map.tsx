@@ -108,7 +108,7 @@ export default function CourseMap() {
   /**
    * extract a bunch of relevant metadata from courses into a top-level object for MapMarkers
    */
-  const markers = getMarkersFromCourses(schedules[scheduleIndex].courses)
+  const markers = getMarkersFromCourses(schedules[scheduleIndex]?.courses)
 
   /**
    * only get markers for courses happening today

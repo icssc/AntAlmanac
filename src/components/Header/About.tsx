@@ -1,5 +1,6 @@
 import { Fragment, useState } from 'react'
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -19,20 +20,19 @@ import { analyticsEnum, logAnalytics } from '$lib/analytics'
 
 interface Props {
   /**
-   * whether this button is in a MUI List; otherwise assumed to be in Menu
+   * whether this button is in a MUI List and should be a ListItem;
+   * otherwise assumed to be in Menu and renders as MenuItem
    */
-  list?: boolean
+  listItem?: boolean
 }
 
 /**
- * button that opens a modal with information about the app
+ * button that opens a modal with information about the project
  */
-export default function About(props?: Props) {
+export default function About(props: Props) {
   const [open, setOpen] = useState(false)
 
-  function handleOpen(e: React.MouseEvent<HTMLElement, MouseEvent>) {
-    e.preventDefault()
-    e.stopPropagation()
+  function handleOpen() {
     setOpen(true)
     logAnalytics({
       category: analyticsEnum.nav.title,
@@ -40,28 +40,29 @@ export default function About(props?: Props) {
     })
   }
 
-  function handleClose(e: React.MouseEvent<HTMLElement, MouseEvent>) {
-    e.preventDefault()
-    e.stopPropagation()
+  function handleClose() {
     setOpen(false)
   }
 
-  const WrapperElement = props?.list ? ListItem : Fragment
-  const ClickElement = props?.list ? ListItemButton : MenuItem
+  const WrapperElement = props.listItem ? ListItem : Fragment
+  const ClickElement = props.listItem ? ListItemButton : MenuItem
 
   return (
-    <WrapperElement>
-      <Tooltip title="About Us">
-        <ClickElement onClick={handleOpen} dense={!props?.list} href="">
-          <ListItemIcon>
-            <InfoIcon />
-          </ListItemIcon>
-          <ListItemText>About</ListItemText>
-        </ClickElement>
-      </Tooltip>
+    <>
+      <WrapperElement>
+        <Tooltip title="About Us">
+          <ClickElement onClick={handleOpen} dense={!props?.listItem} href="">
+            <ListItemIcon>
+              <InfoIcon />
+            </ListItemIcon>
+            <ListItemText>About</ListItemText>
+          </ClickElement>
+        </Tooltip>
+      </WrapperElement>
 
       <Dialog open={open}>
         <DialogTitle>About</DialogTitle>
+
         <DialogContent>
           <DialogContentText>
             AntAlmanac is a schedule planning tool for UCI students.
@@ -86,7 +87,8 @@ export default function About(props?: Props) {
             <br />
             <br />
             <Link target="_blank" href="https://github.com/icssc/AntAlmanac/contributors">
-              <img
+              <Box
+                component="img"
                 src="https://contrib.rocks/image?repo=icssc/antalmanac"
                 width={'100%'}
                 alt="AntAlmanac Contributors"
@@ -94,12 +96,13 @@ export default function About(props?: Props) {
             </Link>
           </DialogContentText>
         </DialogContent>
+
         <DialogActions>
-          <Button onClick={handleClose} color="secondary">
+          <Button onClick={handleClose} color="primary">
             Close
           </Button>
         </DialogActions>
       </Dialog>
-    </WrapperElement>
+    </>
   )
 }
