@@ -4,8 +4,6 @@
   "version": "1.0.0",
   "dependencies": {
     "eslint": "latest",
-    "eslint-config-prettier": "latest",
-    "eslint-plugin-prettier": "latest",
     "eslint-plugin-react": "latest",
     "eslint-config-turbo": "latest"
   }

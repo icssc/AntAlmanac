@@ -182,6 +182,7 @@ importers:
       prettier-config: workspace:*
       source-map-support: ^0.5.16
       ts-node: ^9.0.0
+      tsconfig: workspace:*
       typescript: ~3.9.7
     dependencies:
       aws-cdk-lib: 2.12.0_constructs@10.1.252
@@ -201,20 +202,40 @@ importers:
       prettier: 2.8.4
       prettier-config: link:../../packages/prettier-config
       ts-node: 9.1.1_typescript@3.9.10
+      tsconfig: link:../../packages/tsconfig
+      typescript: 3.9.10
+
+  apps/staging_cdk:
+    specifiers:
+      '@types/node': 10.17.27
+      aws-cdk: 2.20.0
+      aws-cdk-lib: 2.20.0
+      constructs: ^10.0.0
+      dotenv: ^16.0.0
+      source-map-support: ^0.5.16
+      ts-node: ^9.0.0
+      tsconfig: workspace:*
+      typescript: ~3.9.7
+    dependencies:
+      aws-cdk-lib: 2.20.0_constructs@10.1.252
+      constructs: 10.1.252
+      dotenv: 16.0.3
+      source-map-support: 0.5.21
+    devDependencies:
+      '@types/node': 10.17.27
+      aws-cdk: 2.20.0
+      ts-node: 9.1.1_typescript@3.9.10
+      tsconfig: link:../../packages/tsconfig
       typescript: 3.9.10
 
   packages/eslint-config-custom:
     specifiers:
       eslint: latest
-      eslint-config-prettier: latest
       eslint-config-turbo: latest
-      eslint-plugin-prettier: latest
       eslint-plugin-react: latest
     dependencies:
       eslint: 8.34.0
-      eslint-config-prettier: 8.6.0_eslint@8.34.0
       eslint-config-turbo: 0.0.8_eslint@8.34.0
-      eslint-plugin-prettier: 4.2.1_eglaixygsk7cbmkras5yrnnona
       eslint-plugin-react: 7.32.2_eslint@8.34.0
 
   packages/prettier-config:
@@ -4144,6 +4165,34 @@ packages:
       - semver
       - yaml
 
+  /aws-cdk-lib/2.20.0_constructs@10.1.252:
+    resolution: {integrity: sha512-jACK/1UJxtWWl6QH+I1V8Oc8F1EEL6aFQYk24DIrzNyB1Aj9LIs9/NyDu5zN00QFKrR6aDE7WAv1VG3sa6wWdg==}
+    engines: {node: '>= 14.15.0'}
+    peerDependencies:
+      constructs: ^10.0.0
+    dependencies:
+      '@balena/dockerignore': 1.0.2
+      case: 1.6.3
+      constructs: 10.1.252
+      fs-extra: 9.1.0
+      ignore: 5.2.4
+      jsonschema: 1.4.1
+      minimatch: 3.1.2
+      punycode: 2.3.0
+      semver: 7.3.8
+      yaml: 1.10.2
+    dev: false
+    bundledDependencies:
+      - '@balena/dockerignore'
+      - case
+      - fs-extra
+      - ignore
+      - jsonschema
+      - minimatch
+      - punycode
+      - semver
+      - yaml
+
   /aws-cdk/2.12.0:
     resolution: {integrity: sha512-4OJmt1UF9Z+YW0AHzupgDl7xIiTMUssakzdprVqDvg/Kc3tkLt01/UEv5fJNpAyncSndSgpKlQqRvZJIryGLKw==}
     engines: {node: '>= 14.15.0'}
@@ -4177,6 +4226,14 @@ packages:
       yargs: 16.2.0
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /aws-cdk/2.20.0:
+    resolution: {integrity: sha512-rs9LTpvrlbsMcenZ3t7TuLDGbHhbnDocrE63Xb2PT++VptR/A8svllK8k1W7hPl77L9QS75GNK5gh+ShkEzsnw==}
+    engines: {node: '>= 14.15.0'}
+    hasBin: true
+    optionalDependencies:
+      fsevents: 2.3.2
     dev: true
 
   /aws-sdk/2.1317.0:
@@ -5939,6 +5996,7 @@ packages:
       eslint: '>=7.0.0'
     dependencies:
       eslint: 8.34.0
+    dev: true
 
   /eslint-config-react-app/7.0.1_ckew52j24wepffdw3734q22xgm:
     resolution: {integrity: sha512-K6rNzvkIeHaTd8m/QEh1Zko0KI7BACWkkneSs6s9cKZC/J27X3eZR6Upt1jkmZ/4FK+XUOPPxMEN7+lbUXfSlA==}
@@ -6131,22 +6189,6 @@ packages:
       object.entries: 1.1.6
       object.fromentries: 2.0.6
       semver: 6.3.0
-
-  /eslint-plugin-prettier/4.2.1_eglaixygsk7cbmkras5yrnnona:
-    resolution: {integrity: sha512-f/0rXLXUt0oFYs8ra4w49wYZBG5GKZpAYsJSm6rnYL5uVDjd+zowwMwVZHnAjf4edNrKpCDYfXDgmRE/Ak7QyQ==}
-    engines: {node: '>=12.0.0'}
-    peerDependencies:
-      eslint: '>=7.28.0'
-      eslint-config-prettier: '*'
-      prettier: '>=2.0.0'
-    peerDependenciesMeta:
-      eslint-config-prettier:
-        optional: true
-    dependencies:
-      eslint: 8.34.0
-      eslint-config-prettier: 8.6.0_eslint@8.34.0
-      prettier-linter-helpers: 1.0.0
-    dev: false
 
   /eslint-plugin-prettier/4.2.1_u5wnrdwibbfomslmnramz52buy:
     resolution: {integrity: sha512-f/0rXLXUt0oFYs8ra4w49wYZBG5GKZpAYsJSm6rnYL5uVDjd+zowwMwVZHnAjf4edNrKpCDYfXDgmRE/Ak7QyQ==}
@@ -6489,6 +6531,7 @@ packages:
 
   /fast-diff/1.2.0:
     resolution: {integrity: sha512-xJuoT5+L99XlZ8twedaRf6Ax2TgQVxvgZOYoPKqZufmJib0tL2tegPBOZb1pVNgIhlqDlA0eO0c3wBvQcmzx4w==}
+    dev: true
 
   /fast-glob/3.2.12:
     resolution: {integrity: sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w==}
@@ -10273,6 +10316,7 @@ packages:
     engines: {node: '>=6.0.0'}
     dependencies:
       fast-diff: 1.2.0
+    dev: true
 
   /prettier/2.8.4:
     resolution: {integrity: sha512-vIS4Rlc2FNh0BySk3Wkd6xmwxB0FpOndW5fisM5H8hsZSxU2VWVB5CWIkIjWvrHjIhxk2g3bfMKM87zNTrZddw==}

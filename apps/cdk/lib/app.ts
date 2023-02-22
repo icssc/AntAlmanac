@@ -1,4 +1,3 @@
-import 'source-map-support/register';
 import { App, Environment } from 'aws-cdk-lib';
 // import CognitoStack from './cognito'
 import BackendStack from './backend';
@@ -13,10 +12,15 @@ const stages = {
     prod: 'us-west-1',
 };
 
+// Load environmental variables
+if (!process.env.CERTIFICATE_ARN || !process.env.HOSTED_ZONE_ID || !process.env.MONGODB_URI_PROD) {
+    throw new Error('Missing environmental variables');
+}
+
 for (const [stage, region] of Object.entries(stages)) {
     const env: Environment = { region: region, account: account };
 
     // new CognitoStack(app, `${stage}-${region}-Cognito`, { env, stage })
-    new BackendStack(app, `${stage}-${region}-Backend`, { env, stage });
+    new BackendStack(app, `${stage}-${region}-Backend`, { env, stage, certificateArn: process.env.CERTIFICATE_ARN, hostedZoneId: process.env.HOSTED_ZONE_ID, mongoDbUriProd: process.env.MONGODB_URI_PROD });
     // new CloudwatchStack(app, `${stage}-${region}-Cloudwatch`, { env, stage })
 }

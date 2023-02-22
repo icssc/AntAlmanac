@@ -11,10 +11,12 @@ import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 
 interface ActionsProps extends StackProps {
     pr_num: string;
+    certificateArn: string;
+    hostedZoneId: string;
 }
 
 export default class ActionsStack extends Stack {
-    constructor(scope: Construct, id: string, props?: ActionsProps) {
+    constructor(scope: Construct, id: string, props: ActionsProps) {
         super(scope, id, props);
 
         const url = `staging-${props.pr_num}.antalmanac.com`;
@@ -35,7 +37,7 @@ export default class ActionsStack extends Stack {
             })
         );
 
-        const cert = acm.Certificate.fromCertificateArn(this, `api-gateway-cert`, process.env.CERTIFICATE_ARN);
+        const cert = acm.Certificate.fromCertificateArn(this, `api-gateway-cert`, props.certificateArn);
 
         const distribution = new Distribution(this, 'Distribution', {
             certificate: cert,
@@ -52,7 +54,7 @@ export default class ActionsStack extends Stack {
 
         const zone = route53.HostedZone.fromHostedZoneAttributes(this, `antalmanac-hostedzone`, {
             zoneName: 'antalmanac.com',
-            hostedZoneId: process.env.HOSTED_ZONE_ID,
+            hostedZoneId: props.hostedZoneId,
         });
 
         new route53.ARecord(this, `antalmanac-staging-a-record-${props.pr_num}`, {

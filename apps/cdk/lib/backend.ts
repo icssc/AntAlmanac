@@ -8,6 +8,9 @@ import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 
 interface BackendProps extends StackProps {
     stage: string;
+    mongoDbUriProd: string;
+    hostedZoneId: string;
+    certificateArn: string;
 }
 
 const transformUrl = (url: string, props: BackendProps): string => {
@@ -15,7 +18,7 @@ const transformUrl = (url: string, props: BackendProps): string => {
 };
 
 export default class BackendStack extends Stack {
-    constructor(scope: Construct, id: string, props?: BackendProps) {
+    constructor(scope: Construct, id: string, props: BackendProps) {
         super(scope, id, props);
 
         const api = new lambda.Function(this, `antalmanac-api-${props.stage}-lambda`, {
@@ -23,14 +26,15 @@ export default class BackendStack extends Stack {
             code: lambda.Code.fromAsset('functions/antalmanac-backend'),
             handler: 'lambda.handler',
             environment: {
-                AA_MONGODB_URI: props.stage === 'prod' ? process.env.MONGODB_URI_PROD : process.env.MONGODB_URI_DEV,
+                // We don't use need dev database because we will never write to it
+                AA_MONGODB_URI: props.mongoDbUriProd,
                 CORS_ENABLED: (props.stage === 'prod').toString(),
             },
         });
 
         const zone = route53.HostedZone.fromHostedZoneAttributes(this, `antalmanac-DNS-${props.stage}`, {
             zoneName: 'antalmanac.com',
-            hostedZoneId: process.env.HOSTED_ZONE_ID,
+            hostedZoneId: props.hostedZoneId,
         });
 
         const apiGateway = new apigateway.LambdaRestApi(this, `antalmanac-api-gateway-${props.stage}`, {
@@ -40,7 +44,7 @@ export default class BackendStack extends Stack {
                 certificate: acm.Certificate.fromCertificateArn(
                     this,
                     `api-gateway-cert-${props.stage}`,
-                    process.env.CERTIFICATE_ARN
+                    props.certificateArn
                 ),
                 endpointType: apigateway.EndpointType.EDGE,
             },
