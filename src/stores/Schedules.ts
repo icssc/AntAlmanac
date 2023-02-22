@@ -129,7 +129,7 @@ export class Schedules {
 
     // --- Course related methods ---
     getCurrentCourses() {
-        return this.schedules[this.currentScheduleIndex].courses;
+        return this.schedules[this.currentScheduleIndex]?.courses || [];
     }
 
     /**
@@ -233,7 +233,7 @@ export class Schedules {
 
     // --- Custom Event related methods ---
     getCurrentCustomEvents() {
-        return this.schedules[this.currentScheduleIndex].customEvents;
+        return this.schedules[this.currentScheduleIndex]?.customEvents || [];
     }
 
     /**
