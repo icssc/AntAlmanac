@@ -40,6 +40,7 @@
         "react-lazyload": "^3.2.0",
         "react-leaflet": "^4.2.0",
         "react-router-dom": "^6.8.1",
+        "react-split": "^2.0.14",
         "websoc-fuzzy-search": "^0.10.0",
         "zustand": "^4.3.2"
     },
