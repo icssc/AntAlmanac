@@ -72,7 +72,7 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
                     const response = await fetch(`${PETERPORTAL_REST_ENDPOINT}/courses/${courseId}`);
 
                     if (response.ok) {
-                        const jsonResp = await response.json() as CourseResponse;
+                        const jsonResp = (await response.json()) as CourseResponse;
 
                         setCourseInfo({
                             title: jsonResp.title,

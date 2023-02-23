@@ -1,7 +1,8 @@
+import { IconButton, Popover } from '@material-ui/core';
+import { ColorLens } from '@material-ui/icons';
 import React, { PureComponent } from 'react';
 import { SketchPicker } from 'react-color';
-import { IconButton,Popover } from '@material-ui/core';
-import { ColorLens } from '@material-ui/icons';
+
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';
