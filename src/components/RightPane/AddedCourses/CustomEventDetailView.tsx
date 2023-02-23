@@ -1,12 +1,10 @@
+import moment from 'moment';
 import { Card, CardActions, CardHeader, IconButton } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
-import moment from 'moment';
-import React from 'react';
-
-import { deleteCustomEvent } from '../../../actions/AppStoreActions';
-import analyticsEnum from '../../../analytics';
+import { deleteCustomEvent } from '$actions/AppStoreActions';
+import analyticsEnum from '$lib/analytics';
 import CustomEventDialog, { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '../../ColorPicker';
 

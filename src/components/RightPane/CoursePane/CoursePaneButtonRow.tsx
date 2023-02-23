@@ -1,8 +1,8 @@
+import { PureComponent } from 'react';
 import { IconButton, Theme, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap , Styles } from '@material-ui/core/styles/withStyles';
 import { ArrowBack, Refresh } from '@material-ui/icons';
-import React, { PureComponent } from 'react';
 
 const styles: Styles<Theme, object> = {
     buttonRow: {

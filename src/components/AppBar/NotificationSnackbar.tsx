@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
+import { PureComponent } from 'react';
+import { ProviderContext, withSnackbar } from 'notistack';
 import { amber, green } from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import CloseIcon from '@material-ui/icons/Close';
-import { ProviderContext, withSnackbar } from 'notistack';
-import React, { PureComponent } from 'react';
-
-import AppStore from '../../stores/AppStore';
+import AppStore from '$stores/AppStore';
 
 const styles: Styles<Theme, object> = (theme) => ({
     success: {

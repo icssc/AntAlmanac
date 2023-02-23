@@ -1,3 +1,5 @@
+import { Fragment, MouseEventHandler, PureComponent } from 'react';
+import moment from 'moment-timezone';
 import {
     Badge,
     Button,
@@ -14,11 +16,8 @@ import {
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { RssFeed } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
-import moment from 'moment-timezone';
-import React, { Fragment, MouseEventHandler,PureComponent } from 'react';
-
-import analyticsEnum, { logAnalytics } from '../../analytics';
-import { NEWS_ENDPOINT } from '../../api/endpoints';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { NEWS_ENDPOINT } from '$lib/api/endpoints';
 
 const styles: Styles<Theme, object> = (theme) => ({
     list: {

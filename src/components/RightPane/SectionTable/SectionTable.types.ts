@@ -1,6 +1,6 @@
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
-import { AACourse } from '../../../peterportal.types';
+import { AACourse } from '$lib/peterportal.types';
 
 /**
  * This is in its own file so we can import it in SectionTableLazyWrapper without messing up the lazy-load.

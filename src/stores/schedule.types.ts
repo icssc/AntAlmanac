@@ -1,5 +1,5 @@
-import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { AASection } from '../peterportal.types';
+import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { AASection } from '$lib/peterportal.types';
 
 export interface ScheduleCourse {
     // Course as stored in schedule

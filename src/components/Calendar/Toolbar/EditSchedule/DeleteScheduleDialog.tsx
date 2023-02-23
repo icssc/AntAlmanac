@@ -7,11 +7,11 @@ import {
     DialogTitle,
     MenuItem,
 } from '@material-ui/core';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-import { deleteSchedule } from '../../../../actions/AppStoreActions';
-import { isDarkMode } from '../../../../helpers';
-import AppStore from "../../../../stores/AppStore";
+import { deleteSchedule } from '$actions/AppStoreActions';
+import { isDarkMode } from '$lib/helpers';
+import AppStore from "$stores/AppStore";
 
 interface DeleteScheduleDialogProps {
     onClose: () => void;

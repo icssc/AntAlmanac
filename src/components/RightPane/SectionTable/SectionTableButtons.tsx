@@ -3,14 +3,13 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Add, ArrowDropDown,Delete } from '@material-ui/icons';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
-import React from 'react';
 
-import { addCourse, deleteCourse, openSnackbar } from '../../../actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '../../../analytics';
-import { CourseDetails } from '../../../helpers';
-import { AASection } from '../../../peterportal.types';
-import AppStore from '../../../stores/AppStore';
-import ColorPicker from '../../ColorPicker';
+import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { CourseDetails } from '$lib/helpers';
+import { AASection } from '$lib/peterportal.types';
+import AppStore from '$stores/AppStore';
+import ColorPicker from '$components/ColorPicker';
 
 const styles = {
     container: {
