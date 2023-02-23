@@ -170,8 +170,8 @@ export class Schedules {
             this.addUndoState();
         }
         let courseToAdd = this.getExistingCourse(newCourse.section.sectionCode, newCourse.term);
+        let color: string | undefined = undefined;
         if (courseToAdd === undefined) {
-            let color: string | undefined = undefined;
             for (const course of this.getCurrentCourses()) {
                 if (course.courseTitle === newCourse.courseTitle) {
                     color = course.section.color;
@@ -191,11 +191,15 @@ export class Schedules {
                     color,
                 },
             };
+        } else {
+            color = courseToAdd.section.color;
         }
 
         if (!this.doesCourseExistInSchedule(newCourse.section.sectionCode, newCourse.term, scheduleIndex)) {
             this.schedules[scheduleIndex].courses.push(courseToAdd);
         }
+
+        return color;
     }
 
     /**
@@ -203,9 +207,11 @@ export class Schedules {
      */
     addCourseToAllSchedules(newCourse: ScheduleCourse) {
         this.addUndoState();
+        let color: string;
         for (let i = 0; i < this.getNumberOfSchedules(); i++) {
-            this.addCourse(newCourse, i, false);
+            color = this.addCourse(newCourse, i, false);
         }
+        return color;
     }
 
     /**
