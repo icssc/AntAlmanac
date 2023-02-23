@@ -1,9 +1,9 @@
 import { VariantType } from 'notistack';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { LOAD_DATA_ENDPOINT, LOAD_LEGACY_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '$lib/api/endpoints';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { LOAD_DATA_ENDPOINT, LOAD_LEGACY_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '$lib/api/endpoints';
 import { CourseDetails, courseNumAsDecimal, termsInSchedule, warnMultipleTerms } from '$lib/helpers';
 import { Section } from '$lib/peterportal.types';
 import AppStore from '$stores/AppStore';
