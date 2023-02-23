@@ -1,6 +1,5 @@
+import { useState } from 'react';
 import { Paper,Tab, Tabs } from '@material-ui/core';
-import React, { useState } from 'react';
-
 import Calendar from './Calendar/CalendarRoot';
 import DesktopTabs from './RightPane/RightPaneRoot';
 

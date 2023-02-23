@@ -1,14 +1,12 @@
+import { saveAs } from 'file-saver';
+import { createEvents } from 'ics';
 import { Tooltip } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Today from '@material-ui/icons/Today';
-import { saveAs } from 'file-saver';
-import { createEvents } from 'ics';
-import React from 'react';
-
-import { openSnackbar } from '../../../actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '../../../analytics';
-import AppStore from '../../../stores/AppStore';
-import { termData } from '../../../termData';
+import { openSnackbar } from '$actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import AppStore from '$stores/AppStore';
+import { termData } from '$lib/termData';
 
 const quarterStartDates = Object.fromEntries(
     termData

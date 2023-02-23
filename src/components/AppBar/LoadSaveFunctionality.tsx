@@ -1,3 +1,4 @@
+import { ChangeEvent,PureComponent, useEffect } from 'react';
 import {
     Button,
     Dialog,
@@ -10,10 +11,8 @@ import {
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { CloudDownload, Save } from '@material-ui/icons';
-import React, { ChangeEvent,PureComponent, useEffect } from 'react';
-
-import { loadSchedule, saveSchedule } from '../../actions/AppStoreActions';
-import { isDarkMode } from '../../helpers';
+import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
+import { isDarkMode } from '$lib/helpers';
 
 interface LoadSaveButtonBaseProps {
     action: typeof saveSchedule;

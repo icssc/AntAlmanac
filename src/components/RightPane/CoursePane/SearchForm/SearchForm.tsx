@@ -1,10 +1,9 @@
+import { FormEvent, useState } from 'react';
 import { IconButton, Theme, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Tune } from '@material-ui/icons';
-import React, { FormEvent, useState } from 'react';
-
-import analyticsEnum, { logAnalytics } from '../../../../analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import RightPaneStore from '../../RightPaneStore';
 import FuzzySearch from './FuzzySearch';
 import HelpBox from './HelpBox';

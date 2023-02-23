@@ -1,14 +1,13 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
+import { PureComponent, SyntheticEvent } from 'react';
+import moment from 'moment';
+import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
 import { Popper } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import moment from 'moment';
-import React, { PureComponent, SyntheticEvent } from 'react';
-import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
-
-import AppStore from '../../stores/AppStore';
+import AppStore from '$stores/AppStore';
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
 

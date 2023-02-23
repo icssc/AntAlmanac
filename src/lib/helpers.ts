@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { addCourse, openSnackbar } from './actions/AppStoreActions';
+import { addCourse, openSnackbar } from '$actions/AppStoreActions';
 import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from './api/endpoints';
 import { Meeting, Section, WebsocResponse } from './peterportal.types';
-import AppStore from './stores/AppStore';
+import AppStore from '$stores/AppStore';
 
 interface GradesGraphQLResponse {
     data: {

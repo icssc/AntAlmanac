@@ -1,13 +1,12 @@
+import React, { useState } from 'react';
 import { Button, IconButton, Menu,Paper, Tooltip, useMediaQuery } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete, MoreHoriz,Undo } from '@material-ui/icons';
-import React, { useState } from 'react';
-
-import { changeCurrentSchedule, clearSchedules, undoDelete } from '../../actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '../../analytics';
+import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import ConditionalWrapper from '../ConditionalWrapper';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import EditSchedule from './Toolbar/EditSchedule/EditSchedule';

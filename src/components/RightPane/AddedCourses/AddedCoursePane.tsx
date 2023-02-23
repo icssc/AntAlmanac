@@ -2,12 +2,12 @@ import { Button, Grid, Menu, MenuItem,Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import PopupState, { bindMenu,bindTrigger } from 'material-ui-popup-state';
-import React, { PureComponent } from 'react';
+import { PureComponent } from 'react';
 
-import { clearSchedules, copySchedule } from '../../../actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '../../../analytics';
-import { AACourse } from '../../../peterportal.types';
-import AppStore from '../../../stores/AppStore';
+import { clearSchedules, copySchedule } from '$actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { AACourse } from '$lib/peterportal.types';
+import AppStore from '$stores/AppStore';
 import { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';

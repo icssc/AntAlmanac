@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import React, { useState } from 'react';
 
-import { logAnalytics } from '../../../analytics';
+import { logAnalytics } from '$lib/analytics';
 
 const styles = {
     button: {
