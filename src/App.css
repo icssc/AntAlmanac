@@ -1,0 +1,16 @@
+/**
+ * the bar in the middle to resize the split screen: used by react-split
+ */
+.gutter {
+    /**
+   * config to vertically align icon in center
+   */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /**
+   * it should also show the resize cursor on hover
+   */
+    cursor: col-resize;
+}

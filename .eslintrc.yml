@@ -28,6 +28,7 @@ ignorePatterns:
     - 'tools/*'
     - package.json
     - vite.config.ts
+    - '*.css'
 
 rules: 
     simple-import-sort/imports: error
