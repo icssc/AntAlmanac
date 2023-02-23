@@ -17,7 +17,7 @@
         "predeploy": "npm run build",
         "deploy": "gh-pages -d build",
         "format": "prettier --write src pages",
-        "lint": "eslint src/**/*.tsx"
+        "lint": "eslint src/**/*.ts*"
     },
     "dependencies": {
         "@date-io/date-fns": "^2.16.0",
