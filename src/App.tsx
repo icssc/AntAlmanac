@@ -1,3 +1,5 @@
+import './App.css'
+
 import { useEffect } from 'react';
 import ReactGA4 from 'react-ga4';
 import { BrowserRouter, Route,Routes } from 'react-router-dom';
