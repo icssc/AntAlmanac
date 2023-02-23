@@ -26,10 +26,10 @@ const Home = () => {
          * the gutter is the middle bar used to resize the split pane
          * grab the ellipsis DOM node and relocate it under the gutter
          */
-        if (ellipsisRef.current) {
+        if (!isMobileScreen && ellipsisRef.current) {
             document.querySelector('.gutter')?.appendChild(ellipsisRef.current);
         }
-    }, []);
+    }, [isMobileScreen]);
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -58,17 +58,16 @@ const Home = () => {
                     <Box>
                         <Calendar isMobile={false} />
                     </Box>
+
                     <Box>
                         <DesktopTabs style={{ height: 'calc(100vh - 58px)' }} />
+
+                        {/* render an ellipsis icon and manually teleport it to the gutter */}
+                        <MoreVertIcon ref={ellipsisRef} sx={{ color: 'white' }} />
                     </Box>
                 </Split>
             )}
             <NotificationSnackbar />
-
-            {/* render an ellipsis icon and manually teleport it to the gutter */}
-            {/* disabling because it's too scuffed and will kill the app in mobile mode
-                <MoreVertIcon ref={ellipsisRef} sx={{ color: 'white' }} />
-            */}
         </MuiPickersUtilsProvider>
     );
 };
