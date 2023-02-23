@@ -5,7 +5,7 @@ import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [react(), svgr()],
-   resolve: {
+  resolve: {
     alias: {
       '$actions': resolve(__dirname, './src/actions'),
       '$api': resolve(__dirname, './src/api'),
@@ -18,5 +18,8 @@ export default defineConfig({
   },
   build: {
     outDir: 'build'
-  }
+  },
+  server: {
+      host: 'localhost',
+  },
 })
