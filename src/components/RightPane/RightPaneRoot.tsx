@@ -7,10 +7,9 @@ import AddedCoursePane from './AddedCourses/AddedCoursePane';
 import CoursePane from './CoursePane/CoursePaneRoot';
 import darkModeLoadingGif from './CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './CoursePane/SearchForm/Gifs/loading.gif';
-import UCIMap from './Map/UCIMap';
 import RightPaneStore, { BuildingFocusInfo } from './RightPaneStore';
-// const UCIMap = React.lazy(() => import('./Map/UCIMap'));
 
+const UCIMap = React.lazy(() => import('./Map/UCIMap'));
 
 const styles = {
     fallback: {
