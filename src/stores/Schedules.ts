@@ -164,6 +164,7 @@ export class Schedules {
      * Sets color to an unused color in set, also will not add class if already exists
      * @param scheduleIndex Defaults to current schedule
      * @param addUndoState Defaults to true
+     * @returns The course object that was added.
      */
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.getCurrentScheduleIndex(), addUndoState = true) {
         if (addUndoState) {
@@ -199,19 +200,19 @@ export class Schedules {
             this.schedules[scheduleIndex].courses.push(courseToAdd);
         }
 
-        return color;
+        return courseToAdd;
     }
 
     /**
      * Adds a course to every schedule
+     * @returns the course object that was added
      */
     addCourseToAllSchedules(newCourse: ScheduleCourse) {
         this.addUndoState();
-        let color: string;
         for (let i = 0; i < this.getNumberOfSchedules(); i++) {
-            color = this.addCourse(newCourse, i, false);
+            this.addCourse(newCourse, i, false);
         }
-        return color;
+        return newCourse;
     }
 
     /**

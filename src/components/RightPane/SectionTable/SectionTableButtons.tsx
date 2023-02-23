@@ -85,7 +85,7 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
                     action: analyticsEnum.classSearch.actions.ADD_SPECIFIC,
                 });
             }
-            section.color = addCourse(section, courseDetails, term, scheduleIndex);
+            section.color = addCourse(section, courseDetails, term, scheduleIndex).section.color;
         }
     };
 
