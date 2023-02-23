@@ -1,4 +1,4 @@
-import '../../../../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js';
+import 'leaflet.locatecontrol';
 
 import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
 import React, { PureComponent } from 'react';
@@ -33,12 +33,7 @@ class LocateControl extends PureComponent<{ leaflet: LeafletContext }> {
     }
 
     componentDidMount() {
-        // This allows the page not to crash when the map is loaded
-        // But the locate button does not appear with error `Control.Locate is not a constructor`
-        setTimeout(
-            () => this.addLocateControl(),
-            0
-        )
+        this.addLocateControl();
     }
 
     render() {
