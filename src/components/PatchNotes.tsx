@@ -32,7 +32,8 @@ const PatchNotes = () => {
                         Features
                         <ul>
                             <li>Added 2023 Spring Quarter courses</li>
-                            <li>Courses will now share colors when added to Calendar</li>
+                            <li>Lectures/discussions/labs for the same course will now share colors when added to Calendar</li>
+                            <li>You can now resize the calendar with the blue bar in the middle of the page. </li>
                             <li>Added this changelog!</li>
                         </ul>
                         Bug Fixes
@@ -40,6 +41,8 @@ const PatchNotes = () => {
                             <li>Fixed issues with displaying GE-III courses</li>
                             <li>Fixed courses with multiple locations appearing as independent events</li>
                         </ul>
+
+                        Remember to use the <a href="https://docs.google.com/forms/d/e/1FAIpQLSe0emRHqog-Ctl8tjZfJvewY_CSGXys8ykBkFBy1EEUUUHbUw/viewform">feedback form</a> to let us know what you think!
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
