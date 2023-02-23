@@ -1,4 +1,4 @@
-import Split from 'react-split'
+import Split from 'react-split';
 import DateFnsUtils from '@date-io/date-fns';
 import { Box, CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -10,7 +10,7 @@ import DesktopTabs from './RightPane/RightPaneRoot';
 
 const Home = () => {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
-    const theme = useTheme()
+    const theme = useTheme();
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -19,22 +19,22 @@ const Home = () => {
             {isMobileScreen ? (
                 <MobileHome />
             ) : (
-             <Split
-        sizes={[50, 50]}
-        minSize={100}
-        expandToMin={false}
-        gutterSize={10}
-        gutterAlign="center"
-        snapOffset={30}
-        dragInterval={1}
-        direction="horizontal"
-        cursor="col-resize"
-        style={{ display: 'flex' }}
-        gutterStyle={() => ({
-          backgroundColor: theme.palette.primary.main,
-          width: '10px'
-        })}
-      >
+                <Split
+                    sizes={[50, 50]}
+                    minSize={100}
+                    expandToMin={false}
+                    gutterSize={10}
+                    gutterAlign="center"
+                    snapOffset={30}
+                    dragInterval={1}
+                    direction="horizontal"
+                    cursor="col-resize"
+                    style={{ display: 'flex' }}
+                    gutterStyle={() => ({
+                        backgroundColor: theme.palette.primary.main,
+                        width: '10px',
+                    })}
+                >
                     <Box>
                         <Calendar isMobile={false} />
                     </Box>

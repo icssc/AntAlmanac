@@ -88,18 +88,6 @@
         "vite": "^4.1.1",
         "vite-plugin-svgr": "^2.4.0"
     },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
-    "lint-staged": {
-        "*.{ts,js,json,css,html}": [
-            "prettier --write",
-            "eslint --fix",
-            "git add"
-        ]
-    },
     "browserslist": {
         "production": [
             ">0.2%",
