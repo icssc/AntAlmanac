@@ -12,7 +12,6 @@ import MobileHome from './MobileHome';
 import PatchNotes from './PatchNotes';
 import DesktopTabs from './RightPane/RightPaneRoot';
 
-
 const Home = () => {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
     const theme = useTheme();
@@ -67,7 +66,9 @@ const Home = () => {
             <NotificationSnackbar />
 
             {/* render an ellipsis icon and manually teleport it to the gutter */}
-            <MoreVertIcon ref={ellipsisRef} sx={{ color: 'white' }} />
+            {/* disabling because it's too scuffed and will kill the app in mobile mode
+                <MoreVertIcon ref={ellipsisRef} sx={{ color: 'white' }} />
+            */}
         </MuiPickersUtilsProvider>
     );
 };
