@@ -15,7 +15,8 @@ import {
 } from '@material-ui/core/colors';
 
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { CourseInfo, getCourseInfo, queryWebsoc, combineSOCObjects } from '$lib/helpers';
+import { combineSOCObjects, CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
+
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 import { Schedule, ScheduleCourse, ScheduleSaveState, ScheduleUndoState, ShortCourseSchedule } from './schedule.types';
 
@@ -432,10 +433,6 @@ export class Schedules {
             // Get the course info for each course
             const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
             for (const [term, courseSet] of Object.entries(courseDict)) {
-                const params = {
-                    term: term,
-                    sectionCodes: Array.from(courseSet).join(','),
-                };
                 const sectionCodes = Array.from(courseSet);
                 // Code from ImportStudyList
                 const courseInfo = getCourseInfo(

@@ -1,4 +1,4 @@
-import { Popover, TableCell, TableRow, Theme,Tooltip, Typography, useMediaQuery } from '@material-ui/core';
+import { Popover, TableCell, TableRow, Theme, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
@@ -8,8 +8,9 @@ import { Fragment, useEffect, useState } from 'react';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
 import { AASection, EnrollmentCount, Meeting } from '$lib/peterportal.types';
-import AppStore from '$stores/AppStore';
 import { getDefaultTerm } from '$lib/termData';
+import AppStore from '$stores/AppStore';
+
 import OpenSpotAlertPopover, { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import locations from './static/locations.json';
@@ -180,10 +181,8 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                         <a
                             href={((): string => {
                                 const location_id = locations[meeting.bldg.split(' ')[0] as keyof typeof locations];
-                                if (location_id !== undefined) 
-                                    return `https://map.uci.edu/?id=463#!m/${location_id}`;
-                                else 
-                                    return 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034';
+                                if (location_id !== undefined) return `https://map.uci.edu/?id=463#!m/${location_id}`;
+                                else return 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034';
                             })()}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -339,9 +338,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
     useEffect(() => {
         const toggleHighlight = () => {
-            const doAdd = AppStore.getAddedSectionCodes().has(
-                `${section.sectionCode} ${term}`
-            );
+            const doAdd = AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`);
             setAddedCourse(doAdd);
         };
 

@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
 import { createTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
-import AppStore from '$stores/AppStore';
+import { useEffect, useState } from 'react';
+
 import { isDarkMode } from '$lib/helpers';
+import AppStore from '$stores/AppStore';
 
 interface Props {
     children?: React.ReactNode;
@@ -37,7 +38,8 @@ export default function AppThemeProvider(props: Props) {
         },
         typography: {
             htmlFontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10),
-            fontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
+            fontSize:
+                parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
         },
         palette: {
             type: darkMode ? 'dark' : 'light',
