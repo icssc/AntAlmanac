@@ -1,9 +1,9 @@
-import { Button } from '@mui/material'
-import analyticsEnum, { logAnalytics } from '$lib/analytics'
+import { Button, Tooltip } from '@mui/material'
+import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { useSettingsStore } from '$stores/settings'
 
 /**
- * toggles the website's "viewing finals" state
+ * button that can toggle the finals state of the settings store
  */
 export default function ToggleFinalsButton() {
   const { showFinals, setShowFinals } = useSettingsStore()
@@ -17,12 +17,14 @@ export default function ToggleFinalsButton() {
   }
 
   return (
-    <Button
-      onClick={handleClick}
-      color={showFinals ? 'primary' : 'inherit'}
-      variant={showFinals ? 'contained' : 'outlined'}
-    >
-      Finals
-    </Button>
+    <Tooltip title="Toggle Finals Schedule">
+      <Button
+        onClick={handleClick}
+        color={showFinals ? 'primary' : 'inherit'}
+        variant={showFinals ? 'contained' : 'outlined'}
+      >
+        Finals
+      </Button>
+    </Tooltip>
   )
 }

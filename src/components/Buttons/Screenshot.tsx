@@ -1,18 +1,23 @@
-import { useRef } from 'react'
 import html2canvas from 'html2canvas'
-import { Button, Link, Tooltip, useTheme } from '@mui/material'
-import { Panorama as PanoramaIcon } from '@mui/icons-material'
-import analyticsEnum, { logAnalytics } from '$lib/analytics'
+import { useRef } from 'react'
+import { Button, IconButton, Link, Tooltip, useTheme } from '@mui/material'
+import { Panorama as PanoramaIcon, PhotoCamera as PhotoCameraIcon } from '@mui/icons-material'
+import { analyticsEnum, logAnalytics } from '$lib/analytics'
 
-interface Props { 
+interface Props {
   /**
    * provide a React ref to the element to screenshot
    */
   imgRef: React.RefObject<HTMLElement>
+
+  /**
+   * whether to only show the icon
+   */
+  iconOnly?: boolean
 }
 
 /**
- * downloads a screenshot of the DOM Node of imgRef
+ * button that downloads a screenshot of the element referenced by imgRef
  */
 export default function ScreenshotButton(props: Props) {
   const theme = useTheme()
@@ -45,14 +50,15 @@ export default function ScreenshotButton(props: Props) {
   return (
     <>
       <Tooltip title="Get a screenshot of your schedule">
-        <Button 
-          onClick={handleClick} 
-          variant="outlined" 
-          size="small" 
-          startIcon={<PanoramaIcon fontSize="small" />}
-        >
-        Screenshot
-      </Button>
+        {props.iconOnly ? (
+          <IconButton onClick={handleClick}>
+            <PhotoCameraIcon />
+          </IconButton>
+        ) : (
+          <Button onClick={handleClick} variant="outlined" size="small" startIcon={<PanoramaIcon fontSize="small" />}>
+            Screenshot
+          </Button>
+        )}
       </Tooltip>
       <Link sx={{ display: 'none' }} ref={ref} />
     </>

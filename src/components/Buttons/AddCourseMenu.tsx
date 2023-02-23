@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { IconButton, Menu, MenuItem } from '@mui/material'
 import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material'
+import type { AASection, AACourse } from '$lib/peterportal.types'
 import { useScheduleStore } from '$stores/schedule'
 import { addCourse, addCourseToAllSchedules } from '$stores/schedule/course'
-import type { AASection, AACourse } from '$lib/peterportal.types'
 
 interface Props {
   section: AASection
@@ -11,10 +11,10 @@ interface Props {
 }
 
 /**
- * opens a dropdown menu to add a course to specified schedule(s)
+ * button that opens a dropdown to add the provided course to a target schedule(s)
  */
 export default function AddCourseMenuButton(props: Props) {
-  const { schedules } = useScheduleStore()
+  const schedules = useScheduleStore((store) => store.schedules)
   const [anchorEl, setAnchorEl] = useState<HTMLElement>()
 
   function handleClick(event: React.MouseEvent<HTMLElement>) {
@@ -26,7 +26,7 @@ export default function AddCourseMenuButton(props: Props) {
   }
 
   /**
-   * returns function to add a course to the schedule at the specified index
+   * returns function that will add a course to the schedule at the specified index
    */
   function handleAdd(index: number) {
     return () => {

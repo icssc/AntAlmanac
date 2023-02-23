@@ -1,55 +1,40 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { Box, Button, Popover, Typography } from '@mui/material'
 import { InfoOutlined as InfoOutlinedIcon } from '@mui/icons-material'
-import { PETERPORTAL_REST_ENDPOINT } from '$lib/api/endpoints'
-import type { AACourse, CourseResponse } from '$lib/peterportal.types'
+import { useRestQuery } from '$hooks/useRestQuery'
+import type { AACourse } from '$lib/peterportal.types'
 
 /**
- * opens a popup with all summary info about the course, e.g. description, prerequistes, etc.
+ * button that opens a popup with all summary info about the course,
+ * e.g. course description, prerequistes, etc.
  */
 export default function CourseSummaryButton(props: { course: AACourse }) {
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>()
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
     setAnchorEl(event.currentTarget)
   }
 
   function handleClose() {
-    setAnchorEl(undefined)
+    setAnchorEl(null)
   }
 
   const courseId = encodeURIComponent(
     `${props.course.deptCode.replace(/\s/g, '')}${props.course.courseNumber.replace(/\s/g, '')}`
   )
 
-  const query = useQuery([PETERPORTAL_REST_ENDPOINT, courseId], {
-    async queryFn() {
-      const response = await fetch(`${PETERPORTAL_REST_ENDPOINT}/courses/${courseId}`)
-      if (response.ok) {
-        const jsonResp = (await response.json()) as CourseResponse
-        return {
-          title: jsonResp.title,
-          prerequisite_text: jsonResp.prerequisite_text,
-          prerequisite_for: jsonResp.prerequisite_for.join(', '),
-          description: jsonResp.description,
-          ge_list: jsonResp.ge_list.join(', '),
-        }
-      } else {
-        return {
-          title: 'No description available',
-          prerequisite_text: '',
-          prerequisite_for: '',
-          description: '',
-          ge_list: '',
-        }
-      }
-    },
-  })
+  const query = useRestQuery(courseId)
 
   return (
     <>
-      <Button variant="contained" color="info" size="small" onClick={handleClick} startIcon={<InfoOutlinedIcon />}>
+      <Button
+        variant="contained"
+        color="white"
+        size="small"
+        onClick={handleClick}
+        startIcon={<InfoOutlinedIcon />}
+        sx={{ flexShrink: 0 }}
+      >
         {`${props.course?.deptCode} ${props.course?.courseNumber} | ${props.course?.courseTitle}`}
       </Button>
       <Popover

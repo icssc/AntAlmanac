@@ -1,4 +1,4 @@
-import { IconButton } from '@mui/material'
+import { IconButton, Tooltip } from '@mui/material'
 import { Delete as DeleteIcon } from '@mui/icons-material'
 import { useSearchStore } from '$stores/search'
 import { deleteCourse } from '$stores/schedule/course'
@@ -10,19 +10,21 @@ interface Props {
 }
 
 /**
- * deletes course
+ * button that deletes the provided course
  */
 export default function DeleteCourseButton(props: Props) {
-  const { form } = useSearchStore()
-  const term = props.term ?? form.term
+  const storeTerm = useSearchStore((store) => store.form.term)
+  const term = props.term ?? storeTerm
 
   function handleClick() {
     deleteCourse(props.section.sectionCode, term)
   }
 
   return (
-    <IconButton onClick={handleClick}>
-      <DeleteIcon />
-    </IconButton>
+    <Tooltip title="Delete Course">
+      <IconButton onClick={handleClick}>
+        <DeleteIcon />
+      </IconButton>
+    </Tooltip>
   )
 }

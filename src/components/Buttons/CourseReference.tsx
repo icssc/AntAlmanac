@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button, Popover } from '@mui/material'
-import analyticsEnum, { logAnalytics } from '$lib/analytics'
+import { analyticsEnum, logAnalytics } from '$lib/analytics'
 
 interface Props {
   title: string
@@ -11,11 +11,11 @@ interface Props {
 }
 
 /**
- * can link to another page with more info if href is provided,
- * or open popup with additional info about a course
+ * button that can open a popup with additional specific info about the course,
+ * or link to another page with more info (if href is provided)
  */
 export default function CourseReferenceButton(props: Props) {
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>()
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
     logAnalytics({
@@ -30,12 +30,22 @@ export default function CourseReferenceButton(props: Props) {
   }
 
   function handleClose() {
-    setAnchorEl(undefined)
+    setAnchorEl(null)
   }
 
   return (
     <>
-      <Button variant="contained" size="small" onClick={handleClick} startIcon={props.icon}>
+      <Button
+        variant="contained"
+        size="small"
+        onClick={handleClick}
+        startIcon={props.icon}
+        sx={{
+          backgroundColor: '#385EB1',
+          color: '#fff',
+          flexShrink: 0,
+        }}
+      >
         {props.title}
       </Button>
       <Popover

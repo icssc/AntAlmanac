@@ -1,15 +1,12 @@
 import { useRef } from 'react'
 import { createEvents } from 'ics'
 import { useSnackbar } from 'notistack'
-import { Button, Link, Tooltip } from '@mui/material'
-import { Today as TodayIcon } from '@mui/icons-material'
-import analyticsEnum, { logAnalytics } from '$lib/analytics'
-import { useScheduleStore } from '$stores/schedule'
+import { IconButton, Link, Tooltip } from '@mui/material'
+import { Download as DownloadIcon } from '@mui/icons-material'
 import { getEventsFromCourses, vTimeZoneSection } from '$lib/download'
+import { analyticsEnum, logAnalytics } from '$lib/analytics'
+import { useScheduleStore } from '$stores/schedule'
 
-/**
- * downloads current schedule as .ics file
- */
 export default function DownloadButton() {
   const { schedules, scheduleIndex } = useScheduleStore()
   const { enqueueSnackbar } = useSnackbar()
@@ -50,17 +47,14 @@ export default function DownloadButton() {
 
   return (
     <>
-      <Tooltip title="Download Calendar as an .ics file">
-        <Button 
-          onClick={exportCalendar}
-          variant="outlined" 
-          size="small" 
-          startIcon={<TodayIcon fontSize="small" />}
-        >
-        Download
-      </Button>
+      <Tooltip title="Download Schedule (.ics)">
+        <IconButton onClick={exportCalendar}>
+          <DownloadIcon fontSize="small" />
+        </IconButton>
       </Tooltip>
-      <Link ref={ref} sx={{ display: 'none' }} />
+      <Link ref={ref} sx={{ display: 'none' }}>
+        Invisible link to download files
+      </Link>
     </>
   )
 }
