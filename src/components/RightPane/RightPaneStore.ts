@@ -78,8 +78,6 @@ class RightPaneStore extends EventEmitter {
 
     focusOnBuilding = (buildingFocusInfo: BuildingFocusInfo) => {
         this.emit('focusOnBuilding', buildingFocusInfo);
-        // NOTE: This might not be accurate. Some things were lost in the rewrite.
-        // I think it should be good now, but I'm not sure
         /** Explanation of what happens when 'focusOnBuilding' is emitted:
          *
          *  If desktop:
