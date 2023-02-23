@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
 import { createTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
-import AppStore from '$stores/AppStore';
+import { useEffect, useState } from 'react';
+
 import { isDarkMode } from '$lib/helpers';
+import AppStore from '$stores/AppStore';
 
 interface Props {
-    children?: JSX.Element;
+    children?: React.ReactNode;
 }
 
 /**

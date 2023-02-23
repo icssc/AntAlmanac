@@ -1,10 +1,12 @@
-import moment from 'moment';
 import { Card, CardActions, CardHeader, IconButton } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
+import moment from 'moment';
+
 import { deleteCustomEvent } from '$actions/AppStoreActions';
 import analyticsEnum from '$lib/analytics';
+
 import CustomEventDialog, { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '../../ColorPicker';
 
@@ -69,16 +71,12 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                 </div>
                 <IconButton
                     onClick={() => {
-                        deleteCustomEvent(customEvent.customEventID, props.currentScheduleIndex);
+                        deleteCustomEvent(customEvent.customEventID);
                     }}
                 >
                     <Delete fontSize="small" />
                 </IconButton>
-                <CustomEventDialog
-                    customEvent={customEvent}
-                    scheduleNames={props.scheduleNames}
-                    currentScheduleIndex={props.currentScheduleIndex}
-                />
+                <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
             </CardActions>
         </Card>
     );

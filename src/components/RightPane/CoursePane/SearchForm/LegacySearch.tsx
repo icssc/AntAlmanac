@@ -1,6 +1,7 @@
 import { Button, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap , Styles } from '@material-ui/core/styles/withStyles';
+import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+
 import AdvancedSearch from './AdvancedSearch';
 import CourseNumberSearchBar from './CourseNumberSearchBar';
 import DeptSearchBar from './DeptSearchBar/DeptSearchBar';

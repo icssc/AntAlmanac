@@ -1,9 +1,14 @@
+import './App.css';
+
+import { SnackbarProvider } from 'notistack';
 import { useEffect } from 'react';
 import ReactGA4 from 'react-ga4';
-import { BrowserRouter, Route,Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+
 import { undoDelete } from './actions/AppStoreActions';
 import Home from './components/Home';
-import AppThemeProvider from './providers/Theme'
+import AppQueryProvider from './providers/Query';
+import AppThemeProvider from './providers/Theme';
 
 /**
  * renders the single page application
@@ -15,20 +20,24 @@ export default function App() {
         ReactGA4.send('pageview');
         return () => {
             document.removeEventListener('keydown', undoDelete, false);
-        }
-    }, [])
+        };
+    }, []);
 
     return (
-        <AppThemeProvider>
-             <BrowserRouter>
-                 <Routes>
-                     <Route path="/" element={<Home />} />
-                     <Route
-                         path="/feedback"
-                         element={() => window.location.replace('https://forms.gle/k81f2aNdpdQYeKK8A')}
-                     />
-                 </Routes>
-         </BrowserRouter>
-     </AppThemeProvider>
+        <AppQueryProvider>
+            <AppThemeProvider>
+                <SnackbarProvider>
+                    <BrowserRouter>
+                        <Routes>
+                            <Route path="/" element={<Home />} />
+                            <Route
+                                path="/feedback"
+                                element={() => window.location.replace('https://forms.gle/k81f2aNdpdQYeKK8A')}
+                            />
+                        </Routes>
+                    </BrowserRouter>
+                </SnackbarProvider>
+            </AppThemeProvider>
+        </AppQueryProvider>
     );
 }

@@ -1,11 +1,12 @@
 import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
-import AppStore from './AppStore';
+import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 
-export const calendarizeCourseEvents = () => {
-    const addedCourses = AppStore.getAddedCourses();
+import { ScheduleCourse } from './schedule.types';
+
+export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []) => {
     const courseEventsInCalendar: CourseEvent[] = [];
 
-    for (const course of addedCourses) {
+    for (const course of currentCourses) {
         for (const meeting of course.section.meetings) {
             const timeString = meeting.time.replace(/\s/g, '');
 
@@ -38,7 +39,7 @@ export const calendarizeCourseEvents = () => {
                 dates.forEach((shouldBeInCal, index) => {
                     if (shouldBeInCal) {
                         const newEvent = {
-                            color: course.color,
+                            color: course.section.color,
                             term: course.term,
                             title: course.deptCode + ' ' + course.courseNumber,
                             courseTitle: course.courseTitle,
@@ -50,7 +51,6 @@ export const calendarizeCourseEvents = () => {
                             finalExam: course.section.finalExam,
                             end: new Date(2018, 0, index, endHr, endMin),
                             isCustomEvent: false as const,
-                            scheduleIndices: course.scheduleIndices,
                         };
 
                         courseEventsInCalendar.push(newEvent);
@@ -63,11 +63,10 @@ export const calendarizeCourseEvents = () => {
     return courseEventsInCalendar;
 };
 
-export const calendarizeFinals = () => {
-    const addedCourses = AppStore.getAddedCourses();
-    const finalsEventsInCalendar = [] as CourseEvent[];
+export const calendarizeFinals = (currentCourses: ScheduleCourse[] = []) => {
+    const finalsEventsInCalendar: CourseEvent[] = [];
 
-    for (const course of addedCourses) {
+    for (const course of currentCourses) {
         const finalExam = course.section.finalExam;
         if (finalExam.length > 5) {
             const [, date, , , startStr, startMinStr, endStr, endMinStr, ampm] = finalExam.match(
@@ -100,8 +99,7 @@ export const calendarizeFinals = () => {
                         sectionCode: course.section.sectionCode,
                         sectionType: 'Fin',
                         bldg: course.section.meetings[0].bldg,
-                        color: course.color,
-                        scheduleIndices: course.scheduleIndices,
+                        color: course.section.color,
                         start: new Date(2018, 0, index - 1, startHour, startMin),
                         end: new Date(2018, 0, index - 1, endHour, endMin),
                         finalExam: course.section.finalExam,
@@ -116,11 +114,10 @@ export const calendarizeFinals = () => {
     return finalsEventsInCalendar;
 };
 
-export const calendarizeCustomEvents = () => {
-    const customEvents = AppStore.getCustomEvents();
-    const customEventsInCalendar = [];
+export const calendarizeCustomEvents = (currentCustomEvents: RepeatingCustomEvent[] = []) => {
+    const customEventsInCalendar: CustomEvent[] = [];
 
-    for (const customEvent of customEvents) {
+    for (const customEvent of currentCustomEvents) {
         for (let dayIndex = 0; dayIndex < customEvent.days.length; dayIndex++) {
             if (customEvent.days[dayIndex]) {
                 const startHour = parseInt(customEvent.start.slice(0, 2), 10);
@@ -130,16 +127,15 @@ export const calendarizeCustomEvents = () => {
 
                 customEventsInCalendar.push({
                     customEventID: customEvent.customEventID,
-                    color: customEvent.color,
+                    color: customEvent.color ?? '#000000',
                     start: new Date(2018, 0, dayIndex, startHour, startMin),
                     isCustomEvent: true,
                     end: new Date(2018, 0, dayIndex, endHour, endMin),
-                    scheduleIndices: customEvent.scheduleIndices,
                     title: customEvent.title,
                 });
             }
         }
     }
 
-    return customEventsInCalendar as CustomEvent[];
+    return customEventsInCalendar;
 };
