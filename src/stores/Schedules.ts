@@ -171,10 +171,19 @@ export class Schedules {
         }
         let courseToAdd = this.getExistingCourse(newCourse.section.sectionCode, newCourse.term);
         if (courseToAdd === undefined) {
-            const setOfUsedColors = new Set(this.getAllCourses().map((course) => course.section.color));
+            let color: string | undefined = undefined;
+            for (const course of this.getCurrentCourses()) {
+                if (course.courseTitle === newCourse.courseTitle) {
+                    color = course.section.color;
+                    break;
+                }
+            }
 
-            const color: string =
-                arrayOfColors.find((materialColor) => !setOfUsedColors.has(materialColor)) || '#5ec8e0';
+            if (color === undefined) {
+                const setOfUsedColors = new Set(this.getCurrentCourses().map((course) => course.section.color));
+
+                color = arrayOfColors.find((materialColor) => !setOfUsedColors.has(materialColor)) || '#5ec8e0';
+            }
             courseToAdd = {
                 ...newCourse,
                 section: {
