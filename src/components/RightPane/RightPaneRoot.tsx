@@ -35,7 +35,7 @@ class DesktopTabs extends PureComponent<DesktopTabsProps> {
     };
 
 
-    focusOnBuilding(buildingInfo: BuildingFocusInfo) {
+    focusOnBuilding = (buildingInfo: BuildingFocusInfo) => {
         // If the Map tab isn't already active
         if (RightPaneStore.getActiveTab() !== 2) {
             // Switch to Map tab
@@ -57,7 +57,6 @@ class DesktopTabs extends PureComponent<DesktopTabsProps> {
     componentDidMount() {
         RightPaneStore.on('tabChange', this.changeTab);
         this.setState({ activeTab: RightPaneStore.getActiveTab() });
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         RightPaneStore.on('focusOnBuilding', this.focusOnBuilding);
         // Signal to MobileHome that we're loaded so that it can re-emit 'focusOnBuilding'
         RightPaneStore.emit('RightPaneRootLoaded');

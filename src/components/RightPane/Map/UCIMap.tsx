@@ -302,9 +302,8 @@ export default class UCIMap extends PureComponent {
                 {courseName ? (
                     <>
                         <hr />
-                        <>
-                            Class: {courseName}
-                        </>
+                        Class: {courseName}
+
                     </>
                 ) : <></>}
             </MapMarker>
