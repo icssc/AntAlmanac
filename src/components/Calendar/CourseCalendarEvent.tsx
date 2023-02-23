@@ -64,14 +64,14 @@ const styles: Styles<Theme, object> = {
             borderRadius: '50%',
         },
     },
+
     clickableLocation: {
         cursor: 'pointer',
-        color: 'blue',
-    },
-
-    clickableLocationDark: {
-        cursor: 'pointer',
-        color: '#1cbeff',
+        color: isDarkMode() ? '#1cbeff' : 'blue',
+        background: 'none !important',
+        border: 'none',
+        padding: '0 !important',
+        fontSize: 'inherit',
     },
 };
 
@@ -172,18 +172,15 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         </tr>
                         <tr>
                             <td className={classes.alignToTop}>Location</td>
-                            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
                             <td
-                                onClick={() => selectBuilding({ location: bldg, courseName: title})}
-                                className={`${classes.multiline} ${classes.rightCells} ${
-                                    bldg !== 'TBA'
-                                        ? isDarkMode()
-                                            ? classes.clickableLocationDark
-                                            : classes.clickableLocation
-                                        : ""
-                                }`}
+                                className={`${classes.multiline} ${classes.rightCells}`}
                             >
-                                {bldg}
+                                <button
+                                    className={classes.clickableLocation}
+                                    onClick={() => selectBuilding({ location: bldg, courseName: title})
+                                }>
+                                    {bldg}
+                                </button>
                             </td>
                         </tr>
                         <tr>
