@@ -66,19 +66,19 @@ const MapMarker = ({
                     </div>`,
         });
     };
-    let locationString;
+    let locationLinkElement;
 
     if (acronym) {
-        locationString = (
+        locationLinkElement = (
             <a href={`http://www.classrooms.uci.edu/classrooms/${acronym}`} target="_blank" rel="noopener noreferrer">
                 {location}
             </a>
         );
     } else {
-        locationString = location;
+        locationLinkElement = location;
     }
 
-    const [markerRef, updateMarkerRef] = useState(useRef(null));
+    const markerRef = useState(useRef(null))[0];
 
     function _openPopup(_markerRef: MarkerRef) {
         // To give the map time to pan
@@ -106,7 +106,7 @@ const MapMarker = ({
             }}
         >
             <Popup>
-                {locationString}
+                {locationLinkElement}
 
                 <br />
 
