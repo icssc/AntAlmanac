@@ -1,8 +1,9 @@
-import { PureComponent } from 'react';
-import { Button, FormControl, FormControlLabel, Paper,Popover, Radio, RadioGroup } from '@material-ui/core';
+import { Button, FormControl, FormControlLabel, Paper, Popover, Radio, RadioGroup } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Brightness4Icon from '@material-ui/icons/Brightness4';
+import { PureComponent } from 'react';
+
 import { toggleTheme } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
 

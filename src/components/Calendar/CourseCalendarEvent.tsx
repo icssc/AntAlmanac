@@ -1,15 +1,17 @@
-import { Event } from 'react-big-calendar';
 import { IconButton, Paper, Tooltip } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
+import { Event } from 'react-big-calendar';
+
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
+import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
-import ColorPicker from '$components/ColorPicker';
-import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
+
 import locations from '../RightPane/SectionTable/static/locations.json';
+import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 
 const styles: Styles<Theme, object> = {
     courseContainer: {
@@ -67,7 +69,7 @@ const styles: Styles<Theme, object> = {
 const genMapLink = (location: string) => {
     try {
         const location_id = locations[location.split(' ')[0] as keyof typeof locations];
-        return 'https://map.uci.edu/?id=463#!m/' + location_id;
+        return `https://map.uci.edu/?id=463#!m/${location_id}`;
     } catch (err) {
         return 'https://map.uci.edu/';
     }
@@ -193,7 +195,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             </Paper>
         );
     } else {
-            const { title, customEventID } = courseInMoreInfo;
+        const { title, customEventID } = courseInMoreInfo;
         return (
             <Paper className={classes.customEventContainer} onClick={(event) => event.stopPropagation()}>
                 <div className={classes.title}>{title}</div>

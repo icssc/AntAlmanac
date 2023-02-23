@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { PureComponent } from 'react';
-import { ProviderContext, withSnackbar } from 'notistack';
 import { amber, green } from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import CloseIcon from '@material-ui/icons/Close';
+import { ProviderContext, withSnackbar } from 'notistack';
+import { PureComponent } from 'react';
+
 import AppStore from '$stores/AppStore';
 
 const styles: Styles<Theme, object> = (theme) => ({
@@ -49,7 +50,6 @@ class NotificationSnackbar extends PureComponent<NotificationSnackbarProps> {
     };
 
     openSnackbar = () => {
-
         this.props.enqueueSnackbar(AppStore.getSnackbarMessage(), {
             variant: AppStore.getSnackbarVariant(),
             // shitty hack because notistack says it doesn't support `duration`, but this still runs without errors 🤷‍♂️
@@ -85,6 +85,5 @@ class NotificationSnackbar extends PureComponent<NotificationSnackbarProps> {
         return null;
     }
 }
-
 
 export default withSnackbar(withStyles(styles)(NotificationSnackbar));

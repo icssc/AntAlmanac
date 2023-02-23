@@ -1,5 +1,5 @@
-import { Collapse, Grid, Paper, Theme,Typography, withStyles } from '@material-ui/core';
-import { ClassNameMap , Styles } from '@material-ui/core/styles/withStyles';
+import { Collapse, Grid, Paper, Theme, Typography, withStyles } from '@material-ui/core';
+import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import { PureComponent } from 'react';
 
