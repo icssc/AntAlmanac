@@ -378,7 +378,7 @@ export class Schedules {
      * Previous states are capped to 50
      */
     addUndoState() {
-        const clonedSchedules = structuredClone(this.schedules); // Create deep copy of Schedules object
+        const clonedSchedules = JSON.parse(JSON.stringify(this.schedules)) as Schedule[]; // Create deep copy of Schedules object
         this.previousStates.push({ schedules: clonedSchedules, scheduleIndex: this.currentScheduleIndex });
         if (this.previousStates.length >= 50) {
             this.previousStates.shift();
