@@ -1,9 +1,8 @@
+import React, { useState } from 'react';
 import { Button, Menu,Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Edit } from '@material-ui/icons';
-import React, { useState } from 'react';
-
 import DeleteScheduleDialog from './DeleteScheduleDialog';
 import ScheduleNameDialog from './ScheduleNameDialog';
 
@@ -59,8 +58,6 @@ const EditSchedule = (props: EditScheduleProps) => {
                     onClose={handleClose}
                 />
                 <DeleteScheduleDialog
-                    scheduleNames={scheduleNames}
-                    scheduleIndex={scheduleIndex}
                     onClose={handleClose}
                 />
             </Menu>

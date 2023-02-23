@@ -54,13 +54,16 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 2. Navigate to the root directory and install the dependencies  
    `cd AntAlmanac`  
-   `npm install`
+   `npm i -g yarn` (if this fails, try running it with admin privileges)  
+   `yarn install`
 
 3. Start the development server  
-   `npm start`
+   `yarn start`
 
-4. The site should load on http://localhost:3000  
+4. The site should load on http://localhost:5173  
    As you make changes to the React application in `src`, those changes will be automatically reflected on the site.
+
+   If it isn't loading, try disabling your adblocker.
 
 ### Running the [Backend](https://github.com/icssc/antalmanac-backend)
 

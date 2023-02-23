@@ -3,13 +3,13 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
-import React, { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
-import analyticsEnum, { logAnalytics } from '../../../analytics';
-import { clickToCopy, CourseDetails, isDarkMode } from '../../../helpers';
-import { AASection, EnrollmentCount, Meeting } from '../../../peterportal.types';
-import AppStore from '../../../stores/AppStore';
-import { getDefaultTerm } from '../../../termData';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
+import { AASection, EnrollmentCount, Meeting } from '$lib/peterportal.types';
+import AppStore from '$stores/AppStore';
+import { getDefaultTerm } from '$lib/termData';
 import OpenSpotAlertPopover, { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import locations from './static/locations.json';
@@ -339,7 +339,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
     useEffect(() => {
         const toggleHighlight = () => {
-            const doAdd = AppStore.getAddedSectionCodes()[AppStore.getCurrentScheduleIndex()].has(
+            const doAdd = AppStore.getAddedSectionCodes().has(
                 `${section.sectionCode} ${term}`
             );
             setAddedCourse(doAdd);

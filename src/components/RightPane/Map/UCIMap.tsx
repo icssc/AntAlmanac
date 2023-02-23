@@ -1,11 +1,11 @@
 import '../../../../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js';
 
 import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
+import 'leaflet.locatecontrol'
 import React, { PureComponent } from 'react';
-import { LeafletContext,Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
-
-import analyticsEnum, { logAnalytics } from '../../../analytics';
-import AppStore from '../../../stores/AppStore';
+import { LeafletContext, Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import AppStore from '$stores/AppStore';
 import { CalendarEvent, CourseEvent } from '../../Calendar/CourseCalendarEvent';
 import locations from '../SectionTable/static/locations.json';
 import MapMarker from './MapMarker';
@@ -41,6 +41,7 @@ const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ
 const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
 const DIRECTIONS_ENDPOINT = 'https://api.mapbox.com/directions/v5/mapbox/walking/';
+const FAKE_LOCATIONS = ['VRTL REMOTE', 'ON LINE', 'TBA'];
 
 interface UCIMapState {
     lat: number;
@@ -90,7 +91,6 @@ export default class UCIMap extends PureComponent {
                         !(
                             (
                                 event.isCustomEvent ||
-                                !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
                                 !event.start.toString().includes(DAYS[day]) ||
                                 courses.has(event.sectionCode) || // Remove duplicate courses that appear in the calendar
                                 !courses.add(event.sectionCode)
@@ -131,7 +131,7 @@ export default class UCIMap extends PureComponent {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
                 });
-                const obj = await response.json() as MapBoxResponse;
+                const obj = (await response.json()) as MapBoxResponse;
                 const coordinates = obj['routes'][0]['geometry']['coordinates']; // The coordinates for the lines of the routes
                 const waypoints = obj['waypoints']; // The waypoints we specified in the request
                 let waypointIndex = 0;
@@ -286,7 +286,6 @@ export default class UCIMap extends PureComponent {
         const pins: typeof this.state.pins = {};
         const courses = new Set();
         // Tracks courses that have already been pinned on the map, so there are no duplicates
-
         // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
         this.state.eventsInCalendar
             .filter(
@@ -294,10 +293,10 @@ export default class UCIMap extends PureComponent {
                     !(
                         (
                             event.isCustomEvent ||
-                            !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
                             !event.start.toString().includes(DAYS[day]) ||
                             courses.has(event.sectionCode) || // Remove duplicate courses that appear in the calendar
-                            !courses.add(event.sectionCode)
+                            !courses.add(event.sectionCode) ||
+                            FAKE_LOCATIONS.includes(event.bldg)
                         ) // Adds to the set and return false
                     )
             )

@@ -1,13 +1,12 @@
+import React, { useState } from 'react';
 import { Button, IconButton, Menu,Paper, Tooltip, useMediaQuery } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete, MoreHoriz,Undo } from '@material-ui/icons';
-import React, { useState } from 'react';
-
-import { changeCurrentSchedule, clearSchedules, undoDelete } from '../../actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '../../analytics';
+import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import ConditionalWrapper from '../ConditionalWrapper';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import EditSchedule from './Toolbar/EditSchedule/EditSchedule';
@@ -132,7 +131,7 @@ const CalendarPaneToolbar = ({
 
             <div className={classes.spacer} />
 
-            <Tooltip title="Undo last deleted course">
+            <Tooltip title="Undo last action">
                 <IconButton
                     onClick={() => {
                         logAnalytics({
@@ -151,10 +150,10 @@ const CalendarPaneToolbar = ({
                     onClick={() => {
                         if (
                             window.confirm(
-                                'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
+                                'Are you sure you want to clear this schedule?'
                             )
                         ) {
-                            clearSchedules([currentScheduleIndex]);
+                            clearSchedules();
                             logAnalytics({
                                 category: analyticsEnum.calendar.title,
                                 action: analyticsEnum.calendar.actions.CLEAR_SCHEDULE,
@@ -185,7 +184,6 @@ const CalendarPaneToolbar = ({
                         <ExportCalendar key="export"/>,
                         <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot"/>,
                         <CustomEventDialog
-                            currentScheduleIndex={currentScheduleIndex}
                             scheduleNames={scheduleNames}
                             key="custom"
                         />,
