@@ -1,5 +1,6 @@
+import Split from 'react-split'
 import DateFnsUtils from '@date-io/date-fns';
-import { CssBaseline, Grid, useMediaQuery } from '@material-ui/core';
+import { Box, CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import Bar from './AppBar/CustomAppBar';
 import NotificationSnackbar from './AppBar/NotificationSnackbar';
@@ -9,6 +10,7 @@ import DesktopTabs from './RightPane/RightPaneRoot';
 
 const Home = () => {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
+    const theme = useTheme()
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -17,14 +19,29 @@ const Home = () => {
             {isMobileScreen ? (
                 <MobileHome />
             ) : (
-                <Grid container alignItems={'stretch'} style={{ flexGrow: '1' }}>
-                    <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
+             <Split
+        sizes={[50, 50]}
+        minSize={100}
+        expandToMin={false}
+        gutterSize={10}
+        gutterAlign="center"
+        snapOffset={30}
+        dragInterval={1}
+        direction="horizontal"
+        cursor="col-resize"
+        style={{ display: 'flex' }}
+        gutterStyle={() => ({
+          backgroundColor: theme.palette.primary.main,
+          width: '10px'
+        })}
+      >
+                    <Box>
                         <Calendar isMobile={false} />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
+                    </Box>
+                    <Box>
                         <DesktopTabs style={{ height: 'calc(100vh - 58px)' }} />
-                    </Grid>
-                </Grid>
+                    </Box>
+                </Split>
             )}
             <NotificationSnackbar />
         </MuiPickersUtilsProvider>
