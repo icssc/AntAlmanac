@@ -5,6 +5,7 @@ import React, { PureComponent } from 'react';
 import { LeafletContext, Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
 
 import analyticsEnum, {logAnalytics} from '../../../analytics';
+import {FAKE_LOCATIONS} from "../../../helpers";
 import AppStore from '../../../stores/AppStore';
 import {CalendarEvent, CourseEvent} from '../../Calendar/CourseCalendarEvent';
 import RightPaneStore, {BuildingFocusInfo} from "../RightPaneStore";
@@ -52,7 +53,6 @@ const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ
 const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
 const DIRECTIONS_ENDPOINT = 'https://api.mapbox.com/directions/v5/mapbox/walking/';
-const FAKE_LOCATIONS = ['VRTL REMOTE', 'ON LINE', 'TBA'];
 
 interface UCIMapState {
     lat: number;
@@ -325,6 +325,11 @@ export default class UCIMap extends PureComponent {
 
         const buildingCode = buildingCodeMatch[0];
         const locationData = this.locationDataFromBuildingCode(buildingCode);
+
+        if (!locationData) {
+            console.warn("Building data could not be found for: ", buildingCode);
+            return;
+        }
 
         this.pinBuilding({
             buildingName: locationData.name,

@@ -24,7 +24,7 @@ const MobileHome = () => {
                 RightPaneStore.focusOnBuilding(buildingInfo);
                 RightPaneStore.removeListener('RightPaneRootLoaded', reEmitFocus);
             };
-
+            
             // Switch to DesktopTabs
             setSelectedTab(1);
             RightPaneStore.on('RightPaneRootLoaded', reEmitFocus);

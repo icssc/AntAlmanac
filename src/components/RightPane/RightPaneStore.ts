@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 
+import { FAKE_LOCATIONS } from '../../helpers';
 import { getDefaultTerm } from '../../termData';
 
 const defaultFormValues: Record<string, string> = {
@@ -77,7 +78,8 @@ class RightPaneStore extends EventEmitter {
     };
 
     focusOnBuilding = (buildingFocusInfo: BuildingFocusInfo) => {
-        this.emit('focusOnBuilding', buildingFocusInfo);
+        // Filter out fake locations
+        if (!FAKE_LOCATIONS.includes(buildingFocusInfo.location)) this.emit('focusOnBuilding', buildingFocusInfo);
         /** Explanation of what happens when 'focusOnBuilding' is emitted:
          *
          *  If desktop:

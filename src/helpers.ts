@@ -414,3 +414,5 @@ export function courseNumAsDecimal(courseNumber: string) {
         return parseInt(secondToLastElement);
     }
 }
+
+export const FAKE_LOCATIONS = ['VRTL REMOTE', 'ON LINE', 'TBA'];
