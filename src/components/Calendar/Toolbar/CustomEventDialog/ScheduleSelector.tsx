@@ -18,7 +18,7 @@ interface ScheduleSelectorState {
 
 class ScheduleSelector extends PureComponent<ScheduleSelectorProps, ScheduleSelectorState> {
     state = {
-        scheduleIndices: this.props.customEvent?.scheduleIndices || this.props.scheduleIndices,
+        scheduleIndices: this.props.scheduleIndices,
     };
 
     handleChange = (dayIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {

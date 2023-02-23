@@ -11,11 +11,10 @@ import React, { useState } from 'react';
 
 import { deleteSchedule } from '../../../../actions/AppStoreActions';
 import { isDarkMode } from '../../../../helpers';
+import AppStore from "../../../../stores/AppStore";
 
 interface DeleteScheduleDialogProps {
     onClose: () => void;
-    scheduleIndex: number;
-    scheduleNames: string[];
 }
 
 const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
@@ -31,20 +30,20 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
 
     const handleDelete = () => {
         props.onClose();
-        deleteSchedule(props.scheduleIndex);
+        deleteSchedule();
         setIsOpen(false);
     };
 
     return (
         <>
-            <MenuItem onClick={handleOpen} disabled={props.scheduleNames.length === 1}>
+            <MenuItem onClick={handleOpen} disabled={AppStore.schedule.getNumberOfSchedules() === 1}>
                 Delete Schedule
             </MenuItem>
             <Dialog open={isOpen}>
                 <DialogTitle>Delete Schedule</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Are you sure you want to delete {`"${props.scheduleNames[props.scheduleIndex]}"`}?
+                        Are you sure you want to delete {`"${AppStore.schedule.getCurrentScheduleName()}"`}?
                         <br />
                         <br />
                         You cannot undo this action.

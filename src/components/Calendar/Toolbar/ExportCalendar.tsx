@@ -206,9 +206,7 @@ const getRRule = (bydays: ReturnType<typeof getByDays>, quarter: string) => {
 
 const exportCalendar = () => {
     // Fetch courses for the current schedule
-    const courses = AppStore.getAddedCourses().filter((course) => {
-        return course.scheduleIndices.includes(AppStore.getCurrentScheduleIndex());
-    });
+    const courses = AppStore.schedule.getCurrentCourses();
 
     // Construct an array of VEvents for each event
     const events = [];
