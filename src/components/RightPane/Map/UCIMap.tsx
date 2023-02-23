@@ -1,6 +1,7 @@
 import '../../../../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js';
 
 import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
+import 'leaflet.locatecontrol'
 import React, { PureComponent } from 'react';
 import { LeafletContext, Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
 

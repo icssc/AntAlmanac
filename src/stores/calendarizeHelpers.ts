@@ -2,7 +2,7 @@ import { CourseEvent, CustomEvent } from '../components/Calendar/CourseCalendarE
 import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { ScheduleCourse } from './schedule.types';
 
-export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[]) => {
+export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []) => {
     const courseEventsInCalendar: CourseEvent[] = [];
 
     for (const course of currentCourses) {
@@ -62,7 +62,7 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[]) => {
     return courseEventsInCalendar;
 };
 
-export const calendarizeFinals = (currentCourses: ScheduleCourse[]) => {
+export const calendarizeFinals = (currentCourses: ScheduleCourse[] = []) => {
     const finalsEventsInCalendar: CourseEvent[] = [];
 
     for (const course of currentCourses) {
@@ -113,7 +113,7 @@ export const calendarizeFinals = (currentCourses: ScheduleCourse[]) => {
     return finalsEventsInCalendar;
 };
 
-export const calendarizeCustomEvents = (currentCustomEvents: RepeatingCustomEvent[]) => {
+export const calendarizeCustomEvents = (currentCustomEvents: RepeatingCustomEvent[] = []) => {
     const customEventsInCalendar: CustomEvent[] = [];
 
     for (const customEvent of currentCustomEvents) {
