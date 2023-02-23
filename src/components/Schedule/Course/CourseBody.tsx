@@ -309,7 +309,7 @@ export default function CourseBody({ course, term, supplemental }: Props) {
       courseTitle: course.courseTitle,
     },
     {
-      enabled: supplemental
+      enabled: supplemental,
     }
   )
 

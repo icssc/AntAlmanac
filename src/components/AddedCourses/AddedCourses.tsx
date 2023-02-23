@@ -26,7 +26,7 @@ export default function AddedCourses() {
     } else {
       const seggs = {
         ...current,
-        sections: [{ ...current.section }]
+        sections: [{ ...current.section }],
       }
       return [...accumulated, seggs]
     }

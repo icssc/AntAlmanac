@@ -99,41 +99,49 @@ export default function Home() {
    */
   return (
     <>
-    <Split
-      sizes={[50, 50]}
-      minSize={100}
-      expandToMin={false}
-      gutterSize={10}
-      gutterAlign="center"
-      snapOffset={30}
-      dragInterval={1}
-      direction="horizontal"
-      cursor="col-resize"
-      style={{ display: 'flex' }}
-    >
-      <Box sx={{ overflowY: 'auto' }} onDragOver={(e) => e.preventDefault()}>
-        <Calendar />
-      </Box>
-
-
-      {/** the Box with Map MUST be flexed; since the Map uses flexGrow to size its height */}
-      <Box
-        sx={{ display: 'flex', flexDirection: 'column', overflowY: 'auto' }}
-        onDragOver={(e) => e.preventDefault()}
+      <Split
+        sizes={[50, 50]}
+        minSize={100}
+        expandToMin={false}
+        gutterSize={10}
+        gutterAlign="center"
+        snapOffset={30}
+        dragInterval={1}
+        direction="horizontal"
+        cursor="col-resize"
+        style={{ display: 'flex' }}
+        gutterStyle={() => ({
+          backgroundColor: theme.palette.primary.main,
+          width: '10px'
+        })}
       >
-        <Tabs value={tab} onChange={handleTabChange} variant="fullWidth" sx={{ height: 48 }}>
-          <Tab label="Course Search" icon={<SearchIcon />} iconPosition="start" sx={{ minHeight: 0, height: 48 }} />
-          <Tab label="Added Courses" icon={<BulletListIcon />} iconPosition="start" sx={{ minHeight: 0, height: 48 }} />
-          <Tab label="Map" icon={<MyLocationIcon />} iconPosition="start" sx={{ minHeight: 0, height: 48 }} />
-        </Tabs>
-        {tab === 0 && <CourseSearch />}
-        {tab === 1 && <AddedCourses />}
-        {tab === 2 && <Map />}
-      </Box>
-    </Split>
+        <Box sx={{ overflowY: 'auto' }} onDragOver={(e) => e.preventDefault()}>
+          <Calendar />
+        </Box>
+
+        {/** the Box with Map MUST be flexed; since the Map uses flexGrow to size its height */}
+        <Box
+          sx={{ display: 'flex', flexDirection: 'column', overflowY: 'auto' }}
+          onDragOver={(e) => e.preventDefault()}
+        >
+          <Tabs value={tab} onChange={handleTabChange} variant="fullWidth" sx={{ height: 48 }}>
+            <Tab label="Course Search" icon={<SearchIcon />} iconPosition="start" sx={{ minHeight: 0, height: 48 }} />
+            <Tab
+              label="Added Courses"
+              icon={<BulletListIcon />}
+              iconPosition="start"
+              sx={{ minHeight: 0, height: 48 }}
+            />
+            <Tab label="Map" icon={<MyLocationIcon />} iconPosition="start" sx={{ minHeight: 0, height: 48 }} />
+          </Tabs>
+          {tab === 0 && <CourseSearch />}
+          {tab === 1 && <AddedCourses />}
+          {tab === 2 && <Map />}
+        </Box>
+      </Split>
 
       <Box ref={ref}>
-        <MoreVertIcon></MoreVertIcon>
+        <MoreVertIcon fontSize="small" />
       </Box>
     </>
   )

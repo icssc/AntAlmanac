@@ -24,6 +24,7 @@
         "@tanstack/react-query": "^4.24.4",
         "chart.js": "^4.2.1",
         "dayjs": "^1.11.7",
+        "google-one-tap": "^1.0.6",
         "html2canvas": "^1.4.1",
         "ics": "^3.0.1",
         "leaflet": "^1.9.3",
@@ -47,6 +48,7 @@
     "devDependencies": {
         "@babel/core": "^7.20.12",
         "@types/file-saver": "^2.0.5",
+        "@types/google-one-tap": "^1.2.2",
         "@types/leaflet": "^1.9.0",
         "@types/leaflet-routing-machine": "^3.2.4",
         "@types/leaflet.locatecontrol": "^0.74.1",
