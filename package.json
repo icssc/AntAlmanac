@@ -16,7 +16,7 @@
         "preview": "vite preview",
         "predeploy": "npm run build",
         "deploy": "gh-pages -d build",
-        "format": "prettier --write src pages",
+        "format": "prettier --write src",
         "lint": "eslint src/**/*.ts*"
     },
     "dependencies": {
