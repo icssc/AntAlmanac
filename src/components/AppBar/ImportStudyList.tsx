@@ -1,4 +1,3 @@
-import { PureComponent } from 'react';
 import {
     Button,
     Dialog,
@@ -12,10 +11,13 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { PostAdd } from '@material-ui/icons';
+import { PureComponent } from 'react';
+
 import { openSnackbar } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { addCoursesMultiple, combineSOCObjects, getCourseInfo, queryWebsoc } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
+
 import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '../RightPane/RightPaneStore';
 
@@ -152,8 +154,8 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                             To find your Study List, go to{' '}
                             <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>WebReg</a> or{' '}
                             <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>, and click on
-                            Study List once you&apos;ve logged in. Copy everything below the column names (Code, Dept, etc.)
-                            under the Enrolled Classes section. 
+                            Study List once you&apos;ve logged in. Copy everything below the column names (Code, Dept,
+                            etc.) under the Enrolled Classes section.
                             {/* &apos; is an apostrophe (') */}
                         </DialogContentText>
                         <InputLabel className={classes.inputLabel}>Study List</InputLabel>

@@ -11,7 +11,7 @@ import { useState } from 'react';
 
 import { deleteSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
-import AppStore from "$stores/AppStore";
+import AppStore from '$stores/AppStore';
 
 interface DeleteScheduleDialogProps {
     onClose: () => void;

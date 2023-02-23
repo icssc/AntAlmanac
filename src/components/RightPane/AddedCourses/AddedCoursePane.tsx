@@ -1,13 +1,14 @@
-import { Button, Grid, Menu, MenuItem,Typography } from '@material-ui/core';
+import { Button, Grid, Menu, MenuItem, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import PopupState, { bindMenu,bindTrigger } from 'material-ui-popup-state';
+import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 import { PureComponent } from 'react';
 
 import { clearSchedules, copySchedule } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { AACourse } from '$lib/peterportal.types';
 import AppStore from '$stores/AppStore';
+
 import { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
@@ -32,18 +33,18 @@ const styles = {
 };
 
 interface CourseWithTerm extends AACourse {
-    term: string
+    term: string;
 }
 
 interface AddedCoursePaneProps {
-    classes: ClassNameMap
+    classes: ClassNameMap;
 }
 
 interface AddedCoursePaneState {
-    courses: CourseWithTerm[]
-    customEvents: RepeatingCustomEvent[]
-    totalUnits: number
-    scheduleNames: string[]
+    courses: CourseWithTerm[];
+    customEvents: RepeatingCustomEvent[];
+    totalUnits: number;
+    scheduleNames: string[];
 }
 
 class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePaneState> {
@@ -76,17 +77,15 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         AppStore.removeListener('scheduleNamesChange', this.loadScheduleNames);
     }
 
-
     loadCourses = () => {
         const currentCourses = AppStore.schedule.getCurrentCourses();
         let totalUnits = 0;
         const formattedCourses: CourseWithTerm[] = [];
 
         for (const course of currentCourses) {
-            let formattedCourse: CourseWithTerm|undefined = formattedCourses.find(
+            let formattedCourse: CourseWithTerm | undefined = formattedCourses.find(
                 (needleCourse) =>
-                    needleCourse.courseNumber === course.courseNumber &&
-                    needleCourse.deptCode === course.deptCode
+                    needleCourse.courseNumber === course.courseNumber && needleCourse.deptCode === course.deptCode
             );
 
             if (formattedCourse) {
@@ -123,7 +122,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
     loadCustomEvents = () => {
         this.setState({ customEvents: AppStore.schedule.getCurrentCustomEvents() });
         // Force update required because the state has a reference to custom events, so it doesn't see differences all the time
-        this.forceUpdate()
+        this.forceUpdate();
     };
 
     loadScheduleNames = () => {
@@ -163,9 +162,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                                         })}
                                         <MenuItem
                                             onClick={() => {
-                                                copySchedule(
-                                                    this.state.scheduleNames.length
-                                                );
+                                                copySchedule(this.state.scheduleNames.length);
                                                 popupState.close();
                                             }}
                                         >
@@ -215,14 +212,14 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                 {this.state.customEvents.length > 0 && <Typography variant="h6">Custom Events</Typography>}
                 {this.state.customEvents.map((customEvent) => {
                     return (
-                            <Grid item md={12} xs={12} key={customEvent.title}>
-                                <CustomEventDetailView
-                                    customEvent={customEvent}
-                                    currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
-                                    scheduleNames={this.state.scheduleNames}
-                                />
-                            </Grid>
-                        );
+                        <Grid item md={12} xs={12} key={customEvent.title}>
+                            <CustomEventDetailView
+                                customEvent={customEvent}
+                                currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
+                                scheduleNames={this.state.scheduleNames}
+                            />
+                        </Grid>
+                    );
                 })}
             </>
         );

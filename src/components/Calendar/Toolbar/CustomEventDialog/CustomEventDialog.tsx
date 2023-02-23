@@ -17,7 +17,8 @@ import React, { PureComponent } from 'react';
 import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { isDarkMode } from '$lib/helpers';
-import AppStore from "$stores/AppStore";
+import AppStore from '$stores/AppStore';
+
 import DaySelector from './DaySelector';
 import ScheduleSelector from './ScheduleSelector';
 
@@ -48,7 +49,7 @@ interface CustomEventDialogProps {
 
 interface CustomEventDialogState extends RepeatingCustomEvent {
     open: boolean;
-    scheduleIndices: number[]
+    scheduleIndices: number[];
 }
 
 const defaultCustomEvent: RepeatingCustomEvent = {
@@ -63,11 +64,11 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
     state: CustomEventDialogState = {
         open: false,
         ...(this.props.customEvent || defaultCustomEvent),
-        scheduleIndices: []
+        scheduleIndices: [],
     };
 
     handleOpen = () => {
-        this.setState({ open: true, scheduleIndices: [AppStore.schedule.getCurrentScheduleIndex()]});
+        this.setState({ open: true, scheduleIndices: [AppStore.schedule.getCurrentScheduleIndex()] });
 
         logAnalytics({
             category: analyticsEnum.calendar.title,
@@ -136,7 +137,16 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
             <>
                 {this.props.customEvent !== undefined ? (
                     // Dumb ternary below added to get rid of TypeScript possibly undefined compile error
-                    <IconButton onClick={() => this.setState({open: true, scheduleIndices: AppStore.schedule.getIndexesOfCustomEvent(this.props.customEvent ? this.props.customEvent.customEventID : 0)})}>
+                    <IconButton
+                        onClick={() =>
+                            this.setState({
+                                open: true,
+                                scheduleIndices: AppStore.schedule.getIndexesOfCustomEvent(
+                                    this.props.customEvent ? this.props.customEvent.customEventID : 0
+                                ),
+                            })
+                        }
+                    >
                         <Edit fontSize="small" />
                     </IconButton>
                 ) : (
