@@ -59,8 +59,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
         toggleSearch();
     };
 
-    const current = new Date();
-    const month = current.getMonth();
+    const currentMonth = new Date().getMonth(); // 0=Jan
 
     return (
         <div className={classes.rightPane}>
@@ -98,7 +97,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                 </div>
             </form>
             
-            {(month === 8 || month === 9) && <HelpBox />}
+            {(currentMonth === 8 || currentMonth === 9) && <HelpBox />}
             <PrivacyPolicyBanner />
         </div>
     );
