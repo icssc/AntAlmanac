@@ -31,7 +31,6 @@
       ],
       "outputs": [
         "build/**",
-        "dist/**",
         "cdk.out/**"
       ]
     },

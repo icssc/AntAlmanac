@@ -27,18 +27,14 @@ jobs:
       PR_NUM: ${{ github.event.pull_request.number }}
       NODE_ENV: development
       HUSKY: 0
+      # env variables for Turbo
+      TURBO_API: ${{ vars.TURBO_API }}
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: "team_antalmanac"
 
     steps:
       - name: checkout antalmanac
         uses: actions/checkout@v3
-
-      - name: Cache turbo build setup
-        uses: actions/cache@v3
-        with:
-          path: .node_modules/.cache/turbo
-          key: ${{ runner.os }}-turbo-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-
 
       - name: install pnpm
         uses: pnpm/action-setup@v2
