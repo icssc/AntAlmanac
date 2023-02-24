@@ -1,91 +1,69 @@
 name: 'Stage Pull Request'
 
 on:
-    pull_request:
-      types: [opened, synchronize, unlabeled]
-    workflow_dispatch:
+  pull_request:
+    types: [ opened, synchronize, unlabeled ]
+  workflow_dispatch:
 
 permissions:
-    id-token: write
-    contents: read
-    deployments: write
-    pull-requests: write
+  id-token: write
+  contents: read
+  deployments: write
+  pull-requests: write
 
 concurrency:
-    group: ${{ github.head_ref }}
-    cancel-in-progress: true
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
 
 jobs:
-    deploy:
-        if: (!contains(github.event.pull_request.labels.*.name, 'no deploy'))
-        runs-on: ubuntu-latest
-        env:
-            STACK_NAME: antalmanac-staging-stack-${{ github.event.pull_request.number }}
-            # env variables for Node.js
-            HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
-            CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
-            PR_NUM: ${{ github.event.pull_request.number }}
-            NODE_ENV: development
+  deploy:
+    if: (!contains(github.event.pull_request.labels.*.name, 'no deploy'))
+    runs-on: ubuntu-latest
+    env:
+      STACK_NAME: antalmanac-staging-stack-${{ github.event.pull_request.number }}
+      # env variables for Node.js
+      HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
+      CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+      PR_NUM: ${{ github.event.pull_request.number }}
+      NODE_ENV: development
 
-        steps:
-            - uses: actions/setup-node@v2
-              with:
-                  node-version: '16'
+    steps:
+      - name: checkout antalmanac
+        uses: actions/checkout@v3
 
-            - name: checkout antalmanac
-              uses: actions/checkout@v3
+      - name: install pnpm
+        uses: pnpm/action-setup@v2
 
-            # pnpm setup
-            - uses: pnpm/action-setup@v2
-              name: Install pnpm
-              id: pnpm-install
-              with:
-                version: 7
-                run_install: false
+      - name: setup node with pnpm cache
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'pnpm'
 
-            - name: Get pnpm store directory
-              id: pnpm-cache
-              shell: bash
-              run: |
-                echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: install packages
+        run: pnpm install --frozen-lockfile
 
-            - uses: actions/cache@v3
-              name: Setup pnpm cache
-              with:
-                path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-                key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-                restore-keys: |
-                  ${{ runner.os }}-pnpm-store-
+      - name: configure AWS credentials
+        id: configure-aws-credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-            - name: Install dependencies
-              run: pnpm install
+      - name: wait for stack stabilize (if it is currently being deployed)
+        uses: ./.github/actions/stabilize_stack
+        with:
+          stack_name: ${{ env.STACK_NAME }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
 
+      - name: build and deploy staging
+        run: npx turbo deploy-staging --filter ./apps/staging-cdk
 
-            - name: Configure AWS credentials
-              uses: aws-actions/configure-aws-credentials@master
-              with:
-                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                aws-region: us-east-1
-                role-duration-seconds: 2400
-
-            - name: build staging
-              run: turbo deploy-staging --filter./apps/staging-cdk
-
-            - name: wait for stack stabilize
-              uses: ./.github/actions/stabilize_stack
-              with:
-                stack_name: ${{ env.STACK_NAME }}
-                aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
-
-            - name: deploy the stack to AWS
-              working-directory: ./.github/workflows/actions_stack
-              run: npx aws-cdk deploy ${{ env.STACK_NAME }} --require-approval never
-
-            - name: comment staging url
-              uses: marocchino/sticky-pull-request-comment@v2
-              with:
-                header: staging url
-                recreate: true
-                message: Deployed staging instance to https://staging-${{ github.event.pull_request.number }}.antalmanac.com
+      - name: comment staging url
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: staging url
+          recreate: true
+          message: Deployed staging instance to https://staging-${{ github.event.pull_request.number }}.antalmanac.com
