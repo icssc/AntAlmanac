@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "prepare": "husky install",
     "start": "turbo start --filter=antalmanac",
     "start:all": "turbo start",
     "build": "turbo build --filter=antalmanac",
@@ -15,6 +16,7 @@
     "apps/*"
   ],
   "devDependencies": {
-    "turbo": "latest"
+    "turbo": "latest",
+    "husky": "^8.0.3"
   }
 }

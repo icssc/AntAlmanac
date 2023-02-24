@@ -9,7 +9,6 @@
     },
     "repository": "github:icssc/antalmanac",
     "scripts": {
-        "prepare": "husky install",
         "start": "vite",
         "dev": "vite",
         "build": "vite build",
@@ -32,6 +31,7 @@
         "@mui/material": "^5.11.7",
         "@tanstack/react-query": "^4.24.4",
         "chart.js": "^4.2.1",
+        "classnames": "^2.3.2",
         "date-fns": "^2.29.3",
         "dayjs": "^1.11.7",
         "events": "^3.3.0",
@@ -42,6 +42,8 @@
         "leaflet-routing-machine": "^3.2.12",
         "leaflet.locatecontrol": "^0.79.0",
         "material-ui-popup-state": "^5.0.4",
+        "moment": "^2.29.4",
+        "moment-timezone": "^0.5.40",
         "notistack": "^2.0.8",
         "react": "^18.2.0",
         "react-big-calendar": "^1.6.4",
@@ -75,6 +77,7 @@
         "@typescript-eslint/parser": "^5.51.0",
         "@vitejs/plugin-react": "^3.1.0",
         "eslint": "^8.33.0",
+        "eslint-config-custom": "workspace:*",
         "eslint-config-prettier": "^8.6.0",
         "eslint-import-resolver-typescript": "^3.5.3",
         "eslint-plugin-import": "^2.27.5",
@@ -82,15 +85,13 @@
         "eslint-plugin-react": "^7.32.2",
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-simple-import-sort": "^10.0.0",
-        "husky": "^8.0.3",
         "lint-staged": "^13.1.1",
         "prettier": "^2.8.3",
+        "prettier-config": "workspace:*",
+        "tsconfig": "workspace:*",
         "typescript": "^4.9.5",
         "vite": "^4.1.1",
-        "vite-plugin-svgr": "^2.4.0",
-        "eslint-config-custom": "workspace:*",
-        "prettier-config": "workspace:*",
-        "tsconfig": "workspace:*"
+        "vite-plugin-svgr": "^2.4.0"
     },
     "browserslist": {
         "production": [
