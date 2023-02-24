@@ -109,21 +109,21 @@ export default function Home() {
         dragInterval={1}
         direction="horizontal"
         cursor="col-resize"
-        style={{ display: 'flex' }}
+        style={{ 
+          display: 'flex',
+          height: 'calc(100vh - 64px)',
+        }}
         gutterStyle={() => ({
           backgroundColor: theme.palette.primary.main,
           width: '10px'
         })}
       >
-        <Box sx={{ overflowY: 'auto' }} onDragOver={(e) => e.preventDefault()}>
+        <Box sx={{ overflowY: 'auto' }}>
           <Calendar />
         </Box>
 
         {/** the Box with Map MUST be flexed; since the Map uses flexGrow to size its height */}
-        <Box
-          sx={{ display: 'flex', flexDirection: 'column', overflowY: 'auto' }}
-          onDragOver={(e) => e.preventDefault()}
-        >
+        <Box sx={{ display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
           <Tabs value={tab} onChange={handleTabChange} variant="fullWidth" sx={{ height: 48 }}>
             <Tab label="Course Search" icon={<SearchIcon />} iconPosition="start" sx={{ minHeight: 0, height: 48 }} />
             <Tab
