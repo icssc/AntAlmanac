@@ -66,13 +66,15 @@ class AppStore extends EventEmitter {
     }
 
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
+        let addedCourse: ScheduleCourse;
         if (scheduleIndex === this.schedule.getNumberOfSchedules()) {
-            this.schedule.addCourseToAllSchedules(newCourse);
+            addedCourse = this.schedule.addCourseToAllSchedules(newCourse);
         } else {
-            this.schedule.addCourse(newCourse);
+            addedCourse = this.schedule.addCourse(newCourse);
         }
         this.unsavedChanges = true;
         this.emit('addedCoursesChange');
+        return addedCourse;
     }
 
     getEventsInCalendar() {
