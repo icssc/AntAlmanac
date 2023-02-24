@@ -64,7 +64,7 @@ export default class ActionsStack extends Stack {
         });
 
         new s3Deployment.BucketDeployment(this, 'deploySiteToBucket', {
-            sources: [s3Deployment.Source.asset('../../../build')],
+            sources: [s3Deployment.Source.asset('../../antalmanac/build')],
             destinationBucket: websiteBucket,
             distribution: distribution,
             distributionPaths: ['/*'],

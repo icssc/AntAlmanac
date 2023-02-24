@@ -7,7 +7,9 @@
     "test": "jest",
     "cdk": "cdk",
     "lint": "eslint . --ext .ts",
-    "format": "prettier --write lib"
+    "format": "prettier --write lib",
+    "build-staging": "npm run build",
+    "deploy-staging": "cdk deploy --require-approval never"
   },
   "devDependencies": {
     "@types/jest": "^26.0.10",

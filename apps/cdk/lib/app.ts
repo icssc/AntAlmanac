@@ -17,6 +17,11 @@ if (!process.env.CERTIFICATE_ARN || !process.env.HOSTED_ZONE_ID || !process.env.
     throw new Error('Missing environmental variables');
 }
 
+if (process.env.PR_NUM) {
+    const env: Environment = { region: 'us-east-1', account: account };
+    new BackendStack(app, `antalmanac-backend-staging-stack-${process.env.PR_NUM}`, { env, stage: 'dev', certificateArn: process.env.CERTIFICATE_ARN, hostedZoneId: process.env.HOSTED_ZONE_ID, mongoDbUriProd: process.env.MONGODB_URI_PROD });
+}
+
 for (const [stage, region] of Object.entries(stages)) {
     const env: Environment = { region: region, account: account };
 

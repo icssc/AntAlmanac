@@ -7,7 +7,7 @@ import * as process from "process";
 const app = new App({ autoSynth: true });
 
 if (!process.env.PR_NUM || !process.env.CERTIFICATE_ARN || !process.env.HOSTED_ZONE_ID || !process.env.ACCOUNT_ID){
-    throw new Error("Environemntal variables weren't provided and/or this file shouldn't have been run");
+    throw new Error("Environmental variables weren't provided and/or this file shouldn't have been run");
 }
 
 const account = process.env['ACCOUNT_ID'];

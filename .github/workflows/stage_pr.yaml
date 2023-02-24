@@ -19,7 +19,7 @@ jobs:
         if: (!contains(github.event.pull_request.labels.*.name, 'no deploy'))
         runs-on: ubuntu-latest
         env:
-            STACK_NAME: github-actions-stack-${{ github.event.pull_request.number }}
+            STACK_NAME: antalmanac-staging-stack-${{ github.event.pull_request.number }}
             # env variables for Node.js
             HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
             CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
@@ -34,35 +34,49 @@ jobs:
             - name: checkout antalmanac
               uses: actions/checkout@v3
 
-            - name: install node dependencies frontend
-              uses: bahmutov/npm-install@v1
-
-            - name: install node dependencies cdk
-              uses: bahmutov/npm-install@v1
+            # pnpm setup
+            - uses: pnpm/action-setup@v2
+              name: Install pnpm
+              id: pnpm-install
               with:
-                  working-directory: .github/workflows/actions_stack
+                version: 7
+                run_install: false
+
+            - name: Get pnpm store directory
+              id: pnpm-cache
+              shell: bash
+              run: |
+                echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+            - uses: actions/cache@v3
+              name: Setup pnpm cache
+              with:
+                path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+                key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+                restore-keys: |
+                  ${{ runner.os }}-pnpm-store-
+
+            - name: Install dependencies
+              run: pnpm install
+
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@master
               with:
-                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  aws-region: us-east-1
-                  role-duration-seconds: 2400
+                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region: us-east-1
+                role-duration-seconds: 2400
 
-            - name: build frontend
-              run: npm run build
-
-            - name: build CDK
-              working-directory: ./.github/workflows/actions_stack
-              run: npm run build
+            - name: build staging
+              run: turbo deploy-staging --filter./apps/staging-cdk
 
             - name: wait for stack stabilize
               uses: ./.github/actions/stabilize_stack
               with:
-                  stack_name: ${{ env.STACK_NAME }}
-                  aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
+                stack_name: ${{ env.STACK_NAME }}
+                aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
 
             - name: deploy the stack to AWS
               working-directory: ./.github/workflows/actions_stack
@@ -71,6 +85,6 @@ jobs:
             - name: comment staging url
               uses: marocchino/sticky-pull-request-comment@v2
               with:
-                  header: staging url
-                  recreate: true
-                  message: Deployed staging instance to https://staging-${{ github.event.pull_request.number }}.antalmanac.com
+                header: staging url
+                recreate: true
+                message: Deployed staging instance to https://staging-${{ github.event.pull_request.number }}.antalmanac.com

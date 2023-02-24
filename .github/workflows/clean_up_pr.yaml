@@ -20,7 +20,7 @@ jobs:
         if: (github.event.action == 'labeled' && github.event.label.name == 'no deploy') || github.event.action == 'closed'
         runs-on: ubuntu-latest
         env:
-            STACK_NAME: github-actions-stack-${{ github.event.pull_request.number }}
+            STACK_NAME: antalmanac-staging-stack-${{ github.event.pull_request.number }}
             # env variables for Node.js
             HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
             CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}

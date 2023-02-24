@@ -12,7 +12,20 @@
         "cdk.out/**"
       ]
     },
+    "deploy": {
+      "dependsOn": [
+        "build"
+      ]
+    },
     "lint": {},
-    "format": {"dependsOn": ["lint"]}
+    "format": {"dependsOn": ["lint"]},
+    "build-staging": {
+      "dependsOn": ["antalmanac#build"]
+    },
+    "deploy-staging": {
+      "dependsOn": [
+        "build-staging"
+      ]
+    }
   }
 }
