@@ -26,10 +26,19 @@ jobs:
       CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
       PR_NUM: ${{ github.event.pull_request.number }}
       NODE_ENV: development
+      HUSKY: 0
 
     steps:
       - name: checkout antalmanac
         uses: actions/checkout@v3
+
+      - name: Cache turbo build setup
+        uses: actions/cache@v3
+        with:
+          path: .node_modules/.cache/turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
 
       - name: install pnpm
         uses: pnpm/action-setup@v2
@@ -59,7 +68,7 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
 
       - name: build and deploy staging
-        run: npx turbo deploy-staging --filter ./apps/staging-cdk
+        run: npx turbo deploy-staging --filter ./apps/staging-cdk -vvv
 
       - name: comment staging url
         uses: marocchino/sticky-pull-request-comment@v2
