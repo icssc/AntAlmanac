@@ -2,7 +2,8 @@ name: 'Stage Pull Request'
 
 on:
     pull_request:
-        types: [opened, synchronize, unlabeled]
+      types: [opened, synchronize, unlabeled]
+    workflow_dispatch:
 
 permissions:
     id-token: write
