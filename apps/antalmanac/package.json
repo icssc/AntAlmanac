@@ -77,7 +77,6 @@
         "@typescript-eslint/parser": "^5.51.0",
         "@vitejs/plugin-react": "^3.1.0",
         "eslint": "^8.33.0",
-        "eslint-config-custom": "workspace:*",
         "eslint-config-prettier": "^8.6.0",
         "eslint-import-resolver-typescript": "^3.5.3",
         "eslint-plugin-import": "^2.27.5",
@@ -87,8 +86,6 @@
         "eslint-plugin-simple-import-sort": "^10.0.0",
         "lint-staged": "^13.1.1",
         "prettier": "^2.8.3",
-        "prettier-config": "workspace:*",
-        "tsconfig": "workspace:*",
         "typescript": "^4.9.5",
         "vite": "^4.1.1",
         "vite-plugin-svgr": "^2.4.0"

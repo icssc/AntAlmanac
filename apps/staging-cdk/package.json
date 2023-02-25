@@ -11,8 +11,7 @@
         "@types/node": "10.17.27",
         "aws-cdk": "2.20.0",
         "ts-node": "^9.0.0",
-        "typescript": "~3.9.7",
-        "tsconfig": "workspace:*"
+        "typescript": "~3.9.7"
     },
     "dependencies": {
         "aws-cdk-lib": "2.20.0",

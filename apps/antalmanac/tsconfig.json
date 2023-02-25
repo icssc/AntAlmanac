@@ -1,8 +1,20 @@
 {
-    "extends": "tsconfig/base.json",
-    "include": ["src"],
     "compilerOptions": {
-        "baseUrl": ".",
+        "target": "es2015",
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "allowJs": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "react-jsx",
+        "baseUrl": "../..",
         "paths": {
             "$actions/*": ["src/actions/*"],
             "$api/*": ["src/api/*"],
@@ -10,7 +22,7 @@
             "$lib/*": ["src/lib/*"],
             "$providers/*": ["src/providers/*"],
             "$routes/*": ["src/routes/*"],
-            "$stores/*": ["src/stores/*"],
+            "$stores/*": ["src/stores/*"]
         }
-    }
+    },
 }
