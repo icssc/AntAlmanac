@@ -1,10 +1,10 @@
-import { Button, Grid, Menu, MenuItem, Typography } from '@material-ui/core';
+import { Button, Grid, Menu, MenuItem, Paper, TextField, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 import { PureComponent } from 'react';
 
-import { clearSchedules, copySchedule } from '$actions/AppStoreActions';
+import { clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { AACourse } from '$lib/peterportal.types';
 import AppStore from '$stores/AppStore';
@@ -12,7 +12,6 @@ import AppStore from '$stores/AppStore';
 import { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
-import ScheduleNote from './ScheduleNote';
 
 const styles = {
     container: {
@@ -31,6 +30,12 @@ const styles = {
         marginLeft: '4px',
         marginRight: '4px',
     },
+    scheduleNoteContainer: {
+        padding: '10px',
+        marginLeft: '8px',
+        marginRight: '8px',
+        width: '100%',
+    },
 };
 
 interface CourseWithTerm extends AACourse {
@@ -46,7 +51,7 @@ interface AddedCoursePaneState {
     customEvents: RepeatingCustomEvent[];
     totalUnits: number;
     scheduleNames: string[];
-    scheduleNotes: string[];
+    scheduleNote: string;
 }
 
 class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePaneState> {
@@ -55,7 +60,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         customEvents: [],
         totalUnits: 0,
         scheduleNames: AppStore.getScheduleNames(),
-        scheduleNotes: AppStore.getScheduleNotes(),
+        scheduleNote: AppStore.getCurrentScheduleNote(),
     };
 
     componentDidMount = () => {
@@ -66,7 +71,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         AppStore.on('currentScheduleIndexChange', this.loadCourses);
         AppStore.on('currentScheduleIndexChange', this.loadCustomEvents);
         AppStore.on('scheduleNamesChange', this.loadScheduleNames);
-        AppStore.on('scheduleNotesChange', this.loadScheduleNotes);
+        AppStore.on('scheduleNotesChange', this.loadScheduleNote);
         logAnalytics({
             category: analyticsEnum.addedClasses.title,
             action: analyticsEnum.addedClasses.actions.OPEN,
@@ -79,7 +84,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         AppStore.removeListener('currentScheduleIndexChange', this.loadCourses);
         AppStore.removeListener('currentScheduleIndexChange', this.loadCustomEvents);
         AppStore.removeListener('scheduleNamesChange', this.loadScheduleNames);
-        AppStore.removeListener('scheduleNotesChange', this.loadScheduleNotes);
+        AppStore.removeListener('scheduleNotesChange', this.loadScheduleNote);
     }
 
     loadCourses = () => {
@@ -134,13 +139,19 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         this.setState({ scheduleNames: AppStore.getScheduleNames() });
     };
 
-    loadScheduleNotes = () => {
-        this.setState({ scheduleNotes: AppStore.getScheduleNotes() });
+    loadScheduleNote = () => {
+        this.setState({ scheduleNote: AppStore.getCurrentScheduleNote() });
+    };
+
+    handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        this.setState({ scheduleNote: event.target.value });
+        updateScheduleNote(event.target.value, AppStore.getCurrentScheduleIndex());
     };
 
     getGrid = () => {
         const scheduleName = this.state.scheduleNames[AppStore.getCurrentScheduleIndex()];
         const scheduleUnits = this.state.totalUnits;
+        const NOTE_MAX_LEN = 5000;
 
         return (
             <>
@@ -231,10 +242,18 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                     );
                 })}
                 <Typography variant="h6">{`${scheduleName} Notes`}</Typography>
-                <ScheduleNote
-                    note={this.state.scheduleNotes[AppStore.getCurrentScheduleIndex()]}
-                    scheduleIndex={AppStore.getCurrentScheduleIndex()}
-                />
+                <Paper className={this.props.classes.scheduleNoteContainer}>
+                    <TextField
+                        type="text"
+                        placeholder="This schedule does not have any notes! Click here to start typing!"
+                        onChange={this.handleNoteChange}
+                        value={this.state.scheduleNote}
+                        inputProps={{ maxLength: NOTE_MAX_LEN }}
+                        InputProps={{ disableUnderline: true }}
+                        fullWidth
+                        multiline
+                    />
+                </Paper>
             </>
         );
     };

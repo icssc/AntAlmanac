@@ -107,7 +107,6 @@ interface ScheduleCalendarState {
     finalsEventsInCalendar: CalendarEvent[];
     currentScheduleIndex: number;
     scheduleNames: string[];
-    scheduleNotes: string[];
 }
 class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCalendarState> {
     state: ScheduleCalendarState = {
@@ -121,7 +120,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
         currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
         scheduleNames: AppStore.getScheduleNames(),
-        scheduleNotes: AppStore.getScheduleNotes(),
     };
 
     static eventStyleGetter = (event: CalendarEvent) => {
@@ -180,19 +178,12 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         });
     };
 
-    updateScheduleNotes = () => {
-        this.setState({
-            scheduleNotes: AppStore.getScheduleNotes(),
-        });
-    };
-
     componentDidMount = () => {
         AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.on('customEventsChange', this.updateEventsInCalendar);
         AppStore.on('colorChange', this.updateEventsInCalendar);
         AppStore.on('currentScheduleIndexChange', this.updateEventsInCalendar);
         AppStore.on('scheduleNamesChange', this.updateScheduleNames);
-        AppStore.on('scheduleNotesChange', this.updateScheduleNotes);
     };
 
     componentWillUnmount = () => {
@@ -201,7 +192,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         AppStore.removeListener('colorChange', this.updateEventsInCalendar);
         AppStore.removeListener('currentScheduleIndexChange', this.updateEventsInCalendar);
         AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
-        AppStore.removeListener('scheduleNotesChange', this.updateScheduleNotes);
     };
 
     handleTakeScreenshot = (html2CanvasScreenshot: () => void) => {
@@ -261,7 +251,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                     toggleDisplayFinalsSchedule={this.toggleDisplayFinalsSchedule}
                     showFinalsSchedule={this.state.showFinalsSchedule}
                     scheduleNames={this.state.scheduleNames}
-                    scheduleNotes={this.state.scheduleNotes}
                 />
                 <div
                     id="screenshot"

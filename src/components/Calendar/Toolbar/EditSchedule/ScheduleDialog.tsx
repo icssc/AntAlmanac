@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 
 import { addSchedule, editSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
+import AppStore from '$stores/AppStore';
 
 const styles = () => ({
     addButton: {
@@ -22,21 +23,18 @@ interface ScheduleDialogProps {
     onClose: () => void;
     scheduleNames: string[];
     scheduleEditIndex?: number;
-    scheduleNotes: string[];
 }
 
 const ScheduleDialog = (props: ScheduleDialogProps) => {
-    const { classes, onOpen, onClose, scheduleNames, scheduleEditIndex, scheduleNotes } = props;
+    const { classes, onOpen, onClose, scheduleNames, scheduleEditIndex } = props;
     const edit = scheduleEditIndex !== undefined;
 
     const [isOpen, setIsOpen] = useState(false);
     const [scheduleName, setScheduleName] = useState(
-        scheduleEditIndex !== undefined ? scheduleNames[scheduleEditIndex] : `Schedule ${scheduleNames.length + 1}`
+        edit ? scheduleNames[scheduleEditIndex] : `Schedule ${scheduleNames.length + 1}`
     );
     const [clickedText, setClickedText] = useState(false);
-    const [scheduleNote, setScheduleNote] = useState(
-        scheduleEditIndex !== undefined ? scheduleNotes[scheduleEditIndex] : ''
-    );
+    const [scheduleNote, setScheduleNote] = useState(edit ? AppStore.getCurrentScheduleNote() : '');
 
     const handleOpen: React.MouseEventHandler<HTMLLIElement> = (event) => {
         // We need to stop propagation so that the select menu won't close
@@ -52,7 +50,7 @@ const ScheduleDialog = (props: ScheduleDialogProps) => {
         // If the user cancelled renaming the schedule, the schedule name and note are changed to their original value;
         // if the user cancelled adding a new schedule, the schedule name and note are changed to their default value
         setScheduleName(edit ? scheduleNames[scheduleEditIndex] : `Schedule ${scheduleNames.length + 1}`);
-        setScheduleNote(edit ? scheduleNotes[scheduleEditIndex] : '');
+        setScheduleNote(edit ? AppStore.getCurrentScheduleNote() : '');
         setClickedText(false);
     };
 

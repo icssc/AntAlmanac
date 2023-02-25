@@ -512,8 +512,8 @@ export class Schedules {
         }
     }
 
-    getScheduleNotes() {
-        return this.schedules.map((schedule) => schedule.scheduleNote);
+    getCurrentScheduleNote() {
+        return this.schedules[this.currentScheduleIndex].scheduleNote;
     }
 
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {

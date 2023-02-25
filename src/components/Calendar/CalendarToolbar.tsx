@@ -54,7 +54,6 @@ interface CalendarPaneToolbarProps {
     showFinalsSchedule: boolean;
     toggleDisplayFinalsSchedule: () => void;
     onTakeScreenshot: (html2CanvasScreenshot: () => void) => void; // the function in an ancestor component that wraps ScreenshotButton.handleClick to perform canvas transformations before and after downloading the screenshot.
-    scheduleNotes: string[];
 }
 
 const CalendarPaneToolbar = ({
@@ -64,7 +63,6 @@ const CalendarPaneToolbar = ({
     showFinalsSchedule,
     toggleDisplayFinalsSchedule,
     onTakeScreenshot,
-    scheduleNotes,
 }: CalendarPaneToolbarProps) => {
     const handleScheduleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
         logAnalytics({
@@ -93,11 +91,7 @@ const CalendarPaneToolbar = ({
 
     return (
         <Paper elevation={0} variant="outlined" square className={classes.toolbar}>
-            <EditSchedule
-                scheduleNames={scheduleNames}
-                scheduleIndex={currentScheduleIndex}
-                scheduleNotes={scheduleNotes}
-            />
+            <EditSchedule scheduleNames={scheduleNames} scheduleIndex={currentScheduleIndex} />
 
             <Select
                 classes={{ root: classes.rootScheduleSelector }}
@@ -116,7 +110,6 @@ const CalendarPaneToolbar = ({
                     onOpen={() => setOpenSchedules(true)}
                     onClose={() => setOpenSchedules(false)}
                     scheduleNames={scheduleNames}
-                    scheduleNotes={scheduleNotes}
                 />
             </Select>
 

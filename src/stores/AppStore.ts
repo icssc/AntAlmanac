@@ -113,8 +113,8 @@ class AppStore extends EventEmitter {
         return this.schedule.getAddedSectionCodes();
     }
 
-    getScheduleNotes() {
-        return this.schedule.getScheduleNotes();
+    getCurrentScheduleNote() {
+        return this.schedule.getCurrentScheduleNote();
     }
 
     hasUnsavedChanges() {
@@ -225,6 +225,7 @@ class AppStore extends EventEmitter {
     changeCurrentSchedule(newScheduleIndex: number) {
         this.schedule.setCurrentScheduleIndex(newScheduleIndex);
         this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
     }
 
     clearSchedule() {
