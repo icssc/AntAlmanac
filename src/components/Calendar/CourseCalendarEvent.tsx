@@ -2,18 +2,16 @@ import { IconButton, Paper, Tooltip } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
-import React from 'react';
 import { Event } from 'react-big-calendar';
 
-import { deleteCourse, deleteCustomEvent } from '../../actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '../../analytics';
-import { clickToCopy } from '../../helpers';
-import AppStore from '../../stores/AppStore';
-import ColorPicker from '../ColorPicker';
-import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
+import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
+import ColorPicker from '$components/ColorPicker';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { clickToCopy } from '$lib/helpers';
+import AppStore from '$stores/AppStore';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const locations = require('../RightPane/SectionTable/static/locations.json') as Record<string, string>;
+import locations from '../RightPane/SectionTable/static/locations.json';
+import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 
 const styles: Styles<Theme, object> = {
     courseContainer: {
@@ -70,8 +68,8 @@ const styles: Styles<Theme, object> = {
 
 const genMapLink = (location: string) => {
     try {
-        const location_id = locations[location.split(' ')[0]];
-        return 'https://map.uci.edu/?id=463#!m/' + location_id;
+        const location_id = locations[location.split(' ')[0] as keyof typeof locations];
+        return `https://map.uci.edu/?id=463#!m/${location_id}`;
     } catch (err) {
         return 'https://map.uci.edu/';
     }
@@ -81,7 +79,6 @@ interface CommonCalendarEvent extends Event {
     color: string;
     start: Date;
     end: Date;
-    scheduleIndices: number[];
     title: string;
 }
 
@@ -109,13 +106,12 @@ export type CalendarEvent = CourseEvent | CustomEvent;
 interface CourseCalendarEventProps {
     classes: ClassNameMap;
     courseInMoreInfo: CalendarEvent;
-    currentScheduleIndex: number;
     scheduleNames: string[];
     closePopover: () => void;
 }
 
 const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
-    const { classes, courseInMoreInfo, currentScheduleIndex } = props;
+    const { classes, courseInMoreInfo } = props;
     if (!courseInMoreInfo.isCustomEvent) {
         const { term, instructors, sectionCode, title, finalExam, bldg } = courseInMoreInfo;
 
@@ -127,7 +123,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         <IconButton
                             size="small"
                             onClick={() => {
-                                deleteCourse(sectionCode, currentScheduleIndex, term);
+                                deleteCourse(sectionCode, term);
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_COURSE,
@@ -214,18 +210,15 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                     </div>
                     <CustomEventDialog
                         onDialogClose={props.closePopover}
-                        customEvent={AppStore.getCustomEvents().find(
-                            (customEvent) => customEvent.customEventID === customEventID
-                        )}
+                        customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
                         scheduleNames={props.scheduleNames}
-                        currentScheduleIndex={currentScheduleIndex}
                     />
 
                     <Tooltip title="Delete">
                         <IconButton
                             onClick={() => {
                                 props.closePopover();
-                                deleteCustomEvent(customEventID, currentScheduleIndex);
+                                deleteCustomEvent(customEventID);
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,

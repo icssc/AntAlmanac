@@ -1,5 +1,5 @@
-import { Paper,Tab, Tabs } from '@material-ui/core';
-import React, { useState } from 'react';
+import { Paper, Tab, Tabs } from '@material-ui/core';
+import { useState } from 'react';
 
 import Calendar from './Calendar/CalendarRoot';
 import DesktopTabs from './RightPane/RightPaneRoot';
@@ -8,8 +8,9 @@ const MobileHome = () => {
     const [selectedTab, setSelectedTab] = useState(0);
 
     const components = [
-    <Calendar isMobile={true} key="calendar"/>, 
-    <DesktopTabs style={{ height: 'calc(100% - 50px' }} key="desktop"/>];
+        <Calendar isMobile={true} key="calendar" />,
+        <DesktopTabs style={{ height: 'calc(100% - 50px' }} key="desktop" />,
+    ];
 
     return (
         <div style={{ height: 'calc(100% - 60px)' }}>
