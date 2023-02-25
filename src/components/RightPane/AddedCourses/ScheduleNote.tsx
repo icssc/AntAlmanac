@@ -2,7 +2,7 @@ import { Paper, TextField, withStyles } from '@material-ui/core';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import React, { useEffect, useState } from 'react';
 
-import { editScheduleNote } from '../../../actions/AppStoreActions';
+import { updateScheduleNote } from '../../../actions/AppStoreActions';
 
 const styles = {
     container: {
@@ -10,7 +10,7 @@ const styles = {
         marginLeft: '8px',
         marginRight: '8px',
         width: '100%',
-    }
+    },
 };
 
 interface ScheduleNoteProps {
@@ -25,7 +25,7 @@ const ScheduleNote = ({ classes, note, scheduleIndex }: ScheduleNoteProps) => {
 
     const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setScheduleNote(event.target.value);
-        editScheduleNote(event.target.value, scheduleIndex);
+        updateScheduleNote(event.target.value, scheduleIndex);
     };
 
     // If the user changes the note in another place (like the Edit Schedule modal),

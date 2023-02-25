@@ -113,6 +113,10 @@ class AppStore extends EventEmitter {
         return this.schedule.getAddedSectionCodes();
     }
 
+    getScheduleNotes() {
+        return this.schedule.getScheduleNotes();
+    }
+
     hasUnsavedChanges() {
         return this.unsavedChanges;
     }
@@ -176,18 +180,20 @@ class AppStore extends EventEmitter {
         this.emit('colorChange', false);
     }
 
-    addSchedule(newScheduleName: string) {
+    addSchedule(newScheduleName: string, newScheduleNote: string) {
         // If the user adds a schedule, update the array of schedule names, add
         // another key/value pair to keep track of the section codes for that schedule,
         // and redirect the user to the new schedule
-        this.schedule.addNewSchedule(newScheduleName);
+        this.schedule.addNewSchedule(newScheduleName, newScheduleNote);
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
     }
 
-    renameSchedule(scheduleName: string, scheduleIndex: number) {
-        this.schedule.renameSchedule(scheduleName, scheduleIndex);
+    renameSchedule(scheduleName: string, scheduleIndex: number, scheduleNote: string) {
+        this.schedule.renameSchedule(scheduleName, scheduleIndex, scheduleNote);
         this.emit('scheduleNamesChange');
+        this.emit('scheduleNotesChange');
     }
 
     saveSchedule() {
@@ -233,6 +239,7 @@ class AppStore extends EventEmitter {
         this.emit('currentScheduleIndexChange');
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
+        this.emit('scheduleNotesChange');
     }
 
     changeCourseColor(sectionCode: string, term: string, newColor: string) {
@@ -261,6 +268,11 @@ class AppStore extends EventEmitter {
         this.theme = theme;
         this.emit('themeToggle');
         window.localStorage.setItem('theme', theme);
+    }
+
+    updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
+        this.schedule.updateScheduleNote(newScheduleNote, scheduleIndex);
+        this.emit('scheduleNotesChange');
     }
 }
 

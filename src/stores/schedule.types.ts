@@ -18,6 +18,7 @@ export interface Schedule {
     scheduleName: string;
     courses: ScheduleCourse[];
     customEvents: RepeatingCustomEvent[];
+    scheduleNote: string;
 }
 
 interface ShortCourse {
@@ -32,6 +33,7 @@ export interface ShortCourseSchedule {
     scheduleName: string;
     courses: ShortCourse[];
     customEvents: RepeatingCustomEvent[];
+    scheduleNote: string;
 }
 
 export interface ScheduleSaveState {
