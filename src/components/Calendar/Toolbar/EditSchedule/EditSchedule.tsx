@@ -1,11 +1,11 @@
-import { Button, Menu,Tooltip } from '@material-ui/core';
+import { Button, Menu, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Edit } from '@material-ui/icons';
 import React, { useState } from 'react';
 
 import DeleteScheduleDialog from './DeleteScheduleDialog';
-import ScheduleDialog from './ScheduleDialog';
+import ScheduleNameDialog from './ScheduleNameDialog';
 
 const styles = () => ({
     editButton: {
@@ -19,11 +19,10 @@ interface EditScheduleProps {
     classes: ClassNameMap;
     scheduleNames: string[];
     scheduleIndex: number;
-    scheduleNotes: string[];
 }
 
 const EditSchedule = (props: EditScheduleProps) => {
-    const { classes, scheduleNames, scheduleIndex, scheduleNotes } = props;
+    const { classes, scheduleNames, scheduleIndex } = props;
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
@@ -54,17 +53,12 @@ const EditSchedule = (props: EditScheduleProps) => {
                     horizontal: 'left',
                 }}
             >
-                <ScheduleDialog
+                <ScheduleNameDialog
                     scheduleNames={scheduleNames}
                     scheduleRenameIndex={scheduleIndex}
                     onClose={handleClose}
-                    scheduleNotes={scheduleNotes}
                 />
-                <DeleteScheduleDialog
-                    scheduleNames={scheduleNames}
-                    scheduleIndex={scheduleIndex}
-                    onClose={handleClose}
-                />
+                <DeleteScheduleDialog onClose={handleClose} />
             </Menu>
         </>
     );

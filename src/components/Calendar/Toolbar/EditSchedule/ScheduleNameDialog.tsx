@@ -1,11 +1,11 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem,TextField } from '@material-ui/core';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Add } from '@material-ui/icons';
 import React, { useState } from 'react';
 
-import { addSchedule, renameSchedule } from '../../../../actions/AppStoreActions';
-import { isDarkMode } from '../../../../helpers';
+import { addSchedule, renameSchedule } from '$actions/AppStoreActions';
+import { isDarkMode } from '$lib/helpers';
 
 const styles = () => ({
     addButton: {
@@ -16,26 +16,23 @@ const styles = () => ({
     },
 });
 
-interface ScheduleDialogProps {
+interface ScheduleNameDialogProps {
     classes: ClassNameMap;
     onOpen?: () => void;
     onClose: () => void;
     scheduleNames: string[];
     scheduleRenameIndex?: number;
-    scheduleNotes: string[];
 }
 
-const ScheduleDialog = (props: ScheduleDialogProps) => {
-    const { classes, onOpen, onClose, scheduleNames, scheduleRenameIndex, scheduleNotes } = props;
+const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
+    const { classes, onOpen, onClose, scheduleNames, scheduleRenameIndex } = props;
     const rename = scheduleRenameIndex !== undefined;
-    const NOTE_MAX_LEN = 5000;
 
     const [isOpen, setIsOpen] = useState(false);
     const [scheduleName, setScheduleName] = useState(
         scheduleRenameIndex !== undefined ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`
     );
     const [clickedText, setClickedText] = useState(false);
-    const [scheduleNote, setScheduleNote] = useState(scheduleRenameIndex !== undefined ? scheduleNotes[scheduleRenameIndex] : '');
 
     const handleOpen: React.MouseEventHandler<HTMLLIElement> = (event) => {
         // We need to stop propagation so that the select menu won't close
@@ -48,10 +45,9 @@ const ScheduleDialog = (props: ScheduleDialogProps) => {
 
     const handleClose = () => {
         setIsOpen(false);
-        // If the user cancelled renaming the schedule, the schedule name and note are changed to their original values;
-        // if the user cancelled adding a new schedule, the schedule name and note are changed to their default values
+        // If the user cancelled renaming the schedule, the schedule name is changed to its original value;
+        // if the user cancelled adding a new schedule, the schedule name is changed to the default schedule name
         setScheduleName(rename ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`);
-        setScheduleNote(rename ? scheduleNotes[scheduleRenameIndex] : '');
         setClickedText(false);
     };
 
@@ -61,22 +57,16 @@ const ScheduleDialog = (props: ScheduleDialogProps) => {
 
     const handleAdd = () => {
         onClose();
-        addSchedule(scheduleName, scheduleNote);
+        addSchedule(scheduleName);
         setIsOpen(false);
         setScheduleName('');
-        setScheduleNote('');
     };
 
     const handleRename = () => {
         onClose();
-        renameSchedule(scheduleName, scheduleNote, scheduleRenameIndex as number); // typecast works b/c this function only runs when `const rename = scheduleRenameIndex !== undefined` is true.
+        renameSchedule(scheduleName, scheduleRenameIndex as number); // typecast works b/c this function only runs when `const rename = scheduleRenameIndex !== undefined` is true.
         setIsOpen(false);
         setScheduleName('');
-        setScheduleNote('');
-    };
-
-    const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setScheduleNote(event.target.value);
     };
 
     const handleTextClick = () => {
@@ -95,7 +85,7 @@ const ScheduleDialog = (props: ScheduleDialogProps) => {
     return (
         <>
             {rename ? (
-                <MenuItem onClick={handleOpen}>Edit Schedule</MenuItem>
+                <MenuItem onClick={handleOpen}>Rename Schedule</MenuItem>
             ) : (
                 <MenuItem onClick={handleOpen}>
                     <Add className={classes.addButton} />
@@ -108,7 +98,7 @@ const ScheduleDialog = (props: ScheduleDialogProps) => {
                 onClick={(event) => event.stopPropagation()}
                 fullWidth
             >
-                <DialogTitle>{rename ? 'Edit Schedule' : 'Add a New Schedule'}</DialogTitle>
+                <DialogTitle>{rename ? 'Rename Schedule' : 'Add a New Schedule'}</DialogTitle>
                 <DialogContent>
                     <TextField
                         className={classes.textField}
@@ -118,19 +108,6 @@ const ScheduleDialog = (props: ScheduleDialogProps) => {
                         value={scheduleName}
                         onClick={handleTextClick}
                         fullWidth
-                    />
-                </DialogContent>
-                <DialogContent>
-                    <TextField
-                        label="Notes"
-                        margin="dense"
-                        type="text"
-                        placeholder="This schedule is for..."
-                        onChange={handleNoteChange}
-                        value={scheduleNote}
-                        inputProps={{ maxLength: NOTE_MAX_LEN }}
-                        fullWidth
-                        multiline
                     />
                 </DialogContent>
                 <DialogActions>
@@ -143,7 +120,7 @@ const ScheduleDialog = (props: ScheduleDialogProps) => {
                         color="primary"
                         disabled={scheduleName.trim() === ''}
                     >
-                        {rename ? 'Edit Schedule' : 'Add Schedule'}
+                        {rename ? 'Rename Schedule' : 'Add Schedule'}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -151,4 +128,4 @@ const ScheduleDialog = (props: ScheduleDialogProps) => {
     );
 };
 
-export default withStyles(styles)(ScheduleDialog);
+export default withStyles(styles)(ScheduleNameDialog);

@@ -3,13 +3,13 @@ import './calendar.css';
 
 import { Popper } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
-import { ClassNameMap,Styles  } from '@material-ui/core/styles/withStyles';
+import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import moment from 'moment';
-import React, { PureComponent, SyntheticEvent } from 'react';
+import { PureComponent, SyntheticEvent } from 'react';
 import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
-import ReactDOM from 'react-dom';
 
-import AppStore from '../../stores/AppStore';
+import AppStore from '$stores/AppStore';
+
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
 
@@ -67,7 +67,7 @@ const styles: Styles<Theme, object> = {
 };
 
 const AntAlmanacEvent =
-    (classes: ClassNameMap) =>
+    ({ classes }: { classes: ClassNameMap }) =>
     // eslint-disable-next-line react/display-name
     ({ event }: { event: CalendarEvent }) => {
         if (!event.isCustomEvent)
@@ -107,7 +107,6 @@ interface ScheduleCalendarState {
     finalsEventsInCalendar: CalendarEvent[];
     currentScheduleIndex: number;
     scheduleNames: string[];
-    scheduleNotes: string[];
 }
 class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCalendarState> {
     state: ScheduleCalendarState = {
@@ -121,7 +120,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
         currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
         scheduleNames: AppStore.getScheduleNames(),
-        scheduleNotes: AppStore.getScheduleNotes(),
     };
 
     static eventStyleGetter = (event: CalendarEvent) => {
@@ -165,16 +163,9 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         });
     };
 
-    updateCurrentScheduleIndex = () => {
-        this.handleClosePopover();
-
-        this.setState({
-            currentScheduleIndex: AppStore.currentScheduleIndex,
-        });
-    };
-
     updateEventsInCalendar = (close = true) => {
         this.setState({
+            currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
             eventsInCalendar: AppStore.getEventsInCalendar(),
             finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
         });
@@ -187,59 +178,28 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         });
     };
 
-    updateScheduleNotes = () => {
-        this.setState({
-            scheduleNotes: AppStore.getScheduleNotes(),
-        });
-    }
-
     componentDidMount = () => {
         AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.on('customEventsChange', this.updateEventsInCalendar);
         AppStore.on('colorChange', this.updateEventsInCalendar);
-        AppStore.on('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
+        AppStore.on('currentScheduleIndexChange', this.updateEventsInCalendar);
         AppStore.on('scheduleNamesChange', this.updateScheduleNames);
-        AppStore.on('scheduleNotesChange', this.updateScheduleNotes);
     };
 
     componentWillUnmount = () => {
         AppStore.removeListener('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.removeListener('customEventsChange', this.updateEventsInCalendar);
         AppStore.removeListener('colorChange', this.updateEventsInCalendar);
-        AppStore.removeListener('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
+        AppStore.removeListener('currentScheduleIndexChange', this.updateEventsInCalendar);
         AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
-        AppStore.removeListener('scheduleNotesChange', this.updateScheduleNotes);
     };
 
     handleTakeScreenshot = (html2CanvasScreenshot: () => void) => {
         // This function takes a screenshot of the user's schedule
-        // Before we take the screenshot, we need to make some adjustments to the canvas:
-        //  - Set the color to black, so that the weekdays/times still appear when Dark Mode is on
-        //  - Remove the right margin on the calendar header, so the extra area for the scrollbar is removed
-
-        // Fetch the canvas and calendarHeader
-        const canvas = document.getElementById('screenshot') as HTMLElement;
-
-        // this disable only works because this isn't a functional component. It's kinda a hack
-        // eslint-disable-next-line react/no-find-dom-node
-        const headerNode = ReactDOM.findDOMNode(this) as Element;
-        const calendarHeader = headerNode.getElementsByClassName('rbc-time-header')[0] as HTMLElement;
-
-        // Save the current styling, so we can add it back afterwards
-        const oldColor = canvas.style.color;
-        const oldMargin = calendarHeader.style.marginRight;
-
-        // Update the canvas and calendar header for the picture
-        canvas.style.color = 'black';
-        calendarHeader.style.marginRight = '0px';
 
         this.setState({ screenshotting: true }, () => {
             // Take the picture
             html2CanvasScreenshot();
-
-            // Revert the temporary changes to the canvas and calendar
-            canvas.style.color = oldColor;
-            calendarHeader.style.marginRight = oldMargin;
 
             this.setState({ screenshotting: false });
         });
@@ -263,11 +223,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
     };
 
     getEventsForCalendar = () => {
-        const eventSet = this.state.showFinalsSchedule
-            ? this.state.finalsEventsInCalendar
-            : this.state.eventsInCalendar;
-
-        return eventSet.filter((event) => event.scheduleIndices.includes(this.state.currentScheduleIndex));
+        return this.state.showFinalsSchedule ? this.state.finalsEventsInCalendar : this.state.eventsInCalendar;
     };
 
     render() {
@@ -295,7 +251,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                     toggleDisplayFinalsSchedule={this.toggleDisplayFinalsSchedule}
                     showFinalsSchedule={this.state.showFinalsSchedule}
                     scheduleNames={this.state.scheduleNames}
-                    scheduleNotes={this.state.scheduleNotes}
                 />
                 <div
                     id="screenshot"
@@ -330,7 +285,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                             key={this.state.calendarEventKey}
                             closePopover={this.handleClosePopover}
                             courseInMoreInfo={this.state.courseInMoreInfo as CalendarEvent}
-                            currentScheduleIndex={this.state.currentScheduleIndex}
                             scheduleNames={this.state.scheduleNames}
                         />
                     </Popper>
@@ -353,7 +307,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                         events={events}
                         eventPropGetter={ScheduleCalendar.eventStyleGetter}
                         showMultiDayTimes={false}
-                        components={{ event: AntAlmanacEvent(classes) }}
+                        components={{ event: AntAlmanacEvent({ classes }) }}
                         onSelectEvent={this.handleEventClick}
                     />
                 </div>

@@ -1,17 +1,17 @@
-import { Button, Grid, Menu, MenuItem,Typography } from '@material-ui/core';
+import { Button, Grid, Menu, MenuItem, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
-import React, { PureComponent } from 'react';
+import { PureComponent } from 'react';
 
-import { clearSchedules, copySchedule } from '../../../actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '../../../analytics';
-import { AACourse } from '../../../peterportal.types';
-import AppStore from '../../../stores/AppStore';
+import { clearSchedules, copySchedule } from '$actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { AACourse } from '$lib/peterportal.types';
+import AppStore from '$stores/AppStore';
+
 import { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
-import ScheduleNote from './ScheduleNote';
 
 const styles = {
     container: {
@@ -45,7 +45,6 @@ interface AddedCoursePaneState {
     customEvents: RepeatingCustomEvent[];
     totalUnits: number;
     scheduleNames: string[];
-    scheduleNotes: string[];
 }
 
 class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePaneState> {
@@ -54,7 +53,6 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         customEvents: [],
         totalUnits: 0,
         scheduleNames: AppStore.getScheduleNames(),
-        scheduleNotes: AppStore.getScheduleNotes(),
     };
 
     componentDidMount = () => {
@@ -65,7 +63,6 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         AppStore.on('currentScheduleIndexChange', this.loadCourses);
         AppStore.on('currentScheduleIndexChange', this.loadCustomEvents);
         AppStore.on('scheduleNamesChange', this.loadScheduleNames);
-        AppStore.on('scheduleNotesChange', this.loadScheduleNotes);
         logAnalytics({
             category: analyticsEnum.addedClasses.title,
             action: analyticsEnum.addedClasses.actions.OPEN,
@@ -78,46 +75,40 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         AppStore.removeListener('currentScheduleIndexChange', this.loadCourses);
         AppStore.removeListener('currentScheduleIndexChange', this.loadCustomEvents);
         AppStore.removeListener('scheduleNamesChange', this.loadScheduleNames);
-        AppStore.removeListener('scheduleNotesChange', this.loadScheduleNotes);
     }
 
     loadCourses = () => {
-        const addedCourses = AppStore.getAddedCourses();
+        const currentCourses = AppStore.schedule.getCurrentCourses();
         let totalUnits = 0;
         const formattedCourses: CourseWithTerm[] = [];
 
-        for (const addedCourse of addedCourses) {
-            if (addedCourse.scheduleIndices.includes(AppStore.getCurrentScheduleIndex())) {
-                let formattedCourse: CourseWithTerm | undefined = formattedCourses.find(
-                    (needleCourse) =>
-                        needleCourse.courseNumber === addedCourse.courseNumber &&
-                        needleCourse.deptCode === addedCourse.deptCode
-                );
+        for (const course of currentCourses) {
+            let formattedCourse: CourseWithTerm | undefined = formattedCourses.find(
+                (needleCourse) =>
+                    needleCourse.courseNumber === course.courseNumber && needleCourse.deptCode === course.deptCode
+            );
 
-                if (formattedCourse) {
-                    formattedCourse.sections.push({
-                        ...addedCourse.section,
-                        color: addedCourse.color,
-                    });
-                } else {
-                    formattedCourse = {
-                        term: addedCourse.term,
-                        deptCode: addedCourse.deptCode,
-                        courseComment: addedCourse.courseComment,
-                        prerequisiteLink: addedCourse.prerequisiteLink,
-                        courseNumber: addedCourse.courseNumber,
-                        courseTitle: addedCourse.courseTitle,
-                        sections: [
-                            {
-                                ...addedCourse.section,
-                                color: addedCourse.color,
-                            },
-                        ],
-                    };
-                    formattedCourses.push(formattedCourse);
-                }
+            if (formattedCourse) {
+                formattedCourse.sections.push({
+                    ...course.section,
+                });
+            } else {
+                formattedCourse = {
+                    term: course.term,
+                    deptCode: course.deptCode,
+                    courseComment: course.courseComment,
+                    prerequisiteLink: course.prerequisiteLink,
+                    courseNumber: course.courseNumber,
+                    courseTitle: course.courseTitle,
+                    sections: [
+                        {
+                            ...course.section,
+                        },
+                    ],
+                };
+                formattedCourses.push(formattedCourse);
 
-                if (!isNaN(Number(addedCourse.section.units))) totalUnits += Number(addedCourse.section.units);
+                if (!isNaN(Number(course.section.units))) totalUnits += Number(course.section.units);
             }
         }
         formattedCourses.forEach(function (course) {
@@ -129,16 +120,14 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
     };
 
     loadCustomEvents = () => {
-        this.setState({ customEvents: AppStore.getCustomEvents() });
+        this.setState({ customEvents: AppStore.schedule.getCurrentCustomEvents() });
+        // Force update required because the state has a reference to custom events, so it doesn't see differences all the time
+        this.forceUpdate();
     };
 
     loadScheduleNames = () => {
         this.setState({ scheduleNames: AppStore.getScheduleNames() });
     };
-
-    loadScheduleNotes = () => {
-        this.setState({ scheduleNotes: AppStore.getScheduleNotes() });
-    }
 
     getGrid = () => {
         const scheduleName = this.state.scheduleNames[AppStore.getCurrentScheduleIndex()];
@@ -163,7 +152,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                                                     key={index}
                                                     disabled={AppStore.getCurrentScheduleIndex() === index}
                                                     onClick={() => {
-                                                        copySchedule(AppStore.getCurrentScheduleIndex(), index);
+                                                        copySchedule(index);
                                                         popupState.close();
                                                     }}
                                                 >
@@ -173,10 +162,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                                         })}
                                         <MenuItem
                                             onClick={() => {
-                                                copySchedule(
-                                                    AppStore.getCurrentScheduleIndex(),
-                                                    this.state.scheduleNames.length
-                                                );
+                                                copySchedule(this.state.scheduleNames.length);
                                                 popupState.close();
                                             }}
                                         >
@@ -196,7 +182,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                                         'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
                                     )
                                 ) {
-                                    clearSchedules([AppStore.getCurrentScheduleIndex()]);
+                                    clearSchedules();
                                     logAnalytics({
                                         category: analyticsEnum.addedClasses.title,
                                         action: analyticsEnum.addedClasses.actions.CLEAR_SCHEDULE,
@@ -225,24 +211,16 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                 })}
                 {this.state.customEvents.length > 0 && <Typography variant="h6">Custom Events</Typography>}
                 {this.state.customEvents.map((customEvent) => {
-                    if (customEvent.scheduleIndices.includes(AppStore.getCurrentScheduleIndex())) {
-                        return (
-                            <Grid item md={12} xs={12} key={customEvent.title}>
-                                <CustomEventDetailView
-                                    customEvent={customEvent}
-                                    currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
-                                    scheduleNames={this.state.scheduleNames}
-                                />
-                            </Grid>
-                        );
-                    }
-                    return null;
+                    return (
+                        <Grid item md={12} xs={12} key={customEvent.title}>
+                            <CustomEventDetailView
+                                customEvent={customEvent}
+                                currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
+                                scheduleNames={this.state.scheduleNames}
+                            />
+                        </Grid>
+                    );
                 })}
-                <Typography variant="h6">{`${scheduleName} Notes`}</Typography>
-                <ScheduleNote
-                    note={this.state.scheduleNotes[AppStore.getCurrentScheduleIndex()]}
-                    scheduleIndex={AppStore.getCurrentScheduleIndex()}
-                />
             </>
         );
     };
