@@ -233,8 +233,8 @@ export const addSchedule = (scheduleName: string, scheduleNote: string) => {
     AppStore.addSchedule(scheduleName, scheduleNote);
 };
 
-export const renameSchedule = (scheduleName: string, scheduleIndex: number, scheduleNote: string) => {
-    AppStore.renameSchedule(scheduleName, scheduleIndex, scheduleNote);
+export const editSchedule = (scheduleName: string, scheduleIndex: number, scheduleNote: string) => {
+    AppStore.editSchedule(scheduleName, scheduleIndex, scheduleNote);
 };
 
 export const deleteSchedule = () => {

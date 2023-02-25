@@ -190,8 +190,8 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNotesChange');
     }
 
-    renameSchedule(scheduleName: string, scheduleIndex: number, scheduleNote: string) {
-        this.schedule.renameSchedule(scheduleName, scheduleIndex, scheduleNote);
+    editSchedule(scheduleName: string, scheduleIndex: number, scheduleNote: string) {
+        this.schedule.editSchedule(scheduleName, scheduleIndex, scheduleNote);
         this.emit('scheduleNamesChange');
         this.emit('scheduleNotesChange');
     }
@@ -218,6 +218,7 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
         return true;
     }
 

@@ -29,9 +29,9 @@ CalendarRoot
             ScheduleSelector
         ScreenshotButton
         ExportCalendar
-        ScheduleNameDialog (reused below)
+        ScheduleDialog (reused below)
         EditSchedule
-            ScheduleNameDialog (reused above)
+            ScheduleDialog (reused above)
             DeleteScheduleDialog
 */
 
@@ -193,7 +193,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         AppStore.on('currentScheduleIndexChange', this.updateEventsInCalendar);
         AppStore.on('scheduleNamesChange', this.updateScheduleNames);
         AppStore.on('scheduleNotesChange', this.updateScheduleNotes);
-        AppStore.on('scheduleNotesChange', this.updateScheduleNotes);
     };
 
     componentWillUnmount = () => {
@@ -202,7 +201,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         AppStore.removeListener('colorChange', this.updateEventsInCalendar);
         AppStore.removeListener('currentScheduleIndexChange', this.updateEventsInCalendar);
         AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
-        AppStore.removeListener('scheduleNotesChange', this.updateScheduleNotes);
         AppStore.removeListener('scheduleNotesChange', this.updateScheduleNotes);
     };
 
