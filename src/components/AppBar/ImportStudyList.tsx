@@ -17,9 +17,16 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { PostAdd } from '@material-ui/icons';
 import React, { PureComponent } from 'react';
 
-import { openSnackbar } from '../../actions/AppStoreActions';
+import { addCustomEvent, openSnackbar } from '../../actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '../../analytics';
-import { addCoursesMultiple, combineSOCObjects, getCourseInfo, queryWebsoc, queryZotCourse } from '../../helpers';
+import {
+    addCoursesMultiple,
+    combineSOCObjects,
+    getCourseInfo,
+    queryWebsoc,
+    queryZotCourse,
+    ZotCourseResponse,
+} from '../../helpers';
 import AppStore from '../../stores/AppStore';
 import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '../RightPane/RightPaneStore';
@@ -68,15 +75,24 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         this.setState({ isOpen: false }, async () => {
             document.removeEventListener('keydown', this.enterEvent, false);
             if (doImport) {
-                const sectionCodes =
-                    this.state.importSource === 'studylist'
-                        ? this.state.studyListText.match(/\d{5}/g)
-                        : (await queryZotCourse(this.state.zotcourseScheduleName)).filter((code) => code !== 'Custom');
+                let zotcourseImport: ZotCourseResponse | null = null;
+                if (this.state.importSource === 'zotcourse') {
+                    zotcourseImport = await queryZotCourse(this.state.zotcourseScheduleName);
+                }
+                const sectionCodes = zotcourseImport ? zotcourseImport.codes : this.state.studyListText.match(/\d{5}/g);
                 if (!sectionCodes) {
                     openSnackbar('error', 'Cannot import an empty/invalid Study List/Zotcourse.');
                     return;
                 }
-                const currSchedule = AppStore.getCurrentScheduleIndex();
+                // Import Custom Events from zotcourse
+                // TODO: Unknown bug causes errors
+                // if (zotcourseImport) {
+                //     const events = zotcourseImport.customEvents;
+                //     for (const event of events) {
+                //         addCustomEvent(event);
+                //     }
+                // }
+                // const currSchedule = AppStore.getCurrentScheduleIndex();
                 try {
                     const sectionsAdded = addCoursesMultiple(
                         getCourseInfo(

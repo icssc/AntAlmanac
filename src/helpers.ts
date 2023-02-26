@@ -127,7 +127,6 @@ export function getCourseInfo(SOCObject: WebsocResponse) {
         for (const department of school.departments) {
             for (const course of department.courses) {
                 for (const section of course.sections) {
-                    console.log(course.courseComment);
                     courseInfo[section.sectionCode] = {
                         courseDetails: {
                             deptCode: department.deptCode,
@@ -145,20 +144,42 @@ export function getCourseInfo(SOCObject: WebsocResponse) {
     return courseInfo;
 }
 
+export interface ZotCourseResponse {
+    codes: string[];
+    customEvents: RepeatingCustomEvent[];
+}
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function queryZotCourse(schedule_name: string) {
     // TODO: Try fetch successfully. Now it doesn't work. Need Proxy.
     // const url = new URL(ZOTCOURSE_ENDPOINT + schedule_name);
     // const response = (await fetch(url).then((r) => r.json())) as string;
     // console.log(response);
-    const fake_response =
-        '{"data":[{"color":"#94A2BE","course":{"c_type":"Lec","code":"34060","dept":"CompSci","final":{"date":null,"day":null,"end":null,"f_time":"TBA","month":null,"start":null},"instr":["LI, C."],"mtng":[{"bldg":"EH","days":[2,4],"end":"10:50","f_time":"TuTh  9:30-10:50 ","rm":"1200","rm_l":"https://classrooms.uci.edu/classroomtechnology/classrooms/eh/eh-1200","start":"9:30"}],"num":"122B","title":"PROJ DATA&WEB APPS","unit":"4"},"eventType":3},{"color":"#8C66D9","course":{"c_type":"Lec","code":"34190","dept":"CompSci","final":{"date":null,"day":null,"end":null,"f_time":"TBA","month":null,"start":null},"instr":["HARRIS, I."],"mtng":[{"bldg":"EH","days":[1,3,5],"end":"9:50","f_time":"MWF  9:00- 9:50 ","rm":"1200","rm_l":"https://classrooms.uci.edu/classroomtechnology/classrooms/eh/eh-1200","start":"9:00"}],"num":"145","title":"EMBEDDED SOFTWARE","unit":"6"},"eventType":3},{"color":"#4CB052","course":{"c_type":"Lec","code":"36030","dept":"In4matx","final":{"date":null,"day":null,"end":null,"f_time":"TBA","month":null,"start":null},"instr":["NAVARRO, E."],"mtng":[{"bldg":"ALP","days":[2,4],"end":"9:20","f_time":"TuTh  8:00- 9:20 ","rm":"2300","rm_l":"https://classrooms.uci.edu/classroomtechnology/classrooms/alp/alp-2300","start":"8:00"}],"num":"113","title":"REQT ANALYSIS & ENG","unit":"4"},"eventType":3},{"color":"#BFBF4D","course":{"c_type":"Dis","code":"36073","dept":"In4matx","final":null,"instr":["STAFF","VAN DER HOEK, A."],"mtng":[{"bldg":"DBH","days":[5],"end":"11:50","f_time":"F 11:00-11:50 ","rm":"1300","rm_l":"https://classrooms.uci.edu/classroomtechnology/classrooms/dbh/dbh-1300","start":"11:00"}],"num":"121","title":"SOFTWARE DESIGN I","unit":"0"},"eventType":3},{"color":"#BFBF4D","course":{"c_type":"Lab","code":"34193","dept":"CompSci","final":null,"instr":["STAFF","HARRIS, I."],"mtng":[{"bldg":"ICS2","days":[1,3,5],"end":"13:50","f_time":"MWF  1:00- 1:50p","rm":"162","rm_l":null,"start":"13:00"}],"num":"145","title":"EMBEDDED SOFTWARE","unit":"0"},"eventType":3},{"color":"#59BFB3","course":{"c_type":"Dis","code":"36033","dept":"In4matx","final":null,"instr":["STAFF","NAVARRO, E."],"mtng":[{"bldg":"SE","days":[1],"end":"11:50","f_time":"M 11:00-11:50 ","rm":"101","rm_l":"https://classrooms.uci.edu/classroomtechnology/classrooms/se/se-101","start":"11:00"}],"num":"113","title":"REQT ANALYSIS & ENG","unit":"0"},"eventType":3},{"color":"#E0C240","course":{"c_type":"Lec","code":"36070","dept":"In4matx","final":{"date":null,"day":null,"end":null,"f_time":"TBA","month":null,"start":null},"instr":["VAN DER HOEK, A."],"mtng":[{"bldg":"SSLH","days":[1,3,5],"end":"10:50","f_time":"MWF 10:00-10:50 ","rm":"100","rm_l":"https://classrooms.uci.edu/classroomtechnology/classrooms/sslh/sslh-100","start":"10:00"}],"num":"121","title":"SOFTWARE DESIGN I","unit":"4"},"eventType":3},{"color":"#A88383","dow":[2,4],"end":"17:00","eventType":1,"start":"14:00","title":"OIT"},{"color":"#8C66D9","dow":[1,3],"end":"16:00","eventType":1,"start":"14:00","title":"OIT"}],"success":true}';
+    const fake_response = JSON.parse(
+        '{"data":[{"color":"#94A2BE","course":{"c_type":"Lec","code":"34060","dept":"CompSci","final":{"date":null,"day":null,"end":null,"f_time":"TBA","month":null,"start":null},"instr":["LI, C."],"mtng":[{"bldg":"EH","days":[2,4],"end":"10:50","f_time":"TuTh  9:30-10:50 ","rm":"1200","rm_l":"https://classrooms.uci.edu/classroomtechnology/classrooms/eh/eh-1200","start":"9:30"}],"num":"122B","title":"PROJ DATA&WEB APPS","unit":"4"},"eventType":3},{"color":"#8C66D9","course":{"c_type":"Lec","code":"34190","dept":"CompSci","final":{"date":null,"day":null,"end":null,"f_time":"TBA","month":null,"start":null},"instr":["HARRIS, I."],"mtng":[{"bldg":"EH","days":[1,3,5],"end":"9:50","f_time":"MWF  9:00- 9:50 ","rm":"1200","rm_l":"https://classrooms.uci.edu/classroomtechnology/classrooms/eh/eh-1200","start":"9:00"}],"num":"145","title":"EMBEDDED SOFTWARE","unit":"6"},"eventType":3},{"color":"#4CB052","course":{"c_type":"Lec","code":"36030","dept":"In4matx","final":{"date":null,"day":null,"end":null,"f_time":"TBA","month":null,"start":null},"instr":["NAVARRO, E."],"mtng":[{"bldg":"ALP","days":[2,4],"end":"9:20","f_time":"TuTh  8:00- 9:20 ","rm":"2300","rm_l":"https://classrooms.uci.edu/classroomtechnology/classrooms/alp/alp-2300","start":"8:00"}],"num":"113","title":"REQT ANALYSIS & ENG","unit":"4"},"eventType":3},{"color":"#BFBF4D","course":{"c_type":"Dis","code":"36073","dept":"In4matx","final":null,"instr":["STAFF","VAN DER HOEK, A."],"mtng":[{"bldg":"DBH","days":[5],"end":"11:50","f_time":"F 11:00-11:50 ","rm":"1300","rm_l":"https://classrooms.uci.edu/classroomtechnology/classrooms/dbh/dbh-1300","start":"11:00"}],"num":"121","title":"SOFTWARE DESIGN I","unit":"0"},"eventType":3},{"color":"#BFBF4D","course":{"c_type":"Lab","code":"34193","dept":"CompSci","final":null,"instr":["STAFF","HARRIS, I."],"mtng":[{"bldg":"ICS2","days":[1,3,5],"end":"13:50","f_time":"MWF  1:00- 1:50p","rm":"162","rm_l":null,"start":"13:00"}],"num":"145","title":"EMBEDDED SOFTWARE","unit":"0"},"eventType":3},{"color":"#59BFB3","course":{"c_type":"Dis","code":"36033","dept":"In4matx","final":null,"instr":["STAFF","NAVARRO, E."],"mtng":[{"bldg":"SE","days":[1],"end":"11:50","f_time":"M 11:00-11:50 ","rm":"101","rm_l":"https://classrooms.uci.edu/classroomtechnology/classrooms/se/se-101","start":"11:00"}],"num":"113","title":"REQT ANALYSIS & ENG","unit":"0"},"eventType":3},{"color":"#E0C240","course":{"c_type":"Lec","code":"36070","dept":"In4matx","final":{"date":null,"day":null,"end":null,"f_time":"TBA","month":null,"start":null},"instr":["VAN DER HOEK, A."],"mtng":[{"bldg":"SSLH","days":[1,3,5],"end":"10:50","f_time":"MWF 10:00-10:50 ","rm":"100","rm_l":"https://classrooms.uci.edu/classroomtechnology/classrooms/sslh/sslh-100","start":"10:00"}],"num":"121","title":"SOFTWARE DESIGN I","unit":"4"},"eventType":3},{"color":"#A88383","dow":[2,4],"end":"17:00","eventType":1,"start":"14:00","title":"OIT"},{"color":"#8C66D9","dow":[1,3],"end":"16:00","eventType":1,"start":"14:00","title":"OIT"}],"success":true}'
+    );
     // For custom event, there is no course attribute in each.
-    // TODO: Handle Custom Event
-    const codes = JSON.parse(fake_response).data.map((section) =>
-        section.course ? section.course.code : 'Custom'
-    ) as string[];
-    return codes;
+    // TODO: Eliminate such TS errors
+    const codes = fake_response.data
+        .filter((section) => section.eventType === 3)
+        .map((section) => section.course.code) as string[];
+    let days = [false, false, false, false, false, false, false];
+    const customEvents: RepeatingCustomEvent[] = fake_response.data
+        .filter((section) => section.eventType === 1)
+        .map((event) => {
+            return {
+                title: event.title,
+                start: event.start,
+                end: event.end,
+                days: days.map((_, index) => event.dow.includes(index + 1)),
+                scheduleIndices: [AppStore.getCurrentScheduleIndex()],
+                customEventID: Date.now(),
+                color: null,
+            };
+        }) as RepeatingCustomEvent[];
+    return {
+        codes: codes,
+        customEvents: customEvents,
+    };
 }
 
 interface CacheEntry extends WebsocResponse {
