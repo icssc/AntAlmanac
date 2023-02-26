@@ -20,7 +20,13 @@ const setup = (stage) => {
             })
         );
     } else {
-        app.use(cors());
+        app.use(cors({
+            origin: [
+                /(a-Z,0-9,-)*\.antalmanac\.com$/,
+                /^http:\/\/localhost:\d*/
+            ],
+            credentials: true
+        }));
     }
 
     app.use('/api', routes);

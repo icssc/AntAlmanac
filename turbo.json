@@ -17,7 +17,8 @@
     "deploy": {
       "dependsOn": [
         "build"
-      ]
+      ],
+      "cache": false
     },
     "lint": {},
     "format": {
@@ -37,7 +38,8 @@
     "deploy-staging": {
       "dependsOn": [
         "build-staging"
-      ]
+      ],
+      "cache": false
     }
   }
 }

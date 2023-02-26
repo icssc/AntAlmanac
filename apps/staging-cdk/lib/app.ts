@@ -10,7 +10,7 @@ if (!process.env.PR_NUM || !process.env.CERTIFICATE_ARN || !process.env.HOSTED_Z
     throw new Error("Environmental variables weren't provided and/or this file shouldn't have been run");
 }
 
-new ActionsStack(app, `antalmanac-staging-stack-${process.env.PR_NUM}`, {
+new ActionsStack(app, `antalmanac-frontend-staging-${process.env.PR_NUM}`, {
     pr_num: process.env.PR_NUM,
     certificateArn: process.env.CERTIFICATE_ARN,
     hostedZoneId: process.env.HOSTED_ZONE_ID,

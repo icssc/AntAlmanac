@@ -25,13 +25,14 @@ if (process.env.PR_NUM) {
     const env: Environment = { region: 'us-east-1' }
     new BackendStack(
         app,
-        `antalmanac-backend-staging-stack-${process.env.PR_NUM}`,
+        `antalmanac-backend-staging-${process.env.PR_NUM}`,
         {
             env,
             stage: 'dev',
             certificateArn: process.env.CERTIFICATE_ARN,
             hostedZoneId: process.env.HOSTED_ZONE_ID,
             mongoDbUriProd: process.env.MONGODB_URI_PROD,
+            prNum: process.env.PR_NUM
         },
     )
 }
@@ -49,17 +50,18 @@ else if (process.env.BETA) {
 }
 
 else {
-    for (const [stage, region] of Object.entries(stages)) {
-        const env: Environment = {region: region}
-
-        // new CognitoStack(app, `${stage}-${region}-Cognito`, { env, stage })
-        new BackendStack(app, `antalmanac-backend-${stage}`, {
-            env,
-            stage,
-            certificateArn: process.env.CERTIFICATE_ARN,
-            hostedZoneId: process.env.HOSTED_ZONE_ID,
-            mongoDbUriProd: process.env.MONGODB_URI_PROD,
-        })
-        // new CloudwatchStack(app, `${stage}-${region}-Cloudwatch`, { env, stage })
-    }
+    // TEMPORARILY COMMENTED SO I DON'T DEPLOY TO PROD
+    // for (const [stage, region] of Object.entries(stages)) {
+    //     const env: Environment = {region: region}
+    //
+    //     // new CognitoStack(app, `${stage}-${region}-Cognito`, { env, stage })
+    //     new BackendStack(app, `antalmanac-backend-${stage}`, {
+    //         env,
+    //         stage,
+    //         certificateArn: process.env.CERTIFICATE_ARN,
+    //         hostedZoneId: process.env.HOSTED_ZONE_ID,
+    //         mongoDbUriProd: process.env.MONGODB_URI_PROD,
+    //     })
+    //     // new CloudwatchStack(app, `${stage}-${region}-Cloudwatch`, { env, stage })
+    // }
 }

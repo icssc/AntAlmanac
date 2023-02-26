@@ -12,12 +12,12 @@ interface BackendProps extends StackProps {
     mongoDbUriProd: string;
     hostedZoneId: string;
     certificateArn: string;
-    pr_num?: string;
+    prNum?: string;
 }
 
 const transformUrl = (url: string, props: BackendProps): string => {
-    if (props.pr_num !== undefined) {
-        return `staging-${props.pr_num}.${url}`;
+    if (props.prNum !== undefined) {
+        return `staging-${props.prNum}.${url}`;
     }
     return (props.stage === 'dev' ? 'dev.' : '') + url;
 };
@@ -33,7 +33,7 @@ export default class BackendStack extends Stack {
 
         const api = new lambda.Function(this, `antalmanac-api-${props.stage}-lambda`, {
             runtime: lambda.Runtime.NODEJS_14_X,
-            code: lambda.Code.fromAsset('functions/antalmanac-backend'),
+            code: lambda.Code.fromAsset('../backend'),
             handler: 'lambda.handler',
             environment: {
                 // We don't need dev database because we will never write to it
