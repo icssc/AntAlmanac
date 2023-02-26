@@ -68,74 +68,66 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         this.setState({ isOpen: false }, async () => {
             document.removeEventListener('keydown', this.enterEvent, false);
             if (doImport) {
-                if (this.state.importSource === 'studylist') {
-                    await this.importFromStudyList();
-                } else {
-                    await this.importFromZotCourse();
+                const sectionCodes =
+                    this.state.importSource === 'studylist'
+                        ? this.state.studyListText.match(/\d{5}/g)
+                        : (await queryZotCourse(this.state.zotcourseScheduleName)).filter((code) => code !== 'Custom');
+                if (!sectionCodes) {
+                    openSnackbar('error', 'Cannot import an empty/invalid Study List/Zotcourse.');
+                    return;
+                }
+                const currSchedule = AppStore.getCurrentScheduleIndex();
+                try {
+                    const sectionsAdded = addCoursesMultiple(
+                        getCourseInfo(
+                            combineSOCObjects(
+                                await Promise.all(
+                                    sectionCodes
+                                        .reduce((result: string[][], item, index) => {
+                                            // WebSOC queries can have a maximum of 10 course codes in tandem
+                                            const chunkIndex = Math.floor(index / 10);
+                                            result[chunkIndex]
+                                                ? result[chunkIndex].push(item)
+                                                : (result[chunkIndex] = [item]);
+                                            return result;
+                                        }, []) // https://stackoverflow.com/a/37826698
+                                        .map((sectionCode: string[]) =>
+                                            queryWebsoc({
+                                                term: this.state.selectedTerm,
+                                                sectionCodes: sectionCode.join(','),
+                                            })
+                                        )
+                                )
+                            )
+                        ),
+                        this.state.selectedTerm,
+                        currSchedule
+                    );
+                    logAnalytics({
+                        category: analyticsEnum.nav.title,
+                        action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
+                        value: sectionsAdded / (sectionCodes.length || 1),
+                    });
+                    if (sectionsAdded === sectionCodes.length) {
+                        openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
+                    } else if (sectionsAdded !== 0) {
+                        openSnackbar(
+                            'warning',
+                            `Successfully imported ${sectionsAdded} of ${sectionCodes.length} classes. 
+                        Please make sure that you selected the correct term and that none of your classes are missing.`
+                        );
+                    } else {
+                        openSnackbar(
+                            'error',
+                            'Failed to import any classes! Please make sure that you pasted the correct Study List.'
+                        );
+                    }
+                } catch (e) {
+                    if (e instanceof Error) this.handleError(e);
                 }
             }
             this.setState({ studyListText: '' });
         });
-    };
-
-    importFromStudyList = async () => {
-        const sectionCodes = this.state.studyListText.match(/\d{5}/g);
-        if (!sectionCodes) {
-            openSnackbar('error', 'Cannot import an empty/invalid Study List.');
-            return;
-        }
-        const currSchedule = AppStore.getCurrentScheduleIndex();
-        try {
-            const sectionsAdded = addCoursesMultiple(
-                getCourseInfo(
-                    combineSOCObjects(
-                        await Promise.all(
-                            sectionCodes
-                                .reduce((result: string[][], item, index) => {
-                                    // WebSOC queries can have a maximum of 10 course codes in tandem
-                                    const chunkIndex = Math.floor(index / 10);
-                                    result[chunkIndex] ? result[chunkIndex].push(item) : (result[chunkIndex] = [item]);
-                                    return result;
-                                }, []) // https://stackoverflow.com/a/37826698
-                                .map((sectionCode: string[]) =>
-                                    queryWebsoc({
-                                        term: this.state.selectedTerm,
-                                        sectionCodes: sectionCode.join(','),
-                                    })
-                                )
-                        )
-                    )
-                ),
-                this.state.selectedTerm,
-                currSchedule
-            );
-            logAnalytics({
-                category: analyticsEnum.nav.title,
-                action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
-                value: sectionsAdded / (sectionCodes.length || 1),
-            });
-            if (sectionsAdded === sectionCodes.length) {
-                openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
-            } else if (sectionsAdded !== 0) {
-                openSnackbar(
-                    'warning',
-                    `Successfully imported ${sectionsAdded} of ${sectionCodes.length} classes. 
-                Please make sure that you selected the correct term and that none of your classes are missing.`
-                );
-            } else {
-                openSnackbar(
-                    'error',
-                    'Failed to import any classes! Please make sure that you pasted the correct Study List.'
-                );
-            }
-        } catch (e) {
-            if (e instanceof Error) this.handleError(e);
-        }
-    };
-
-    importFromZotCourse = async () => {
-        // TODO: Not Finished
-        await queryZotCourse(this.state.zotcourseScheduleName);
     };
 
     enterEvent = (event: KeyboardEvent) => {
