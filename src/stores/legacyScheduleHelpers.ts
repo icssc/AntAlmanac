@@ -26,7 +26,12 @@ export interface LegacyUserData {
 export function convertLegacySchedule(legacyUserData: LegacyUserData) {
     const scheduleSaveState: ScheduleSaveState = { schedules: [], scheduleIndex: 0 };
     for (const scheduleName of legacyUserData.scheduleNames) {
-        scheduleSaveState.schedules.push({ scheduleName: scheduleName, courses: [], customEvents: [] });
+        scheduleSaveState.schedules.push({
+            scheduleName: scheduleName,
+            courses: [],
+            customEvents: [],
+            scheduleNote: '',
+        });
     }
     for (const course of legacyUserData.addedCourses) {
         for (const scheduleIndex of course.scheduleIndices) {

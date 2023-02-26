@@ -441,6 +441,16 @@ export class Schedules {
             this.schedules.length = 0;
             this.currentScheduleIndex = saveState.scheduleIndex;
 
+            // If this is a schedule that was saved before schedule notes were implemented,
+            // just give each schedule an empty schedule note
+            saveState.schedules.forEach((schedule: ShortCourseSchedule, index: number) => {
+                if (!('scheduleNote' in schedule)) {
+                    saveState.schedules[index]['scheduleNote'] = '';
+                }
+            });
+
+            console.log(saveState);
+
             // Get a dictionary of all unique courses
             const courseDict: { [key: string]: Set<string> } = {};
             for (const schedule of saveState.schedules) {

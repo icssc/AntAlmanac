@@ -31,9 +31,9 @@ const styles = {
         marginRight: '4px',
     },
     scheduleNoteContainer: {
-        padding: '10px',
-        marginLeft: '8px',
-        marginRight: '8px',
+        padding: '8px',
+        marginLeft: '4px',
+        marginRight: '4px',
         width: '100%',
     },
 };
