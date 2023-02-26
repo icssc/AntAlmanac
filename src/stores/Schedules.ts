@@ -445,7 +445,7 @@ export class Schedules {
             // just give each schedule an empty schedule note
             saveState.schedules.forEach((schedule: ShortCourseSchedule, index: number) => {
                 if (!('scheduleNote' in schedule)) {
-                    saveState.schedules[index]['scheduleNote'] = '';
+                    saveState.schedules[index].scheduleNote = '';
                 }
             });
 

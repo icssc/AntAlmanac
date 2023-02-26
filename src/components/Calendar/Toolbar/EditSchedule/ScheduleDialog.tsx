@@ -47,7 +47,7 @@ const ScheduleDialog = (props: ScheduleDialogProps) => {
 
     const handleClose = () => {
         setIsOpen(false);
-        // If the user cancelled renaming the schedule, the schedule name and note are changed to their original value;
+        // If the user cancelled editing the schedule, the schedule name and note are changed to their original value;
         // if the user cancelled adding a new schedule, the schedule name and note are changed to their default value
         setScheduleName(edit ? scheduleNames[scheduleEditIndex] : `Schedule ${scheduleNames.length + 1}`);
         setScheduleNote(edit ? AppStore.getCurrentScheduleNote() : '');
