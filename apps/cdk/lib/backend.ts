@@ -11,9 +11,13 @@ interface BackendProps extends StackProps {
     mongoDbUriProd: string;
     hostedZoneId: string;
     certificateArn: string;
+    pr_num?: string;
 }
 
 const transformUrl = (url: string, props: BackendProps): string => {
+    if (props.pr_num !== undefined) {
+        return `staging-${props.pr_num}.${url}`;
+    }
     return (props.stage === 'dev' ? 'dev.' : '') + url;
 };
 
@@ -26,7 +30,7 @@ export default class BackendStack extends Stack {
             code: lambda.Code.fromAsset('functions/antalmanac-backend'),
             handler: 'lambda.handler',
             environment: {
-                // We don't use need dev database because we will never write to it
+                // We don't need dev database because we will never write to it
                 AA_MONGODB_URI: props.mongoDbUriProd,
                 CORS_ENABLED: (props.stage === 'prod').toString(),
             },

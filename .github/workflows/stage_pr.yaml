@@ -64,7 +64,7 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
 
       - name: build and deploy staging
-        run: npx turbo deploy-staging --filter ./apps/staging-cdk -vvv
+        run: npx turbo deploy-staging --filter=./apps/staging-cdk
 
       - name: comment staging url
         uses: marocchino/sticky-pull-request-comment@v2
