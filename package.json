@@ -24,7 +24,6 @@
         "date-fns": "^2.19.0",
         "file-saver": "^2.0.2",
         "html2canvas": "^1.0.0-rc.5",
-        "http-proxy-middleware": "^2.0.6",
         "ics": "^2.27.0",
         "leaflet": "^1.6.0",
         "leaflet.locatecontrol": "^0.72.0",
