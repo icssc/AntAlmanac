@@ -449,8 +449,6 @@ export class Schedules {
                 }
             });
 
-            console.log(saveState);
-
             // Get a dictionary of all unique courses
             const courseDict: { [key: string]: Set<string> } = {};
             for (const schedule of saveState.schedules) {
