@@ -4,12 +4,12 @@ const routes = require('./routes');
 const cors = require('cors');
 require('dotenv').config();
 
-const setup = (corsEnabled) => {
+const setup = (stage) => {
     const app = express();
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
 
-    if (corsEnabled) {
+    if (stage === 'prod') {
         app.use(
             cors({
                 origin: [
