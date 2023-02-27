@@ -32,7 +32,8 @@
       ],
       "outputs": [
         "build/**",
-        "cdk.out/**"
+        "cdk.out/**",
+        "dist/**"
       ]
     },
     "deploy-staging": {

@@ -32,8 +32,8 @@ export default class BackendStack extends Stack {
         })
 
         const api = new lambda.Function(this, `antalmanac-api-${props.stage}-lambda`, {
-            runtime: lambda.Runtime.NODEJS_14_X,
-            code: lambda.Code.fromAsset('../backend'),
+            runtime: lambda.Runtime.NODEJS_16_X,
+            code: lambda.Code.fromAsset('../backend/dist'),
             handler: 'lambda.handler',
             environment: {
                 // We don't need dev database because we will never write to it
