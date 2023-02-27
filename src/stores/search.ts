@@ -22,6 +22,7 @@ export interface FormValues {
   coursesFull: string
   building: string
   room: string
+  fuzzy: string
 }
 
 /**
@@ -59,6 +60,7 @@ const defaultFormValues: FormValues = {
   coursesFull: 'ANY',
   building: '',
   room: '',
+  fuzzy: '',
 }
 
 /**

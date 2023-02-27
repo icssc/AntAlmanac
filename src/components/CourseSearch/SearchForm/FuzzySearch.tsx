@@ -15,7 +15,7 @@ const emojiMap = {
 const romanArr = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'] as const
 
 export default function FuzzySearch() {
-  const { resetFields, setField, setShowResults } = useSearchStore()
+  const { resetFields, setField, setShowResults, form } = useSearchStore()
   const [results, setResults] = useState<Record<string, SearchResult>>({})
   const [cache, setCache] = useState<Record<string, Record<string, SearchResult>>>({})
 
@@ -43,6 +43,7 @@ export default function FuzzySearch() {
 
   function handleInputChange(_event: React.SyntheticEvent, query: string, reason: AutocompleteInputChangeReason) {
     if (reason === 'input') {
+      setField('fuzzy', query)
       if (cache[query]) {
         setResults(cache[query])
       } else {
@@ -63,6 +64,8 @@ export default function FuzzySearch() {
     if (!object || !v) {
       return
     }
+
+    setField('fuzzy', v)
 
     /**
      * reset the form values whenever a new option is selected
@@ -143,6 +146,7 @@ export default function FuzzySearch() {
       noOptionsText="No results found! Try broadening your search."
       onChange={handleChange}
       onInputChange={handleInputChange}
+      inputValue={form.fuzzy}
     />
   )
 }

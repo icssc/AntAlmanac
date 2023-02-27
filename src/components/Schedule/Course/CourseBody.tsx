@@ -296,6 +296,8 @@ interface Props {
  * e.g. section code, instructors, times, enrollment status, etc.
  */
 export default function CourseBody({ course, term, supplemental }: Props) {
+  const form = useSearchStore(store => store.form)
+
   /**
    * after the supplemental prop has been prop-drilled down several layers,
    * it determines whether this query is enabled and should override the provided course data
@@ -303,7 +305,7 @@ export default function CourseBody({ course, term, supplemental }: Props) {
   const query = useWebsocQuery(
     {
       department: course.deptCode,
-      term,
+      term: term || form.term,
       ge: 'ANY',
       courseNumber: course.courseNumber,
       courseTitle: course.courseTitle,
