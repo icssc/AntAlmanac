@@ -6,11 +6,6 @@ import 'dotenv/config'
 
 const app = new App({ autoSynth: true })
 
-const stages = {
-    dev: 'us-east-1',
-    prod: 'us-west-1',
-}
-
 // Load environmental variables
 if (
     !process.env.CERTIFICATE_ARN ||
@@ -37,31 +32,32 @@ if (process.env.PR_NUM) {
     )
 }
 
-// Deploy beta
-else if (process.env.BETA) {
-    const env: Environment = { region: 'us-east-1' }
-    new BackendStack(app, `antalmanac-backend-beta`, {
-        env,
-        stage: 'dev',
-        certificateArn: process.env.CERTIFICATE_ARN,
-        hostedZoneId: process.env.HOSTED_ZONE_ID,
-        mongoDbUriProd: process.env.MONGODB_URI_PROD,
-    })
-}
-
+// Deploy normally
 else {
-    // TEMPORARILY COMMENTED SO I DON'T DEPLOY TO PROD
-    // for (const [stage, region] of Object.entries(stages)) {
-    //     const env: Environment = {region: region}
-    //
-    //     // new CognitoStack(app, `${stage}-${region}-Cognito`, { env, stage })
-    //     new BackendStack(app, `antalmanac-backend-${stage}`, {
-    //         env,
-    //         stage,
-    //         certificateArn: process.env.CERTIFICATE_ARN,
-    //         hostedZoneId: process.env.HOSTED_ZONE_ID,
-    //         mongoDbUriProd: process.env.MONGODB_URI_PROD,
-    //     })
-    //     // new CloudwatchStack(app, `${stage}-${region}-Cloudwatch`, { env, stage })
-    // }
+    let stages;
+    if (process.env.ALPHA) {
+        stages = {
+            alpha: 'us-east-1',
+        }
+    }
+    else {
+        // TODO: Uncomment when ready to deploy to prod
+        // stages = {
+        //     dev: 'us-east-1',
+        //     prod: 'us-east-1',
+        // }
+    }
+    for (const [stage, region] of Object.entries(stages)) {
+        const env: Environment = {region: region}
+
+        // new CognitoStack(app, `${stage}-${region}-Cognito`, { env, stage })
+        new BackendStack(app, `antalmanac-backend-${stage}`, {
+            env,
+            stage,
+            certificateArn: process.env.CERTIFICATE_ARN,
+            hostedZoneId: process.env.HOSTED_ZONE_ID,
+            mongoDbUriProd: process.env.MONGODB_URI_PROD,
+        })
+        // new CloudwatchStack(app, `${stage}-${region}-Cloudwatch`, { env, stage })
+    }
 }

@@ -16,10 +16,14 @@ interface BackendProps extends StackProps {
 }
 
 const transformUrl = (url: string, props: BackendProps): string => {
+    // Staging
     if (props.prNum !== undefined) {
         return `staging-${props.prNum}.${url}`;
     }
-    return (props.stage === 'dev' ? 'dev.' : '') + url;
+
+    if (props.stage === 'alpha') return 'alpha.' + url;
+    else if (props.stage === 'dev') return 'dev.' + url;
+    return url
 };
 
 export default class BackendStack extends Stack {
