@@ -1,5 +1,5 @@
-import { Paper ,Tab, Tabs } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import { Paper, Tab, Tabs } from '@material-ui/core';
+import { useEffect, useState } from 'react';
 
 import Calendar from './Calendar/CalendarRoot';
 import DesktopTabs from './RightPane/RightPaneRoot';
@@ -9,8 +9,9 @@ const MobileHome = () => {
     const [selectedTab, setSelectedTab] = useState(0);
 
     const components = [
-    <Calendar isMobile={true} key="calendar"/>, 
-    <DesktopTabs style={{ height: 'calc(100% - 50px' }} key="desktop"/>];
+        <Calendar isMobile={true} key="calendar" />,
+        <DesktopTabs style={{ height: 'calc(100% - 50px' }} key="desktop" />,
+    ];
 
     const focusOnBuilding = (buildingInfo: BuildingFocusInfo) => {
         // Since MobileHome doesn't have DesktopTabs permanently loaded,
@@ -24,7 +25,7 @@ const MobileHome = () => {
                 RightPaneStore.focusOnBuilding(buildingInfo);
                 RightPaneStore.removeListener('RightPaneRootLoaded', reEmitFocus);
             };
-            
+
             // Switch to DesktopTabs
             setSelectedTab(1);
             RightPaneStore.on('RightPaneRootLoaded', reEmitFocus);
@@ -33,7 +34,9 @@ const MobileHome = () => {
 
     useEffect(() => {
         RightPaneStore.on('focusOnBuilding', focusOnBuilding);
-        return () => {RightPaneStore.removeListener('focusOnBuilding', focusOnBuilding)}
+        return () => {
+            RightPaneStore.removeListener('focusOnBuilding', focusOnBuilding);
+        };
     });
 
     return (

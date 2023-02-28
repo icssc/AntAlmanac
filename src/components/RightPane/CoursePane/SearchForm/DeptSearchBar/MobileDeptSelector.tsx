@@ -4,7 +4,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import React, { ChangeEvent, PureComponent } from 'react';
+import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../../RightPaneStore';
 import depts from './depts';

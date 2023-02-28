@@ -1,18 +1,18 @@
-import { Popover, TableCell, TableRow, Theme,Tooltip, Typography, useMediaQuery } from '@material-ui/core';
+import { Popover, TableCell, TableRow, Theme, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
-import React, { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
-import analyticsEnum, { logAnalytics } from '../../../analytics';
-import { clickToCopy, CourseDetails, isDarkMode } from '../../../helpers';
-import { AASection, EnrollmentCount, Meeting } from '../../../peterportal.types';
-import AppStore from '../../../stores/AppStore';
-import RightPaneStore from '../RightPaneStore'
-import OpenSpotAlertPopover, { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
+import { AASection, EnrollmentCount, Meeting } from '$lib/peterportal.types';
+import AppStore from '$stores/AppStore';
+
+import RightPaneStore from '../RightPaneStore';
+import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
-import locations from './static/locations.json';
 import restrictionsMapping from './static/restrictionsMapping.json';
 
 const styles: Styles<Theme, object> = (theme) => ({
@@ -191,7 +191,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                             onClick={() => {
                                 RightPaneStore.focusOnBuilding({
                                     location: meeting.bldg,
-                                    courseName: courseName
+                                    courseName: courseName,
                                 });
                             }}
                         >
@@ -308,7 +308,8 @@ interface StatusCellProps extends OpenSpotAlertPopoverProps {
 }
 
 const StatusCell = withStyles(styles)((props: StatusCellProps) => {
-    const { term, sectionCode, courseTitle, courseNumber, status, classes } = props;
+    // const { term, sectionCode, courseTitle, courseNumber, status, classes } = props;
+    const { status, classes } = props;
 
     // TODO: Implement course notification when PeterPortal has the functionality, according to #473
     // if (term === getDefaultTerm().shortName && (status === 'NewOnly' || status === 'FULL')) {
@@ -322,11 +323,9 @@ const StatusCell = withStyles(styles)((props: StatusCellProps) => {
     //             />
     //         </NoPaddingTableCell>
     //     )
-        return (
-            <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>
-                {status}
-            </NoPaddingTableCell>
-        );
+    return (
+        <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>{status}</NoPaddingTableCell>
+    );
 });
 
 interface SectionTableBodyProps {
@@ -346,9 +345,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
 
     useEffect(() => {
         const toggleHighlight = () => {
-            const doAdd = AppStore.getAddedSectionCodes()[AppStore.getCurrentScheduleIndex()].has(
-                `${section.sectionCode} ${term}`
-            );
+            const doAdd = AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`);
             setAddedCourse(doAdd);
         };
 
@@ -385,7 +382,10 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             />
             <InstructorsCell instructors={section.instructors} />
             <DayAndTimeCell meetings={section.meetings} />
-            <LocationsCell meetings={section.meetings} courseName={courseDetails.deptCode + " " + courseDetails.courseNumber}/>
+            <LocationsCell
+                meetings={section.meetings}
+                courseName={courseDetails.deptCode + ' ' + courseDetails.courseNumber}
+            />
             <SectionEnrollmentCell
                 numCurrentlyEnrolled={section.numCurrentlyEnrolled}
                 maxCapacity={parseInt(section.maxCapacity)}

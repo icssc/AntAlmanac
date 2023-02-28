@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 
-import { FAKE_LOCATIONS } from '../../helpers';
-import { getDefaultTerm } from '../../termData';
+import { FAKE_LOCATIONS } from '$lib/helpers';
+import { getDefaultTerm } from '$lib/termData';
 
 const defaultFormValues: Record<string, string> = {
     deptValue: 'ALL',

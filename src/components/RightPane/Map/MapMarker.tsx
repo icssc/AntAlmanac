@@ -1,10 +1,12 @@
 import { Button } from '@material-ui/core';
 import WalkIcon from '@material-ui/icons/DirectionsWalk';
 import Leaflet from 'leaflet';
-import React, {ReactElement, useEffect, useRef, useState} from 'react';
+import React, { ReactElement, useEffect, useRef, useState } from 'react';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
 import { Marker, Popup } from 'react-leaflet';
 
-import analyticsEnum, { logAnalytics } from '../../../analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';
 const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId=463&image=';
@@ -22,7 +24,7 @@ interface MapMarkerProps {
     openPopup?: boolean;
 }
 
-type MarkerRef = React.MutableRefObject<Marker|null>;
+type MarkerRef = React.MutableRefObject<Marker | null>;
 
 const MapMarker = ({
     index,
@@ -34,7 +36,7 @@ const MapMarker = ({
     lng,
     acronym,
     children,
-    openPopup
+    openPopup,
 }: MapMarkerProps) => {
     /**@param color rgb hex color string */
     const getMarkerIcon = (color: string) => {
@@ -83,9 +85,9 @@ const MapMarker = ({
     function _openPopup(_markerRef: MarkerRef) {
         // To give the map time to pan
         setTimeout(() => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             _markerRef?.current?.fireLeafletEvent('click', null);
-        }, 300)
-
+        }, 300);
     }
 
     useEffect(() => {

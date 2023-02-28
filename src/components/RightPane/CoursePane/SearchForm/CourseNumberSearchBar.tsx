@@ -1,5 +1,5 @@
 import { TextField } from '@material-ui/core';
-import React, { ChangeEvent, PureComponent } from 'react';
+import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
 
@@ -7,7 +7,7 @@ interface CourseNumberSearchBarState {
     courseNumber: string;
 }
 
-class CourseNumberSearchBar extends PureComponent<Record<string,never>, CourseNumberSearchBarState> {
+class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseNumberSearchBarState> {
     state = {
         courseNumber: RightPaneStore.getFormData().courseNumber,
     };

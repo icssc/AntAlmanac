@@ -1,27 +1,36 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import 'leaflet.locatecontrol';
 
 import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
 import React, { PureComponent } from 'react';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { LeafletContext, Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
 
-import analyticsEnum, {logAnalytics} from '../../../analytics';
-import {FAKE_LOCATIONS} from "../../../helpers";
-import AppStore from '../../../stores/AppStore';
-import {CalendarEvent, CourseEvent} from '../../Calendar/CourseCalendarEvent';
-import RightPaneStore, {BuildingFocusInfo} from "../RightPaneStore";
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { FAKE_LOCATIONS } from '$lib/helpers';
+import AppStore from '$stores/AppStore';
+
+import { CalendarEvent, CourseEvent } from '../../Calendar/CourseCalendarEvent';
+import RightPaneStore, { BuildingFocusInfo } from '../RightPaneStore';
 import locations from '../SectionTable/static/locations.json';
 import MapMarker from './MapMarker';
 import MapMenu from './MapMenu';
 import Building from './static/building';
 import buildingCatalogue from './static/buildingCatalogue';
-import {Coord, MapBoxResponse} from './static/mapbox';
+import { Coord, MapBoxResponse } from './static/mapbox';
 
 // TODO investigate less jank ways of doing this if at all possible
 
 class LocateControl extends PureComponent<{ leaflet: LeafletContext }> {
     addLocateControl() {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const { map } = this.props.leaflet;
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const lc = new Control.Locate({
             position: 'topleft',
             strings: {
@@ -95,7 +104,6 @@ export default class UCIMap extends PureComponent {
                         !(
                             (
                                 event.isCustomEvent ||
-                                !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
                                 !event.start.toString().includes(DAYS[day]) ||
                                 courses.has(event.sectionCode) || // Remove duplicate courses that appear in the calendar
                                 !courses.add(event.sectionCode)
@@ -259,28 +267,30 @@ export default class UCIMap extends PureComponent {
         }
     };
 
-    locationDataFromBuildingCode = (buildingCode: string): {
-        name: string, lat: number, lng: number, imageURLs: string[]
+    locationDataFromBuildingCode = (
+        buildingCode: string
+    ): {
+        name: string;
+        lat: number;
+        lng: number;
+        imageURLs: string[];
     } => {
         // Get building code, get id of building code, which will get us the building data from buildingCatalogue
         const id = locations[buildingCode as keyof typeof locations] as keyof typeof buildingCatalogue;
         return buildingCatalogue[id];
-    }
+    };
 
     pinBuilding = (args: {
-        buildingName: string,
-        lat: number,
-        lng: number,
-        imageURL: string | null,
-        courseName?: string | null,
+        buildingName: string;
+        lat: number;
+        lng: number;
+        imageURL: string | null;
+        courseName?: string | null;
     }) => {
-        const {buildingName, lat, lng, imageURL, courseName } = args;
+        const { buildingName, lat, lng, imageURL, courseName } = args;
 
         // Acronym, if it exists, is in between parentheses
-        const acronym = buildingName.substring(
-            buildingName.indexOf('(') + 1,
-            buildingName.indexOf(')')
-        );
+        const acronym = buildingName.substring(buildingName.indexOf('(') + 1, buildingName.indexOf(')'));
 
         const marker = (
             <MapMarker
@@ -299,9 +309,11 @@ export default class UCIMap extends PureComponent {
                         <hr />
                         Class: {courseName}
                     </>
-                ) : <></>}
+                ) : (
+                    <></>
+                )}
             </MapMarker>
-        )
+        );
 
         this.setState({
             lat: lat + 0.001, // Off-centered to show the popup
@@ -309,12 +321,12 @@ export default class UCIMap extends PureComponent {
             zoom: 17,
             selectedMarker: marker,
         });
-    }
+    };
 
     selectBuilding = (buildingFocusInfo: BuildingFocusInfo) => {
         const buildingCodeMatch = buildingFocusInfo.location.match(/[^\d\s]+/);
         if (!buildingCodeMatch) {
-            console.warn("Building code could not be parsed from: ", buildingFocusInfo.location);
+            console.warn('Building code could not be parsed from: ', buildingFocusInfo.location);
             return;
         }
 
@@ -322,7 +334,7 @@ export default class UCIMap extends PureComponent {
         const locationData = this.locationDataFromBuildingCode(buildingCode);
 
         if (!locationData) {
-            console.warn("Building data could not be found for: ", buildingCode);
+            console.warn('Building data could not be found for: ', buildingCode);
             return;
         }
 
@@ -333,7 +345,7 @@ export default class UCIMap extends PureComponent {
             imageURL: locationData.imageURLs.length > 0 ? locationData.imageURLs[0] : null,
             courseName: buildingFocusInfo.courseName,
         });
-    }
+    };
 
     updateCurrentScheduleIndex = () => {
         this.createMarkers(this.state.day);
@@ -378,7 +390,6 @@ export default class UCIMap extends PureComponent {
                     !(
                         (
                             event.isCustomEvent ||
-                            !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
                             !event.start.toString().includes(DAYS[day]) ||
                             courses.has(event.sectionCode) || // Remove duplicate courses that appear in the calendar
                             !courses.add(event.sectionCode) ||

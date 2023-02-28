@@ -1,8 +1,9 @@
-import { Paper,Tab, Tabs, Typography } from '@material-ui/core';
+import { Paper, Tab, Tabs, Typography } from '@material-ui/core';
 import { FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
 import React, { PureComponent, Suspense } from 'react';
 
-import { isDarkMode } from '../../helpers';
+import { isDarkMode } from '$lib/helpers';
+
 import AddedCoursePane from './AddedCourses/AddedCoursePane';
 import CoursePane from './CoursePane/CoursePaneRoot';
 import darkModeLoadingGif from './CoursePane/SearchForm/Gifs/dark-loading.gif';
@@ -34,7 +35,6 @@ class DesktopTabs extends PureComponent<DesktopTabsProps> {
         this.setState({ activeTab: activeTab });
     };
 
-
     focusOnBuilding = (buildingInfo: BuildingFocusInfo) => {
         // If the Map tab isn't already active
         if (RightPaneStore.getActiveTab() !== 2) {
@@ -52,7 +52,7 @@ class DesktopTabs extends PureComponent<DesktopTabsProps> {
         } else {
             RightPaneStore.emit('selectBuilding', buildingInfo);
         }
-    }
+    };
 
     componentDidMount() {
         RightPaneStore.on('tabChange', this.changeTab);
