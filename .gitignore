@@ -6,7 +6,7 @@ build/
 
 # misc
 .DS_Store
-.env
+apps/cdk/.env
 .idea
 .vscode
 

@@ -9,7 +9,8 @@
     "lint": "eslint . --ext .ts",
     "format": "prettier --write lib",
     "build-staging": "npm run build",
-    "deploy-staging": "cdk deploy --require-approval never"
+    "deploy-staging": "cdk deploy --require-approval never",
+    "clean": "rm -rf cdk.out"
   },
   "devDependencies": {
     "@types/jest": "^26.0.10",

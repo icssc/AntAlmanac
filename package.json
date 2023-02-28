@@ -16,8 +16,8 @@
     "apps/*"
   ],
   "devDependencies": {
-    "turbo": "latest",
-    "husky": "^8.0.3"
+    "husky": "^8.0.3",
+    "turbo": "latest"
   },
   "packageManager": "pnpm@7.27.1"
 }

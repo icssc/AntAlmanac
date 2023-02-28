@@ -6,25 +6,15 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as dynamnodb from 'aws-cdk-lib/aws-dynamodb'
+import { transformUrl } from './helpers';
 
-interface BackendProps extends StackProps {
+export interface BackendProps extends StackProps {
     stage: string;
     mongoDbUriProd: string;
     hostedZoneId: string;
     certificateArn: string;
     prNum?: string;
 }
-
-const transformUrl = (url: string, props: BackendProps): string => {
-    // Staging
-    if (props.prNum !== undefined) {
-        return `staging-${props.prNum}.${url}`;
-    }
-
-    if (props.stage === 'alpha') return 'alpha.' + url;
-    else if (props.stage === 'dev') return 'dev.' + url;
-    return url
-};
 
 export default class BackendStack extends Stack {
     constructor(scope: Construct, id: string, props: BackendProps) {
