@@ -5,7 +5,7 @@
   "scripts": {
     "prepare": "husky install",
     "start": "turbo start --filter=antalmanac",
-    "start:all": "turbo start",
+    "start:all": "VITE_LOCAL_SERVER=true turbo start",
     "build": "turbo build --filter=antalmanac",
     "build:all": "turbo build",
     "deploy": "turbo deploy --filter=antalmanac",

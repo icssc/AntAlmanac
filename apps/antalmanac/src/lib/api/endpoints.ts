@@ -1,6 +1,9 @@
 function endpointTransform(path: string) {
     if (import.meta.env.VITE_ENDPOINT) {
-        return `https://${import.meta.env.VITE_ENDPOINT}.api.antalmanac.com${path}`
+        return `https://${import.meta.env.VITE_ENDPOINT}.api.antalmanac.com${path}`;
+    }
+    if (import.meta.env.VITE_LOCAL_SERVER) {
+        return `http://localhost:8080${path}`;
     }
     return import.meta.env.DEV ? `https://dev.api.antalmanac.com${path}` : `https://api.antalmanac.com${path}`;
 }
