@@ -1,0 +1,22 @@
+name: 'Checkout and build AntAlmanac'
+description: 'Checkout and build all of AntAlmanac'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: install pnpm
+      uses: pnpm/action-setup@v2
+
+    - name: setup node with pnpm cache
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        cache: 'pnpm'
+
+    - name: install packages
+      run: pnpm install --frozen-lockfile
+      shell: bash
+
+    - name: build project
+      run: npx turbo build
+      shell: bash

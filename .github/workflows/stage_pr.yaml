@@ -38,17 +38,8 @@ jobs:
       - name: checkout antalmanac
         uses: actions/checkout@v3
 
-      - name: install pnpm
-        uses: pnpm/action-setup@v2
-
-      - name: setup node with pnpm cache
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-          cache: 'pnpm'
-
-      - name: install packages
-        run: pnpm install --frozen-lockfile
+      - name: setup and build
+        uses: ./.github/actions/setup_and_build
 
       - name: configure AWS credentials
         id: configure-aws-credentials
@@ -76,15 +67,6 @@ jobs:
             backend:
               - 'apps/cdk/**'
               - 'apps/backend/**'
-
-      - name: build and deploy staging
-        run: |
-          if [ "${{ steps.change.outputs.backend }}" == "true" ] || \
-             [ "${{ contains(github.events.pull_request.labels.*.name, 'deploy all') }}" == "true" ]; then
-            npx turbo deploy-staging
-          else
-            npx turbo deploy-staging --filter=./apps/staging-frontend
-          fi
 
       - name: comment staging url
         uses: marocchino/sticky-pull-request-comment@v2

@@ -4,11 +4,9 @@ importers:
 
   .:
     specifiers:
-      dotenv-cli: ^7.0.0
       husky: ^8.0.3
       turbo: latest
     devDependencies:
-      dotenv-cli: 7.0.0
       husky: 8.0.3
       turbo: 1.8.3
 
@@ -2892,21 +2890,6 @@ packages:
       '@babel/runtime': 7.20.13
       csstype: 3.1.1
     dev: false
-
-  /dotenv-cli/7.0.0:
-    resolution: {integrity: sha512-XfMzVdpdDTRnlcgvFLg3lSyiLXqFxS4tH7RbK5IxkC4XIUuxPyrGoDufkfLjy/dA28EILzEu+mros6h8aQmyGg==}
-    hasBin: true
-    dependencies:
-      cross-spawn: 7.0.3
-      dotenv: 16.0.3
-      dotenv-expand: 10.0.0
-      minimist: 1.2.8
-    dev: true
-
-  /dotenv-expand/10.0.0:
-    resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==}
-    engines: {node: '>=12'}
-    dev: true
 
   /dotenv/16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}

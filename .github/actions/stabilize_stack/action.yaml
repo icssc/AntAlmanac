@@ -11,7 +11,6 @@ outputs:
 runs:
     using: 'composite'
     steps:
-
         - name: check if stack exists
           id: check-stack-exists
           run: echo "STACK_STATUS=$(aws cloudformation describe-stacks --stack-name ${{ inputs.stack_name }} --query "Stacks[0].StackStatus" --output text)" >> $GITHUB_ENV
