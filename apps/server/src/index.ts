@@ -95,11 +95,11 @@ async function queryMovies() {
 async function run() {
   try {
     // deleteMovies();
-    // createMovies();
+    createMovies();
     // addMovies('hello', 'world')
     // addMovies('I love', 'Elysia');
     // getMovies();
-    queryMovies();
+    // queryMovies();
   } catch (err) {
     console.error(err)
   }
