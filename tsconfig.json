@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "NodeNext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "outDir": "dist",
+    "paths": {
+      "@apps/client": ["apps/client/src"],
+      "@apps/client/*": ["apps/client/src/*"],
+      "@apps/server": ["apps/server/src"],
+      "@apps/server/*": ["apps/server/src/*"],
+    }
+  }
+}

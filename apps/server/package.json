@@ -1,0 +1,30 @@
+{
+  "name": "@apps/server",
+  "version": "0.0.1",
+  "description": "Server for AntAlmanac",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "format": "prettier --write .",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.54.0",
+    "@typescript-eslint/parser": "^5.54.0",
+    "eslint": "^8.35.0",
+    "eslint-config-prettier": "^8.6.0",
+    "prettier": "^2.8.4",
+    "tsx": "^3.12.3",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.282.0",
+    "@aws-sdk/lib-dynamodb": "^3.282.0",
+    "@aws-sdk/smithy-client": "^3.279.0",
+    "@aws-sdk/types": "^3.272.0",
+    "@aws-sdk/util-dynamodb": "^3.282.0",
+    "@trpc/client": "^10.13.2",
+    "@trpc/server": "^10.13.2",
+    "zod": "^3.20.6"
+  }
+}

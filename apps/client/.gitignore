@@ -1,0 +1,18 @@
+# desktop configuration files
+.DS_Store
+desktop.ini
+
+# very big
+node_modules/
+
+# build/generated artifacts
+dist/
+.turbo/
+
+# private
+.env
+.env.*
+credentials.json
+
+# error logs
+*.log

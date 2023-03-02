@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "outDir": "dist",
+    "paths": {
+      "@apps/server": ["../server/src"],
+      "@apps/server/*": ["../server/src/*"],
+      "$components/*": ["src/components/*"],
+      "$hooks/*": ["src/hooks/*"],
+      "$lib/*": ["src/lib/*"],
+      "$providers/*": ["src/providers/*"],
+      "$routes/*": ["src/routes/*"],
+      "$stores/*": ["src/stores/*"]
+    }
+  }
+}

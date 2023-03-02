@@ -1,0 +1,23 @@
+{
+  "name": "Aponia",
+  "version": "0.5.25",
+  "description": "Aponia",
+  "keywords": [
+    "Aponia"
+  ],
+  "license": "Aponia",
+  "author": "Aponia <aponia@flamechasers.moth> ",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "yarn": ">=1.22.0"
+  },
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^13.1.2",
+    "turbo": "^1.8.3"
+  }
+}
