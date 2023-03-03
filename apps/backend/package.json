@@ -4,7 +4,7 @@
     "description": "Backend for AntAlmanac",
     "main": "server.js",
     "scripts": {
-        "build-staging": "esbuild --platform=node --target=node16 --bundle  --outfile=dist/lambda.js lambda.js",
+        "build": "esbuild --platform=node --target=node16 --bundle  --outfile=dist/lambda.js lambda.js",
         "start": "node server.local.js",
         "format": "prettier --write \"./**/*.{ts,tsx,js}\""
     },

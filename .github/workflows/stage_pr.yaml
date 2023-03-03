@@ -15,77 +15,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  setup_and_build:
     if: (!contains(github.event.pull_request.labels.*.name, 'no deploy'))
+    uses: ./.github/workflows/setup_and_build.yaml
+    secrets: inherit
+
+  deploy_backend:
+    needs: setup_and_build
+    if: needs.setup_and_build.outputs.apiSubDomain != 'dev' # only deploy backend if we aren't using default
+    uses: ./.github/workflows/deploy_stack.yaml
+    secrets: inherit
+    with:
+        stack_name: ${{ needs.setup_and_build.outputs.backendStack }}
+
+  deploy_frontend:
+    needs: setup_and_build
+    uses: ./.github/workflows/deploy_stack.yaml
+    secrets: inherit
+    with:
+      stack_name: ${{ needs.setup_and_build.outputs.frontendStack }}
+
+  comment_staging_url:
+    needs: [setup_and_build, deploy_frontend]
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    env:
-      FRONTEND_STACK_NAME: antalmanac-frontend-staging-${{ github.event.pull_request.number }}
-      BACKEND_STACK_NAME: antalmanac-backend-staging-${{ github.event.pull_request.number }}
-      # env variables for Node.js
-      HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
-      CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
-      MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
-      PR_NUM: ${{ github.event.pull_request.number }}
-      VITE_ENDPOINT: staging-${{ github.event.pull_request.number }} # because vite only reads env variables that start with VITE_
-      NODE_ENV: development
-      HUSKY: 0
-      # env variables for Turbo
-      TURBO_API: ${{ vars.TURBO_API }}
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: "team_antalmanac"
-
     steps:
-      - name: checkout antalmanac
-        uses: actions/checkout@v3
-
-      - name: install pnpm
-        uses: pnpm/action-setup@v2
-
-      - name: setup node with pnpm cache
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-          cache: 'pnpm'
-
-      - name: install packages
-        run: pnpm install --frozen-lockfile
-
-      - name: configure AWS credentials
-        id: configure-aws-credentials
-        uses: aws-actions/configure-aws-credentials@master
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: wait for frontend stack stabilize (if it is currently being deployed)
-        uses: ./.github/actions/stabilize_stack
-        with:
-          stack_name: ${{ env.FRONTEND_STACK_NAME }}
-
-      - name: wait for backend stack stabilize (if it is currently being deployed)
-        uses: ./.github/actions/stabilize_stack
-        with:
-          stack_name: ${{ env.BACKEND_STACK_NAME }}
-
-      - name: check if backend/cdk changed
-        uses: dorny/paths-filter@v2
-        id: change
-        with:
-          filters: |
-            backend:
-              - 'apps/cdk/**'
-              - 'apps/backend/**'
-
-      - name: build and deploy staging
-        run: |
-          if [ "${{ steps.change.outputs.backend }}" == "true" ] || \
-             [ "${{ contains(github.events.pull_request.labels.*.name, 'deploy all') }}" == "true" ]; then
-            npx turbo deploy-staging
-          else
-            npx turbo deploy-staging --filter=./apps/staging-frontend
-          fi
-
       - name: comment staging url
         uses: marocchino/sticky-pull-request-comment@v2
         with:

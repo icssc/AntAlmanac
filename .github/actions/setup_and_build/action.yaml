@@ -1,0 +1,45 @@
+name: 'Checkout and build AntAlmanac'
+description: |
+  Checkout and build all of AntAlmanac
+  Secrets have to be passed in because they are not available in composite actions
+inputs:
+  HOSTED_ZONE_ID:
+    description: AntAlmanac Hosted Zone ID
+    required: true
+  CERTIFICATE_ARN:
+    description: AntAlmanac Certificate ARN
+    required: true
+  MONGODB_URI_PROD:
+    description: MongoDB URI
+    required: true
+  TURBO_TOKEN:
+    description: Turbo token for caching
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: pipe secrets to env
+      run: |
+        export HOSTED_ZONE_ID=${{ inputs.HOSTED_ZONE_ID }}
+        export CERTIFICATE_ARN=${{ inputs.CERTIFICATE_ARN }}
+        export MONGODB_URI_PROD=${{ inputs.MONGODB_URI_PROD }}
+        export TURBO_TOKEN=${{ inputs.TURBO_TOKEN }}
+      shell: bash
+
+    - name: install pnpm
+      uses: pnpm/action-setup@v2
+
+    - name: setup node with pnpm cache
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        cache: 'pnpm'
+
+    - name: install packages
+      run: pnpm install --frozen-lockfile
+      shell: bash
+
+    - name: build project
+      run: npx turbo build
+      shell: bash

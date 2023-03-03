@@ -17,18 +17,28 @@ if (
 // Deploy staging
 if (process.env.PR_NUM) {
     const env: Environment = { region: 'us-east-1' }
-    new BackendStack(
-        app,
-        `antalmanac-backend-staging-${process.env.PR_NUM}`,
-        {
-            env,
-            stage: 'dev',
-            certificateArn: process.env.CERTIFICATE_ARN,
-            hostedZoneId: process.env.HOSTED_ZONE_ID,
-            mongoDbUriProd: process.env.MONGODB_URI_PROD,
-            prNum: process.env.PR_NUM
-        },
-    )
+    new FrontendStack(app, `antalmanac-frontend-staging-${process.env.PR_NUM}`, {
+        env,
+        stage: 'dev',
+        certificateArn: process.env.CERTIFICATE_ARN,
+        hostedZoneId: process.env.HOSTED_ZONE_ID,
+        prNum: process.env.PR_NUM
+    })
+
+    if (process.env.apiSubDomain !== 'dev') {
+        new BackendStack(
+            app,
+            `antalmanac-backend-staging-${process.env.PR_NUM}`,
+            {
+                env,
+                stage: 'dev',
+                certificateArn: process.env.CERTIFICATE_ARN,
+                hostedZoneId: process.env.HOSTED_ZONE_ID,
+                mongoDbUriProd: process.env.MONGODB_URI_PROD,
+                prNum: process.env.PR_NUM
+            },
+        )
+    }
 }
 
 // Deploy normally
@@ -40,6 +50,7 @@ else {
         }
     }
     else {
+        throw new Error('Do not deploy to prod')
         // TODO: Uncomment when ready to deploy to prod
         // stages = {
         //     dev: 'us-east-1',

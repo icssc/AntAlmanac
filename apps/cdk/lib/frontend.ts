@@ -61,7 +61,7 @@ export default class FrontendStack extends Stack {
 
         new route53.ARecord(this, `antalmanac-frontend-a-record-${props.stage}`, {
             zone: zone,
-            // Remove ending . after transformUrl
+            // Remove trailing . after transformUrl
             recordName: transformUrl('', props).slice(0, -1),
             target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
         });
