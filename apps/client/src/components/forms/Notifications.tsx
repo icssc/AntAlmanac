@@ -10,6 +10,8 @@ export default function NotificationsForm() {
     resolver: zodResolver(notificationsSchema),
   })
 
+  const query = trpc.notifications.find.useQuery('714')
+
   const mutation = trpc.notifications.insert.useMutation()
 
   const onSubmit = (formData: notificationsData) => {
@@ -32,6 +34,9 @@ export default function NotificationsForm() {
             Submit
           </Button>
         </Box>
+      </Box>
+      <Box sx={{ whiteSpace: 'pre' }}>
+        {JSON.stringify(query.data, null, 2)}
       </Box>
     </>
   )
