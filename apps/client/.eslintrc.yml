@@ -36,4 +36,4 @@ globals:
   React: true
 
 ignorePatterns:
-  - "vite.config.ts"
+  - 'vite.config.ts'

@@ -15,7 +15,7 @@ export default function NewsForm() {
 
   const mutation = trpc.news.insert.useMutation()
 
-  async function onSubmit(newsData: newsData) {
+  const onSubmit = (newsData: newsData) => {
     mutation.mutate(newsData, {
       onSuccess(newData) {
         if (newData) {

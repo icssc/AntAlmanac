@@ -9,22 +9,26 @@ interface Props {
  * wraps the app with a reactive MUI theme
  */
 export default function AppThemeProvider({ children }: Props) {
-  const theme = useMemo(() => createTheme({
-    palette: {
-      primary: {
-        main: '#bf3636',
-        light: '#f76860',
-        dark: '#880010',
-        contrastText: '#fff',
-      },
-      secondary: {
-        main: '#f2d399',
-        light: '#ffffca',
-        dark: '#bea26a',
-        contrastText: '#000',
-      },
-    },
-  }), [])
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          primary: {
+            main: '#bf3636',
+            light: '#f76860',
+            dark: '#880010',
+            contrastText: '#fff',
+          },
+          secondary: {
+            main: '#f2d399',
+            light: '#ffffca',
+            dark: '#bea26a',
+            contrastText: '#000',
+          },
+        },
+      }),
+    []
+  )
 
   return (
     <ThemeProvider theme={theme}>
@@ -35,5 +39,5 @@ export default function AppThemeProvider({ children }: Props) {
 }
 
 AppThemeProvider.defaultProps = {
-  children: null
+  children: null,
 }
