@@ -46,7 +46,6 @@ export default function News() {
       category: analyticsEnum.nav.title,
       action: analyticsEnum.nav.actions.CLICK_NEWS,
     })
-    setShowDot(false)
   }
 
   const handleClose = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -59,6 +58,7 @@ export default function News() {
     if (typeof Storage !== 'undefined' && query.data?.[0]) {
       window.localStorage.setItem('newsDate', query.data[0].date.toLocaleString())
     }
+    setShowDot(false)
   }
 
   return (
