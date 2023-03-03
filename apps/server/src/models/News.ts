@@ -1,8 +1,6 @@
 import dynamoose from 'dynamoose'
 import type { Item } from 'dynamoose/dist/Item'
 
-dynamoose.aws.ddb.local('http://localhost:8000')
-
 interface News extends Item {
   id: string
   title: string

@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
+import useSettingsStore from '$stores/settings'
 
 interface Props {
   children?: React.ReactNode
@@ -9,10 +10,12 @@ interface Props {
  * wraps the app with a reactive MUI theme
  */
 export default function AppThemeProvider({ children }: Props) {
+  const isDarkMode = useSettingsStore((store) => store.isDarkMode)
   const theme = useMemo(
     () =>
       createTheme({
         palette: {
+          mode: isDarkMode ? 'dark' : 'light',
           primary: {
             main: '#bf3636',
             light: '#f76860',
@@ -27,7 +30,7 @@ export default function AppThemeProvider({ children }: Props) {
           },
         },
       }),
-    []
+    [isDarkMode]
   )
 
   return (
@@ -36,4 +39,8 @@ export default function AppThemeProvider({ children }: Props) {
       {children}
     </ThemeProvider>
   )
+}
+
+AppThemeProvider.defaultProps = {
+  children: null,
 }

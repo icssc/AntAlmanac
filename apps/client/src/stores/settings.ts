@@ -30,15 +30,15 @@ interface SettingsStore {
   setColorScheme: (scheme: string) => void
 
   /**
-   * function to determine if the current color scheme is dark
+   *  whether current color scheme is dark
    */
-  isDarkMode: () => boolean
+  isDarkMode: boolean
 }
 
 /**
  * hook for accessing the shared settings store
  */
-const useSettingsStore = create<SettingsStore>((set, get) => ({
+const useSettingsStore = create<SettingsStore>((set) => ({
   showFinals: false,
 
   setShowFinals(showFinals: boolean) {
@@ -49,19 +49,14 @@ const useSettingsStore = create<SettingsStore>((set, get) => ({
 
   setColorScheme(colorScheme: string) {
     window.localStorage.setItem('colorScheme', colorScheme)
-    set({ colorScheme })
+    const isDarkMode =
+      colorScheme === 'dark' || (colorScheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    set({ colorScheme, isDarkMode })
   },
 
-  isDarkMode() {
-    switch (get().colorScheme) {
-      case 'light':
-        return false
-      case 'dark':
-        return true
-      default:
-        return typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
-    }
-  },
+  isDarkMode:
+    (typeof Storage !== 'undefined' && window.localStorage.getItem('colorScheme') === 'dark') ||
+    window.matchMedia('(prefers-color-scheme: dark)').matches,
 }))
 
 export default useSettingsStore
