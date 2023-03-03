@@ -10,7 +10,7 @@ on:
 
 jobs:
   delete_stack:
-
+    runs-on: ubuntu-latest
     steps:
       - name: checkout antalmanac
         uses: actions/checkout@v3

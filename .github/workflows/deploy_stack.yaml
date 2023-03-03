@@ -4,9 +4,9 @@ on:
   workflow_call:
     inputs:
       stack_name:
-          description: 'The name of the stack to deploy'
-          required: true
-          type: string
+        description: 'The name of the stack to deploy'
+        required: true
+        type: string
 
 jobs:
   deploy:

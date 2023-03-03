@@ -26,7 +26,7 @@ jobs:
     uses: ./.github/workflows/deploy_stack.yaml
     secrets: inherit
     with:
-        stack_name: ${{ needs.setup_and_build.outputs.backendStack }}
+      stack_name: ${{ needs.setup_and_build.outputs.backendStack }}
 
   deploy_frontend:
     needs: setup_and_build
@@ -36,7 +36,7 @@ jobs:
       stack_name: ${{ needs.setup_and_build.outputs.frontendStack }}
 
   comment_staging_url:
-    needs: [setup_and_build, deploy_frontend]
+    needs: [ setup_and_build, deploy_frontend ]
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:

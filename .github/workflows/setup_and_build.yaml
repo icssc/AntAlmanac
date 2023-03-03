@@ -14,9 +14,9 @@ jobs:
   setup_and_build:
     runs-on: ubuntu-latest
     outputs:
-        backendStack: ${{ steps.write-output.outputs.backendStack }}
-        frontendStack: ${{ steps.write-output.outputs.frontendStack }}
-        apiSubDomain: ${{ steps.write-output.outputs.apiSubDomain }}
+      backendStack: ${{ steps.write-output.outputs.backendStack }}
+      frontendStack: ${{ steps.write-output.outputs.frontendStack }}
+      apiSubDomain: ${{ steps.write-output.outputs.apiSubDomain }}
 
     steps:
       - name: checkout antalmanac
