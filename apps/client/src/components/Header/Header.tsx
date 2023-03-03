@@ -1,4 +1,5 @@
-import { AppBar, Box, Button, MenuList, MenuItem, Toolbar } from '@mui/material'
+import { AppBar, Button, MenuList, MenuItem, Toolbar } from '@mui/material'
+import Logo from './Logo'
 
 /**
  * main website header
@@ -8,7 +9,7 @@ export default function Header() {
     <AppBar position="static" sx={{ '& .MuiButtonBase-root': { color: 'inherit' } }}>
       <Toolbar>
         <Button href="/">
-          <Box component="img" src="/logo.png" height="64px"></Box>
+          <Logo />
         </Button>
         <MenuList sx={{ display: 'flex' }}>
           <MenuItem>About</MenuItem>

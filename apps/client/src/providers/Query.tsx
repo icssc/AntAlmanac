@@ -42,6 +42,6 @@ export default function AppQueryProvider({ children }: Props) {
   )
 }
 
-AppQueryProvider.defaultProps = {
-  children: null,
-}
+// AppQueryProvider.defaultProps = {
+//   children: null,
+// }
