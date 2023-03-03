@@ -17,8 +17,10 @@
     "yarn": ">=1.22.0"
   },
   "devDependencies": {
+    "@prisma/client": "^4.11.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.1.2",
+    "prisma": "^4.11.0",
     "turbo": "^1.8.3"
   }
 }
