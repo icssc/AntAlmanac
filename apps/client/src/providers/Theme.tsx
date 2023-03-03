@@ -20,7 +20,7 @@ export default function AppThemeProvider({ children }: Props) {
             contrastText: '#fff',
           },
           secondary: {
-            main: '#f2d399',
+            main: '#da9a0e',
             light: '#ffffca',
             dark: '#bea26a',
             contrastText: '#000',
