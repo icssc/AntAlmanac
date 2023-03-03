@@ -18,14 +18,9 @@ const NotificationModel = dynamoose.model<Notification>("Notifications", {
   },
   phoneNumbers: {
     type: Array,
-    schema: [String]
+    schema: [String],
+    default: []
   },
 });
 
 export default NotificationModel
-
-/**
- * notes:
- * I had to set phoneNumbers to [String] to create the table,
- * then I had to change it to { type: Array, schema: [String] } to make sure it was an array?
- */

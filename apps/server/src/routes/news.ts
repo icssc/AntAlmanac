@@ -6,7 +6,7 @@ import { procedure, router } from '../trpc'
 
 const newsRouter = router({
   /**
-   * get all news
+   * find all news starting from a provided date
    */
   findAll: procedure.input(z.date().optional()).query(async ({ input }) => {
     const news = await NewsModel.scan().exec()
@@ -24,7 +24,6 @@ const newsRouter = router({
       id: randomUUID(),
       date: new Date()
     })
-    console.log({ news })
     return news
   }),
 
