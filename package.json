@@ -9,7 +9,8 @@
   "author": "Aponia <aponia@flamechasers.moth> ",
   "private": true,
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "engines": {
     "node": ">=18.0.0",

@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
 
 interface Props {
@@ -7,8 +8,8 @@ interface Props {
 /**
  * wraps the app with a reactive MUI theme
  */
-export default function AppThemeProvider(props: Props) {
-  const theme = createTheme({
+export default function AppThemeProvider({ children }: Props) {
+  const theme = useMemo(() => createTheme({
     palette: {
       primary: {
         main: '#bf3636',
@@ -23,12 +24,16 @@ export default function AppThemeProvider(props: Props) {
         contrastText: '#000',
       },
     },
-  })
+  }), [])
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {props.children}
+      {children}
     </ThemeProvider>
   )
+}
+
+AppThemeProvider.defaultProps = {
+  children: null
 }

@@ -1,13 +1,10 @@
 import { procedure, router } from '../trpc'
-import NewsModel from '$models/News'
+import newsRouter from './news'
 
 export const appRouter = router({
   '': procedure.query(() => 'Hello, World'),
   hello: procedure.query(() => 'world'),
-  news: procedure.query(async () => {
-    const news = await NewsModel.get('1')
-    return news
-  })
+  news: newsRouter,
 })
 
 export type AppRouter = typeof appRouter

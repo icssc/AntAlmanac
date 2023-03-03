@@ -5,8 +5,8 @@ import { AppBar, Toolbar } from '@mui/material'
  */
 export default function Header() {
   return (
-    <AppBar>
-      <Toolbar></Toolbar>
+    <AppBar position="static">
+      <Toolbar />
     </AppBar>
   )
 }

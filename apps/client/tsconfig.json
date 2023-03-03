@@ -5,14 +5,21 @@
     "baseUrl": ".",
     "outDir": "dist",
     "paths": {
+      // monorepo aliases
       "@apps/server": ["../server/src"],
       "@apps/server/*": ["../server/src/*"],
+      "@packages/schemas/*": ["../../packages/schemas/src/*"],
+
+      // frontend aliases
       "$components/*": ["src/components/*"],
       "$hooks/*": ["src/hooks/*"],
       "$lib/*": ["src/lib/*"],
       "$providers/*": ["src/providers/*"],
       "$routes/*": ["src/routes/*"],
-      "$stores/*": ["src/stores/*"]
+      "$stores/*": ["src/stores/*"],
+
+      // backend aliases
+      "$models/*": ["../server/src/models/*"]
     }
   }
 }

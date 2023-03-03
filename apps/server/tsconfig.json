@@ -4,6 +4,7 @@
     "baseUrl": ".",
     "paths": {
       "$models/*": ["src/models/*"],
+      "@packages/schemas/*": ["../../packages/schemas/src/*"],
     }
   }
 }

@@ -15,7 +15,14 @@ extends:
   - eslint:recommended
   - plugin:@typescript-eslint/eslint-recommended
   - plugin:@typescript-eslint/recommended
+  - airbnb
+  - airbnb-typescript
   - prettier
+
+rules:
+  import/extensions: off
+  no-restricted-exports: off
+  react/jsx-props-no-spreading: off
 
 env:
   browser: true
@@ -27,3 +34,6 @@ settings:
 
 globals:
   React: true
+
+ignorePatterns:
+  - "vite.config.ts"

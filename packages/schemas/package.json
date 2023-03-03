@@ -1,0 +1,12 @@
+{
+  "name": "@packages/schemas",
+  "version": "0.0.1",
+  "description": "Schemas",
+  "license": "MIT",
+  "dependencies": {
+    "zod": "^3.20.6"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  }
+}

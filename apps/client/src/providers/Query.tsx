@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import superjson from 'superjson'
 import { httpBatchLink } from '@trpc/react-query'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import trpc from '$lib/trpc'
@@ -10,7 +11,7 @@ interface Props {
 /**
  * wraps the application with an initialized trpc + query client and provider
  */
-export default function AppQueryProvider(props: Props) {
+export default function AppQueryProvider({ children }: Props) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -25,9 +26,10 @@ export default function AppQueryProvider(props: Props) {
 
   const [trpcClient] = useState(() =>
     trpc.createClient({
+      transformer: superjson,
       links: [
         httpBatchLink({
-          url: 'http://localhost:5000/trpc',
+          url: 'http://localhost:3000/trpc',
         }),
       ],
     })
@@ -35,7 +37,11 @@ export default function AppQueryProvider(props: Props) {
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>{props.children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </trpc.Provider>
   )
+}
+
+AppQueryProvider.defaultProps = {
+  children: null,
 }

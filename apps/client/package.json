@@ -16,7 +16,11 @@
     "@typescript-eslint/parser": "^5.54.0",
     "@vitejs/plugin-react": "^3.1.0",
     "eslint": "^8.35.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^2.8.4",
@@ -26,16 +30,21 @@
   "dependencies": {
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
+    "@hookform/resolvers": "^2.9.11",
     "@mui/icons-material": "^5.11.11",
     "@mui/lab": "^5.0.0-alpha.121",
     "@mui/material": "^5.11.11",
+    "@packages/schemas": "*",
     "@tanstack/react-query": "^4.24.10",
     "@trpc/client": "^10.13.2",
     "@trpc/react-query": "^10.13.2",
     "@trpc/server": "^10.13.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.43.3",
     "react-router-dom": "^6.8.2",
+    "superjson": "^1.12.2",
+    "zod": "^3.20.6",
     "zustand": "^4.3.5"
   }
 }

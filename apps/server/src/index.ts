@@ -1,3 +1,4 @@
+import cors from 'cors'
 import dynamoose from 'dynamoose'
 import express from 'express'
 import { createExpressMiddleware } from '@trpc/server/adapters/express'
@@ -10,6 +11,8 @@ const port = 3000
 
 async function run() {
   const app = express()
+
+  app.use(cors({ credentials: true, origin: true }))
 
   app.use('/trpc', createExpressMiddleware({
     router: appRouter,

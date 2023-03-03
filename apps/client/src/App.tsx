@@ -1,14 +1,16 @@
 import AppThemeProvider from '$providers/Theme'
 import AppQueryProvider from '$providers/Query'
 import Header from '$components/Header'
-import { Button } from '@mui/material'
+import NewsForm from '$components/forms/News'
+import DeleteNewsButton from '$components/buttons/DeleteNews'
 
 export default function App() {
   return (
     <AppQueryProvider>
       <AppThemeProvider>
         <Header />
-        <Button variant="contained">Hello, World!</Button>
+        <NewsForm />
+        <DeleteNewsButton />
       </AppThemeProvider>
     </AppQueryProvider>
   )
