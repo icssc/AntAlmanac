@@ -7,8 +7,6 @@ on:
         value: ${{ jobs.setup_and_build.outputs.backendStack }}
       frontendStack:
         value: ${{ jobs.setup_and_build.outputs.frontendStack }}
-      frontendSubDomain:
-        value: staging-${{ github.event.pull_request.number }}
       apiSubDomain:
         value: ${{ jobs.setup_and_build.outputs.apiSubDomain }}
 
