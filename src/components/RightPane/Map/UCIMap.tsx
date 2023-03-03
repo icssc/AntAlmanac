@@ -1,11 +1,12 @@
-import '../../../../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js';
+import 'leaflet.locatecontrol';
 
 import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
-import 'leaflet.locatecontrol';
 import React, { PureComponent } from 'react';
 import { LeafletContext, Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
+
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';
+
 import { CalendarEvent, CourseEvent } from '../../Calendar/CourseCalendarEvent';
 import locations from '../SectionTable/static/locations.json';
 import MapMarker from './MapMarker';
