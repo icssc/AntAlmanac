@@ -41,7 +41,7 @@ export function addCourse(section: Section, course: SimpleAACourse, addScheduleI
   const targetScheduleIndex = addScheduleIndex ?? scheduleIndex
   const allCourses = schedules[targetScheduleIndex].courses
 
-  const term = form.term
+  const { term } = form
   const termsInSchedule = new Set([term, ...allCourses.map((c) => c.term)])
 
   if (termsInSchedule.size > 1) {
@@ -50,16 +50,14 @@ export function addCourse(section: Section, course: SimpleAACourse, addScheduleI
     )
   }
 
-  const existingCourse = allCourses.find(
-    (course) => course.section.sectionCode === section.sectionCode && course.term === form.term
-  )
+  const existingCourse = allCourses.find((c) => c.section.sectionCode === section.sectionCode && c.term === form.term)
 
   if (existingCourse) {
     options?.onError?.(new Error('Course already exists in schedule'))
     return
   }
 
-  const setOfUsedColors = new Set(allCourses.map((course) => course.section.color))
+  const setOfUsedColors = new Set(allCourses.map((c) => c.section.color))
   const color = arrayOfColors.find((materialColor) => !setOfUsedColors.has(materialColor)) || '#5ec8e0'
 
   const newCourse: Course = {
@@ -107,7 +105,7 @@ export function addCourseToAllSchedules(section: Section, course: SimpleAACourse
 export function changeCourseColor(sectionCode: string, term: string, newColor: string) {
   const { schedules } = useScheduleStore.getState()
   const allCourses = schedules.map((schedule) => schedule.courses).flat(1)
-  const course = allCourses.find((course) => course.section.sectionCode === sectionCode && course.term === term)
+  const course = allCourses.find((c) => c.section.sectionCode === sectionCode && c.term === term)
   if (course) {
     course.section.color = newColor
     useScheduleStore.setState({ schedules })

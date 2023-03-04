@@ -12,15 +12,15 @@ import type { RepeatingCustomEvent } from '.'
  */
 export function addCustomEvent(newCustomEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
   const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
-  const customEvents = schedules[scheduleIndex].customEvents
+  const { customEvents } = schedules[scheduleIndex]
 
   previousStates.push({ schedules: structuredClone(schedules), scheduleIndex })
 
-  for (const scheduleIndex of scheduleIndices) {
+  scheduleIndices.forEach((index) => {
     if (!customEvents.some((customEvent) => customEvent.customEventID === newCustomEvent.customEventID)) {
-      schedules[scheduleIndex].customEvents.push(newCustomEvent)
+      schedules[index].customEvents.push(newCustomEvent)
     }
-  }
+  })
 
   useScheduleStore.setState({ schedules, previousStates, saved: false })
 }
@@ -36,13 +36,13 @@ export function deleteCustomEvent(customEventId: number, removedIndices?: number
 
   previousStates.push({ schedules: structuredClone(schedules), scheduleIndex })
 
-  for (const scheduleIndex of scheduleIndices) {
-    const customEvents = schedules[scheduleIndex].customEvents
-    const index = customEvents.findIndex((customEvent) => customEvent.customEventID === customEventId)
-    if (index != null) {
-      customEvents.splice(index, 1)
+  scheduleIndices.forEach((index) => {
+    const { customEvents } = schedules[index]
+    const eventIndex = customEvents.findIndex((customEvent) => customEvent.customEventID === customEventId)
+    if (eventIndex != null) {
+      customEvents.splice(eventIndex, 1)
     }
-  }
+  })
 
   useScheduleStore.setState({ schedules, saved: false })
 }
@@ -58,7 +58,7 @@ export function editCustomEvent(editedCustomEvent: RepeatingCustomEvent, newIndi
 
   previousStates.push({ schedules, scheduleIndex })
 
-  const customEvents = schedules[scheduleIndex].customEvents
+  const { customEvents } = schedules[scheduleIndex]
   const customEvent = customEvents.find((event) => event.customEventID === editedCustomEvent.customEventID)
 
   if (!customEvent) {
@@ -101,7 +101,7 @@ export function editCustomEvent(editedCustomEvent: RepeatingCustomEvent, newIndi
 export function changeCustomEventColor(customEventId: number, newColor: string) {
   const { schedules, scheduleIndex } = useScheduleStore.getState()
 
-  const customEvents = schedules[scheduleIndex].customEvents
+  const { customEvents } = schedules[scheduleIndex]
   const customEvent = customEvents.find((event) => event.customEventID === customEventId)
 
   if (customEvent) {

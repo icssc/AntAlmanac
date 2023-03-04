@@ -1,3 +1,4 @@
+import type { EventAttributes } from 'ics'
 import { termData } from '$lib/termData'
 import type { Course } from '$stores/schedule'
 
@@ -58,9 +59,7 @@ function getByDays(days: string) {
  * getQuarter returns the quarter of a given term
  * @example "2019 Fall" -> "Fall"
  */
-const getQuarter = (term: string) => {
-  return term.split(' ')[1]
-}
+const getQuarter = (term: string) => term.split(' ')[1]
 
 /**
  * getClassStartDate returns the start date of a class
@@ -95,9 +94,10 @@ function getClassStartDate(term: string, bydays: string[]) {
  * This is a helper function used by getFirstClass
  * @example "4:00-4:50p" -> [[16, 0], [16, 50]]
  */
-function parseTimes(time: string) {
+function parseTimes(input: string) {
   // Determine whether the time is in the afternoon (PM)
   let pm = false
+  let time = input
   if (time.slice(-1) === 'p') {
     // Course time strings would end with a 'p'
     time = time.substring(0, time.length - 1) // Remove 'p' from the end
@@ -115,7 +115,7 @@ function parseTimes(time: string) {
       (timeString) =>
         timeString
           .split(':') // Ex: [[" 4", "00"], ["4", "50"]]
-          .map((val) => parseInt(val)) as HourMinute // Ex: [[4, 0], [4, 50]]
+          .map((val) => parseInt(val, 10)) as HourMinute // Ex: [[4, 0], [4, 50]]
     )
 
   // Add 12 hours if the time is PM
@@ -139,8 +139,8 @@ function getExamTime(exam: string, year: number) {
   const [examStartTime, examEndTime] = parseTimes(time)
 
   return [
-    [year, months[month], parseInt(day), ...examStartTime],
-    [year, months[month], parseInt(day), ...examEndTime],
+    [year, months[month], parseInt(day, 10), ...examStartTime],
+    [year, months[month], parseInt(day, 10), ...examEndTime],
   ]
 }
 
@@ -149,7 +149,7 @@ function getExamTime(exam: string, year: number) {
  * @example "2019 Fall" -> "2019"
  */
 function getYear(term: string) {
-  return parseInt(term.split(' ')[0])
+  return parseInt(term.split(' ')[0], 10)
 }
 
 /**
@@ -181,7 +181,7 @@ function getRRule(bydays: ReturnType<typeof getByDays>, quarter: string) {
   let count = getTermLength(quarter) * bydays.length // Number of occurences in the quarter
   switch (quarter) {
     case 'Fall':
-      for (const byday of bydays) {
+      bydays.forEach((byday) => {
         switch (byday) {
           case 'TH':
           case 'FR':
@@ -191,7 +191,7 @@ function getRRule(bydays: ReturnType<typeof getByDays>, quarter: string) {
           default:
             break
         }
-      }
+      })
       break
     case 'Summer1':
       if (bydays.includes('MO')) count += 1 // instruction ends Monday of Week 6
@@ -206,9 +206,7 @@ function getRRule(bydays: ReturnType<typeof getByDays>, quarter: string) {
 }
 
 export function getEventsFromCourses(courses: Course[]) {
-  // Construct an array of VEvents for each event
-  const events = []
-  for (const course of courses) {
+  const events = courses.map((course) => {
     const {
       term,
       deptCode,
@@ -217,35 +215,32 @@ export function getEventsFromCourses(courses: Course[]) {
       section: { sectionType, instructors, meetings, finalExam },
     } = course
 
-    // Create a VEvent for each meeting
-    for (const meeting of meetings) {
-      if (meeting.time === 'TBA') {
-        // Skip this meeting if there is no meeting time
-        continue
-      }
-      const bydays = getByDays(meeting.days)
-      const classStartDate = getClassStartDate(term, bydays)
-      const [firstClassStart, firstClassEnd] = getFirstClass(classStartDate, meeting.time)
-      const rrule = getRRule(bydays, getQuarter(term))
+    const courseEvents: EventAttributes[] = meetings
+      .filter((meeting) => meeting.time !== 'TBA')
+      .map((meeting) => {
+        const bydays = getByDays(meeting.days)
+        const classStartDate = getClassStartDate(term, bydays)
+        const [firstClassStart, firstClassEnd] = getFirstClass(classStartDate, meeting.time)
+        const rrule = getRRule(bydays, getQuarter(term))
 
-      // Add VEvent to events array
-      events.push({
-        productId: 'antalmanac/ics',
-        startOutputType: 'local' as const,
-        endOutputType: 'local' as const,
-        title: `${deptCode} ${courseNumber} ${sectionType}`,
-        description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
-        location: `${meeting.bldg}`,
-        start: firstClassStart as DateTimeArray,
-        end: firstClassEnd as DateTimeArray,
-        recurrenceRule: rrule,
+        // Add VEvent to events array
+        return {
+          productId: 'antalmanac/ics',
+          startOutputType: 'local' as const,
+          endOutputType: 'local' as const,
+          title: `${deptCode} ${courseNumber} ${sectionType}`,
+          description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
+          location: `${meeting.bldg}`,
+          start: firstClassStart as DateTimeArray,
+          end: firstClassEnd as DateTimeArray,
+          recurrenceRule: rrule,
+        }
       })
-    }
 
     // Add Final to events
     if (finalExam && finalExam !== 'TBA') {
       const [examStart, examEnd] = getExamTime(finalExam, getYear(term))
-      events.push({
+      courseEvents.push({
         productId: 'antalmanac/ics',
         startOutputType: 'local' as const,
         endOutputType: 'local' as const,
@@ -255,8 +250,11 @@ export function getEventsFromCourses(courses: Course[]) {
         end: examEnd as DateTimeArray,
       })
     }
-  }
-  return events
+    return courseEvents
+  })
+
+  const flattenedEvents = events.flat()
+  return flattenedEvents
 }
 
 export const vTimeZoneSection =

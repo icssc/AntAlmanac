@@ -7,8 +7,8 @@
  * @see {@link https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator}
  */
 
+import type { EventInput } from '@fullcalendar/core'
 import type { Course, RepeatingCustomEvent } from '.'
-import type { Event } from 'react-big-calendar'
 
 /**
  * common properties for the internal calendar types
@@ -80,23 +80,24 @@ export function getCourseCalendarEvents(courses: Course[] = []): CourseCalendarE
         }
 
         const calendarEventsMeeting = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'].map((day, index) => {
-          if (meeting.days.includes(day)) {
-            const newCalendarEvent = {
-              color: course.section.color,
-              term: course.term,
-              title: `${course.deptCode} ${course.courseNumber}`,
-              courseTitle: course.courseTitle,
-              bldg: meeting.bldg,
-              instructors: course.section.instructors,
-              sectionCode: course.section.sectionCode,
-              sectionType: course.section.sectionType,
-              start: new Date(2018, 0, index, startHr, startMin),
-              finalExam: course.section.finalExam,
-              end: new Date(2018, 0, index, endHr, endMin),
-              isCustomEvent: false as const,
-            }
-            return newCalendarEvent
+          if (!meeting.days.includes(day)) {
+            return null
           }
+          const newCalendarEvent = {
+            color: course.section.color,
+            term: course.term,
+            title: `${course.deptCode} ${course.courseNumber}`,
+            courseTitle: course.courseTitle,
+            bldg: meeting.bldg,
+            instructors: course.section.instructors,
+            sectionCode: course.section.sectionCode,
+            sectionType: course.section.sectionType,
+            start: new Date(2018, 0, index, startHr, startMin),
+            finalExam: course.section.finalExam,
+            end: new Date(2018, 0, index, endHr, endMin),
+            isCustomEvent: false as const,
+          }
+          return newCalendarEvent
         })
 
         const definedCalendarEventsMeetings = calendarEventsMeeting.filter(notNull)
@@ -108,7 +109,7 @@ export function getCourseCalendarEvents(courses: Course[] = []): CourseCalendarE
   })
 
   const flatCalendarEventsForAllCourses = calendarEventsForAllCourses.flat()
-  return flatCalendarEventsForAllCourses satisfies Event[]
+  return flatCalendarEventsForAllCourses satisfies EventInput[]
 }
 
 /**
@@ -134,23 +135,24 @@ export function getFinalsCalendarEvents(courses: Course[] = []): CourseCalendarE
       }
 
       const finalsForCourse = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((day, index) => {
-        if (date.includes(day)) {
-          const newCalendarEvent = {
-            title: `${course.deptCode} ${course.courseNumber}`,
-            sectionCode: course.section.sectionCode,
-            sectionType: 'Fin',
-            bldg: course.section.meetings[0].bldg,
-            color: course.section.color,
-            start: new Date(2018, 0, index - 1, startHour, startMin),
-            end: new Date(2018, 0, index - 1, endHour, endMin),
-            finalExam: course.section.finalExam,
-            instructors: course.section.instructors,
-            term: course.term,
-            isCustomEvent: false as const,
-            customEventID: 0,
-          }
-          return newCalendarEvent
+        if (!date.includes(day)) {
+          return null
         }
+        const newCalendarEvent = {
+          title: `${course.deptCode} ${course.courseNumber}`,
+          sectionCode: course.section.sectionCode,
+          sectionType: 'Fin',
+          bldg: course.section.meetings[0].bldg,
+          color: course.section.color,
+          start: new Date(2018, 0, index - 1, startHour, startMin),
+          end: new Date(2018, 0, index - 1, endHour, endMin),
+          finalExam: course.section.finalExam,
+          instructors: course.section.instructors,
+          term: course.term,
+          isCustomEvent: false as const,
+          customEventID: 0,
+        }
+        return newCalendarEvent
       })
 
       const definedFinalsForCourse = finalsForCourse.filter(notNull)
@@ -158,7 +160,7 @@ export function getFinalsCalendarEvents(courses: Course[] = []): CourseCalendarE
     })
 
   const flatFinalsForAllCourses = finalsForAllCourses.flat()
-  return flatFinalsForAllCourses satisfies Event[]
+  return flatFinalsForAllCourses satisfies EventInput[]
 }
 
 /**
@@ -167,22 +169,23 @@ export function getFinalsCalendarEvents(courses: Course[] = []): CourseCalendarE
 export function getCustomCalendarEvents(customEvents: RepeatingCustomEvent[] = []): CustomCalendarEvent[] {
   const allCustomCalendarEvents = customEvents.map((customEvent) => {
     const calendarEventsSingleCustom = customEvent.days.map((day, dayIndex) => {
-      if (day) {
-        const startHour = parseInt(customEvent.start.slice(0, 2), 10)
-        const startMin = parseInt(customEvent.start.slice(3, 5), 10)
-        const endHour = parseInt(customEvent.end.slice(0, 2), 10)
-        const endMin = parseInt(customEvent.end.slice(3, 5), 10)
-
-        const newCalendarEvent = {
-          customEventID: customEvent.customEventID,
-          color: customEvent.color || '',
-          start: new Date(2018, 0, dayIndex, startHour, startMin),
-          isCustomEvent: true as const,
-          end: new Date(2018, 0, dayIndex, endHour, endMin),
-          title: customEvent.title,
-        }
-        return newCalendarEvent
+      if (!day) {
+        return null
       }
+      const startHour = parseInt(customEvent.start.slice(0, 2), 10)
+      const startMin = parseInt(customEvent.start.slice(3, 5), 10)
+      const endHour = parseInt(customEvent.end.slice(0, 2), 10)
+      const endMin = parseInt(customEvent.end.slice(3, 5), 10)
+
+      const newCalendarEvent = {
+        customEventID: customEvent.customEventID,
+        color: customEvent.color || '',
+        start: new Date(2018, 0, dayIndex, startHour, startMin),
+        isCustomEvent: true as const,
+        end: new Date(2018, 0, dayIndex, endHour, endMin),
+        title: customEvent.title,
+      }
+      return newCalendarEvent
     })
 
     const definedCalendarEventsSingleCustom = calendarEventsSingleCustom.filter(notNull)
@@ -190,5 +193,5 @@ export function getCustomCalendarEvents(customEvents: RepeatingCustomEvent[] = [
   })
 
   const flatCustomCalendarEvents = allCustomCalendarEvents.flat()
-  return flatCustomCalendarEvents satisfies Event[]
+  return flatCustomCalendarEvents satisfies EventInput[]
 }

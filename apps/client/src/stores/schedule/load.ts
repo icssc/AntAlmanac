@@ -25,7 +25,7 @@ interface LegacyUserData {
 /**
  * get course info from a websocket response
  */
-function getCourseInfo(SOCObject: WebsocResponse) {
+export function getCourseInfo(SOCObject: WebsocResponse) {
   const courseInfo: { [sectionCode: string]: CourseInfo } = {}
   for (const school of SOCObject.schools) {
     for (const department of school.departments) {
@@ -39,7 +39,7 @@ function getCourseInfo(SOCObject: WebsocResponse) {
               courseComment: course.courseComment,
               prerequisiteLink: course.prerequisiteLink,
             },
-            section: section,
+            section,
           }
         }
       }
@@ -55,6 +55,7 @@ function getCourseInfo(SOCObject: WebsocResponse) {
  * TODO: Remove if and when API is fixed
  */
 function removeDuplicateMeetings(websocResp: WebsocResponse): WebsocResponse {
+  const response = websocResp
   websocResp.schools.forEach((school, schoolIndex) => {
     school.departments.forEach((department, departmentIndex) => {
       department.courses.forEach((course, courseIndex) => {
@@ -65,7 +66,7 @@ function removeDuplicateMeetings(websocResp: WebsocResponse): WebsocResponse {
           for (const meeting of section.meetings) {
             let isNewMeeting = true
 
-            for (let i = 0; i < existingMeetings.length; i++) {
+            for (let i = 0; i < existingMeetings.length; i += 1) {
               const sameDayAndTime =
                 meeting.days === existingMeetings[i].days && meeting.time === existingMeetings[i].time
               const sameBuilding = meeting.bldg === existingMeetings[i].bldg
@@ -81,7 +82,7 @@ function removeDuplicateMeetings(websocResp: WebsocResponse): WebsocResponse {
                 existingMeetings[i] = {
                   days: existingMeetings[i].days,
                   time: existingMeetings[i].time,
-                  bldg: existingMeetings[i].bldg + ' & ' + meeting.bldg,
+                  bldg: `${existingMeetings[i].bldg} & ${meeting.bldg}`,
                 }
                 isNewMeeting = false
               }
@@ -91,14 +92,14 @@ function removeDuplicateMeetings(websocResp: WebsocResponse): WebsocResponse {
           }
 
           // Update websocResp with correct meetings
-          websocResp.schools[schoolIndex].departments[departmentIndex].courses[courseIndex].sections[
+          response.schools[schoolIndex].departments[departmentIndex].courses[courseIndex].sections[
             sectionIndex
           ].meetings = existingMeetings
         })
       })
     })
   })
-  return websocResp
+  return response
 }
 
 /**
@@ -127,87 +128,6 @@ async function queryWebsoc(params: Record<string, string>): Promise<WebsocRespon
   }
 }
 
-interface Options {
-  onSuccess?: () => void
-  onError?: (error: Error) => void
-}
-
-/**
- * load schedule
- */
-export async function loadSchedule(userID: string, rememberMe?: boolean, options?: Options) {
-  const { saved } = useScheduleStore.getState()
-
-  logAnalytics({
-    category: analyticsEnum.nav.title,
-    action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
-    label: userID,
-    value: rememberMe ? 1 : 0,
-  })
-
-  if (
-    userID == null ||
-    (!saved && !window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
-  ) {
-    return
-  }
-
-  userID = userID.replace(/\s+/g, '')
-
-  if (!userID) {
-    return
-  }
-
-  if (rememberMe) {
-    window.localStorage.setItem('userID', userID)
-  } else {
-    window.localStorage.removeItem('userID')
-  }
-
-  try {
-    let response_data = await fetch(LOAD_DATA_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userID: userID }),
-    })
-
-    const json = (await response_data.json()) as { userData: ScheduleSaveState }
-    const scheduleSaveState = json.userData
-
-    if (scheduleSaveState) {
-      if (await fromScheduleSaveState(scheduleSaveState)) {
-        options?.onSuccess?.()
-        return
-      }
-
-      if (await fromScheduleSaveState(convertLegacySchedule(scheduleSaveState as any))) {
-        options?.onSuccess?.()
-        return
-      }
-
-      /**
-       * Finally try getting and loading from legacy if none of the above works
-       * TODO: should be legacy endpoint
-       */
-      response_data = await fetch(LOAD_DATA_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userID: userID }),
-      })
-
-      const legacyResponse = (await response_data.json()) as { userData: LegacyUserData }
-      const legacyUserData = legacyResponse.userData
-
-      if (!legacyUserData || (await fromScheduleSaveState(convertLegacySchedule(legacyUserData)))) {
-        options?.onSuccess?.()
-      }
-    }
-    options?.onError?.(new Error(`Couldn't find schedules for username "${userID}".`))
-  } catch (e) {
-    options?.onError?.(new Error('Encountered network error while loading schedules.'))
-  }
-}
-
 /**
  * overwrite the current schedule with the provided save state.
  */
@@ -218,7 +138,7 @@ async function fromScheduleSaveState(saveState: ScheduleSaveState) {
 
   try {
     schedules.length = 0
-    const scheduleIndex = saveState.scheduleIndex
+    const savedScheduleIndex = saveState.scheduleIndex
 
     // Get a dictionary of all unique courses
     const courseDict: { [key: string]: Set<string> } = {}
@@ -234,14 +154,13 @@ async function fromScheduleSaveState(saveState: ScheduleSaveState) {
 
     // Get the course info for each course
     const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>()
-    for (const [term, courseSet] of Object.entries(courseDict)) {
-      const params = {
-        term: term,
-        sectionCodes: Array.from(courseSet).join(','),
-      }
-      const jsonResp = await queryWebsoc(params)
-      courseInfoDict.set(term, getCourseInfo(jsonResp))
-    }
+    console.log({ courseDict })
+
+    await Promise.all(
+      Object.entries(courseDict).map(([term, courseSet]) =>
+        queryWebsoc({ term, sectionCodes: Array.from(courseSet).join(',') })
+      )
+    )
 
     // Map course info to courses and transform shortened schedule to normal schedule
     for (const shortCourseSchedule of saveState.schedules) {
@@ -266,7 +185,7 @@ async function fromScheduleSaveState(saveState: ScheduleSaveState) {
       })
     }
 
-    useScheduleStore.setState({ schedules, scheduleIndex, previousStates })
+    useScheduleStore.setState({ schedules, scheduleIndex: savedScheduleIndex, previousStates })
     return true
   } catch (e) {
     console.log(e)
@@ -280,7 +199,7 @@ async function fromScheduleSaveState(saveState: ScheduleSaveState) {
 function convertLegacySchedule(legacyUserData: LegacyUserData) {
   const scheduleSaveState: ScheduleSaveState = { schedules: [], scheduleIndex: 0 }
   for (const scheduleName of legacyUserData.scheduleNames) {
-    scheduleSaveState.schedules.push({ scheduleName: scheduleName, courses: [], customEvents: [] })
+    scheduleSaveState.schedules.push({ scheduleName, courses: [], customEvents: [] })
   }
   for (const course of legacyUserData.addedCourses) {
     for (const scheduleIndex of course.scheduleIndices) {
@@ -293,4 +212,79 @@ function convertLegacySchedule(legacyUserData: LegacyUserData) {
     }
   }
   return scheduleSaveState
+}
+
+interface Options {
+  onSuccess?: () => void
+  onError?: (error: Error) => void
+}
+
+/**
+ * load schedule
+ */
+export async function loadSchedule(userID: string, rememberMe?: boolean, options?: Options) {
+  const { saved } = useScheduleStore.getState()
+
+  logAnalytics({
+    category: analyticsEnum.nav.title,
+    action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
+    label: userID,
+    value: rememberMe ? 1 : 0,
+  })
+
+  if (
+    !userID ||
+    (!saved && !window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
+  ) {
+    return
+  }
+
+  if (rememberMe) {
+    window.localStorage.setItem('userID', userID)
+  } else {
+    window.localStorage.removeItem('userID')
+  }
+
+  try {
+    let response = await fetch(LOAD_DATA_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userID }),
+    })
+
+    const json = (await response.json()) as { userData: ScheduleSaveState }
+    const scheduleSaveState = json.userData
+
+    if (scheduleSaveState) {
+      if (await fromScheduleSaveState(scheduleSaveState)) {
+        options?.onSuccess?.()
+        return
+      }
+
+      if (await fromScheduleSaveState(convertLegacySchedule(scheduleSaveState as any))) {
+        options?.onSuccess?.()
+        return
+      }
+
+      /**
+       * Finally try getting and loading from legacy if none of the above works
+       * TODO: should be legacy endpoint
+       */
+      response = await fetch(LOAD_DATA_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userID }),
+      })
+
+      const legacyResponse = (await response.json()) as { userData: LegacyUserData }
+      const legacyUserData = legacyResponse.userData
+
+      if (!legacyUserData || (await fromScheduleSaveState(convertLegacySchedule(legacyUserData)))) {
+        options?.onSuccess?.()
+      }
+    }
+    options?.onError?.(new Error(`Couldn't find schedules for username "${userID}".`))
+  } catch (e) {
+    options?.onError?.(new Error('Encountered network error while loading schedules.'))
+  }
 }

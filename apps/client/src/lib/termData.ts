@@ -3,8 +3,11 @@ const defaultTerm = 0
 
 class Term {
   shortName: `${string} ${string}`
+
   longName: string
+
   startDate?: [number, number, number]
+
   constructor(shortName: `${string} ${string}`, longName: string, startDate?: [number, number, number]) {
     this.shortName = shortName
     this.longName = longName
@@ -68,7 +71,7 @@ const termData = [
   new Term('2014 Fall', '2014 Fall Quarter'),
 ]
 
-//returns the default term
+// returns the default term
 function getDefaultTerm() {
   return termData[defaultTerm]
 }

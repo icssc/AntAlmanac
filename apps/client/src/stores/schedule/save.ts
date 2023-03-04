@@ -7,19 +7,15 @@ import type { Schedule, ShortCourseSchedule } from '.'
  * convert schedule to shortened schedule (no course info) for saving.
  */
 export function convertSchedulesToSave(schedules: Schedule[]) {
-  const shortSchedules: ShortCourseSchedule[] = schedules.map((schedule) => {
-    return {
-      scheduleName: schedule.scheduleName,
-      customEvents: schedule.customEvents,
-      courses: schedule.courses.map((course) => {
-        return {
-          color: course.section.color,
-          term: course.term,
-          sectionCode: course.section.sectionCode,
-        }
-      }),
-    }
-  })
+  const shortSchedules: ShortCourseSchedule[] = schedules.map((schedule) => ({
+    scheduleName: schedule.scheduleName,
+    customEvents: schedule.customEvents,
+    courses: schedule.courses.map((course) => ({
+      color: course.section.color,
+      term: course.term,
+      sectionCode: course.section.sectionCode,
+    })),
+  }))
   return { schedules: shortSchedules, scheduleIndex: 0 }
 }
 
@@ -32,8 +28,6 @@ interface Options {
  * saves the current schedule
  */
 export async function saveSchedule(userID: string, rememberMe: boolean, options?: Options) {
-  const { schedules } = useScheduleStore.getState()
-
   logAnalytics({
     category: analyticsEnum.nav.title,
     action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
@@ -45,35 +39,31 @@ export async function saveSchedule(userID: string, rememberMe: boolean, options?
     return
   }
 
-  userID = userID.replace(/\s+/g, '')
+  const { schedules } = useScheduleStore.getState()
 
-  if (userID.length > 0) {
-    if (rememberMe) {
-      window.localStorage.setItem('userID', userID)
-    } else {
-      window.localStorage.removeItem('userID')
+  if (rememberMe) {
+    window.localStorage.setItem('userID', userID)
+  } else {
+    window.localStorage.removeItem('userID')
+  }
+
+  try {
+    if (!schedules) {
+      throw new Error('No schedule to save')
     }
 
-    try {
-      if (!schedules) {
-        throw new Error('No schedule to save')
-      }
+    const userData = convertSchedulesToSave(schedules)
 
-      const userData = convertSchedulesToSave(schedules)
+    await fetch(SAVE_DATA_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userID, userData }),
+    })
 
-      await fetch(SAVE_DATA_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userID, userData }),
-      })
-
-      useScheduleStore.setState({ saved: true })
-      options?.onSuccess?.()
-    } catch (e) {
-      console.log(e)
-      options?.onError?.()
-    }
+    useScheduleStore.setState({ saved: true })
+    options?.onSuccess?.()
+  } catch (e) {
+    console.log(e)
+    options?.onError?.()
   }
 }

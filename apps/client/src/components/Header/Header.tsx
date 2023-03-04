@@ -28,10 +28,10 @@ export default function Header() {
     <AppBar enableColorOnDark position="static" sx={{ '& .MuiButtonBase-root': { color: 'inherit' } }}>
       <Toolbar>
         <IconButton onClick={openDrawer}>
-          <MenuIcon fontSize="large" />
+          <MenuIcon />
         </IconButton>
 
-        <Box sx={{ flex: 1 }}>
+        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
           <Button href="/">
             <Logo />
           </Button>
@@ -45,7 +45,7 @@ export default function Header() {
           </List>
         </Drawer>
 
-        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
           <Notifications />
           <News />
           <Settings />

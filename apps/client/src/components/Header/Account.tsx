@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Box, IconButton, Menu, MenuItem, Tooltip } from '@mui/material'
 import { AccountCircle as AccountCircleIcon } from '@mui/icons-material'
+import useScript from '$hooks/useScript'
 
 /**
  * button that opens menu with account controls
@@ -8,11 +9,16 @@ import { AccountCircle as AccountCircleIcon } from '@mui/icons-material'
 export default function Account() {
   const [anchorEl, setAnchorEl] = useState<HTMLElement>()
   const [loggedIn, setLoggedIn] = useState(false)
-
   const ref = useRef<HTMLButtonElement>(null)
 
+  /**
+   * load Google One-Tap library dynamically
+   * @see {@link https://developers.google.com/identity/gsi/web/guides/client-library}
+   */
+  const scriptStatus = useScript('https://accounts.google.com/gsi/client')
+
   useEffect(() => {
-    if (loggedIn) {
+    if (loggedIn || scriptStatus !== 'ready') {
       return
     }
 
@@ -35,7 +41,7 @@ export default function Account() {
         shape: 'circle',
       })
     }
-  }, [loggedIn])
+  }, [loggedIn, scriptStatus])
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setAnchorEl(event.currentTarget)
