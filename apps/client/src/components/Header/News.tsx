@@ -18,29 +18,23 @@ import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import trpc from '$lib/trpc'
 
 /**
- * button that opens a modal with the latest unread news items
+ * button that opens a popover with news items
  */
 export default function News() {
   const [anchorEl, setAnchorEl] = useState<Element>()
   const [showDot, setShowDot] = useState(false)
 
-  /**
-   * get saved date of latest news item read
-   */
-  const dateStr = typeof Storage === 'undefined' ? undefined : window.localStorage.getItem('newsDate')
-
   const query = trpc.news.findAll.useInfiniteQuery(
-    { date: dateStr ? new Date(dateStr) : undefined },
+    {},
     {
       onSuccess(data) {
-        const serverDate = data.pages.at(-1)?.news?.[0]?.createdAt
-        if (dateStr == null || (serverDate && new Date(dateStr) < serverDate)) {
+        const latestNewsDateStr = typeof Storage === 'undefined' ? undefined : window.localStorage.getItem('newsDate')
+        const serverDate = data.pages.at(-1)?.news?.at(-1)?.createdAt
+        if (!latestNewsDateStr || (serverDate && new Date(latestNewsDateStr) < serverDate)) {
           setShowDot(true)
         }
       },
-      getNextPageParam(lastPage) {
-        return lastPage.nextCursor
-      },
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   )
 
@@ -61,7 +55,9 @@ export default function News() {
       if (element && query.hasNextPage) {
         observer.current.observe(element)
       }
-    }, [query.data])
+    },
+    [query.data]
+  )
 
   const handleOpen = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.preventDefault()
