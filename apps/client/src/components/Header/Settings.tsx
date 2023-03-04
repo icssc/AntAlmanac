@@ -1,15 +1,5 @@
 import { useState } from 'react'
-import {
-  Box,
-  Divider,
-  Drawer,
-  IconButton,
-  Paper,
-  ToggleButtonGroup,
-  ToggleButton,
-  Tooltip,
-  Typography,
-} from '@mui/material'
+import { Box, IconButton, Popover, ToggleButtonGroup, ToggleButton, Tooltip } from '@mui/material'
 import {
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
@@ -24,14 +14,14 @@ import useSettingsStore from '$stores/settings'
  */
 export default function Settings() {
   const { colorScheme, setColorScheme } = useSettingsStore()
-  const [open, setOpen] = useState(false)
+  const [anchorEl, setAnchorEl] = useState<Element>()
 
-  const handleOpen = () => {
-    setOpen(true)
+  const handleOpen = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    setAnchorEl(e.currentTarget)
   }
 
   const handleClose = () => {
-    setOpen(false)
+    setAnchorEl(undefined)
   }
 
   /**
@@ -54,37 +44,30 @@ export default function Settings() {
         </IconButton>
       </Tooltip>
 
-      <Drawer anchor="right" open={open} onClose={handleClose}>
-        <Paper sx={{ height: 1 }}>
-          <Box sx={{ p: 2 }}>
-            <Typography variant="body1" fontWeight="600">
-              Settings
-            </Typography>
-          </Box>
-
-          <Divider />
-
-          <Box sx={{ px: 4, '& .MuiSvgIcon-root': { mr: 1 } }}>
-            <Typography variant="body1" sx={{ my: 2 }}>
-              Mode
-            </Typography>
-            <ToggleButtonGroup exclusive fullWidth value={colorScheme} onChange={handleChange}>
-              <ToggleButton value="light">
-                <LightModeIcon fontSize="small" />
-                Light
-              </ToggleButton>
-              <ToggleButton value="dark">
-                <DarkModeIcon fontSize="small" />
-                Dark
-              </ToggleButton>
-              <ToggleButton value="auto">
-                <SettingsBrightnessIcon fontSize="small" />
-                Auto
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </Box>
-        </Paper>
-      </Drawer>
+      <Popover
+        open={!!anchorEl}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Box sx={{ p: 2, '& .MuiSvgIcon-root': { mr: 1 } }}>
+          <ToggleButtonGroup exclusive fullWidth value={colorScheme} onChange={handleChange}>
+            <ToggleButton value="light">
+              <LightModeIcon fontSize="small" />
+              Light
+            </ToggleButton>
+            <ToggleButton value="dark">
+              <DarkModeIcon fontSize="small" />
+              Dark
+            </ToggleButton>
+            <ToggleButton value="auto">
+              <SettingsBrightnessIcon fontSize="small" />
+              Auto
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+      </Popover>
     </>
   )
 }

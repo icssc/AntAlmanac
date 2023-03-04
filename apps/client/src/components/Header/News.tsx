@@ -60,8 +60,6 @@ export default function News() {
   )
 
   const handleOpen = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    e.preventDefault()
-    e.stopPropagation()
     setAnchorEl(e.currentTarget)
     logAnalytics({
       category: analyticsEnum.nav.title,
@@ -69,9 +67,7 @@ export default function News() {
     })
   }
 
-  const handleClose = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const handleClose = (_e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     setAnchorEl(undefined)
   }
 

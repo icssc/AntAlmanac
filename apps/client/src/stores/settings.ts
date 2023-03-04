@@ -56,7 +56,9 @@ const useSettingsStore = create<SettingsStore>((set) => ({
 
   isDarkMode:
     (typeof Storage !== 'undefined' && window.localStorage.getItem('colorScheme') === 'dark') ||
-    window.matchMedia('(prefers-color-scheme: dark)').matches,
+    (typeof Storage !== 'undefined' &&
+      window.localStorage.getItem('colorScheme') === 'auto' &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches),
 }))
 
 export default useSettingsStore

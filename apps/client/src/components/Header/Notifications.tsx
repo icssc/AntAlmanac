@@ -1,68 +1,49 @@
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 import { Notifications as NotificationsIcon } from '@mui/icons-material'
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
-  Tooltip,
-} from '@mui/material'
+import { Box, Button, Divider, IconButton, List, ListItem, Paper, Popover, Tooltip, Typography } from '@mui/material'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
-
-interface Props {
-  /**
-   * whether this button is in a MUI List and should be a ListItem;
-   * otherwise assumed to be in Menu and renders as MenuItem
-   */
-  listItem?: boolean
-}
 
 /**
  * notification bell that opens a modal with notifications
  */
-export default function Notifications(props?: Props) {
-  const [open, setOpen] = useState(false)
+export default function Notifications() {
+  const [anchorEl, setAnchorEl] = useState<Element>()
 
-  function handleOpen(_e: React.MouseEvent<HTMLElement, MouseEvent>) {
-    setOpen(true)
+  const handleOpen = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    setAnchorEl(e.currentTarget)
     logAnalytics({
       category: analyticsEnum.nav.title,
       action: analyticsEnum.nav.actions.CLICK_NOTIFICATIONS,
     })
   }
 
-  function handleClose(_e: React.MouseEvent<HTMLElement, MouseEvent>) {
-    setOpen(false)
+  const handleClose = (_e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    setAnchorEl(undefined)
   }
 
-  const WrapperElement = props?.listItem ? ListItem : Fragment
-  const ClickElement = props?.listItem ? ListItemButton : MenuItem
+  const query: any = {}
 
   return (
-    <WrapperElement>
+    <>
       <Tooltip title="Notifications Registered">
-        <ClickElement onClick={handleOpen} dense={!props?.listItem} href="">
-          <ListItemIcon>
-            <NotificationsIcon />
-          </ListItemIcon>
-          <ListItemText>Notifications</ListItemText>
-        </ClickElement>
+        <IconButton onClick={handleOpen}>
+          <NotificationsIcon />
+        </IconButton>
       </Tooltip>
 
-      <Dialog open={open} onClose={handleClose} scroll="paper">
-        <DialogTitle>Notifications You&apos;ve Registered For</DialogTitle>
-
-        <DialogContent dividers={true}>
-          <DialogContentText>
+      <Popover
+        open={!!anchorEl}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Paper>
+          <Box>
+            <Typography variant="h5" sx={{ m: 2 }}>
+              Notifications You&apos;ve Registered For
+            </Typography>
+            <Divider sx={{ my: 1 }} />
             {query.data?.phoneNumber ? (
               <Box>
                 Watchlist for {query.data.phoneNumber}:
@@ -75,15 +56,16 @@ export default function Notifications(props?: Props) {
                 </List>
               </Box>
             ) : (
-              'You have not registered for SMS notifications on this PC!'
+              <Typography sx={{ m: 2 }}>You have not registered for SMS notifications on this PC!</Typography>
             )}
-          </DialogContentText>
-        </DialogContent>
+            <Divider sx={{ my: 1 }} />
+          </Box>
 
-        <DialogActions>
-          <Button onClick={handleClose}>Close</Button>
-        </DialogActions>
-      </Dialog>
-    </WrapperElement>
+          <Box sx={{ p: 1, display: 'flex', justifyContent: 'flex-end' }}>
+            <Button onClick={handleClose}>Close</Button>
+          </Box>
+        </Paper>
+      </Popover>
+    </>
   )
 }
