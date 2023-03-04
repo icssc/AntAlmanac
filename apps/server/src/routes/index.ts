@@ -7,7 +7,7 @@ export const appRouter = router({
   '': procedure.query(() => 'Hello, World!'),
   news: newsRouter,
   notifications: notificationsRouter,
-  schedule: scheduleRouter
+  schedule: scheduleRouter,
 })
 
 export type AppRouter = typeof appRouter

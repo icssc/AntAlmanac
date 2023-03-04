@@ -14,16 +14,10 @@ const newsRouter = router({
    * find all news starting from a provided date
    */
   findAll: procedure.input(querySchema).query(async ({ input }) => {
-    const news = await NewsModel
-        .query("stable")
-        .eq("Elysia")
-        .sort('ascending')
-        .limit(3)
-        .startAt(input.cursor)
-        .exec()
+    const news = await NewsModel.query('stable').eq('Elysia').sort('ascending').limit(3).startAt(input.cursor).exec()
     return {
       news,
-      nextCursor: news.lastKey
+      nextCursor: news.lastKey,
     }
   }),
 
@@ -31,7 +25,7 @@ const newsRouter = router({
    * given news data, insert a new news entry
    */
   insert: procedure.input(newsSchema.optional()).mutation(async ({ input }) => {
-    const news = await NewsModel.create({ 
+    const news = await NewsModel.create({
       ...input,
       id: randomUUID(),
     })
@@ -43,10 +37,10 @@ const newsRouter = router({
    */
   deleteAll: procedure.mutation(async () => {
     const news = await NewsModel.scan().exec()
-    news.forEach(async k => {
+    news.forEach(async (k) => {
       k.delete()
     })
-  })
+  }),
 })
 
 export default newsRouter

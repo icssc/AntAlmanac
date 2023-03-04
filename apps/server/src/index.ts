@@ -14,10 +14,13 @@ async function run() {
 
   app.use(cors({ credentials: true, origin: true }))
 
-  app.use('/trpc', createExpressMiddleware({
-    router: appRouter,
-    createContext
-  }))
+  app.use(
+    '/trpc',
+    createExpressMiddleware({
+      router: appRouter,
+      createContext,
+    })
+  )
 
   app.listen(port, () => {
     console.log(`🚀 Server ready at http://localhost:${port}`)

@@ -7,20 +7,20 @@ interface Notification extends Item {
   phoneNumbers: string[]
 }
 
-const NotificationModel = dynamoose.model<Notification>("Notifications", {
+const NotificationModel = dynamoose.model<Notification>('Notifications', {
   sectionCode: {
     type: String,
     hashKey: true,
   },
   courseTitle: {
     type: String,
-    rangeKey: true
+    rangeKey: true,
   },
   phoneNumbers: {
     type: Array,
     schema: [String],
-    default: []
+    default: [],
   },
-});
+})
 
 export default NotificationModel

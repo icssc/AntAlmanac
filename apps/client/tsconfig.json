@@ -9,6 +9,8 @@
       "@apps/server": ["../server/src"],
       "@apps/server/*": ["../server/src/*"],
       "@packages/schemas/*": ["../../packages/schemas/src/*"],
+      "@packages/peterportal": ["../../packages/peterportal/src"],
+      "@packages/peterportal/*": ["../../packages/peterportal/src/*"],
 
       // frontend aliases
       "$components/*": ["src/components/*"],
@@ -19,7 +21,8 @@
       "$stores/*": ["src/stores/*"],
 
       // backend aliases
-      "$models/*": ["../server/src/models/*"]
+      "$models/*": ["../server/src/models/*"],
+      "$services/*": ["../server/src/services/*"],
     }
   }
 }

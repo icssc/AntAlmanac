@@ -10,12 +10,11 @@ const notificationsRouter = router({
   insert: procedure.input(notificationsSchema).mutation(async ({ input }) => {
     const existing = await NotificationModel.get({
       sectionCode: input.sectionCode,
-      courseTitle: input.courseTitle
+      courseTitle: input.courseTitle,
     })
 
     // Dynamoose TypeScript doesn't support this statement natively atm
-    const updatePhoneNumbers: Partial<any> = 
-        { [existing ? '$ADD' : '$SET']: { phoneNumbers: [input.phoneNumber] } }
+    const updatePhoneNumbers: Partial<any> = { [existing ? '$ADD' : '$SET']: { phoneNumbers: [input.phoneNumber] } }
 
     const notification = await NotificationModel.update(
       { sectionCode: input.sectionCode, courseTitle: input.courseTitle },
@@ -29,9 +28,9 @@ const notificationsRouter = router({
    */
   find: procedure.input(z.string()).query(async ({ input }) => {
     const allNotifications = await NotificationModel.scan().exec()
-    const notifications = allNotifications.filter(n => n.phoneNumbers.includes(input))
+    const notifications = allNotifications.filter((n) => n.phoneNumbers.includes(input))
     return notifications
-  })
+  }),
 })
 
 export default notificationsRouter

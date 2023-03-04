@@ -13,26 +13,29 @@ interface News extends Item {
   stable: 'Elysia'
 }
 
-const NewsSchema = new dynamoose.Schema({
-  id: {
-    type: String,
-    hashKey: true,
+const NewsSchema = new dynamoose.Schema(
+  {
+    id: {
+      type: String,
+      hashKey: true,
+    },
+    stable: {
+      type: String,
+      default: 'Elysia',
+      forceDefault: true,
+      index: {
+        type: 'global',
+        rangeKey: 'createdAt',
+      },
+    },
+    title: String,
+    body: String,
   },
-  stable: {
-    type: String,
-    default: 'Elysia',
-    forceDefault: true,
-    index: {
-      type: 'global',
-      rangeKey: 'createdAt',
-    }
-  },
-  title: String,
-  body: String,
-}, {
-  timestamps: true,
-})
+  {
+    timestamps: true,
+  }
+)
 
-const NewsModel = dynamoose.model<News>("News", NewsSchema);
+const NewsModel = dynamoose.model<News>('News', NewsSchema)
 
 export default NewsModel

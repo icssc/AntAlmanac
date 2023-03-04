@@ -4,7 +4,10 @@
     "baseUrl": ".",
     "paths": {
       "$models/*": ["src/models/*"],
+      "$services/*": ["src/services/*"],
       "@packages/schemas/*": ["../../packages/schemas/src/*"],
+      "@packages/peterportal": ["../../packages/peterportal/src"],
+      "@packages/peterportal/*": ["../../packages/peterportal/src/*"]
     }
   }
 }
