@@ -45,7 +45,9 @@ export default function Beta() {
       </Tooltip>
 
       <Dialog open={open}>
-        <DialogTitle variant="h4" align="center" color="primary" fontWeight="600">Beta Website</DialogTitle>
+        <DialogTitle variant="h4" align="center" color="primary" fontWeight="600">
+          Beta Website
+        </DialogTitle>
 
         <DialogContent>
           <Box
