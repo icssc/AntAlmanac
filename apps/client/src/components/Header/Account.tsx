@@ -33,11 +33,11 @@ export default function Account() {
       window.google.accounts.id.renderButton(ref.current, {
         type: 'icon',
         size: 'medium',
-        shape: 'circle'
+        shape: 'circle',
       })
     }
     window.google.accounts.id.prompt()
-  }, [])
+  }, [loggedIn])
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setAnchorEl(event.currentTarget)
@@ -56,7 +56,7 @@ export default function Account() {
           </IconButton>
         ) : (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Box ref={ref}></Box>
+            <Box ref={ref} />
           </Box>
         )}
       </Tooltip>

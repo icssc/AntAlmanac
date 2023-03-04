@@ -56,7 +56,7 @@ export default function News() {
         observer.current.observe(element)
       }
     },
-    [query.data]
+    [query]
   )
 
   const handleOpen = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -67,7 +67,7 @@ export default function News() {
     })
   }
 
-  const handleClose = (_e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleClose = () => {
     setAnchorEl(undefined)
   }
 
@@ -111,9 +111,8 @@ export default function News() {
           {!query.isLoading && query.data?.pages.length ? (
             // LOADED and DATA
             <List sx={{ width: 300, height: 300, overflowY: 'auto' }} disablePadding dense>
-              {query.data?.pages.map((page, i) => (
-                <Fragment key={i}>
-                  {page.news.map((news) => (
+              {query.data?.pages.map((page) => (
+                  page.news.map((news) => (
                     <Fragment key={news.id}>
                       <ListItem>
                         <ListItemText>
@@ -126,8 +125,7 @@ export default function News() {
                       </ListItem>
                       <Divider />
                     </Fragment>
-                  ))}
-                </Fragment>
+                  ))
               ))}
               {query.hasNextPage && <ListItem ref={lastElementRef}>Load More</ListItem>}
             </List>

@@ -5,9 +5,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
-  Link,
   ListItem,
   ListItemButton,
   Tooltip,
@@ -55,7 +53,7 @@ export default function Beta() {
             component="img"
             src="https://imgs.search.brave.com/1STD62jqpCVsPWc9ophclCBdoLlch-43XFMQTYCj3fM/rs:fit:220:316:1/g:ce/aHR0cHM6Ly9jLnRl/bm9yLmNvbS90UGYt/VXc3RnN5RUFBQUFN/L2VseXNpYS1jaGli/aS1hbmltZS5naWY.gif"
             alt="Elysia my beloved"
-          ></Box>
+          />
         </DialogContent>
 
         <DialogActions>

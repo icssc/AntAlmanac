@@ -15,11 +15,7 @@ export default function NotificationsForm() {
   const mutation = trpc.notifications.insert.useMutation()
 
   const onSubmit = (formData: notificationsData) => {
-    mutation.mutate(formData, {
-      onSuccess(response) {
-        console.log({ response })
-      },
-    })
+    mutation.mutate(formData)
   }
 
   return (

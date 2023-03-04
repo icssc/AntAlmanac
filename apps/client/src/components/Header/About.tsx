@@ -74,7 +74,7 @@ export default function About() {
               <Box
                 component="img"
                 src="https://contrib.rocks/image?repo=icssc/antalmanac"
-                width={'100%'}
+                width="100%"
                 alt="AntAlmanac Contributors"
               />
             </Link>
