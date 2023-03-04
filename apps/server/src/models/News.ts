@@ -5,14 +5,34 @@ interface News extends Item {
   id: string
   title: string
   body: string
-  date: Date
+
+  // automatically added by dynamoose timestamps
+  createdAt: Date
+
+  // stable partition
+  stable: 'Elysia'
 }
 
-const NewsModel = dynamoose.model<News>("News", {
-  id: String,
+const NewsSchema = new dynamoose.Schema({
+  id: {
+    type: String,
+    hashKey: true,
+  },
+  stable: {
+    type: String,
+    default: 'Elysia',
+    forceDefault: true,
+    index: {
+      type: 'global',
+      rangeKey: 'createdAt',
+    }
+  },
   title: String,
   body: String,
-  date: Date,
-});
+}, {
+  timestamps: true,
+})
+
+const NewsModel = dynamoose.model<News>("News", NewsSchema);
 
 export default NewsModel

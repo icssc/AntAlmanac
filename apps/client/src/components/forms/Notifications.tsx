@@ -25,7 +25,9 @@ export default function NotificationsForm() {
   return (
     <>
       <Box sx={{ maxWidth: 300, mx: 'auto' }}>
-        <Typography variant="h4" color="primary">Notifications Form</Typography>
+        <Typography variant="h4" color="primary">
+          Notifications Form
+        </Typography>
         <Box component="form" onSubmit={handleSubmit(onSubmit)}>
           <TextField {...register('sectionCode')} label="Section Code" fullWidth margin="dense" />
           <TextField {...register('courseTitle')} label="Course Title" fullWidth margin="normal" />
@@ -35,9 +37,7 @@ export default function NotificationsForm() {
           </Button>
         </Box>
       </Box>
-      <Box sx={{ whiteSpace: 'pre' }}>
-        {JSON.stringify(query.data, null, 2)}
-      </Box>
+      <Box sx={{ whiteSpace: 'pre' }}>{JSON.stringify(query.data, null, 2)}</Box>
     </>
   )
 }

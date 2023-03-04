@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useCallback, useRef, useState } from 'react'
 import {
   Badge,
   Box,
@@ -27,16 +27,20 @@ export default function News() {
   const clientDateStr = typeof Storage === 'undefined' ? undefined : window.localStorage.getItem('newsDate')
   const clientDate = clientDateStr ? new Date(clientDateStr) : undefined
 
-  const query = trpc.news.findAll.useQuery(clientDate, {
-    onSuccess(data) {
-      if (data.length) {
-        const serverDate = data[0].date
-        if (clientDateStr == null || new Date(clientDateStr) < serverDate) {
+  const query = trpc.news.findAll.useInfiniteQuery(
+    { date: clientDate },
+    {
+      onSuccess(data) {
+        const serverDate = data.pages.at(-1)?.news?.[0]?.createdAt
+        if (clientDateStr == null || (serverDate && new Date(clientDateStr) < serverDate)) {
           setShowDot(true)
         }
-      }
-    },
-  })
+      },
+      getNextPageParam(lastPage) {
+        return lastPage.nextCursor
+      },
+    }
+  )
 
   const handleOpen = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.preventDefault()
@@ -55,11 +59,32 @@ export default function News() {
   }
 
   const saveLatestRead = () => {
-    if (typeof Storage !== 'undefined' && query.data?.[0]) {
-      window.localStorage.setItem('newsDate', query.data[0].date.toLocaleString())
+    if (typeof Storage !== 'undefined' && query.data?.pages?.at(-1)?.news?.[0]) {
+      window.localStorage.setItem('newsDate', query.data.pages.at(-1)?.news[0].createdAt.toLocaleString() || '')
     }
     setShowDot(false)
   }
+
+  const observer = useRef<IntersectionObserver>()
+
+  const lastElementRef = useCallback(
+    (element: HTMLElement | null) => {
+      if (observer.current) {
+        observer.current.disconnect()
+      }
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && query.hasNextPage) {
+          query.fetchNextPage()
+        }
+      })
+
+      if (element && query.hasNextPage) {
+        observer.current.observe(element)
+      }
+    },
+    [query.data]
+  )
 
   return (
     <>
@@ -88,23 +113,28 @@ export default function News() {
               <Skeleton variant="text" animation="wave" width="42.069%" />
             </Box>
           )}
-          {!query.isLoading && query.data?.length ? (
+          {!query.isLoading && query.data?.pages.length ? (
             // LOADED and DATA
-            <List sx={{ width: 300, overflowY: 'auto' }} disablePadding dense>
-              {query.data?.map(news => (
-                <Fragment key={news.id}>
-                  <ListItem>
-                    <ListItemText>
-                      <Typography>{news.title}</Typography>
-                      <Typography variant="body2">{news.body}</Typography>
-                      <Typography variant="caption" color="textSecondary">
-                        {news.date.toLocaleString()}
-                      </Typography>
-                    </ListItemText>
-                  </ListItem>
-                  <Divider />
+            <List sx={{ width: 300, height: 300, overflowY: 'auto' }} disablePadding dense>
+              {query.data?.pages.map((page, i) => (
+                <Fragment key={i}>
+                  {page.news.map((news) => (
+                    <Fragment key={news.id}>
+                      <ListItem>
+                        <ListItemText>
+                          <Typography>{news.title}</Typography>
+                          <Typography variant="body2">{news.body}</Typography>
+                          <Typography variant="caption" color="textSecondary">
+                            {news.createdAt.toLocaleString()}
+                          </Typography>
+                        </ListItemText>
+                      </ListItem>
+                      <Divider />
+                    </Fragment>
+                  ))}
                 </Fragment>
               ))}
+              {query.hasNextPage && <ListItem ref={lastElementRef}>Load More</ListItem>}
             </List>
           ) : (
             // LOADED and NO DATA

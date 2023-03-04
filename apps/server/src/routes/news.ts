@@ -4,15 +4,27 @@ import { newsSchema } from '@packages/schemas/news'
 import NewsModel from '$models/News'
 import { procedure, router } from '../trpc'
 
+const querySchema = z.object({
+  date: z.date().nullish(),
+  cursor: z.any().nullish(),
+})
+
 const newsRouter = router({
   /**
    * find all news starting from a provided date
    */
-  findAll: procedure.input(z.date().optional()).query(async ({ input }) => {
-    const news = await NewsModel.scan().exec()
-    return news
-      .filter(n => n.date > (input || 0))
-      .sort((a, b) => a.date < b.date ? 1 : a.date > b.date ? 1 : 0)
+  findAll: procedure.input(querySchema).query(async ({ input }) => {
+    const news = await NewsModel
+        .query("stable")
+        .eq("Elysia")
+        .sort('ascending')
+        .limit(3)
+        .startAt(input.cursor)
+        .exec()
+    return {
+      news,
+      nextCursor: news.lastKey
+    }
   }),
 
   /**
@@ -22,7 +34,6 @@ const newsRouter = router({
     const news = await NewsModel.create({ 
       ...input,
       id: randomUUID(),
-      date: new Date()
     })
     return news
   }),
