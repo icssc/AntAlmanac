@@ -75,3 +75,37 @@ export interface LegacyUserData {
   customEvents: LegacyRepeatingCustomEvent[]
 }
 
+export const defaultCourseDetails: CourseDetails = {
+  courseTitle: '',
+  courseNumber: '',
+  courseComment: '',
+  deptCode: '',
+  prerequisiteLink: '',
+}
+
+export const defaultSection: Section = {
+  sectionNum: '',
+  status: '',
+  sectionCode: '',
+  sectionType: '',
+  sectionComment: '',
+  units: '',
+  numRequested: '',
+  numOnWaitlist: '',
+  numNewOnlyReserved: '',
+  numCurrentlyEnrolled: {
+    totalEnrolled: '',
+    sectionEnrolled: '',
+  },
+  instructors: [],
+  meetings: [],
+  maxCapacity: '',
+  finalExam: '',
+  restrictions: '',
+}
+
+export const defaultCourseInfo: CourseInfo = {
+  courseDetails: structuredClone(defaultCourseDetails),
+  section: structuredClone(defaultSection)
+}
+
