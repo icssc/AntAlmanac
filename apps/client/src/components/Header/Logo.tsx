@@ -5,7 +5,7 @@ import { useTheme, useMediaQuery } from '@mui/material'
  */
 export default function Logo() {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   if (isMobile) {
     return (
