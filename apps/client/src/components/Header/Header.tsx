@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { AppBar, Box, Button, Drawer, IconButton, List, Toolbar, useTheme, useMediaQuery } from '@mui/material'
+import { AppBar, Box, Button, Drawer, IconButton, List, Toolbar } from '@mui/material'
 import { Menu as MenuIcon } from '@mui/icons-material'
 import About from './About'
 import Feedback from './Feedback'
-import Beta from './Beta'
+import Old from './Old'
 import Logo from './Logo'
 import Notifications from './Notifications'
 import Settings from './Settings'
@@ -14,9 +14,6 @@ import Account from './Account'
  * main website header
  */
 export default function Header() {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-
   const [open, setOpen] = useState(false)
 
   const openDrawer = () => {
@@ -30,11 +27,9 @@ export default function Header() {
   return (
     <AppBar enableColorOnDark position="static" sx={{ '& .MuiButtonBase-root': { color: 'inherit' } }}>
       <Toolbar>
-        {isMobile && (
-          <IconButton onClick={openDrawer}>
-            <MenuIcon fontSize="large" />
-          </IconButton>
-        )}
+        <IconButton onClick={openDrawer}>
+          <MenuIcon fontSize="large" />
+        </IconButton>
 
         <Box sx={{ flex: 1 }}>
           <Button href="/">
@@ -42,23 +37,15 @@ export default function Header() {
           </Button>
         </Box>
 
-        {!isMobile && (
-          <List sx={{ display: 'flex' }}>
-            <About />
-            <Feedback />
-            <Beta />
-          </List>
-        )}
-
         <Drawer open={open} onClose={closeDrawer}>
           <List sx={{ width: 200 }}>
             <About />
             <Feedback />
-            <Beta />
+            <Old />
           </List>
         </Drawer>
 
-        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
           <Notifications />
           <News />
           <Settings />

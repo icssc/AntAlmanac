@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Notifications as NotificationsIcon } from '@mui/icons-material'
+import { NotificationsOutlined as NotificationsIcon } from '@mui/icons-material'
 import { Box, IconButton, List, ListItem, Popover, Tooltip, Typography } from '@mui/material'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
 
@@ -39,7 +39,7 @@ export default function Notifications() {
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Typography variant="h5" color="primary" fontWeight="600" sx={{ m: 2 }}>
-          Registered Notifications 
+          Registered Notifications
         </Typography>
         {query.data?.phoneNumber ? (
           <Box>

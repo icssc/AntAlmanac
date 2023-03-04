@@ -10,10 +10,11 @@ import {
   Link,
   ListItem,
   ListItemButton,
+  ListItemIcon,
+  ListItemText,
   Tooltip,
-  useTheme,
-  useMediaQuery,
 } from '@mui/material'
+import { InfoOutlined as InfoIcon } from '@mui/icons-material'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
 
 /**
@@ -21,8 +22,6 @@ import { analyticsEnum, logAnalytics } from '$lib/analytics'
  */
 export default function About() {
   const [open, setOpen] = useState(false)
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
   const handleOpen = () => {
     setOpen(true)
@@ -38,9 +37,14 @@ export default function About() {
 
   return (
     <>
-      <Tooltip title="Learn about us" placement={isMobile ? 'right' : 'bottom'}>
-        <ListItem onClick={handleOpen}>
-          <ListItemButton>About</ListItemButton>
+      <Tooltip title="Learn about us" placement="right">
+        <ListItem onClick={handleOpen} disablePadding>
+          <ListItemButton>
+            <ListItemIcon>
+              <InfoIcon />
+            </ListItemIcon>
+            <ListItemText>About</ListItemText>
+          </ListItemButton>
         </ListItem>
       </Tooltip>
 

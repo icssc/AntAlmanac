@@ -3,7 +3,7 @@ import { Box, IconButton, Popover, ToggleButtonGroup, ToggleButton, Tooltip } fr
 import {
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
-  Settings as SettingsIcon,
+  SettingsOutlined as SettingsIcon,
   SettingsBrightness as SettingsBrightnessIcon,
 } from '@mui/icons-material'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'

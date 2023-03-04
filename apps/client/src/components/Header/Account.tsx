@@ -8,10 +8,9 @@ import { AccountCircle as AccountCircleIcon } from '@mui/icons-material'
  */
 export default function Account() {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const [loggedIn, setLoggedIn] = useState(false)
 
   const ref = useRef<HTMLButtonElement>(null)
-
-  const loggedIn = false
 
   useEffect(() => {
     if (loggedIn) {
@@ -24,6 +23,7 @@ export default function Account() {
       auto_select: true,
       callback(response) {
         console.log(response)
+        setLoggedIn(true)
       },
       itp_support: true,
       context: 'use',

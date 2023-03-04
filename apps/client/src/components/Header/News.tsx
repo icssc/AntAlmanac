@@ -13,7 +13,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { Newspaper as NewspaperIcon } from '@mui/icons-material'
+import { NewspaperOutlined as NewspaperIcon } from '@mui/icons-material'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import trpc from '$lib/trpc'
 
@@ -111,22 +111,22 @@ export default function News() {
           {!query.isLoading && query.data?.pages.length ? (
             // LOADED and DATA
             <List sx={{ width: 300, height: 300, overflowY: 'auto' }} disablePadding dense>
-              {query.data?.pages.map((page) => (
-                  page.news.map((news) => (
-                    <Fragment key={news.id}>
-                      <ListItem>
-                        <ListItemText>
-                          <Typography>{news.title}</Typography>
-                          <Typography variant="body2">{news.body}</Typography>
-                          <Typography variant="caption" color="textSecondary">
-                            {news.createdAt.toLocaleString()}
-                          </Typography>
-                        </ListItemText>
-                      </ListItem>
-                      <Divider />
-                    </Fragment>
-                  ))
-              ))}
+              {query.data?.pages.map((page) =>
+                page.news.map((news) => (
+                  <Fragment key={news.id}>
+                    <ListItem>
+                      <ListItemText>
+                        <Typography>{news.title}</Typography>
+                        <Typography variant="body2">{news.body}</Typography>
+                        <Typography variant="caption" color="textSecondary">
+                          {news.createdAt.toLocaleString()}
+                        </Typography>
+                      </ListItemText>
+                    </ListItem>
+                    <Divider />
+                  </Fragment>
+                ))
+              )}
               {query.hasNextPage && <ListItem ref={lastElementRef}>Load More</ListItem>}
             </List>
           ) : (

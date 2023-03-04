@@ -1,17 +1,18 @@
-import { ListItem, ListItemButton, Tooltip, useTheme, useMediaQuery } from '@mui/material'
+import { ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip } from '@mui/material'
+import { AssignmentOutlined as AssignmentIcon } from '@mui/icons-material'
 
 /**
- * button that links to a feedback form
+ * button that opens a modal with information about the project
  */
 export default function Feedback() {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-
   return (
-    <Tooltip title="Give us feedback" placement={isMobile ? 'right' : 'bottom'}>
-      <ListItem>
+    <Tooltip title="Give us feedback" placement="right">
+      <ListItem disablePadding>
         <ListItemButton href="https://forms.gle/k81f2aNdpdQYeKK8A" target="_blank">
-          Feedback
+          <ListItemIcon>
+            <AssignmentIcon />
+          </ListItemIcon>
+          <ListItemText>Feedback</ListItemText>
         </ListItemButton>
       </ListItem>
     </Tooltip>
