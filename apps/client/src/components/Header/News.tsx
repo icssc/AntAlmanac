@@ -24,15 +24,17 @@ export default function News() {
   const [anchorEl, setAnchorEl] = useState<Element>()
   const [showDot, setShowDot] = useState(false)
 
-  const clientDateStr = typeof Storage === 'undefined' ? undefined : window.localStorage.getItem('newsDate')
-  const clientDate = clientDateStr ? new Date(clientDateStr) : undefined
+  /**
+   * get saved date of latest news item read
+   */
+  const dateStr = typeof Storage === 'undefined' ? undefined : window.localStorage.getItem('newsDate')
 
   const query = trpc.news.findAll.useInfiniteQuery(
-    { date: clientDate },
+    { date: dateStr ? new Date(dateStr) : undefined },
     {
       onSuccess(data) {
         const serverDate = data.pages.at(-1)?.news?.[0]?.createdAt
-        if (clientDateStr == null || (serverDate && new Date(clientDateStr) < serverDate)) {
+        if (dateStr == null || (serverDate && new Date(dateStr) < serverDate)) {
           setShowDot(true)
         }
       },
@@ -41,29 +43,6 @@ export default function News() {
       },
     }
   )
-
-  const handleOpen = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setAnchorEl(e.currentTarget)
-    logAnalytics({
-      category: analyticsEnum.nav.title,
-      action: analyticsEnum.nav.actions.CLICK_NEWS,
-    })
-  }
-
-  const handleClose = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setAnchorEl(undefined)
-  }
-
-  const saveLatestRead = () => {
-    if (typeof Storage !== 'undefined' && query.data?.pages?.at(-1)?.news?.[0]) {
-      window.localStorage.setItem('newsDate', query.data.pages.at(-1)?.news[0].createdAt.toLocaleString() || '')
-    }
-    setShowDot(false)
-  }
 
   const observer = useRef<IntersectionObserver>()
 
@@ -82,9 +61,33 @@ export default function News() {
       if (element && query.hasNextPage) {
         observer.current.observe(element)
       }
-    },
-    [query.data]
-  )
+    }, [query.data])
+
+  const handleOpen = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setAnchorEl(e.currentTarget)
+    logAnalytics({
+      category: analyticsEnum.nav.title,
+      action: analyticsEnum.nav.actions.CLICK_NEWS,
+    })
+  }
+
+  const handleClose = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setAnchorEl(undefined)
+  }
+
+  /**
+   * upon closing the popover, store the date of the most recent news item
+   */
+  const saveLatestRead = () => {
+    if (typeof Storage !== 'undefined' && query.data?.pages?.at(-1)?.news?.[0]) {
+      window.localStorage.setItem('newsDate', query.data.pages.at(-1)?.news[0].createdAt.toLocaleString() || '')
+    }
+    setShowDot(false)
+  }
 
   return (
     <>
