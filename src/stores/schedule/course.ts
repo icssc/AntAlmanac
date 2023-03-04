@@ -147,20 +147,31 @@ export function deleteCourse(sectionCode: string, term: string) {
  * otherwise add all current courses to the target schedule
  * @param toScheduleIndex index of the other schedule
  */
-export function copyCoursesToSchedule(toScheduleIndex: number, options?: Options) {
-    const { schedules, scheduleIndex } = useScheduleStore.getState();
-    if (toScheduleIndex === schedules.length) {
-        schedules[scheduleIndex].courses.forEach((course) => {
-            addCourseToAllSchedules(course.section, course, options);
-        });
-    } else {
-        schedules[scheduleIndex].courses.forEach((course) =>
-            addCourse(course.section, course, toScheduleIndex, options)
-        );
-    }
+export function copyCoursesToSchedule(toScheduleIndex: number) {
+  const { schedules, scheduleIndex } = useScheduleStore.getState()
 
-    logAnalytics({
-        category: analyticsEnum.addedClasses.title,
-        action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
-    });
+  if (toScheduleIndex === schedules.length) {
+    schedules[scheduleIndex].courses.forEach((course) => {
+      addCourseToAllSchedules(course.section, course)
+    })
+  } 
+  else {
+    schedules[scheduleIndex].courses.forEach((course) =>
+      addCourse(course.section, course, toScheduleIndex)
+    )
+  }
+  
+  logAnalytics({
+    category: analyticsEnum.addedClasses.title,
+    action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
+  });
+}
+
+/**
+ * restore the latest state from the saved states
+ */
+export function undo() {
+  const { scheduleIndex, previousStates } = useScheduleStore.getState()
+  const lastState = previousStates.pop() || { schedules: [], scheduleIndex }
+  useScheduleStore.setState({ schedules: lastState.schedules, previousStates })
 }
