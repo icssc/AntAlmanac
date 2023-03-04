@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 import { defaultCourseInfo } from '@packages/schemas/schedule'
-import type { Course, CourseInfo, ScheduleSaveState } from '@packages/schemas/schedule'
+import type { CourseInfo, ScheduleSaveState } from '@packages/schemas/schedule'
 import type { WebsocResponse } from '@packages/peterportal'
 
 const apiBaseUrl = 'https://dev.api.antalmanac.com'
@@ -56,7 +56,7 @@ function getCourseInfo(SOCObject: WebsocResponse) {
 /**
  * generate a full schedule from a saved, short schedule
  */
-async function generateFullSchedule(saveState: ScheduleSaveState): Promise<Course[]> {
+async function generateFullSchedule(saveState: ScheduleSaveState) {
   const uniqueSectionsPerTerm: Record<string, Set<string>> = {}
   const courseInfoPerTerm = new Map<string, Record<string, CourseInfo>>()
 
@@ -78,24 +78,32 @@ async function generateFullSchedule(saveState: ScheduleSaveState): Promise<Cours
     })
   )
 
-  const schedules = saveState.schedules.map((schedule) =>
-    schedule.courses
-      .map((course) => ({ short: course, info: courseInfoPerTerm.get(course.term) }))
-      .filter((course) => course.info != null)
-      .map((course) => {
-        const courseInfoMap = course.info?.[course.short.sectionCode] || structuredClone(defaultCourseInfo)
-        return {
-          ...course.short,
-          ...courseInfoMap?.courseDetails,
-          section: {
-            ...courseInfoMap?.section,
-            color: course.short.color,
-          },
-        }
-      })
-  )
-  const flattenedSchedules = schedules.flat()
-  return flattenedSchedules
+  const schedules = saveState.schedules.map((schedule) => {
+    const hydratedCourses = 
+      schedule.courses
+        .map((course) => ({ short: course, info: courseInfoPerTerm.get(course.term) }))
+        .filter((course) => course.info != null)
+        .map((course) => {
+          const courseInfoMap = course.info?.[course.short.sectionCode] || structuredClone(defaultCourseInfo)
+          return {
+            ...course.short,
+            ...courseInfoMap?.courseDetails,
+            section: {
+              ...courseInfoMap?.section,
+              color: course.short.color,
+            },
+          }
+        })
+      return {
+        ...schedule,
+        courses: hydratedCourses,
+      }
+  })
+
+  return {
+    schedules: schedules.flat(),
+    scheduleIndex: saveState.scheduleIndex,
+  }
 }
 
 export default generateFullSchedule

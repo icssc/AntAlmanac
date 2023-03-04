@@ -5,12 +5,12 @@
  */
 
 import * as colors from '@mui/material/colors'
+import type { Course } from '@packages/schemas/schedule'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { courseNumAsDecimal } from '$lib/helpers'
 import { useSearchStore } from '$stores/search'
 import type { AACourse, Section } from '$lib/peterportal.types'
 import { useScheduleStore } from '.'
-import type { Course } from '.'
 
 const arrayOfColors = Object.values(colors).map((c) => ('black' in c ? c.black : c[500]))
 

@@ -22,7 +22,7 @@
 
       // backend aliases
       "$models/*": ["../server/src/models/*"],
-      "$services/*": ["../server/src/services/*"],
+      "$services/*": ["../server/src/services/*"]
     }
   }
 }

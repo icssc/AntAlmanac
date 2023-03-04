@@ -3,73 +3,10 @@
  *
  * all other files in this folder are de-coupled from one another,
  * and only extend this store's functionality
- *
- * move common/shared interfaces here
  */
 
 import { create } from 'zustand'
-import type { AASection, Section } from '$lib/peterportal.types'
-
-export interface RepeatingCustomEvent {
-  title: string
-  start: string
-  end: string
-  days: boolean[]
-  customEventID: number
-  color?: string
-}
-
-export interface CourseDetails {
-  courseComment: string
-  courseNumber: string
-  courseTitle: string
-  deptCode: string
-  prerequisiteLink: string
-}
-
-export interface CourseInfo {
-  courseDetails: CourseDetails
-  section: Section
-}
-
-export interface Course extends CourseDetails {
-  section: AASection
-  term: string
-}
-
-export interface Schedule {
-  scheduleName: string
-  courses: Course[]
-  customEvents: RepeatingCustomEvent[]
-}
-
-export interface ShortCourse {
-  color: string
-  term: string
-  sectionCode: string
-}
-
-export interface ShortCourseSchedule {
-  scheduleName: string
-  courses: ShortCourse[]
-  customEvents: RepeatingCustomEvent[]
-}
-
-/**
- * saved schedule in the database (similar to the undo state, but with less data)
- */
-export interface ScheduleSaveState {
-  schedules: ShortCourseSchedule[]
-  scheduleIndex: number
-}
-
-/**
- * saved schedule in memory
- */
-export interface ScheduleUndoState {
-  schedules: Schedule[]
-  scheduleIndex: number
-}
+import type { Schedule, ScheduleUndoState } from '@packages/schemas/schedule'
 
 export interface ScheduleStore {
   /**

@@ -8,7 +8,7 @@
  */
 
 import type { EventInput } from '@fullcalendar/core'
-import type { Course, RepeatingCustomEvent } from '.'
+import type { Course, RepeatingCustomEvent } from '@packages/schemas/schedule'
 
 /**
  * common properties for the internal calendar types

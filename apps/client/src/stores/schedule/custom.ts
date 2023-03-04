@@ -2,8 +2,8 @@
  * functions that manage custom events in the schedule store
  */
 
+import type { RepeatingCustomEvent } from '@packages/schemas/schedule'
 import { useScheduleStore } from '.'
-import type { RepeatingCustomEvent } from '.'
 
 /**
  * add a custom event to multiple schedules

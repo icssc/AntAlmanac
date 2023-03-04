@@ -1,7 +1,7 @@
+import type { Schedule, ShortCourseSchedule } from '@packages/schemas/schedule'
 import { SAVE_DATA_ENDPOINT } from '$lib/api/endpoints'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { useScheduleStore } from '.'
-import type { Schedule, ShortCourseSchedule } from '.'
 
 /*
  * convert schedule to shortened schedule (no course info) for saving.
