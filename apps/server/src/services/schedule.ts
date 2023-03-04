@@ -14,7 +14,7 @@ async function queryWebsoc(params: Record<string, string>): Promise<WebsocRespon
   const searchParams = new URLSearchParams(params)
   try {
     const response = await fetch(`${PETERPORTAL_WEBSOC_ENDPOINT}?${searchParams.toString()}`)
-    const data = (await response.json()) as WebsocResponse
+    const data = await response.json() as WebsocResponse
     return data
   } catch {
     const response = await fetch(WEBSOC_ENDPOINT, {
@@ -22,7 +22,7 @@ async function queryWebsoc(params: Record<string, string>): Promise<WebsocRespon
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(params),
     })
-    const data = (await response.json()) as WebsocResponse
+    const data = await response.json() as WebsocResponse
     return data
   }
 }
