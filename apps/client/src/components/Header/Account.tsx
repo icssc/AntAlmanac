@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { Box, IconButton, Menu, MenuItem, Tooltip } from '@mui/material'
 import { AccountCircle as AccountCircleIcon } from '@mui/icons-material'
-// import googleOneTap from 'google-one-tap'
 
 /**
  * button that opens menu with account controls
  */
 export default function Account() {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement>()
   const [loggedIn, setLoggedIn] = useState(false)
 
   const ref = useRef<HTMLButtonElement>(null)
@@ -36,7 +35,6 @@ export default function Account() {
         shape: 'circle',
       })
     }
-    window.google.accounts.id.prompt()
   }, [loggedIn])
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -44,7 +42,13 @@ export default function Account() {
   }
 
   const handleClose = () => {
-    setAnchorEl(null)
+    setAnchorEl(undefined)
+  }
+
+  const logout = () => {
+    window.google.accounts.id.revoke('')
+    setAnchorEl(undefined)
+    setLoggedIn(false)
   }
 
   return (
@@ -61,8 +65,7 @@ export default function Account() {
         )}
       </Tooltip>
       <Menu anchorEl={anchorEl} keepMounted open={!!anchorEl} onClose={handleClose}>
-        <MenuItem onClick={handleClose}>Account</MenuItem>
-        <MenuItem onClick={handleClose}>Logout</MenuItem>
+        <MenuItem onClick={logout}>Logout</MenuItem>
       </Menu>
     </>
   )
