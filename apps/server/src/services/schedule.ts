@@ -14,7 +14,7 @@ async function queryWebsoc(params: Record<string, string>): Promise<WebsocRespon
   const searchParams = new URLSearchParams(params)
   try {
     const response = await fetch(`${PETERPORTAL_WEBSOC_ENDPOINT}?${searchParams.toString()}`)
-    const data = await response.json() as WebsocResponse
+    const data = (await response.json()) as WebsocResponse
     return data
   } catch {
     const response = await fetch(WEBSOC_ENDPOINT, {
@@ -22,7 +22,7 @@ async function queryWebsoc(params: Record<string, string>): Promise<WebsocRespon
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(params),
     })
-    const data = await response.json() as WebsocResponse
+    const data = (await response.json()) as WebsocResponse
     return data
   }
 }
@@ -53,6 +53,9 @@ function getCourseInfo(SOCObject: WebsocResponse) {
   return courseInfo
 }
 
+/**
+ * generate a full schedule from a saved, short schedule
+ */
 async function generateFullSchedule(saveState: ScheduleSaveState): Promise<Course[]> {
   const uniqueSectionsPerTerm: Record<string, Set<string>> = {}
   const courseInfoPerTerm = new Map<string, Record<string, CourseInfo>>()
@@ -69,8 +72,9 @@ async function generateFullSchedule(saveState: ScheduleSaveState): Promise<Cours
 
   await Promise.all(
     Object.entries(uniqueSectionsPerTerm).map(async ([term, courseSet]) => {
-      const response = await queryWebsoc({ term, sectionCodes: Array.from(courseSet).join(',') })
-      courseInfoPerTerm.set(term, getCourseInfo(response))
+      const response = await queryWebsoc({ term, sectionCodes: [...courseSet].join(',') })
+      const courseInfo = getCourseInfo(response)
+      courseInfoPerTerm.set(term, courseInfo)
     })
   )
 
