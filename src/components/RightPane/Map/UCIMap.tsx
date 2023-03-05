@@ -324,6 +324,8 @@ export default class UCIMap extends PureComponent {
     };
 
     selectBuilding = (buildingFocusInfo: BuildingFocusInfo) => {
+        // Get the first set of letters before the first number or space, which is the building code
+        // E.g., "BS" in "BS 1200"
         const buildingCodeMatch = buildingFocusInfo.location.match(/[^\d\s]+/);
         if (!buildingCodeMatch) {
             console.warn('Building code could not be parsed from: ', buildingFocusInfo.location);
