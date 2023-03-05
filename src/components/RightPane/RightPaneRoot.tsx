@@ -64,7 +64,6 @@ class DesktopTabs extends PureComponent<DesktopTabsProps> {
 
     componentWillUnmount() {
         RightPaneStore.removeListener('tabChange', this.changeTab);
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         RightPaneStore.removeListener('focusOnBuilding', this.focusOnBuilding);
     }
 
