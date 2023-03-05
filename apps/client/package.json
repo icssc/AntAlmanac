@@ -10,6 +10,8 @@
   },
   "devDependencies": {
     "@types/google-one-tap": "^1.2.2",
+    "@types/leaflet": "^1.9.1",
+    "@types/leaflet-routing-machine": "^3.2.4",
     "@types/node": "^18.14.2",
     "@types/react": "^18.0.28",
     "@types/react-big-calendar": "^1.6.1",
@@ -42,6 +44,7 @@
     "@mui/lab": "^5.0.0-alpha.121",
     "@mui/material": "^5.11.11",
     "@packages/schemas": "*",
+    "@react-leaflet/core": "^2.1.0",
     "@tanstack/react-query": "^4.24.10",
     "@trpc/client": "^10.13.2",
     "@trpc/react-query": "^10.13.2",
@@ -49,6 +52,8 @@
     "dayjs": "^1.11.7",
     "html2canvas": "^1.4.1",
     "ics": "^3.1.0",
+    "leaflet": "^1.9.3",
+    "leaflet-routing-machine": "^3.2.12",
     "notistack": "^2.0.8",
     "react": "^18.2.0",
     "react-big-calendar": "^1.6.8",
@@ -57,9 +62,11 @@
     "react-ga4": "^2.0.0",
     "react-hook-form": "^7.43.3",
     "react-lazyload": "^3.2.0",
+    "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.8.2",
     "react-split": "^2.0.14",
     "superjson": "^1.12.2",
+    "websoc-fuzzy-search": "^0.10.0",
     "zod": "^3.20.6",
     "zustand": "^4.3.5"
   }

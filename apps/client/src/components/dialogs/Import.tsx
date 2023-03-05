@@ -15,7 +15,7 @@ import {
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material'
 import useSettingsStore from '$stores/settings'
-import { useScheduleStore } from '$stores/schedule'
+// import { useScheduleStore } from '$stores/schedule'
 // import { addCourse } from '$stores/schedule/course'
 // import { combineSOCObjects, getCourseInfo } from '$stores/schedule/import'
 // import { analyticsEnum, logAnalytics } from '$lib/analytics'
@@ -32,8 +32,8 @@ interface Props {
  */
 export default function ImportDialog({ open, setOpen }: Props) {
   const [term, setTerm] = useState('')
-  const [studyList, setStudyList] = useState('')
-  const { scheduleIndex } = useScheduleStore()
+  // const [studyList, setStudyList] = useState('')
+  // const { scheduleIndex } = useScheduleStore()
   const isDarkMode = useSettingsStore((store) => store.isDarkMode)
 
   const handleSubmit = async () => {
@@ -84,9 +84,9 @@ export default function ImportDialog({ open, setOpen }: Props) {
     setOpen(false)
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setStudyList(e.target.value)
-  }
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  //   setStudyList(e.target.value)
+  // }
 
   const handleTerm = (e: SelectChangeEvent<string>) => {
     setTerm(e.target.value)
@@ -109,7 +109,7 @@ export default function ImportDialog({ open, setOpen }: Props) {
         </DialogContentText>
         <TextField
           fullWidth
-          onChange={handleChange}
+          // onChange={handleChange}
           autoFocus
           margin="dense"
           type="text"

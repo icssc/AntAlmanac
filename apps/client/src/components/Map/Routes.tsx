@@ -1,3 +1,5 @@
+/* eslint react/no-unused-prop-types: off */
+
 import { useEffect } from 'react'
 import L from 'leaflet'
 import type { LatLngTuple } from 'leaflet'
@@ -67,8 +69,8 @@ function createRouter(props: Props, context: LeafletContextInterface) {
       const totalTime = route.summary?.totalTime || 0
       const totalDistance = route.summary?.totalDistance || 0
 
-      const duration = totalTime > 30 ? Math.round(totalTime / 60) + ' min' : '<1 min'
-      const miles = Math.floor(totalDistance / 1.609 / 10) / 100 + ' mi'
+      const duration = totalTime > 30 ? `${Math.round(totalTime / 60)  } min` : '<1 min'
+      const miles = `${Math.floor(totalDistance / 1.609 / 10) / 100  } mi`
 
       const content = `
        <div style="position:relative; 

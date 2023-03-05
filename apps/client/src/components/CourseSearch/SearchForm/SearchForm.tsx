@@ -28,11 +28,11 @@ export default function SearchForm() {
 
   const [showLegacySearch, setShowLegacySearch] = useState(false)
 
-  function handleClick() {
+  const handleClick = () => {
     setShowResults(true)
   }
 
-  function toggleShowLegacySearch() {
+  const toggleShowLegacySearch = () => {
     setShowLegacySearch((prev) => !prev)
   }
 

@@ -4,19 +4,19 @@ import { useSearchStore } from '$stores/search'
 import { termData } from '$lib/termData'
 
 export default function TermSelect() {
-  const term = useSearchStore((store) => store.form.term)
+  const formTerm = useSearchStore((store) => store.form.term)
   const setField = useSearchStore((store) => store.setField)
 
-  function handleChange(e: SelectChangeEvent<string>) {
+  const handleChange = (e: SelectChangeEvent<string>) => {
     setField('term', e.target.value)
   }
 
   return (
     <FormControl fullWidth>
       <InputLabel>Term</InputLabel>
-      <Select value={term} onChange={handleChange} label="Term">
-        {termData.map((term, index) => (
-          <MenuItem key={index} value={term.shortName}>
+      <Select value={formTerm} onChange={handleChange} label="Term">
+        {termData.map((term) => (
+          <MenuItem key={term.longName} value={term.shortName}>
             {term.longName}
           </MenuItem>
         ))}

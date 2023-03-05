@@ -17,17 +17,17 @@ const geList: { value: string; label: string }[] = [
 ]
 
 export default function GeSelect() {
-  const ge = useSearchStore((store) => store.form.ge)
+  const formGe = useSearchStore((store) => store.form.ge)
   const setField = useSearchStore((store) => store.setField)
 
-  function handleChange(e: SelectChangeEvent<string>) {
+  const handleChange = (e: SelectChangeEvent<string>) => {
     setField('ge', e.target.value)
   }
 
   return (
     <FormControl fullWidth>
       <InputLabel>General Education</InputLabel>
-      <Select value={ge} onChange={handleChange} label="General Education">
+      <Select value={formGe} onChange={handleChange} label="General Education">
         {geList.map((ge) => (
           <MenuItem key={ge.value} value={ge.value}>
             {ge.label}

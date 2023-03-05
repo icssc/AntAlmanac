@@ -14,7 +14,7 @@ export default function HelpBox() {
         </ListItem>
         <ListItem sx={{ display: 'list-item', p: 0 }}>Select your major.</ListItem>
         <ListItem sx={{ display: 'list-item', p: 0 }}>
-          View the "REQUIREMENTS" and "SAMPLE PROGRAM" tabs to see what classes you should take.
+          View the &quot;REQUIREMENTS&quot; and &quot;SAMPLE PROGRAM&quot; tabs to see what classes you should take.
         </ListItem>
       </List>
       <Box sx={{ display: 'flex', gap: 10, overflow: 'auto' }}>

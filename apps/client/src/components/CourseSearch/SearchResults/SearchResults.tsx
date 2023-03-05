@@ -1,11 +1,12 @@
 import LazyLoad from 'react-lazyload'
 import { Box, IconButton } from '@mui/material'
 import { ArrowBack as ArrowBackIcon, Refresh as RefreshIcon } from '@mui/icons-material'
+import { Course } from '@packages/schemas/schedule'
 import { useSearchStore } from '$stores/search'
-import { useSettingsStore } from '$stores/settings'
+import useSettingsStore from '$stores/settings'
 import { useWebsocQuery } from '$hooks/useWebsocQuery'
 import Schedule from '$components/Schedule'
-import { Course, useScheduleStore } from '$stores/schedule'
+import { useScheduleStore } from '$stores/schedule'
 import type { AACourse, AASection, Department, School, WebsocResponse } from '$lib/peterportal.types'
 
 /**
@@ -22,9 +23,10 @@ function flattenSOCObject(SOCObject: WebsocResponse, courses: Course[] = []) {
     school.departments.forEach((dept) => {
       accumulator.push(dept)
       dept.courses.forEach((course) => {
-        for (const section of course.sections) {
-          ;(section as AASection).color = courseColors[section.sectionCode]
-        }
+        course.sections.forEach(section => {
+          // eslint-disable-next-line no-param-reassign
+          (section as AASection).color = courseColors[section.sectionCode]
+        })
         accumulator.push(course as AACourse)
       })
     })
@@ -46,9 +48,8 @@ export default function CourseList() {
   const query = useWebsocQuery(getParams(), { enabled: showResults })
   const transformedData = query?.data ? flattenSOCObject(query.data, courses) : []
 
-  const darkMode = isDarkMode()
-  const noResultsSrc = darkMode ? '/no_results/dark.png' : '/no_results/light.png'
-  const loadingSrc = darkMode ? '/loading/dark.gif' : '/loading/light.gif'
+  const noResultsSrc = isDarkMode ? '/no_results/dark.png' : '/no_results/light.png'
+  const loadingSrc = isDarkMode ? '/loading/dark.gif' : '/loading/light.gif'
 
   /**
    * whether course body needs to manually search for more info
@@ -56,11 +57,11 @@ export default function CourseList() {
    */
   const supplemental = form.ge !== 'ANY'
 
-  function handleRefresh() {
+  const handleRefresh = () => {
     query.refetch()
   }
 
-  function handleBack() {
+  const handleBack = () => {
     setShowResults(false)
   }
 
@@ -94,6 +95,7 @@ export default function CourseList() {
               const current = transformedData[index]
               const height = 'sections' in current && current.sections ? current.sections.length * 60 + 60 : 200
               return (
+                // eslint-disable-next-line react/no-array-index-key
                 <LazyLoad once key={index} height={height} offset={500} overflow>
                   <Schedule course={data} supplemental={supplemental} />
                 </LazyLoad>

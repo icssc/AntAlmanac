@@ -1,6 +1,7 @@
 import { useSnackbar } from 'notistack'
 import {
   Box,
+  Button,
   Link,
   Paper,
   Table,
@@ -17,10 +18,10 @@ import { analyticsEnum } from '$lib/analytics'
 import { useSearchStore } from '$stores/search'
 import { useScheduleStore } from '$stores/schedule'
 import { useWebsocQuery } from '$hooks/useWebsocQuery'
-import AddCourseButton from '$components/Buttons/AddCourse'
-import AddCourseMenuButton from '$components/Buttons/AddCourseMenu'
-import DeleteCourseButton from '$components/Buttons/DeleteCourse'
-import ColorPicker from '$components/Buttons/ColorPicker'
+import AddCourseButton from '$components/buttons/AddCourse'
+import AddCourseMenuButton from '$components/buttons/AddCourseMenu'
+import DeleteCourseButton from '$components/buttons/DeleteCourse'
+import ColorPicker from '$components/buttons/ColorPicker'
 import type { AACourse, AASection } from '$lib/peterportal.types'
 
 const restrictions: Record<string, string> = {
@@ -69,7 +70,7 @@ const SectionStatusColors: Record<string, string> = {
  * column 0
  * actions for managing the course, e.g. add, delete, change color, add to schedule #
  */
-function CourseActions(props: { section: AASection; course: AACourse; term?: string }) {
+function CourseActions({...props}: { section: AASection; course: AACourse; term?: string }) {
   const { schedules, scheduleIndex } = useScheduleStore()
   const courses = schedules[scheduleIndex]?.courses
   const addedSectionCodes = new Set(courses.map((course) => `${course.section.sectionCode} ${course.term}`))
@@ -101,7 +102,7 @@ function SectionCode(props: { section: AASection }) {
   const { enqueueSnackbar } = useSnackbar()
   const { section } = props
 
-  function handleClick(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
     if (window.isSecureContext) {
       navigator.clipboard.writeText(section.sectionCode.toString())
@@ -111,9 +112,9 @@ function SectionCode(props: { section: AASection }) {
 
   return (
     <Tooltip title="Click to Copy Course Code">
-      <Link onClick={handleClick} underline="hover" href="#" variant="body2">
+      <Button onClick={handleClick}>
         {section.sectionCode}
-      </Link>
+      </Button>
     </Tooltip>
   )
 }
@@ -147,17 +148,17 @@ function CourseInstructors(props: { section: AASection }) {
   const { section } = props
   return (
     <Box>
-      {section.instructors.map((instructor, index) => {
+      {section.instructors.map((instructor) => {
         const lastName = instructor.substring(0, instructor.indexOf(','))
         if (!lastName || lastName === 'STAFF') {
           return (
-            <Typography key={index} variant="body2">
+            <Typography key={instructor} variant="body2">
               {instructor}
             </Typography>
           )
         }
         return (
-          <Box key={index}>
+          <Box key={instructor}>
             <Link
               href={`https://www.ratemyprofessors.com/search/teachers?sid=U2Nob29sLTEwNzQ=&query=${lastName}`}
               target="_blank"
@@ -182,8 +183,8 @@ function CourseTimes(props: { section: AASection }) {
   const { section } = props
   return (
     <Box>
-      {section.meetings.map((meeting, index) => (
-        <Typography variant="body2" key={index}>
+      {section.meetings.map((meeting) => (
+        <Typography variant="body2" key={Object.values(meeting).join()}>
           {`${meeting.days} ${meeting.time.replace(/\s/g, '').split('-').join(' - ')}`}
         </Typography>
       ))}
@@ -199,20 +200,20 @@ function CoursePlaces(props: { section: AASection }) {
   const { section } = props
   return (
     <Box>
-      {section.meetings.map((meeting, index) => {
+      {section.meetings.map((meeting) => {
         if (!meeting || meeting.bldg === 'TBA') {
           return (
-            <Typography key={index} variant="body2">
+            <Typography key={Object.values(meeting).join()} variant="body2">
               {meeting.bldg}
             </Typography>
           )
         }
-        const location_id = locations[meeting.bldg.split(' ')[0] as keyof typeof locations]
-        const href = location_id
-          ? `https://map.uci.edu/?id=463#!m/${location_id}`
+        const locationId = locations[meeting.bldg.split(' ')[0] as keyof typeof locations]
+        const href = locationId
+          ? `https://map.uci.edu/?id=463#!m/${locationId}`
           : 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034'
         return (
-          <Link key={index} variant="body2" href={href} target="_blank" rel="noopener noreferrer" underline="hover">
+          <Link key={Object.values(meeting).join()} variant="body2" href={href} target="_blank" rel="noopener noreferrer" underline="hover">
             {meeting.bldg}
           </Link>
         )
@@ -256,8 +257,8 @@ function CourseRestrictions(props: { section: AASection }) {
         title={section.restrictions
           .split(' ')
           .filter((r) => r !== 'and' && r !== 'or')
-          .map((r, index) => (
-            <Typography key={index}>{restrictions[r]}</Typography>
+          .map((r) => (
+            <Typography key={r}>{restrictions[r]}</Typography>
           ))}
       >
         <Link href="https://www.reg.uci.edu/enrollment/restrict_codes.html" target="_blank" rel="noopener noreferrer">
@@ -362,12 +363,12 @@ export default function CourseBody({ course, term, supplemental }: Props) {
         </TableHead>
 
         <TableBody sx={{ padding: 0 }}>
-          {courseDetails?.sections.map((section, index) => (
+          {courseDetails?.sections.map((section) => (
             <TableRow
               sx={{
                 '&:nth-of-type(odd)': { bgcolor: 'action.hover' },
               }}
-              key={index}
+              key={section.sectionCode}
             >
               <TableCell>
                 <CourseActions section={section} course={course} term={term} />

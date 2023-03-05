@@ -5,7 +5,7 @@ export default function CourseNumberInput() {
   const courseNumber = useSearchStore((store) => store.form.courseNumber)
   const setField = useSearchStore((store) => store.setField)
 
-  function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setField('courseNumber', e.target.value)
   }
 

@@ -93,7 +93,7 @@ export default function GradesPopup(props: Props) {
   return (
     <Box sx={{ padding: 2 }}>
       {!query.data ? (
-        <Skeleton variant="text" animation="wave" height={height} width={width}></Skeleton>
+        <Skeleton variant="text" animation="wave" height={height} width={width} />
       ) : (
         <>
           <Box height={height} width={width}>

@@ -9,7 +9,7 @@ const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId
 /**
  * returns a leaflet DivIcon that can replace the marker's default blue icon
  */
-function getMarkerIcon(color: string = '', stackIndex: number = 1, label: any = '') {
+function getMarkerIcon(color = '', stackIndex = 1, label: any = '') {
   return Leaflet.divIcon({
     /**
      * Adds offset for marker for stacking markers
@@ -68,38 +68,38 @@ interface Props {
 /**
  * returns a custom map marker + popup with course info
  */
-export default function CourseMarker(props: Props) {
+export default function CourseMarker({ lat, lng, color, image, location, acronym, stackIndex, label, children }: Props) {
   return (
     <Marker
-      position={[props.lat, props.lng]}
-      icon={getMarkerIcon(props.color, props.stackIndex, props.label)}
-      zIndexOffset={props.stackIndex}
+      position={[lat, lng]}
+      icon={getMarkerIcon(color, stackIndex, label)}
+      zIndexOffset={stackIndex}
     >
       <Popup>
-        {props.location ? (
+        {location ? (
           <Link
-            href={`http://www.classrooms.uci.edu/classrooms/${props.acronym}`}
+            href={`http://www.classrooms.uci.edu/classrooms/${acronym}`}
             target="_blank"
             rel="noopener noreferrer"
             textAlign="center"
           >
-            {props.location}
+            {location}
           </Link>
         ) : (
-          <Typography>{props.location}</Typography>
+          <Typography>{location}</Typography>
         )}
 
-        {props.image && (
-          <img src={`${IMAGE_CMS_URL}${props.image}`} alt="Building Snapshot" style={{ width: '100%' }} />
+        {image && (
+          <img src={`${IMAGE_CMS_URL}${image}`} alt="Building Snapshot" style={{ width: '100%' }} />
         )}
 
-        {props.children}
+        {children}
 
         <Button
           variant="contained"
           color="inherit"
           startIcon={<DirectionsWalkIcon />}
-          href={`${GOOGLE_MAPS_URL}${props.lat},${props.lng}`}
+          href={`${GOOGLE_MAPS_URL}${lat},${lng}`}
           target="_blank"
           sx={{ alignSelf: 'center' }}
         >

@@ -6,32 +6,32 @@ import {
   ShowChart as ShowChartIcon,
 } from '@mui/icons-material'
 import { analyticsEnum } from '$lib/analytics'
-import CourseSummaryButton from '$components/Buttons/CourseSummary'
-import CourseReferenceButton from '$components/Buttons/CourseReference'
+import CourseSummaryButton from '$components/buttons/CourseSummary'
+import CourseReferenceButton from '$components/buttons/CourseReference'
 import type { AACourse } from '$lib/peterportal.types'
 import GradesPopup from './GradesPopup'
 
 interface Props {
   course: AACourse
-  term?: string
+  // term?: string
 }
 
 /**
  * the header for the course has buttons with popups, summaries, links to other helpful websites, etc.
  */
-export default function CourseHead(props: Props) {
-  const courseId = props.course.deptCode.replaceAll(' ', '') + props.course.courseNumber
-  const encodedDept = encodeURIComponent(props.course.deptCode)
+export default function CourseHead({ course }: Props) {
+  const courseId = course.deptCode.replaceAll(' ', '') + course.courseNumber
+  const encodedDept = encodeURIComponent(course.deptCode)
 
   return (
     <Box sx={{ display: 'flex', gap: 1, overflowX: 'auto', marginY: 2 }}>
-      <CourseSummaryButton {...props} />
-      {props.course.prerequisiteLink && (
+      <CourseSummaryButton course={course} />
+      {course.prerequisiteLink && (
         <CourseReferenceButton
           analyticsAction={analyticsEnum.classSearch.actions.CLICK_PREREQUISITES}
           title="Prerequisites"
           icon={<AssignmentIcon />}
-          href={props.course.prerequisiteLink}
+          href={course.prerequisiteLink}
         />
       )}
       <CourseReferenceButton
@@ -45,13 +45,13 @@ export default function CourseHead(props: Props) {
         title="Zotistics"
         icon={<AssessmentIcon />}
       >
-        <GradesPopup {...props} />
+        <GradesPopup course={course} />
       </CourseReferenceButton>
       <CourseReferenceButton
         analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_ENROLLMENT}
         title="Past Enrollment"
         icon={<ShowChartIcon />}
-        href={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${props.course.courseNumber}&courseType=all`}
+        href={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${course.courseNumber}&courseType=all`}
       />
     </Box>
   )

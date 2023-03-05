@@ -2,7 +2,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './Calendar.css'
 
 import dayjs from 'dayjs'
-import { useEffect, useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { Calendar, dayjsLocalizer, DateLocalizer, Views } from 'react-big-calendar'
 import type { EventProps } from 'react-big-calendar'
 import { Box, ClickAwayListener, Paper, Popper, useTheme, Typography } from '@mui/material'
@@ -47,8 +47,8 @@ export default function AntAlamancCalendar() {
   const theme = useTheme()
   const showFinals = useSettingsStore((store) => store.showFinals)
   const { schedules, scheduleIndex } = useScheduleStore()
-  const courses = schedules[scheduleIndex].courses
-  const customEvents = schedules[scheduleIndex].customEvents
+  const {courses} = schedules[scheduleIndex]
+  const {customEvents} = schedules[scheduleIndex]
 
   /**
    * this ref is important! pass it to the screenshot button to take a picture of the calendar

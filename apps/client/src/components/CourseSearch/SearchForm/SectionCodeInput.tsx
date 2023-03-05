@@ -5,7 +5,7 @@ export default function SectionCodeInput() {
   const sectionCode = useSearchStore((store) => store.form.sectionCode)
   const setField = useSearchStore((store) => store.setField)
 
-  function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setField('sectionCode', e.target.value)
   }
 

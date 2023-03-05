@@ -9,12 +9,10 @@ import Schedule from '$components/Schedule'
 export default function AddedCourses() {
   const { schedules, scheduleIndex } = useScheduleStore()
 
-  const coursesWithSections = schedules[scheduleIndex]?.courses.map((course) => {
-    return {
+  const coursesWithSections = schedules[scheduleIndex]?.courses.map((course) => ({
       ...course,
       sections: [course.section],
-    }
-  })
+    }))
 
   const courses = coursesWithSections?.reduce((accumulated, current) => {
     const found = accumulated.find(
@@ -23,18 +21,16 @@ export default function AddedCourses() {
     if (found) {
       found.sections.push({ ...current.section })
       return accumulated
-    } else {
+    } 
       const seggs = {
         ...current,
         sections: [{ ...current.section }],
       }
       return [...accumulated, seggs]
-    }
+    
   }, [] as typeof coursesWithSections)
 
-  const totalUnits = courses?.reduce((accumulated, current) => {
-    return accumulated + parseInt(current.section.units, 10)
-  }, 0)
+  const totalUnits = courses?.reduce((accumulated, current) => accumulated + parseInt(current.section.units, 10), 0)
 
   return (
     <Box sx={{ padding: 2 }}>
@@ -45,8 +41,8 @@ export default function AddedCourses() {
         const current = courses[index]
         const height = 'sections' in current && current.sections ? current.sections.length * 60 + 60 : 200
         return (
-          <LazyLoad once key={index} height={height} offset={500} overflow>
-            <Schedule key={index} course={course} term={course.term} supplemental={false} />
+          <LazyLoad once key={current.section.sectionCode} height={height} offset={500} overflow>
+            <Schedule course={course} term={course.term} supplemental={false} />
           </LazyLoad>
         )
       })}

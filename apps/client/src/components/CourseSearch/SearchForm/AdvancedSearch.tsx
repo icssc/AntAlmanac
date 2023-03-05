@@ -19,16 +19,14 @@ export default function AdvancedSearch() {
   /**
    * returns function that will handle a text change event by setting the form field
    */
-  function handleInput(key: keyof FormValues) {
-    return (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement> | SelectChangeEvent<string>) => {
+  const handleInput = (key: keyof FormValues) => (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement> | SelectChangeEvent<string>) => {
       setField(key, e.target.value)
     }
-  }
 
   /**
    * handle toggling "ONLINE" courses
    */
-  function handleToggle(_e: React.ChangeEvent<HTMLInputElement>, checked: boolean) {
+  const handleToggle = (_e: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
     if (checked) {
       setField('building', 'ON')
       setField('room', 'LINE')

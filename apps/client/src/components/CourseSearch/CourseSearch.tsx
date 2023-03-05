@@ -7,7 +7,7 @@ export default function ClassSearch() {
 
   if (showResults) {
     return <SearchResults />
-  } else {
+  } 
     return <SearchForm />
-  }
+  
 }

@@ -19,7 +19,7 @@ export default function FuzzySearch() {
   const [results, setResults] = useState<Record<string, SearchResult>>({})
   const [cache, setCache] = useState<Record<string, Record<string, SearchResult>>>({})
 
-  function getOptionLabel(option: string) {
+  const getOptionLabel = (option: string) => {
     const object = results[option]
     if (!object) {
       return option
@@ -27,7 +27,7 @@ export default function FuzzySearch() {
     switch (object.type) {
       case 'GE_CATEGORY': {
         const cat = option.split('-')[1].toLowerCase()
-        const num = parseInt(cat)
+        const num = parseInt(cat, 10)
         return `${emojiMap.GE_CATEGORY} GE ${cat.replace(num.toString(), romanArr[num - 1])} (${cat}): ${object.name}`
       }
       case 'DEPARTMENT':
@@ -41,7 +41,7 @@ export default function FuzzySearch() {
     }
   }
 
-  function handleInputChange(_event: React.SyntheticEvent, query: string, reason: AutocompleteInputChangeReason) {
+  const handleInputChange = (_event: React.SyntheticEvent, query: string, reason: AutocompleteInputChangeReason) => {
     if (reason === 'input') {
       setField('fuzzy', query)
       if (cache[query]) {
@@ -59,7 +59,7 @@ export default function FuzzySearch() {
     }
   }
 
-  function handleChange(_event: React.SyntheticEvent, v: string | null) {
+  const handleChange = (_event: React.SyntheticEvent, v: string | null) => {
     const object = results[v || '']
     if (!object || !v) {
       return
@@ -71,6 +71,9 @@ export default function FuzzySearch() {
      * reset the form values whenever a new option is selected
      */
     resetFields(['ge', 'instructor', 'deptValue', 'deptLabel', 'courseNumber'])
+
+    let cachedRecord: Record<string, SearchResult> | undefined
+    let result: SearchResult | undefined
 
     switch (object.type) {
       case 'GE_CATEGORY':
@@ -86,12 +89,12 @@ export default function FuzzySearch() {
          * values in cache object are objects with string keys mapped to a SearchResult
          * find a value that has a key with the current autocomplete value
          */
-        const cachedRecord = Object.values(cache).find((value) => Object.keys(value).includes(v))
+        cachedRecord = Object.values(cache).find((value) => Object.keys(value).includes(v))
 
         /**
          * access the cachedRecord using the autocomplete value as the key to get the SearchResult
          */
-        const result = cachedRecord?.[v]
+        result = cachedRecord?.[v]
 
         setField('deptValue', v)
         setField('deptLabel', `${v}: ${result?.name}`)
@@ -102,12 +105,12 @@ export default function FuzzySearch() {
          * all values in cache are records with keys that are course names
          * find a cached record that has a key with current autocomplete value
          */
-        const cachedRecord = Object.values(cache).find((value) => Object.keys(value).includes(v))
+        cachedRecord = Object.values(cache).find((value) => Object.keys(value).includes(v))
 
         /**
          * access the record at the autocomplete value to get a SearchResult
          */
-        const result = cachedRecord?.[v]
+        result = cachedRecord?.[v]
 
         let deptLabel = result?.name
         if (!deptLabel) {

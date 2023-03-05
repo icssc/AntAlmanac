@@ -4,7 +4,7 @@ import type { Map, LatLngTuple } from 'leaflet'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import 'leaflet-routing-machine'
 import { Autocomplete, Box, Paper, Tab, Tabs, TextField, Typography } from '@mui/material'
-import type { Course } from '$stores/schedule'
+import type { Course } from '@packages/schemas/schedule'
 import { useScheduleStore } from '$stores/schedule'
 import { getCourseCalendarEvents } from '$stores/schedule/calendar'
 import type { CourseCalendarEvent } from '$stores/schedule/calendar'
@@ -19,9 +19,9 @@ import UserLocator from './UserLocator'
  * extracts all metadata from courses to the top level in preparation to use in the map
  */
 export function getMarkersFromCourses(courses: Course[]) {
-  const events = getCourseCalendarEvents(courses)
+  const courseEvents = getCourseCalendarEvents(courses)
 
-  const uniqueBuildingCodes = new Set(events.map((event) => event.bldg.split(' ').slice(0, -1).join(' ')))
+  const uniqueBuildingCodes = new Set(courseEvents.map((event) => event.bldg.split(' ').slice(0, -1).join(' ')))
 
   const pins: Record<string, CourseCalendarEvent[]> = {}
 
@@ -29,7 +29,7 @@ export function getMarkersFromCourses(courses: Course[]) {
    * associate each building code to courses that have a matching building code
    */
   uniqueBuildingCodes.forEach((buildingCode) => {
-    pins[buildingCode] = events.filter((event) => {
+    pins[buildingCode] = courseEvents.filter((event) => {
       const eventBuildingCode = event.bldg.split(' ').slice(0, -1).join(' ')
       return eventBuildingCode === buildingCode
     })
@@ -84,11 +84,11 @@ export default function CourseMap() {
 
   const today = days[tab]
 
-  function handleChange(_event: React.SyntheticEvent, newValue: number) {
+  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue)
   }
 
-  function handleSearch(_event: React.SyntheticEvent, value: Building | null) {
+  const handleSearch = (_event: React.SyntheticEvent, value: Building | null) => {
     if (!value) {
       setSelected(undefined)
     } else {
@@ -139,8 +139,8 @@ export default function CourseMap() {
         {/** menu floats above the map */}
         <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.942, marginX: '15%', marginY: 8 }}>
           <Tabs value={tab} onChange={handleChange} variant="fullWidth" sx={{ minHeight: 0 }}>
-            {days.map((day, index) => (
-              <Tab key={index} label={day || 'All'} sx={{ padding: 1, minHeight: 'auto', minWidth: '10%', p: 1 }} />
+            {days.map((day) => (
+              <Tab key={day} label={day || 'All'} sx={{ padding: 1, minHeight: 'auto', minWidth: '10%', p: 1 }} />
             ))}
           </Tabs>
           <Autocomplete
@@ -169,7 +169,7 @@ export default function CourseMap() {
 
         {/* draw a marker for each class */}
         {uniqueMarkers.map((marker, index) => (
-          <Fragment key={index}>
+          <Fragment key={Object.values(marker).join()}>
             <CourseMarker {...marker} label={today ? index + 1 : undefined} stackIndex={index}>
               <hr />
               <Typography variant="body2">Class: {`${marker.title} ${marker.sectionType}`}</Typography>
