@@ -61,7 +61,9 @@ export default function CourseEventDetails({ event, closePopover }: Props) {
   return (
     <Paper sx={{ padding: 2 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography fontWeight={600} color="primary">{title}</Typography>
+        <Typography fontWeight={600} color="primary">
+          {title}
+        </Typography>
         <Tooltip title="Delete Course">
           <IconButton size="small" onClick={handleDelete}>
             <DeleteIcon fontSize="inherit" />

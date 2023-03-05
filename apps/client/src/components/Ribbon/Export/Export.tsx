@@ -65,7 +65,7 @@ export default function ExportMenu({ imgRef }: Props) {
     })
   }
 
-  async function handleScreenshot() {
+  const handleScreenshot = async () => {
     if (!imgRef.current || !ref.current) {
       return
     }
@@ -85,7 +85,7 @@ export default function ExportMenu({ imgRef }: Props) {
     ref.current.click()
   }
 
-  function handleShare() {
+  const handleShare = () => {
     window.alert('Work in Progress')
   }
 
@@ -114,7 +114,7 @@ export default function ExportMenu({ imgRef }: Props) {
           </MenuItem>
         </Menu>
       </MenuItem>
-      <Link ref={ref} sx={{ display: 'none' }}>
+      <Link ref={ref} sx={{ display: 'none' }} href="/">
         Invisible link to download files
       </Link>
     </>

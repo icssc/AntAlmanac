@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { IconButton, Tooltip } from '@mui/material'
 import { Edit as EditIcon } from '@mui/icons-material'
-import RenameScheduleDialog from '$components/Dialog/RenameSchedule'
+import RenameScheduleDialog from '$components/dialogs/RenameSchedule'
 
 /**
  * button that opens up the rename schedule dialog

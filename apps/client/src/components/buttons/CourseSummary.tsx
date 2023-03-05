@@ -14,17 +14,13 @@ interface Props {
  */
 export default function CourseSummaryButton({ course }: Props) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>()
-
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
-
   const handleClose = () => {
     setAnchorEl(undefined)
   }
-
   const courseId = encodeURIComponent(`${course.deptCode.replace(/\s/g, '')}${course.courseNumber.replace(/\s/g, '')}`)
-
   const query = useRestQuery(courseId)
 
   return (

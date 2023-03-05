@@ -4,7 +4,7 @@ import { ListItemIcon, ListItemText, MenuItem, Select } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material'
 import { useScheduleStore } from '$stores/schedule'
 import { setScheduleIndex } from '$stores/schedule/schedule'
-import RenameScheduleDialog from '$components/Dialog/RenameSchedule'
+import RenameScheduleDialog from '$components/dialogs/RenameSchedule'
 
 /**
  * select form that can switch between schedules or add a new schedule

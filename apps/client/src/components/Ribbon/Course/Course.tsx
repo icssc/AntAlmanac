@@ -14,8 +14,8 @@ export default function CourseMenu() {
   const { enqueueSnackbar } = useSnackbar()
   const [anchorEl, setAnchorEl] = useState<HTMLElement>()
 
-  const schedules = useScheduleStore(store => store.schedules)
-  const scheduleIndex = useScheduleStore(store => store.scheduleIndex)
+  const schedules = useScheduleStore((store) => store.schedules)
+  const scheduleIndex = useScheduleStore((store) => store.scheduleIndex)
   const currentSchedule = schedules[scheduleIndex]
 
   const handleClick = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
@@ -40,14 +40,12 @@ export default function CourseMenu() {
   /**
    * returns function that will copy courses to the schedule at the specified index
    */
-  const handleAdd = (index: number) => {
-    return () => {
-      if (window.confirm(`Copy current courses to ${schedules[index].scheduleName}?`)) {
-        copyCoursesToSchedule(index)
-        enqueueSnackbar(`Copied current courses to ${schedules[index].scheduleName}`, {
-          variant: 'success',
-        })
-      }
+  const handleAdd = (index: number) => () => {
+    if (window.confirm(`Copy current courses to ${schedules[index].scheduleName}?`)) {
+      copyCoursesToSchedule(index)
+      enqueueSnackbar(`Copied current courses to ${schedules[index].scheduleName}`, {
+        variant: 'success',
+      })
     }
   }
 
@@ -59,42 +57,40 @@ export default function CourseMenu() {
   }
 
   return (
-    <>
-      <MenuItem onClick={handleClick} disableRipple dense>
-        <ListItemText>Course</ListItemText>
+    <MenuItem onClick={handleClick} disableRipple dense>
+      <ListItemText>Course</ListItemText>
 
-        <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={handleClose} transitionDuration={0}>
-          <MenuItem onClick={handleClearCourses} divider dense>
-            <ListItemIcon>
-              <BackspaceIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>Clear Courses</ListItemText>
-          </MenuItem>
+      <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={handleClose} transitionDuration={0}>
+        <MenuItem onClick={handleClearCourses} divider dense>
+          <ListItemIcon>
+            <BackspaceIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Clear Courses</ListItemText>
+        </MenuItem>
 
-          <MenuItem dense disabled>
-            <ListItemIcon>
-              <FileCopyIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>Copy Courses to</ListItemText>
-          </MenuItem>
+        <MenuItem dense disabled>
+          <ListItemIcon>
+            <FileCopyIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Copy Courses to</ListItemText>
+        </MenuItem>
 
-          {schedules.map((schedule, index) => (
-            <MenuItem key={index} onClick={handleAdd(index)} dense>
-              <ListItemIcon>
-                <ChevronRightIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>{schedule.scheduleName}</ListItemText>
-            </MenuItem>
-          ))}
-
-          <MenuItem onClick={handleAddAll} dense>
+        {schedules.map((schedule, index) => (
+          <MenuItem key={schedule.scheduleName} onClick={handleAdd(index)} dense>
             <ListItemIcon>
               <ChevronRightIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText>All schedules</ListItemText>
+            <ListItemText>{schedule.scheduleName}</ListItemText>
           </MenuItem>
-        </Menu>
-      </MenuItem>
-    </>
+        ))}
+
+        <MenuItem onClick={handleAddAll} dense>
+          <ListItemIcon>
+            <ChevronRightIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>All schedules</ListItemText>
+        </MenuItem>
+      </Menu>
+    </MenuItem>
   )
 }

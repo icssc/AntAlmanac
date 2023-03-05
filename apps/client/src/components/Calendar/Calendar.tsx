@@ -10,7 +10,7 @@ import { useScheduleStore } from '$stores/schedule'
 import useSettingsStore from '$stores/settings'
 import { getCourseCalendarEvents, getFinalsCalendarEvents, getCustomCalendarEvents } from '$stores/schedule/calendar'
 import type { CalendarEvent } from '$stores/schedule/calendar'
-import trpc from '$lib/trpc'
+import CalendarToolbar from './Toolbar/Toolbar'
 import CourseEventDetails from './Details/CourseEvent'
 import CustomEventDetails from './Details/CustomEvent'
 
@@ -74,20 +74,14 @@ export default function AntAlamancCalendar() {
     setAnchorEl(undefined)
   }
 
-  const utils = trpc.useContext()
 
   useEffect(() => {
-    utils.schedule.find.fetch('rem').then(res => {
-      useScheduleStore.setState(res)
-    })
   }, [])
 
   return (
     <Box>
       <Paper sx={{ position: 'sticky', top: 0, zIndex: 1 }}>
-        {/*
         <CalendarToolbar imgRef={ref} />
-          */}
       </Paper>
 
       <Box ref={ref}>

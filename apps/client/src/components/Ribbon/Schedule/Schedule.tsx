@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material'
 import { CloudDownload as CloudDownloadIcon, PostAdd as PostAddIcon, Save as SaveIcon } from '@mui/icons-material'
-import ImportDialog from '$components/Dialog/Import'
-import SaveDialog from '$components/Dialog/Save'
-import LoadDialog from '$components/Dialog/Load'
+import ImportDialog from '$components/dialogs/Import'
+import SaveDialog from '$components/dialogs/Save'
+import LoadDialog from '$components/dialogs/Load'
 
 export default function ScheduleMenu() {
   const [anchorEl, setAnchorEl] = useState<HTMLElement>()
