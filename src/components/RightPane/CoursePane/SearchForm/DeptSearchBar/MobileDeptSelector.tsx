@@ -26,8 +26,18 @@ interface MobileDeptSelectorState {
 }
 
 class MobileDeptSelector extends PureComponent<MobileDeptSelectorProps, MobileDeptSelectorState> {
+
+    updatedeptAndGetFormData(){
+        RightPaneStore.updateFormValue("deptLabel", RightPaneStore.getUrlDeptLabel()) 
+        return RightPaneStore.getFormData().deptLabel
+    };
+
     state = {
-        deptLabel: RightPaneStore.getFormData().deptLabel,
+        deptLabel: RightPaneStore.getUrlDeptLabel() != "null" && RightPaneStore.getUrlDeptLabel() != "" && RightPaneStore.getUrlDeptLabel() != " " 
+        ?
+        this.updatedeptAndGetFormData()
+        : 
+        RightPaneStore.getFormData().deptLabel,
     };
 
     handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {

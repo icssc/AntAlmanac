@@ -35,13 +35,41 @@ interface GESelectorState {
 }
 
 class GESelector extends PureComponent<GESelectorProps, GESelectorState> {
+
+    updateGEAndGetFormData(){
+        RightPaneStore.updateFormValue("ge", RightPaneStore.getUrlGEValue()) 
+        return RightPaneStore.getFormData().ge
+    };
+
     state = {
-        ge: RightPaneStore.getFormData().ge,
+        ge: RightPaneStore.getUrlGEValue() != "null" && RightPaneStore.getUrlGEValue() != "" && RightPaneStore.getUrlGEValue() != " " 
+        ?
+        this.updateGEAndGetFormData()
+        : 
+        RightPaneStore.getFormData().ge,
     };
 
     handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
         this.setState({ ge: event.target.value as string });
         RightPaneStore.updateFormValue('ge', event.target.value as string);
+
+        let stateObj = { url: "url" };
+        const url = new URL(window.location.href)
+        const urlParam = new URLSearchParams(url.search);
+        urlParam.delete('GE');
+        if (event.target.value as string != "" && event.target.value as string != null && event.target.value as string != "ANY"){
+            urlParam.append('GE', event.target.value as string);
+            const new_url = `?${urlParam.toString()}`;
+            window.history.replaceState(stateObj, "url", "/" + new_url);
+        }else{
+            if (urlParam.toString() == "" || urlParam.toString() == null){
+                const new_url = `${urlParam.toString()}`;
+                window.history.replaceState(stateObj, "url", "/" + new_url);
+            }else{
+                const new_url = `?${urlParam.toString()}`;
+                window.history.replaceState(stateObj, "url", "/" + new_url);
+            }
+        }
     };
 
     componentDidMount() {

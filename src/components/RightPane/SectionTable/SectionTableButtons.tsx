@@ -94,8 +94,13 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
         const url = new URL(window.location.href)
         const urlParam = new URLSearchParams(url.search);
         urlParam.delete('courseCode');
+        urlParam.delete('courseNumber');
+        urlParam.delete('deptLabel');
+        urlParam.delete('deptValue');
+        urlParam.delete('GE');
+        urlParam.delete('term');
         urlParam.append('courseCode', String(section.sectionCode));
-        const new_url = `${url.origin.toString()}?${urlParam.toString()}`;
+        const new_url = `${url.origin.toString()}/?${urlParam.toString()}`;
         navigator.clipboard.writeText(new_url.toString()).then(function() {
             openSnackbar('success', 'Course Link Copied!');
         }, function() {

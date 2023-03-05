@@ -3,19 +3,43 @@ import React, { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
 
-const urlParamValue = new URLSearchParams(window.location.search).get("courseCode");
-if (String(urlParamValue) != "null" && String(urlParamValue) != ""){
-    RightPaneStore.updateFormValue("sectionCode",String(urlParamValue))
-}
 
 class SectionCodeSearchBar extends PureComponent {
+
+    updateCourseCodeAndGetFormData(){
+        RightPaneStore.updateFormValue("sectionCode", RightPaneStore.getUrlCourseCodeValue()) 
+        return RightPaneStore.getFormData().sectionCode
+    };
+
     state = {
-        sectionCode: RightPaneStore.getFormData().sectionCode,
+        sectionCode: RightPaneStore.getUrlCourseCodeValue() != "null" && RightPaneStore.getUrlCourseCodeValue() != "" && RightPaneStore.getUrlCourseCodeValue() != " " 
+        ?
+        this.updateCourseCodeAndGetFormData()
+        : 
+        RightPaneStore.getFormData().sectionCode,
     };
 
     handleChange = (event: ChangeEvent<{ value: string }>) => {
         this.setState({ sectionCode: event.target.value });
         RightPaneStore.updateFormValue('sectionCode', event.target.value);
+
+        let stateObj = { url: "url" };
+        const url = new URL(window.location.href)
+        const urlParam = new URLSearchParams(url.search);
+        urlParam.delete('courseCode');
+        if (event.target.value != "" && event.target.value != null){
+            urlParam.append('courseCode', event.target.value);
+            const new_url = `?${urlParam.toString()}`;
+            window.history.replaceState(stateObj, "url", "/" + new_url);
+        }else{
+            if (urlParam.toString() == "" || urlParam.toString() == null){
+                const new_url = `${urlParam.toString()}`;
+                window.history.replaceState(stateObj, "url", "/" + new_url);
+            }else{
+                const new_url = `?${urlParam.toString()}`;
+                window.history.replaceState(stateObj, "url", "/" + new_url);
+            }
+        }
     };
 
     componentDidMount() {

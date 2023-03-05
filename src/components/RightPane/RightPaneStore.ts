@@ -23,6 +23,12 @@ class RightPaneStore extends EventEmitter {
     private activeTab: number;
     private doDisplaySearch: boolean;
     private openSpotAlertPopoverActive: boolean;
+    private urlCourseCodeValue: string;
+    private urlTermValue: string;
+    private urlGEValue: string;
+    private urlCourseNumValue: string;
+    private urlDeptLabel: string;
+    private urlDeptValue: string;
     constructor() {
         super();
         this.setMaxListeners(15);
@@ -30,6 +36,12 @@ class RightPaneStore extends EventEmitter {
         this.activeTab = 0;
         this.doDisplaySearch = true;
         this.openSpotAlertPopoverActive = false;
+        this.urlCourseCodeValue = String(new URLSearchParams(window.location.search).get('courseCode'));
+        this.urlTermValue = String(new URLSearchParams(window.location.search).get('term'));
+        this.urlGEValue = String(new URLSearchParams(window.location.search).get('GE'));
+        this.urlCourseNumValue = String(new URLSearchParams(window.location.search).get('courseNumber'));
+        this.urlDeptLabel = String(new URLSearchParams(window.location.search).get('deptLabel'));
+        this.urlDeptValue = String(new URLSearchParams(window.location.search).get('deptValue'));
     }
 
     getFormData = () => {
@@ -46,6 +58,30 @@ class RightPaneStore extends EventEmitter {
 
     getOpenSpotAlertPopoverActive = () => {
         return this.openSpotAlertPopoverActive;
+    };
+
+    getUrlCourseCodeValue = () => {
+        return this.urlCourseCodeValue;
+    };
+
+    getUrlTermValue = () => {
+        return this.urlTermValue;
+    };
+
+    getUrlGEValue = () => {
+        return this.urlGEValue;
+    };
+
+    getUrlCourseNumValue = () => {
+        return this.urlCourseNumValue;
+    };
+
+    getUrlDeptLabel = () => {
+        return this.urlDeptLabel;
+    };
+
+    getUrlDeptValue = () => {
+        return this.urlDeptValue;
     };
 
     updateFormValue = (field: string, value: string) => {

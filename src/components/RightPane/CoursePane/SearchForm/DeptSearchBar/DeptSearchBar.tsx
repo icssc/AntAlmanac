@@ -38,6 +38,18 @@ interface DeptSearchBarState {
 }
 
 class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState> {
+
+    updatedeptLabelAndGetFormData(){
+        RightPaneStore.updateFormValue("deptLabel", RightPaneStore.getUrlDeptLabel()) 
+        RightPaneStore.updateFormValue("deptValue", RightPaneStore.getUrlDeptValue()) 
+        return RightPaneStore.getFormData().deptLabel
+    };
+
+    updatedeptValueAndGetFormData(){
+        RightPaneStore.updateFormValue("deptValue", RightPaneStore.getUrlDeptValue()) 
+        return RightPaneStore.getFormData().deptValue
+    };
+
     constructor(props: DeptSearchBarProps) {
         super(props);
 
@@ -48,8 +60,17 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
         }
         this.state = {
             value: {
-                deptValue: RightPaneStore.getFormData().deptValue,
-                deptLabel: RightPaneStore.getFormData().deptLabel,
+                deptValue: RightPaneStore.getUrlDeptValue() != "null" && RightPaneStore.getUrlDeptValue() != "" && RightPaneStore.getUrlDeptValue() != " " 
+                ?
+                this.updatedeptValueAndGetFormData()
+                : 
+                RightPaneStore.getFormData().deptValue,
+
+                deptLabel: RightPaneStore.getUrlDeptLabel() != "null" && RightPaneStore.getUrlDeptLabel() != "" && RightPaneStore.getUrlDeptLabel() != " " 
+                ?
+                this.updatedeptLabelAndGetFormData()
+                : 
+                RightPaneStore.getFormData().deptLabel,
                 isFavorite: false,
             },
             favorites: favorites,
@@ -84,6 +105,29 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
         this.setState({ value: setDeptValue });
         RightPaneStore.updateFormValue('deptValue', setDeptValue.deptValue);
         RightPaneStore.updateFormValue('deptLabel', setDeptValue.deptLabel);
+
+        let stateObj = { url: "url" };
+        const url = new URL(window.location.href)
+        const urlParam = new URLSearchParams(url.search);
+        urlParam.delete('deptLabel');
+        urlParam.delete('deptValue');
+        if (setDeptValue.deptValue != "" && setDeptValue.deptValue != null && 
+            setDeptValue.deptValue != "ALL" && setDeptValue.deptLabel != "" && 
+            setDeptValue.deptLabel != null && setDeptValue.deptLabel != "ALL: Include All Departments")
+            {
+            urlParam.append('deptLabel', setDeptValue.deptLabel);
+            urlParam.append('deptValue', setDeptValue.deptValue);
+            const new_url = `?${urlParam.toString()}`;
+            window.history.replaceState(stateObj, "url", "/" + new_url);
+        }else{
+            if (urlParam.toString() == "" || urlParam.toString() == null){
+                const new_url = `${urlParam.toString()}`;
+                window.history.replaceState(stateObj, "url", "/" + new_url);
+            }else{
+                const new_url = `?${urlParam.toString()}`;
+                window.history.replaceState(stateObj, "url", "/" + new_url);
+            }
+        }
 
         if (newDept === null || newDept.deptValue === 'ALL') return;
 
