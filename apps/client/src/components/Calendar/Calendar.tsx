@@ -1,12 +1,14 @@
 import { useMemo, useState } from 'react'
 import { Box, Button, ClickAwayListener, Popper } from '@mui/material'
-import FullCalendar from '@fullcalendar/react' // must go before plugins
-import timeGridPlugin from '@fullcalendar/timegrid' // a plugin!
+import FullCalendar from '@fullcalendar/react'
+import timeGridPlugin from '@fullcalendar/timegrid'
 import type { EventClickArg, EventContentArg } from '@fullcalendar/core'
-import trpc from '$lib/trpc'
 import { useScheduleStore } from '$stores/schedule'
 import { getCourseCalendarEvents } from '$stores/schedule/calendar'
 import type { CalendarEvent } from '$stores/schedule/calendar'
+import trpc from '$lib/trpc'
+import CourseEventDetails from './Details/CourseEvent'
+import CustomEventDetails from './Details/CustomEvent'
 
 /**
  * single calendar event box
@@ -82,12 +84,14 @@ export default function Calendar() {
         eventContent={AntAlmanacEvent}
         eventClick={handleEventClick}
       />
-      <Popper anchorEl={anchorEl} open={!!anchorEl} sx={{ zIndex: 1 }}>
+      <Popper anchorEl={anchorEl} open={!!anchorEl} placement="right" sx={{ zIndex: 1 }}>
         <ClickAwayListener onClickAway={handleClose}>
           <Box whiteSpace="pre">
            {info && 'bldg' in info && (
-             JSON.stringify(info, null, 2)
-              // <CourseEventDetails key={calendarEventKey} event={courseInMoreInfo} closePopover={handleClose} />
+              <CourseEventDetails event={info} closePopover={handleClose} />
+            )}
+           {info && 'customEventID' in info && (
+              <CustomEventDetails event={info} closePopover={handleClose} />
             )}
           </Box>
         </ClickAwayListener>

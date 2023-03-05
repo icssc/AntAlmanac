@@ -4,8 +4,8 @@ import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { useScheduleStore } from '$stores/schedule'
 import { deleteCustomEvent } from '$stores/schedule/custom'
 import type { CustomCalendarEvent } from '$stores/schedule/calendar'
-import CustomEventButton from '$components/Buttons/CustomEvent'
-import ColorPicker from '$components/Buttons/ColorPicker'
+import CustomEventButton from '$components/buttons/CustomEvent'
+import ColorPicker from '$components/buttons/ColorPicker'
 
 interface CourseCalendarEventProps {
   event: CustomCalendarEvent
