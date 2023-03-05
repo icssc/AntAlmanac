@@ -4,3 +4,9 @@
   align-items: center;
   cursor: col-resize;
 }
+
+.gutter::before {
+  content: "⋮";
+  font-size: 30pt;
+  color: white;
+}
