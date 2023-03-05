@@ -46,8 +46,9 @@ export default function AntAlamancCalendar() {
   const [info, setInfo] = useState<CalendarEvent>()
   const theme = useTheme()
   const showFinals = useSettingsStore((store) => store.showFinals)
-  const courses = useScheduleStore((store) => store.schedules[store.scheduleIndex].courses)
-  const customEvents = useScheduleStore((store) => store.schedules[store.scheduleIndex].customEvents)
+  const { schedules, scheduleIndex } = useScheduleStore()
+  const courses = schedules[scheduleIndex].courses
+  const customEvents = schedules[scheduleIndex].customEvents
 
   /**
    * this ref is important! pass it to the screenshot button to take a picture of the calendar
@@ -73,10 +74,6 @@ export default function AntAlamancCalendar() {
   const handleClose = () => {
     setAnchorEl(undefined)
   }
-
-
-  useEffect(() => {
-  }, [])
 
   return (
     <Box>

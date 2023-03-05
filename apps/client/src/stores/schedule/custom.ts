@@ -12,14 +12,10 @@ import { useScheduleStore } from '.'
  */
 export function addCustomEvent(newCustomEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
   const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
-  const { customEvents } = schedules[scheduleIndex]
-
   previousStates.push({ schedules: structuredClone(schedules), scheduleIndex })
 
   scheduleIndices.forEach((index) => {
-    if (!customEvents.some((customEvent) => customEvent.customEventID === newCustomEvent.customEventID)) {
-      schedules[index].customEvents.push(newCustomEvent)
-    }
+    schedules[index].customEvents.push(newCustomEvent)
   })
 
   useScheduleStore.setState({ schedules, previousStates, saved: false })

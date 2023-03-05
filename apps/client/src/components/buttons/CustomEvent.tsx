@@ -125,10 +125,12 @@ export default function CustomEventButton({ event, onDialogClose, iconOnly }: Pr
       action: analyticsEnum.calendar.actions.ADD_CUSTOM_EVENT,
     })
 
+    const array = new Uint32Array(1)
+
     const newCustomEvent = {
       color: event ? event.color : '#551a8b',
       ...value,
-      customEventID: event ? event.customEventID : Date.now(),
+      customEventID: event ? event.customEventID : window.crypto.getRandomValues(array)[0] + Date.now()
     }
 
     if (event) {
@@ -218,7 +220,7 @@ export default function CustomEventButton({ event, onDialogClose, iconOnly }: Pr
             Cancel
           </Button>
           <Button onClick={handleSubmit} variant="contained" color="primary" disabled={!!disabled}>
-            {disabled && (event ? 'Save Changes' : 'Add Event')}
+            {disabled || (event ? 'Save Changes' : 'Add Event')}
           </Button>
         </DialogActions>
       </Dialog>

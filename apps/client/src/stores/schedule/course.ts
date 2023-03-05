@@ -127,8 +127,7 @@ export function deleteCourse(sectionCode: string, term: string) {
   )
 
   schedules[scheduleIndex].courses.splice(index, 1)
-
-  useScheduleStore.setState({ schedules: structuredClone(schedules), previousStates, saved: false })
+  useScheduleStore.setState({ schedules, previousStates, saved: false })
 
   logAnalytics({
     category: analyticsEnum.addedClasses.title,
