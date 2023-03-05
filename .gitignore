@@ -1,6 +1,7 @@
 # desktop configuration files
 .DS_Store
 desktop.ini
+.idea
 
 # very big
 node_modules/
