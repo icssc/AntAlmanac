@@ -33,16 +33,15 @@ export function courseNumAsDecimal(courseNumber: string) {
   const letterAsNumber = lastElement.toUpperCase().charCodeAt(0) - 'A'.charCodeAt(0) + 1
   if (letterAsNumber >= 1 && letterAsNumber <= 9) {
     return parseFloat(`${secondToLastElement}.${letterAsNumber}`)
-  } 
-    console.error(
-      `The first character type at the end of the string was not within [A-I] or [a-i], returning last numbers found in string, Violating Character: ${
-        filtered[filtered.length - 1][0]
-      }, Input: ${courseNumber}`
-    )
-    // This will represent an integer at this point because the split in the beginning split the array into strings of digits and strings of other characters
-    // If the last element in the array does not represent an integer, then the second to last element must represent an integer
-    return parseInt(secondToLastElement, 10)
-  
+  }
+  console.error(
+    `The first character type at the end of the string was not within [A-I] or [a-i], returning last numbers found in string, Violating Character: ${
+      filtered[filtered.length - 1][0]
+    }, Input: ${courseNumber}`
+  )
+  // This will represent an integer at this point because the split in the beginning split the array into strings of digits and strings of other characters
+  // If the last element in the array does not represent an integer, then the second to last element must represent an integer
+  return parseInt(secondToLastElement, 10)
 }
 
 /**
