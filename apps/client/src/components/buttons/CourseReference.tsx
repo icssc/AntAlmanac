@@ -14,23 +14,23 @@ interface Props {
  * button that can open a popup with additional specific info about the course,
  * or link to another page with more info (if href is provided)
  */
-export default function CourseReferenceButton(props: Props) {
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
+export default function CourseReferenceButton({ title, href, icon, children, analyticsAction }: Props) {
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>()
 
-  function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     logAnalytics({
       category: analyticsEnum.classSearch.title,
-      action: props.analyticsAction,
+      action: analyticsAction,
     })
-    if (props.href) {
-      window.open(props.href)
+    if (href) {
+      window.open(href)
     } else {
       setAnchorEl(event.currentTarget)
     }
   }
 
-  function handleClose() {
-    setAnchorEl(null)
+  const handleClose = () => {
+    setAnchorEl(undefined)
   }
 
   return (
@@ -39,14 +39,10 @@ export default function CourseReferenceButton(props: Props) {
         variant="contained"
         size="small"
         onClick={handleClick}
-        startIcon={props.icon}
-        sx={{
-          backgroundColor: '#385EB1',
-          color: '#fff',
-          flexShrink: 0,
-        }}
+        startIcon={icon}
+        sx={{ backgroundColor: '#385EB1', color: '#fff', flexShrink: 0 }}
       >
-        {props.title}
+        {title}
       </Button>
       <Popover
         open={!!anchorEl}
@@ -55,7 +51,7 @@ export default function CourseReferenceButton(props: Props) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        {props.children}
+        {children}
       </Popover>
     </>
   )

@@ -1,14 +1,15 @@
 import { Button, Tooltip } from '@mui/material'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
-import { useSettingsStore } from '$stores/settings'
+import useSettingsStore from '$stores/settings'
 
 /**
  * button that can toggle the finals state of the settings store
  */
 export default function ToggleFinalsButton() {
-  const { showFinals, setShowFinals } = useSettingsStore()
+  const showFinals = useSettingsStore((store) => store.showFinals)
+  const setShowFinals = useSettingsStore((store) => store.setShowFinals)
 
-  function handleClick() {
+  const handleClick = () => {
     logAnalytics({
       category: analyticsEnum.calendar.title,
       action: analyticsEnum.calendar.actions.DISPLAY_FINALS,

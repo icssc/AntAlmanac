@@ -4,24 +4,26 @@ import { InfoOutlined as InfoOutlinedIcon } from '@mui/icons-material'
 import { useRestQuery } from '$hooks/useRestQuery'
 import type { AACourse } from '$lib/peterportal.types'
 
+interface Props {
+  course: AACourse
+}
+
 /**
  * button that opens a popup with all summary info about the course,
  * e.g. course description, prerequistes, etc.
  */
-export default function CourseSummaryButton(props: { course: AACourse }) {
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
+export default function CourseSummaryButton({ course }: Props) {
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>()
 
-  function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
 
-  function handleClose() {
-    setAnchorEl(null)
+  const handleClose = () => {
+    setAnchorEl(undefined)
   }
 
-  const courseId = encodeURIComponent(
-    `${props.course.deptCode.replace(/\s/g, '')}${props.course.courseNumber.replace(/\s/g, '')}`
-  )
+  const courseId = encodeURIComponent(`${course.deptCode.replace(/\s/g, '')}${course.courseNumber.replace(/\s/g, '')}`)
 
   const query = useRestQuery(courseId)
 
@@ -29,13 +31,12 @@ export default function CourseSummaryButton(props: { course: AACourse }) {
     <>
       <Button
         variant="contained"
-        color="white"
         size="small"
         onClick={handleClick}
         startIcon={<InfoOutlinedIcon />}
         sx={{ flexShrink: 0 }}
       >
-        {`${props.course?.deptCode} ${props.course?.courseNumber} | ${props.course?.courseTitle}`}
+        {`${course?.deptCode} ${course?.courseNumber} | ${course?.courseTitle}`}
       </Button>
       <Popover
         open={!!anchorEl}

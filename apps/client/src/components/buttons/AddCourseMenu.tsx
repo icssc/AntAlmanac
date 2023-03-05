@@ -13,29 +13,27 @@ interface Props {
 /**
  * button that opens a dropdown to add the provided course to a target schedule(s)
  */
-export default function AddCourseMenuButton(props: Props) {
+export default function AddCourseMenuButton({ section, course }: Props) {
   const schedules = useScheduleStore((store) => store.schedules)
   const [anchorEl, setAnchorEl] = useState<HTMLElement>()
 
-  function handleClick(event: React.MouseEvent<HTMLElement>) {
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
 
-  function handleClose() {
+  const handleClose = () => {
     setAnchorEl(undefined)
+  }
+
+  const handleAddAll = () => {
+    addCourseToAllSchedules(section, course)
   }
 
   /**
    * returns function that will add a course to the schedule at the specified index
    */
-  function handleAdd(index: number) {
-    return () => {
-      addCourse(props.section, props.course, index)
-    }
-  }
-
-  function handleAddAll() {
-    addCourseToAllSchedules(props.section, props.course)
+  const handleAdd = (index: number) => () => {
+    addCourse(section, course, index)
   }
 
   return (
@@ -45,7 +43,7 @@ export default function AddCourseMenuButton(props: Props) {
       </IconButton>
       <Menu open={!!anchorEl} anchorEl={anchorEl} onClose={handleClose}>
         {schedules.map((schedule, index) => (
-          <MenuItem key={index} onClick={handleAdd(index)}>
+          <MenuItem key={schedule.scheduleName} onClick={handleAdd(index)}>
             {schedule.scheduleName}
           </MenuItem>
         ))}

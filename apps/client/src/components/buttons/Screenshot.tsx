@@ -19,7 +19,7 @@ interface Props {
 /**
  * button that downloads a screenshot of the element referenced by imgRef
  */
-export default function ScreenshotButton(props: Props) {
+export default function ScreenshotButton({ imgRef, iconOnly }: Props) {
   const theme = useTheme()
 
   /**
@@ -27,8 +27,8 @@ export default function ScreenshotButton(props: Props) {
    */
   const ref = useRef<HTMLAnchorElement>(null)
 
-  async function handleClick() {
-    if (!props.imgRef.current || !ref.current) {
+  const handleClick = async () => {
+    if (!imgRef.current || !ref.current) {
       return
     }
 
@@ -37,7 +37,7 @@ export default function ScreenshotButton(props: Props) {
       action: analyticsEnum.calendar.actions.SCREENSHOT,
     })
 
-    const canvas = await html2canvas(props.imgRef.current, {
+    const canvas = await html2canvas(imgRef.current, {
       scale: 2.5,
       backgroundColor: theme.palette.background.paper,
     })
@@ -50,7 +50,7 @@ export default function ScreenshotButton(props: Props) {
   return (
     <>
       <Tooltip title="Get a screenshot of your schedule">
-        {props.iconOnly ? (
+        {iconOnly ? (
           <IconButton onClick={handleClick}>
             <PhotoCameraIcon />
           </IconButton>
@@ -60,7 +60,7 @@ export default function ScreenshotButton(props: Props) {
           </Button>
         )}
       </Tooltip>
-      <Link sx={{ display: 'none' }} ref={ref} />
+      <Link sx={{ display: 'none' }} ref={ref} href="/" />
     </>
   )
 }

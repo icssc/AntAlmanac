@@ -3,7 +3,7 @@ import { Delete as DeleteIcon } from '@mui/icons-material'
 import { deleteCurrentSchedule } from '$stores/schedule/schedule'
 
 export default function DeleteScheduleButton() {
-  function handleDelete() {
+  const handleDelete = () => {
     if (window.confirm('Are you sure you want to delete this schedule?')) {
       deleteCurrentSchedule()
     }

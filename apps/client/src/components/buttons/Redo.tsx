@@ -3,7 +3,7 @@ import { Redo as RedoIcon } from '@mui/icons-material'
 import { redo } from '$stores/schedule/commands'
 
 export default function RedoButton() {
-  function handleClick() {
+  const handleClick = () => {
     redo()
   }
 

@@ -9,7 +9,7 @@ import RenameScheduleDialog from '$components/Dialog/RenameSchedule'
 export default function RenameScheduleButton() {
   const [open, setOpen] = useState(false)
 
-  function handleOpen() {
+  const handleOpen = () => {
     setOpen(true)
   }
 

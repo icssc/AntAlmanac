@@ -13,11 +13,11 @@ export default function SelectScheduleButton() {
   const { schedules, scheduleIndex } = useScheduleStore()
   const [open, setOpen] = useState(false)
 
-  function handleOpen() {
+  const handleOpen = () => {
     setOpen(true)
   }
 
-  function handleSelectChange(e: SelectChangeEvent<string>) {
+  const handleSelectChange = (e: SelectChangeEvent<string>) => {
     const index = parseInt(e.target.value, 10)
     if (index < schedules.length) {
       setScheduleIndex(index)
@@ -28,7 +28,7 @@ export default function SelectScheduleButton() {
     <>
       <Select size="small" value={scheduleIndex.toString()} onChange={handleSelectChange} fullWidth>
         {schedules.map((schedule, index) => (
-          <MenuItem key={index} value={index}>
+          <MenuItem key={schedule.scheduleName} value={index}>
             {schedule.scheduleName}
           </MenuItem>
         ))}

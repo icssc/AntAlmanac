@@ -2,6 +2,7 @@ import { useSnackbar } from 'notistack'
 import { Delete as DeleteIcon } from '@mui/icons-material'
 import {
   Box,
+  Button,
   IconButton,
   Link,
   Paper,
@@ -21,23 +22,23 @@ import location_ids from '$lib/location_ids'
 
 function genMapLink(location: string) {
   try {
-    const location_id = location_ids[location.split(' ')[0] as keyof typeof location_ids]
-    return `https://map.uci.edu/?id=463#!m/${location_id}`
+    const locationId = location_ids[location.split(' ')[0] as keyof typeof location_ids]
+    return `https://map.uci.edu/?id=463#!m/${locationId}`
   } catch (err) {
     return 'https://map.uci.edu/'
   }
 }
 
-interface CourseCalendarEventProps {
+interface Props {
   event: CourseCalendarEvent
   closePopover?: () => void
 }
 
-export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
-  const { term, instructors, sectionCode, title, finalExam, bldg } = props.event
+export default function CourseEventDetails({ event, closePopover }: Props) {
+  const { term, instructors, sectionCode, title, finalExam, bldg } = event
   const { enqueueSnackbar } = useSnackbar()
 
-  function handleClickCopy(e: React.MouseEvent<HTMLElement, MouseEvent>) {
+  const handleClickCopy = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation()
     e.preventDefault()
     logAnalytics({
@@ -48,19 +49,19 @@ export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
     enqueueSnackbar('Section code copied to clipboard', { variant: 'success' })
   }
 
-  function handleDelete() {
+  const handleDelete = () => {
     deleteCourse(sectionCode, term)
     logAnalytics({
       category: analyticsEnum.calendar.title,
       action: analyticsEnum.calendar.actions.DELETE_COURSE,
     })
-    props.closePopover?.()
+    closePopover?.()
   }
 
   return (
     <Paper sx={{ padding: 2 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography>{title}</Typography>
+        <Typography fontWeight={600} color="primary">{title}</Typography>
         <Tooltip title="Delete Course">
           <IconButton size="small" onClick={handleDelete}>
             <DeleteIcon fontSize="inherit" />
@@ -69,15 +70,15 @@ export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
       </Box>
 
       <TableContainer>
-        <Table size="small" sx={{ '.MuiTableCell-root': { paddingX: 0, paddingY: 0.5, border: 'none' }, padding: 0 }}>
+        <Table size="small" sx={{ '.MuiTableCell-root': { px: 0, py: 0.5, border: 'none' }, padding: 0 }}>
           <TableBody>
             <TableRow>
               <TableCell sx={{ verticalAlign: 'top' }}>Section code</TableCell>
               <Tooltip title="Click to copy course code" placement="right">
                 <TableCell align="right">
-                  <Link href="#" onClick={handleClickCopy}>
+                  <Button onClick={handleClickCopy} sx={{ p: 0 }}>
                     {sectionCode}
-                  </Link>
+                  </Button>
                 </TableCell>
               </Tooltip>
             </TableRow>
@@ -116,9 +117,9 @@ export default function CourseCalendarEvent(props: CourseCalendarEventProps) {
               <TableCell>Color</TableCell>
               <TableCell align="right">
                 <ColorPicker
-                  color={props.event.color}
-                  isCustomEvent={props.event.isCustomEvent}
-                  sectionCode={props.event.sectionCode}
+                  color={event.color}
+                  isCustomEvent={event.isCustomEvent}
+                  sectionCode={event.sectionCode}
                   analyticsCategory={analyticsEnum.calendar.title}
                   term={term}
                 />

@@ -6,7 +6,7 @@ import { clearCurrentSchedule } from '$stores/schedule/schedule'
  * button that clears the current schedule
  */
 export default function ClearCurrentSchedule() {
-  function handleClick() {
+  const handleClick = () => {
     if (window.confirm('Are you sure you want to clear this schedule?')) {
       clearCurrentSchedule()
     }

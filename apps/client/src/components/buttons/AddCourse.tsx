@@ -12,11 +12,11 @@ interface Props {
 /**
  * button that adds the provided course to the schedule
  */
-export default function AddCourseButton(props: Props) {
+export default function AddCourseButton({ section, course }: Props) {
   const { enqueueSnackbar } = useSnackbar()
 
-  function handleClick() {
-    addCourse(props.section, props.course, undefined, {
+  const handleClick = () => {
+    addCourse(section, course, undefined, {
       onWarn(message) {
         enqueueSnackbar(message, { variant: 'warning' })
       },

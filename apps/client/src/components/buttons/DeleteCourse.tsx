@@ -12,12 +12,11 @@ interface Props {
 /**
  * button that deletes the provided course
  */
-export default function DeleteCourseButton(props: Props) {
+export default function DeleteCourseButton({ section, term }: Props) {
   const storeTerm = useSearchStore((store) => store.form.term)
-  const term = props.term ?? storeTerm
 
-  function handleClick() {
-    deleteCourse(props.section.sectionCode, term)
+  const handleClick = () => {
+    deleteCourse(section.sectionCode, term || storeTerm)
   }
 
   return (

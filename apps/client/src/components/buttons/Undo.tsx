@@ -3,7 +3,7 @@ import { Undo as UndoIcon } from '@mui/icons-material'
 import { undo } from '$stores/schedule/commands'
 
 export default function UndoButton() {
-  function handleClick() {
+  const handleClick = () => {
     undo()
   }
 

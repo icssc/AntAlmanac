@@ -8,12 +8,12 @@ import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { useScheduleStore } from '$stores/schedule'
 
 export default function DownloadButton() {
-  const { schedules, scheduleIndex } = useScheduleStore()
+  const courses = useScheduleStore((store) => store.schedules[store.scheduleIndex].courses)
   const { enqueueSnackbar } = useSnackbar()
   const ref = useRef<HTMLAnchorElement>(null)
 
-  function exportCalendar() {
-    const events = getEventsFromCourses(schedules[scheduleIndex].courses)
+  const exportCalendar = () => {
+    const events = getEventsFromCourses(courses)
 
     createEvents(events, (err, val) => {
       logAnalytics({
@@ -52,7 +52,7 @@ export default function DownloadButton() {
           <DownloadIcon fontSize="small" />
         </IconButton>
       </Tooltip>
-      <Link ref={ref} sx={{ display: 'none' }}>
+      <Link ref={ref} sx={{ display: 'none' }} href="/">
         Invisible link to download files
       </Link>
     </>

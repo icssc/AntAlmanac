@@ -32,38 +32,45 @@ interface Props {
 /**
  * color picker button that changes the color of the provided course or custom event
  */
-export default function ColorPicker(props: Props) {
-  const [color, setColor] = useState(props.color)
+export default function ColorPicker({
+  color,
+  analyticsCategory,
+  term,
+  isCustomEvent,
+  customEventID,
+  sectionCode,
+}: Props) {
+  const [value, setValue] = useState(color)
   const [anchorEl, setAnchorEl] = useState<HTMLElement>()
 
-  function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     setAnchorEl(e?.currentTarget)
     logAnalytics({
-      category: props.analyticsCategory,
+      category: analyticsCategory,
       action: analyticsEnum.calendar.actions.CHANGE_COURSE_COLOR,
     })
   }
 
-  function handleClose(e: React.MouseEvent) {
+  const handleClose = (e: React.MouseEvent) => {
     e.stopPropagation()
     setAnchorEl(undefined)
   }
 
-  function handleChange(e: ColorResult) {
-    if (props.customEventID) {
-      changeCustomEventColor(props.customEventID, e.hex)
+  const handleChange = (e: ColorResult) => {
+    if (isCustomEvent && customEventID) {
+      changeCustomEventColor(customEventID, e.hex)
     }
-    if (props.sectionCode && props.term) {
-      changeCourseColor(props.sectionCode, props.term, e.hex)
+    if (sectionCode && term) {
+      changeCourseColor(sectionCode, term, e.hex)
     }
-    setColor(e.hex)
+    setValue(e.hex)
   }
 
   return (
     <>
       <Tooltip title="Change Event Color">
-        <IconButton sx={{ color }} onClick={handleClick} size="large">
+        <IconButton sx={{ color: value }} onClick={handleClick} size="large">
           <ColorLens fontSize="small" />
         </IconButton>
       </Tooltip>
@@ -74,7 +81,7 @@ export default function ColorPicker(props: Props) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
       >
-        <SketchPicker color={color} onChange={handleChange} />
+        <SketchPicker color={value} onChange={handleChange} />
       </Popover>
     </>
   )
