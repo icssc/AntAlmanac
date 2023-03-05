@@ -393,7 +393,8 @@ export default class UCIMap extends PureComponent {
                             !event.start.toString().includes(DAYS[day]) ||
                             courses.has(event.sectionCode) || // Remove duplicate courses that appear in the calendar
                             !courses.add(event.sectionCode) ||
-                            FAKE_LOCATIONS.includes(event.bldg)
+                            // trim inconsistent white spacing in event.bldg from API
+                            FAKE_LOCATIONS.includes(event.bldg.trim())
                         ) // Adds to the set and return false
                     )
             )
