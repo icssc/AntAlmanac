@@ -13,7 +13,6 @@ import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { ReactComponent as Logo } from './logo.svg';
 import { ReactComponent as MobileLogo } from './mobile-logo.svg';
 import News from './News';
-import NotificationHub from './NotificationHub';
 import SettingsMenu from './SettingsMenu';
 
 const styles = {
@@ -76,7 +75,6 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
                         {[
                             // the keys here don't do anything they just make eslint happy.
                             <SettingsMenu key="settings" />,
-                            <NotificationHub key="notifications" />,
                             <ImportStudyList key="studylist" />,
                             <Feedback key="feedback" />,
                             <News key="news" />,
