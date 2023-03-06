@@ -17,6 +17,8 @@
       "@packages/schemas/*": ["packages/schemas/src/*"],
       "@packages/peterportal": ["packages/peterportal/src"],
       "@packages/peterportal/*": ["packages/peterportal/src/*"],
+      "@packages/types": ["packages/types/src"],
+      "@packages/types/*": ["packages/types/src/*"],
     }
   }
 }

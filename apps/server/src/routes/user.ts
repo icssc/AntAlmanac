@@ -3,15 +3,14 @@ import { procedure, router } from '../trpc'
 import { scheduleSaveStateSchema } from '@packages/schemas/schedule'
 import UserModel from '$models/User'
 
-
 const saveQuerySchema = z.object({
   id: z.string(),
   scheduleSaveState: scheduleSaveStateSchema
 })
 
 const userRouter = router({
-  find: procedure.query(async () => {
-    const users = UserModel.scan().exec()
+  findAll: procedure.query(async () => {
+    const users = await UserModel.scan().exec()
     return users
   }),
 
@@ -32,7 +31,12 @@ const userRouter = router({
         },
     )
     return updatedUser
-  })
+  }),
+
+  create: procedure.mutation(async () => {
+    const users = await UserModel.get('1')
+    return users
+  }),
 })
 
 export default userRouter

@@ -1,6 +1,33 @@
 import { useMemo } from 'react'
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
+import type { PaletteOptions } from '@mui/material'
 import useSettingsStore from '$stores/settings'
+
+const lightTheme: PaletteOptions = {
+  primary: {
+    main: '#BF3636',
+  },
+  secondary: {
+    main: '#BF7154',
+  },
+  background: {
+    default: '#fafafa',
+    paper: '#fff',
+  },
+}
+
+const darkTheme: PaletteOptions = {
+  primary: {
+    main: '#BF3636',
+  },
+  secondary: {
+    main: '#BF7154',
+  },
+  background: {
+    default: '#303030',
+    paper: '#424242',
+  },
+}
 
 interface Props {
   children?: React.ReactNode
@@ -16,18 +43,7 @@ export default function AppThemeProvider({ children }: Props) {
       createTheme({
         palette: {
           mode: isDarkMode ? 'dark' : 'light',
-          primary: {
-            main: '#bf3636',
-            light: '#f76860',
-            dark: '#880010',
-            contrastText: '#fff',
-          },
-          secondary: {
-            main: '#da9a0e',
-            light: '#ffffca',
-            dark: '#bea26a',
-            contrastText: '#000',
-          },
+          ...(isDarkMode ? darkTheme : lightTheme),
         },
       }),
     [isDarkMode]
@@ -39,8 +55,4 @@ export default function AppThemeProvider({ children }: Props) {
       {children}
     </ThemeProvider>
   )
-}
-
-AppThemeProvider.defaultProps = {
-  children: null,
 }

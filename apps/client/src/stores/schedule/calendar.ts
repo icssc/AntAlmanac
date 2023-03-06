@@ -8,12 +8,12 @@
  */
 
 import type { EventInput } from '@fullcalendar/core'
-import type { Course, RepeatingCustomEvent } from '.'
+import type { Course, RepeatingCustomEvent } from '@packages/types'
 
 /**
- * common properties for the internal calendar types
+ * shared properties of internal calendar interfaces
  */
-interface CommonCalendarEvent {
+interface MinimalCalendarEvent {
   color: string
   start: Date
   end: Date
@@ -21,9 +21,9 @@ interface CommonCalendarEvent {
 }
 
 /**
- * react-big-calendar compatible calendar event for a course
+ * react-big-calendar compatible interface for a course
  */
-export interface CourseCalendarEvent extends CommonCalendarEvent {
+export interface CourseCalendarEvent extends MinimalCalendarEvent {
   bldg: string
   finalExam: string
   instructors: string[]
@@ -34,13 +34,9 @@ export interface CourseCalendarEvent extends CommonCalendarEvent {
 }
 
 /**
- * react-big-calendar compatible interface derived for a custom event
+ * react-big-calendar compatible interface for a custom event
  */
-export interface CustomCalendarEvent extends CommonCalendarEvent {
-  color: string
-  start: Date
-  end: Date
-  title: string
+export interface CustomCalendarEvent extends MinimalCalendarEvent {
   customEventID: number
   isCustomEvent: true
 }
@@ -88,7 +84,7 @@ export function getCourseCalendarEvents(courses: Course[] = []): CourseCalendarE
             term: course.term,
             title: `${course.deptCode} ${course.courseNumber}`,
             courseTitle: course.courseTitle,
-            bldg: meeting.bldg,
+            bldg: meeting.bldg.join(),
             instructors: course.section.instructors,
             sectionCode: course.section.sectionCode,
             sectionType: course.section.sectionType,
@@ -142,7 +138,7 @@ export function getFinalsCalendarEvents(courses: Course[] = []): CourseCalendarE
           title: `${course.deptCode} ${course.courseNumber}`,
           sectionCode: course.section.sectionCode,
           sectionType: 'Fin',
-          bldg: course.section.meetings[0].bldg,
+          bldg: course.section.meetings[0].bldg.join(),
           color: course.section.color,
           start: new Date(2018, 0, index - 1, startHour, startMin),
           end: new Date(2018, 0, index - 1, endHour, endMin),

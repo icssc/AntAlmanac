@@ -3,12 +3,10 @@
  *
  * all other files in this folder are de-coupled from one another,
  * and only extend this store's functionality
- *
- * move common/shared interfaces here
  */
 
 import { create } from 'zustand'
-import type { AASection, Section } from '$lib/peterportal.types'
+import type { AASection, Section } from '@packages/peterportal'
 
 export interface RepeatingCustomEvent {
   title: string
@@ -69,6 +67,54 @@ export interface ScheduleSaveState {
 export interface ScheduleUndoState {
   schedules: Schedule[]
   scheduleIndex: number
+}
+
+export interface LegacyShortCourseInfo extends ShortCourse {
+  scheduleIndices: number[]
+}
+
+export interface LegacyRepeatingCustomEvent extends RepeatingCustomEvent {
+  scheduleIndices: number[]
+}
+
+export interface LegacyUserData {
+  addedCourses: LegacyShortCourseInfo[]
+  scheduleNames: string[]
+  customEvents: LegacyRepeatingCustomEvent[]
+}
+
+export const defaultCourseDetails: CourseDetails = {
+  courseTitle: '',
+  courseNumber: '',
+  courseComment: '',
+  deptCode: '',
+  prerequisiteLink: '',
+}
+
+export const defaultSection: Section = {
+  sectionNum: '',
+  status: '',
+  sectionCode: '',
+  sectionType: '',
+  sectionComment: '',
+  units: '',
+  numRequested: '',
+  numOnWaitlist: '',
+  numNewOnlyReserved: '',
+  numCurrentlyEnrolled: {
+    totalEnrolled: '',
+    sectionEnrolled: '',
+  },
+  instructors: [],
+  meetings: [],
+  maxCapacity: '',
+  finalExam: '',
+  restrictions: '',
+}
+
+export const defaultCourseInfo: CourseInfo = {
+  courseDetails: structuredClone(defaultCourseDetails),
+  section: structuredClone(defaultSection),
 }
 
 export interface ScheduleStore {

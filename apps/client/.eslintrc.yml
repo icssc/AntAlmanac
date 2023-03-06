@@ -23,6 +23,7 @@ rules:
   import/extensions: off
   no-restricted-exports: off
   react/jsx-props-no-spreading: off
+  react/require-default-props: off
 
 env:
   browser: true

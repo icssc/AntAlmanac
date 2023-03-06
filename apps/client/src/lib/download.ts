@@ -1,6 +1,10 @@
+/**
+ * helpers to convert a schedule of courses to an array of ICS events
+ */
+
 import type { EventAttributes } from 'ics'
+import type { Course } from '@packages/schemas/schedule'
 import { termData } from '$lib/termData'
-import type { Course } from '$stores/schedule'
 
 const quarterStartDates = Object.fromEntries(
   termData

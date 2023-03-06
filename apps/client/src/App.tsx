@@ -1,8 +1,9 @@
+import { SnackbarProvider } from 'notistack'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import Home from '$routes/Home'
 import AppThemeProvider from '$providers/Theme'
 import AppQueryProvider from '$providers/Query'
 import Header from '$components/Header'
-import Home from '$routes/Home'
 
 const router = createBrowserRouter([
   {
@@ -15,8 +16,10 @@ export default function App() {
   return (
     <AppQueryProvider>
       <AppThemeProvider>
-        <Header />
-        <RouterProvider router={router} />
+        <SnackbarProvider>
+          <Header />
+          <RouterProvider router={router} />
+        </SnackbarProvider>
       </AppThemeProvider>
     </AppQueryProvider>
   )

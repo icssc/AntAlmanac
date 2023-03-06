@@ -1,7 +1,7 @@
+import type { Schedule, ShortCourseSchedule } from '@packages/types'
 import { SAVE_DATA_ENDPOINT } from '$lib/api/endpoints'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { useScheduleStore } from '.'
-import type { Schedule, ShortCourseSchedule } from '.'
 
 /*
  * convert schedule to shortened schedule (no course info) for saving.
@@ -16,7 +16,10 @@ export function convertSchedulesToSave(schedules: Schedule[]) {
       sectionCode: course.section.sectionCode,
     })),
   }))
-  return { schedules: shortSchedules, scheduleIndex: 0 }
+  return {
+    schedules: shortSchedules,
+    scheduleIndex: 0,
+  }
 }
 
 interface Options {
