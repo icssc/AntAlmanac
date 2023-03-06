@@ -1,4 +1,4 @@
-import type { WebsocSection, WebsocAPIResponse } from 'peterportal-api-next-types'
+import type { WebsocCourse, WebsocSection, WebsocAPIResponse } from 'peterportal-api-next-types'
 
 //-----------------------------------------------------------------------------------
 // main data entities
@@ -15,9 +15,10 @@ export interface Section extends WebsocSection {
 }
 
 /**
- * modified section from the AACourse
+ * modified WebsocCourse from PeterPortal API
+ * substitutes the sections array with a single section object
  */
-export interface Course extends WebsocCourse {
+export interface Course extends Omit<WebsocCourse, 'sections'> {
   /**
    * a course in the schedule is associated with a term, e.g. 2020 Fall
    */

@@ -3,12 +3,12 @@
  * @remarks structuredClone is used to deep clone state so it doesn't get affected by mutations to the original
  */
 
+import type { WebsocCourse } from 'peterportal-api-next-types'
 import * as colors from '@mui/material/colors'
-import type { Course } from '@packages/schemas/schedule'
+import type { Course, Section } from '@packages/types'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { courseNumAsDecimal } from '$lib/helpers'
 import { useSearchStore } from '$stores/search'
-import type { AACourse, Section } from '$lib/peterportal.types'
 import { useScheduleStore } from '.'
 
 /**
@@ -19,7 +19,7 @@ const arrayOfColors = Object.values(colors).map((c) => ('black' in c ? c.black :
 /**
  * AACourse without the "sections" property
  */
-type SimpleAACourse = Omit<AACourse, 'sections'>
+type SimpleAACourse = Omit<WebsocCourse, 'sections'>
 
 /**
  * after the function runs, it can execute the appropriate callbck if provided

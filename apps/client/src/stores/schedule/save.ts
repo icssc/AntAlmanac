@@ -1,4 +1,4 @@
-import type { Schedule, ShortCourseSchedule } from '@packages/schemas/schedule'
+import type { Schedule, ShortCourseSchedule } from '@packages/types'
 import { SAVE_DATA_ENDPOINT } from '$lib/api/endpoints'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { useScheduleStore } from '.'

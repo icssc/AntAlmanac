@@ -56,7 +56,3 @@ export default function AppThemeProvider({ children }: Props) {
     </ThemeProvider>
   )
 }
-
-AppThemeProvider.defaultProps = {
-  children: null,
-}

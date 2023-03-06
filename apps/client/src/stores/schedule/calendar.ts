@@ -8,7 +8,7 @@
  */
 
 import type { EventInput } from '@fullcalendar/core'
-import type { Course, RepeatingCustomEvent } from '@packages/schemas/schedule'
+import type { Course, RepeatingCustomEvent } from '@packages/types'
 
 /**
  * shared properties of internal calendar interfaces
@@ -84,7 +84,7 @@ export function getCourseCalendarEvents(courses: Course[] = []): CourseCalendarE
             term: course.term,
             title: `${course.deptCode} ${course.courseNumber}`,
             courseTitle: course.courseTitle,
-            bldg: meeting.bldg,
+            bldg: meeting.bldg.join(),
             instructors: course.section.instructors,
             sectionCode: course.section.sectionCode,
             sectionType: course.section.sectionType,
@@ -138,7 +138,7 @@ export function getFinalsCalendarEvents(courses: Course[] = []): CourseCalendarE
           title: `${course.deptCode} ${course.courseNumber}`,
           sectionCode: course.section.sectionCode,
           sectionType: 'Fin',
-          bldg: course.section.meetings[0].bldg,
+          bldg: course.section.meetings[0].bldg.join(),
           color: course.section.color,
           start: new Date(2018, 0, index - 1, startHour, startMin),
           end: new Date(2018, 0, index - 1, endHour, endMin),

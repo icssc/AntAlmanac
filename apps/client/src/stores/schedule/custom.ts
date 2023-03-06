@@ -2,7 +2,7 @@
  * functions that manage custom events in the schedule store
  */
 
-import type { RepeatingCustomEvent } from '@packages/schemas/schedule'
+import type { RepeatingCustomEvent } from '@packages/types'
 import { useScheduleStore } from '.'
 
 /**

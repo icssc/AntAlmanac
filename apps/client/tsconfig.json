@@ -9,8 +9,8 @@
       "@apps/server": ["../server/src"],
       "@apps/server/*": ["../server/src/*"],
       "@packages/schemas/*": ["../../packages/schemas/src/*"],
-      "@packages/peterportal": ["../../packages/peterportal/src"],
-      "@packages/peterportal/*": ["../../packages/peterportal/src/*"],
+      "@packages/types": ["../../packages/types/src"],
+      "@packages/types/*": ["../../packages/types/src/*"],
 
       // frontend aliases
       "$components/*": ["src/components/*"],
