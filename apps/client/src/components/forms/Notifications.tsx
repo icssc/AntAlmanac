@@ -25,9 +25,8 @@ export default function NotificationsForm() {
           Notifications Form
         </Typography>
         <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-          <TextField {...register('sectionCode')} label="Section Code" fullWidth margin="dense" />
-          <TextField {...register('courseTitle')} label="Course Title" fullWidth margin="normal" />
-          <TextField {...register('phoneNumber')} label="Phone Number" fullWidth margin="normal" />
+          <TextField {...register('course')} label="Course (year, quarter, sectionCode)" fullWidth margin="dense" />
+          <TextField {...register('userId')} label="Phone Number" fullWidth margin="normal" />
           <Button variant="contained" type="submit">
             Submit
           </Button>
