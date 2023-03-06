@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { notificationsSchema } from '@packages/schemas/notifications'
 import NotificationModel from '$models/Notification'
 import { procedure, router } from '../trpc'
+import UserModel from "$models/User";
 
 const notificationsRouter = router({
   /**
@@ -19,17 +20,40 @@ const notificationsRouter = router({
       { course: input.course },
       updateUserIds
     )
-    return notification
+
+    const user = await UserModel.get({
+      id: input.userId
+    })
+
+    if (!user) {
+      return null
+    }
+    const updateNotifications: Partial<any> = { [user.notifications ? '$ADD' : '$SET']: { notifications: [input.course] } }
+
+    const updatedUser = await UserModel.update(
+      {
+        id: input.userId,
+      },
+      updateNotifications
+    )
+
+    return {notification, updatedUser}
   }),
 
   /**
-   * find all notifications for a given phone number
+   * find all notifications for a given user
    */
-  // find: procedure.input(z.string()).query(async ({ input }) => {
-  //   const allNotifications = await NotificationModel.scan().exec()
-  //   const notifications = allNotifications.filter((n) => n.phoneNumbers.includes(input))
-  //   return notifications
-  // }),
+  find: procedure.input(z.string()).query(async ({ input }) => {
+    const user = await UserModel.get({
+      id: input
+    })
+
+  if (!user) {
+    return null
+  }
+
+  return user.notifications
+  }),
 })
 
 export default notificationsRouter

@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const notificationsSchema = z.object({
-  course: z.string(),
+  course: z.string(), // {year} {quarter} {sectionCode}
   userId: z.string()
 })
 
