@@ -16,13 +16,13 @@ import {
 import locations from '$lib/location_ids'
 import { analyticsEnum } from '$lib/analytics'
 import { useSearchStore } from '$stores/search'
-import { useScheduleStore } from '$stores/schedule'
 import { useWebsocQuery } from '$hooks/useWebsocQuery'
 import AddCourseButton from '$components/buttons/AddCourse'
 import AddCourseMenuButton from '$components/buttons/AddCourseMenu'
 import DeleteCourseButton from '$components/buttons/DeleteCourse'
 import ColorPicker from '$components/buttons/ColorPicker'
-import type { AACourse, AASection } from '$lib/peterportal.types'
+import type { WebsocCourse, WebsocSection } from 'peterportal-api-next-types'
+import type { Section } from '@packages/types'
 
 const restrictions: Record<string, string> = {
   A: 'A: Prerequisite required',
@@ -70,17 +70,13 @@ const SectionStatusColors: Record<string, string> = {
  * column 0
  * actions for managing the course, e.g. add, delete, change color, add to schedule #
  */
-function CourseActions({ ...props }: { section: AASection; course: AACourse; term?: string }) {
-  const { schedules, scheduleIndex } = useScheduleStore()
-  const courses = schedules[scheduleIndex]?.courses
-  const addedSectionCodes = new Set(courses.map((course) => `${course.section.sectionCode} ${course.term}`))
+function CourseActions({ ...props }: { section: Section | WebsocSection; course: WebsocCourse; term?: string }) {
   const term = props.term || useSearchStore.getState()?.form?.term
-  const alreadyAdded = addedSectionCodes.has(`${props.section.sectionCode} ${term}`)
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'nowrap' }}>
-      {alreadyAdded ? <DeleteCourseButton {...props} /> : <AddCourseButton {...props} />}
-      {alreadyAdded ? (
+      {'color' in props.section ? <DeleteCourseButton {...props} /> : <AddCourseButton {...props} />}
+      {'color' in props.section ? (
         <ColorPicker
           color={props.section.color}
           sectionCode={props.section.sectionCode}
@@ -98,7 +94,7 @@ function CourseActions({ ...props }: { section: AASection; course: AACourse; ter
  * column 1
  * section code that can be copied to clipboard on click
  */
-function SectionCode(props: { section: AASection }) {
+function SectionCode(props: { section: WebsocSection }) {
   const { enqueueSnackbar } = useSnackbar()
   const { section } = props
 
@@ -121,7 +117,7 @@ function SectionCode(props: { section: AASection }) {
  * column 2
  * information about the course type, units, etc.
  */
-function CourseDetails(props: { section: AASection }) {
+function CourseDetails(props: { section: WebsocSection }) {
   const { section } = props
   return (
     <Box>
@@ -142,7 +138,7 @@ function CourseDetails(props: { section: AASection }) {
  * column 3
  * course instructors
  */
-function CourseInstructors(props: { section: AASection }) {
+function CourseInstructors(props: { section: WebsocSection }) {
   const { section } = props
   return (
     <Box>
@@ -177,8 +173,7 @@ function CourseInstructors(props: { section: AASection }) {
  * column 5
  * course meeting days/times
  */
-function CourseTimes(props: { section: AASection }) {
-  const { section } = props
+function CourseTimes({ section }: { section: WebsocSection }) {
   return (
     <Box>
       {section.meetings.map((meeting) => (
@@ -194,19 +189,22 @@ function CourseTimes(props: { section: AASection }) {
  * column 6
  * meeting locations and links to the map
  */
-function CoursePlaces(props: { section: AASection }) {
-  const { section } = props
+function CoursePlaces({ section }: { section: WebsocSection }) {
   return (
     <Box>
       {section.meetings.map((meeting) => {
-        if (!meeting || meeting.bldg === 'TBA') {
+        /**
+         * TODO: old peterportal API returns string; new returns array, update when necessary
+         */
+        const bldg = Array.isArray(meeting.bldg) ? meeting.bldg[0] : meeting.bldg
+        if (!meeting || bldg === 'TBA') {
           return (
             <Typography key={Object.values(meeting).join()} variant="body2">
               {meeting.bldg}
             </Typography>
           )
         }
-        const locationId = locations[meeting.bldg.split(' ')[0] as keyof typeof locations]
+        const locationId = locations[bldg.split(' ')[0] as keyof typeof locations]
         const href = locationId
           ? `https://map.uci.edu/?id=463#!m/${locationId}`
           : 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034'
@@ -231,7 +229,7 @@ function CoursePlaces(props: { section: AASection }) {
  * column 7
  * course's current enrollment data
  */
-function CourseEnrollment(props: { section: AASection }) {
+function CourseEnrollment(props: { section: WebsocSection }) {
   const { section } = props
   return (
     <Box>
@@ -254,7 +252,7 @@ function CourseEnrollment(props: { section: AASection }) {
  * column 8
  * course's restrictions
  */
-function CourseRestrictions(props: { section: AASection }) {
+function CourseRestrictions(props: { section: WebsocSection }) {
   const { section } = props
   return (
     <Box>
@@ -278,7 +276,7 @@ function CourseRestrictions(props: { section: AASection }) {
  * clumn 9
  * course's current status, e.g. full, open
  */
-function CourseStatus(props: { section: AASection }) {
+function CourseStatus(props: { section: WebsocSection }) {
   const { section } = props
   return (
     <Typography variant="body2" color={SectionStatusColors[section.status?.toLowerCase() || '']}>
@@ -288,7 +286,7 @@ function CourseStatus(props: { section: AASection }) {
 }
 
 interface Props {
-  course: AACourse
+  course: WebsocCourse
   term?: string
 
   /**
@@ -321,7 +319,7 @@ export default function CourseBody({ course, term, supplemental }: Props) {
     }
   )
 
-  const queryData = query.data?.schools[0]?.departments[0]?.courses?.[0] as AACourse
+  const queryData = query.data?.schools[0]?.departments[0]?.courses?.[0] as WebsocCourse
   const courseDetails = supplemental ? queryData : course
 
   return (

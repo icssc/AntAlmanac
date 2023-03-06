@@ -1,11 +1,11 @@
 import { Typography } from '@mui/material'
-import type { School, Department, AACourse } from '$lib/peterportal.types'
+import type { WebsocSchool, WebsocDepartment, WebsocCourse } from 'peterportal-api-next-types'
 import SchoolCard from './School'
 import DepartmentCard from './Department'
 import CourseCard from './Course'
 
 interface Props {
-  course: School | Department | AACourse
+  course: WebsocSchool | WebsocDepartment | WebsocCourse
   term?: string
 
   /**

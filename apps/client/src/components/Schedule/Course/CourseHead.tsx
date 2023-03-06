@@ -8,12 +8,11 @@ import {
 import { analyticsEnum } from '$lib/analytics'
 import CourseSummaryButton from '$components/buttons/CourseSummary'
 import CourseReferenceButton from '$components/buttons/CourseReference'
-import type { AACourse } from '$lib/peterportal.types'
+import type { WebsocCourse } from 'peterportal-api-next-types'
 import GradesPopup from './GradesPopup'
 
 interface Props {
-  course: AACourse
-  // term?: string
+  course: WebsocCourse
 }
 
 /**

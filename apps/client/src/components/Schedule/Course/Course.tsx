@@ -1,10 +1,10 @@
 import { Box } from '@mui/material'
-import type { AACourse } from '$lib/peterportal.types'
+import type { WebsocCourse } from 'peterportal-api-next-types'
 import CourseHead from './CourseHead'
 import CourseBody from './CourseBody'
 
 interface Props {
-  course: AACourse
+  course: WebsocCourse
   term?: string
 
   /**
@@ -19,7 +19,7 @@ interface Props {
 export default function Course({ course, term, supplemental }: Props) {
   return (
     <Box>
-      <CourseHead course={course} term={term} />
+      <CourseHead course={course} />
       <CourseBody course={course} term={term} supplemental={supplemental} />
     </Box>
   )

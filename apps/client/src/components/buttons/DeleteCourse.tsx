@@ -1,11 +1,11 @@
 import { IconButton, Tooltip } from '@mui/material'
 import { Delete as DeleteIcon } from '@mui/icons-material'
-import type { Section } from '@packages/types'
+import type { WebsocSection } from 'peterportal-api-next-types'
 import { useSearchStore } from '$stores/search'
 import { deleteCourse } from '$stores/schedule/course'
 
 interface Props {
-  section: Section
+  section: WebsocSection
   term?: string
 }
 

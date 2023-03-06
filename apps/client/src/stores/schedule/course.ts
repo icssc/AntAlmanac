@@ -3,9 +3,9 @@
  * @remarks structuredClone is used to deep clone state so it doesn't get affected by mutations to the original
  */
 
-import type { WebsocCourse } from 'peterportal-api-next-types'
+import type { WebsocSection, WebsocCourse } from 'peterportal-api-next-types'
 import * as colors from '@mui/material/colors'
-import type { Course, Section } from '@packages/types'
+import type { Course } from '@packages/types'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { courseNumAsDecimal } from '$lib/helpers'
 import { useSearchStore } from '$stores/search'
@@ -36,7 +36,7 @@ interface Options {
  * @param addScheduleIndex index of schedule in the array to target
  * @param options callbacks
  */
-export function addCourse(section: Section, course: SimpleAACourse, addScheduleIndex?: number, options?: Options) {
+export function addCourse(section: WebsocSection, course: SimpleAACourse, addScheduleIndex?: number, options?: Options) {
   const { form } = useSearchStore.getState()
   const { schedules, scheduleIndex, previousStates } = useScheduleStore.getState()
 
@@ -83,7 +83,7 @@ export function addCourse(section: Section, course: SimpleAACourse, addScheduleI
  * @param course
  * @param save whether to immediately commit these changes
  */
-export function addCourseToAllSchedules(section: Section, course: SimpleAACourse, options?: Options) {
+export function addCourseToAllSchedules(section: WebsocSection, course: SimpleAACourse, options?: Options) {
   const { schedules } = useScheduleStore.getState()
   schedules.forEach((_schedule, index) => addCourse(section, course, index, options))
 }

@@ -1,12 +1,12 @@
 import { useSnackbar } from 'notistack'
 import { IconButton } from '@mui/material'
 import { Add as AddIcon } from '@mui/icons-material'
-import type { Section, Course } from '@packages/types'
+import type { WebsocCourse, WebsocSection } from 'peterportal-api-next-types'
 import { addCourse } from '$stores/schedule/course'
 
 interface Props {
-  section: Section
-  course: Course
+  section: WebsocSection
+  course: WebsocCourse
 }
 
 /**
