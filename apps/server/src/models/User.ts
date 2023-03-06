@@ -1,6 +1,6 @@
 import dynamoose from 'dynamoose'
 import type { Item } from 'dynamoose/dist/Item'
-import type { SavedSchedule } from '@packages/schemas/schedule'
+import type { SavedSchedule } from '@packages/types'
 
 interface User extends Item {
   id: string

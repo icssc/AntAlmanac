@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import fetch from 'node-fetch'
 import generateFullSchedule from '$services/schedule'
-import type { SavedSchedule } from '@packages/schemas/schedule'
+import type { SavedSchedule } from '@packages/types'
 import { procedure, router } from '../trpc'
 
 const apiBaseUrl = 'https://dev.api.antalmanac.com'
