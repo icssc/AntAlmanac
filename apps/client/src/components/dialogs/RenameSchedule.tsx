@@ -14,8 +14,8 @@ interface Props {
  * dialog with a form to rename the current schedule
  */
 export default function RenameScheduleDialog({ open, setOpen, index }: Props) {
-  const isDarkMode = useSettingsStore(store => store.isDarkMode)
-  const originalName = useScheduleStore(store => store.schedules[index ?? store.scheduleIndex]?.scheduleName)
+  const isDarkMode = useSettingsStore((store) => store.isDarkMode)
+  const originalName = useScheduleStore((store) => store.schedules[index ?? store.scheduleIndex]?.scheduleName)
   const [scheduleName, setScheduleName] = useState(originalName)
   const title = originalName ? 'Rename Schedule' : 'Add a New Schedule'
   const action = originalName ? 'Rename Schedule' : 'Add Schedule'

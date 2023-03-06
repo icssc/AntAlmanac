@@ -11,9 +11,9 @@ import type { EventInput } from '@fullcalendar/core'
 import type { Course, RepeatingCustomEvent } from '@packages/schemas/schedule'
 
 /**
- * common properties for the internal calendar types
+ * shared properties of internal calendar interfaces
  */
-interface CommonCalendarEvent {
+interface MinimalCalendarEvent {
   color: string
   start: Date
   end: Date
@@ -21,9 +21,9 @@ interface CommonCalendarEvent {
 }
 
 /**
- * react-big-calendar compatible calendar event for a course
+ * react-big-calendar compatible interface for a course
  */
-export interface CourseCalendarEvent extends CommonCalendarEvent {
+export interface CourseCalendarEvent extends MinimalCalendarEvent {
   bldg: string
   finalExam: string
   instructors: string[]
@@ -34,13 +34,9 @@ export interface CourseCalendarEvent extends CommonCalendarEvent {
 }
 
 /**
- * react-big-calendar compatible interface derived for a custom event
+ * react-big-calendar compatible interface for a custom event
  */
-export interface CustomCalendarEvent extends CommonCalendarEvent {
-  color: string
-  start: Date
-  end: Date
-  title: string
+export interface CustomCalendarEvent extends MinimalCalendarEvent {
   customEventID: number
   isCustomEvent: true
 }

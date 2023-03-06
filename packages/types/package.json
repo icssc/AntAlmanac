@@ -1,0 +1,9 @@
+{
+  "name": "@packages/types",
+  "version": "0.0.1",
+  "description": "types for AntAlamanc",
+  "license": "MIT",
+  "devDependencies": {
+    "peterportal-api-next-types": "^1.0.0-alpha.3"
+  }
+}

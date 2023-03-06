@@ -66,17 +66,14 @@ export default function ImportDialog({ open, setOpen }: Props) {
     //   )
     // )
     // const coursesAdded = Object.values(sectionsAdded)
-
     // coursesAdded.forEach((section) => {
     //   addCourse(section.section, section.courseDetails, scheduleIndex)
     // })
-
     // logAnalytics({
     //   category: analyticsEnum.nav.title,
     //   action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
     //   value: coursesAdded.length / (sectionCodes.length || 1),
     // })
-
     // setOpen(false)
   }
 

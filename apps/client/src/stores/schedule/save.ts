@@ -16,7 +16,10 @@ export function convertSchedulesToSave(schedules: Schedule[]) {
       sectionCode: course.section.sectionCode,
     })),
   }))
-  return { schedules: shortSchedules, scheduleIndex: 0 }
+  return {
+    schedules: shortSchedules,
+    scheduleIndex: 0,
+  }
 }
 
 interface Options {

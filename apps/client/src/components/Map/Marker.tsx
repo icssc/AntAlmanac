@@ -68,13 +68,19 @@ interface Props {
 /**
  * returns a custom map marker + popup with course info
  */
-export default function CourseMarker({ lat, lng, color, image, location, acronym, stackIndex, label, children }: Props) {
+export default function CourseMarker({
+  lat,
+  lng,
+  color,
+  image,
+  location,
+  acronym,
+  stackIndex,
+  label,
+  children,
+}: Props) {
   return (
-    <Marker
-      position={[lat, lng]}
-      icon={getMarkerIcon(color, stackIndex, label)}
-      zIndexOffset={stackIndex}
-    >
+    <Marker position={[lat, lng]} icon={getMarkerIcon(color, stackIndex, label)} zIndexOffset={stackIndex}>
       <Popup>
         {location ? (
           <Link
@@ -89,9 +95,7 @@ export default function CourseMarker({ lat, lng, color, image, location, acronym
           <Typography>{location}</Typography>
         )}
 
-        {image && (
-          <img src={`${IMAGE_CMS_URL}${image}`} alt="Building Snapshot" style={{ width: '100%' }} />
-        )}
+        {image && <img src={`${IMAGE_CMS_URL}${image}`} alt="Building Snapshot" style={{ width: '100%' }} />}
 
         {children}
 

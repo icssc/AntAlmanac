@@ -10,6 +10,7 @@ interface Props {
 
 /**
  * wraps the application with an initialized trpc + query client and provider
+ * @see {@link https://trpc.io/docs/react#3-add-trpc-providers}
  */
 export default function AppQueryProvider({ children }: Props) {
   const [queryClient] = useState(
@@ -40,8 +41,4 @@ export default function AppQueryProvider({ children }: Props) {
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </trpc.Provider>
   )
-}
-
-AppQueryProvider.defaultProps = {
-  children: null,
 }

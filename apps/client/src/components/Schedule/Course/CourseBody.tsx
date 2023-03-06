@@ -70,7 +70,7 @@ const SectionStatusColors: Record<string, string> = {
  * column 0
  * actions for managing the course, e.g. add, delete, change color, add to schedule #
  */
-function CourseActions({...props}: { section: AASection; course: AACourse; term?: string }) {
+function CourseActions({ ...props }: { section: AASection; course: AACourse; term?: string }) {
   const { schedules, scheduleIndex } = useScheduleStore()
   const courses = schedules[scheduleIndex]?.courses
   const addedSectionCodes = new Set(courses.map((course) => `${course.section.sectionCode} ${course.term}`))
@@ -112,9 +112,7 @@ function SectionCode(props: { section: AASection }) {
 
   return (
     <Tooltip title="Click to Copy Course Code">
-      <Button onClick={handleClick}>
-        {section.sectionCode}
-      </Button>
+      <Button onClick={handleClick}>{section.sectionCode}</Button>
     </Tooltip>
   )
 }
@@ -213,7 +211,14 @@ function CoursePlaces(props: { section: AASection }) {
           ? `https://map.uci.edu/?id=463#!m/${locationId}`
           : 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034'
         return (
-          <Link key={Object.values(meeting).join()} variant="body2" href={href} target="_blank" rel="noopener noreferrer" underline="hover">
+          <Link
+            key={Object.values(meeting).join()}
+            variant="body2"
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            underline="hover"
+          >
             {meeting.bldg}
           </Link>
         )
@@ -297,7 +302,7 @@ interface Props {
  * e.g. section code, instructors, times, enrollment status, etc.
  */
 export default function CourseBody({ course, term, supplemental }: Props) {
-  const form = useSearchStore(store => store.form)
+  const form = useSearchStore((store) => store.form)
 
   /**
    * after the supplemental prop has been prop-drilled down several layers,

@@ -47,8 +47,8 @@ export default function AntAlamancCalendar() {
   const theme = useTheme()
   const showFinals = useSettingsStore((store) => store.showFinals)
   const { schedules, scheduleIndex } = useScheduleStore()
-  const {courses} = schedules[scheduleIndex]
-  const {customEvents} = schedules[scheduleIndex]
+  const { courses } = schedules[scheduleIndex]
+  const { customEvents } = schedules[scheduleIndex]
 
   /**
    * this ref is important! pass it to the screenshot button to take a picture of the calendar

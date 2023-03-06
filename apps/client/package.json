@@ -55,6 +55,7 @@
     "leaflet": "^1.9.3",
     "leaflet-routing-machine": "^3.2.12",
     "notistack": "^2.0.8",
+    "peterportal-api-next-types": "^1.0.0-alpha.3",
     "react": "^18.2.0",
     "react-big-calendar": "^1.6.8",
     "react-color": "^2.19.3",

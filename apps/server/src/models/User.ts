@@ -1,12 +1,12 @@
 import dynamoose from 'dynamoose'
 import type { Item } from 'dynamoose/dist/Item'
-import type { ScheduleSaveState } from '@packages/schemas/schedule'
+import type { SavedSchedule } from '@packages/schemas/schedule'
 
 interface User extends Item {
   id: string
   name: string
   email: string
-  schedules: ScheduleSaveState[]
+  schedules: SavedSchedule[]
 }
 
 const UserSchema = new dynamoose.Schema({

@@ -1,7 +1,6 @@
 /**
  * functions that manage courses in the schedule store
- * @remarks be careful with previousStates;
- * structuredClone is used to deep clone the object so it doesn't get affected by mutations to the original
+ * @remarks structuredClone is used to deep clone state so it doesn't get affected by mutations to the original
  */
 
 import * as colors from '@mui/material/colors'
@@ -12,6 +11,9 @@ import { useSearchStore } from '$stores/search'
 import type { AACourse, Section } from '$lib/peterportal.types'
 import { useScheduleStore } from '.'
 
+/**
+ * lol: the colors import is an object; iterate through all the values and return their 500 variant
+ */
 const arrayOfColors = Object.values(colors).map((c) => ('black' in c ? c.black : c[500]))
 
 /**
@@ -30,9 +32,9 @@ interface Options {
 /**
  * add a course to a schedule
  * @param section
- * @param course AACourse with missing properties
+ * @param course AACourse
  * @param addScheduleIndex index of schedule in the array to target
- * @param save whether we can undo the changes
+ * @param options callbacks
  */
 export function addCourse(section: Section, course: SimpleAACourse, addScheduleIndex?: number, options?: Options) {
   const { form } = useSearchStore.getState()
@@ -40,15 +42,6 @@ export function addCourse(section: Section, course: SimpleAACourse, addScheduleI
 
   const targetScheduleIndex = addScheduleIndex ?? scheduleIndex
   const allCourses = schedules[targetScheduleIndex].courses
-
-  const { term } = form
-  const termsInSchedule = new Set([term, ...allCourses.map((c) => c.term)])
-
-  if (termsInSchedule.size > 1) {
-    options?.onWarn?.(
-      `Course added from different term. Schedule now contains courses from ${[...termsInSchedule].sort().join(', ')}.`
-    )
-  }
 
   const existingCourse = allCourses.find((c) => c.section.sectionCode === section.sectionCode && c.term === form.term)
 
@@ -61,7 +54,7 @@ export function addCourse(section: Section, course: SimpleAACourse, addScheduleI
   const color = arrayOfColors.find((materialColor) => !setOfUsedColors.has(materialColor)) || '#5ec8e0'
 
   const newCourse: Course = {
-    term,
+    term: form.term,
     deptCode: course.deptCode,
     courseNumber: course.courseNumber,
     courseTitle: course.courseTitle,
@@ -97,7 +90,7 @@ export function addCourseToAllSchedules(section: Section, course: SimpleAACourse
 
 /**
  * change a course's color
- * @remarks logging Google Analytics will be done from the component
+ * @remarks component will log Google Analytics, not this function
  * @param sectionCode section code
  * @param term
  * @param newColor color
@@ -136,9 +129,8 @@ export function deleteCourse(sectionCode: string, term: string) {
 }
 
 /**
- * if schedule index is equal to the length, add all current courses to all other schedules
- * otherwise add all current courses to the target schedule
- * @param toScheduleIndex index of the other schedule
+ * if target schedule index === length, add all current courses to all schedules
+ * else add all current courses to the target schedule
  */
 export function copyCoursesToSchedule(toScheduleIndex: number, options?: Options) {
   const { schedules, scheduleIndex } = useScheduleStore.getState()

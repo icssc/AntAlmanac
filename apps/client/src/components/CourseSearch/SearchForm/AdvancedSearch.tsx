@@ -19,7 +19,9 @@ export default function AdvancedSearch() {
   /**
    * returns function that will handle a text change event by setting the form field
    */
-  const handleInput = (key: keyof FormValues) => (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement> | SelectChangeEvent<string>) => {
+  const handleInput =
+    (key: keyof FormValues) =>
+    (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement> | SelectChangeEvent<string>) => {
       setField(key, e.target.value)
     }
 

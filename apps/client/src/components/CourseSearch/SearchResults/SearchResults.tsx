@@ -23,9 +23,9 @@ function flattenSOCObject(SOCObject: WebsocResponse, courses: Course[] = []) {
     school.departments.forEach((dept) => {
       accumulator.push(dept)
       dept.courses.forEach((course) => {
-        course.sections.forEach(section => {
+        course.sections.forEach((section) => {
           // eslint-disable-next-line no-param-reassign
-          (section as AASection).color = courseColors[section.sectionCode]
+          ;(section as AASection).color = courseColors[section.sectionCode]
         })
         accumulator.push(course as AACourse)
       })

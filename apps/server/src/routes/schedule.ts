@@ -1,13 +1,13 @@
 import { z } from 'zod'
 import fetch from 'node-fetch'
 import generateFullSchedule from '$services/schedule'
-import type { ScheduleSaveState } from '@packages/schemas/schedule'
+import type { SavedSchedule } from '@packages/schemas/schedule'
 import { procedure, router } from '../trpc'
 
 const apiBaseUrl = 'https://dev.api.antalmanac.com'
 const LOAD_DATA_ENDPOINT = `${apiBaseUrl}/api/users/loadUserData`
 
-type ResponseData = { userData: ScheduleSaveState }
+type ResponseData = { userData: SavedSchedule }
 
 const scheduleRouter = router({
   find: procedure.input(z.string()).query(async ({ input }) => {

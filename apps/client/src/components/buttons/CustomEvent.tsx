@@ -130,7 +130,7 @@ export default function CustomEventButton({ event, onDialogClose, iconOnly }: Pr
     const newCustomEvent = {
       color: event ? event.color : '#551a8b',
       ...value,
-      customEventID: event ? event.customEventID : window.crypto.getRandomValues(array)[0] + Date.now()
+      customEventID: event ? event.customEventID : window.crypto.getRandomValues(array)[0] + Date.now(),
     }
 
     if (event) {

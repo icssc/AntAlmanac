@@ -1,44 +1,54 @@
-import type { AASection, Section } from '@packages/peterportal'
+import type { WebsocCourse, WebsocSection } from 'peterportal-api-next-types'
 
+//-----------------------------------------------------------------------------------
+// main data entities
+//-----------------------------------------------------------------------------------
+
+/**
+ * custom calendar event, similar to react-big-calendar's events
+ */
 export interface RepeatingCustomEvent {
   title: string
   start: string
   end: string
   days: boolean[]
-  customEventID: number
   color?: string
+  customEventID: number
 }
 
-export interface CourseDetails {
-  courseComment: string
-  courseNumber: string
-  courseTitle: string
-  deptCode: string
-  prerequisiteLink: string
-}
-
-export interface CourseInfo {
-  courseDetails: CourseDetails
-  section: Section
-}
-
-export interface Course extends CourseDetails {
-  section: AASection
+/**
+ * modified course from peterportal
+ */
+export interface Course extends WebsocCourse {
   term: string
+  section: WebsocSection & { color: string }
 }
 
+/**
+ * complete schedule
+ */
 export interface Schedule {
   scheduleName: string
   courses: Course[]
   customEvents: RepeatingCustomEvent[]
 }
 
+//-----------------------------------------------------------------------------------
+// schedule saving
+//-----------------------------------------------------------------------------------
+
+/**
+ * trimmed course properties
+ */
 export interface ShortCourse {
   color: string
   term: string
   sectionCode: string
 }
 
+/**
+ * minimal schedule
+ */
 export interface ShortCourseSchedule {
   scheduleName: string
   courses: ShortCourse[]
@@ -46,20 +56,16 @@ export interface ShortCourseSchedule {
 }
 
 /**
- * saved schedule in the database (similar to the undo state, but with less data)
+ * schedule data saved in database (similar to the undo state, but with less data)
  */
-export interface ScheduleSaveState {
+export interface SavedSchedule {
   schedules: ShortCourseSchedule[]
   scheduleIndex: number
 }
 
-/**
- * saved schedule in memory
- */
-export interface ScheduleUndoState {
-  schedules: Schedule[]
-  scheduleIndex: number
-}
+//-----------------------------------------------------------------------------------
+// legacy support
+//-----------------------------------------------------------------------------------
 
 export interface LegacyShortCourseInfo extends ShortCourse {
   scheduleIndices: number[]
@@ -69,43 +75,8 @@ export interface LegacyRepeatingCustomEvent extends RepeatingCustomEvent {
   scheduleIndices: number[]
 }
 
-export interface LegacyUserData {
+export interface LegacySavedSchedule {
   addedCourses: LegacyShortCourseInfo[]
   scheduleNames: string[]
   customEvents: LegacyRepeatingCustomEvent[]
 }
-
-export const defaultCourseDetails: CourseDetails = {
-  courseTitle: '',
-  courseNumber: '',
-  courseComment: '',
-  deptCode: '',
-  prerequisiteLink: '',
-}
-
-export const defaultSection: Section = {
-  sectionNum: '',
-  status: '',
-  sectionCode: '',
-  sectionType: '',
-  sectionComment: '',
-  units: '',
-  numRequested: '',
-  numOnWaitlist: '',
-  numNewOnlyReserved: '',
-  numCurrentlyEnrolled: {
-    totalEnrolled: '',
-    sectionEnrolled: '',
-  },
-  instructors: [],
-  meetings: [],
-  maxCapacity: '',
-  finalExam: '',
-  restrictions: '',
-}
-
-export const defaultCourseInfo: CourseInfo = {
-  courseDetails: structuredClone(defaultCourseDetails),
-  section: structuredClone(defaultSection)
-}
-
