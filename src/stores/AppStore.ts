@@ -153,6 +153,7 @@ class AppStore extends EventEmitter {
         this.emit('colorChange', false);
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
     }
 
     addCustomEvent(customEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
