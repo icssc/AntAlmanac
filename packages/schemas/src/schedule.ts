@@ -1,4 +1,5 @@
 import type { AASection, Section } from '@packages/peterportal'
+import { z } from 'zod'
 
 export interface RepeatingCustomEvent {
   title: string
@@ -52,6 +53,35 @@ export interface ScheduleSaveState {
   schedules: ShortCourseSchedule[]
   scheduleIndex: number
 }
+
+export const repeatingCustomEventSchema = z.object({
+  title: z.string(),
+  start: z.string(),
+  end: z.string(),
+  days: z.array(z.boolean()),
+  customEventID: z.number(),
+  color: z.string().optional()
+})
+
+export const shortCourseSchema = z.object({
+  color: z.string(),
+  term: z.string(),
+  sectionCode: z.string()
+})
+
+export const shortCourseScheduleSchema = z.object({
+  scheduleName: z.string(),
+  courses: z.array(shortCourseSchema),
+  customEvents: z.array(repeatingCustomEventSchema)
+})
+
+export const scheduleSaveStateSchema = z.object({
+  schedules: z.array(shortCourseScheduleSchema),
+  scheduleIndex: z.number()
+})
+
+export type scheduleSaveStateData = z.TypeOf<typeof scheduleSaveStateSchema>
+
 
 /**
  * saved schedule in memory
@@ -108,4 +138,3 @@ export const defaultCourseInfo: CourseInfo = {
   courseDetails: structuredClone(defaultCourseDetails),
   section: structuredClone(defaultSection)
 }
-

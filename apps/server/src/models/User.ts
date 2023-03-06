@@ -1,14 +1,14 @@
 import dynamoose from 'dynamoose'
 import type { Item } from 'dynamoose/dist/Item'
-import type { ScheduleSaveState } from '@packages/schemas/schedule'
-import notifications from "../routes/notifications";
+import type {ScheduleSaveState, ShortCourseSchedule} from '@packages/schemas/schedule'
 
 interface User extends Item {
   id: string
   name: string
   email: string
   notifications: string[] // `{year} {quarter} {sectionCode}`
-  schedules: ScheduleSaveState[]
+  scheduleIndex: number
+  schedules: ShortCourseSchedule[]
 }
 
 const UserSchema = new dynamoose.Schema({
@@ -19,6 +19,7 @@ const UserSchema = new dynamoose.Schema({
   name: String,
   email: String,
   notifications: [String],
+  scheduleIndex: Number,
   schedules: [
     {
       type: Object,
