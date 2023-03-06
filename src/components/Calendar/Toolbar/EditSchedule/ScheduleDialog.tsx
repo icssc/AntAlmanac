@@ -65,7 +65,7 @@ const ScheduleDialog = (props: ScheduleDialogProps) => {
 
     const handleEdit = () => {
         clearDialog();
-        editSchedule(scheduleName, scheduleEditIndex as number, scheduleNote); // typecast works b/c this function only runs when `const edit = scheduleEditIndex !== undefined` is true.
+        editSchedule(scheduleName, scheduleNote, scheduleEditIndex as number); // typecast works b/c this function only runs when `const edit = scheduleEditIndex !== undefined` is true.
     };
 
     // Closes the dialog and resets the fields within it

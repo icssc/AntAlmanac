@@ -94,7 +94,7 @@ export class Schedules {
     /**
      * Edits schedule name and schedule note at index
      */
-    editSchedule(newScheduleName: string, scheduleIndex: number, newScheduleNote: string) {
+    editSchedule(newScheduleName: string, newScheduleNote: string, scheduleIndex: number) {
         this.addUndoState();
         this.schedules[scheduleIndex].scheduleName = newScheduleName;
         this.schedules[scheduleIndex].scheduleNote = newScheduleNote;

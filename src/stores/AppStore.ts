@@ -190,8 +190,8 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNotesChange');
     }
 
-    editSchedule(scheduleName: string, scheduleIndex: number, scheduleNote: string) {
-        this.schedule.editSchedule(scheduleName, scheduleIndex, scheduleNote);
+    editSchedule(scheduleName: string, scheduleNote: string, scheduleIndex: number) {
+        this.schedule.editSchedule(scheduleName, scheduleNote, scheduleIndex);
         this.emit('scheduleNamesChange');
         this.emit('scheduleNotesChange');
     }
