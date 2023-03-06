@@ -3,7 +3,7 @@ import type { ChartData, ChartOptions } from 'chart.js'
 import { Bar as BarChart } from 'react-chartjs-2'
 import { Box, Link, Skeleton, useMediaQuery, useTheme } from '@mui/material'
 import { useGraphqlQuery } from '$hooks/useGraphqlQuery'
-import type { AACourse } from '$lib/peterportal.types'
+import type { WebsocCourse } from 'peterportal-api-next-types'
 
 /**
  * register everything
@@ -11,7 +11,7 @@ import type { AACourse } from '$lib/peterportal.types'
 ChartJS.register(...registerables)
 
 interface Props {
-  course: AACourse
+  course: WebsocCourse
 }
 
 /**

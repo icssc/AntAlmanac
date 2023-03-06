@@ -3,7 +3,7 @@
  */
 
 import type { EventAttributes } from 'ics'
-import type { Course } from '@packages/schemas/schedule'
+import type { Course } from '@packages/types'
 import { termData } from '$lib/termData'
 
 const quarterStartDates = Object.fromEntries(

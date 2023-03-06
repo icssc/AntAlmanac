@@ -1431,6 +1431,11 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
+"@kurkle/color@^0.3.0":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@kurkle/color/-/color-0.3.2.tgz#5acd38242e8bde4f9986e7913c8fdf49d3aa199f"
+  integrity sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==
+
 "@mapbox/corslite@0.0.7":
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/@mapbox/corslite/-/corslite-0.0.7.tgz#29f5b6a188ba946e514bdf0b6401ed4fbe13a39e"
@@ -1689,6 +1694,13 @@
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/@types/leaflet-routing-machine/-/leaflet-routing-machine-3.2.4.tgz#fd302ffde7ec5eb834d4e47c9c5b4ec0c04fbf54"
   integrity sha512-CFcWghU+eDel/zY2Q1u1tI6rxL2V6SfJ85/prt7s2QEw8tK+OkH+o5PLm/7eYsZH86i30ff5rmEk8GN1nZ9ODg==
+  dependencies:
+    "@types/leaflet" "*"
+
+"@types/leaflet.locatecontrol@^0.74.1":
+  version "0.74.1"
+  resolved "https://registry.yarnpkg.com/@types/leaflet.locatecontrol/-/leaflet.locatecontrol-0.74.1.tgz#1a1074cd720a68655ffdb70d8104539a71416615"
+  integrity sha512-4rqWfKadQ+Rksv4uq7Ab68CdOlaDt8z5bP+EMbXk5Ea82XMV9yLzQpAvVZ2xdARa8fpF2Atk+fheQ04Lik6ziA==
   dependencies:
     "@types/leaflet" "*"
 
@@ -2192,6 +2204,13 @@ chalk@^4.0.0:
   dependencies:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
+
+chart.js@^4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-4.2.1.tgz#d2bd5c98e9a0ae35408975b638f40513b067ba1d"
+  integrity sha512-6YbpQ0nt3NovAgOzbkSSeeAQu/3za1319dPUQTXn9WcOpywM8rGKxJHrhS8V8xEkAlk8YhEfjbuAPfUyp6jIsw==
+  dependencies:
+    "@kurkle/color" "^0.3.0"
 
 clean-stack@^2.0.0:
   version "2.2.0"
@@ -3652,6 +3671,11 @@ leaflet-routing-machine@^3.2.12:
     "@mapbox/polyline" "^0.2.0"
     osrm-text-instructions "^0.13.2"
 
+leaflet.locatecontrol@^0.79.0:
+  version "0.79.0"
+  resolved "https://registry.yarnpkg.com/leaflet.locatecontrol/-/leaflet.locatecontrol-0.79.0.tgz#0236b87c699a49f9ddb2f289941fbc0d3c3f8b62"
+  integrity sha512-h64QIHFkypYdr90lkSfjKvPvvk8/b8UnP3m9WuoWdp5p2AaCWC0T1NVwyuj4rd5U4fBW3tQt4ppmZ2LceHMIDg==
+
 leaflet@^1.9.3:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.9.3.tgz#52ec436954964e2d3d39e0d433da4b2500d74414"
@@ -4273,6 +4297,11 @@ react-big-calendar@^1.6.8:
     prop-types "^15.8.1"
     react-overlays "^5.2.1"
     uncontrollable "^7.2.1"
+
+react-chartjs-2@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/react-chartjs-2/-/react-chartjs-2-5.2.0.tgz#43c1e3549071c00a1a083ecbd26c1ad34d385f5d"
+  integrity sha512-98iN5aguJyVSxp5U3CblRLH67J8gkfyGNbiK3c+l1QI/G4irHMPQw44aEPmjVag+YKTyQ260NcF82GTQ3bdscA==
 
 react-color@^2.19.3:
   version "2.19.3"
@@ -5143,10 +5172,10 @@ yup@^0.32.9:
     property-expr "^2.0.4"
     toposort "^2.0.2"
 
-zod@^3.20.6:
-  version "3.20.6"
-  resolved "https://registry.yarnpkg.com/zod/-/zod-3.20.6.tgz#2f2f08ff81291d47d99e86140fedb4e0db08361a"
-  integrity sha512-oyu0m54SGCtzh6EClBVqDDlAYRz4jrVtKwQ7ZnsEmMI9HnzuZFj8QFwAY1M5uniIYACdGvv0PBWPF2kO0aNofA==
+zod@^3.21.1:
+  version "3.21.1"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.21.1.tgz#ac5bb7cf68876281ebd02f95ac4bb9a080370282"
+  integrity sha512-+dTu2m6gmCbO9Ahm4ZBDapx2O6ZY9QSPXst2WXjcznPMwf2YNpn3RevLx4KkZp1OPW/ouFcoBtBzFz/LeY69oA==
 
 zustand@^4.3.5:
   version "4.3.5"

@@ -71,25 +71,24 @@ async function generateFullSchedule(saveState: SavedSchedule) {
   )
 
   const schedules = saveState.schedules.map((schedule) => {
-    const hydratedCourses = 
-      schedule.courses
-        .map((course) => ({ short: course, info: courseInfoPerTerm.get(course.term) }))
-        .filter((course) => course.info != null)
-        .map((course) => {
-          const courseInfoMap = course.info?.[course.short.sectionCode]
-          return {
-            ...course.short,
-            ...courseInfoMap?.courseDetails,
-            section: {
-              ...courseInfoMap?.section,
-              color: course.short.color,
-            },
-          }
-        })
-      return {
-        ...schedule,
-        courses: hydratedCourses,
-      }
+    const hydratedCourses = schedule.courses
+      .map((course) => ({ short: course, info: courseInfoPerTerm.get(course.term) }))
+      .filter((course) => course.info != null)
+      .map((course) => {
+        const courseInfoMap = course.info![course.short.sectionCode]
+        return {
+          ...course.short,
+          ...courseInfoMap.courseDetails,
+          section: {
+            ...courseInfoMap.section,
+            color: course.short.color,
+          },
+        }
+      })
+    return {
+      ...schedule,
+      courses: hydratedCourses,
+    }
   })
 
   return {

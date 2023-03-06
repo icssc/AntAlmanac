@@ -4,7 +4,7 @@
   "description": "shared schemas for validating data between the client and server via tRPC",
   "license": "MIT",
   "dependencies": {
-    "zod": "^3.20.6"
+    "zod": "^3.21.1"
   },
   "devDependencies": {
     "peterportal-api-next-types": "^1.0.0-alpha.3",

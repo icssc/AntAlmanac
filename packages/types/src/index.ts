@@ -1,4 +1,5 @@
-import type { WebsocCourse, WebsocSection, WebsocAPIResponse } from 'peterportal-api-next-types'
+import { z } from 'zod'
+import type { WebsocCourse, WebsocSection } from 'peterportal-api-next-types'
 
 //-----------------------------------------------------------------------------------
 // main data entities
@@ -98,3 +99,33 @@ export interface LegacySavedSchedule {
   scheduleNames: string[]
   customEvents: LegacyRepeatingCustomEvent[]
 }
+
+//-----------------------------------------------------------------------------------
+// schemas specifically related to schedules and AA internals
+//-----------------------------------------------------------------------------------
+
+export const repeatingCustomEventSchema = z.object({
+  title: z.string(),
+  start: z.string(),
+  end: z.string(),
+  days: z.boolean().array(),
+  customEventID: z.number(),
+  color: z.string().optional()
+})
+
+export const shortCourseSchema = z.object({
+  color: z.string(),
+  term: z.string(),
+  sectionCode: z.string()
+})
+
+export const shortCourseScheduleSchema = z.object({
+  scheduleName: z.string(),
+  courses: shortCourseSchema.array(),
+  customEvents: repeatingCustomEventSchema.array()
+})
+
+export const scheduleSaveStateSchema = z.object({
+  schedules: shortCourseScheduleSchema.array(),
+  scheduleIndex: z.number()
+})

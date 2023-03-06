@@ -1,6 +1,6 @@
 import dynamoose from 'dynamoose'
 import type { Item } from 'dynamoose/dist/Item'
-import type { ShortCourseSchedule} from '@packages/schemas/schedule'
+import type { ShortCourseSchedule } from '@packages/types'
 
 interface User extends Item {
   id: string
@@ -49,8 +49,8 @@ const UserSchema = new dynamoose.Schema({
             },
           },
         ],
-      }
-    }
+      },
+    },
   ],
 })
 
