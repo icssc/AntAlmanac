@@ -28,6 +28,7 @@ const notificationsRouter = router({
     if (!user) {
       return null
     }
+
     const updateNotifications: Partial<any> = { [user.notifications ? '$ADD' : '$SET']: { notifications: [input.course] } }
 
     const updatedUser = await UserModel.update(

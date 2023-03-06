@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { procedure, router } from '../trpc'
-import { scheduleSaveStateData, scheduleSaveStateSchema } from '@packages/schemas/schedule'
+import { scheduleSaveStateSchema } from '@packages/schemas/schedule'
 import UserModel from '$models/User'
 
 

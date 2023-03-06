@@ -80,9 +80,6 @@ export const scheduleSaveStateSchema = z.object({
   scheduleIndex: z.number()
 })
 
-export type scheduleSaveStateData = z.TypeOf<typeof scheduleSaveStateSchema>
-
-
 /**
  * saved schedule in memory
  */
