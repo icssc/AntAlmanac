@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { IconButton, Menu, MenuItem } from '@mui/material'
 import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material'
-import type { AASection, AACourse } from '$lib/peterportal.types'
+import type { Section, Course } from '@packages/types'
 import { useScheduleStore } from '$stores/schedule'
 import { addCourse, addCourseToAllSchedules } from '$stores/schedule/course'
 
 interface Props {
-  section: AASection
-  course: AACourse
+  section: Section
+  course: Course
 }
 
 /**

@@ -19,7 +19,7 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material'
-import type { RepeatingCustomEvent } from '@packages/schemas/schedule'
+import type { RepeatingCustomEvent } from '@packages/types'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
 import { addCustomEvent, editCustomEvent } from '$stores/schedule/custom'
 import useSettingsStore from '$stores/settings'

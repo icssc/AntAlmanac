@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Box, Button, Popover, Typography } from '@mui/material'
 import { InfoOutlined as InfoOutlinedIcon } from '@mui/icons-material'
+import type { Course } from '@packages/types'
 import { useRestQuery } from '$hooks/useRestQuery'
-import type { AACourse } from '$lib/peterportal.types'
 
 interface Props {
-  course: AACourse
+  course: Course
 }
 
 /**

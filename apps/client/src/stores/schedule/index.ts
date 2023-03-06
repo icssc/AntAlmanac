@@ -114,7 +114,7 @@ export const defaultSection: Section = {
 
 export const defaultCourseInfo: CourseInfo = {
   courseDetails: structuredClone(defaultCourseDetails),
-  section: structuredClone(defaultSection)
+  section: structuredClone(defaultSection),
 }
 
 export interface ScheduleStore {

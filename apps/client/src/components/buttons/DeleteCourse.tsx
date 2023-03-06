@@ -1,11 +1,11 @@
 import { IconButton, Tooltip } from '@mui/material'
 import { Delete as DeleteIcon } from '@mui/icons-material'
+import type { Section } from '@packages/types'
 import { useSearchStore } from '$stores/search'
 import { deleteCourse } from '$stores/schedule/course'
-import type { AASection } from '$lib/peterportal.types'
 
 interface Props {
-  section: AASection
+  section: Section
   term?: string
 }
 

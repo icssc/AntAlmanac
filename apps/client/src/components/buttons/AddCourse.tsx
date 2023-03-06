@@ -1,12 +1,12 @@
 import { useSnackbar } from 'notistack'
 import { IconButton } from '@mui/material'
 import { Add as AddIcon } from '@mui/icons-material'
-import type { AASection, AACourse } from '$lib/peterportal.types'
+import type { Section, Course } from '@packages/types'
 import { addCourse } from '$stores/schedule/course'
 
 interface Props {
-  section: AASection
-  course: AACourse
+  section: Section
+  course: Course
 }
 
 /**

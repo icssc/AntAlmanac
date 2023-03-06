@@ -1,5 +1,5 @@
-import html2canvas from 'html2canvas'
 import { useRef } from 'react'
+import html2canvas from 'html2canvas'
 import { Button, IconButton, Link, Tooltip, useTheme } from '@mui/material'
 import { Panorama as PanoramaIcon, PhotoCamera as PhotoCameraIcon } from '@mui/icons-material'
 import { analyticsEnum, logAnalytics } from '$lib/analytics'
