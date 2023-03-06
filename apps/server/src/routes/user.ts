@@ -8,6 +8,11 @@ const saveQuerySchema = z.object({
   scheduleSaveState: scheduleSaveStateSchema,
 })
 
+const saveQuerySchema = z.object({
+  id: z.string(),
+  scheduleSaveState: scheduleSaveStateSchema
+})
+
 const userRouter = router({
   findAll: procedure.query(async () => {
     const users = await UserModel.scan().exec()

@@ -15,7 +15,7 @@ const notificationsRouter = router({
 
     // Dynamoose TypeScript doesn't support this statement natively atm
     const updateUserIds: Partial<any> = { [existing ? '$ADD' : '$SET']: { userIds: [input.userId] } }
-
+    
     const notification = await NotificationModel.update({ course: input.course }, updateUserIds)
 
     const user = await UserModel.get({
@@ -45,14 +45,14 @@ const notificationsRouter = router({
    */
   find: procedure.input(z.string()).query(async ({ input }) => {
     const user = await UserModel.get({
-      id: input,
+      id: input
     })
 
-    if (!user) {
-      return null
-    }
+  if (!user) {
+    return null
+  }
 
-    return user.notifications
+  return user.notifications
   }),
 })
 
