@@ -3,11 +3,11 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { Skeleton } from '@material-ui/lab';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-import analyticsEnum, { logAnalytics } from '../../../analytics';
-import { PETERPORTAL_REST_ENDPOINT } from '../../../api/endpoints';
-import { CourseResponse } from '../../../peterportal.types';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { PETERPORTAL_REST_ENDPOINT } from '$lib/api/endpoints';
+import { CourseResponse } from '$lib/peterportal.types';
 
 const styles = () => ({
     rightSpace: {
@@ -72,7 +72,7 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
                     const response = await fetch(`${PETERPORTAL_REST_ENDPOINT}/courses/${courseId}`);
 
                     if (response.ok) {
-                        const jsonResp = await response.json() as CourseResponse;
+                        const jsonResp = (await response.json()) as CourseResponse;
 
                         setCourseInfo({
                             title: jsonResp.title,

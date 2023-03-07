@@ -1,5 +1,5 @@
 import { TextField } from '@material-ui/core';
-import React, { ChangeEvent, PureComponent } from 'react';
+import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
 
@@ -7,12 +7,9 @@ interface CourseNumberSearchBarState {
     courseNumber: string;
 }
 
+
 class CourseNumberSearchBar extends PureComponent<Record<string,never>, CourseNumberSearchBarState> {
 
-    updateCourseNumAndGetFormData(){
-        RightPaneStore.updateFormValue("courseNumber", RightPaneStore.getUrlCourseNumValue()) 
-        return RightPaneStore.getFormData().courseNumber
-    };
 
     state = {
         courseNumber: RightPaneStore.getUrlCourseNumValue() != "null" && RightPaneStore.getUrlCourseNumValue() != "" && RightPaneStore.getUrlCourseNumValue() != " " 
@@ -20,6 +17,11 @@ class CourseNumberSearchBar extends PureComponent<Record<string,never>, CourseNu
         this.updateCourseNumAndGetFormData()
         : 
         RightPaneStore.getFormData().courseNumber,
+    };
+    
+    updateCourseNumAndGetFormData(){
+        RightPaneStore.updateFormValue("courseNumber", RightPaneStore.getUrlCourseNumValue()) 
+        return RightPaneStore.getFormData().courseNumber
     };
 
     handleChange = (event: ChangeEvent<HTMLInputElement>) => {

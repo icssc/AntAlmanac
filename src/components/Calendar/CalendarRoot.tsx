@@ -5,10 +5,11 @@ import { Popper } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import moment from 'moment';
-import React, { PureComponent, SyntheticEvent } from 'react';
+import { PureComponent, SyntheticEvent } from 'react';
 import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
 
-import AppStore from '../../stores/AppStore';
+import AppStore from '$stores/AppStore';
+
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
 
@@ -66,7 +67,7 @@ const styles: Styles<Theme, object> = {
 };
 
 const AntAlmanacEvent =
-    (classes: ClassNameMap) =>
+    ({ classes }: { classes: ClassNameMap }) =>
     // eslint-disable-next-line react/display-name
     ({ event }: { event: CalendarEvent }) => {
         if (!event.isCustomEvent)
@@ -162,16 +163,9 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         });
     };
 
-    updateCurrentScheduleIndex = () => {
-        this.handleClosePopover();
-
-        this.setState({
-            currentScheduleIndex: AppStore.currentScheduleIndex,
-        });
-    };
-
     updateEventsInCalendar = (close = true) => {
         this.setState({
+            currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
             eventsInCalendar: AppStore.getEventsInCalendar(),
             finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
         });
@@ -188,7 +182,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.on('customEventsChange', this.updateEventsInCalendar);
         AppStore.on('colorChange', this.updateEventsInCalendar);
-        AppStore.on('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
+        AppStore.on('currentScheduleIndexChange', this.updateEventsInCalendar);
         AppStore.on('scheduleNamesChange', this.updateScheduleNames);
     };
 
@@ -196,7 +190,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         AppStore.removeListener('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.removeListener('customEventsChange', this.updateEventsInCalendar);
         AppStore.removeListener('colorChange', this.updateEventsInCalendar);
-        AppStore.removeListener('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
+        AppStore.removeListener('currentScheduleIndexChange', this.updateEventsInCalendar);
         AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
     };
 
@@ -229,11 +223,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
     };
 
     getEventsForCalendar = () => {
-        const eventSet = this.state.showFinalsSchedule
-            ? this.state.finalsEventsInCalendar
-            : this.state.eventsInCalendar;
-
-        return eventSet.filter((event) => event.scheduleIndices.includes(this.state.currentScheduleIndex));
+        return this.state.showFinalsSchedule ? this.state.finalsEventsInCalendar : this.state.eventsInCalendar;
     };
 
     render() {
@@ -295,7 +285,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                             key={this.state.calendarEventKey}
                             closePopover={this.handleClosePopover}
                             courseInMoreInfo={this.state.courseInMoreInfo as CalendarEvent}
-                            currentScheduleIndex={this.state.currentScheduleIndex}
                             scheduleNames={this.state.scheduleNames}
                         />
                     </Popper>
@@ -318,7 +307,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                         events={events}
                         eventPropGetter={ScheduleCalendar.eventStyleGetter}
                         showMultiDayTimes={false}
-                        components={{ event: AntAlmanacEvent(classes) }}
+                        components={{ event: AntAlmanacEvent({ classes }) }}
                         onSelectEvent={this.handleEventClick}
                     />
                 </div>

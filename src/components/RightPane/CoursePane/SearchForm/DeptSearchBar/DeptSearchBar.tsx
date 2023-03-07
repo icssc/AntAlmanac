@@ -2,7 +2,7 @@ import { TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Autocomplete } from '@material-ui/lab';
-import React, { ChangeEvent, PureComponent } from 'react';
+import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../../RightPaneStore';
 import depts from './depts';
@@ -56,7 +56,7 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
         let favorites: Department[] = [];
         if (typeof Storage !== 'undefined') {
             const locallyStoredFavorites = window.localStorage.getItem('favorites');
-            favorites = locallyStoredFavorites !== null ? JSON.parse(locallyStoredFavorites) as Department[] : [];
+            favorites = locallyStoredFavorites !== null ? (JSON.parse(locallyStoredFavorites) as Department[]) : [];
         }
         this.state = {
             value: {
