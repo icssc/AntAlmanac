@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormGroup, TextField } from '@mui/material'
 import { useSettingsStore } from '$stores/settings'
 import { useScheduleStore } from '$stores/schedule'
-import { renameCurrentSchedule } from '$stores/schedule/schedule'
+import { addSchedule, renameCurrentSchedule } from '$stores/schedule/schedule'
 
 interface Props {
   open: boolean
@@ -25,7 +25,12 @@ export default function RenameScheduleDialog(props: Props) {
   const [scheduleName, setScheduleName] = useState(originalName)
 
   function handleRename() {
-    renameCurrentSchedule(scheduleName)
+    if (index === schedules.length) {
+      addSchedule(scheduleName)
+    }
+    else {
+      renameCurrentSchedule(scheduleName)
+    }
     setOpen(false)
   }
 
