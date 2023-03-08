@@ -13,10 +13,9 @@ export const LOAD_DATA_ENDPOINT = endpointTransform('/api/users/loadUserData');
 export const SAVE_DATA_ENDPOINT = endpointTransform('/api/users/saveUserData');
 export const ENROLLMENT_DATA_ENDPOINT = endpointTransform('/api/enrollmentData');
 export const NEWS_ENDPOINT = endpointTransform('/api/news');
+export const ZOTCOURSE_ENDPOINT = endpointTransform('/api/zotcourse');
 
 // PeterPortal API
 export const PETERPORTAL_GRAPHQL_ENDPOINT = 'https://api.peterportal.org/graphql';
 export const PETERPORTAL_REST_ENDPOINT = 'https://api.peterportal.org/rest/v0';
 export const PETERPORTAL_WEBSOC_ENDPOINT = `${PETERPORTAL_REST_ENDPOINT}/schedule/soc`;
-
-export const ZOTCOURSE_ENDPOINT = 'https://zotcourse.appspot.com/schedule/load?username=';
