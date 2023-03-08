@@ -1,6 +1,7 @@
-import { PureComponent } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@material-ui/core';
 import { Info } from '@material-ui/icons';
+import { PureComponent } from 'react';
+
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 class AboutPage extends PureComponent {

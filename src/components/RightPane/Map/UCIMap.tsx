@@ -1,25 +1,36 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import 'leaflet.locatecontrol';
 
 import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
 import React, { PureComponent } from 'react';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { LeafletContext, Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { FAKE_LOCATIONS } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 
 import { CalendarEvent, CourseEvent } from '../../Calendar/CourseCalendarEvent';
+import RightPaneStore, { BuildingFocusInfo } from '../RightPaneStore';
 import locations from '../SectionTable/static/locations.json';
 import MapMarker from './MapMarker';
 import MapMenu from './MapMenu';
 import Building from './static/building';
 import buildingCatalogue from './static/buildingCatalogue';
 import { Coord, MapBoxResponse } from './static/mapbox';
+
 // TODO investigate less jank ways of doing this if at all possible
 
 class LocateControl extends PureComponent<{ leaflet: LeafletContext }> {
-    componentDidMount() {
+    addLocateControl() {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const { map } = this.props.leaflet;
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const lc = new Control.Locate({
             position: 'topleft',
             strings: {
@@ -28,6 +39,10 @@ class LocateControl extends PureComponent<{ leaflet: LeafletContext }> {
             flyTo: true,
         });
         lc.addTo(map as Leaflet.Map);
+    }
+
+    componentDidMount() {
+        this.addLocateControl();
     }
 
     render() {
@@ -42,16 +57,14 @@ const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ
 const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
 const DIRECTIONS_ENDPOINT = 'https://api.mapbox.com/directions/v5/mapbox/walking/';
-const FAKE_LOCATIONS = ['VRTL REMOTE', 'ON LINE', 'TBA'];
 
 interface UCIMapState {
     lat: number;
     lng: number;
     zoom: number;
     day: number;
+    selectedMarker: Marker | null;
     selected: string | null;
-    selected_img: string;
-    selected_acronym: string;
     eventsInCalendar: CalendarEvent[];
     poly: Polyline[];
     info_markers: [string[], string, string][];
@@ -64,9 +77,8 @@ export default class UCIMap extends PureComponent {
         lng: -117.842717,
         zoom: 16,
         day: 0,
+        selectedMarker: null,
         selected: null,
-        selected_img: '',
-        selected_acronym: '',
         eventsInCalendar: AppStore.getEventsInCalendar(),
         poly: [],
         info_markers: [],
@@ -255,6 +267,88 @@ export default class UCIMap extends PureComponent {
         }
     };
 
+    locationDataFromBuildingCode = (
+        buildingCode: string
+    ): {
+        name: string;
+        lat: number;
+        lng: number;
+        imageURLs: string[];
+    } => {
+        // Get building code, get id of building code, which will get us the building data from buildingCatalogue
+        const id = locations[buildingCode as keyof typeof locations] as keyof typeof buildingCatalogue;
+        return buildingCatalogue[id];
+    };
+
+    pinBuilding = (args: {
+        buildingName: string;
+        lat: number;
+        lng: number;
+        imageURL: string | null;
+        courseName?: string | null;
+    }) => {
+        const { buildingName, lat, lng, imageURL, courseName } = args;
+
+        // Acronym, if it exists, is in between parentheses
+        const acronym = buildingName.substring(buildingName.indexOf('(') + 1, buildingName.indexOf(')'));
+
+        const marker = (
+            <MapMarker
+                image={imageURL ? imageURL : undefined}
+                location={buildingName}
+                lat={lat}
+                lng={lng}
+                acronym={acronym}
+                markerColor="#FF0000"
+                index="!"
+                stackIndex={acronym in this.state.pins ? -1 : 0}
+                openPopup={true}
+            >
+                {courseName ? (
+                    <>
+                        <hr />
+                        Class: {courseName}
+                    </>
+                ) : (
+                    <></>
+                )}
+            </MapMarker>
+        );
+
+        this.setState({
+            lat: lat + 0.001, // Off-centered to show the popup
+            lng: lng,
+            zoom: 17,
+            selectedMarker: marker,
+        });
+    };
+
+    selectBuilding = (buildingFocusInfo: BuildingFocusInfo) => {
+        // Get the first set of letters before the first number or space, which is the building code
+        // E.g., "BS" in "BS 1200"
+        const buildingCodeMatch = buildingFocusInfo.location.match(/[^\d\s]+/);
+        if (!buildingCodeMatch) {
+            console.warn('Building code could not be parsed from: ', buildingFocusInfo.location);
+            return;
+        }
+
+        const buildingCode = buildingCodeMatch[0];
+        const locationData = this.locationDataFromBuildingCode(buildingCode);
+
+        if (!locationData) {
+            console.warn('Building data could not be found for: ', buildingCode);
+            return;
+        }
+
+        this.pinBuilding({
+            buildingName: locationData.name,
+            lat: locationData.lat,
+            lng: locationData.lng,
+            imageURL: locationData.imageURLs.length > 0 ? locationData.imageURLs[0] : null,
+            courseName: buildingFocusInfo.courseName,
+        });
+    };
+
     updateCurrentScheduleIndex = () => {
         this.createMarkers(this.state.day);
         void this.generateRoute(this.state.day);
@@ -276,11 +370,15 @@ export default class UCIMap extends PureComponent {
         this.createMarkers(this.state.day);
         AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.on('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
+
+        RightPaneStore.on('selectBuilding', this.selectBuilding);
+        RightPaneStore.emit('mapLoaded');
     };
 
     componentWillUnmount = () => {
         AppStore.removeListener('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.removeListener('currentScheduleIndexChange', this.updateCurrentScheduleIndex);
+        RightPaneStore.removeListener('selectBuilding', this.selectBuilding);
     };
 
     createMarkers = (day: number) => {
@@ -319,9 +417,7 @@ export default class UCIMap extends PureComponent {
         const markers = [];
         const pins = this.state.pins;
         for (const buildingCode in pins) {
-            // Get building code, get id of building code, which will get us the building data from buildingCatalogue
-            const id = locations[buildingCode as keyof typeof locations] as keyof typeof buildingCatalogue;
-            const locationData = buildingCatalogue[id];
+            const locationData = this.locationDataFromBuildingCode(buildingCode);
             const courses = pins[buildingCode];
             for (let index = courses.length - 1; index >= 0; index--) {
                 const [event, eventIndex] = courses[index];
@@ -361,23 +457,11 @@ export default class UCIMap extends PureComponent {
 
     handleSearch = (event: React.ChangeEvent<unknown>, searchValue: Building | null) => {
         if (searchValue) {
-            // Acronym, if it exists, is in between parentheses
-            const acronym = searchValue.name.substring(
-                searchValue.name.indexOf('(') + 1,
-                searchValue.name.indexOf(')')
-            );
-
-            this.setState({
+            this.pinBuilding({
+                buildingName: searchValue.name,
                 lat: searchValue.lat,
                 lng: searchValue.lng,
-                selected: searchValue.name,
-                selected_acronym: acronym,
-                zoom: 18,
-            });
-
-            // If there is an image, add the image and url
-            this.setState({
-                selected_img: searchValue.imageURLs.length !== 0 ? searchValue.imageURLs[0] : null,
+                imageURL: searchValue.imageURLs.length > 0 ? searchValue.imageURLs[0] : null,
             });
         } else {
             this.setState({ selected: null, selected_img: null, selected_acronym: null });
@@ -417,18 +501,7 @@ export default class UCIMap extends PureComponent {
 
                 {this.drawMarkers()}
 
-                {this.state.selected ? (
-                    <MapMarker
-                        image={this.state.selected_img}
-                        location={this.state.selected}
-                        lat={this.state.lat}
-                        lng={this.state.lng}
-                        acronym={this.state.selected_acronym}
-                        markerColor="#FF0000"
-                        index="!"
-                        stackIndex={this.state.selected_acronym in this.state.pins ? -1 : 0}
-                    />
-                ) : null}
+                {this.state.selectedMarker}
             </Map>
         );
     }

@@ -7,10 +7,10 @@ import { Event } from 'react-big-calendar';
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { clickToCopy } from '$lib/helpers';
+import { clickToCopy, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 
-import locations from '../RightPane/SectionTable/static/locations.json';
+import RightPaneStore, { BuildingFocusInfo } from '../RightPane/RightPaneStore';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 
 const styles: Styles<Theme, object> = {
@@ -64,14 +64,20 @@ const styles: Styles<Theme, object> = {
             borderRadius: '50%',
         },
     },
+
+    clickableLocation: {
+        cursor: 'pointer',
+        color: isDarkMode() ? '#1cbeff' : 'blue',
+        background: 'none !important',
+        border: 'none',
+        padding: '0 !important',
+        fontSize: 'inherit',
+    },
 };
 
-const genMapLink = (location: string) => {
-    try {
-        const location_id = locations[location.split(' ')[0] as keyof typeof locations];
-        return `https://map.uci.edu/?id=463#!m/${location_id}`;
-    } catch (err) {
-        return 'https://map.uci.edu/';
+const selectBuilding = (buildingFocusInfo: BuildingFocusInfo) => {
+    if (buildingFocusInfo.location !== 'TBA') {
+        RightPaneStore.focusOnBuilding(buildingFocusInfo);
     }
 };
 
@@ -83,7 +89,7 @@ interface CommonCalendarEvent extends Event {
 }
 
 export interface CourseEvent extends CommonCalendarEvent {
-    bldg: string;
+    bldg: string; // E.g., ICS 174, which is actually building + room
     finalExam: string;
     instructors: string[];
     isCustomEvent: false;
@@ -165,13 +171,12 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         <tr>
                             <td className={classes.alignToTop}>Location</td>
                             <td className={`${classes.multiline} ${classes.rightCells}`}>
-                                {bldg !== 'TBA' ? (
-                                    <a href={genMapLink(bldg)} target="_blank" rel="noopener noreferrer">
-                                        {bldg}
-                                    </a>
-                                ) : (
-                                    bldg
-                                )}
+                                <button
+                                    className={classes.clickableLocation}
+                                    onClick={() => selectBuilding({ location: bldg, courseName: title })}
+                                >
+                                    {bldg}
+                                </button>
                             </td>
                         </tr>
                         <tr>
