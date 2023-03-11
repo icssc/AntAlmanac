@@ -10,7 +10,7 @@ import darkModeLoadingGif from './CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './CoursePane/SearchForm/Gifs/loading.gif';
 import RightPaneStore, { BuildingFocusInfo } from './RightPaneStore';
 
-const UCIMap = React.lazy(() => import('./Map/UCIMap'));
+const UCIMap = React.lazy(() => import('$components/Map'));
 
 const styles = {
     fallback: {

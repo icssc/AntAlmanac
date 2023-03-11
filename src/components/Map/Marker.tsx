@@ -9,7 +9,7 @@ const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId
 /**
  * returns a leaflet DivIcon that can replace the marker's default blue icon
  */
-function getMarkerIcon(color = '', stackIndex = 1, label = 0) {
+function getMarkerIcon(color = '', stackIndex = 1, label: string | number = 0) {
     return Leaflet.divIcon({
         /**
          * Adds offset for marker for stacking markers
@@ -61,7 +61,7 @@ interface Props {
     location?: string;
     acronym?: string;
     stackIndex?: number;
-    label?: number;
+    label?: number | string;
     children?: React.ReactNode;
 }
 

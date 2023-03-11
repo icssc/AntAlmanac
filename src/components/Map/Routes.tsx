@@ -1,5 +1,3 @@
-/* eslint react/no-unused-prop-types: off */
-
 import 'leaflet-routing-machine';
 
 import type { LeafletContextInterface } from '@react-leaflet/core';

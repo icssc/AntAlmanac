@@ -1,3 +1,6 @@
+import './Map.css';
+import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
+import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import 'leaflet-routing-machine';
 
 import { Autocomplete, Box, Paper, Tab, Tabs, TextField, Typography } from '@mui/material';
@@ -142,7 +145,7 @@ export default function CourseMap() {
     }, [] as (typeof uniqueMarkers)[]);
 
     return (
-        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+        <Box sx={{ height: 1, width: 1, display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
             <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
                 {/** menu floats above the map */}
                 <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.942, marginX: '15%', marginY: 8 }}>
