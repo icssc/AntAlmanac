@@ -1,7 +1,7 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
-import { Popper } from '@material-ui/core';
+import { Box, ClickAwayListener, Popper } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import moment from 'moment';
@@ -240,11 +240,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         });
 
         return (
-            <div
-                className={classes.container}
-                style={isMobile ? { height: 'calc(100% - 50px)' } : undefined}
-                onClick={this.handleClosePopover}
-            >
+            <div className={classes.container} style={isMobile ? { height: 'calc(100% - 50px)' } : undefined}>
                 <CalendarToolbar
                     onTakeScreenshot={this.handleTakeScreenshot}
                     currentScheduleIndex={this.state.currentScheduleIndex}
@@ -281,12 +277,16 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                         }}
                         open={Boolean(this.state.anchorEl)}
                     >
-                        <CourseCalendarEvent
-                            key={this.state.calendarEventKey}
-                            closePopover={this.handleClosePopover}
-                            courseInMoreInfo={this.state.courseInMoreInfo as CalendarEvent}
-                            scheduleNames={this.state.scheduleNames}
-                        />
+                        <ClickAwayListener onClickAway={this.handleClosePopover}>
+                            <Box>
+                                <CourseCalendarEvent
+                                    key={this.state.calendarEventKey}
+                                    closePopover={this.handleClosePopover}
+                                    courseInMoreInfo={this.state.courseInMoreInfo as CalendarEvent}
+                                    scheduleNames={this.state.scheduleNames}
+                                />
+                            </Box>
+                        </ClickAwayListener>
                     </Popper>
                     <Calendar<CalendarEvent, object>
                         localizer={localizer}

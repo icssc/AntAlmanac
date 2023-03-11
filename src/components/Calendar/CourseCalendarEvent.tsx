@@ -1,4 +1,4 @@
-import { IconButton, Paper, Tooltip } from '@material-ui/core';
+import { Button, IconButton, Paper, Tooltip } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
@@ -146,17 +146,19 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             <td className={classes.alignToTop}>Section code</td>
                             <Tooltip title="Click to copy course code" placement="right">
                                 {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
-                                <td
-                                    onClick={(e) => {
-                                        logAnalytics({
-                                            category: analyticsEnum.calendar.title,
-                                            action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
-                                        });
-                                        clickToCopy(e, sectionCode);
-                                    }}
-                                    className={classes.rightCells}
-                                >
-                                    <u>{sectionCode}</u>
+                                <td className={classes.rightCells}>
+                                    <Button
+                                        size="small"
+                                        onClick={(e) => {
+                                            logAnalytics({
+                                                category: analyticsEnum.calendar.title,
+                                                action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
+                                            });
+                                            clickToCopy(e, sectionCode);
+                                        }}
+                                    >
+                                        <u>{sectionCode}</u>
+                                    </Button>
                                 </td>
                             </Tooltip>
                         </tr>
@@ -202,7 +204,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     } else {
         const { title, customEventID } = courseInMoreInfo;
         return (
-            <Paper className={classes.customEventContainer} onClick={(event) => event.stopPropagation()}>
+            <Paper className={classes.customEventContainer}>
                 <div className={classes.title}>{title}</div>
                 <div className={classes.buttonBar}>
                     <div className={`${classes.colorPicker}`}>

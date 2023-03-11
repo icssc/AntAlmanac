@@ -1,4 +1,4 @@
-import { Popover, TableCell, TableRow, Theme, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
+import { Button, Popover, TableCell, TableRow, Theme, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
@@ -20,6 +20,7 @@ const styles: Styles<Theme, object> = (theme) => ({
         pointerEvents: 'none',
     },
     sectionCode: {
+        padding: 0,
         display: 'inline-block',
         cursor: 'pointer',
         '&:hover': {
@@ -95,7 +96,8 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             <Tooltip title="Click to copy course code" placement="bottom" enterDelay={300}>
-                <div
+                <Button
+                    size="small"
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);
                         logAnalytics({
@@ -106,7 +108,7 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
                     className={classes.sectionCode}
                 >
                     {sectionCode}
-                </div>
+                </Button>
             </Tooltip>
         </NoPaddingTableCell>
     );

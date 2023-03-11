@@ -6,24 +6,19 @@ parserOptions:
 plugins:
     - react
     - react-hooks
+    - import
+    - jsx-a11y
     - '@typescript-eslint/eslint-plugin'
 
 extends:
     - eslint:recommended
     - plugin:react/recommended
     - plugin:react-hooks/recommended
-    - eslint:recommended
+    - plugin:react/jsx-runtime
+    - plugin:jsx-a11y/recommended
     - plugin:@typescript-eslint/eslint-recommended
     - plugin:@typescript-eslint/recommended
-    - airbnb
-    - airbnb-typescript
     - prettier
-
-rules:
-    import/extensions: off
-    no-restricted-exports: off
-    react/jsx-props-no-spreading: off
-    react/require-default-props: off
 
 env:
     browser: true

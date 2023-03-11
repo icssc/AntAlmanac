@@ -11,3 +11,5 @@
 # file system configs
 desktop.ini
 .DS_Store
+
+tools/
