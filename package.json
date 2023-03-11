@@ -16,8 +16,8 @@
         "preview": "vite preview",
         "predeploy": "npm run build",
         "deploy": "gh-pages -d build",
-        "format": "prettier --write .",
-        "lint": "eslint ."
+        "format": "prettier --write src",
+        "lint": "eslint src"
     },
     "dependencies": {
         "@date-io/date-fns": "^2.16.0",
