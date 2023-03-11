@@ -1,0 +1,13 @@
+# dev environment 
+/node_modules/
+/.turbo/
+/dist/
+/static/
+/public/
+
+# private
+.env
+
+# file system configs
+desktop.ini
+.DS_Store
