@@ -145,7 +145,6 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         <tr>
                             <td className={classes.alignToTop}>Section code</td>
                             <Tooltip title="Click to copy course code" placement="right">
-                                {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
                                 <td className={classes.rightCells}>
                                     <Button
                                         size="small"
