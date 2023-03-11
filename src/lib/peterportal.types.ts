@@ -100,6 +100,9 @@ export interface Section {
     restrictions: string;
     status: string;
     sectionComment: string;
+
+    // extra
+    numWaitlistCap: string;
 }
 
 /**
