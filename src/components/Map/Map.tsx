@@ -1,7 +1,6 @@
 import './Map.css';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
-import 'leaflet-routing-machine';
 
 import { Autocomplete, Box, Paper, Tab, Tabs, TextField, Typography } from '@mui/material';
 import type { LatLngTuple, Map } from 'leaflet';

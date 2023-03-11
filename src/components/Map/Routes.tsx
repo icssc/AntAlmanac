@@ -1,9 +1,8 @@
-import 'leaflet-routing-machine';
-
 import type { LeafletContextInterface } from '@react-leaflet/core';
 import { createElementHook, createElementObject, useLeafletContext } from '@react-leaflet/core';
 import type { LatLngTuple } from 'leaflet';
 import L from 'leaflet';
+import * as _ from 'leaflet-routing-machine';
 import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 
