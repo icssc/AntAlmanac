@@ -113,7 +113,7 @@ export class Schedules {
      * Deletes current schedule and adjusts schedule index to current
      */
     deleteCurrentSchedule() {
-        this.addUndoState(true);
+        this.addUndoState();
         this.schedules.splice(this.currentScheduleIndex, 1);
         this.currentScheduleIndex = Math.min(this.currentScheduleIndex, this.getNumberOfSchedules() - 1);
     }
@@ -390,12 +390,11 @@ export class Schedules {
      * Appends a copy of the current schedule to previous states to revert to
      * Previous states are capped to 50
      */
-    addUndoState(scheduleWasDeleted = false) {
+    addUndoState() {
         const clonedSchedules = JSON.parse(JSON.stringify(this.schedules)) as Schedule[]; // Create deep copy of Schedules object
         this.previousStates.push({
             schedules: clonedSchedules,
             scheduleIndex: this.currentScheduleIndex,
-            scheduleWasDeleted: scheduleWasDeleted,
         });
         if (this.previousStates.length >= 50) {
             this.previousStates.shift();
@@ -409,11 +408,11 @@ export class Schedules {
     revertState() {
         const state = this.previousStates.pop();
         if (state !== undefined) {
-            // If one of the schedules was deleted in the undo state, restore it and insert it back
-            // into the current schedule list; the deleted schedule has the index state.scheduleIndex
-            // since we can only delete the current schedule. We need to do this insertion so that
-            // we can assign the correct schedule note for each schedule.
-            if (state.scheduleWasDeleted) {
+            // If the undo state has more schedules than the current schedule list, that means a schedule
+            // was deleted. We need to make sure that we assign the correct schedule note for each schedule,
+            // so we need to insert the deleted schedule back. The deleted schedule has the index state.scheduleIndex
+            // since we can only delete the current schedule.
+            if (state.schedules.length > this.getNumberOfSchedules()) {
                 this.schedules.splice(state.scheduleIndex, 0, state.schedules[state.scheduleIndex]);
             }
 
@@ -426,7 +425,6 @@ export class Schedules {
             this.schedules = state.schedules;
             this.currentScheduleIndex = state.scheduleIndex;
         }
-        console.log(this.previousStates);
     }
 
     /*
