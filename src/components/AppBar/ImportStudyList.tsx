@@ -64,7 +64,7 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
 
     handleError = (error: Error) => {
         openSnackbar('error', 'An error occurred while trying to import the Study List.');
-        console.error(error);
+        // console.error(error);
     };
 
     handleOpen = () => {
@@ -77,7 +77,9 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
             if (doImport) {
                 let zotcourseImport: ZotCourseResponse | null = null;
                 if (this.state.importSource === 'zotcourse') {
-                    zotcourseImport = await queryZotCourse(this.state.zotcourseScheduleName);
+                    try {
+                        zotcourseImport = await queryZotCourse(this.state.zotcourseScheduleName);
+                    } catch (e) {}
                 }
                 const sectionCodes = zotcourseImport ? zotcourseImport.codes : this.state.studyListText.match(/\d{5}/g);
                 if (!sectionCodes) {
