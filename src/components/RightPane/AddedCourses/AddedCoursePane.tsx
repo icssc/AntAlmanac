@@ -241,7 +241,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                         </Grid>
                     );
                 })}
-                <Typography variant="h6">{`${scheduleName} Notes`}</Typography>
+                <Typography variant="h6">Schedule Notes</Typography>
                 <Paper className={this.props.classes.scheduleNoteContainer}>
                     <TextField
                         type="text"

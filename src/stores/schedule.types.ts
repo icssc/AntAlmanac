@@ -44,4 +44,5 @@ export interface ScheduleSaveState {
 export interface ScheduleUndoState {
     schedules: Schedule[];
     scheduleIndex: number;
+    scheduleWasDeleted: boolean;
 }
