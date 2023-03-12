@@ -149,9 +149,16 @@ export interface ZotCourseResponse {
     customEvents: RepeatingCustomEvent[];
 }
 export async function queryZotCourse(schedule_name: string) {
-    const url = new URL(ZOTCOURSE_ENDPOINT + '/' + schedule_name);
+    // const url = new URL('http://localhost:8080/api/zotcourse/loadUserData');
+    const url = new URL(ZOTCOURSE_ENDPOINT);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const response = await fetch(url).then((r) => r.json());
+    const response = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({ scheduleName: schedule_name }),
+        headers: { 'Content-Type': 'application/json' },
+    })
+        .then((r) => r.json())
+        .catch((err) => console.log(err));
     // For custom event, there is no course attribute in each.
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     const codes = response.data

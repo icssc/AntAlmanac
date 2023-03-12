@@ -85,13 +85,13 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                     return;
                 }
                 // Import Custom Events from zotcourse
-                // TODO: Unknown bug causes
-                // if (zotcourseImport) {
-                //     const events = zotcourseImport.customEvents;
-                //     for (const event of events) {
-                //         addCustomEvent(event);
-                //     }
-                // }
+                // TODO: Fix bug caused by addCustomEvent call
+                if (zotcourseImport) {
+                    const events = zotcourseImport.customEvents;
+                    for (const event of events) {
+                        addCustomEvent(event);
+                    }
+                }
 
                 const currSchedule = AppStore.getCurrentScheduleIndex();
                 try {

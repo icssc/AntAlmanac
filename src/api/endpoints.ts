@@ -13,7 +13,7 @@ export const LOAD_DATA_ENDPOINT = endpointTransform('/api/users/loadUserData');
 export const SAVE_DATA_ENDPOINT = endpointTransform('/api/users/saveUserData');
 export const ENROLLMENT_DATA_ENDPOINT = endpointTransform('/api/enrollmentData');
 export const NEWS_ENDPOINT = endpointTransform('/api/news');
-export const ZOTCOURSE_ENDPOINT = endpointTransform('/api/zotcourse');
+export const ZOTCOURSE_ENDPOINT = endpointTransform('/api/zotcourse/loadUserData');
 
 // PeterPortal API
 export const PETERPORTAL_GRAPHQL_ENDPOINT = 'https://api.peterportal.org/graphql';
