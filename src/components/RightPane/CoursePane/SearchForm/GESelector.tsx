@@ -40,12 +40,16 @@ class GESelector extends PureComponent<GESelectorProps, GESelectorState> {
         return RightPaneStore.getFormData().ge
     };
 
+    getGe(){
+        if(RightPaneStore.getUrlGEValue() != "null" && RightPaneStore.getUrlGEValue() != "" && RightPaneStore.getUrlGEValue() != " "){
+            return this.updateGEAndGetFormData()
+        }else{
+            return RightPaneStore.getFormData().ge
+        }
+    };
+
     state = {
-        ge: RightPaneStore.getUrlGEValue() != "null" && RightPaneStore.getUrlGEValue() != "" && RightPaneStore.getUrlGEValue() != " " 
-        ?
-        this.updateGEAndGetFormData()
-        : 
-        RightPaneStore.getFormData().ge,
+        ge: this.getGe(),
     };
 
     handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
@@ -59,14 +63,14 @@ class GESelector extends PureComponent<GESelectorProps, GESelectorState> {
         if (event.target.value as string != "" && event.target.value as string != null && event.target.value as string != "ANY"){
             urlParam.append('GE', event.target.value as string);
             const new_url = `?${urlParam.toString()}`;
-            window.history.replaceState(stateObj, "url", "/" + new_url);
+            history.replaceState(stateObj, "url", "/" + new_url);
         }else{
             if (urlParam.toString() == "" || urlParam.toString() == null){
                 const new_url = `${urlParam.toString()}`;
-                window.history.replaceState(stateObj, "url", "/" + new_url);
+                history.replaceState(stateObj, "url", "/" + new_url);
             }else{
                 const new_url = `?${urlParam.toString()}`;
-                window.history.replaceState(stateObj, "url", "/" + new_url);
+                history.replaceState(stateObj, "url", "/" + new_url);
             }
         }
     };

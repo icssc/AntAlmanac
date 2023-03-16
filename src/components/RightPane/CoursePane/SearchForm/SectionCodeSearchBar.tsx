@@ -10,12 +10,16 @@ class SectionCodeSearchBar extends PureComponent {
         return RightPaneStore.getFormData().sectionCode
     };
 
+    getSectionCode(){
+        if(RightPaneStore.getUrlCourseCodeValue() != "null" && RightPaneStore.getUrlCourseCodeValue() != "" && RightPaneStore.getUrlCourseCodeValue() != " "){
+            return this.updateCourseCodeAndGetFormData()
+        }else{
+            return RightPaneStore.getFormData().sectionCode
+        }
+    };
+
     state = {
-        sectionCode: RightPaneStore.getUrlCourseCodeValue() != "null" && RightPaneStore.getUrlCourseCodeValue() != "" && RightPaneStore.getUrlCourseCodeValue() != " " 
-        ?
-        this.updateCourseCodeAndGetFormData()
-        : 
-        RightPaneStore.getFormData().sectionCode,
+        sectionCode: this.getSectionCode(),
     };
 
     handleChange = (event: ChangeEvent<{ value: string }>) => {
@@ -29,14 +33,14 @@ class SectionCodeSearchBar extends PureComponent {
         if (event.target.value != "" && event.target.value != null){
             urlParam.append('courseCode', event.target.value);
             const new_url = `?${urlParam.toString()}`;
-            window.history.replaceState(stateObj, "url", "/" + new_url);
+            history.replaceState(stateObj, "url", "/" + new_url);
         }else{
             if (urlParam.toString() == "" || urlParam.toString() == null){
                 const new_url = `${urlParam.toString()}`;
-                window.history.replaceState(stateObj, "url", "/" + new_url);
+                history.replaceState(stateObj, "url", "/" + new_url);
             }else{
                 const new_url = `?${urlParam.toString()}`;
-                window.history.replaceState(stateObj, "url", "/" + new_url);
+                history.replaceState(stateObj, "url", "/" + new_url);
             }
         }
     };

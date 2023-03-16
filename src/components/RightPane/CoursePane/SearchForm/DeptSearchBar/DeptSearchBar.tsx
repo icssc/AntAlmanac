@@ -50,6 +50,22 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
         return RightPaneStore.getFormData().deptValue
     };
 
+    getDeptValue(){
+        if (RightPaneStore.getUrlDeptValue() != "null" && RightPaneStore.getUrlDeptValue() != "" && RightPaneStore.getUrlDeptValue() != " "){
+            return this.updatedeptValueAndGetFormData()
+        }else{
+            return RightPaneStore.getFormData().deptValue
+        }
+    };
+
+    getDeptLabel(){
+        if(RightPaneStore.getUrlDeptLabel() != "null" && RightPaneStore.getUrlDeptLabel() != "" && RightPaneStore.getUrlDeptLabel() != " "){
+            return this.updatedeptLabelAndGetFormData()
+        }else{
+            return RightPaneStore.getFormData().deptLabel
+        }
+    };
+
     constructor(props: DeptSearchBarProps) {
         super(props);
 
@@ -58,19 +74,11 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
             const locallyStoredFavorites = window.localStorage.getItem('favorites');
             favorites = locallyStoredFavorites !== null ? (JSON.parse(locallyStoredFavorites) as Department[]) : [];
         }
+
         this.state = {
             value: {
-                deptValue: RightPaneStore.getUrlDeptValue() != "null" && RightPaneStore.getUrlDeptValue() != "" && RightPaneStore.getUrlDeptValue() != " " 
-                ?
-                this.updatedeptValueAndGetFormData()
-                : 
-                RightPaneStore.getFormData().deptValue,
-
-                deptLabel: RightPaneStore.getUrlDeptLabel() != "null" && RightPaneStore.getUrlDeptLabel() != "" && RightPaneStore.getUrlDeptLabel() != " " 
-                ?
-                this.updatedeptLabelAndGetFormData()
-                : 
-                RightPaneStore.getFormData().deptLabel,
+                deptValue: this.getDeptValue(),
+                deptLabel: this.getDeptLabel(),
                 isFavorite: false,
             },
             favorites: favorites,
@@ -118,14 +126,14 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
             urlParam.append('deptLabel', setDeptValue.deptLabel);
             urlParam.append('deptValue', setDeptValue.deptValue);
             const new_url = `?${urlParam.toString()}`;
-            window.history.replaceState(stateObj, "url", "/" + new_url);
+            history.replaceState(stateObj, "url", "/" + new_url);
         }else{
             if (urlParam.toString() == "" || urlParam.toString() == null){
                 const new_url = `${urlParam.toString()}`;
-                window.history.replaceState(stateObj, "url", "/" + new_url);
+                history.replaceState(stateObj, "url", "/" + new_url);
             }else{
                 const new_url = `?${urlParam.toString()}`;
-                window.history.replaceState(stateObj, "url", "/" + new_url);
+                history.replaceState(stateObj, "url", "/" + new_url);
             }
         }
 

@@ -11,12 +11,16 @@ interface CourseNumberSearchBarState {
 class CourseNumberSearchBar extends PureComponent<Record<string,never>, CourseNumberSearchBarState> {
 
 
+    getCourseNumber(){
+        if (RightPaneStore.getUrlCourseNumValue() != "null" && RightPaneStore.getUrlCourseNumValue() != "" && RightPaneStore.getUrlCourseNumValue() != " "){
+            return this.updateCourseNumAndGetFormData()
+        }else{
+            return RightPaneStore.getFormData().courseNumber
+        }
+    };
+
     state = {
-        courseNumber: RightPaneStore.getUrlCourseNumValue() != "null" && RightPaneStore.getUrlCourseNumValue() != "" && RightPaneStore.getUrlCourseNumValue() != " " 
-        ?
-        this.updateCourseNumAndGetFormData()
-        : 
-        RightPaneStore.getFormData().courseNumber,
+        courseNumber: this.getCourseNumber(),
     };
     
     updateCourseNumAndGetFormData(){
@@ -35,14 +39,14 @@ class CourseNumberSearchBar extends PureComponent<Record<string,never>, CourseNu
         if (event.target.value != "" && event.target.value != null){
             urlParam.append('courseNumber', event.target.value);
             const new_url = `?${urlParam.toString()}`;
-            window.history.replaceState(stateObj, "url", "/" + new_url);
+            history.replaceState(stateObj, "url", "/" + new_url);
         }else{
             if (urlParam.toString() == "" || urlParam.toString() == null){
                 const new_url = `${urlParam.toString()}`;
-                window.history.replaceState(stateObj, "url", "/" + new_url);
+                history.replaceState(stateObj, "url", "/" + new_url);
             }else{
                 const new_url = `?${urlParam.toString()}`;
-                window.history.replaceState(stateObj, "url", "/" + new_url);
+                history.replaceState(stateObj, "url", "/" + new_url);
             }
         }
     };

@@ -18,12 +18,16 @@ class TermSelector extends PureComponent<TermSelectorProps> {
         return RightPaneStore.getFormData().term
     };
 
+    getTerm(){
+        if(RightPaneStore.getUrlTermValue() != "null" && RightPaneStore.getUrlTermValue() != "" && RightPaneStore.getUrlTermValue() != " " ){
+            return this.updateTermAndGetFormData()
+        }else{
+            return RightPaneStore.getFormData().term
+        }
+    };
+
     state = {
-        term: RightPaneStore.getUrlTermValue() != "null" && RightPaneStore.getUrlTermValue() != "" && RightPaneStore.getUrlTermValue() != " " 
-        ?
-        this.updateTermAndGetFormData()
-        : 
-        RightPaneStore.getFormData().term,
+        term: this.getTerm(),
     };
 
     resetField = () => {
@@ -49,14 +53,14 @@ class TermSelector extends PureComponent<TermSelectorProps> {
         if (event.target.value as string != "" && event.target.value as string != null){
             urlParam.append('term', event.target.value as string);
             const new_url = `?${urlParam.toString()}`;
-            window.history.replaceState(stateObj, "url", "/" + new_url);
+            history.replaceState(stateObj, "url", "/" + new_url);
         }else{
             if (urlParam.toString() == "" || urlParam.toString() == null){
                 const new_url = `${urlParam.toString()}`;
-                window.history.replaceState(stateObj, "url", "/" + new_url);
+                history.replaceState(stateObj, "url", "/" + new_url);
             }else{
                 const new_url = `?${urlParam.toString()}`;
-                window.history.replaceState(stateObj, "url", "/" + new_url);
+                history.replaceState(stateObj, "url", "/" + new_url);
             }
         }
     };
