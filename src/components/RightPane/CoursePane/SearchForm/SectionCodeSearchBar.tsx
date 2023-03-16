@@ -20,7 +20,7 @@ class SectionCodeSearchBar extends PureComponent {
 
     state = {
         sectionCode: this.getSectionCode(),
-    };
+    }; 
 
     handleChange = (event: ChangeEvent<{ value: string }>) => {
         this.setState({ sectionCode: event.target.value });
