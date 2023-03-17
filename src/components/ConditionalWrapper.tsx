@@ -17,6 +17,6 @@ const ConditionalWrapper = forwardRef<Element, ConditionalWrapperProps>(({ condi
     return condition ? wrapper(children) : children;
 });
 
-ConditionalWrapper.displayName = 'ConditionalWrapper';
+ConditionalWrapper.displayName = "ConditionalWrapper";
 
 export default ConditionalWrapper;

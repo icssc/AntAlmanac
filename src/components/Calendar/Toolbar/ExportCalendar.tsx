@@ -1,12 +1,14 @@
-import { saveAs } from 'file-saver';
-import { createEvents } from 'ics';
 import { Tooltip } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Today from '@material-ui/icons/Today';
-import { openSnackbar } from '$actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import AppStore from '$stores/AppStore';
-import { termData } from '$lib/termData';
+import { saveAs } from 'file-saver';
+import { createEvents } from 'ics';
+import React from 'react';
+
+import { openSnackbar } from '../../../actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '../../../analytics';
+import AppStore from '../../../stores/AppStore';
+import { termData } from '../../../termData';
 
 const quarterStartDates = Object.fromEntries(
     termData
@@ -204,7 +206,9 @@ const getRRule = (bydays: ReturnType<typeof getByDays>, quarter: string) => {
 
 const exportCalendar = () => {
     // Fetch courses for the current schedule
-    const courses = AppStore.schedule.getCurrentCourses();
+    const courses = AppStore.getAddedCourses().filter((course) => {
+        return course.scheduleIndices.includes(AppStore.getCurrentScheduleIndex());
+    });
 
     // Construct an array of VEvents for each event
     const events = [];

@@ -1,7 +1,8 @@
-import { ChangeEvent, PureComponent } from 'react';
 import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import React, { ChangeEvent, PureComponent } from 'react';
+
 import RightPaneStore from '../../RightPaneStore';
 
 const geList: { value: string; label: string }[] = [

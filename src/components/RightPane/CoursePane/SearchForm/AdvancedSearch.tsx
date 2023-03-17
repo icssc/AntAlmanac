@@ -11,9 +11,9 @@ import {
     Typography,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { ClassNameMap , Styles } from '@material-ui/core/styles/withStyles';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import { ChangeEvent, PureComponent } from 'react';
+import React, { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
 

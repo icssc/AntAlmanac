@@ -1,8 +1,9 @@
-import { ChangeEvent, PureComponent } from 'react';
-import search, { SearchResult } from 'websoc-fuzzy-search';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Autocomplete';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import React, { ChangeEvent, PureComponent } from 'react';
+import search, { SearchResult } from 'websoc-fuzzy-search';
+
+import analyticsEnum, { logAnalytics } from '../../../../analytics';
 import RightPaneStore from '../../RightPaneStore';
 
 const emojiMap: Record<string, string> = {

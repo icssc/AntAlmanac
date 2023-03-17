@@ -1,6 +1,6 @@
 import { Button, Tooltip } from '@material-ui/core';
 import { Assignment } from '@material-ui/icons';
-import { FunctionComponent } from 'react';
+import React, { FunctionComponent } from 'react';
 
 const Feedback: FunctionComponent = () => {
     return (

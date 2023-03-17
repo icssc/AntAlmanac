@@ -1,12 +1,11 @@
-import 'leaflet.locatecontrol';
+import '../../../../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js';
 
 import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
 import React, { PureComponent } from 'react';
 import { LeafletContext, Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import AppStore from '$stores/AppStore';
-
+import analyticsEnum, { logAnalytics } from '../../../analytics';
+import AppStore from '../../../stores/AppStore';
 import { CalendarEvent, CourseEvent } from '../../Calendar/CourseCalendarEvent';
 import locations from '../SectionTable/static/locations.json';
 import MapMarker from './MapMarker';
@@ -92,6 +91,7 @@ export default class UCIMap extends PureComponent {
                         !(
                             (
                                 event.isCustomEvent ||
+                                !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
                                 !event.start.toString().includes(DAYS[day]) ||
                                 courses.has(event.sectionCode) || // Remove duplicate courses that appear in the calendar
                                 !courses.add(event.sectionCode)
@@ -294,11 +294,11 @@ export default class UCIMap extends PureComponent {
                     !(
                         (
                             event.isCustomEvent ||
+                            !event.scheduleIndices.includes(AppStore.getCurrentScheduleIndex()) ||
                             !event.start.toString().includes(DAYS[day]) ||
                             courses.has(event.sectionCode) || // Remove duplicate courses that appear in the calendar
                             !courses.add(event.sectionCode) ||
-                            // trim inconsistent white spacing in event.bldg from API
-                            FAKE_LOCATIONS.includes(event.bldg.trim())
+                            FAKE_LOCATIONS.includes(event.bldg)
                         ) // Adds to the set and return false
                     )
             )

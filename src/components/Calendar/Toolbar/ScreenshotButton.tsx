@@ -1,11 +1,12 @@
-import { PureComponent } from 'react';
-import { saveAs } from 'file-saver';
-import html2canvas from 'html2canvas';
 import { Tooltip } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { Panorama } from '@material-ui/icons';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { isDarkMode } from '$lib/helpers';
+import { saveAs } from 'file-saver';
+import html2canvas from 'html2canvas';
+import React, { PureComponent } from 'react';
+
+import analyticsEnum, { logAnalytics } from '../../../analytics';
+import { isDarkMode } from '../../../helpers';
 
 interface ScreenshotButtonProps {
     onTakeScreenshot: (html2CanvasScreenshot: () => void) => void; // the function in an ancestor component that wraps ScreenshotButton.handleClick to perform canvas transformations before and after downloading the screenshot.

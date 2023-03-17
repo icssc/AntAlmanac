@@ -1,5 +1,6 @@
-import { Paper, withStyles } from '@material-ui/core';
+import { Paper , withStyles } from '@material-ui/core';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import React from 'react';
 
 const styles = {
     container: {
@@ -39,10 +40,7 @@ const HelpBox = ({ classes }: HelpBoxProps) => {
                     .
                 </li>
                 <li>Select your major.</li>
-                <li>
-                    View the &quot;REQUIREMENTS&quot; and &quot;SAMPLE PROGRAM&quot; tabs to see what classes you should
-                    take.
-                </li>
+                <li>View the &quot;REQUIREMENTS&quot; and &quot;SAMPLE PROGRAM&quot; tabs to see what classes you should take.</li>
             </ol>
             <div className={classes.images}>
                 <img

@@ -2,10 +2,9 @@ import { IconButton, Theme, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Tune } from '@material-ui/icons';
-import { FormEvent, useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-
+import analyticsEnum, { logAnalytics } from '../../../../analytics';
 import RightPaneStore from '../../RightPaneStore';
 import FuzzySearch from './FuzzySearch';
 import HelpBox from './HelpBox';
@@ -75,8 +74,6 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
         toggleSearch();
     };
 
-    const currentMonth = new Date().getMonth(); // 0=Jan
-
     return (
         <div className={classes.rightPane}>
             <form onSubmit={onFormSubmit} className={classes.form}>
@@ -113,7 +110,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                 </div>
             </form>
 
-            {(currentMonth === 8 || currentMonth === 9) && <HelpBox />}
+            <HelpBox />
             <PrivacyPolicyBanner />
         </div>
     );

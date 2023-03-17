@@ -1,15 +1,16 @@
 import { IconButton, Menu, MenuItem, TableCell, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { Add, ArrowDropDown, Delete } from '@material-ui/icons';
+import { Add, ArrowDropDown,Delete } from '@material-ui/icons';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
+import React from 'react';
 
-import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
-import ColorPicker from '$components/ColorPicker';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { CourseDetails } from '$lib/helpers';
-import { AASection } from '$lib/peterportal.types';
-import AppStore from '$stores/AppStore';
+import { addCourse, deleteCourse, openSnackbar } from '../../../actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '../../../analytics';
+import { CourseDetails } from '../../../helpers';
+import { AASection } from '../../../peterportal.types';
+import AppStore from '../../../stores/AppStore';
+import ColorPicker from '../../ColorPicker';
 
 const styles = {
     container: {
@@ -34,7 +35,7 @@ export const ColorAndDelete = withStyles(styles)((props: ColorAndDeleteProps) =>
             <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
                 <IconButton
                     onClick={() => {
-                        deleteCourse(sectionCode, term);
+                        deleteCourse(sectionCode, AppStore.getCurrentScheduleIndex(), term);
                         logAnalytics({
                             category: analyticsEnum.addedClasses.title,
                             action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
@@ -85,8 +86,7 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
                     action: analyticsEnum.classSearch.actions.ADD_SPECIFIC,
                 });
             }
-            const newCourse = addCourse(section, courseDetails, term, scheduleIndex);
-            section.color = newCourse.section.color;
+            section.color = addCourse(section, courseDetails, term, scheduleIndex);
         }
     };
 

@@ -1,11 +1,11 @@
-import { IconButton, Popover } from '@material-ui/core';
+import { IconButton,Popover } from '@material-ui/core';
 import { ColorLens } from '@material-ui/icons';
 import React, { PureComponent } from 'react';
 import { SketchPicker } from 'react-color';
 
-import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import AppStore from '$stores/AppStore';
+import { changeCourseColor, changeCustomEventColor } from '../actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '../analytics';
+import AppStore from '../stores/AppStore';
 
 interface ColorPickerProps {
     color: string;
@@ -51,7 +51,7 @@ class ColorPicker extends PureComponent<ColorPickerProps> {
             if (this.props.isCustomEvent && this.props.customEventID)
                 changeCustomEventColor(this.props.customEventID, this.state.color);
             else if (this.props.sectionCode && this.props.term)
-                changeCourseColor(this.props.sectionCode, this.props.term, this.state.color);
+                changeCourseColor(this.props.sectionCode, this.state.color, this.props.term);
         });
     };
 

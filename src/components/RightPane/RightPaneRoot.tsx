@@ -1,9 +1,8 @@
-import { Paper, Tab, Tabs, Typography } from '@material-ui/core';
+import { Paper,Tab, Tabs, Typography } from '@material-ui/core';
 import { FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
 import React, { PureComponent, Suspense } from 'react';
 
-import { isDarkMode } from '$lib/helpers';
-
+import { isDarkMode } from '../../helpers';
 import AddedCoursePane from './AddedCourses/AddedCoursePane';
 import CoursePane from './CoursePane/CoursePaneRoot';
 import darkModeLoadingGif from './CoursePane/SearchForm/Gifs/dark-loading.gif';

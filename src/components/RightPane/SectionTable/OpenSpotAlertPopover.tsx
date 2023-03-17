@@ -1,12 +1,11 @@
 import { Button, Popover, TextField, Typography } from '@material-ui/core';
-import { Theme, withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { Theme,withStyles } from '@material-ui/core/styles';
+import { ClassNameMap,Styles } from '@material-ui/core/styles/withStyles';
 import React, { PureComponent } from 'react';
 import InputMask from 'react-input-mask';
 
-import { REGISTER_NOTIFICATIONS_ENDPOINT } from '$lib/api/endpoints';
-
 import { openSnackbar } from '../../../actions/AppStoreActions';
+import { REGISTER_NOTIFICATIONS_ENDPOINT } from '../../../api/endpoints';
 import RightPaneStore from '../RightPaneStore';
 
 const phoneNumberRegex = RegExp(/\d{10}/);

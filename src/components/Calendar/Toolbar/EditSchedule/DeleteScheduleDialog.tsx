@@ -7,14 +7,15 @@ import {
     DialogTitle,
     MenuItem,
 } from '@material-ui/core';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
-import { deleteSchedule } from '$actions/AppStoreActions';
-import { isDarkMode } from '$lib/helpers';
-import AppStore from '$stores/AppStore';
+import { deleteSchedule } from '../../../../actions/AppStoreActions';
+import { isDarkMode } from '../../../../helpers';
 
 interface DeleteScheduleDialogProps {
     onClose: () => void;
+    scheduleIndex: number;
+    scheduleNames: string[];
 }
 
 const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
@@ -30,20 +31,20 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
 
     const handleDelete = () => {
         props.onClose();
-        deleteSchedule();
+        deleteSchedule(props.scheduleIndex);
         setIsOpen(false);
     };
 
     return (
         <>
-            <MenuItem onClick={handleOpen} disabled={AppStore.schedule.getNumberOfSchedules() === 1}>
+            <MenuItem onClick={handleOpen} disabled={props.scheduleNames.length === 1}>
                 Delete Schedule
             </MenuItem>
             <Dialog open={isOpen}>
                 <DialogTitle>Delete Schedule</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Are you sure you want to delete {`"${AppStore.schedule.getCurrentScheduleName()}"`}?
+                        Are you sure you want to delete {`"${props.scheduleNames[props.scheduleIndex]}"`}?
                         <br />
                         <br />
                         You cannot undo this action.

@@ -73,14 +73,13 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
                     )}
                 >
                     <>
-                        {[
-                            // the keys here don't do anything they just make eslint happy.
-                            <SettingsMenu key="settings" />,
-                            <NotificationHub key="notifications" />,
-                            <ImportStudyList key="studylist" />,
-                            <Feedback key="feedback" />,
-                            <News key="news" />,
-                            <AboutPage key="about" />,
+                        {[// the keys here don't do anything they just make eslint happy.
+                            <SettingsMenu key="settings"/>,
+                            <NotificationHub key="notifications"/>,
+                            <ImportStudyList key="studylist"/>,
+                            <Feedback key="feedback"/>,
+                            <News key="news"/>,
+                            <AboutPage key="about"/>,
                         ].map((element, index) => (
                             <ConditionalWrapper
                                 key={index}

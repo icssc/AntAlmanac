@@ -2,10 +2,10 @@ import { Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Skeleton } from '@material-ui/lab';
-import { useState } from 'react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import React, { useState } from 'react';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer,XAxis, YAxis } from 'recharts';
 
-import { isDarkMode, queryGrades } from '$lib/helpers';
+import { isDarkMode,queryGrades } from '../../../helpers';
 
 const styles: Styles<Theme, object> = {
     button: {
@@ -34,7 +34,7 @@ interface GradesPopupProps {
 
 interface GradeData {
     name: string;
-    all: number;
+    all: number
 }
 
 const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }: GradesPopupProps) => {

@@ -1,7 +1,8 @@
-import { PureComponent } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@material-ui/core';
 import { Info } from '@material-ui/icons';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import React, { PureComponent } from 'react';
+
+import analyticsEnum, { logAnalytics } from '../../analytics';
 
 class AboutPage extends PureComponent {
     state: { isOpen: boolean } = {

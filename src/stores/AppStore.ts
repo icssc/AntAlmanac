@@ -1,17 +1,48 @@
 import { EventEmitter } from 'events';
 import { VariantType } from 'notistack';
 
-import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
-import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { SnackbarPosition } from '../components/AppBar/NotificationSnackbar';
+import { CalendarEvent, CourseEvent } from '../components/Calendar/CourseCalendarEvent';
+import { RepeatingCustomEvent } from '../components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { CourseData } from '../helpers';
+import { AASection } from '../peterportal.types';
+import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calenderizeHelpers';
 
-import { ScheduleCourse, ScheduleSaveState } from './schedule.types';
-import { Schedules } from './Schedules';
+export interface ShortCourseInfo {
+    color: string;
+    term: string;
+    sectionCode: string;
+    scheduleIndices: number[];
+}
+export interface UserData {
+    addedCourses: ShortCourseInfo[];
+    scheduleNames: string[];
+    customEvents: RepeatingCustomEvent[];
+}
+
+export interface AppStoreCourse {
+    color: string;
+    courseComment: string;
+    courseNumber: string; //i.e. 122a
+    courseTitle: string;
+    deptCode: string;
+    prerequisiteLink: string;
+    scheduleIndices: number[];
+    section: AASection;
+    term: string;
+}
+
+export interface AppStoreDeletedCourse extends AppStoreCourse {
+    scheduleIndex: number;
+}
 
 class AppStore extends EventEmitter {
-    schedule: Schedules;
+    currentScheduleIndex: number;
     customEvents: RepeatingCustomEvent[];
+    addedCourses: AppStoreCourse[];
+    addedSectionCodes: { [key: number]: Set<string> };
     colorPickers: { [key: string]: EventEmitter };
+    deletedCourses: AppStoreDeletedCourse[];
     snackbarMessage: string;
     snackbarVariant: VariantType;
     snackbarDuration: number;
@@ -20,14 +51,18 @@ class AppStore extends EventEmitter {
     theme: string;
     eventsInCalendar: CalendarEvent[];
     finalsEventsInCalendar: CourseEvent[];
+    scheduleNames: string[];
     unsavedChanges: boolean;
 
     constructor() {
         super();
         this.setMaxListeners(300); //this number is big because every section on the search results page listens to two events each.
+        this.currentScheduleIndex = 0;
         this.customEvents = [];
-        this.schedule = new Schedules();
+        this.addedCourses = [];
+        this.addedSectionCodes = { 0: new Set() };
         this.colorPickers = {};
+        this.deletedCourses = [];
         this.snackbarMessage = '';
         this.snackbarVariant = 'info';
         this.snackbarDuration = 3000;
@@ -36,6 +71,7 @@ class AppStore extends EventEmitter {
         this.eventsInCalendar = [];
         this.finalsEventsInCalendar = [];
         this.unsavedChanges = false;
+        this.scheduleNames = ['Schedule 1'];
         this.theme = (() => {
             // either 'light', 'dark', or 'auto'
             const theme = typeof Storage === 'undefined' ? 'auto' : window.localStorage.getItem('theme');
@@ -50,39 +86,64 @@ class AppStore extends EventEmitter {
     }
 
     getCurrentScheduleIndex() {
-        return this.schedule.getCurrentScheduleIndex();
+        return this.currentScheduleIndex;
     }
 
     getScheduleNames() {
-        return this.schedule.getScheduleNames();
+        return this.scheduleNames;
     }
 
     getAddedCourses() {
-        return this.schedule.getAllCourses();
+        return this.addedCourses;
+    }
+
+    addCourse(newCourse: AppStoreCourse) {
+        this.addedCourses = this.addedCourses.concat(newCourse);
+        this.updateAddedSectionCodes();
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
+        this.unsavedChanges = true;
+        this.emit('addedCoursesChange');
+    }
+
+    /**
+     * This gets run when you add the same section code to multiple schedules.
+     */
+    addSection(newSection: AppStoreCourse) {
+        this.addedCourses = this.addedCourses.map((course) => {
+            if (course.section.sectionCode === newSection.section.sectionCode) return newSection;
+            else return course;
+        });
+        this.updateAddedSectionCodes();
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
+        this.unsavedChanges = true;
+        this.emit('addedCoursesChange');
     }
 
     getCustomEvents() {
-        return this.schedule.getAllCustomEvents();
-    }
+        // Note: remove this forEach loop after Spring 2022 ends
+        this.customEvents.forEach((customEvent) => {
+            if (customEvent.days.length === 5) {
+                customEvent.days = [false, ...customEvent.days, false];
+            } else if (customEvent.days.length === 6) {
+                customEvent.days = [...customEvent.days, false];
+            }
+        });
 
-    addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
-        let addedCourse: ScheduleCourse;
-        if (scheduleIndex === this.schedule.getNumberOfSchedules()) {
-            addedCourse = this.schedule.addCourseToAllSchedules(newCourse);
-        } else {
-            addedCourse = this.schedule.addCourse(newCourse);
-        }
-        this.unsavedChanges = true;
-        this.emit('addedCoursesChange');
-        return addedCourse;
+        return this.customEvents;
     }
 
     getEventsInCalendar() {
-        return this.schedule.toCalendarizedEvents();
+        return this.eventsInCalendar;
     }
 
     getFinalEventsInCalendar() {
-        return this.schedule.toCalendarizedFinals();
+        return this.finalsEventsInCalendar;
+    }
+
+    getDeletedCourses() {
+        return this.deletedCourses;
     }
 
     getSnackbarMessage() {
@@ -110,11 +171,25 @@ class AppStore extends EventEmitter {
     }
 
     getAddedSectionCodes() {
-        return this.schedule.getAddedSectionCodes();
+        return this.addedSectionCodes;
     }
 
     hasUnsavedChanges() {
         return this.unsavedChanges;
+    }
+
+    updateAddedSectionCodes() {
+        this.addedSectionCodes = {};
+
+        for (let i = 0; i < this.scheduleNames.length; i++) {
+            this.addedSectionCodes[i] = new Set();
+        }
+
+        for (const course of this.addedCourses) {
+            for (const scheduleIndex of course.scheduleIndices) {
+                this.addedSectionCodes[scheduleIndex].add(`${course.section.sectionCode} ${course.term}`);
+            }
+        }
     }
 
     registerColorPicker(id: string, update: (color: string) => void) {
@@ -135,58 +210,71 @@ class AppStore extends EventEmitter {
         }
     }
 
-    deleteCourse(sectionCode: string, term: string) {
-        this.schedule.deleteCourse(sectionCode, term);
+    deleteCourse(addedCoursesAfterDelete: AppStoreCourse[], deletedCourses: AppStoreDeletedCourse[]) {
+        this.addedCourses = addedCoursesAfterDelete;
+        this.updateAddedSectionCodes();
+        this.deletedCourses = deletedCourses;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
         this.unsavedChanges = true;
         this.emit('addedCoursesChange');
     }
 
-    undoAction() {
-        this.schedule.revertState();
+    undoDelete(deletedCourses: AppStoreDeletedCourse[]) {
+        this.deletedCourses = deletedCourses;
         this.unsavedChanges = true;
-        this.emit('addedCoursesChange');
+    }
+
+    addCustomEvent(customEvent: RepeatingCustomEvent) {
+        this.customEvents = this.customEvents.concat(customEvent);
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
+        this.unsavedChanges = true;
         this.emit('customEventsChange');
+    }
+
+    editCustomEvent(customEventsAfterEdit: RepeatingCustomEvent[]) {
+        this.customEvents = customEventsAfterEdit;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
+        this.unsavedChanges = true;
+        this.emit('customEventsChange');
+    }
+
+    deleteCustomEvent(customEventsAfterDelete: RepeatingCustomEvent[]) {
+        this.customEvents = customEventsAfterDelete;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
+        this.unsavedChanges = true;
+        this.emit('customEventsChange');
+    }
+
+    changeCustomEventColor(
+        customEventsAfterColorChange: RepeatingCustomEvent[],
+        customEventID: number,
+        newColor: string
+    ) {
+        this.customEvents = customEventsAfterColorChange;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
+        this.unsavedChanges = true;
+        this.colorPickers[customEventID].emit('colorChange', newColor);
         this.emit('colorChange', false);
-        this.emit('scheduleNamesChange');
-        this.emit('currentScheduleIndexChange');
     }
 
-    addCustomEvent(customEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
-        this.schedule.addCustomEvent(customEvent, scheduleIndices);
-        this.unsavedChanges = true;
-        this.emit('customEventsChange');
-    }
-
-    editCustomEvent(editedCustomEvent: RepeatingCustomEvent, newScheduleIndices: number[]) {
-        this.schedule.editCustomEvent(editedCustomEvent, newScheduleIndices);
-        this.unsavedChanges = true;
-        this.emit('customEventsChange');
-    }
-
-    deleteCustomEvent(customEventId: number) {
-        this.schedule.deleteCustomEvent(customEventId);
-        this.unsavedChanges = true;
-        this.emit('customEventsChange');
-    }
-
-    changeCustomEventColor(customEventId: number, newColor: string) {
-        this.schedule.changeCustomEventColor(customEventId, newColor);
-        this.unsavedChanges = true;
-        this.colorPickers[customEventId].emit('colorChange', newColor);
-        this.emit('colorChange', false);
-    }
-
-    addSchedule(newScheduleName: string) {
+    addSchedule(newScheduleNames: string[]) {
         // If the user adds a schedule, update the array of schedule names, add
         // another key/value pair to keep track of the section codes for that schedule,
         // and redirect the user to the new schedule
-        this.schedule.addNewSchedule(newScheduleName);
+        this.scheduleNames = newScheduleNames;
+        this.addedSectionCodes[newScheduleNames.length - 1] = new Set();
+        this.currentScheduleIndex = newScheduleNames.length - 1;
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
     }
 
-    renameSchedule(scheduleName: string, scheduleIndex: number) {
-        this.schedule.renameSchedule(scheduleName, scheduleIndex);
+    renameSchedule(newScheduleNames: string[]) {
+        this.scheduleNames = newScheduleNames;
         this.emit('scheduleNamesChange');
     }
 
@@ -194,49 +282,70 @@ class AppStore extends EventEmitter {
         this.unsavedChanges = false;
     }
 
-    copySchedule(to: number) {
-        this.schedule.copySchedule(to);
+    copySchedule(addedCoursesAfterCopy: AppStoreCourse[], customEventsAfterCopy: RepeatingCustomEvent[]) {
+        this.addedCourses = addedCoursesAfterCopy;
+        this.updateAddedSectionCodes();
+        this.customEvents = customEventsAfterCopy;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
         this.unsavedChanges = true;
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
     }
 
-    async loadSchedule(savedSchedule: ScheduleSaveState) {
-        try {
-            await this.schedule.fromScheduleSaveState(savedSchedule);
-        } catch {
-            return false;
-        }
+    loadSchedule(userData: CourseData) {
+        this.addedCourses = userData.addedCourses;
+        this.scheduleNames = userData.scheduleNames;
+        this.updateAddedSectionCodes();
+        this.customEvents = userData.customEvents;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
         this.unsavedChanges = false;
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
         this.emit('scheduleNamesChange');
-        this.emit('currentScheduleIndexChange');
-        return true;
     }
 
     changeCurrentSchedule(newScheduleIndex: number) {
-        this.schedule.setCurrentScheduleIndex(newScheduleIndex);
+        this.currentScheduleIndex = newScheduleIndex;
         this.emit('currentScheduleIndexChange');
     }
 
-    clearSchedule() {
-        this.schedule.clearCurrentSchedule();
+    clearSchedule(addedCoursesAfterClear: AppStoreCourse[], customEventsAfterClear: RepeatingCustomEvent[]) {
+        this.addedCourses = addedCoursesAfterClear;
+        this.updateAddedSectionCodes();
+        this.customEvents = customEventsAfterClear;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
         this.unsavedChanges = true;
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
     }
 
-    deleteSchedule() {
-        this.schedule.deleteCurrentSchedule();
+    deleteSchedule(
+        newScheduleNames: string[],
+        newAddedCourses: AppStoreCourse[],
+        newCustomEvents: RepeatingCustomEvent[],
+        newScheduleIndex: number
+    ) {
+        this.scheduleNames = newScheduleNames;
+        this.addedCourses = newAddedCourses;
+        this.updateAddedSectionCodes();
+        this.customEvents = newCustomEvents;
+        this.currentScheduleIndex = newScheduleIndex;
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
     }
 
-    changeCourseColor(sectionCode: string, term: string, newColor: string) {
-        this.schedule.changeCourseColor(sectionCode, term, newColor);
+    changeCourseColor(addedCoursesAfterColorChange: AppStoreCourse[], sectionCode: string, newColor: string) {
+        this.addedCourses = addedCoursesAfterColorChange;
+        this.updateAddedSectionCodes();
+        this.finalsEventsInCalendar = calendarizeFinals();
+        this.eventsInCalendar = [...calendarizeCourseEvents(), ...calendarizeCustomEvents()];
         this.unsavedChanges = true;
         this.colorPickers[sectionCode].emit('colorChange', newColor);
         this.emit('colorChange', false);

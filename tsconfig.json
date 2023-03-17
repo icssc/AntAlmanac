@@ -13,16 +13,7 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
-        "jsx": "react-jsx",
-        "baseUrl": ".",
-        "paths": {
-            "$actions/*": ["src/actions/*"],
-            "$api/*": ["src/api/*"],
-            "$components/*": ["src/components/*"],
-            "$lib/*": ["src/lib/*"],
-            "$providers/*": ["src/providers/*"],
-            "$routes/*": ["src/routes/*"],
-            "$stores/*": ["src/stores/*"],
-        }
+        "jsx": "react"
     },
+    "include": ["src"]
 }

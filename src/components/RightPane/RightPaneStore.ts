@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
-import { getDefaultTerm } from '$lib/termData';
+
+import { getDefaultTerm } from '../../termData';
 
 const defaultFormValues: Record<string, string> = {
     deptValue: 'ALL',
