@@ -315,12 +315,22 @@ export default class UCIMap extends PureComponent {
             </MapMarker>
         );
 
-        this.setState({
-            lat: lat + 0.001, // Off-centered to show the popup
-            lng: lng,
-            zoom: 17,
-            selectedMarker: marker,
-        });
+        const setMarkerCallback = () => {
+            this.setState({
+                selectedMarker: marker,
+            });
+        };
+
+        // Clear the marker first before setting the new one so that it pops up
+        this.setState(
+            {
+                selectedMarker: null,
+                lat: lat + 0.001, // Off-centered to show the popup
+                lng: lng,
+                zoom: 17,
+            },
+            setMarkerCallback
+        );
     };
 
     selectBuilding = (buildingFocusInfo: BuildingFocusInfo) => {
