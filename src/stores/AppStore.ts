@@ -1,12 +1,11 @@
 import { EventEmitter } from 'events';
 import { VariantType } from 'notistack';
 
+import { ScheduleCourse, ScheduleSaveState } from './schedule.types';
+import { Schedules } from './Schedules';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-
-import { ScheduleCourse, ScheduleSaveState } from './schedule.types';
-import { Schedules } from './Schedules';
 
 class AppStore extends EventEmitter {
     schedule: Schedules;

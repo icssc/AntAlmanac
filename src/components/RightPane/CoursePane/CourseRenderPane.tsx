@@ -5,11 +5,6 @@ import CloseIcon from '@material-ui/icons/Close';
 import React, { PureComponent } from 'react';
 import LazyLoad from 'react-lazyload';
 
-import analyticsEnum from '$lib/analytics';
-import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '$lib/helpers';
-import { AACourse, AASection, Department, School, WebsocResponse } from '$lib/peterportal.types';
-import AppStore from '$stores/AppStore';
-
 import RightPaneStore from '../RightPaneStore';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
@@ -18,6 +13,10 @@ import darkModeLoadingGif from './SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './SearchForm/Gifs/loading.gif';
 import darkNoNothing from './static/dark-no_results.png';
 import noNothing from './static/no_results.png';
+import AppStore from '$stores/AppStore';
+import { AACourse, AASection, Department, School, WebsocResponse } from '$lib/peterportal.types';
+import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '$lib/helpers';
+import analyticsEnum from '$lib/analytics';
 
 const styles: Styles<Theme, object> = (theme) => ({
     course: {

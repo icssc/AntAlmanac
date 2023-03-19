@@ -9,10 +9,6 @@ import React, { PureComponent } from 'react';
 // @ts-ignore
 import { LeafletContext, Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { FAKE_LOCATIONS } from '$lib/helpers';
-import AppStore from '$stores/AppStore';
-
 import { CalendarEvent, CourseEvent } from '../../Calendar/CourseCalendarEvent';
 import RightPaneStore, { BuildingFocusInfo } from '../RightPaneStore';
 import locations from '../SectionTable/static/locations.json';
@@ -21,6 +17,9 @@ import MapMenu from './MapMenu';
 import Building from './static/building';
 import buildingCatalogue from './static/buildingCatalogue';
 import { Coord, MapBoxResponse } from './static/mapbox';
+import AppStore from '$stores/AppStore';
+import { FAKE_LOCATIONS } from '$lib/helpers';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 // TODO investigate less jank ways of doing this if at all possible
 

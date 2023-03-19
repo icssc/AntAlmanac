@@ -5,15 +5,14 @@ import classNames from 'classnames';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
 import { Fragment, useEffect, useState } from 'react';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
-import { AASection, EnrollmentCount, Meeting } from '$lib/peterportal.types';
-import AppStore from '$stores/AppStore';
-
 import RightPaneStore from '../RightPaneStore';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import restrictionsMapping from './static/restrictionsMapping.json';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
+import { AASection, EnrollmentCount, Meeting } from '$lib/peterportal.types';
+import AppStore from '$stores/AppStore';
 
 const styles: Styles<Theme, object> = (theme) => ({
     popover: {

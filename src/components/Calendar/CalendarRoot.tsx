@@ -8,10 +8,9 @@ import moment from 'moment';
 import { PureComponent, SyntheticEvent } from 'react';
 import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
 
-import AppStore from '$stores/AppStore';
-
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
+import AppStore from '$stores/AppStore';
 
 const localizer = momentLocalizer(moment);
 
