@@ -31,5 +31,8 @@ settings:
 globals:
     React: true
 
+rules:
+    import/order: error
+
 ignorePatterns:
     - 'vite.config.ts'
