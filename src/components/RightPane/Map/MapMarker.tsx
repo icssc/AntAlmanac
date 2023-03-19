@@ -91,7 +91,7 @@ const MapMarker = ({
     }
 
     useEffect(() => {
-        _openPopup(markerRef);
+        if (openPopup) _openPopup(markerRef);
     }, [markerRef, openPopup, lat, lng, location]);
 
     return (
