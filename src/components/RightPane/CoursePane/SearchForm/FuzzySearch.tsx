@@ -3,9 +3,8 @@ import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Au
 import { ChangeEvent, PureComponent } from 'react';
 import search, { SearchResult } from 'websoc-fuzzy-search';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-
 import RightPaneStore from '../../RightPaneStore';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 const emojiMap: Record<string, string> = {
     GE_CATEGORY: '🏫', // U+1F3EB :school:

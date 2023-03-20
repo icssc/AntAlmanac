@@ -1,25 +1,25 @@
-import { Popover, TableCell, TableRow, Theme, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
+import { Button, Popover, TableCell, TableRow, Theme, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
 import { Fragment, useEffect, useState } from 'react';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
-import { AASection, EnrollmentCount, Meeting } from '$lib/peterportal.types';
-import AppStore from '$stores/AppStore';
-
 import RightPaneStore from '../RightPaneStore';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import restrictionsMapping from './static/restrictionsMapping.json';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
+import { AASection, EnrollmentCount, Meeting } from '$lib/peterportal.types';
+import AppStore from '$stores/AppStore';
 
 const styles: Styles<Theme, object> = (theme) => ({
     popover: {
         pointerEvents: 'none',
     },
     sectionCode: {
+        padding: 0,
         display: 'inline-block',
         cursor: 'pointer',
         '&:hover': {
@@ -95,7 +95,8 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             <Tooltip title="Click to copy course code" placement="bottom" enterDelay={300}>
-                <div
+                <Button
+                    size="small"
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);
                         logAnalytics({
@@ -106,7 +107,7 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
                     className={classes.sectionCode}
                 >
                     {sectionCode}
-                </div>
+                </Button>
             </Tooltip>
         </NoPaddingTableCell>
     );

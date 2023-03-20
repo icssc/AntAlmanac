@@ -1,17 +1,16 @@
-import { IconButton, Paper, Tooltip } from '@material-ui/core';
+import { Button, IconButton, Paper, Tooltip } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
 import { Event } from 'react-big-calendar';
 
+import RightPaneStore, { BuildingFocusInfo } from '../RightPane/RightPaneStore';
+import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
-
-import RightPaneStore, { BuildingFocusInfo } from '../RightPane/RightPaneStore';
-import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 
 const styles: Styles<Theme, object> = {
     courseContainer: {
@@ -145,18 +144,19 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         <tr>
                             <td className={classes.alignToTop}>Section code</td>
                             <Tooltip title="Click to copy course code" placement="right">
-                                {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
-                                <td
-                                    onClick={(e) => {
-                                        logAnalytics({
-                                            category: analyticsEnum.calendar.title,
-                                            action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
-                                        });
-                                        clickToCopy(e, sectionCode);
-                                    }}
-                                    className={classes.rightCells}
-                                >
-                                    <u>{sectionCode}</u>
+                                <td className={classes.rightCells}>
+                                    <Button
+                                        size="small"
+                                        onClick={(e) => {
+                                            logAnalytics({
+                                                category: analyticsEnum.calendar.title,
+                                                action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
+                                            });
+                                            clickToCopy(e, sectionCode);
+                                        }}
+                                    >
+                                        <u>{sectionCode}</u>
+                                    </Button>
                                 </td>
                             </Tooltip>
                         </tr>
@@ -202,7 +202,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     } else {
         const { title, customEventID } = courseInMoreInfo;
         return (
-            <Paper className={classes.customEventContainer} onClick={(event) => event.stopPropagation()}>
+            <Paper className={classes.customEventContainer}>
                 <div className={classes.title}>{title}</div>
                 <div className={classes.buttonBar}>
                     <div className={`${classes.colorPicker}`}>
