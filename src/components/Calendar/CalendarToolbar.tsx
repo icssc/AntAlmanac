@@ -12,7 +12,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import ConditionalWrapper from '../ConditionalWrapper';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import EditSchedule from './Toolbar/EditSchedule/EditSchedule';
-import ScheduleDialog from './Toolbar/EditSchedule/ScheduleDialog';
+import ScheduleDialog from './Toolbar/EditSchedule/ScheduleNameDialog';
 import ExportCalendar from './Toolbar/ExportCalendar';
 import ScreenshotButton from './Toolbar/ScreenshotButton';
 

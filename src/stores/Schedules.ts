@@ -41,10 +41,18 @@ export class Schedules {
     private currentScheduleIndex: number;
     private previousStates: ScheduleUndoState[];
 
+    // We do not want schedule notes to be undone; to avoid this,
+    // we keep track of every schedule note in an object where each key
+    // is a unique ID and each value is the most recent schedule note.
+    private scheduleNoteMap: { [key: number]: string };
+    private currentScheduleNoteId: number;
+
     constructor() {
-        this.schedules = [{ scheduleName: 'Schedule 1', courses: [], customEvents: [], scheduleNote: '' }];
+        this.schedules = [{ scheduleName: 'Schedule 1', courses: [], customEvents: [], scheduleNoteId: 0 }];
         this.currentScheduleIndex = 0;
         this.previousStates = [];
+        this.scheduleNoteMap = { 0: '' };
+        this.currentScheduleNoteId = 1;
     }
 
     // --- Schedule index methods ---
@@ -79,25 +87,26 @@ export class Schedules {
     /**
      * Creates an empty schedule
      */
-    addNewSchedule(newScheduleName: string, newScheduleNote: string) {
+    addNewSchedule(newScheduleName: string) {
         this.addUndoState();
         this.schedules.push({
             scheduleName: newScheduleName,
             courses: [],
             customEvents: [],
-            scheduleNote: newScheduleNote,
+            scheduleNoteId: this.currentScheduleNoteId,
         });
         // Setting schedule index manually otherwise 2 undo states are added
         this.currentScheduleIndex = this.getNumberOfSchedules() - 1;
+        this.scheduleNoteMap[this.currentScheduleNoteId] = '';
+        this.currentScheduleNoteId++;
     }
 
     /**
-     * Edits schedule name and schedule note at index
+     * Edits schedule name at index
      */
-    editSchedule(newScheduleName: string, newScheduleNote: string, scheduleIndex: number) {
+    renameSchedule(newScheduleName: string, scheduleIndex: number) {
         this.addUndoState();
         this.schedules[scheduleIndex].scheduleName = newScheduleName;
-        this.schedules[scheduleIndex].scheduleNote = newScheduleNote;
     }
 
     /**
@@ -399,6 +408,7 @@ export class Schedules {
         if (this.previousStates.length >= 50) {
             this.previousStates.shift();
         }
+        console.log(this.scheduleNoteMap);
     }
 
     /**
@@ -408,20 +418,6 @@ export class Schedules {
     revertState() {
         const state = this.previousStates.pop();
         if (state !== undefined) {
-            // If the undo state has more schedules than the current schedule list, that means a schedule
-            // was deleted. We need to make sure that we assign the correct schedule note for each schedule,
-            // so we need to insert the deleted schedule back. The deleted schedule has the index state.scheduleIndex
-            // since we can only delete the current schedule.
-            if (state.schedules.length > this.getNumberOfSchedules()) {
-                this.schedules.splice(state.scheduleIndex, 0, state.schedules[state.scheduleIndex]);
-            }
-
-            // This loop updates every schedule note in the undo state to the current schedule's
-            // schedule notes; this makes sure schedules notes are not undone.
-            state.schedules.forEach((schedule, i) => {
-                schedule.scheduleNote = this.schedules[i].scheduleNote;
-            });
-
             this.schedules = state.schedules;
             this.currentScheduleIndex = state.scheduleIndex;
         }
@@ -442,7 +438,7 @@ export class Schedules {
                         sectionCode: course.section.sectionCode,
                     };
                 }),
-                scheduleNote: schedule.scheduleNote,
+                scheduleNote: this.scheduleNoteMap[schedule.scheduleNoteId],
             };
         });
         return { schedules: shortSchedules, scheduleIndex: this.currentScheduleIndex };
@@ -457,14 +453,6 @@ export class Schedules {
         try {
             this.schedules.length = 0;
             this.currentScheduleIndex = saveState.scheduleIndex;
-
-            // If this is a schedule that was saved before schedule notes were implemented,
-            // just give each schedule an empty schedule note
-            saveState.schedules.forEach((schedule: ShortCourseSchedule, index: number) => {
-                if (!('scheduleNote' in schedule)) {
-                    saveState.schedules[index].scheduleNote = '';
-                }
-            });
 
             // Get a dictionary of all unique courses
             const courseDict: { [key: string]: Set<string> } = {};
@@ -526,11 +514,26 @@ export class Schedules {
                         });
                     }
                 }
+
+                if (!('scheduleNote' in shortCourseSchedule)) {
+                    // If this is a schedule that was saved before schedule notes were implemented,
+                    // just give each schedule an empty schedule note
+                    this.scheduleNoteMap[this.currentScheduleNoteId] = '';
+                } else {
+                    this.scheduleNoteMap[this.currentScheduleNoteId] = shortCourseSchedule.scheduleNote;
+                }
+
                 this.schedules.push({
-                    ...shortCourseSchedule,
-                    courses,
+                    scheduleName: shortCourseSchedule.scheduleName,
+                    courses: courses,
+                    customEvents: shortCourseSchedule.customEvents,
+                    scheduleNoteId: this.currentScheduleNoteId,
                 });
+
+                this.currentScheduleNoteId++;
             }
+
+            console.log(this.scheduleNoteMap);
         } catch (e) {
             this.revertState();
             throw new Error('Unable to load schedule');
@@ -538,10 +541,12 @@ export class Schedules {
     }
 
     getCurrentScheduleNote() {
-        return this.schedules[this.currentScheduleIndex].scheduleNote;
+        const scheduleNoteId = this.schedules[this.currentScheduleIndex].scheduleNoteId;
+        return this.scheduleNoteMap[scheduleNoteId];
     }
 
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
-        this.schedules[scheduleIndex].scheduleNote = newScheduleNote;
+        const scheduleNoteId = this.schedules[scheduleIndex].scheduleNoteId;
+        this.scheduleNoteMap[scheduleNoteId] = newScheduleNote;
     }
 }

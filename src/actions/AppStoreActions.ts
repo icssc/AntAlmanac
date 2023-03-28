@@ -229,12 +229,12 @@ export const toggleTheme = (radioGroupEvent: React.ChangeEvent<HTMLInputElement>
     });
 };
 
-export const addSchedule = (scheduleName: string, scheduleNote: string) => {
-    AppStore.addSchedule(scheduleName, scheduleNote);
+export const addSchedule = (scheduleName: string) => {
+    AppStore.addSchedule(scheduleName);
 };
 
-export const editSchedule = (scheduleName: string, scheduleNote: string, scheduleIndex: number) => {
-    AppStore.editSchedule(scheduleName, scheduleNote, scheduleIndex);
+export const renameSchedule = (scheduleName: string, scheduleIndex: number) => {
+    AppStore.renameSchedule(scheduleName, scheduleIndex);
 };
 
 export const deleteSchedule = () => {

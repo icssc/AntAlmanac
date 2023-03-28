@@ -29,9 +29,9 @@ CalendarRoot
             ScheduleSelector
         ScreenshotButton
         ExportCalendar
-        ScheduleDialog (reused below)
+        ScheduleNameDialog (reused below)
         EditSchedule
-            ScheduleDialog (reused above)
+            ScheduleNameDialog (reused above)
             DeleteScheduleDialog
 */
 

@@ -18,7 +18,7 @@ export interface Schedule {
     scheduleName: string;
     courses: ScheduleCourse[];
     customEvents: RepeatingCustomEvent[];
-    scheduleNote: string;
+    scheduleNoteId: number;
 }
 
 interface ShortCourse {

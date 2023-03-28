@@ -181,18 +181,18 @@ class AppStore extends EventEmitter {
         this.emit('colorChange', false);
     }
 
-    addSchedule(newScheduleName: string, newScheduleNote: string) {
+    addSchedule(newScheduleName: string) {
         // If the user adds a schedule, update the array of schedule names, add
         // another key/value pair to keep track of the section codes for that schedule,
         // and redirect the user to the new schedule
-        this.schedule.addNewSchedule(newScheduleName, newScheduleNote);
+        this.schedule.addNewSchedule(newScheduleName);
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
     }
 
-    editSchedule(scheduleName: string, scheduleNote: string, scheduleIndex: number) {
-        this.schedule.editSchedule(scheduleName, scheduleNote, scheduleIndex);
+    renameSchedule(scheduleName: string, scheduleIndex: number) {
+        this.schedule.renameSchedule(scheduleName, scheduleIndex);
         this.emit('scheduleNamesChange');
         this.emit('scheduleNotesChange');
     }
