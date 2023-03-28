@@ -5,7 +5,7 @@ import { Edit } from '@material-ui/icons';
 import React, { useState } from 'react';
 
 import DeleteScheduleDialog from './DeleteScheduleDialog';
-import ScheduleDialog from './ScheduleNameDialog';
+import ScheduleNameDialog from './ScheduleNameDialog';
 
 const styles = () => ({
     editButton: {
@@ -53,7 +53,7 @@ const EditSchedule = (props: EditScheduleProps) => {
                     horizontal: 'left',
                 }}
             >
-                <ScheduleDialog
+                <ScheduleNameDialog
                     scheduleNames={scheduleNames}
                     scheduleRenameIndex={scheduleIndex}
                     onClose={handleClose}
