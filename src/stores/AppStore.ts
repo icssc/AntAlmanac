@@ -194,7 +194,6 @@ class AppStore extends EventEmitter {
     renameSchedule(scheduleName: string, scheduleIndex: number) {
         this.schedule.renameSchedule(scheduleName, scheduleIndex);
         this.emit('scheduleNamesChange');
-        this.emit('scheduleNotesChange');
     }
 
     saveSchedule() {

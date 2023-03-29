@@ -102,7 +102,7 @@ export class Schedules {
     }
 
     /**
-     * Edits schedule name at index
+     * Renames schedule at index
      */
     renameSchedule(newScheduleName: string, scheduleIndex: number) {
         this.addUndoState();
@@ -408,7 +408,6 @@ export class Schedules {
         if (this.previousStates.length >= 50) {
             this.previousStates.shift();
         }
-        console.log(this.scheduleNoteMap);
     }
 
     /**
@@ -515,12 +514,12 @@ export class Schedules {
                     }
                 }
 
-                if (!('scheduleNote' in shortCourseSchedule)) {
+                if ('scheduleNote' in shortCourseSchedule) {
+                    this.scheduleNoteMap[this.currentScheduleNoteId] = shortCourseSchedule.scheduleNote;
+                } else {
                     // If this is a schedule that was saved before schedule notes were implemented,
                     // just give each schedule an empty schedule note
                     this.scheduleNoteMap[this.currentScheduleNoteId] = '';
-                } else {
-                    this.scheduleNoteMap[this.currentScheduleNoteId] = shortCourseSchedule.scheduleNote;
                 }
 
                 this.schedules.push({
@@ -532,8 +531,6 @@ export class Schedules {
 
                 this.currentScheduleNoteId++;
             }
-
-            console.log(this.scheduleNoteMap);
         } catch (e) {
             this.revertState();
             throw new Error('Unable to load schedule');
