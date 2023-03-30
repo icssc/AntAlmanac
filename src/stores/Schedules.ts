@@ -45,14 +45,15 @@ export class Schedules {
     // we keep track of every schedule note in an object where each key
     // is a unique ID and each value is the most recent schedule note.
     private scheduleNoteMap: { [key: number]: string };
-    private currentScheduleNoteId: number;
 
     constructor() {
-        this.schedules = [{ scheduleName: 'Schedule 1', courses: [], customEvents: [], scheduleNoteId: 0 }];
+        const scheduleNoteId = Math.random();
+        this.schedules = [
+            { scheduleName: 'Schedule 1', courses: [], customEvents: [], scheduleNoteId: scheduleNoteId },
+        ];
         this.currentScheduleIndex = 0;
         this.previousStates = [];
-        this.scheduleNoteMap = { 0: '' };
-        this.currentScheduleNoteId = 1;
+        this.scheduleNoteMap = { [scheduleNoteId]: '' };
     }
 
     // --- Schedule index methods ---
@@ -89,16 +90,16 @@ export class Schedules {
      */
     addNewSchedule(newScheduleName: string) {
         this.addUndoState();
+        const scheduleNoteId = Math.random();
         this.schedules.push({
             scheduleName: newScheduleName,
             courses: [],
             customEvents: [],
-            scheduleNoteId: this.currentScheduleNoteId,
+            scheduleNoteId: scheduleNoteId,
         });
         // Setting schedule index manually otherwise 2 undo states are added
         this.currentScheduleIndex = this.getNumberOfSchedules() - 1;
-        this.scheduleNoteMap[this.currentScheduleNoteId] = '';
-        this.currentScheduleNoteId++;
+        this.scheduleNoteMap[scheduleNoteId] = '';
     }
 
     /**
@@ -514,22 +515,21 @@ export class Schedules {
                     }
                 }
 
+                const scheduleNoteId = Math.random();
                 if ('scheduleNote' in shortCourseSchedule) {
-                    this.scheduleNoteMap[this.currentScheduleNoteId] = shortCourseSchedule.scheduleNote;
+                    this.scheduleNoteMap[scheduleNoteId] = shortCourseSchedule.scheduleNote;
                 } else {
                     // If this is a schedule that was saved before schedule notes were implemented,
                     // just give each schedule an empty schedule note
-                    this.scheduleNoteMap[this.currentScheduleNoteId] = '';
+                    this.scheduleNoteMap[scheduleNoteId] = '';
                 }
 
                 this.schedules.push({
                     scheduleName: shortCourseSchedule.scheduleName,
                     courses: courses,
                     customEvents: shortCourseSchedule.customEvents,
-                    scheduleNoteId: this.currentScheduleNoteId,
+                    scheduleNoteId: scheduleNoteId,
                 });
-
-                this.currentScheduleNoteId++;
             }
         } catch (e) {
             this.revertState();
