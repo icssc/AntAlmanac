@@ -112,6 +112,10 @@ class AppStore extends EventEmitter {
         return this.schedule.getAddedSectionCodes();
     }
 
+    getCurrentScheduleNote() {
+        return this.schedule.getCurrentScheduleNote();
+    }
+
     hasUnsavedChanges() {
         return this.unsavedChanges;
     }
@@ -148,6 +152,7 @@ class AppStore extends EventEmitter {
         this.emit('colorChange', false);
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
     }
 
     addCustomEvent(customEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
@@ -182,6 +187,7 @@ class AppStore extends EventEmitter {
         this.schedule.addNewSchedule(newScheduleName);
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
     }
 
     renameSchedule(scheduleName: string, scheduleIndex: number) {
@@ -211,12 +217,14 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
         return true;
     }
 
     changeCurrentSchedule(newScheduleIndex: number) {
         this.schedule.setCurrentScheduleIndex(newScheduleIndex);
         this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
     }
 
     clearSchedule() {
@@ -232,6 +240,7 @@ class AppStore extends EventEmitter {
         this.emit('currentScheduleIndexChange');
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
+        this.emit('scheduleNotesChange');
     }
 
     changeCourseColor(sectionCode: string, term: string, newColor: string) {
@@ -260,6 +269,11 @@ class AppStore extends EventEmitter {
         this.theme = theme;
         this.emit('themeToggle');
         window.localStorage.setItem('theme', theme);
+    }
+
+    updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
+        this.schedule.updateScheduleNote(newScheduleNote, scheduleIndex);
+        this.emit('scheduleNotesChange');
     }
 }
 

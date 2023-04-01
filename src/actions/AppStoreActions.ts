@@ -240,3 +240,7 @@ export const renameSchedule = (scheduleName: string, scheduleIndex: number) => {
 export const deleteSchedule = () => {
     AppStore.deleteSchedule();
 };
+
+export const updateScheduleNote = (newScheduleNote: string, scheduleIndex: number) => {
+    AppStore.updateScheduleNote(newScheduleNote, scheduleIndex);
+};
