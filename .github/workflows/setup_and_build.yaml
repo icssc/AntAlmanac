@@ -89,9 +89,17 @@ jobs:
           echo "frontendStack=$frontendStack" >> $GITHUB_OUTPUT
           echo "apiSubDomain=$apiSubDomain" >> $GITHUB_OUTPUT
 
-      - name: upload build artifcats
+      - name: upload cdk artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.sha }}
+          name: ${{ github.sha }}-cdk
           path: apps/cdk/cdk.out
           retention-days: 1
+
+      - name: upload website artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.sha }}-website
+          path: apps/antalmanac/build
+          retention-days: 1
+

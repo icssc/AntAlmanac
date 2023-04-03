@@ -24,7 +24,7 @@ jobs:
       - name: download build artifacts
         uses: actions/download-artifact@v3
         with:
-          name: ${{ github.sha }}
+          name: ${{ github.sha }}-cdk
           path: cdk.out
 
       - name: configure AWS credentials
