@@ -26,14 +26,14 @@ jobs:
     uses: ./.github/workflows/deploy_stack.yaml
     secrets: inherit
     with:
-      stack_name: ${{ needs.setup_and_build.outputs.backendStack }}
+      stack_name: antalmanac-backend-staging-${{ github.event.pull_request.number }}
 
   deploy_frontend:
     needs: setup_and_build
     uses: ./.github/workflows/deploy_stack.yaml
     secrets: inherit
     with:
-      stack_name: ${{ needs.setup_and_build.outputs.frontendStack }}
+      stack_name: antalmanac-frontend-staging-${{ github.event.pull_request.number }}
 
   comment_staging_url:
     needs: [ setup_and_build, deploy_frontend ]

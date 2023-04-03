@@ -3,10 +3,6 @@ name: Checkout and build AntAlmanac
 on:
   workflow_call:
     outputs:
-      backendStack:
-        value: ${{ jobs.setup_and_build.outputs.backendStack }}
-      frontendStack:
-        value: ${{ jobs.setup_and_build.outputs.frontendStack }}
       apiSubDomain:
         value: ${{ jobs.setup_and_build.outputs.apiSubDomain }}
 
@@ -14,8 +10,6 @@ jobs:
   setup_and_build:
     runs-on: ubuntu-latest
     outputs:
-      backendStack: ${{ steps.write-output.outputs.backendStack }}
-      frontendStack: ${{ steps.write-output.outputs.frontendStack }}
       apiSubDomain: ${{ steps.write-output.outputs.apiSubDomain }}
 
     steps:
@@ -68,26 +62,9 @@ jobs:
           TURBO_TEAM: "team_antalmanac"
         run: npx turbo build
 
-      - name: get stack names
-        run: |
-          stacks=$(npx cdk list --app 'cdk.out')
-          if [[ $(echo "$stacks" | wc -l) -eq 1 ]]; then
-            frontendStack=$stacks
-            echo "Only one stack defined, assuming it's the frontend stack: $frontendStack"
-          else
-            { read -r backendStack; read -r frontendStack; } <<< "$stacks"
-            echo "Both stacks defined: backend: $backendStack and frontend: $frontendStack"
-          fi
-          echo "frontendStack=$frontendStack" >> $GITHUB_ENV
-          echo "backendStack=$backendStack" >> $GITHUB_ENV
-        working-directory: apps/cdk
-
       - name: write env variables to output
         id: write-output
-        run: |
-          echo "backendStack=$backendStack" >> $GITHUB_OUTPUT
-          echo "frontendStack=$frontendStack" >> $GITHUB_OUTPUT
-          echo "apiSubDomain=$apiSubDomain" >> $GITHUB_OUTPUT
+        run: echo "apiSubDomain=$apiSubDomain" >> $GITHUB_OUTPUT
 
       - name: upload cdk artifacts
         uses: actions/upload-artifact@v3
