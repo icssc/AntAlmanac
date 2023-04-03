@@ -52,7 +52,7 @@ class LocateControl extends PureComponent<{ leaflet: LeafletContext }> {
 const LocateControlLeaflet = withLeaflet(LocateControl);
 
 const DAYS = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+const ACCESS_TOKEN = 'pk.eyJ1IjoicGVkcmljIiwiYSI6ImNsZzE0bjk2ajB0NHEzanExZGFlbGpwazIifQ.l14rgv5vmu5wIMgOUUhUXw';
 const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
 const DIRECTIONS_ENDPOINT = 'https://api.mapbox.com/directions/v5/mapbox/walking/';
