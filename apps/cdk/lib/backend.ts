@@ -1,12 +1,12 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import {RemovalPolicy, Stack, StackProps} from 'aws-cdk-lib';
+import {Construct} from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as dynamnodb from 'aws-cdk-lib/aws-dynamodb'
-import { transformUrl } from './helpers';
+import {transformUrl} from './helpers';
 
 export interface BackendProps extends StackProps {
     stage: string;
@@ -22,7 +22,8 @@ export default class BackendStack extends Stack {
 
         const userDataDDB = new dynamnodb.Table(this, `antalmanac-userdata-ddb-${props.stage}`, {
             partitionKey: { name: 'id', type: dynamnodb.AttributeType.STRING },
-            billingMode: dynamnodb.BillingMode.PAY_PER_REQUEST
+            billingMode: dynamnodb.BillingMode.PAY_PER_REQUEST,
+            removalPolicy: props.stage === 'dev' || props.stage === 'prod' ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY
         })
 
         const api = new lambda.Function(this, `antalmanac-api-${props.stage}-lambda`, {

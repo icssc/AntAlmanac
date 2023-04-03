@@ -79,4 +79,3 @@ jobs:
           name: ${{ github.sha }}-website
           path: apps/antalmanac/build
           retention-days: 1
-

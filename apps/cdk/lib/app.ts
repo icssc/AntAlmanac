@@ -54,15 +54,15 @@ else {
     for (const [stage, region] of Object.entries(stages)) {
         const env: Environment = {region: region}
 
-        new BackendStack(app, `antalmanac-backend-${stage}`, {
+        new BackendStack(app, `${stage}-${region}-Backend`, {
             env,
             stage,
             certificateArn: process.env.CERTIFICATE_ARN,
             hostedZoneId: process.env.HOSTED_ZONE_ID,
             mongoDbUriProd: process.env.MONGODB_URI_PROD,
         })
-        if (stage === 'alpha') {
-            new FrontendStack(app, `antalmanac-frontend-${stage}`, {
+        if (stage !== 'prod') {
+            new FrontendStack(app, `${stage}-${region}-Frontend`, {
                 env,
                 stage,
                 certificateArn: process.env.CERTIFICATE_ARN,

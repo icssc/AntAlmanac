@@ -16,16 +16,31 @@ jobs:
     uses: ./.github/workflows/setup_and_build.yaml
     secrets: inherit
 
-  deploy_backend:
+  deploy_dev_backend:
     needs: setup_and_build
     uses: ./.github/workflows/deploy_stack.yaml
     secrets: inherit
     with:
-      stack_name: ${{ needs.setup_and_build.outputs.backendStack }}
+      # stack_name: dev-us-east-1-Backend
+      stack_name: alpha-us-west-1-Backend
 
-  deploy_frontend:
+  deploy_dev_frontend:
     needs: setup_and_build
     uses: ./.github/workflows/deploy_stack.yaml
     secrets: inherit
     with:
-      stack_name: ${{ needs.setup_and_build.outputs.frontendStack }}
+      # stack_name: dev-us-east-1-Frontend
+      stack_name: alpha-us-west-1-Frontend
+
+  deploy_prod_backend:
+    needs: setup_and_build
+    uses: ./.github/workflows/deploy_stack.yaml
+    secrets: inherit
+    with:
+      # stack_name: prod-us-west-1-Backend
+      stack_name: just-a-test
+
+  deploy_to_pages:
+    needs: setup_and_build
+    uses: ./.github/workflows/deploy_pages.yaml
+    secrets: inherit
