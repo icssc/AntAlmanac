@@ -537,7 +537,10 @@ export class Schedules {
     }
 
     getCurrentScheduleNote() {
-        const scheduleNoteId = this.schedules[this.currentScheduleIndex].scheduleNoteId;
+        const scheduleNoteId = this.schedules[this.currentScheduleIndex]?.scheduleNoteId;
+        if (scheduleNoteId === undefined) {
+            return '';
+        }
         return this.scheduleNoteMap[scheduleNoteId];
     }
 
