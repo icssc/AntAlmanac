@@ -1,26 +1,25 @@
-import { Popover, TableCell, TableRow, Theme, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
+import { Button, Popover, TableCell, TableRow, Theme, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
 import { Fragment, useEffect, useState } from 'react';
 
+import RightPaneStore from '../RightPaneStore';
+import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
+import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
+import restrictionsMapping from './static/restrictionsMapping.json';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
 import { AASection, EnrollmentCount, Meeting } from '$lib/peterportal.types';
-import { getDefaultTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
-
-import OpenSpotAlertPopover, { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
-import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
-import locations from './static/locations.json';
-import restrictionsMapping from './static/restrictionsMapping.json';
 
 const styles: Styles<Theme, object> = (theme) => ({
     popover: {
         pointerEvents: 'none',
     },
     sectionCode: {
+        padding: 0,
         display: 'inline-block',
         cursor: 'pointer',
         '&:hover': {
@@ -45,6 +44,14 @@ const styles: Styles<Theme, object> = (theme) => ({
         textDecoration: 'underline',
         color: isDarkMode() ? 'dodgerblue' : 'blue',
         cursor: 'pointer',
+    },
+    mapLink: {
+        color: isDarkMode() ? 'dodgerblue' : 'blue',
+        cursor: 'pointer',
+        background: 'none !important',
+        border: 'none',
+        padding: '0 !important',
+        fontSize: '0.85rem', // Not sure why this is not inherited
     },
     paper: {
         padding: theme.spacing(),
@@ -88,7 +95,8 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             <Tooltip title="Click to copy course code" placement="bottom" enterDelay={300}>
-                <div
+                <Button
+                    size="small"
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);
                         logAnalytics({
@@ -99,7 +107,7 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
                     className={classes.sectionCode}
                 >
                     {sectionCode}
-                </div>
+                </Button>
             </Tooltip>
         </NoPaddingTableCell>
     );
@@ -168,27 +176,28 @@ const InstructorsCell = withStyles(styles)((props: InstructorsCellProps) => {
 interface LocationsCellProps {
     classes: ClassNameMap;
     meetings: Meeting[];
+    courseName: string; // Used in map pin popup
 }
 
 const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
-    const { classes, meetings } = props;
+    const { classes, meetings, courseName } = props;
 
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
                 return meeting.bldg !== 'TBA' ? (
                     <Fragment key={meeting.days + meeting.time + meeting.bldg}>
-                        <a
-                            href={((): string => {
-                                const location_id = locations[meeting.bldg.split(' ')[0] as keyof typeof locations];
-                                if (location_id !== undefined) return `https://map.uci.edu/?id=463#!m/${location_id}`;
-                                else return 'https://map.uci.edu/?id=463#!ct/12035,12033,11888,0,12034';
-                            })()}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <button
+                            className={classes.mapLink}
+                            onClick={() => {
+                                RightPaneStore.focusOnBuilding({
+                                    location: meeting.bldg,
+                                    courseName: courseName,
+                                });
+                            }}
                         >
                             {meeting.bldg}
-                        </a>
+                        </button>
                         <br />
                     </Fragment>
                 ) : (
@@ -300,26 +309,24 @@ interface StatusCellProps extends OpenSpotAlertPopoverProps {
 }
 
 const StatusCell = withStyles(styles)((props: StatusCellProps) => {
-    const { term, sectionCode, courseTitle, courseNumber, status, classes } = props;
+    // const { term, sectionCode, courseTitle, courseNumber, status, classes } = props;
+    const { status, classes } = props;
 
-    if (term === getDefaultTerm().shortName && (status === 'NewOnly' || status === 'FULL')) {
-        return (
-            <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>
-                <OpenSpotAlertPopover
-                    courseTitle={courseTitle}
-                    courseNumber={courseNumber}
-                    status={status}
-                    sectionCode={sectionCode}
-                />
-            </NoPaddingTableCell>
-        );
-    } else {
-        return (
-            <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>
-                {status}
-            </NoPaddingTableCell>
-        );
-    }
+    // TODO: Implement course notification when PeterPortal has the functionality, according to #473
+    // if (term === getDefaultTerm().shortName && (status === 'NewOnly' || status === 'FULL')) {
+    //     return (
+    //         <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>
+    //             <OpenSpotAlertPopover
+    //                 courseTitle={courseTitle}
+    //                 courseNumber={courseNumber}
+    //                 status={status}
+    //                 sectionCode={sectionCode}
+    //             />
+    //         </NoPaddingTableCell>
+    //     )
+    return (
+        <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>{status}</NoPaddingTableCell>
+    );
 });
 
 interface SectionTableBodyProps {
@@ -336,6 +343,7 @@ interface SectionTableBodyProps {
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames } = props;
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
+
     useEffect(() => {
         const toggleHighlight = () => {
             const doAdd = AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`);
@@ -375,7 +383,10 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             />
             <InstructorsCell instructors={section.instructors} />
             <DayAndTimeCell meetings={section.meetings} />
-            <LocationsCell meetings={section.meetings} />
+            <LocationsCell
+                meetings={section.meetings}
+                courseName={courseDetails.deptCode + ' ' + courseDetails.courseNumber}
+            />
             <SectionEnrollmentCell
                 numCurrentlyEnrolled={section.numCurrentlyEnrolled}
                 maxCapacity={parseInt(section.maxCapacity)}

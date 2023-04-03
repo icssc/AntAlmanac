@@ -1,12 +1,13 @@
-import { PureComponent } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { openSnackbar } from '$actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { clearCache } from '$lib/helpers';
+import { PureComponent } from 'react';
+
 import RightPaneStore from '../RightPaneStore';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
 import CourseRenderPane from './CourseRenderPane';
 import SearchForm from './SearchForm/SearchForm';
+import { clearCache } from '$lib/helpers';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { openSnackbar } from '$actions/AppStoreActions';
 
 const styles = {
     container: {

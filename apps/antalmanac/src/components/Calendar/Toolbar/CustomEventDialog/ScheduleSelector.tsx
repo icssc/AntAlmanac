@@ -1,7 +1,8 @@
-import React, { PureComponent } from 'react';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
+import React, { PureComponent } from 'react';
+
 import { RepeatingCustomEvent } from './CustomEventDialog';
 
 interface ScheduleSelectorProps {

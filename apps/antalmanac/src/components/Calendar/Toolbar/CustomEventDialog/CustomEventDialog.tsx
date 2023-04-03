@@ -14,13 +14,12 @@ import { withStyles } from '@material-ui/core/styles';
 import { Add, Edit } from '@material-ui/icons';
 import React, { PureComponent } from 'react';
 
+import DaySelector from './DaySelector';
+import ScheduleSelector from './ScheduleSelector';
 import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
-
-import DaySelector from './DaySelector';
-import ScheduleSelector from './ScheduleSelector';
 
 const styles = {
     textField: {

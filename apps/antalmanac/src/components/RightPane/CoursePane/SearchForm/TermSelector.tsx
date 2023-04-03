@@ -1,10 +1,11 @@
-import { ChangeEvent, PureComponent } from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import { termData } from '$lib/termData';
+import { ChangeEvent, PureComponent } from 'react';
+
 import RightPaneStore from '../../RightPaneStore';
+import { termData } from '$lib/termData';
 
 interface TermSelectorProps {
     changeState: (field: string, value: string) => void;

@@ -1,5 +1,5 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // PatchNotes follows structure/layout of AboutPage.tsx
 const PatchNotes = () => {
@@ -34,7 +34,10 @@ const PatchNotes = () => {
                     <DialogContentText>
                         Features
                         <ul>
-                            <li>Added 2023 Spring Quarter courses</li>
+                            <li>
+                                Added 2023 Spring Quarter, 2023 Summer Session 1, 2023 10-wk Summer, and 2023 Summer
+                                Session 2 courses
+                            </li>
                             <li>
                                 Lectures/discussions/labs for the same course will now share colors when added to
                                 Calendar

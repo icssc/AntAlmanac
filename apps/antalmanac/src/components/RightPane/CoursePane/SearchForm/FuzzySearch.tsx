@@ -1,9 +1,10 @@
-import { ChangeEvent, PureComponent } from 'react';
-import search, { SearchResult } from 'websoc-fuzzy-search';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Autocomplete';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { ChangeEvent, PureComponent } from 'react';
+import search, { SearchResult } from 'websoc-fuzzy-search';
+
 import RightPaneStore from '../../RightPaneStore';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 const emojiMap: Record<string, string> = {
     GE_CATEGORY: '🏫', // U+1F3EB :school:

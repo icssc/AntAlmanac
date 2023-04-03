@@ -2,13 +2,12 @@ import { Paper, Tab, Tabs, Typography } from '@material-ui/core';
 import { FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
 import React, { PureComponent, Suspense } from 'react';
 
-import { isDarkMode } from '$lib/helpers';
-
 import AddedCoursePane from './AddedCourses/AddedCoursePane';
 import CoursePane from './CoursePane/CoursePaneRoot';
 import darkModeLoadingGif from './CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './CoursePane/SearchForm/Gifs/loading.gif';
-import RightPaneStore from './RightPaneStore';
+import RightPaneStore, { BuildingFocusInfo } from './RightPaneStore';
+import { isDarkMode } from '$lib/helpers';
 
 const UCIMap = React.lazy(() => import('./Map/UCIMap'));
 
@@ -35,13 +34,36 @@ class DesktopTabs extends PureComponent<DesktopTabsProps> {
         this.setState({ activeTab: activeTab });
     };
 
+    focusOnBuilding = (buildingInfo: BuildingFocusInfo) => {
+        // If the Map tab isn't already active
+        if (RightPaneStore.getActiveTab() !== 2) {
+            const selectBuilding = () => {
+                RightPaneStore.emit('selectBuilding', buildingInfo);
+                RightPaneStore.removeListener('mapLoaded', selectBuilding);
+            };
+
+            // Map tab will emit 'mapLoaded' when it loads,
+            // then we can tell it to focus on a building
+            RightPaneStore.on('mapLoaded', selectBuilding);
+
+            // Switch to Map tab
+            RightPaneStore.handleTabChange(undefined, 2);
+        } else {
+            RightPaneStore.emit('selectBuilding', buildingInfo);
+        }
+    };
+
     componentDidMount() {
         RightPaneStore.on('tabChange', this.changeTab);
         this.setState({ activeTab: RightPaneStore.getActiveTab() });
+        RightPaneStore.on('focusOnBuilding', this.focusOnBuilding);
+        // Signal to MobileHome that we're loaded so that it can re-emit 'focusOnBuilding'
+        RightPaneStore.emit('RightPaneRootLoaded');
     }
 
     componentWillUnmount() {
         RightPaneStore.removeListener('tabChange', this.changeTab);
+        RightPaneStore.removeListener('focusOnBuilding', this.focusOnBuilding);
     }
 
     render() {

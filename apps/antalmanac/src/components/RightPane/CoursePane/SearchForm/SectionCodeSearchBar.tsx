@@ -1,5 +1,6 @@
 import { TextField } from '@material-ui/core';
 import { ChangeEvent, PureComponent } from 'react';
+
 import RightPaneStore from '../../RightPaneStore';
 
 class SectionCodeSearchBar extends PureComponent {
