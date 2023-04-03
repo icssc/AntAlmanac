@@ -12,30 +12,20 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test_variables:
-    runs-on: ubuntu-latest
-    env:
-      PR_NUM: ${{ github.event.pull_request.number }}
-      HEAD_REF: ${{ github.ref }}
-    steps:
-      - name: test variables
-        run: |
-            echo "PR_NUM: $PR_NUM"
-            echo "HEAD_REF: $HEAD_REF"
-#  setup_and_build:
-#    uses: ./.github/workflows/setup_and_build.yaml
-#    secrets: inherit
-#
-#  deploy_backend:
-#    needs: setup_and_build
-#    uses: ./.github/workflows/deploy_stack.yaml
-#    secrets: inherit
-#    with:
-#      stack_name: ${{ needs.setup_and_build.outputs.backendStack }}
-#
-#  deploy_frontend:
-#    needs: setup_and_build
-#    uses: ./.github/workflows/deploy_stack.yaml
-#    secrets: inherit
-#    with:
-#      stack_name: ${{ needs.setup_and_build.outputs.frontendStack }}
+  setup_and_build:
+    uses: ./.github/workflows/setup_and_build.yaml
+    secrets: inherit
+
+  deploy_backend:
+    needs: setup_and_build
+    uses: ./.github/workflows/deploy_stack.yaml
+    secrets: inherit
+    with:
+      stack_name: ${{ needs.setup_and_build.outputs.backendStack }}
+
+  deploy_frontend:
+    needs: setup_and_build
+    uses: ./.github/workflows/deploy_stack.yaml
+    secrets: inherit
+    with:
+      stack_name: ${{ needs.setup_and_build.outputs.frontendStack }}
