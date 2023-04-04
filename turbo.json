@@ -25,22 +25,6 @@
       "dependsOn": [
         "lint"
       ]
-    },
-    "build-staging": {
-      "dependsOn": [
-        "antalmanac#build"
-      ],
-      "outputs": [
-        "build/**",
-        "cdk.out/**",
-        "dist/**"
-      ]
-    },
-    "deploy-staging": {
-      "dependsOn": [
-        "build-staging"
-      ],
-      "cache": false
     }
   }
 }
