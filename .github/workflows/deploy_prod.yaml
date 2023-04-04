@@ -3,8 +3,7 @@ name: Deploy to Prod
 on:
   push:
     branches:
-#      - main
-      - alpha
+      - main
   workflow_dispatch:
 
 concurrency:
@@ -13,34 +12,31 @@ concurrency:
 
 jobs:
   setup_and_build:
-    uses: ./.github/workflows/setup_and_build.yaml
+    uses: ./.github/workflows/step_setup_and_build.yaml
     secrets: inherit
 
   deploy_dev_backend:
     needs: setup_and_build
-    uses: ./.github/workflows/deploy_stack.yaml
+    uses: ./.github/workflows/step_deploy_stack.yaml
     secrets: inherit
     with:
-      # stack_name: dev-us-east-1-Backend
-      stack_name: alpha-us-west-1-Backend
+     stack_name: dev-us-east-1-Backend
 
   deploy_dev_frontend:
     needs: setup_and_build
-    uses: ./.github/workflows/deploy_stack.yaml
+    uses: ./.github/workflows/step_deploy_stack.yaml
     secrets: inherit
     with:
-      # stack_name: dev-us-east-1-Frontend
-      stack_name: alpha-us-west-1-Frontend
+     stack_name: dev-us-east-1-Frontend
 
   deploy_prod_backend:
     needs: setup_and_build
-    uses: ./.github/workflows/deploy_stack.yaml
+    uses: ./.github/workflows/step_deploy_stack.yaml
     secrets: inherit
     with:
-      # stack_name: prod-us-west-1-Backend
-      stack_name: just-a-test
+     stack_name: prod-us-west-1-Backend
 
   deploy_to_pages:
     needs: setup_and_build
-    uses: ./.github/workflows/deploy_pages.yaml
+    uses: ./.github/workflows/step_deploy_pages.yaml
     secrets: inherit

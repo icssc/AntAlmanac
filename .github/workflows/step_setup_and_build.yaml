@@ -55,7 +55,6 @@ jobs:
           CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
           MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
           PR_NUM: ${{ github.event.pull_request.number }}
-          #          ALPHA: true
           # for Turbo caching
           TURBO_API: ${{ vars.TURBO_API }}
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}

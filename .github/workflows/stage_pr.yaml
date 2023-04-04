@@ -17,20 +17,20 @@ concurrency:
 jobs:
   setup_and_build:
     if: (!contains(github.event.pull_request.labels.*.name, 'no deploy'))
-    uses: ./.github/workflows/setup_and_build.yaml
+    uses: ./.github/workflows/step_setup_and_build.yaml
     secrets: inherit
 
   deploy_backend:
     needs: setup_and_build
     if: needs.setup_and_build.outputs.apiSubDomain != 'dev' # only deploy backend if we aren't using default
-    uses: ./.github/workflows/deploy_stack.yaml
+    uses: ./.github/workflows/step_deploy_stack.yaml
     secrets: inherit
     with:
       stack_name: antalmanac-backend-staging-${{ github.event.pull_request.number }}
 
   deploy_frontend:
     needs: setup_and_build
-    uses: ./.github/workflows/deploy_stack.yaml
+    uses: ./.github/workflows/step_deploy_stack.yaml
     secrets: inherit
     with:
       stack_name: antalmanac-frontend-staging-${{ github.event.pull_request.number }}
