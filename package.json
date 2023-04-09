@@ -30,6 +30,7 @@
         "@mui/icons-material": "^5.11.0",
         "@mui/lab": "^5.0.0-alpha.118",
         "@mui/material": "^5.11.7",
+        "@mui/x-data-grid": "^6.0.4",
         "@tanstack/react-query": "^4.24.4",
         "chart.js": "^4.2.1",
         "date-fns": "^2.29.3",

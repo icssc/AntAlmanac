@@ -1,15 +1,4 @@
-import {
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Tooltip,
-    Typography,
-    useMediaQuery,
-} from '@material-ui/core';
+import { useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { Assessment, Assignment, Help, RateReview } from '@material-ui/icons';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
@@ -19,7 +8,7 @@ import CourseInfoBar from './CourseInfoBar';
 import CourseInfoButton from './CourseInfoButton';
 import GradesPopup from './GradesPopup';
 import { SectionTableProps } from './SectionTable.types';
-import SectionTableBody from './SectionTableBody';
+import SectionsGrid from './SectionsGrid';
 import analyticsEnum from '$lib/analytics';
 
 const styles = {
@@ -128,71 +117,7 @@ const SectionTable = (props: SectionTableProps) => {
                 />
             </div>
 
-            <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
-                <Table className={classes?.table} size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row} />
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
-                                Code
-                            </TableCell>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
-                                Type
-                            </TableCell>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
-                                Instructors
-                            </TableCell>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
-                                Times
-                            </TableCell>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
-                                Places
-                            </TableCell>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
-                                <div className={classes?.flex}>
-                                    <span className={classes?.iconMargin}>Enrollment</span>
-                                    {!isMobileScreen && (
-                                        <Tooltip
-                                            title={
-                                                <Typography>
-                                                    Enrolled/Capacity
-                                                    <br />
-                                                    Waitlist
-                                                    <br />
-                                                    New-Only Reserved
-                                                </Typography>
-                                            }
-                                        >
-                                            <Help fontSize="small" />
-                                        </Tooltip>
-                                    )}
-                                </div>
-                            </TableCell>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
-                                Rstr
-                            </TableCell>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
-                                Status
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {courseDetails.sections.map((section) => {
-                            return (
-                                <SectionTableBody
-                                    key={section.sectionCode}
-                                    section={section}
-                                    courseDetails={courseDetails}
-                                    term={term}
-                                    colorAndDelete={colorAndDelete}
-                                    highlightAdded={highlightAdded}
-                                    scheduleNames={scheduleNames}
-                                />
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <SectionsGrid courseDetails={courseDetails} term={term} scheduleNames={scheduleNames} />
         </>
     );
 };
