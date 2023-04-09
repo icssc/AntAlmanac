@@ -149,7 +149,6 @@ export interface ZotCourseResponse {
     customEvents: RepeatingCustomEvent[];
 }
 export async function queryZotCourse(schedule_name: string) {
-    // const url = new URL('http://localhost:8080/api/zotcourse/loadUserData');
     const url = new URL(ZOTCOURSE_ENDPOINT);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const response = await fetch(url, {
@@ -171,7 +170,7 @@ export async function queryZotCourse(schedule_name: string) {
                 title: event.title,
                 start: event.start,
                 end: event.end,
-                days: days.map((_, index) => event.dow.includes(index + 1)),
+                days: days.map((_, index) => event.dow.includes(index)),
                 scheduleIndices: [AppStore.getCurrentScheduleIndex()],
                 customEventID: Date.now(),
                 color: '#551a8b',

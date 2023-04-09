@@ -79,7 +79,9 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                 if (this.state.importSource === 'zotcourse') {
                     try {
                         zotcourseImport = await queryZotCourse(this.state.zotcourseScheduleName);
-                    } catch (e) {}
+                    } catch (e) {
+                        /* empty */
+                    }
                 }
                 const sectionCodes = zotcourseImport ? zotcourseImport.codes : this.state.studyListText.match(/\d{5}/g);
                 if (!sectionCodes) {
