@@ -156,9 +156,7 @@ export async function queryZotCourse(schedule_name: string) {
         method: 'POST',
         body: JSON.stringify({ scheduleName: schedule_name }),
         headers: { 'Content-Type': 'application/json' },
-    })
-        .then((r) => r.json())
-        .catch((err) => console.log(err));
+    }).then((r) => r.json());
     // For custom event, there is no course attribute in each.
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     const codes = response.data
