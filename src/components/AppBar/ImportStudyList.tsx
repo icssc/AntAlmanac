@@ -85,7 +85,6 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                     return;
                 }
                 // Import Custom Events from zotcourse
-                // TODO: Fix bug caused by addCustomEvent call
                 if (zotcourseImport) {
                     const events = zotcourseImport.customEvents;
                     for (const event of events) {

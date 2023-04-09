@@ -176,7 +176,7 @@ export async function queryZotCourse(schedule_name: string) {
                 days: days.map((_, index) => event.dow.includes(index + 1)),
                 scheduleIndices: [AppStore.getCurrentScheduleIndex()],
                 customEventID: Date.now(),
-                color: null,
+                color: '#551a8b',
             };
         }) as RepeatingCustomEvent[];
     return {
