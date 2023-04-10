@@ -137,17 +137,6 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
 }
 
 const LoadSaveScheduleFunctionality = () => {
-    useEffect(() => {
-        if (typeof Storage !== 'undefined') {
-            const savedUserID = window.localStorage.getItem('userID');
-
-            if (savedUserID != null) {
-                // this `void` is for eslint "no floating promises"
-                void loadSchedule(savedUserID, true);
-            }
-        }
-    }, []);
-
     const [loading, setLoading] = useState(false);
 
     const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
@@ -155,6 +144,17 @@ const LoadSaveScheduleFunctionality = () => {
         await loadSchedule(userID, rememberMe);
         setLoading(false);
     };
+
+    useEffect(() => {
+        if (typeof Storage !== 'undefined') {
+            const savedUserID = window.localStorage.getItem('userID');
+
+            if (savedUserID != null) {
+                // this `void` is for eslint "no floating promises"
+                void loadScheduleAndSetLoading(savedUserID, true);
+            }
+        }
+    }, []);
 
     return (
         <>
