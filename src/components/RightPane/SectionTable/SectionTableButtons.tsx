@@ -4,6 +4,7 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Add, ArrowDropDown, Delete } from '@material-ui/icons';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 
+import { MOBILE_BREAKPOINT } from '../../../globals';
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
@@ -27,7 +28,7 @@ interface ColorAndDeleteProps {
 
 export const ColorAndDelete = withStyles(styles)((props: ColorAndDeleteProps) => {
     const { sectionCode, color, classes, term } = props;
-    const isMobileScreen = useMediaQuery('(max-width: 960px)');
+    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
     return (
         <TableCell padding="none">
@@ -66,7 +67,7 @@ interface ScheduleAddCellProps {
 export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) => {
     const { classes, section, courseDetails, term, scheduleNames } = props;
     const popupState = usePopupState({ popupId: 'SectionTableAddCellPopup', variant: 'popover' });
-    const isMobileScreen = useMediaQuery('(max-width: 960px)');
+    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
     const closeAndAddCourse = (scheduleIndex: number, specificSchedule?: boolean) => {
         popupState.close();
