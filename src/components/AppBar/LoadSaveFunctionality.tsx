@@ -18,7 +18,7 @@ import { isDarkMode } from '$lib/helpers';
 
 interface LoadSaveButtonBaseProps {
     action: typeof saveSchedule;
-    actionName: string;
+    actionName: 'Save' | 'Load';
     disabled: boolean;
     loading: boolean;
 }
