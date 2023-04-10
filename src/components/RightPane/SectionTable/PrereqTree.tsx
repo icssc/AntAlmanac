@@ -17,7 +17,22 @@ interface NodeProps {
 const Node: FC<NodeProps> = (props) => {
     return (
         <div style={{ padding: '1px 0' }} className={`${props.node}`} key={props.index}>
-            <Popup trigger={<div className={'course'}>{props.label}</div>} basic position="top center" wide="very" />
+            <Popup
+                trigger={
+                    <div
+                        className={'course'}
+                        style={{
+                            backgroundColor: isDarkMode() ? '#303030' : '#e0e0e0',
+                            color: isDarkMode() ? '#bfbfbf' : 'black',
+                        }}
+                    >
+                        {props.label}
+                    </div>
+                }
+                basic
+                position="top center"
+                wide="very"
+            />
         </div>
     );
 };

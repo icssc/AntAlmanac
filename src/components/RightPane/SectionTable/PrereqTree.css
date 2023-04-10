@@ -181,7 +181,6 @@
 }
 
 .course {
-  background-color: var(--background-grey-light-theme);
   border-radius: 3px;
   font-size: .8rem;
   font-weight: 500;
