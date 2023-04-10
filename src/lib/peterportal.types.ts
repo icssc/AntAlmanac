@@ -127,3 +127,9 @@ export interface SectionGQL {
     number: string;
     type: string;
 }
+
+export interface PrerequisiteJSON {
+    [key: string]: PrerequisiteJSONNode[];
+}
+
+export type PrerequisiteJSONNode = PrerequisiteJSON | string;
