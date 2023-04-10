@@ -4,7 +4,6 @@ import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPO
 import { Meeting, Section, WebsocResponse } from './peterportal.types';
 import { addCourse, openSnackbar } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
-import {useMediaQuery} from "@material-ui/core";
 
 interface GradesGraphQLResponse {
     data: {
