@@ -4,6 +4,7 @@ import { Grid, Popup } from 'semantic-ui-react';
 
 import { PrerequisiteJSONNode, PrerequisiteJSON } from '../../../lib/peterportal.types';
 import { CourseInfo } from './CourseInfoBar';
+import { isDarkMode } from '$lib/helpers';
 
 import './PrereqTree.css';
 
@@ -16,19 +17,7 @@ interface NodeProps {
 const Node: FC<NodeProps> = (props) => {
     return (
         <div style={{ padding: '1px 0' }} className={`${props.node}`} key={props.index}>
-            <Popup
-                style={{
-                    backgroundColor: 'green',
-                    borderRadius: 5,
-                    fontSize: '.8rem',
-                    fontWeight: 500,
-                    padding: '0.5rem',
-                }}
-                trigger={<div className={'course'}>{props.label}</div>}
-                basic
-                position="top center"
-                wide="very"
-            />
+            <Popup trigger={<div className={'course'}>{props.label}</div>} basic position="top center" wide="very" />
         </div>
     );
 };
