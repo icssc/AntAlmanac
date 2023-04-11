@@ -102,12 +102,14 @@ const RecruitmentBanner = (classes: ClassNameMap) => {
     const [bannerVisibility, setBannerVisibility] = React.useState<boolean>(true);
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
+    const recruitmentDismissalTime = window.localStorage.getItem('recruitmentDismissalTime');
+    const dismissedRecently =
+        recruitmentDismissalTime !== null &&
+        Date.now() - parseInt(recruitmentDismissalTime) < 11 * 7 * 24 * 3600 * 1000;
     const displayRecruitmentBanner =
         bannerVisibility &&
-        (window.localStorage.getItem('recruitmentDismissalTime') === null ||
-            (Date.now() - parseInt(window.localStorage.getItem('recruitmentDismissalTime') as string) >
-                11 * 7 * 24 * 3600 * 1000 &&
-                ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue)));
+        !dismissedRecently &&
+        ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue);
 
     return (
         <div className={classes.bannerContainer}>
