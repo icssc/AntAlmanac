@@ -1,4 +1,5 @@
 import {
+    Button,
     Collapse,
     FormControl,
     FormControlLabel,
@@ -250,18 +251,19 @@ class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchSt
     };
 
     render() {
-        const { classes } = this.props;
-
         return (
             <>
-                <div onClick={this.handleExpand} className={classes.container}>
+                <Button
+                    onClick={this.handleExpand}
+                    style={{ textTransform: 'none', width: 'auto', display: 'flex', justifyContent: 'start' }}
+                >
                     <div>
                         <Typography noWrap variant="body1">
                             Advanced Search Options
                         </Typography>
                     </div>
                     {this.state.expandAdvanced ? <ExpandLess /> : <ExpandMore />}
-                </div>
+                </Button>
                 <Collapse in={this.state.expandAdvanced}>
                     <AdvancedSearchTextFields />
                 </Collapse>

@@ -4,14 +4,13 @@ import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Tune } from '@material-ui/icons';
 import { FormEvent, useState } from 'react';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-
 import RightPaneStore from '../../RightPaneStore';
 import FuzzySearch from './FuzzySearch';
 import HelpBox from './HelpBox';
 import LegacySearch from './LegacySearch';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import TermSelector from './TermSelector';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 const styles: Styles<Theme, object> = {
     rightPane: {

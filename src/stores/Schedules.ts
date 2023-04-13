@@ -14,11 +14,10 @@ import {
     teal,
 } from '@material-ui/core/colors';
 
-import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { combineSOCObjects, CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
-
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 import { Schedule, ScheduleCourse, ScheduleSaveState, ScheduleUndoState, ShortCourseSchedule } from './schedule.types';
+import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { combineSOCObjects, CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
 
 const arrayOfColors = [
     red[500],
@@ -41,10 +40,19 @@ export class Schedules {
     private currentScheduleIndex: number;
     private previousStates: ScheduleUndoState[];
 
+    // We do not want schedule notes to be undone; to avoid this,
+    // we keep track of every schedule note in an object where each key
+    // is a unique ID and each value is the most recent schedule note.
+    private scheduleNoteMap: { [key: number]: string };
+
     constructor() {
-        this.schedules = [{ scheduleName: 'Schedule 1', courses: [], customEvents: [] }];
+        const scheduleNoteId = Math.random();
+        this.schedules = [
+            { scheduleName: 'Schedule 1', courses: [], customEvents: [], scheduleNoteId: scheduleNoteId },
+        ];
         this.currentScheduleIndex = 0;
         this.previousStates = [];
+        this.scheduleNoteMap = { [scheduleNoteId]: '' };
     }
 
     // --- Schedule index methods ---
@@ -81,9 +89,16 @@ export class Schedules {
      */
     addNewSchedule(newScheduleName: string) {
         this.addUndoState();
-        this.schedules.push({ scheduleName: newScheduleName, courses: [], customEvents: [] });
+        const scheduleNoteId = Math.random();
+        this.schedules.push({
+            scheduleName: newScheduleName,
+            courses: [],
+            customEvents: [],
+            scheduleNoteId: scheduleNoteId,
+        });
         // Setting schedule index manually otherwise 2 undo states are added
         this.currentScheduleIndex = this.getNumberOfSchedules() - 1;
+        this.scheduleNoteMap[scheduleNoteId] = '';
     }
 
     /**
@@ -386,7 +401,10 @@ export class Schedules {
      */
     addUndoState() {
         const clonedSchedules = JSON.parse(JSON.stringify(this.schedules)) as Schedule[]; // Create deep copy of Schedules object
-        this.previousStates.push({ schedules: clonedSchedules, scheduleIndex: this.currentScheduleIndex });
+        this.previousStates.push({
+            schedules: clonedSchedules,
+            scheduleIndex: this.currentScheduleIndex,
+        });
         if (this.previousStates.length >= 50) {
             this.previousStates.shift();
         }
@@ -419,6 +437,7 @@ export class Schedules {
                         sectionCode: course.section.sectionCode,
                     };
                 }),
+                scheduleNote: this.scheduleNoteMap[schedule.scheduleNoteId],
             };
         });
         return { schedules: shortSchedules, scheduleIndex: this.currentScheduleIndex };
@@ -494,14 +513,39 @@ export class Schedules {
                         });
                     }
                 }
+
+                const scheduleNoteId = Math.random();
+                if ('scheduleNote' in shortCourseSchedule) {
+                    this.scheduleNoteMap[scheduleNoteId] = shortCourseSchedule.scheduleNote;
+                } else {
+                    // If this is a schedule that was saved before schedule notes were implemented,
+                    // just give each schedule an empty schedule note
+                    this.scheduleNoteMap[scheduleNoteId] = '';
+                }
+
                 this.schedules.push({
-                    ...shortCourseSchedule,
-                    courses,
+                    scheduleName: shortCourseSchedule.scheduleName,
+                    courses: courses,
+                    customEvents: shortCourseSchedule.customEvents,
+                    scheduleNoteId: scheduleNoteId,
                 });
             }
         } catch (e) {
             this.revertState();
             throw new Error('Unable to load schedule');
         }
+    }
+
+    getCurrentScheduleNote() {
+        const scheduleNoteId = this.schedules[this.currentScheduleIndex]?.scheduleNoteId;
+        if (scheduleNoteId === undefined) {
+            return '';
+        }
+        return this.scheduleNoteMap[scheduleNoteId];
+    }
+
+    updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
+        const scheduleNoteId = this.schedules[scheduleIndex].scheduleNoteId;
+        this.scheduleNoteMap[scheduleNoteId] = newScheduleNote;
     }
 }

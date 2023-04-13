@@ -4,11 +4,10 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
 import moment from 'moment';
 
-import { deleteCustomEvent } from '$actions/AppStoreActions';
-import analyticsEnum from '$lib/analytics';
-
 import CustomEventDialog, { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '../../ColorPicker';
+import { deleteCustomEvent } from '$actions/AppStoreActions';
+import analyticsEnum from '$lib/analytics';
 
 const styles = {
     root: {

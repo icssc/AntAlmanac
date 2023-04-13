@@ -13,14 +13,13 @@ import {
 import { withStyles } from '@material-ui/core/styles';
 import { Assessment, Help, RateReview } from '@material-ui/icons';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
-import React from 'react';
-import analyticsEnum from '$lib/analytics';
 // import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back and restore the files (https://github.com/icssc/AntAlmanac/tree/5e89e035e66f00608042871d43730ba785f756b0/src/components/RightPane/SectionTable/EnrollmentGraph)
 import CourseInfoBar from './CourseInfoBar';
 import CourseInfoButton from './CourseInfoButton';
 import GradesPopup from './GradesPopup';
 import { SectionTableProps } from './SectionTable.types';
 import SectionTableBody from './SectionTableBody';
+import analyticsEnum from '$lib/analytics';
 
 const styles = {
     flex: {

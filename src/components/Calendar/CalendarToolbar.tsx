@@ -6,15 +6,14 @@ import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete, MoreHoriz, Undo } from '@material-ui/icons';
 import React, { useState } from 'react';
 
-import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-
 import ConditionalWrapper from '../ConditionalWrapper';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import EditSchedule from './Toolbar/EditSchedule/EditSchedule';
 import ScheduleNameDialog from './Toolbar/EditSchedule/ScheduleNameDialog';
 import ExportCalendar from './Toolbar/ExportCalendar';
 import ScreenshotButton from './Toolbar/ScreenshotButton';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
 
 const styles: Styles<Theme, object> = {
     toolbar: {
