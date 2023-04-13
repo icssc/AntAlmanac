@@ -91,7 +91,7 @@ const flattenSOCObject = (SOCObject: WebsocResponse): (School | Department | AAC
         return accumulator;
     }, []);
 };
-const RecruitmentBanner = (classes: ClassNameMap) => {
+const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = React.useState<boolean>(true);
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
@@ -99,10 +99,8 @@ const RecruitmentBanner = (classes: ClassNameMap) => {
     const dismissedRecently =
         recruitmentDismissalTime !== null &&
         Date.now() - parseInt(recruitmentDismissalTime) < 11 * 7 * 24 * 3600 * 1000;
-    const displayRecruitmentBanner =
-        bannerVisibility &&
-        !dismissedRecently &&
-        ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue);
+    const isSearchCS = ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue);
+    const displayRecruitmentBanner = bannerVisibility && !dismissedRecently && isSearchCS;
 
     return (
         <div style={{ position: 'fixed', bottom: 5, right: 5, zIndex: 999 }}>
@@ -279,7 +277,7 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
 
             currentView = (
                 <>
-                    <RecruitmentBanner {...classes} />
+                    <RecruitmentBanner />
                     <div className={classes.root} style={{ position: 'relative' }}>
                         <div className={classes.spacing} />
                         {this.state.courseData.length === 0 ? (
