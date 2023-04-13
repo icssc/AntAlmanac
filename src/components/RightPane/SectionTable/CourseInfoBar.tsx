@@ -5,6 +5,7 @@ import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { Skeleton } from '@material-ui/lab';
 import { useState } from 'react';
 
+import { MOBILE_BREAKPOINT } from '../../../globals';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { PETERPORTAL_REST_ENDPOINT } from '$lib/api/endpoints';
 import { CourseResponse } from '$lib/peterportal.types';
@@ -139,7 +140,7 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
         }
     };
 
-    const isMobileScreen = useMediaQuery('(max-width: 750px)');
+    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
     return (
         <>

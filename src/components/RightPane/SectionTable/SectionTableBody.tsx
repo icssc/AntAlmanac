@@ -6,6 +6,7 @@ import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/h
 import { Fragment, useEffect, useState } from 'react';
 
 import RightPaneStore from '../RightPaneStore';
+import { MOBILE_BREAKPOINT } from '../../../globals';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import restrictionsMapping from './static/restrictionsMapping.json';
@@ -124,7 +125,7 @@ interface SectionDetailCellProps {
 
 const SectionDetailsCell = withStyles(styles)((props: SectionDetailCellProps) => {
     const { classes, sectionType, sectionNum, units } = props;
-    const isMobileScreen = useMediaQuery('(max-width: 750px)');
+    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
 
     return (
         <NoPaddingTableCell className={classes.cell} style={isMobileScreen ? { textAlign: 'center' } : {}}>
