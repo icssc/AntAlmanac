@@ -1,10 +1,11 @@
-import { Button, Grid, Paper, Theme } from '@material-ui/core';
+import { Button, Grid, IconButton, Paper, Theme, useTheme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { PureComponent } from 'react';
 import LazyLoad from 'react-lazyload';
 
+import { Alert } from '@mui/material';
 import RightPaneStore from '../RightPaneStore';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
@@ -62,17 +63,9 @@ const styles: Styles<Theme, object> = (theme) => ({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    bannerContainer: {
+    spacing: {
         height: '50px',
-        paddingLeft: '110px',
-        display: 'flex',
-        justifyContent: 'flex-end',
-        paddingRight: '0px',
         marginBottom: '5px',
-    },
-    bannerGrid: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
     },
 });
 
@@ -98,43 +91,49 @@ const flattenSOCObject = (SOCObject: WebsocResponse): (School | Department | AAC
         return accumulator;
     }, []);
 };
-const RecruitmentBanner = (classes: ClassNameMap) => {
+const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = React.useState<boolean>(true);
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
-    const displayRecruitmentBanner =
-        bannerVisibility &&
-        (window.localStorage.getItem('recruitmentDismissalTime') === null ||
-            (Date.now() - parseInt(window.localStorage.getItem('recruitmentDismissalTime') as string) >
-                11 * 7 * 24 * 3600 * 1000 &&
-                ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue)));
+    const recruitmentDismissalTime = window.localStorage.getItem('recruitmentDismissalTime');
+    const dismissedRecently =
+        recruitmentDismissalTime !== null &&
+        Date.now() - parseInt(recruitmentDismissalTime) < 11 * 7 * 24 * 3600 * 1000;
+    const isSearchCS = ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue);
+    const displayRecruitmentBanner = bannerVisibility && !dismissedRecently && isSearchCS;
 
     return (
-        <div className={classes.bannerContainer}>
+        <div style={{ position: 'fixed', bottom: 5, right: 5, zIndex: 999 }}>
             {displayRecruitmentBanner ? (
-                <Paper elevation={1} square>
-                    <Grid container className={classes.bannerGrid}>
-                        <div style={{ paddingLeft: '30px' }}>
-                            Interested in web development?
-                            <br />
-                            <a href="https://forms.gle/v32Cx65vwhnmxGPv8" target="__blank" rel="noopener noreferrer">
-                                Join ICSSC and work on AntAlmanac and other projects!
-                            </a>
-                            <br />
-                            We have opportunities for experienced devs and those with zero experience!
-                        </div>
-
-                        <Button
+                <Alert
+                    icon={false}
+                    severity="info"
+                    style={{
+                        color: isDarkMode() ? '#ece6e6' : '#2e2e2e',
+                        backgroundColor: isDarkMode() ? '#2e2e2e' : '#ece6e6',
+                    }}
+                    action={
+                        <IconButton
+                            aria-label="close"
+                            size="small"
+                            color="inherit"
                             onClick={() => {
-                                // Unix  time in seconds
                                 window.localStorage.setItem('recruitmentDismissalTime', Date.now().toString());
                                 setBannerVisibility(false);
                             }}
-                            color="inherit"
-                            startIcon={<CloseIcon />}
-                        ></Button>
-                    </Grid>
-                </Paper>
+                        >
+                            <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                    }
+                >
+                    Interested in web development?
+                    <br />
+                    <a href="https://forms.gle/v32Cx65vwhnmxGPv8" target="__blank" rel="noopener noreferrer">
+                        Join ICSSC and work on AntAlmanac and other projects!
+                    </a>
+                    <br />
+                    We have opportunities for experienced devs and those with zero experience!
+                </Alert>
             ) : null}{' '}
         </div>
     );
@@ -277,27 +276,30 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
             };
 
             currentView = (
-                <div className={classes.root}>
-                    <RecruitmentBanner {...classes} />
-                    {this.state.courseData.length === 0 ? (
-                        <div className={classes.noResultsDiv}>
-                            <img src={isDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
-                        </div>
-                    ) : (
-                        this.state.courseData.map((_: School | Department | AACourse, index: number) => {
-                            let heightEstimate = 200;
-                            if ((this.state.courseData[index] as AACourse).sections !== undefined)
-                                heightEstimate =
-                                    (this.state.courseData[index] as AACourse).sections.length * 60 + 20 + 40;
+                <>
+                    <RecruitmentBanner />
+                    <div className={classes.root} style={{ position: 'relative' }}>
+                        <div className={classes.spacing} />
+                        {this.state.courseData.length === 0 ? (
+                            <div className={classes.noResultsDiv}>
+                                <img src={isDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
+                            </div>
+                        ) : (
+                            this.state.courseData.map((_: School | Department | AACourse, index: number) => {
+                                let heightEstimate = 200;
+                                if ((this.state.courseData[index] as AACourse).sections !== undefined)
+                                    heightEstimate =
+                                        (this.state.courseData[index] as AACourse).sections.length * 60 + 20 + 40;
 
-                            return (
-                                <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
-                                    {SectionTableWrapped(index, renderData)}
-                                </LazyLoad>
-                            );
-                        })
-                    )}
-                </div>
+                                return (
+                                    <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
+                                        {SectionTableWrapped(index, renderData)}
+                                    </LazyLoad>
+                                );
+                            })
+                        )}
+                    </div>
+                </>
             );
         } else {
             currentView = (
