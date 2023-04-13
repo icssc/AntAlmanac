@@ -1,4 +1,4 @@
-import { Button, Grid, IconButton, Paper, Theme } from '@material-ui/core';
+import { Button, Grid, IconButton, Paper, Theme, useTheme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import CloseIcon from '@material-ui/icons/Close';
@@ -110,10 +110,15 @@ const RecruitmentBanner = (classes: ClassNameMap) => {
                 <Alert
                     icon={false}
                     severity="info"
+                    style={{
+                        color: isDarkMode() ? '#ece6e6' : '#2e2e2e',
+                        backgroundColor: isDarkMode() ? '#2e2e2e' : '#ece6e6',
+                    }}
                     action={
                         <IconButton
                             aria-label="close"
                             size="small"
+                            color="inherit"
                             onClick={() => {
                                 window.localStorage.setItem('recruitmentDismissalTime', Date.now().toString());
                                 setBannerVisibility(false);
