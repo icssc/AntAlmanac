@@ -8,7 +8,6 @@ function endpointTransform(path: string) {
     return import.meta.env.DEV ? `https://dev.api.antalmanac.com${path}` : `https://api.antalmanac.com${path}`;
 }
 
-export const WEBSOC_ENDPOINT = endpointTransform('/api/websocapi');
 export const LOOKUP_NOTIFICATIONS_ENDPOINT = endpointTransform('/api/notifications/lookupNotifications');
 export const REGISTER_NOTIFICATIONS_ENDPOINT = endpointTransform('/api/notifications/registerNotifications');
 export const RANDOM_AD_ENDPOINT = endpointTransform('/api/banners/getRandomAd');

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, WEBSOC_ENDPOINT } from './api/endpoints';
+import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT } from './api/endpoints';
 import { Meeting, Section, WebsocResponse } from './peterportal.types';
 import { addCourse, openSnackbar } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
@@ -99,19 +99,9 @@ export async function queryWebsoc(params: Record<string, string>): Promise<Webso
     //courses[i].sections[j].meetings will have two entries, despite it being the same section.
     //For now, I'm correcting it with removeDuplicateMeetings, but the API should handle this
 
-    try {
-        const response = (await fetch(url).then((r) => r.json())) as WebsocResponse;
-        websocCache[searchString] = { ...response, timestamp: Date.now() };
-        return removeDuplicateMeetings(response);
-    } catch {
-        const backupResponse = (await fetch(WEBSOC_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(params),
-        }).then((res) => res.json())) as WebsocResponse;
-        websocCache[searchString] = { ...backupResponse, timestamp: Date.now() };
-        return removeDuplicateMeetings(backupResponse);
-    }
+    const response = (await fetch(url).then((r) => r.json())) as WebsocResponse;
+    websocCache[searchString] = { ...response, timestamp: Date.now() };
+    return removeDuplicateMeetings(response);
 }
 
 // Removes duplicate meetings as a result of multiple locations from WebsocResponse.
