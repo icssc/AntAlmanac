@@ -53,10 +53,15 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
         setScheduleName(event.target.value);
     };
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        event.stopPropagation();
+        if (event.key === 'Enter') {
+            submitName();
+        }
+    };
+
     const submitName = () => {
         onClose();
-        setIsOpen(false);
-        setScheduleName('');
         if (rename) {
             renameSchedule(scheduleName, scheduleRenameIndex as number); // typecast works b/c this function only runs when `const rename = scheduleRenameIndex !== undefined` is true.
         } else {
@@ -79,10 +84,10 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
                 </MenuItem>
             )}
             <Dialog
-                open={isOpen}
-                onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => event.stopPropagation()}
-                onClick={(event: React.MouseEvent<Element, MouseEvent>) => event.stopPropagation()}
                 fullWidth
+                open={isOpen}
+                onKeyDown={handleKeyDown}
+                onClick={(event: React.MouseEvent<Element, MouseEvent>) => event.stopPropagation()}
             >
                 <DialogTitle>{rename ? 'Rename Schedule' : 'Add a New Schedule'}</DialogTitle>
                 <DialogContent>
@@ -95,11 +100,6 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
                         placeholder={`Schedule ${scheduleNames.length + 1}`}
                         onChange={handleNameChange}
                         value={scheduleName}
-                        onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
-                            if (event.key === 'Enter') {
-                                submitName();
-                            }
-                        }}
                     />
                 </DialogContent>
                 <DialogActions>
