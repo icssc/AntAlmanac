@@ -38,7 +38,7 @@ class RightPaneStore extends EventEmitter {
     constructor() {
         super();
         this.setMaxListeners(15);
-        this.formData = { ...defaultFormValues }; // creates shallow copy
+        this.formData = structuredClone(defaultFormValues);
         this.activeTab = 0;
         this.doDisplaySearch = true;
         this.openSpotAlertPopoverActive = false;
@@ -66,29 +66,12 @@ class RightPaneStore extends EventEmitter {
         return this.openSpotAlertPopoverActive;
     };
 
-    getUrlCourseCodeValue = () => {
-        return this.urlCourseCodeValue;
-    };
-
-    getUrlTermValue = () => {
-        return this.urlTermValue;
-    };
-
-    getUrlGEValue = () => {
-        return this.urlGEValue;
-    };
-
-    getUrlCourseNumValue = () => {
-        return this.urlCourseNumValue;
-    };
-
-    getUrlDeptLabel = () => {
-        return this.urlDeptLabel;
-    };
-
-    getUrlDeptValue = () => {
-        return this.urlDeptValue;
-    };
+    getUrlCourseCodeValue = () => this.urlCourseCodeValue;
+    getUrlTermValue = () => this.urlTermValue;
+    getUrlGEValue = () => this.urlGEValue;
+    getUrlCourseNumValue = () => this.urlCourseNumValue;
+    getUrlDeptLabel = () => this.urlDeptLabel;
+    getUrlDeptValue = () => this.urlDeptValue;
 
     updateFormValue = (field: string, value: string) => {
         this.formData[field] = value;
@@ -96,7 +79,7 @@ class RightPaneStore extends EventEmitter {
     };
 
     resetFormValues = () => {
-        this.formData = { ...defaultFormValues }; // shallow copy again
+        this.formData = structuredClone(defaultFormValues);
         this.emit('formReset');
     };
 

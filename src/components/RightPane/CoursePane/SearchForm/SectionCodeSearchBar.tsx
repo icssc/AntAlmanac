@@ -4,19 +4,19 @@ import { ChangeEvent, PureComponent } from 'react';
 import RightPaneStore from '../../RightPaneStore';
 
 class SectionCodeSearchBar extends PureComponent {
-    
-    updateCourseCodeAndGetFormData(){
-        RightPaneStore.updateFormValue("sectionCode", RightPaneStore.getUrlCourseCodeValue()) 
-        return RightPaneStore.getFormData().sectionCode
-    };
+    updateCourseCodeAndGetFormData() {
+        RightPaneStore.updateFormValue('sectionCode', RightPaneStore.getUrlCourseCodeValue());
+        return RightPaneStore.getFormData().sectionCode;
+    }
 
-    getSectionCode(){
-        if(RightPaneStore.getUrlCourseCodeValue() != "null" && RightPaneStore.getUrlCourseCodeValue() != "" && RightPaneStore.getUrlCourseCodeValue() != " "){
-            return this.updateCourseCodeAndGetFormData()
-        }else{
-            return RightPaneStore.getFormData().sectionCode
+    getSectionCode() {
+        const urlCourseCodeValue = RightPaneStore.getUrlCourseCodeValue();
+        if (urlCourseCodeValue != 'null' && urlCourseCodeValue.trim() != '') {
+            return this.updateCourseCodeAndGetFormData();
+        } else {
+            return RightPaneStore.getFormData().sectionCode;
         }
-    };
+    }
 
     state = {
         sectionCode: this.getSectionCode(),
@@ -25,22 +25,22 @@ class SectionCodeSearchBar extends PureComponent {
     handleChange = (event: ChangeEvent<{ value: string }>) => {
         this.setState({ sectionCode: event.target.value });
         RightPaneStore.updateFormValue('sectionCode', event.target.value);
-    
-        let stateObj = { url: "url" };
-        const url = new URL(window.location.href)
+
+        const stateObj = { url: 'url' };
+        const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
         urlParam.delete('courseCode');
-        if (event.target.value != "" && event.target.value != null){
+        if (event.target.value != '' && event.target.value != null) {
             urlParam.append('courseCode', event.target.value);
             const new_url = `?${urlParam.toString()}`;
-            history.replaceState(stateObj, "url", "/" + new_url);
-        }else{
-            if (urlParam.toString() == "" || urlParam.toString() == null){
+            history.replaceState(stateObj, 'url', '/' + new_url);
+        } else {
+            if (urlParam.toString() == '' || urlParam.toString() == null) {
                 const new_url = `${urlParam.toString()}`;
-                history.replaceState(stateObj, "url", "/" + new_url);
-            }else{
+                history.replaceState(stateObj, 'url', '/' + new_url);
+            } else {
                 const new_url = `?${urlParam.toString()}`;
-                history.replaceState(stateObj, "url", "/" + new_url);
+                history.replaceState(stateObj, 'url', '/' + new_url);
             }
         }
     };

@@ -91,22 +91,27 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
         }
     };
 
+    const addCourseHandler = () => {
+        closeAndAddCourse(scheduleNames.length, true);
+    };
+
     const closeCopyAndAlert = () => {
-        const url = new URL(window.location.href)
+        const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
-        urlParam.delete('courseCode');
-        urlParam.delete('courseNumber');
-        urlParam.delete('deptLabel');
-        urlParam.delete('deptValue');
-        urlParam.delete('GE');
-        urlParam.delete('term');
+        // Reset these params in url becasue when copy a specific class's link, it only copy its course code
+        // if there is random value let in the url, it will mess up the url copied.
+        const fieldsToReset = ['courseCode', 'courseNumber', 'deptLabel', 'deptValue', 'GE', 'term'];
+        fieldsToReset.forEach((field) => urlParam.delete(field));
         urlParam.append('courseCode', String(section.sectionCode));
         const new_url = `${url.origin.toString()}/?${urlParam.toString()}`;
-        navigator.clipboard.writeText(new_url.toString()).then(function() {
-            openSnackbar('success', 'Course Link Copied!');
-        }, function() {
-            openSnackbar('error', 'Fail to copy the link!');
-        });
+        navigator.clipboard.writeText(new_url.toString()).then(
+            () => {
+                openSnackbar('success', 'Course Link Copied!');
+            },
+            () => {
+                openSnackbar('error', 'Fail to copy the link!');
+            }
+        );
         popupState.close();
     };
 
@@ -125,12 +130,8 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
                             Add to {name}
                         </MenuItem>
                     ))}
-                    <MenuItem onClick={() => closeAndAddCourse(scheduleNames.length, true)}>
-                        Add to All Schedules
-                    </MenuItem>
-                    <MenuItem onClick={() => closeCopyAndAlert()}>
-                         Copy Link
-                    </MenuItem>
+                    <MenuItem onClick={addCourseHandler}>Add to All Schedules</MenuItem>
+                    <MenuItem onClick={closeCopyAndAlert}>Copy Link</MenuItem>
                 </Menu>
             </div>
         </TableCell>

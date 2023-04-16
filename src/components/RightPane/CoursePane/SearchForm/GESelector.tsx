@@ -35,20 +35,20 @@ interface GESelectorState {
 }
 
 class GESelector extends PureComponent<GESelectorProps, GESelectorState> {
-    
-    updateGEAndGetFormData(){
-        RightPaneStore.updateFormValue("ge", RightPaneStore.getUrlGEValue()) 
-        return RightPaneStore.getFormData().ge
-    };
+    updateGEAndGetFormData() {
+        RightPaneStore.updateFormValue('ge', RightPaneStore.getUrlGEValue());
+        return RightPaneStore.getFormData().ge;
+    }
 
-    getGe(){
-        if(RightPaneStore.getUrlGEValue() != "null" && RightPaneStore.getUrlGEValue() != "" && RightPaneStore.getUrlGEValue() != " "){
-            return this.updateGEAndGetFormData()
-        }else{
-            return RightPaneStore.getFormData().ge
+    getGe() {
+        const urlGEValue = RightPaneStore.getUrlGEValue();
+        if (urlGEValue != 'null' && urlGEValue.trim() != '') {
+            return this.updateGEAndGetFormData();
+        } else {
+            return RightPaneStore.getFormData().ge;
         }
-    };
-    
+    }
+
     state = {
         ge: this.getGe(),
     };
@@ -56,22 +56,26 @@ class GESelector extends PureComponent<GESelectorProps, GESelectorState> {
     handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
         this.setState({ ge: event.target.value as string });
         RightPaneStore.updateFormValue('ge', event.target.value as string);
-    
-        let stateObj = { url: "url" };
-        const url = new URL(window.location.href)
+
+        const stateObj = { url: 'url' };
+        const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
         urlParam.delete('GE');
-        if (event.target.value as string != "" && event.target.value as string != null && event.target.value as string != "ANY"){
+        if (
+            (event.target.value as string) != '' &&
+            (event.target.value as string) != null &&
+            (event.target.value as string) != 'ANY'
+        ) {
             urlParam.append('GE', event.target.value as string);
             const new_url = `?${urlParam.toString()}`;
-            history.replaceState(stateObj, "url", "/" + new_url);
-        }else{
-            if (urlParam.toString() == "" || urlParam.toString() == null){
+            history.replaceState(stateObj, 'url', '/' + new_url);
+        } else {
+            if (urlParam.toString() == '' || urlParam.toString() == null) {
                 const new_url = `${urlParam.toString()}`;
-                history.replaceState(stateObj, "url", "/" + new_url);
-            }else{
+                history.replaceState(stateObj, 'url', '/' + new_url);
+            } else {
                 const new_url = `?${urlParam.toString()}`;
-                history.replaceState(stateObj, "url", "/" + new_url);
+                history.replaceState(stateObj, 'url', '/' + new_url);
             }
         }
     };

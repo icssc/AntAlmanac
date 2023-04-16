@@ -8,19 +8,19 @@ interface CourseNumberSearchBarState {
 }
 
 class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseNumberSearchBarState> {
-    
-    updateCourseNumAndGetFormData(){
-        RightPaneStore.updateFormValue("courseNumber", RightPaneStore.getUrlCourseNumValue()) 
-        return RightPaneStore.getFormData().courseNumber
-    };
+    updateCourseNumAndGetFormData() {
+        RightPaneStore.updateFormValue('courseNumber', RightPaneStore.getUrlCourseNumValue());
+        return RightPaneStore.getFormData().courseNumber;
+    }
 
-    getCourseNumber(){
-        if (RightPaneStore.getUrlCourseNumValue() != "null" && RightPaneStore.getUrlCourseNumValue() != "" && RightPaneStore.getUrlCourseNumValue() != " "){
-            return this.updateCourseNumAndGetFormData()
-        }else{
-            return RightPaneStore.getFormData().courseNumber
+    getCourseNumber() {
+        const urlCourseNumValue = RightPaneStore.getUrlCourseNumValue();
+        if (urlCourseNumValue != 'null' && urlCourseNumValue.trim() != '') {
+            return this.updateCourseNumAndGetFormData();
+        } else {
+            return RightPaneStore.getFormData().courseNumber;
         }
-    };
+    }
 
     state = {
         courseNumber: this.getCourseNumber(),
@@ -29,22 +29,22 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
     handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         this.setState({ courseNumber: event.target.value });
         RightPaneStore.updateFormValue('courseNumber', event.target.value);
-    
-        let stateObj = { url: "url" };
-        const url = new URL(window.location.href)
+
+        const stateObj = { url: 'url' };
+        const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
         urlParam.delete('courseNumber');
-        if (event.target.value != "" && event.target.value != null){
+        if (event.target.value != '' && event.target.value != null) {
             urlParam.append('courseNumber', event.target.value);
             const new_url = `?${urlParam.toString()}`;
-            history.replaceState(stateObj, "url", "/" + new_url);
-        }else{
-            if (urlParam.toString() == "" || urlParam.toString() == null){
+            history.replaceState(stateObj, 'url', '/' + new_url);
+        } else {
+            if (urlParam.toString() == '' || urlParam.toString() == null) {
                 const new_url = `${urlParam.toString()}`;
-                history.replaceState(stateObj, "url", "/" + new_url);
-            }else{
+                history.replaceState(stateObj, 'url', '/' + new_url);
+            } else {
                 const new_url = `?${urlParam.toString()}`;
-                history.replaceState(stateObj, "url", "/" + new_url);
+                history.replaceState(stateObj, 'url', '/' + new_url);
             }
         }
     };

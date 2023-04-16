@@ -48,22 +48,33 @@ const styles: Styles<Theme, object> = {
 const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) => {
     const { classes, toggleSearch } = props;
 
-    const urlParamValue1 = new URLSearchParams(window.location.search).get("courseCode") != "" && 
-    new URLSearchParams(window.location.search).get("courseCode") != null;
-    const urlParamValue2 = new URLSearchParams(window.location.search).get("courseNumber") != "" && 
-    new URLSearchParams(window.location.search).get("courseNumber") != null;
-    const urlParamValue3 = new URLSearchParams(window.location.search).get("deptLabel") != "" && 
-    new URLSearchParams(window.location.search).get("deptLabel") != null;
-    const urlParamValue4 = new URLSearchParams(window.location.search).get("deptValue") != "" && 
-    new URLSearchParams(window.location.search).get("deptValue") != null;
-    const urlParamValue5 = new URLSearchParams(window.location.search).get("GE") != "" && 
-    new URLSearchParams(window.location.search).get("GE") != null;
-    const urlParamValue6 = new URLSearchParams(window.location.search).get("term") != "" && 
-    new URLSearchParams(window.location.search).get("term") != null;
-    const [showLegacySearch, setShowLegacySearch] = useState(urlParamValue1 == true || 
-        urlParamValue2 == true || urlParamValue3 == true || 
-        urlParamValue4 == true || urlParamValue5 || 
-        urlParamValue6 == true == true ? true : false);
+    const urlParamValue1 =
+        new URLSearchParams(window.location.search).get('courseCode') != '' &&
+        new URLSearchParams(window.location.search).get('courseCode') != null;
+    const urlParamValue2 =
+        new URLSearchParams(window.location.search).get('courseNumber') != '' &&
+        new URLSearchParams(window.location.search).get('courseNumber') != null;
+    const urlParamValue3 =
+        new URLSearchParams(window.location.search).get('deptLabel') != '' &&
+        new URLSearchParams(window.location.search).get('deptLabel') != null;
+    const urlParamValue4 =
+        new URLSearchParams(window.location.search).get('deptValue') != '' &&
+        new URLSearchParams(window.location.search).get('deptValue') != null;
+    const urlParamValue5 =
+        new URLSearchParams(window.location.search).get('GE') != '' &&
+        new URLSearchParams(window.location.search).get('GE') != null;
+    const urlParamValue6 =
+        new URLSearchParams(window.location.search).get('term') != '' &&
+        new URLSearchParams(window.location.search).get('term') != null;
+    const allParamValues = [
+        urlParamValue1,
+        urlParamValue2,
+        urlParamValue3,
+        urlParamValue4,
+        urlParamValue5,
+        urlParamValue6,
+    ];
+    const [showLegacySearch, setShowLegacySearch] = useState(allParamValues.some(Boolean));
 
     const toggleShowLegacySearch = () => {
         setShowLegacySearch(!showLegacySearch);
