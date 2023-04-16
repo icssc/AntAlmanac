@@ -1,14 +1,22 @@
-# Welcome to your CDK TypeScript project!
+# AntAlmanac CDK
 
-This is a blank project for TypeScript development with CDK.
+# Infrastructure Summary
+- Backend
+  - Lambda that runs the backend
+  - DynamoDB for schedule data
+  - Route53 for routing requests from a domain to the backend
+- Frontend
+  - S3 bucket for hosting the frontend
+  - Route53 for routing requests from a domain to the frontend
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+# Note About Env Variables
+Env variables are used to determine what version of a stack to deploy.
+- If 'PR_NUM' exists, we deploy the staging version of a stack
+  - If 'API_SUB_DOMAIN' is not 'dev', we deploy a staging version of the backend
+- Otherwise we deploy the production version of a stack
 
-## Useful commands
-
- * `npm run build`   compile typescript to js
- * `npm run watch`   watch for changes and compile
- * `npm run test`    perform the jest unit tests
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk synth`       emits the synthesized CloudFormation template
+# Running Locally
+_There is almost no reason to run this locally unless you are developing the CDK itself._
+1. `pnpm run build`
+2. Deploy relevant stacks with `cdk deploy <stack-name>`
+ 
