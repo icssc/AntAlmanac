@@ -61,23 +61,13 @@ class GESelector extends PureComponent<GESelectorProps, GESelectorState> {
         const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
         urlParam.delete('GE');
-        if (
-            (event.target.value as string) != '' &&
-            (event.target.value as string) != null &&
-            (event.target.value as string) != 'ANY'
-        ) {
+        const changedValue = event.target.value as string;
+        if (changedValue != '' && changedValue != null && changedValue != 'ANY') {
             urlParam.append('GE', event.target.value as string);
-            const new_url = `?${urlParam.toString()}`;
-            history.replaceState(stateObj, 'url', '/' + new_url);
-        } else {
-            if (urlParam.toString() == '' || urlParam.toString() == null) {
-                const new_url = `${urlParam.toString()}`;
-                history.replaceState(stateObj, 'url', '/' + new_url);
-            } else {
-                const new_url = `?${urlParam.toString()}`;
-                history.replaceState(stateObj, 'url', '/' + new_url);
-            }
         }
+        const param = urlParam.toString();
+        const new_url = `${param.trim() && param !== 'null' ? '?' : ''}${param}`;
+        history.replaceState(stateObj, 'url', '/' + new_url);
     };
 
     componentDidMount() {

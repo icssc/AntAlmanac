@@ -32,17 +32,10 @@ class SectionCodeSearchBar extends PureComponent {
         urlParam.delete('courseCode');
         if (event.target.value != '' && event.target.value != null) {
             urlParam.append('courseCode', event.target.value);
-            const new_url = `?${urlParam.toString()}`;
-            history.replaceState(stateObj, 'url', '/' + new_url);
-        } else {
-            if (urlParam.toString() == '' || urlParam.toString() == null) {
-                const new_url = `${urlParam.toString()}`;
-                history.replaceState(stateObj, 'url', '/' + new_url);
-            } else {
-                const new_url = `?${urlParam.toString()}`;
-                history.replaceState(stateObj, 'url', '/' + new_url);
-            }
         }
+        const param = urlParam.toString();
+        const new_url = `${param.trim() && param !== 'null' ? '?' : ''}${param}`;
+        history.replaceState(stateObj, 'url', '/' + new_url);
     };
 
     componentDidMount() {

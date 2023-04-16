@@ -51,19 +51,10 @@ class TermSelector extends PureComponent<TermSelectorProps> {
         const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
         urlParam.delete('term');
-        if ((event.target.value as string) != '' && (event.target.value as string) != null) {
-            urlParam.append('term', event.target.value as string);
-            const new_url = `?${urlParam.toString()}`;
-            history.replaceState(stateObj, 'url', '/' + new_url);
-        } else {
-            if (urlParam.toString() == '' || urlParam.toString() == null) {
-                const new_url = `${urlParam.toString()}`;
-                history.replaceState(stateObj, 'url', '/' + new_url);
-            } else {
-                const new_url = `?${urlParam.toString()}`;
-                history.replaceState(stateObj, 'url', '/' + new_url);
-            }
-        }
+        urlParam.append('term', event.target.value as string);
+        const param = urlParam.toString();
+        const new_url = `${param && param !== 'null' ? '?' : ''}${param}`;
+        history.replaceState(stateObj, 'url', '/' + new_url);
     };
 
     render() {

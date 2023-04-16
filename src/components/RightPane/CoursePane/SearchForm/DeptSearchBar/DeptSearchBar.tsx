@@ -129,17 +129,10 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
         ) {
             urlParam.append('deptLabel', setDeptValue.deptLabel);
             urlParam.append('deptValue', setDeptValue.deptValue);
-            const new_url = `?${urlParam.toString()}`;
-            history.replaceState(stateObj, 'url', '/' + new_url);
-        } else {
-            if (urlParam.toString() == '' || urlParam.toString() == null) {
-                const new_url = `${urlParam.toString()}`;
-                history.replaceState(stateObj, 'url', '/' + new_url);
-            } else {
-                const new_url = `?${urlParam.toString()}`;
-                history.replaceState(stateObj, 'url', '/' + new_url);
-            }
         }
+        const param = urlParam.toString();
+        const new_url = `${param.trim() && param !== 'null' ? '?' : ''}${param}`;
+        history.replaceState(stateObj, 'url', '/' + new_url);
 
         if (newDept === null || newDept.deptValue === 'ALL') return;
 

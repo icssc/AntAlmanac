@@ -36,17 +36,10 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
         urlParam.delete('courseNumber');
         if (event.target.value != '' && event.target.value != null) {
             urlParam.append('courseNumber', event.target.value);
-            const new_url = `?${urlParam.toString()}`;
-            history.replaceState(stateObj, 'url', '/' + new_url);
-        } else {
-            if (urlParam.toString() == '' || urlParam.toString() == null) {
-                const new_url = `${urlParam.toString()}`;
-                history.replaceState(stateObj, 'url', '/' + new_url);
-            } else {
-                const new_url = `?${urlParam.toString()}`;
-                history.replaceState(stateObj, 'url', '/' + new_url);
-            }
         }
+        const param = urlParam.toString();
+        const new_url = `${param.trim() && param !== 'null' ? '?' : ''}${param}`;
+        history.replaceState(stateObj, 'url', '/' + new_url);
     };
 
     componentDidMount() {
