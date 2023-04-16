@@ -15,7 +15,14 @@ import {
 } from '@material-ui/core/colors';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
-import { Schedule, ScheduleCourse, ScheduleSaveState, ScheduleUndoState, ShortCourseSchedule } from './schedule.types';
+import {
+    Schedule,
+    ScheduleCourse,
+    ScheduleSaveState,
+    ScheduleUndoState,
+    ShortCourseSchedule,
+    HSLColor,
+} from './schedule.types';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { combineSOCObjects, CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
 
@@ -174,6 +181,147 @@ export class Schedules {
         return undefined;
     }
 
+    getColorForNewSection(newSection: ScheduleCourse, scheduleIndex: number): string {
+        function HexToHSL(hex: string): HSLColor {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+            if (!result) {
+                throw new Error('Could not parse Hex Color');
+            }
+
+            const rHex = parseInt(result[1], 16);
+            const gHex = parseInt(result[2], 16);
+            const bHex = parseInt(result[3], 16);
+
+            const r = rHex / 255;
+            const g = gHex / 255;
+            const b = bHex / 255;
+
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+
+            let h = (max + min) / 2;
+            let s = h;
+            let l = h;
+
+            if (max === min) {
+                // Achromatic
+                return { h: 0, s: 0, l };
+            }
+
+            const d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch (max) {
+                case r:
+                    h = (g - b) / d + (g < b ? 6 : 0);
+                    break;
+                case g:
+                    h = (b - r) / d + 2;
+                    break;
+                case b:
+                    h = (r - g) / d + 4;
+                    break;
+            }
+            h /= 6;
+
+            s = s * 100;
+            s = Math.round(s);
+            l = l * 100;
+            l = Math.round(l);
+            h = Math.round(360 * h);
+
+            console.log({ h, s, l });
+
+            return { h, s, l };
+        }
+
+        // TODO: Fix this. Currently { h: 4, s: 100, l: 68 } -> #1027b72, which is obviously wrong
+        function HSLToHex(hsl: HSLColor): string {
+            // Convert HSL values to decimals
+            const h = hsl.h / 360;
+            const s = hsl.s / 100;
+            const l = hsl.l / 100;
+
+            let r, g, b;
+
+            if (s === 0) {
+                // If saturation is 0, the color is gray
+                r = g = b = l;
+            } else {
+                const hue2rgb = (p: number, q: number, t: number) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1 / 6) return p + (q - p) * 6 * t;
+                    if (t < 1 / 2) return q;
+                    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                    return p;
+                };
+
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+
+                r = hue2rgb(p, q, h + 1 / 3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1 / 3);
+            }
+
+            // Convert RGB values to hex string
+            const toHex = (num: number) => {
+                const hex = Math.round(num * 255).toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            };
+
+            console.log(`#${toHex(r)}${toHex(g)}${toHex(b)}`);
+
+            return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+        }
+
+        function generateCloseColor(originalColor: string, setOfUsedColors: Set<string>): string {
+            // Not sure if the colors will look right. I don't know colors.
+
+            // Generate a color that is slightly different from the original color and that is not already used
+            let color: HSLColor = HexToHSL(originalColor);
+
+            // Keep generating until color doesn't match any of the used colors
+            // The new color should be +10 from the original color, then -10, then +20, then -20, etc. in hue and lightness
+            for (let i = 1; setOfUsedColors.has(HSLToHex(color)); i++) {
+                const delta = (i % 2 ? 5 : -5) * i;
+                color = {
+                    h: color.h,
+                    s: color.s + (delta % 100),
+                    l: color.l + (delta % 100),
+                };
+            }
+
+            return HSLToHex(color);
+        }
+
+        // Use the color of the closest section with the same title
+
+        // Array of sections that have the same course title (i.e., they're under the same course),
+        // sorted by their distance from the new section's section code
+        const existingSections: Array<ScheduleCourse> = this.getCurrentCourses()
+            .filter((course) => course.courseTitle === newSection.courseTitle)
+            .sort(
+                // Sort by distance from new section's section code
+                (a, b) =>
+                    Math.abs(parseInt(a.section.sectionCode) - parseInt(newSection.section.sectionCode)) -
+                    Math.abs(parseInt(b.section.sectionCode) - parseInt(newSection.section.sectionCode))
+            );
+
+        const setOfUsedColors = new Set(this.getCurrentCourses().map((course) => course.section.color));
+
+        if (existingSections.length > 0) {
+            const originalColor = existingSections[0].section.color;
+
+            // Generate a slightly different color that does not conflict with any other section in the schedule
+            return generateCloseColor(originalColor, setOfUsedColors);
+        }
+
+        // If there are no existing sections with the same course title, generate a new color
+        return arrayOfColors.find((materialColor) => !setOfUsedColors.has(materialColor)) || '#5ec8e0';
+    }
+
     /**
      * Adds a course to a given schedule index
      * Sets color to an unused color in set, also will not add class if already exists
@@ -185,37 +333,23 @@ export class Schedules {
         if (addUndoState) {
             this.addUndoState();
         }
-        let courseToAdd = this.getExistingCourse(newCourse.section.sectionCode, newCourse.term);
-        let color: string | undefined = undefined;
-        if (courseToAdd === undefined) {
-            for (const course of this.getCurrentCourses()) {
-                if (course.courseTitle === newCourse.courseTitle) {
-                    color = course.section.color;
-                    break;
-                }
-            }
 
-            if (color === undefined) {
-                const setOfUsedColors = new Set(this.getCurrentCourses().map((course) => course.section.color));
-
-                color = arrayOfColors.find((materialColor) => !setOfUsedColors.has(materialColor)) || '#5ec8e0';
-            }
-            courseToAdd = {
-                ...newCourse,
-                section: {
-                    ...newCourse.section,
-                    color,
-                },
-            };
-        } else {
-            color = courseToAdd.section.color;
+        const existingSection = this.getExistingCourse(newCourse.section.sectionCode, newCourse.term);
+        if (existingSection) {
+            return existingSection;
         }
 
-        if (!this.doesCourseExistInSchedule(newCourse.section.sectionCode, newCourse.term, scheduleIndex)) {
-            this.schedules[scheduleIndex].courses.push(courseToAdd);
-        }
+        const sectionToAdd = {
+            ...newCourse,
+            section: {
+                ...newCourse.section,
+                color: this.getColorForNewSection(newCourse, scheduleIndex),
+            },
+        };
 
-        return courseToAdd;
+        this.schedules[scheduleIndex].courses.push(sectionToAdd);
+
+        return sectionToAdd;
     }
 
     /**
