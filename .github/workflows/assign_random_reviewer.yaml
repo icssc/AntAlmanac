@@ -4,9 +4,9 @@ on:
     types: [opened, ready_for_review, reopened]
 
 jobs:
-  test:
+  assign_reviewer:
     runs-on: ubuntu-latest
-    if: "!github.event.pull_request.draft"
+    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v3
       - uses: uesteibar/reviewer-lottery@v3
