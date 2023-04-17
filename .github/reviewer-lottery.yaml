@@ -1,0 +1,7 @@
+groups:
+  - name: devs
+    reviewers: 1
+    usernames:
+      - Voark
+      - EricPedley
+      - bevm0
