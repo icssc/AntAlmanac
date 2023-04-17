@@ -92,7 +92,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
                 <DialogTitle>{rename ? 'Rename Schedule' : 'Add a New Schedule'}</DialogTitle>
                 <DialogContent>
                     <TextField
-                        // We disable autofocus in order to be consistent with the Save, Load, and Import dialogs
+                        // We enable autofocus in order to be consistent with the Save, Load, and Import dialogs
                         // eslint-disable-next-line jsx-a11y/no-autofocus
                         autoFocus
                         fullWidth
