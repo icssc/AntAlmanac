@@ -42,7 +42,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
         }
     };
 
-    const handleClose = () => {
+    const handleCancel = () => {
         setIsOpen(false);
         // If the user cancelled renaming the schedule, the schedule name is changed to its original value;
         // if the user cancelled adding a new schedule, the schedule name is changed to the default schedule name
@@ -92,6 +92,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
                 <DialogTitle>{rename ? 'Rename Schedule' : 'Add a New Schedule'}</DialogTitle>
                 <DialogContent>
                     <TextField
+                        // We disable autofocus in order to be consistent with the Save, Load, and Import dialogs
                         // eslint-disable-next-line jsx-a11y/no-autofocus
                         autoFocus
                         fullWidth
@@ -103,7 +104,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDarkMode() ? 'secondary' : 'primary'}>
+                    <Button onClick={handleCancel} color={isDarkMode() ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>
                     <Button
