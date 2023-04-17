@@ -3,6 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import React, { useState } from 'react';
 
+import { MOBILE_BREAKPOINT } from '../../../globals';
 import { logAnalytics } from '$lib/analytics';
 
 const styles = {
@@ -32,7 +33,7 @@ function CourseInfoButton({
     analyticsCategory,
 }: CourseInfoButtonProps) {
     const [popupAnchor, setPopupAnchor] = useState<HTMLElement | null>(null);
-    const isMobileScreen = useMediaQuery('(max-width: 750px)');
+    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
     return (
         <>
             <Button

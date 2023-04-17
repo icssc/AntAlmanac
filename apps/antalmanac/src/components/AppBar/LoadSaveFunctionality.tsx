@@ -10,14 +10,17 @@ import {
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { CloudDownload, Save } from '@material-ui/icons';
-import { ChangeEvent, PureComponent, useEffect } from 'react';
+import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 
+import { LoadingButton } from '@mui/lab';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
 
 interface LoadSaveButtonBaseProps {
     action: typeof saveSchedule;
-    actionName: string;
+    actionName: 'Save' | 'Load';
+    disabled: boolean;
+    loading: boolean;
 }
 
 interface LoadSaveButtonBaseState {
@@ -82,13 +85,15 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
     render() {
         return (
             <>
-                <Button
+                <LoadingButton
                     onClick={this.handleOpen}
                     color="inherit"
                     startIcon={this.props.actionName === 'Save' ? <Save /> : <CloudDownload />}
+                    disabled={this.props.disabled}
+                    loading={this.props.loading}
                 >
                     {this.props.actionName}
-                </Button>
+                </LoadingButton>
                 <Dialog open={this.state.isOpen}>
                     <DialogTitle>{this.props.actionName}</DialogTitle>
                     <DialogContent>
@@ -132,21 +137,34 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
 }
 
 const LoadSaveScheduleFunctionality = () => {
+    const [loading, setLoading] = useState(false);
+
+    const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
+        setLoading(true);
+        await loadSchedule(userID, rememberMe);
+        setLoading(false);
+    };
+
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
             const savedUserID = window.localStorage.getItem('userID');
 
             if (savedUserID != null) {
                 // this `void` is for eslint "no floating promises"
-                void loadSchedule(savedUserID, true);
+                void loadScheduleAndSetLoading(savedUserID, true);
             }
         }
     }, []);
 
     return (
         <>
-            <LoadSaveButtonBase actionName={'Save'} action={saveSchedule} />
-            <LoadSaveButtonBase actionName={'Load'} action={loadSchedule} />
+            <LoadSaveButtonBase actionName={'Save'} action={saveSchedule} disabled={loading} loading={false} />
+            <LoadSaveButtonBase
+                actionName={'Load'}
+                action={loadScheduleAndSetLoading}
+                disabled={false}
+                loading={loading}
+            />
         </>
     );
 };

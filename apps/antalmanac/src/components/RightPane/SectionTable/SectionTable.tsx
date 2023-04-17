@@ -11,10 +11,10 @@ import {
     useMediaQuery,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { Assessment, Assignment, Help, RateReview } from '@material-ui/icons';
+import { Assessment, Help, RateReview } from '@material-ui/icons';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
-
 // import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back and restore the files (https://github.com/icssc/AntAlmanac/tree/5e89e035e66f00608042871d43730ba785f756b0/src/components/RightPane/SectionTable/EnrollmentGraph)
+import { MOBILE_BREAKPOINT } from '../../../globals';
 import CourseInfoBar from './CourseInfoBar';
 import CourseInfoButton from './CourseInfoButton';
 import GradesPopup from './GradesPopup';
@@ -68,7 +68,7 @@ const SectionTable = (props: SectionTableProps) => {
     const { classes, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames, analyticsCategory } = props;
     const courseId = courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     const encodedDept = encodeURIComponent(courseDetails.deptCode);
-    const isMobileScreen = useMediaQuery('(max-width: 750px)');
+    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
     return (
         <>
@@ -83,21 +83,13 @@ const SectionTable = (props: SectionTableProps) => {
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
                     courseNumber={courseDetails.courseNumber}
+                    prerequisiteLink={courseDetails.prerequisiteLink}
                     analyticsCategory={analyticsCategory}
                 />
 
                 {/* Temporarily remove "Past Enrollment" until data on PeterPortal API */}
                 {/* <AlmanacGraph courseDetails={courseDetails} />  */}
 
-                {courseDetails.prerequisiteLink && (
-                    <CourseInfoButton
-                        analyticsCategory={analyticsCategory}
-                        analyticsAction={analyticsEnum.classSearch.actions.CLICK_PREREQUISITES}
-                        text={isMobileScreen ? 'Prereqs' : 'Prerequisites'}
-                        icon={<Assignment />}
-                        redirectLink={courseDetails.prerequisiteLink}
-                    />
-                )}
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
                     analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
