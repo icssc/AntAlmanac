@@ -1,0 +1,42 @@
+name: 'Delete stack'
+
+on:
+  workflow_call:
+    inputs:
+      stack_name:
+        description: 'The name of the stack to delete'
+        required: true
+        type: string
+
+jobs:
+  delete_stack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout antalmanac
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          role-duration-seconds: 2400
+
+      - name: wait for stack stabilize
+        id: stabilize-stack
+        uses: ./.github/actions/stabilize_stack
+        with:
+          stack_name: ${{ inputs.stack_name }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
+
+      - name: delete the stack
+        id: delete-stack
+        if: steps.stabilize-stack.outputs.stack-exists
+        run: aws cloudformation delete-stack --stack-name ${{ inputs.stack_name }}
+        continue-on-error: true
+
+      - name: wait for stack delete
+        if: steps.delete-stack.outcome == 'success'
+        run: aws cloudformation wait stack-delete-complete --stack-name ${{ inputs.stack_name }}
