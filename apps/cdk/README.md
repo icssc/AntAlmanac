@@ -6,7 +6,7 @@
   - DynamoDB for schedule data
   - Route53 for routing requests from a domain to the backend
 - Frontend
-  - S3 bucket for hosting the frontend
+  - S3 bucket for hosting the frontend (for staging and dev, prod is hosted on GitHub pages)
   - Route53 for routing requests from a domain to the frontend
 
 # Note About Env Variables
