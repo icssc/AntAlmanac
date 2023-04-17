@@ -256,7 +256,7 @@ importers:
   apps/cdk:
     dependencies:
       antalmanac:
-        specifier: workspace:*
+        specifier: '*'
         version: link:../antalmanac
       aws-cdk-lib:
         specifier: ^2.66.1
