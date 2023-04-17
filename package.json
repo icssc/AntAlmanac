@@ -4,13 +4,13 @@
   "private": true,
   "scripts": {
     "prepare": "husky install",
-    "start": "turbo start --filter=antalmanac",
-    "start:all": "VITE_LOCAL_SERVER=true turbo start",
-    "build": "turbo build --filter=antalmanac",
-    "build:all": "turbo build",
-    "deploy": "turbo deploy --filter=antalmanac",
+    "start:aa": "turbo start --filter=antalmanac",
+    "start": "VITE_LOCAL_SERVER=true turbo start",
+    "build:aa": "turbo build --filter=antalmanac",
+    "build": "turbo build",
+    "deploy:aa": "turbo deploy --filter=antalmanac",
     "deploy:cdk": "turbo deploy --filter=cdk",
-    "deploy:all": "turbo deploy"
+    "deploy": "turbo deploy"
   },
   "workspaces": [
     "apps/*"
