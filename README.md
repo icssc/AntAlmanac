@@ -1,4 +1,4 @@
-![AntAlmanac](/public/banner.png)
+![AntAlmanac](apps/antalmanac/public/banner.png)
 
 ## About
 
