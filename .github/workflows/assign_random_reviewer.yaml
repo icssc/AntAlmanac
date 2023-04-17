@@ -1,15 +1,16 @@
 name: "Assign Random Reviewer"
 on:
+  pull_request:
+    types: [opened, ready_for_review, reopened]
   pull_request_target:
-    types: [opened, ready_for_review, reopened, synchronize]
-
-permissions:
-  id-token: read
+    types: [opened, ready_for_review, reopened]
 
 jobs:
   assign_reviewer:
     runs-on: ubuntu-latest
-#    if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v3
-#      - uses: uesteibar/reviewer-lottery@v3
+      - uses: uesteibar/reviewer-lottery@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
