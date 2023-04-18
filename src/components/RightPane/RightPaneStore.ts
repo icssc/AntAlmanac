@@ -42,12 +42,13 @@ class RightPaneStore extends EventEmitter {
         this.activeTab = 0;
         this.doDisplaySearch = true;
         this.openSpotAlertPopoverActive = false;
-        this.urlCourseCodeValue = String(new URLSearchParams(window.location.search).get('courseCode'));
-        this.urlTermValue = String(new URLSearchParams(window.location.search).get('term'));
-        this.urlGEValue = String(new URLSearchParams(window.location.search).get('GE'));
-        this.urlCourseNumValue = String(new URLSearchParams(window.location.search).get('courseNumber'));
-        this.urlDeptLabel = String(new URLSearchParams(window.location.search).get('deptLabel'));
-        this.urlDeptValue = String(new URLSearchParams(window.location.search).get('deptValue'));
+        const search = new URLSearchParams(window.location.search);
+        this.urlCourseCodeValue = search.get('courseCode') || '';
+        this.urlTermValue = search.get('term') || '';
+        this.urlGEValue = search.get('GE') || '';
+        this.urlCourseNumValue = search.get('courseNumber') || '';
+        this.urlDeptLabel = search.get('deptLabel') || '';
+        this.urlDeptValue = search.get('deptValue') || '';
     }
 
     getFormData = () => {
