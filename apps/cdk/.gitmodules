@@ -1,0 +1,6 @@
+[submodule "functions/SOCSpider"]
+	path = functions/SOCSpider
+	url = https://github.com/icssc-projects/SOCSpider.git
+[submodule "functions/antalmanac-backend"]
+	path = functions/antalmanac-backend
+	url = https://github.com/icssc-projects/antalmanac-backend.git
