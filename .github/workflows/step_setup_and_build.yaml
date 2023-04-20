@@ -44,9 +44,9 @@ jobs:
 
       - name: set api subdomain
         run: |
-          if [ ${{ inputs.prod }} == 'true' ]; then
-            echo "nodeEnv=production" >> $GITHUB_ENV
-          elif [ ${{ steps.backend-changed.outputs.backend }} == 'true' ]; then
+          if [ ${{ inputs.prod }} == true ]; then
+            true
+          elif [ ${{ steps.backend-changed.outputs.backend }} == true ]; then
             echo "apiSubDomain=staging-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
           else
             echo "apiSubDomain=dev" >> $GITHUB_ENV

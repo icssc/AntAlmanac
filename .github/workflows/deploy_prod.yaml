@@ -13,6 +13,8 @@ concurrency:
 jobs:
   setup_and_build:
     uses: ./.github/workflows/step_setup_and_build.yaml
+    with:
+      prod: true
     secrets: inherit
 
   deploy_dev_backend:
