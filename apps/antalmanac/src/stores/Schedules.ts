@@ -1,17 +1,11 @@
 import {
     amber,
     blue,
-    blueGrey,
-    cyan,
     deepPurple,
     green,
-    indigo,
-    lightGreen,
-    lime,
     pink,
     purple,
-    red,
-    teal,
+    deepOrange,
 } from '@material-ui/core/colors';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
@@ -26,20 +20,14 @@ import {
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { combineSOCObjects, CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
 
-const arrayOfColors = [
-    red[500],
+const defaultColors = [
+    blue[500],
     pink[500],
     purple[500],
-    indigo[500],
-    deepPurple[500],
-    blue[500],
     green[500],
-    cyan[500],
-    teal[500],
-    lightGreen[500],
-    lime[500],
     amber[500],
-    blueGrey[500],
+    deepPurple[500],
+    deepOrange[500],
 ];
 
 /**
@@ -210,7 +198,7 @@ function getColorForNewSection(newSection: ScheduleCourse, sectionsInSchedule: S
     }
 
     // If there are no existing sections with the same course title, generate a new color
-    return arrayOfColors.find((materialColor) => !usedColors.has(materialColor)) || '#5ec8e0';
+    return defaultColors.find((materialColor) => !usedColors.has(materialColor)) || '#5ec8e0';
 }
 
 export class Schedules {
