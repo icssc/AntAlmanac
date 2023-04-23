@@ -42,6 +42,177 @@ const arrayOfColors = [
     blueGrey[500],
 ];
 
+/**
+ * Converts a hex color to HSL
+ * Assumes the hex color is in the format #RRGGBB
+ * Adapted from https://stackoverflow.com/a/9493060
+ *
+ * @param hex str: hex string representation of a color
+ *
+ * @return An HSLColor object where h, s, and l are in the range [0, 1]
+ */
+function HexToHSL(hex: string): HSLColor {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+    if (!result) {
+        throw new Error('Could not parse Hex Color');
+    }
+
+    const r = parseInt(result[1], 16) / 255;
+    const g = parseInt(result[2], 16) / 255;
+    const b = parseInt(result[3], 16) / 255;
+
+    const max = Math.max(r, g, b),
+        min = Math.min(r, g, b);
+    let h,
+        s,
+        l = (max + min) / 2;
+
+    if (max == min) {
+        h = s = 0; // achromatic
+    } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+            case r:
+                h = (g - b) / d + (g < b ? 6 : 0);
+                break;
+            case g:
+                h = (b - r) / d + 2;
+                break;
+            case b:
+                h = (r - g) / d + 4;
+                break;
+            default:
+                throw new Error('Error converting hex to hsl');
+        }
+        h /= 6;
+    }
+
+    [h, s, l] = [h, s, l].map((val: number) => Math.round(val * 100) / 100);
+
+    return { h, s, l };
+}
+
+/**
+ * Converts HSL color in the range [0, 1] to a hex string ("#RRGGBB")
+ * Adapted from https://stackoverflow.com/a/9493060
+ */
+function HSLToHex({ h, s, l }: HSLColor): string {
+    // Check that h, s, and l are in the range [0, 1]
+    if (h < 0 || h > 1 || s < 0 || s > 1 || l < 0 || l > 1) {
+        throw new Error('Invalid HSLColor');
+    }
+
+    let r, g, b;
+
+    if (s == 0) {
+        r = g = b = l; // achromatic
+    } else {
+        const hue2rgb = function hue2rgb(p: number, q: number, t: number) {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1 / 6) return p + (q - p) * 6 * t;
+            if (t < 1 / 2) return q;
+            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+            return p;
+        };
+
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1 / 3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1 / 3);
+    }
+
+    [r, g, b] = [r, g, b].map((x) =>
+        Math.round(x * 255)
+            .toString(16)
+            .padStart(2, '0')
+    );
+
+    return `#${r}${g}${b}`;
+}
+
+/**
+ * Checks if an HSL color is contained in an array of colors, within a delta
+ */
+function colorIsContained(color: HSLColor, usedColors: Iterable<HSLColor>, delta: number): boolean {
+    for (const usedColor of usedColors) {
+        if (
+            Math.abs(usedColor.h - color.h) < delta &&
+            Math.abs(usedColor.s - color.s) < delta &&
+            Math.abs(usedColor.l - color.l) < delta
+        )
+            return true;
+    }
+    return false;
+}
+
+/**
+ * Takes in a hex color and returns a hex color that is close to the original but not already used.
+ * Takes the hue, saturation, and lightness of the original color and adding or subtracting some small amount
+ * from hue and saturation until there's an unused color
+ *
+ *
+ * @param originalColor string: Hex color ("#RRGGBB") as a basis.
+ * @param usedColors Set<string>: A set of hex colors that are already used.
+ * @param variation number [0-1]: The step size to use when generating a new color.
+ *      The bigger the number, the more different the new color will be.
+ *
+ * @return Unused hex color that is close to the original color ("#RRGGBB").
+ */
+// Color theory is complicated.
+// The perception of color differences cannot be described by a simple formula, or any for that matter (AFAIK).
+// Credit to https://sighack.com/post/procedural-color-algorithms-color-variations for procedural color ideas.
+function generateCloseColor(originalColor: string, usedColors: Set<string>, variation = 0.02): string {
+    const usedColorsHSL = [...usedColors].map(HexToHSL);
+    const originalHSL = HexToHSL(originalColor);
+
+    // Generate a color that is slightly different from the original color and that is not already used
+    let color: HSLColor = originalHSL;
+
+    // Keep generating until color doesn't match any of the used colors
+    for (let delta = variation; colorIsContained(color, usedColorsHSL, 0.01); delta += variation) {
+        color = {
+            h: Math.round(((color.h + delta * (originalHSL.h <= 0.5 ? 1 : -1)) * 100) % 100) / 100,
+            // h: color.h,
+            s: Math.round(((color.s + delta * (originalHSL.s <= 0.5 ? 1 : -1)) * 100) % 100) / 100,
+            // l: Math.round((color.l + delta) * 100 % 100)/100,
+            l: color.l,
+        };
+    }
+
+    return HSLToHex(color);
+}
+
+function getColorForNewSection(newSection: ScheduleCourse, sectionsInSchedule: ScheduleCourse[]): string {
+    // Use the color of the closest section with the same title
+
+    // Array of sections that have the same course title (i.e., they're under the same course),
+    // sorted by their distance from the new section's section code
+    const existingSections: Array<ScheduleCourse> = sectionsInSchedule
+        .filter((course) => course.courseTitle === newSection.courseTitle)
+        .sort(
+            // Sort by distance from new section's section code
+            (a, b) =>
+                Math.abs(parseInt(a.section.sectionCode) - parseInt(newSection.section.sectionCode)) -
+                Math.abs(parseInt(b.section.sectionCode) - parseInt(newSection.section.sectionCode))
+        );
+
+    const usedColors = new Set(sectionsInSchedule.map((course) => course.section.color));
+
+    if (existingSections.length > 0) {
+        const originalColor = existingSections[0].section.color;
+
+        // Generate a slightly different color that does not conflict with any other section in the schedule
+        return generateCloseColor(originalColor, usedColors);
+    }
+
+    // If there are no existing sections with the same course title, generate a new color
+    return arrayOfColors.find((materialColor) => !usedColors.has(materialColor)) || '#5ec8e0';
+}
+
 export class Schedules {
     private schedules: Schedule[];
     private currentScheduleIndex: number;
@@ -181,150 +352,10 @@ export class Schedules {
         return undefined;
     }
 
-    getColorForNewSection(newSection: ScheduleCourse, scheduleIndex: number): string {
-        function HexToHSL(hex: string): HSLColor {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-
-            if (!result) {
-                throw new Error('Could not parse Hex Color');
-            }
-
-            const rHex = parseInt(result[1], 16);
-            const gHex = parseInt(result[2], 16);
-            const bHex = parseInt(result[3], 16);
-
-            const r = rHex / 255;
-            const g = gHex / 255;
-            const b = bHex / 255;
-
-            const max = Math.max(r, g, b);
-            const min = Math.min(r, g, b);
-
-            let h = (max + min) / 2;
-            let s = h;
-            let l = h;
-
-            if (max === min) {
-                // Achromatic
-                return { h: 0, s: 0, l };
-            }
-
-            const d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            switch (max) {
-                case r:
-                    h = (g - b) / d + (g < b ? 6 : 0);
-                    break;
-                case g:
-                    h = (b - r) / d + 2;
-                    break;
-                case b:
-                    h = (r - g) / d + 4;
-                    break;
-            }
-            h /= 6;
-
-            s = s * 100;
-            s = Math.round(s);
-            l = l * 100;
-            l = Math.round(l);
-            h = Math.round(360 * h);
-
-            console.log({ h, s, l });
-
-            return { h, s, l };
-        }
-
-        // TODO: Fix this. Currently { h: 4, s: 100, l: 68 } -> #1027b72, which is obviously wrong
-        function HSLToHex(hsl: HSLColor): string {
-            // Convert HSL values to decimals
-            const h = hsl.h / 360;
-            const s = hsl.s / 100;
-            const l = hsl.l / 100;
-
-            let r, g, b;
-
-            if (s === 0) {
-                // If saturation is 0, the color is gray
-                r = g = b = l;
-            } else {
-                const hue2rgb = (p: number, q: number, t: number) => {
-                    if (t < 0) t += 1;
-                    if (t > 1) t -= 1;
-                    if (t < 1 / 6) return p + (q - p) * 6 * t;
-                    if (t < 1 / 2) return q;
-                    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-                    return p;
-                };
-
-                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-                const p = 2 * l - q;
-
-                r = hue2rgb(p, q, h + 1 / 3);
-                g = hue2rgb(p, q, h);
-                b = hue2rgb(p, q, h - 1 / 3);
-            }
-
-            // Convert RGB values to hex string
-            const toHex = (num: number) => {
-                const hex = Math.round(num * 255).toString(16);
-                return hex.length === 1 ? '0' + hex : hex;
-            };
-
-            console.log(`#${toHex(r)}${toHex(g)}${toHex(b)}`);
-
-            return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-        }
-
-        function generateCloseColor(originalColor: string, setOfUsedColors: Set<string>): string {
-            // Not sure if the colors will look right. I don't know colors.
-
-            // Generate a color that is slightly different from the original color and that is not already used
-            let color: HSLColor = HexToHSL(originalColor);
-
-            // Keep generating until color doesn't match any of the used colors
-            // The new color should be +10 from the original color, then -10, then +20, then -20, etc. in hue and lightness
-            for (let i = 1; setOfUsedColors.has(HSLToHex(color)); i++) {
-                const delta = (i % 2 ? 5 : -5) * i;
-                color = {
-                    h: color.h,
-                    s: color.s + (delta % 100),
-                    l: color.l + (delta % 100),
-                };
-            }
-
-            return HSLToHex(color);
-        }
-
-        // Use the color of the closest section with the same title
-
-        // Array of sections that have the same course title (i.e., they're under the same course),
-        // sorted by their distance from the new section's section code
-        const existingSections: Array<ScheduleCourse> = this.getCurrentCourses()
-            .filter((course) => course.courseTitle === newSection.courseTitle)
-            .sort(
-                // Sort by distance from new section's section code
-                (a, b) =>
-                    Math.abs(parseInt(a.section.sectionCode) - parseInt(newSection.section.sectionCode)) -
-                    Math.abs(parseInt(b.section.sectionCode) - parseInt(newSection.section.sectionCode))
-            );
-
-        const setOfUsedColors = new Set(this.getCurrentCourses().map((course) => course.section.color));
-
-        if (existingSections.length > 0) {
-            const originalColor = existingSections[0].section.color;
-
-            // Generate a slightly different color that does not conflict with any other section in the schedule
-            return generateCloseColor(originalColor, setOfUsedColors);
-        }
-
-        // If there are no existing sections with the same course title, generate a new color
-        return arrayOfColors.find((materialColor) => !setOfUsedColors.has(materialColor)) || '#5ec8e0';
-    }
-
     /**
      * Adds a course to a given schedule index
      * Sets color to an unused color in set, also will not add class if already exists
+     * @param newCourse The course to add
      * @param scheduleIndex Defaults to current schedule
      * @param addUndoState Defaults to true
      * @returns The course object that was added.
@@ -343,7 +374,7 @@ export class Schedules {
             ...newCourse,
             section: {
                 ...newCourse.section,
-                color: this.getColorForNewSection(newCourse, scheduleIndex),
+                color: getColorForNewSection(newCourse, this.getCurrentCourses()),
             },
         };
 
