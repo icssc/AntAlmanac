@@ -32,7 +32,6 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
     const [scheduleName, setScheduleName] = useState(
         scheduleRenameIndex !== undefined ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`
     );
-    const [clickedText, setClickedText] = useState(false);
 
     const handleOpen: React.MouseEventHandler<HTMLLIElement> = (event) => {
         // We need to stop propagation so that the select menu won't close
@@ -43,38 +42,30 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
         }
     };
 
-    const handleClose = () => {
+    const handleCancel = () => {
         setIsOpen(false);
         // If the user cancelled renaming the schedule, the schedule name is changed to its original value;
         // if the user cancelled adding a new schedule, the schedule name is changed to the default schedule name
         setScheduleName(rename ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`);
-        setClickedText(false);
     };
 
     const handleNameChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setScheduleName(event.target.value);
     };
 
-    const handleAdd = () => {
-        onClose();
-        addSchedule(scheduleName);
-        setIsOpen(false);
-        setScheduleName('');
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        event.stopPropagation();
+        if (event.key === 'Enter') {
+            submitName();
+        }
     };
 
-    const handleRename = () => {
+    const submitName = () => {
         onClose();
-        renameSchedule(scheduleName, scheduleRenameIndex as number); // typecast works b/c this function only runs when `const rename = scheduleRenameIndex !== undefined` is true.
-        setIsOpen(false);
-        setScheduleName('');
-    };
-
-    const handleTextClick = () => {
-        // When the user first clicks on the text field when they are adding a
-        // new schedule, erase the default schedule name and make the text field empty
-        if (!rename && !clickedText) {
-            setScheduleName('');
-            setClickedText(true);
+        if (rename) {
+            renameSchedule(scheduleName, scheduleRenameIndex as number); // typecast works b/c this function only runs when `const rename = scheduleRenameIndex !== undefined` is true.
+        } else {
+            addSchedule(scheduleName);
         }
     };
 
@@ -93,29 +84,31 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
                 </MenuItem>
             )}
             <Dialog
-                open={isOpen}
-                onKeyDown={(event) => event.stopPropagation()}
-                onClick={(event) => event.stopPropagation()}
                 fullWidth
+                open={isOpen}
+                onKeyDown={handleKeyDown}
+                onClick={(event: React.MouseEvent<Element, MouseEvent>) => event.stopPropagation()}
             >
                 <DialogTitle>{rename ? 'Rename Schedule' : 'Add a New Schedule'}</DialogTitle>
                 <DialogContent>
                     <TextField
+                        // We enable autofocus in order to be consistent with the Save, Load, and Import dialogs
+                        // eslint-disable-next-line jsx-a11y/no-autofocus
+                        autoFocus
+                        fullWidth
                         className={classes.textField}
                         label="Name"
                         placeholder={`Schedule ${scheduleNames.length + 1}`}
                         onChange={handleNameChange}
                         value={scheduleName}
-                        onClick={handleTextClick}
-                        fullWidth
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDarkMode() ? 'secondary' : 'primary'}>
+                    <Button onClick={handleCancel} color={isDarkMode() ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>
                     <Button
-                        onClick={rename ? handleRename : handleAdd}
+                        onClick={submitName}
                         variant="contained"
                         color="primary"
                         disabled={scheduleName.trim() === ''}
