@@ -50,14 +50,21 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
 
     const search = new URLSearchParams(window.location.search);
 
+    const getCourseCode = search.get('courseCode');
+    const getCourseNumber = search.get('courseNumber');
+    const getDeptLabel = search.get('deptLabel');
+    const getGE = search.get('GE');
+    const getDeptValue = search.get('deptValue');
+    const getTerm = search.get('term');
+
     const [showLegacySearch, setShowLegacySearch] = useState(
         [
-            search.get('courseCode') != '' && search.get('courseCode') != null,
-            search.get('courseNumber') != '' && search.get('courseNumber') != null,
-            search.get('deptLabel') != '' && search.get('deptLabel') != null,
-            search.get('GE') != '' && search.get('GE') != null,
-            search.get('deptValue') != '' && search.get('deptValue') != null,
-            search.get('term') != '' && search.get('term') != null,
+            Boolean(getCourseCode),
+            Boolean(getCourseNumber),
+            Boolean(getDeptLabel),
+            Boolean(getGE),
+            Boolean(getDeptValue),
+            Boolean(getTerm),
         ].some(Boolean)
     );
 
