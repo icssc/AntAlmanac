@@ -55,8 +55,8 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
             search.get('courseCode') != '' && search.get('courseCode') != null,
             search.get('courseNumber') != '' && search.get('courseNumber') != null,
             search.get('deptLabel') != '' && search.get('deptLabel') != null,
-            search.get('deptValue') != '' && search.get('deptValue') != null,
             search.get('GE') != '' && search.get('GE') != null,
+            search.get('deptValue') != '' && search.get('deptValue') != null,
             search.get('term') != '' && search.get('term') != null,
         ].some(Boolean)
     );
