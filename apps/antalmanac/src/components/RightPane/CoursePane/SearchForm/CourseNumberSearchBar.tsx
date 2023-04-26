@@ -14,12 +14,9 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
     }
 
     getCourseNumber() {
-        const urlCourseNumValue = RightPaneStore.getUrlCourseNumValue();
-        if (urlCourseNumValue != 'null' && urlCourseNumValue.trim() != '') {
-            return this.updateCourseNumAndGetFormData();
-        } else {
-            return RightPaneStore.getFormData().courseNumber;
-        }
+      return RightPaneStore.getUrlCourseNumValue().trim() 
+        ? this.updateCourseNumAndGetFormData() 
+        : RightPaneStore.getFormData().courseNumber;
     }
 
     state = {
@@ -29,17 +26,15 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
     handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         this.setState({ courseNumber: event.target.value });
         RightPaneStore.updateFormValue('courseNumber', event.target.value);
-
-        const stateObj = { url: 'url' };
         const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
         urlParam.delete('courseNumber');
-        if (event.target.value != '' && event.target.value != null) {
+        if (event.target.value) {
             urlParam.append('courseNumber', event.target.value);
         }
         const param = urlParam.toString();
-        const new_url = `${param.trim() && param !== 'null' ? '?' : ''}${param}`;
-        history.replaceState(stateObj, 'url', '/' + new_url);
+        const new_url = `${param.trim() ? '?' : ''}${param}`;
+        history.replaceState({ url: 'url' }, 'url', '/' + new_url);
     };
 
     componentDidMount() {
