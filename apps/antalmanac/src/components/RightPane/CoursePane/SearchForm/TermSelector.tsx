@@ -19,12 +19,9 @@ class TermSelector extends PureComponent<TermSelectorProps> {
     }
 
     getTerm() {
-        const urlTermValue = RightPaneStore.getUrlTermValue();
-        if (urlTermValue != 'null' && urlTermValue.trim() != '') {
-            return this.updateTermAndGetFormData();
-        } else {
-            return RightPaneStore.getFormData().term;
-        }
+      return RightPaneStore.getUrlTermValue() 
+        ? this.updateTermAndGetFormData()
+        : RightPaneStore.getFormData().term
     }
 
     state = {

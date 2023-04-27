@@ -30,6 +30,7 @@ const styles = {
 interface GESelectorProps {
     classes: ClassNameMap;
 }
+
 interface GESelectorState {
     ge: string;
 }
@@ -53,20 +54,20 @@ class GESelector extends PureComponent<GESelectorProps, GESelectorState> {
         ge: this.getGe(),
     };
 
+
     handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
         this.setState({ ge: event.target.value as string });
         RightPaneStore.updateFormValue('ge', event.target.value as string);
-
         const stateObj = { url: 'url' };
         const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
         urlParam.delete('GE');
         const changedValue = event.target.value as string;
-        if (changedValue != '' && changedValue != null && changedValue != 'ANY') {
+        if (changedValue && changedValue != 'ANY') {
             urlParam.append('GE', event.target.value as string);
         }
         const param = urlParam.toString();
-        const new_url = `${param.trim() && param !== 'null' ? '?' : ''}${param}`;
+        const new_url = `${param.trim() ? '?' : ''}${param}`;
         history.replaceState(stateObj, 'url', '/' + new_url);
     };
 

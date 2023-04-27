@@ -35,6 +35,7 @@ class RightPaneStore extends EventEmitter {
     private urlCourseNumValue: string;
     private urlDeptLabel: string;
     private urlDeptValue: string;
+
     constructor() {
         super();
         this.setMaxListeners(15);
@@ -84,7 +85,7 @@ class RightPaneStore extends EventEmitter {
         this.emit('formReset');
     };
 
-    handleTabChange = (event: unknown, value: number) => {
+    handleTabChange = (_event: unknown, value: number) => {
         this.activeTab = value;
         this.emit('tabChange', value);
     };
