@@ -13,8 +13,19 @@ interface TermSelectorProps {
 }
 
 class TermSelector extends PureComponent<TermSelectorProps> {
+    updateTermAndGetFormData() {
+        RightPaneStore.updateFormValue('term', RightPaneStore.getUrlTermValue());
+        return RightPaneStore.getFormData().term;
+    }
+
+    getTerm() {
+      return RightPaneStore.getUrlTermValue() 
+        ? this.updateTermAndGetFormData()
+        : RightPaneStore.getFormData().term
+    }
+
     state = {
-        term: RightPaneStore.getFormData().term,
+        term: this.getTerm(),
     };
 
     resetField = () => {
@@ -32,6 +43,15 @@ class TermSelector extends PureComponent<TermSelectorProps> {
     handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
         this.setState({ term: event.target.value });
         this.props.changeState(this.props.fieldName, event.target.value as string);
+
+        const stateObj = { url: 'url' };
+        const url = new URL(window.location.href);
+        const urlParam = new URLSearchParams(url.search);
+        urlParam.delete('term');
+        urlParam.append('term', event.target.value as string);
+        const param = urlParam.toString();
+        const new_url = `${param && param !== 'null' ? '?' : ''}${param}`;
+        history.replaceState(stateObj, 'url', '/' + new_url);
     };
 
     render() {

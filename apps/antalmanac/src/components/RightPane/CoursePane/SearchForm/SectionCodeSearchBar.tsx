@@ -4,13 +4,34 @@ import { ChangeEvent, PureComponent } from 'react';
 import RightPaneStore from '../../RightPaneStore';
 
 class SectionCodeSearchBar extends PureComponent {
+    updateCourseCodeAndGetFormData() {
+        RightPaneStore.updateFormValue('sectionCode', RightPaneStore.getUrlCourseCodeValue());
+        return RightPaneStore.getFormData().sectionCode;
+    }
+
+    getSectionCode() {
+      return RightPaneStore.getUrlCourseCodeValue()
+        ? this.updateCourseCodeAndGetFormData()
+        : RightPaneStore.getFormData().sectionCode;
+    }
+
     state = {
-        sectionCode: RightPaneStore.getFormData().sectionCode,
+        sectionCode: this.getSectionCode(),
     };
 
     handleChange = (event: ChangeEvent<{ value: string }>) => {
         this.setState({ sectionCode: event.target.value });
         RightPaneStore.updateFormValue('sectionCode', event.target.value);
+        const stateObj = { url: 'url' };
+        const url = new URL(window.location.href);
+        const urlParam = new URLSearchParams(url.search);
+        urlParam.delete('courseCode');
+        if (event.target.value) {
+            urlParam.append('courseCode', event.target.value);
+        }
+        const param = urlParam.toString();
+        const new_url = `${param.trim() ? '?' : ''}${param}`;
+        history.replaceState(stateObj, 'url', '/' + new_url);
     };
 
     componentDidMount() {

@@ -29,13 +29,27 @@ class RightPaneStore extends EventEmitter {
     private activeTab: number;
     private doDisplaySearch: boolean;
     private openSpotAlertPopoverActive: boolean;
+    private urlCourseCodeValue: string;
+    private urlTermValue: string;
+    private urlGEValue: string;
+    private urlCourseNumValue: string;
+    private urlDeptLabel: string;
+    private urlDeptValue: string;
+
     constructor() {
         super();
         this.setMaxListeners(15);
-        this.formData = { ...defaultFormValues }; // creates shallow copy
+        this.formData = structuredClone(defaultFormValues);
         this.activeTab = 0;
         this.doDisplaySearch = true;
         this.openSpotAlertPopoverActive = false;
+        const search = new URLSearchParams(window.location.search);
+        this.urlCourseCodeValue = search.get('courseCode') || '';
+        this.urlTermValue = search.get('term') || '';
+        this.urlGEValue = search.get('GE') || '';
+        this.urlCourseNumValue = search.get('courseNumber') || '';
+        this.urlDeptLabel = search.get('deptLabel') || '';
+        this.urlDeptValue = search.get('deptValue') || '';
     }
 
     getFormData = () => {
@@ -54,17 +68,24 @@ class RightPaneStore extends EventEmitter {
         return this.openSpotAlertPopoverActive;
     };
 
+    getUrlCourseCodeValue = () => this.urlCourseCodeValue;
+    getUrlTermValue = () => this.urlTermValue;
+    getUrlGEValue = () => this.urlGEValue;
+    getUrlCourseNumValue = () => this.urlCourseNumValue;
+    getUrlDeptLabel = () => this.urlDeptLabel;
+    getUrlDeptValue = () => this.urlDeptValue;
+
     updateFormValue = (field: string, value: string) => {
         this.formData[field] = value;
         this.emit('formDataChange');
     };
 
     resetFormValues = () => {
-        this.formData = { ...defaultFormValues }; // shallow copy again
+        this.formData = structuredClone(defaultFormValues);
         this.emit('formReset');
     };
 
-    handleTabChange = (event: unknown, value: number) => {
+    handleTabChange = (_event: unknown, value: number) => {
         this.activeTab = value;
         this.emit('tabChange', value);
     };

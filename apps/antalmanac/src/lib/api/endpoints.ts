@@ -5,7 +5,9 @@ function endpointTransform(path: string) {
     if (import.meta.env.VITE_LOCAL_SERVER) {
         return `http://localhost:8080${path}`;
     }
-    return import.meta.env.MODE === 'development' ? `https://dev.api.antalmanac.com${path}` : `https://api.antalmanac.com${path}`;
+    return import.meta.env.MODE === 'development'
+        ? `https://dev.api.antalmanac.com${path}`
+        : `https://api.antalmanac.com${path}`;
 }
 
 export const LOOKUP_NOTIFICATIONS_ENDPOINT = endpointTransform('/api/notifications/lookupNotifications');
