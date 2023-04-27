@@ -1,8 +1,7 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { SelectProps } from '@mui/material';
-import { PureComponent } from 'react';
+import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
 
@@ -55,7 +54,8 @@ class GESelector extends PureComponent<GESelectorProps, GESelectorState> {
         ge: this.getGe(),
     };
 
-    handleChange: SelectProps['onChange'] = (event) => {
+
+    handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
         this.setState({ ge: event.target.value as string });
         RightPaneStore.updateFormValue('ge', event.target.value as string);
         const stateObj = { url: 'url' };
@@ -89,7 +89,7 @@ class GESelector extends PureComponent<GESelectorProps, GESelectorState> {
         return (
             <FormControl className={classes.formControl}>
                 <InputLabel>General Education</InputLabel>
-                <Select value={this.state.ge} onChange={e =>e } fullWidth>
+                <Select value={this.state.ge} onChange={this.handleChange} fullWidth>
                     {geList.map((category) => {
                         return (
                             <MenuItem key={category.value} value={category.value}>
