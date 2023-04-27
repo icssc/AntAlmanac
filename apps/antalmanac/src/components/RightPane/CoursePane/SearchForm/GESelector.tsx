@@ -42,12 +42,9 @@ class GESelector extends PureComponent<GESelectorProps, GESelectorState> {
     }
 
     getGe() {
-        const urlGEValue = RightPaneStore.getUrlGEValue();
-        if (urlGEValue != 'null' && urlGEValue.trim() != '') {
-            return this.updateGEAndGetFormData();
-        } else {
-            return RightPaneStore.getFormData().ge;
-        }
+        return RightPaneStore.getUrlGEValue().trim()
+          ? this.updateGEAndGetFormData()
+          : RightPaneStore.getFormData().ge
     }
 
     state = {
