@@ -48,7 +48,6 @@ interface AddedCoursePaneProps {
 interface AddedCoursePaneState {
     courses: CourseWithTerm[];
     customEvents: RepeatingCustomEvent[];
-    totalUnits: number;
     scheduleNames: string[];
     scheduleNote: string;
 }
@@ -57,7 +56,6 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
     state: AddedCoursePaneState = {
         courses: [],
         customEvents: [],
-        totalUnits: 0,
         scheduleNames: AppStore.getScheduleNames(),
         scheduleNote: AppStore.getCurrentScheduleNote(),
     };
@@ -88,7 +86,6 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
 
     loadCourses = () => {
         const currentCourses = AppStore.schedule.getCurrentCourses();
-        let totalUnits = 0;
         const formattedCourses: CourseWithTerm[] = [];
 
         for (const course of currentCourses) {
@@ -116,8 +113,6 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                     ],
                 };
                 formattedCourses.push(formattedCourse);
-
-                if (!isNaN(Number(course.section.units))) totalUnits += Number(course.section.units);
             }
         }
         formattedCourses.forEach(function (course) {
@@ -125,7 +120,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                 return parseInt(a.sectionCode) - parseInt(b.sectionCode);
             });
         });
-        this.setState({ courses: formattedCourses, totalUnits });
+        this.setState({ courses: formattedCourses });
     };
 
     loadCustomEvents = () => {
@@ -147,9 +142,23 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         updateScheduleNote(event.target.value, AppStore.getCurrentScheduleIndex());
     };
 
+    getTotalUnits = () => {
+        let totalUnits = 0;
+
+        for (const course of this.state.courses) {
+            for (const section of course.sections) {
+                if (!isNaN(Number(section.units))) {
+                    totalUnits += Number(section.units);
+                }
+            }
+        }
+
+        return totalUnits;
+    };
+
     getGrid = () => {
         const scheduleName = this.state.scheduleNames[AppStore.getCurrentScheduleIndex()];
-        const scheduleUnits = this.state.totalUnits;
+        const scheduleUnits = this.getTotalUnits();
         const NOTE_MAX_LEN = 5000;
 
         return (
