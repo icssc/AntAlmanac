@@ -388,6 +388,13 @@ export class Schedules {
     }
 
     /**
+     * Convert just courses into calendar compatible format.
+     */
+    toCalendarizedCourseEvents() {
+        return calendarizeCourseEvents(this.getCurrentCourses())
+    }
+
+    /**
      * Convert finals into calendar friendly format
      */
     toCalendarizedFinals() {
