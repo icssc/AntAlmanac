@@ -1,24 +1,16 @@
-import {
-    amber,
-    blue,
-    deepPurple,
-    green,
-    pink,
-    purple,
-    deepOrange,
-} from '@material-ui/core/colors';
+import {amber, blue, deepOrange, deepPurple, green, pink, purple,} from '@material-ui/core/colors';
 
-import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
+import {calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals} from './calendarizeHelpers';
 import {
+    HSLColor,
     Schedule,
     ScheduleCourse,
     ScheduleSaveState,
     ScheduleUndoState,
     ShortCourseSchedule,
-    HSLColor,
 } from './schedule.types';
-import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { combineSOCObjects, CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
+import {RepeatingCustomEvent} from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import {combineSOCObjects, CourseInfo, getCourseInfo, queryWebsoc} from '$lib/helpers';
 
 const defaultColors = [
     blue[500],
@@ -139,9 +131,7 @@ function colorIsContained(color: HSLColor, usedColors: Iterable<HSLColor>, delta
 
 /**
  * Takes in a hex color and returns a hex color that is close to the original but not already used.
- * Takes the hue, saturation, and lightness of the original color and adding or subtracting some small amount
- * from hue and saturation until there's an unused color
- *
+ * Takes changes the lightness of the color by a small amount until a color that is not already used is found.
  *
  * @param originalColor string: Hex color ("#RRGGBB") as a basis.
  * @param usedColors Set<string>: A set of hex colors that are already used.
@@ -150,24 +140,21 @@ function colorIsContained(color: HSLColor, usedColors: Iterable<HSLColor>, delta
  *
  * @return Unused hex color that is close to the original color ("#RRGGBB").
  */
-// Color theory is complicated.
-// The perception of color differences cannot be described by a simple formula, or any for that matter (AFAIK).
-// Credit to https://sighack.com/post/procedural-color-algorithms-color-variations for procedural color ideas.
-function generateCloseColor(originalColor: string, usedColors: Set<string>, variation = 0.02): string {
+function generateCloseColor(originalColor: string, usedColors: Set<string>, variation = 0.1): string {
     const usedColorsHSL = [...usedColors].map(HexToHSL);
-    const originalHSL = HexToHSL(originalColor);
 
     // Generate a color that is slightly different from the original color and that is not already used
-    let color: HSLColor = originalHSL;
-
     // Keep generating until color doesn't match any of the used colors
-    for (let delta = variation; colorIsContained(color, usedColorsHSL, 0.01); delta += variation) {
+    let color: HSLColor = HexToHSL(originalColor);
+
+    for (
+        let delta = variation;
+        colorIsContained(color, usedColorsHSL, 0.01); // Checks if color is contained in usedColorsHSL
+        delta += variation
+    ) {
         color = {
-            h: Math.round(((color.h + delta * (originalHSL.h <= 0.5 ? 1 : -1)) * 100) % 100) / 100,
-            // h: color.h,
-            s: Math.round(((color.s + delta * (originalHSL.s <= 0.5 ? 1 : -1)) * 100) % 100) / 100,
-            // l: Math.round((color.l + delta) * 100 % 100)/100,
-            l: color.l,
+            ...color,
+            l: Math.round((color.l + delta) * 100 % 100)/100,
         };
     }
 
