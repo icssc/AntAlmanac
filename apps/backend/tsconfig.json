@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "composite": true,
+    "outDir": "dist",
+    "paths": {
+      "$models/*": ["./src/models/*"],
+      "$db/*": ["./src/db/*"]
+    }
+  }
+}

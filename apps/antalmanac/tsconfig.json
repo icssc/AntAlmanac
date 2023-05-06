@@ -22,7 +22,12 @@
             "$lib/*": ["src/lib/*"],
             "$providers/*": ["src/providers/*"],
             "$routes/*": ["src/routes/*"],
-            "$stores/*": ["src/stores/*"]
+            "$stores/*": ["src/stores/*"],
+            "$models/*": ["../backend/src/models/*"],
+            "$db/*": ["../backend/src/db/*"]
         }
     },
+//    "references": [{
+//        "path": "../backend"
+//    }],
 }

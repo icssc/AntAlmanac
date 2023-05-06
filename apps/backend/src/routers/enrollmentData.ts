@@ -1,7 +1,7 @@
 const express = require('express');
-const EnrollmentData = require('../models/EnrollmentData');
+const EnrollmentData = require('$models/EnrollmentData');
 const router = express.Router();
-const connectToDb = require('../db');
+const connectToDb = require('../db.js');
 
 router.post('/', async (req, res) => {
     await connectToDb();

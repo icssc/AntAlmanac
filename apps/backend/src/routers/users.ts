@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { getById, insertById } = require('../ddb');
-const User = require('../models/User');
-const connectToDb = require('../db');
+const { getById, insertById } = require('../db/ddb.ts');
+const User = require('$models/User.js');
+const connectToDb = require('../db.js');
 
 router.post('/loadUserData', async (req, res) => {
     try {
