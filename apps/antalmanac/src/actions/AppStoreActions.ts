@@ -3,7 +3,7 @@ import { VariantType } from 'notistack';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { LOAD_DATA_ENDPOINT, LOAD_LEGACY_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '$lib/api/endpoints';
+import { LOAD_USER_DATA_ENDPOINT, LOAD_LEGACY_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '$lib/api/endpoints';
 import { CourseDetails, courseNumAsDecimal, termsInSchedule, warnMultipleTerms } from '$lib/helpers';
 import { Section } from '$lib/peterportal.types';
 import AppStore from '$stores/AppStore';
@@ -120,7 +120,7 @@ export const loadSchedule = async (userID: string, rememberMe: boolean) => {
 
             try {
                 let scheduleSaveState: unknown; // Unknown because we cast this as two conflicting types
-                let response_data = await fetch(LOAD_DATA_ENDPOINT, {
+                let response_data = await fetch(LOAD_USER_DATA_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userID: userID }),
