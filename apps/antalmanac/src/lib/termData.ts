@@ -1,5 +1,5 @@
 // The index of the default term in termData, as per WebSOC
-const defaultTerm = 3;
+const defaultTerm = 0;
 
 class Term {
     shortName: `${string} ${string}`;
@@ -15,6 +15,7 @@ class Term {
 // Quarterly Academic Calendar: https://www.reg.uci.edu/calendars/quarterly/2022-2023/quarterly22-23.html
 // Note: months are 0-indexed
 const termData = [
+    new Term('2023 Fall', '2023 Fall Quarter', [2023, 8, 25]),
     new Term('2023 Summer2', '2023 Summer Session 2', [2023, 7, 7]),
     new Term('2023 Summer10wk', '2023 10-wk Summer', [2023, 5, 26]),
     new Term('2023 Summer1', '2023 Summer Session 1', [2023, 5, 26]),

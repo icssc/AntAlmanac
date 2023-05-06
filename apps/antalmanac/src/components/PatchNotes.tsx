@@ -35,8 +35,8 @@ const PatchNotes = () => {
                         Features
                         <ul>
                             <li>
-                                Added 2023 Spring Quarter, 2023 Summer Session 1, 2023 10-wk Summer, and 2023 Summer
-                                Session 2 courses
+                                Added 2023 Summer Session 1, 2023 10-wk Summer, 2023 Summer Session 2, and 2023 Fall
+                                Quarter courses
                             </li>
                             <li>
                                 Lectures/discussions/labs for the same course will now share colors when added to
