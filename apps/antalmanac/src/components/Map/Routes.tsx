@@ -6,7 +6,7 @@ import 'leaflet-routing-machine'
 import { createElementHook, createElementObject, useLeafletContext } from '@react-leaflet/core'
 import type { LeafletContextInterface } from '@react-leaflet/core'
 
-const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'
+const ACCESS_TOKEN = 'pk.eyJ1IjoicGVkcmljIiwiYSI6ImNsZzE0bjk2ajB0NHEzanExZGFlbGpwazIifQ.l14rgv5vmu5wIMgOUUhUXw';
 
 interface Props {
   /**

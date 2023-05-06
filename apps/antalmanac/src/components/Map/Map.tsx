@@ -1,4 +1,6 @@
-import { Fragment, useRef, useState } from 'react'
+import './Map.css'
+
+import { Fragment, useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import type { Map, LatLngTuple } from 'leaflet'
 import { MapContainer, TileLayer } from 'react-leaflet'
@@ -12,6 +14,18 @@ import CourseMarker from './Marker'
 import CourseRoutes from './Routes'
 import UserLocator from './UserLocator'
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent'
+
+const ACCESS_TOKEN = 'pk.eyJ1IjoicGVkcmljIiwiYSI6ImNsZzE0bjk2ajB0NHEzanExZGFlbGpwazIifQ.l14rgv5vmu5wIMgOUUhUXw';
+
+const ATTRIBUTION_MARKUP =
+    '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
+
+const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`
+
+/**
+ * empty day is alias for "All Days"
+ */
+const days = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
 
 
 /**
@@ -60,18 +74,6 @@ export function getMarkersFromCourses() {
   return markersByTime
 }
 
-const ACCESS_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'
-
-const attribution =
-  '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>'
-
-const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`
-
-/**
- * empty day is alias for "All Days"
- */
-const days = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
-
 /**
  * map of all course locations on UCI campus
  */
@@ -79,6 +81,24 @@ export default function CourseMap() {
   const map = useRef<Map | null>(null)
   const [tab, setTab] = useState(0)
   const [selected, setSelected] = useState<Building>()
+
+  /**
+   * extract a bunch of relevant metadata from courses into a top-level object for MapMarkers
+   */
+  const [markers, setMarkers] = useState(getMarkersFromCourses())
+
+  const updateMarkers = () => {
+    setMarkers(getMarkersFromCourses())
+  }
+
+  useEffect(() => {
+    AppStore.on('addedCoursesChange', updateMarkers);
+    AppStore.on('currentScheduleIndexChange', updateMarkers);
+    return () => {
+      AppStore.removeListener('addedCoursesChange', updateMarkers);
+      AppStore.removeListener('currentScheduleIndexChange', updateMarkers);
+    }
+  }, [])
 
   const today = days[tab]
 
@@ -104,11 +124,6 @@ export default function CourseMap() {
   )
 
   /**
-   * extract a bunch of relevant metadata from courses into a top-level object for MapMarkers
-   */
-  const markers = getMarkersFromCourses()
-
-  /**
    * only get markers for courses happening today
    */
   const markersToday = markers.filter((marker) => marker.start.toString().includes(today))
@@ -132,7 +147,7 @@ export default function CourseMap() {
   }, [] as (typeof uniqueMarkers)[])
 
   return (
-    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}>
       <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
         {/** menu floats above the map */}
         <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.942, marginX: '15%', marginY: 8 }}>
@@ -149,7 +164,7 @@ export default function CourseMap() {
           />
         </Paper>
 
-        <TileLayer attribution={attribution} url={url} tileSize={512} maxZoom={21} zoomOffset={-1} />
+        <TileLayer attribution={ATTRIBUTION_MARKUP} url={url} tileSize={512} maxZoom={21} zoomOffset={-1} />
 
         <UserLocator />
 

@@ -9,7 +9,7 @@ import loadingGif from './CoursePane/SearchForm/Gifs/loading.gif';
 import RightPaneStore, { BuildingFocusInfo } from './RightPaneStore';
 import { isDarkMode } from '$lib/helpers';
 
-// const UCIMap = React.lazy(() => import('./Map/UCIMap'));
+const UCIMap = React.lazy(() => import('../Map'));
 
 const styles = {
     fallback: {
@@ -85,7 +85,7 @@ class DesktopTabs extends PureComponent<DesktopTabsProps> {
                             </div>
                         }
                     >
-                    {/* <UCIMap /> */}
+                      <UCIMap />
                     </Suspense>
                 );
                 break;
