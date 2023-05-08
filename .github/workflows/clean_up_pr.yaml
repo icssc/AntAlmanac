@@ -18,15 +18,16 @@ permissions:
 jobs:
   delete_frontend_stack:
     uses: ./.github/workflows/step_delete_stack.yaml
+    secrets: inherit
     with:
       stack_name: antalmanac-frontend-staging-${{ github.event.pull_request.number }}
-      secrets: inherit
 
   delete_backend_stack:
     uses: ./.github/workflows/step_delete_stack.yaml
+    secrets: inherit
     with:
       stack_name: antalmanac-backend-staging-${{ github.event.pull_request.number }}
-      secrets: inherit
+
 
   delete_staging_url:
     runs-on: ubuntu-latest
