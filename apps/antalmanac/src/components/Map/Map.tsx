@@ -36,6 +36,9 @@ export function getMarkersFromCourses() {
 
   const uniqueBuildingCodes = new Set(courseEvents.map((event) => event.bldg.split(' ').slice(0, -1).join(' ')))
 
+  /**
+   * Each building has an array of courses that occur in the building.
+   */
   const pins: Record<string, CourseEvent[]> = {}
 
   /**
@@ -48,11 +51,18 @@ export function getMarkersFromCourses() {
     })
   })
 
-  const result = Object.entries(pins)
-    .filter(([buildingCode]) => !!buildingCatalogue[locationIds[buildingCode]])
-    .map(([buildingCode, events]) => {
+  const markers = Object.entries(pins)
+    /**
+     * Filter out buildings that don't exist in the building catalogue.
+     */
+    .filter(([buildingCode]) => Boolean(buildingCatalogue[locationIds[buildingCode]]))
+
+    /**
+     * FlatMap each building code to an array of course events that occur in the building.
+     */
+    .flatMap(([buildingCode, courseEvents]) => {
       const locationData = buildingCatalogue[locationIds[buildingCode]]
-      const eventLocationData = events.map((event) => {
+      const eventLocationData = courseEvents.map((event) => {
         const key = `${event.title} ${event.sectionType} @ ${event.bldg}`
         const acronym = locationData.name.substring(locationData.name.indexOf('(') + 1, locationData.name.indexOf(')'))
         return {
@@ -65,11 +75,9 @@ export function getMarkersFromCourses() {
           ...event,
         }
       })
-      const flatEventLocationData = eventLocationData.flat()
-      return flatEventLocationData
+      return eventLocationData
     })
 
-  const markers = result.flat()
   const markersByTime = markers.sort((a, b) => a.start.getTime() - b.start.getTime())
   return markersByTime
 }
@@ -79,7 +87,7 @@ export function getMarkersFromCourses() {
  */
 export default function CourseMap() {
   const map = useRef<Map | null>(null)
-  const [tab, setTab] = useState(0)
+  const [selectedDayIndex, setSelectedDay] = useState(0)
   const [selected, setSelected] = useState<Building>()
 
   /**
@@ -100,10 +108,10 @@ export default function CourseMap() {
     }
   }, [])
 
-  const today = days[tab]
+  const today = days[selectedDayIndex]
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setTab(newValue)
+    setSelectedDay(newValue)
   }
 
   const handleSearch = (_event: React.SyntheticEvent, value: Building | null) => {
@@ -131,27 +139,27 @@ export default function CourseMap() {
   /**
    * unique array of markers that occur today
    */
-  const uniqueMarkers = markersToday.filter(
+  const uniqueMarkersToday = markersToday.filter(
     (marker, index, self) => self.findIndex((foundMarker) => marker.key === foundMarker.key) === index
   )
 
   /**
    * group every two markers as [start, destination] tuples
    */
-  const startDestPairs = uniqueMarkers.reduce((acc, cur, index) => {
+  const startDestPairs = uniqueMarkersToday.reduce((acc, cur, index) => {
     acc.push([cur])
     if (index > 0) {
       acc[index - 1].push(cur)
     }
     return acc
-  }, [] as (typeof uniqueMarkers)[])
+  }, [] as (typeof uniqueMarkersToday)[])
 
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}>
       <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
         {/** menu floats above the map */}
         <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.942, marginX: '15%', marginY: 8 }}>
-          <Tabs value={tab} onChange={handleChange} variant="fullWidth" sx={{ minHeight: 0 }}>
+          <Tabs value={selectedDayIndex} onChange={handleChange} variant="fullWidth" sx={{ minHeight: 0 }}>
             {days.map((day) => (
               <Tab key={day} label={day || 'All'} sx={{ padding: 1, minHeight: 'auto', minWidth: '10%', p: 1 }} />
             ))}
@@ -181,7 +189,7 @@ export default function CourseMap() {
           })}
 
         {/* draw a marker for each class */}
-        {uniqueMarkers.map((marker, index) => (
+        {uniqueMarkersToday.map((marker, index) => (
           <Fragment key={Object.values(marker).join()}>
             <CourseMarker {...marker} label={today ? index + 1 : undefined} stackIndex={index}>
               <hr />
