@@ -1,5 +1,4 @@
 const express = require('express');
-const fetch = require('node-fetch');
 const router = express.Router();
 const zotcourseUrl = 'https://zotcourse.appspot.com/schedule/load';
 
