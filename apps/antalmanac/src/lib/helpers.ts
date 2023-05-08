@@ -80,19 +80,16 @@ export interface ZotCourseResponse {
 }
 export async function queryZotCourse(schedule_name: string) {
     const url = new URL(ZOTCOURSE_ENDPOINT);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const response = await fetch(url, {
         method: 'POST',
         body: JSON.stringify({ scheduleName: schedule_name }),
         headers: { 'Content-Type': 'application/json' },
     }).then((r) => r.json());
     // For custom event, there is no course attribute in each.
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     const codes = response.data
         .filter((section: { eventType: number }) => section.eventType === 3)
         .map((section: { course: { code: string } }) => section.course.code) as string[];
     const days = [false, false, false, false, false, false, false];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const customEvents: RepeatingCustomEvent[] = response.data
         .filter((section: { eventType: number }) => section.eventType === 1)
         .map((event: { title: string; start: string; end: string; dow: number[] }) => {
