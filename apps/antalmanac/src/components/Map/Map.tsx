@@ -10,7 +10,7 @@ import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids'
 import buildingCatalogue from '$lib/buildingCatalogue'
 import type { Building } from '$lib/buildingCatalogue'
-import CourseMarker from './Marker'
+import LocationMarker from './Marker'
 import CourseRoutes from './Routes'
 import UserLocator from './UserLocator'
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent'
@@ -191,17 +191,17 @@ export default function CourseMap() {
         {/* draw a marker for each class */}
         {uniqueMarkersToday.map((marker, index) => (
           <Fragment key={Object.values(marker).join()}>
-            <CourseMarker {...marker} label={today ? index + 1 : undefined} stackIndex={index}>
+            <LocationMarker {...marker} label={today ? index + 1 : undefined} stackIndex={index}>
               <hr />
               <Typography variant="body2">Class: {`${marker.title} ${marker.sectionType}`}</Typography>
               <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
-            </CourseMarker>
+            </LocationMarker>
           </Fragment>
         ))}
 
         {/* render an additional marker if the user searched up a location */}
         {selected && (
-          <CourseMarker {...selected} label="!" color="red" location={selected.name} image={selected.imageURLs?.[0]} />
+          <LocationMarker {...selected} label="!" color="red" location={selected.name} image={selected.imageURLs?.[0]} />
         )}
       </MapContainer>
     </Box>
