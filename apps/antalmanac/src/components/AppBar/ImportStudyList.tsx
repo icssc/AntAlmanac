@@ -6,6 +6,7 @@ import {
     DialogContentText,
     DialogTitle,
     TextField,
+    Tooltip,
 } from '@material-ui/core';
 import InputLabel from '@material-ui/core/InputLabel';
 import { withStyles } from '@material-ui/core/styles';
@@ -141,9 +142,11 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         return (
             <>
                 {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
-                <Button onClick={this.handleOpen} color="inherit" startIcon={<PostAdd />}>
-                    Import
-                </Button>
+                <Tooltip title="Import a schedule from your Study List">
+                    <Button onClick={this.handleOpen} color="inherit" startIcon={<PostAdd />}>
+                        Import
+                    </Button>
+                </Tooltip>
                 <Dialog open={this.state.isOpen}>
                     <DialogTitle>Import Schedule</DialogTitle>
                     <DialogContent>
