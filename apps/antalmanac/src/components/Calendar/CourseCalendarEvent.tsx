@@ -118,7 +118,7 @@ interface CourseCalendarEventProps {
 const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     const { classes, courseInMoreInfo } = props;
     if (!courseInMoreInfo.isCustomEvent) {
-        const { term, instructors, sectionCode, title, finalExam, bldg } = courseInMoreInfo;
+        const { term, instructors, sectionCode, title, finalExam, bldg, sectionType } = courseInMoreInfo;
 
         return (
             <Paper className={classes.courseContainer}>
@@ -178,6 +178,10 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                                     {bldg}
                                 </button>
                             </td>
+                        </tr>
+                        <tr>
+                            <td>Section type</td>
+                            <td className={classes.rightCells}>{sectionType}</td>
                         </tr>
                         <tr>
                             <td>Final</td>
