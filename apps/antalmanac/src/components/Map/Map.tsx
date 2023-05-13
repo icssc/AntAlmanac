@@ -1,6 +1,7 @@
 import './Map.css'
 
 import { Fragment, useEffect, useRef, useState } from 'react'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import L from 'leaflet'
 import type { Map, LatLngTuple } from 'leaflet'
 import { MapContainer, TileLayer } from 'react-leaflet'
@@ -89,6 +90,24 @@ export default function CourseMap() {
   const map = useRef<Map | null>(null)
   const [selectedDayIndex, setSelectedDay] = useState(0)
   const [selected, setSelected] = useState<Building>()
+  const [searchParams] = useSearchParams()
+
+  /**
+   * Whenever search params changes, update the selected location if possible.
+   */
+  useEffect(() => {
+    const location = +(searchParams.get('location') ?? 0)
+
+    if (!(location in buildingCatalogue)) return
+
+    const building = buildingCatalogue[location]
+
+    setSelected(building)
+
+    map.current?.setView(L.latLng(building.lat, building.lng), 18)
+  }, [searchParams])
+
+  const navigate = useNavigate()
 
   /**
    * extract a bunch of relevant metadata from courses into a top-level object for MapMarkers
@@ -156,6 +175,10 @@ export default function CourseMap() {
 
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}>
+    <button onClick={() => navigate('/?location=83038')}>A</button>
+    <button onClick={() => navigate('/?location=83095')}>B</button>
+    <button onClick={() => navigate('/?location=83169')}>C</button>
+    <button onClick={() => navigate('/')}>Home</button>
       <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
         {/** menu floats above the map */}
         <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.942, marginX: '15%', marginY: 8 }}>
