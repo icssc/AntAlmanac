@@ -69,7 +69,7 @@ interface Props {
 /**
  * Custom map marker + popup with course info.
  */
-export default function CourseMarker({
+export default function LocationMarker({
   lat,
   lng,
   color,
