@@ -4,3 +4,10 @@
 .leaflet-control-container .leaflet-routing-container-hide {
   display: none;
 }
+
+/**
+ * Remove the forced margin between paragraphs in the leaflet popup.
+ */
+.leaflet-popup-content p {
+  margin: unset;
+}
