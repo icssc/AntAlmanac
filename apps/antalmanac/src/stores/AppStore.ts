@@ -6,6 +6,7 @@ import { Schedules } from './Schedules';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import RightPaneStore from "$components/RightPane/RightPaneStore";
 
 class AppStore extends EventEmitter {
     schedule: Schedules;
@@ -20,6 +21,7 @@ class AppStore extends EventEmitter {
     eventsInCalendar: CalendarEvent[];
     finalsEventsInCalendar: CourseEvent[];
     unsavedChanges: boolean;
+    barebonesMode: boolean;
 
     constructor() {
         super();
@@ -35,6 +37,7 @@ class AppStore extends EventEmitter {
         this.eventsInCalendar = [];
         this.finalsEventsInCalendar = [];
         this.unsavedChanges = false;
+        this.barebonesMode = false;
         this.theme = (() => {
             // either 'light', 'dark', or 'auto'
             const theme = typeof Storage === 'undefined' ? 'auto' : window.localStorage.getItem('theme');
@@ -62,6 +65,10 @@ class AppStore extends EventEmitter {
 
     getCustomEvents() {
         return this.schedule.getAllCustomEvents();
+    }
+
+    getBarebonesSchedule() {
+        return this.schedule.getBarebonesSchedule();
     }
 
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
@@ -114,6 +121,10 @@ class AppStore extends EventEmitter {
 
     getCurrentScheduleNote() {
         return this.schedule.getCurrentScheduleNote();
+    }
+
+    getBarebonesMode() {
+        return this.barebonesMode;
     }
 
     hasUnsavedChanges() {
@@ -208,6 +219,8 @@ class AppStore extends EventEmitter {
 
     async loadSchedule(savedSchedule: ScheduleSaveState) {
         try {
+            // This will not throw if the saved schedule is valid but PeterPortal can't be reached
+            // It will call loadBarebonesSchedule and return normally
             await this.schedule.fromScheduleSaveState(savedSchedule);
         } catch {
             return false;
@@ -218,7 +231,24 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
+
         return true;
+    }
+
+    loadBarebonesSchedule(savedSchedule: ScheduleSaveState) {
+        this.schedule.setBarebonesSchedules(savedSchedule.schedules);
+        this.barebonesMode = true;
+
+        this.emit('addedCoursesChange');
+        this.emit('customEventsChange');
+        this.emit('scheduleNamesChange');
+        this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
+
+        this.emit('barebonesModeChange');
+
+        // Switch to added courses tab since PeterPortal can't be reached anyway
+        RightPaneStore.handleTabChange(null, 1);
     }
 
     changeCurrentSchedule(newScheduleIndex: number) {

@@ -51,6 +51,7 @@ interface AddedCoursePaneState {
     totalUnits: number;
     scheduleNames: string[];
     scheduleNote: string;
+    barebonesMode: boolean;
 }
 
 class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePaneState> {
@@ -60,6 +61,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         totalUnits: 0,
         scheduleNames: AppStore.getScheduleNames(),
         scheduleNote: AppStore.getCurrentScheduleNote(),
+        barebonesMode: AppStore.getBarebonesMode(),
     };
 
     componentDidMount = () => {
@@ -71,6 +73,8 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         AppStore.on('currentScheduleIndexChange', this.loadCustomEvents);
         AppStore.on('scheduleNamesChange', this.loadScheduleNames);
         AppStore.on('scheduleNotesChange', this.loadScheduleNote);
+        AppStore.on('barebonesModeChange', this.barebonesModeChange);
+
         logAnalytics({
             category: analyticsEnum.addedClasses.title,
             action: analyticsEnum.addedClasses.actions.OPEN,
@@ -84,6 +88,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         AppStore.removeListener('currentScheduleIndexChange', this.loadCustomEvents);
         AppStore.removeListener('scheduleNamesChange', this.loadScheduleNames);
         AppStore.removeListener('scheduleNotesChange', this.loadScheduleNote);
+        AppStore.removeListener('barebonesModeChange', this.barebonesModeChange);
     }
 
     loadCourses = () => {
@@ -257,11 +262,56 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         );
     };
 
+    getBarebonesSchedule = () => {
+        const sectionsByTerm = AppStore.getBarebonesSchedule().courses.reduce(
+            (acc: Record<string, string[]>, course) => {
+                if (!acc[course.term]) {
+                    acc[course.term] = [];
+                }
+                acc[course.term].push(course.sectionCode);
+                return acc;
+            }, {});
+
+        return (
+            <>
+                {
+                    //Sections organized under terms, in case the schedule contains multiple terms
+                    Object.entries(sectionsByTerm).map(([term, sections]) => {
+                        return (
+                            <>
+                                <Typography variant="h6">{term}</Typography>
+                                <Paper key={term} elevation={1}>
+                                    <Grid item md={12} xs={12} key={term} style={{padding: "15px 0px 15px"}}>
+                                        <Typography variant="body1">
+                                            Sections enrolled: {sections.join(', ')}
+                                        </Typography>
+                                    </Grid>
+                                </Paper>
+                            </>
+
+                        );
+                    })
+                }
+                <Typography variant="body1">
+                    PeterPortal or WebSoc is currently unreachable.
+                    This is the information that we can currently retrieve.
+                </Typography>
+            </>
+        )
+    }
+
+    barebonesModeChange = () => {
+        this.setState({ barebonesMode: AppStore.getBarebonesMode() }, () => console.log(this.state.barebonesMode));
+    }
+
     render() {
         return (
-            <Grid container spacing={2}>
-                {this.getGrid()}
-            </Grid>
+            this.state.barebonesMode ?
+                this.getBarebonesSchedule()
+                :
+                <Grid container spacing={2}>
+                    {this.getGrid()}
+                </Grid>
         );
     }
 }

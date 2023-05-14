@@ -18,6 +18,8 @@ import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } f
 import { Schedule, ScheduleCourse, ScheduleSaveState, ScheduleUndoState, ShortCourseSchedule } from './schedule.types';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { combineSOCObjects, CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
+import {openSnackbar} from "$actions/AppStoreActions";
+import AppStore from  "$stores/AppStore";
 
 const arrayOfColors = [
     red[500],
@@ -39,6 +41,7 @@ export class Schedules {
     private schedules: Schedule[];
     private currentScheduleIndex: number;
     private previousStates: ScheduleUndoState[];
+    private barebonesSchedules: ShortCourseSchedule[];
 
     // We do not want schedule notes to be undone; to avoid this,
     // we keep track of every schedule note in an object where each key
@@ -53,6 +56,7 @@ export class Schedules {
         this.currentScheduleIndex = 0;
         this.previousStates = [];
         this.scheduleNoteMap = { [scheduleNoteId]: '' };
+        this.barebonesSchedules = [];
     }
 
     // --- Schedule index methods ---
@@ -467,30 +471,38 @@ export class Schedules {
 
             // Get the course info for each course
             const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
-            for (const [term, courseSet] of Object.entries(courseDict)) {
-                const sectionCodes = Array.from(courseSet);
-                // Code from ImportStudyList
-                const courseInfo = getCourseInfo(
-                    combineSOCObjects(
-                        await Promise.all(
-                            sectionCodes
-                                .reduce((result: string[][], item, index) => {
-                                    // WebSOC queries can have a maximum of 10 course codes in tandem
-                                    const chunkIndex = Math.floor(index / 10);
-                                    result[chunkIndex] ? result[chunkIndex].push(item) : (result[chunkIndex] = [item]);
-                                    return result;
-                                }, []) // https://stackoverflow.com/a/37826698
-                                .map((sectionCode: string[]) =>
-                                    queryWebsoc({
-                                        term: term,
-                                        sectionCodes: sectionCode.join(','),
-                                    })
-                                )
+            try {
+                for (const [term, courseSet] of Object.entries(courseDict)) {
+                    const sectionCodes = Array.from(courseSet);
+                    // Code from ImportStudyList
+                    const courseInfo = getCourseInfo(
+                        combineSOCObjects(
+                            await Promise.all(
+                                sectionCodes
+                                    .reduce((result: string[][], item, index) => {
+                                        // WebSOC queries can have a maximum of 10 course codes in tandem
+                                        const chunkIndex = Math.floor(index / 10);
+                                        result[chunkIndex] ? result[chunkIndex].push(item) : (result[chunkIndex] = [item]);
+                                        return result;
+                                    }, []) // https://stackoverflow.com/a/37826698
+                                    .map((sectionCode: string[]) =>
+                                        queryWebsoc({
+                                            term: term,
+                                            sectionCodes: sectionCode.join(','),
+                                        })
+                                    )
+                            )
                         )
-                    )
-                );
-                courseInfoDict.set(term, courseInfo);
+                    );
+                    courseInfoDict.set(term, courseInfo);
+                }
+            } catch (error) {
+                console.error(error);
+                openSnackbar('error', 'Could not retrieve course information.');
+                AppStore.loadBarebonesSchedule(saveState);
+                return;
             }
+
 
             // Map course info to courses and transform shortened schedule to normal schedule
             for (const shortCourseSchedule of saveState.schedules) {
@@ -547,5 +559,13 @@ export class Schedules {
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
         const scheduleNoteId = this.schedules[scheduleIndex].scheduleNoteId;
         this.scheduleNoteMap[scheduleNoteId] = newScheduleNote;
+    }
+
+    getBarebonesSchedule(): ShortCourseSchedule {
+        return this.barebonesSchedules[this.currentScheduleIndex];
+    }
+
+    setBarebonesSchedules(barebonesSchedules: ShortCourseSchedule[]) {
+        this.barebonesSchedules = barebonesSchedules;
     }
 }
