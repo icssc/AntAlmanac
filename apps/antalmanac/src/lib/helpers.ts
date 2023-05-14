@@ -258,7 +258,7 @@ export const addCoursesMultiple = (
 };
 
 export const termsInSchedule = (term: string) =>
-    new Set([term, ...AppStore.schedule.getCurrentCourses().map((course) => course.term)]);
+    new Set([term, ...AppStore.schedules.getCurrentCourses().map((course) => course.term)]);
 
 export const warnMultipleTerms = (terms: Set<string>) => {
     openSnackbar(

@@ -92,7 +92,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
     }
 
     loadCourses = () => {
-        const currentCourses = AppStore.schedule.getCurrentCourses();
+        const currentCourses = AppStore.schedules.getCurrentCourses();
         let totalUnits = 0;
         const formattedCourses: CourseWithTerm[] = [];
 
@@ -134,7 +134,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
     };
 
     loadCustomEvents = () => {
-        this.setState({ customEvents: AppStore.schedule.getCurrentCustomEvents() });
+        this.setState({ customEvents: AppStore.schedules.getCurrentCustomEvents() });
         // Force update required because the state has a reference to custom events, so it doesn't see differences all the time
         this.forceUpdate();
     };

@@ -74,7 +74,7 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
                 window.localStorage.removeItem('userID');
             }
 
-            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+            const scheduleSaveState = AppStore.schedules.getScheduleAsSaveState();
 
             try {
                 await fetch(SAVE_DATA_ENDPOINT, {

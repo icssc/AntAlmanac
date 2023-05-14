@@ -215,7 +215,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                     </div>
                     <CustomEventDialog
                         onDialogClose={props.closePopover}
-                        customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
+                        customEvent={AppStore.schedules.getExistingCustomEvent(customEventID)}
                         scheduleNames={props.scheduleNames}
                     />
 
