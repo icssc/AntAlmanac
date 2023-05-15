@@ -118,12 +118,12 @@ interface CourseCalendarEventProps {
 const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     const { classes, courseInMoreInfo } = props;
     if (!courseInMoreInfo.isCustomEvent) {
-        const { term, instructors, sectionCode, title, finalExam, bldg } = courseInMoreInfo;
+        const { term, instructors, sectionCode, title, finalExam, bldg, sectionType } = courseInMoreInfo;
 
         return (
             <Paper className={classes.courseContainer}>
                 <div className={classes.titleBar}>
-                    <span className={classes.title}>{title}</span>
+                    <span className={classes.title}>{`${title} ${sectionType}`}</span>
                     <Tooltip title="Delete">
                         <IconButton
                             size="small"
