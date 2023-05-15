@@ -3,7 +3,7 @@ import { router, procedure } from '../trpc'
 // import enrollmentRouter from './enrollment'
 import newsRouter from './news'
 // import notificationRouter from './notification'
-// import userRouter from './user'
+import usersRouter from './users'
 // import websocRouter from './websoc'
 
 const appRouter = router({
@@ -13,8 +13,8 @@ const appRouter = router({
     // ad: adRouter,
     // enrollment: enrollmentRouter,
     news: newsRouter,
+    users: usersRouter,
     // notification: notificationRouter,
-    // user: userRouter,
     // websoc: websocRouter,
 })
 

@@ -10,6 +10,7 @@
     "repository": "github:icssc/antalmanac",
     "scripts": {
         "start": "vite",
+        "start:local": "VITE_LOCAL_SERVER=true vite",
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",

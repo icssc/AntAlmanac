@@ -9,6 +9,7 @@ import { Section } from '$lib/peterportal.types';
 import AppStore from '$stores/AppStore';
 import { convertLegacySchedule, LegacyUserData } from '$stores/legacyScheduleHelpers';
 import { ScheduleCourse, ScheduleSaveState } from '$stores/schedule.types';
+import trpc from '$lib/api/trpc'
 
 export const addCourse = (
     section: Section,
@@ -97,75 +98,42 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
     }
 };
 
-export const loadSchedule = async (userID: string, rememberMe: boolean) => {
+export const loadSchedule = async (userId: string, rememberMe: boolean) => {
     logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
-        label: userID,
+        label: userId,
         value: rememberMe ? 1 : 0,
     });
     if (
-        userID != null &&
+        userId != null &&
         (!AppStore.hasUnsavedChanges() ||
             window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
     ) {
-        userID = userID.replace(/\s+/g, '');
+        userId = userId.replace(/\s+/g, '');
 
-        if (userID.length > 0) {
+        if (userId.length > 0) {
             if (rememberMe) {
-                window.localStorage.setItem('userID', userID);
+                window.localStorage.setItem('userID', userId);
             } else {
                 window.localStorage.removeItem('userID');
             }
 
             try {
-                let scheduleSaveState: unknown; // Unknown because we cast this as two conflicting types
-                let response_data = await fetch(LOAD_DATA_ENDPOINT, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userID: userID }),
-                });
+                const res = await trpc.users.getUserData.query({userId})
+                const scheduleSaveState = res?.userData;
+                console.log(scheduleSaveState)
 
-                if (response_data.ok) {
-                    const json = (await response_data.json()) as { userData: ScheduleSaveState };
-                    scheduleSaveState = json.userData;
-
-                    if (scheduleSaveState !== undefined) {
-                        // First we will try loading the schedule normally
-                        if (await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState)) {
-                            openSnackbar('success', `Schedule for username "${userID}" loaded.`);
-                            return;
-                        }
-                        // Second we try loading the schedule as if it was legacy
-                        // in case a legacy schedule was somehow saved to the new DB
-                        else if (
-                            await AppStore.loadSchedule(convertLegacySchedule(scheduleSaveState as LegacyUserData))
-                        ) {
-                            openSnackbar('success', `Schedule for username "${userID}" loaded.`);
-                            return;
-                        }
-                    }
-                }
-
-                // Finally try getting and loading from legacy if none of the above works
-                response_data = await fetch(LOAD_LEGACY_DATA_ENDPOINT, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userID: userID }),
-                });
-                if (response_data.ok) {
-                    const json = (await response_data.json()) as { userData: LegacyUserData };
-                    const legacyUserData = json.userData;
-                    if (legacyUserData !== undefined) {
-                        if (await AppStore.loadSchedule(convertLegacySchedule(legacyUserData))) {
-                            openSnackbar('success', `Legacy schedule for username "${userID}" loaded.`);
-                            return;
-                        }
+                if (scheduleSaveState !== undefined) {
+                    // First we will try loading the schedule normally
+                    if (await AppStore.loadSchedule(scheduleSaveState)) {
+                        openSnackbar('success', `Schedule for username "${userId}" loaded.`);
+                        return;
                     }
                 }
 
                 // If none of the above works
-                openSnackbar('error', `Couldn't find schedules for username "${userID}".`);
+                openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
             } catch (e) {
                 openSnackbar('error', `Got a network error when trying to load schedules.`);
             }

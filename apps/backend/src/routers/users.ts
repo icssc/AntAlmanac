@@ -1,45 +1,80 @@
-const express = require('express');
-const router = express.Router();
-const { getById, insertById } = require('../db/ddb.ts');
-const User = require('$models/User.js');
-const connectToDb = require('../db.js');
+import { router, procedure } from '../trpc'
+import { getById, insertById } from '$db/ddb';
+import LegacyUserModel from '$models/User';
+import {Problem, type} from 'arktype'
 
-router.post('/loadUserData', async (req, res) => {
-    try {
-        const userID = req.body.userID;
-        const data = await getById(userID);
+import {
+    LegacyUserSchema,
+    LegacyUserData,
+    UserSchema,
+    ScheduleSaveState,
+    RepeatingCustomEventSchema, LegacyUser
+} from 'antalmanac-types'
+import connectToMongoDB from "$db/mongodb";
 
-        if (data === null) res.status(404).send({ error: `User data for ${userID} not found` });
-        else res.status(200).send({ userID: data.id, userData: data.userData });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+export function convertLegacySchedule(legacyUserData: LegacyUserData) {
+    const scheduleSaveState: ScheduleSaveState = { schedules: [], scheduleIndex: 0 };
+    for (const scheduleName of legacyUserData.scheduleNames) {
+        scheduleSaveState.schedules.push({
+            scheduleName: scheduleName,
+            courses: [],
+            customEvents: [],
+            scheduleNote: '',
+        });
     }
-});
-
-router.post('/loadLegacyUserData', async (req, res) => {
-    await connectToDb();
-
-    try {
-        const userID = req.body.userID;
-        const data = await User.findById(userID);
-
-        if (data === null) res.status(404).send({ error: `User data for ${userID} not found` });
-        else res.status(200).send({ userID: data._id, userData: data.userData });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    for (const course of legacyUserData.addedCourses) {
+        for (const scheduleIndex of course.scheduleIndices) {
+            scheduleSaveState.schedules[scheduleIndex].courses.push({ ...course });
+        }
     }
-});
-
-router.post('/saveUserData', async (req, res) => {
-    try {
-        const userID = req.body.userID;
-        const userData = req.body.userData;
-
-        await insertById(userID, userData);
-        res.status(200).send();
-    } catch (err) {
-        res.status(500).send({ error: err.message });
+    for (const customEvent of legacyUserData.customEvents) {
+        for (const scheduleIndex of customEvent.scheduleIndices) {
+            const { data } = RepeatingCustomEventSchema({ ...customEvent })
+            if (data !== undefined) {
+                scheduleSaveState.schedules[scheduleIndex].customEvents.push(data);
+            }
+        }
     }
-});
+    return scheduleSaveState;
+}
 
-module.exports = router;
+async function getLegacyUserData(userId: string) {
+    await connectToMongoDB();
+    console.log('loading legacy user data')
+    const data = await LegacyUserModel.findById(userId) ;
+    console.log(data)
+    const legacyUserData = data?.userData
+    return legacyUserData ? { id: userId, userData: convertLegacySchedule(legacyUserData) } : undefined;
+}
+
+async function getUserData(userId: string) {
+    try {
+        const {data: userData} = UserSchema(await getById(userId));
+        return userData
+    }
+    catch(e) {
+        if (e instanceof Problem){
+            return undefined
+        }
+        else {
+            throw e
+        }
+    }
+}
+
+const usersRouter = router({
+    getUserData: procedure
+        .input(type({userId: 'string'}).assert)
+        .query(async ({input}) => {
+            const data = await getUserData(input.userId) ?? await getLegacyUserData(input.userId)
+            console.log(data)
+            return data
+        })
+
+    // saveLegacyUserData: procedure.query(async (userId: string, userData: ScheduleSaveState ) => {
+    //     await insertById(userId, JSON.stringify({userData}));
+    // }),
+})
+
+export default usersRouter;
+
