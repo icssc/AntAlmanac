@@ -8,9 +8,11 @@
     "strict": true,
     "skipLibCheck": true,
     "baseUrl": ".",
-    "composite": true,
+    "include": ["src/**/*"],
     "outDir": "dist",
+    "resolveJsonModule": true,
     "paths": {
+      "$aa/*": ["../antalmanac/*"],
       "$models/*": ["./src/models/*"],
       "$db/*": ["./src/db/*"]
     }

@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
+import mongoose, { Schema, Document } from 'mongoose';
+import {LegacyUser} from "antalmanac-types";
 
-const User = mongoose.Schema({
+const UserSchema = new Schema<LegacyUser>({
     _id: String,
     userData: {
         addedCourses: [
@@ -26,4 +27,4 @@ const User = mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model('User', User);
+export default mongoose.model<LegacyUser>('LegacyUser', UserSchema);

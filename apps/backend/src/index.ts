@@ -12,6 +12,7 @@ const corsOptions: CorsOptions = {
 };
 
 export async function start(corsEnabled: boolean = false) {
+    console.log('Starting server...')
     await connectToMongoDB();
 
     const app = express();
@@ -26,8 +27,8 @@ export async function start(corsEnabled: boolean = false) {
         })
     );
 
-    console.log(import.meta.env)
-    if (import.meta.env.MODE === 'development') {
+    // if (import.meta.env.MODE === 'development') {
+    if (true) {
         app.listen(3000, async () => {
             // eslint-disable-next-line no-console
             console.log('Server listening at http://localhost:3000');
@@ -37,4 +38,4 @@ export async function start(corsEnabled: boolean = false) {
     return app;
 }
 
-export default start();
+export const app = start()

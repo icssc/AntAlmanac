@@ -1,33 +1,34 @@
-import { DynamoDB } from 'aws-sdk';
-import dotenv from 'dotenv';
+import {DynamoDBDocument} from "@aws-sdk/lib-dynamodb";
+import { DynamoDB } from "@aws-sdk/client-dynamodb";
+
+import dotenv from "dotenv";
 
 dotenv.config();
 
-const documentClient = new DynamoDB.DocumentClient({ region: process.env.AWS_REGION });
+// Initialise DynamoDB Client
+const client = new DynamoDB({
+    region: "us-east-1",
+})
+
+// Create DynamoDB DocumentClient
+const documentClient = DynamoDBDocument.from(client);
+
 const TABLENAME = process.env.USERDATA_TABLE_NAME!;
 
-function callback(err: any, data?: any): void {
-    if (err) {
-        console.error('Error', err);
-    } else {
-        console.log('Success');
-    }
-}
-
-async function getById(id: string): Promise<DynamoDB.DocumentClient.AttributeMap | undefined> {
-    const params: DynamoDB.DocumentClient.GetItemInput = {
+async function getById(id: string): Promise<any> {
+    const params = {
         TableName: TABLENAME,
         Key: {
             id: id,
         },
     };
 
-    const data: DynamoDB.DocumentClient.GetItemOutput = await documentClient.get(params, callback).promise();
+    const data = await documentClient.get(params);
     return data.Item;
 }
 
 async function insertById(id: string, userData: string): Promise<void> {
-    const params: DynamoDB.DocumentClient.PutItemInput = {
+    const params = {
         TableName: TABLENAME,
         Item: {
             id: id,
@@ -35,7 +36,7 @@ async function insertById(id: string, userData: string): Promise<void> {
         },
     };
 
-    await documentClient.put(params, callback).promise();
+    await documentClient.put(params);
 }
 
 export { getById, insertById };

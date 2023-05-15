@@ -23,8 +23,9 @@
             "$providers/*": ["src/providers/*"],
             "$routes/*": ["src/routes/*"],
             "$stores/*": ["src/stores/*"],
-            "$models/*": ["../backend/src/models/*"],
-            "$db/*": ["../backend/src/db/*"]
+            // Backend aliases
+//            "$models/*": ["../backend/src/models/*"],
+//            "$db/*": ["../backend/src/db/*"]
         }
     },
 //    "references": [{

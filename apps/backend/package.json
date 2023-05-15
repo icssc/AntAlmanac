@@ -15,6 +15,8 @@
         "@trpc/server": "^10.23.0",
         "@typegoose/typegoose": "^11.1.0",
         "@vendia/serverless-express": "^4.10.1",
+        "antalmanac-types": "*",
+        "arktype": "1.0.14-alpha",
         "aws-lambda": "^1.0.7",
         "cors": "^2.8.5",
         "dotenv": "^16.0.3",
@@ -26,12 +28,13 @@
         "zod": "^3.20.6"
     },
     "devDependencies": {
+        "@aws-sdk/client-dynamodb": "^3.332.0",
+        "@aws-sdk/lib-dynamodb": "^3.332.0",
         "@types/aws-lambda": "^8.10.110",
         "@types/cors": "^2.8.13",
         "@types/express": "^4.17.17",
         "@typescript-eslint/eslint-plugin": "^5.52.0",
         "@typescript-eslint/parser": "^5.52.0",
-        "aws-sdk": "^2.1368.0",
         "concurrently": "^8.0.1",
         "eslint": "^8.34.0",
         "eslint-config-airbnb": "^19.0.4",
@@ -45,7 +48,7 @@
         "prisma": "^4.10.1",
         "tsx": "^3.12.3",
         "typescript": "^4.9.5",
-        "vite": "^4.1.1",
+        "vite": "^4.3.5",
         "vite-plugin-node": "^3.0.2"
     },
     "lint-staged": {
