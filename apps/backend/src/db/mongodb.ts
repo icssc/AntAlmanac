@@ -11,8 +11,7 @@ async function connectToMongoDB(): Promise<void> {
     console.log('=> using new database connection');
 
     try {
-        const db = await mongoose.connect(process.env.AA_MONGODB_URI!, {
-        });
+        const db = await mongoose.connect(import.meta.env.AA_MONGODB_URI, {});
 
         isConnected = db.connection.readyState === 1;
         console.log('Connected to MongoDB');

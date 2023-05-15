@@ -1,22 +1,22 @@
-import {DynamoDBDocument} from "@aws-sdk/lib-dynamodb";
-import { DynamoDB } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
+import { DynamoDB } from '@aws-sdk/client-dynamodb';
 
-import dotenv from "dotenv";
-import {ScheduleSaveState} from "antalmanac-types";
+import dotenv from 'dotenv';
+import { ScheduleSaveState } from 'antalmanac-types';
 
 dotenv.config();
 
 // Initialise DynamoDB Client
 const client = new DynamoDB({
-    region: "us-east-1",
-})
+    region: 'us-east-1',
+});
 
 // Create DynamoDB DocumentClient
 const documentClient = DynamoDBDocument.from(client);
 
-const TABLENAME = process.env.USERDATA_TABLE_NAME!;
+const TABLENAME = import.meta.env.USERDATA_TABLE_NAME;
 
-async function getById(id: string): Promise<any> {
+async function getById(id: string){
     const params = {
         TableName: TABLENAME,
         Key: {
@@ -28,7 +28,7 @@ async function getById(id: string): Promise<any> {
     return data.Item;
 }
 
-async function insertById(id: string, userData: ScheduleSaveState): Promise<void> {
+async function insertById(id: string, userData: ScheduleSaveState) {
     const params = {
         TableName: TABLENAME,
         Item: {

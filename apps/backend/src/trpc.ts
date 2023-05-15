@@ -1,10 +1,9 @@
-import { initTRPC } from '@trpc/server'
-import type { context } from './context'
-import superjson from 'superjson'
+import { initTRPC } from '@trpc/server';
+import superjson from 'superjson';
+import type { context } from './context';
 
 const { procedure, router, _config, mergeRouters, middleware } = initTRPC.context<context>().create({
-        transformer: superjson,
-    }
-)
+    transformer: superjson,
+});
 
-export { procedure, router, _config, mergeRouters, middleware }
+export { procedure, router, _config, mergeRouters, middleware };
