@@ -8,7 +8,7 @@ import {
     LegacyUserData,
     UserSchema,
     ScheduleSaveState,
-    RepeatingCustomEventSchema, LegacyUser
+    RepeatingCustomEventSchema, ShortCourseSchema
 } from 'antalmanac-types'
 import connectToMongoDB from "$db/mongodb";
 
@@ -23,13 +23,18 @@ export function convertLegacySchedule(legacyUserData: LegacyUserData) {
         });
     }
     for (const course of legacyUserData.addedCourses) {
+        const { data, problems } = ShortCourseSchema(course)
+        if (data === undefined) {
+            console.log(problems)
+            continue
+        }
         for (const scheduleIndex of course.scheduleIndices) {
-            scheduleSaveState.schedules[scheduleIndex].courses.push({ ...course });
+            scheduleSaveState.schedules[scheduleIndex].courses.push(data);
         }
     }
     for (const customEvent of legacyUserData.customEvents) {
         for (const scheduleIndex of customEvent.scheduleIndices) {
-            const { data } = RepeatingCustomEventSchema({ ...customEvent })
+            const { data } = RepeatingCustomEventSchema(customEvent)
             if (data !== undefined) {
                 scheduleSaveState.schedules[scheduleIndex].customEvents.push(data);
             }
@@ -41,36 +46,30 @@ export function convertLegacySchedule(legacyUserData: LegacyUserData) {
 async function getLegacyUserData(userId: string) {
     await connectToMongoDB();
     console.log('loading legacy user data')
-    const data = await LegacyUserModel.findById(userId) ;
-    console.log(data)
+    const {data, problems} = LegacyUserSchema(await LegacyUserModel.findById(userId));
+    if (problems !== undefined) {
+        return undefined
+    }
+    console.log('loaded legacy user data')
+    // console.log(JSON.stringify(data, null, 2))
     const legacyUserData = data?.userData
     return legacyUserData ? { id: userId, userData: convertLegacySchedule(legacyUserData) } : undefined;
 }
 
 async function getUserData(userId: string) {
-    try {
-        const {data: userData} = UserSchema(await getById(userId));
-        return userData
+    const {data: userData, problems} = UserSchema(await getById(userId));
+    if (problems !== undefined) {
+        return undefined
     }
-    catch(e) {
-        if (e instanceof Problem){
-            return undefined
-        }
-        else {
-            throw e
-        }
-    }
+    return userData
 }
 
 const usersRouter = router({
     getUserData: procedure
         .input(type({userId: 'string'}).assert)
         .query(async ({input}) => {
-            const data = await getUserData(input.userId) ?? await getLegacyUserData(input.userId)
-            console.log(data)
-            return data
+            return await getUserData(input.userId) ?? await getLegacyUserData(input.userId)
         })
-
     // saveLegacyUserData: procedure.query(async (userId: string, userData: ScheduleSaveState ) => {
     //     await insertById(userId, JSON.stringify({userData}));
     // }),
