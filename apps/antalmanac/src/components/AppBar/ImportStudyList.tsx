@@ -6,6 +6,7 @@ import {
     DialogContentText,
     DialogTitle,
     TextField,
+    Tooltip,
 } from '@material-ui/core';
 import InputLabel from '@material-ui/core/InputLabel';
 import { withStyles } from '@material-ui/core/styles';
@@ -177,9 +178,11 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                         <Button onClick={() => this.handleClose(false)} color="primary">
                             Cancel
                         </Button>
-                        <Button onClick={() => this.handleClose(true)} color="primary">
-                            Import
-                        </Button>
+                        <Tooltip title="Import a schedule from your Study List">
+                            <Button onClick={() => this.handleClose(true)} color="primary">
+                                Import
+                            </Button>
+                        </Tooltip>
                     </DialogActions>
                 </Dialog>
             </>
