@@ -180,9 +180,9 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                         <Button onClick={() => this.handleClose(false)} color="primary">
                             Cancel
                         </Button>
-                            <Button onClick={() => this.handleClose(true)} color="primary">
-                                Import
-                            </Button>
+                        <Button onClick={() => this.handleClose(true)} color="primary">
+                            Import
+                        </Button>
                     </DialogActions>
                 </Dialog>
             </>
