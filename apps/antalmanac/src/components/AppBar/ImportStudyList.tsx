@@ -142,9 +142,11 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         return (
             <>
                 {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
-                <Button onClick={this.handleOpen} color="inherit" startIcon={<PostAdd />}>
-                    Import
-                </Button>
+                <Tooltip title="Import a schedule from your Study List">
+                    <Button onClick={this.handleOpen} color="inherit" startIcon={<PostAdd />}>
+                        Import
+                    </Button>
+                </Tooltip>
                 <Dialog open={this.state.isOpen}>
                     <DialogTitle>Import Schedule</DialogTitle>
                     <DialogContent>
@@ -178,11 +180,9 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                         <Button onClick={() => this.handleClose(false)} color="primary">
                             Cancel
                         </Button>
-                        <Tooltip title="Import a schedule from your Study List">
                             <Button onClick={() => this.handleClose(true)} color="primary">
                                 Import
                             </Button>
-                        </Tooltip>
                     </DialogActions>
                 </Dialog>
             </>
