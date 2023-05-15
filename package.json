@@ -1,103 +1,26 @@
 {
-    "name": "antalmanac",
-    "version": "1.0.0",
-    "private": true,
-    "homepage": "https://antalmanac.com",
-    "description": "A course exploration and scheduling tool for UCI Anteaters",
-    "bugs": {
-        "url": "https://antalmanac.com/feedback"
-    },
-    "repository": "github:icssc/antalmanac",
-    "scripts": {
-        "prepare": "husky install",
-        "start": "vite",
-        "dev": "vite",
-        "build": "vite build",
-        "preview": "vite preview",
-        "predeploy": "npm run build",
-        "deploy": "gh-pages -d build",
-        "format": "prettier --write src",
-        "lint": "eslint src"
-    },
-    "dependencies": {
-        "@date-io/date-fns": "^2.16.0",
-        "@emotion/react": "^11.10.5",
-        "@emotion/styled": "^11.10.5",
-        "@material-ui/core": "^4.12.4",
-        "@material-ui/icons": "^4.11.3",
-        "@material-ui/lab": "^4.0.0-alpha.61",
-        "@material-ui/pickers": "^3.3.10",
-        "@mui/icons-material": "^5.11.0",
-        "@mui/lab": "^5.0.0-alpha.118",
-        "@mui/material": "^5.11.7",
-        "@tanstack/react-query": "^4.24.4",
-        "chart.js": "^4.2.1",
-        "date-fns": "^2.29.3",
-        "dayjs": "^1.11.7",
-        "events": "^3.3.0",
-        "file-saver": "^2.0.5",
-        "html2canvas": "^1.4.1",
-        "ics": "^3.0.1",
-        "leaflet": "^1.9.3",
-        "leaflet-routing-machine": "^3.2.12",
-        "leaflet.locatecontrol": "^0.79.0",
-        "material-ui-popup-state": "^5.0.4",
-        "notistack": "^2.0.8",
-        "react": "^18.2.0",
-        "react-big-calendar": "^1.6.4",
-        "react-chartjs-2": "^5.2.0",
-        "react-color": "^2.19.3",
-        "react-dom": "^18.2.0",
-        "react-ga4": "^2.0.0",
-        "react-input-mask": "^2.0.4",
-        "react-lazyload": "^3.2.0",
-        "react-leaflet": "2",
-        "react-router-dom": "^6.8.1",
-        "react-split": "^2.0.14",
-        "recharts": "^2.4.2",
-        "semantic-ui-react": "^2.1.4",
-        "websoc-fuzzy-search": "^0.10.0",
-        "zustand": "^4.3.2"
-    },
-    "devDependencies": {
-        "@babel/core": "^7.20.12",
-        "@types/file-saver": "^2.0.5",
-        "@types/leaflet": "^1.9.0",
-        "@types/leaflet-routing-machine": "^3.2.4",
-        "@types/leaflet.locatecontrol": "^0.74.1",
-        "@types/node": "^18.13.0",
-        "@types/react": "^18.0.27",
-        "@types/react-big-calendar": "^1.6.0",
-        "@types/react-color": "^3.0.6",
-        "@types/react-dom": "^18.0.10",
-        "@types/react-input-mask": "^3.0.2",
-        "@types/react-lazyload": "^3.2.0",
-        "@typescript-eslint/eslint-plugin": "^5.54.1",
-        "@typescript-eslint/parser": "^5.54.1",
-        "@vitejs/plugin-react": "^3.1.0",
-        "eslint": "^8.36.0",
-        "eslint-config-prettier": "^8.7.0",
-        "eslint-plugin-import": "^2.27.5",
-        "eslint-plugin-jsx-a11y": "^6.7.1",
-        "eslint-plugin-react": "^7.32.2",
-        "eslint-plugin-react-hooks": "^4.6.0",
-        "husky": "^8.0.3",
-        "lint-staged": "^13.1.1",
-        "prettier": "^2.8.4",
-        "typescript": "^4.9.5",
-        "vite": "^4.1.1",
-        "vite-plugin-svgr": "^2.4.0"
-    },
-    "browserslist": {
-        "production": [
-            ">0.2%",
-            "not dead",
-            "not op_mini all"
-        ],
-        "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
-        ]
+  "name": "antalmanac",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "prepare": "husky install",
+    "start:aa": "turbo start --filter=antalmanac",
+    "start": "VITE_LOCAL_SERVER=true turbo start",
+    "build:aa": "turbo build --filter=antalmanac",
+    "build": "turbo build",
+    "deploy:aa": "turbo deploy --filter=antalmanac",
+    "deploy:cdk": "turbo deploy --filter=cdk",
+    "deploy": "turbo deploy"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "turbo": "latest"
+  },
+  "packageManager": "pnpm@8.2.0",
+    "engines": {
+      "pnpm": "^8"
     }
 }

@@ -1,0 +1,34 @@
+{
+  "name": "antalmanac-cdk",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "tsc && cdk synth",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write lib",
+    "build-staging": "npm run build",
+    "deploy-staging": "cdk deploy --require-approval never",
+    "clean": "rm -rf cdk.out"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.10",
+    "@types/node": "10.17.27",
+    "@typescript-eslint/eslint-plugin": "^5.54.1",
+    "@typescript-eslint/parser": "^5.54.1",
+    "aws-cdk": "^2.66.1",
+    "eslint": "^8.38.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.8.4",
+    "ts-node": "^9.0.0",
+    "typescript": "latest"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.66.1",
+    "constructs": "^10.0.0",
+    "dotenv": "^16.0.0",
+    "antalmanac": "*"
+  }
+}
