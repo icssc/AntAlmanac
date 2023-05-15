@@ -4,7 +4,7 @@
 import 'leaflet.locatecontrol';
 
 import Leaflet, { Control, LeafletMouseEvent } from 'leaflet';
-import React, { PureComponent} from 'react';
+import React, { PureComponent } from 'react';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { LeafletContext, Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
