@@ -97,7 +97,7 @@ export default class UCIMap extends PureComponent {
             const courses = new Set();
 
             // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
-            this.state.eventsInCalendar
+            AppStore.getEventsInCalendar()
                 .filter(
                     (event) =>
                         !(
@@ -395,7 +395,7 @@ export default class UCIMap extends PureComponent {
         const courses = new Set();
         // Tracks courses that have already been pinned on the map, so there are no duplicates
         // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
-        this.state.eventsInCalendar
+        AppStore.getEventsInCalendar()
             .filter(
                 (event) =>
                     !(
