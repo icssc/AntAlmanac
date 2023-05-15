@@ -1,6 +1,5 @@
 /* eslint-disable prefer-const */
 import { FC } from 'react';
-import { Grid, Popup } from 'semantic-ui-react';
 
 import { PrerequisiteNode, Prerequisite } from '$lib/peterportal.types';
 import { CourseInfo } from './CourseInfoBar';
@@ -17,23 +16,17 @@ interface NodeProps {
 const Node: FC<NodeProps> = (props) => {
     return (
         <div style={{ padding: '1px 0' }} className={`${props.node}`} key={props.index}>
-            <Popup
-                trigger={
-                    <div
-                        className={'course'}
-                        style={{
-                            backgroundColor: isDarkMode() ? '#303030' : '#e0e0e0',
-                            color: isDarkMode() ? '#bfbfbf' : 'black',
-                        }}
-                    >
-                        {props.label}
-                    </div>
-                }
-                basic
-                position="top center"
-                wide="very"
-            />
-        </div>
+            
+            <div
+                className={'course'}
+                style={{
+                    backgroundColor: isDarkMode() ? '#303030' : '#e0e0e0',
+                    color: isDarkMode() ? '#bfbfbf' : 'black',
+                }}
+            >
+                {props.label}
+            </div>
+   </div>
     );
 };
 
@@ -100,7 +93,7 @@ const PrereqTree: FC<PrereqProps> = (props) => {
         );
     return (
         <div>
-            <Grid.Row className={'prereq'}>
+            <div className={'prereq'}>
                 <div
                     style={{
                         display: 'inline-flex',
@@ -144,7 +137,7 @@ const PrereqTree: FC<PrereqProps> = (props) => {
                         </div>
                     )}
                 </div>
-            </Grid.Row>
+            </div>
         </div>
     );
 };
