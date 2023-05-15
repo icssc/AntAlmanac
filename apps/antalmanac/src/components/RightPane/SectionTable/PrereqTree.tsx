@@ -93,7 +93,7 @@ const PrereqTree: FC<PrereqProps> = (props) => {
         );
     return (
         <div>
-            <div className={'prereq'}>
+            <div className={'prereq-tree'}>
                 <div
                     style={{
                         display: 'inline-flex',
