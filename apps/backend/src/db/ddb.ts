@@ -2,6 +2,7 @@ import {DynamoDBDocument} from "@aws-sdk/lib-dynamodb";
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
 
 import dotenv from "dotenv";
+import {ScheduleSaveState} from "antalmanac-types";
 
 dotenv.config();
 
@@ -27,7 +28,7 @@ async function getById(id: string): Promise<any> {
     return data.Item;
 }
 
-async function insertById(id: string, userData: string): Promise<void> {
+async function insertById(id: string, userData: ScheduleSaveState): Promise<void> {
     const params = {
         TableName: TABLENAME,
         Item: {

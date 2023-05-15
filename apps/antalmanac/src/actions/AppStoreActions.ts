@@ -10,6 +10,7 @@ import AppStore from '$stores/AppStore';
 import { convertLegacySchedule, LegacyUserData } from '$stores/legacyScheduleHelpers';
 import { ScheduleCourse, ScheduleSaveState } from '$stores/schedule.types';
 import trpc from '$lib/api/trpc'
+import {TRPCError} from "@trpc/server";
 
 export const addCourse = (
     section: Section,
@@ -78,13 +79,14 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
                 const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
             try {
-                await fetch(SAVE_DATA_ENDPOINT, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ userID, userData: scheduleSaveState }),
-                });
+                await trpc.users.saveUserData.mutate({ id: userID, userData: scheduleSaveState })
+                // await fetch(SAVE_DATA_ENDPOINT, {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                //     body: JSON.stringify({ userID, userData: scheduleSaveState }),
+                // });
 
                 openSnackbar(
                     'success',
@@ -92,7 +94,12 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
                 );
                 AppStore.saveSchedule();
             } catch (e) {
-                openSnackbar('error', `Schedule could not be saved under username "${userID}`);
+                if (e instanceof TRPCError){
+                    openSnackbar('error', `Schedule could not be saved under username "${userID}`);
+                }
+                else {
+                    openSnackbar('error', 'Network error or server is down.')
+                }
             }
         }
     }
@@ -122,18 +129,17 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
             try {
                 const res = await trpc.users.getUserData.query({userId})
                 const scheduleSaveState = res?.userData;
-                console.log(scheduleSaveState)
 
-                if (scheduleSaveState !== undefined) {
-                    // First we will try loading the schedule normally
-                    if (await AppStore.loadSchedule(scheduleSaveState)) {
-                        openSnackbar('success', `Schedule for username "${userId}" loaded.`);
-                        return;
-                    }
+                if (scheduleSaveState === undefined) {
+                    openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
                 }
-
-                // If none of the above works
-                openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
+                else if (await AppStore.loadSchedule(scheduleSaveState)) {
+                    openSnackbar('success', `Schedule for username "${userId}" loaded.`);
+                }
+                else {
+                    openSnackbar('error', `Couldn't load schedules for username "${userId}". 
+                    If this continues happening please submit a feedback form.`);
+                }
             } catch (e) {
                 openSnackbar('error', `Got a network error when trying to load schedules.`);
             }

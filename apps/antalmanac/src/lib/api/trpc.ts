@@ -18,7 +18,7 @@ const trpc = createTRPCProxyClient<AppRouter>({
             url: getEndpoint() + '/trpc',
         }),
     ],
-    transformer: superjson
+    transformer: superjson,
 });
 
 export default trpc;

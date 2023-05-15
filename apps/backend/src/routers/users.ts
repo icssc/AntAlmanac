@@ -58,6 +58,7 @@ async function getLegacyUserData(userId: string) {
 
 async function getUserData(userId: string) {
     const {data: userData, problems} = UserSchema(await getById(userId));
+    console.log(userData)
     if (problems !== undefined) {
         return undefined
     }
@@ -69,10 +70,12 @@ const usersRouter = router({
         .input(type({userId: 'string'}).assert)
         .query(async ({input}) => {
             return await getUserData(input.userId) ?? await getLegacyUserData(input.userId)
+        }),
+    saveUserData: procedure
+        .input(UserSchema.assert)
+        .mutation(async ({input}) => {
+            await insertById(input.id, input.userData);
         })
-    // saveLegacyUserData: procedure.query(async (userId: string, userData: ScheduleSaveState ) => {
-    //     await insertById(userId, JSON.stringify({userData}));
-    // }),
 })
 
 export default usersRouter;
