@@ -25,6 +25,8 @@ const UserSchema = new Schema<LegacyUser>({
             },
         ],
     },
+}, {
+    collection: 'users',
 });
 
 export default mongoose.model<LegacyUser>('LegacyUser', UserSchema);
