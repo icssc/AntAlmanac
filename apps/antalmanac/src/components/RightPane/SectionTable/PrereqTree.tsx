@@ -2,7 +2,7 @@
 import { FC } from 'react';
 import { Grid, Popup } from 'semantic-ui-react';
 
-import { PrerequisiteJSONNode, PrerequisiteJSON } from '../../../lib/peterportal.types';
+import { PrerequisiteNode, Prerequisite } from '$lib/peterportal.types';
 import { CourseInfo } from './CourseInfoBar';
 import { isDarkMode } from '$lib/helpers';
 
@@ -39,14 +39,14 @@ const Node: FC<NodeProps> = (props) => {
 
 interface TreeProps {
     prerequisiteNames: string[];
-    prerequisiteJSON: PrerequisiteJSONNode;
+    prerequisite: PrerequisiteNode;
     key?: string;
     index?: number;
 }
 
 const Tree: FC<TreeProps> = (props) => {
     // eslint-disable-next-line prefer-const
-    let prerequisite = props.prerequisiteJSON;
+    let prerequisite = props.prerequisite;
     let isValueNode = typeof prerequisite === 'string';
 
     // if value is a string, render leaf node
@@ -69,12 +69,12 @@ const Tree: FC<TreeProps> = (props) => {
                     </span>
                     <div className={'prereq-clump'}>
                         <ul className="prereq-list">
-                            {(prerequisite as PrerequisiteJSON)[Object.keys(prerequisite)[0]].map((child, index) => (
+                            {(prerequisite as Prerequisite)[Object.keys(prerequisite)[0]].map((child, index) => (
                                 <Tree
                                     key={`tree-${index}`}
                                     prerequisiteNames={props.prerequisiteNames}
                                     index={index}
-                                    prerequisiteJSON={child}
+                                    prerequisite={child}
                                 />
                             ))}
                         </ul>
@@ -139,7 +139,7 @@ const PrereqTree: FC<PrereqProps> = (props) => {
                         <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
                             <Tree
                                 prerequisiteNames={props.prerequisite_list}
-                                prerequisiteJSON={JSON.parse(props.prerequisite_tree)}
+                                prerequisite={JSON.parse(props.prerequisite_tree)}
                             />
                         </div>
                     )}

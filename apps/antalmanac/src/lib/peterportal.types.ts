@@ -127,5 +127,5 @@ export interface SectionGQL {
     number: string;
     type: string;
 }
-export type PrerequisiteTree = Record<string, PrerequisiteNode[]>
+export type Prerequisite = Record<string, PrerequisiteNode[]>
 export type PrerequisiteNode = Prerequisite | string;
