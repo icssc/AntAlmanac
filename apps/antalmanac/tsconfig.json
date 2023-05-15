@@ -23,12 +23,6 @@
             "$providers/*": ["src/providers/*"],
             "$routes/*": ["src/routes/*"],
             "$stores/*": ["src/stores/*"],
-            // Backend aliases
-//            "$models/*": ["../backend/src/models/*"],
-//            "$db/*": ["../backend/src/db/*"]
         }
     },
-//    "references": [{
-//        "path": "../backend"
-//    }],
 }

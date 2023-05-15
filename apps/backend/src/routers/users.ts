@@ -1,16 +1,17 @@
-import { router, procedure } from '../trpc'
-import { getById, insertById } from '$db/ddb';
-import LegacyUserModel from '$models/User';
-import {Problem, type} from 'arktype'
-
+import { type } from 'arktype';
 import {
     LegacyUserSchema,
     LegacyUserData,
     UserSchema,
     ScheduleSaveState,
-    RepeatingCustomEventSchema, ShortCourseSchema
-} from 'antalmanac-types'
-import connectToMongoDB from "$db/mongodb";
+    RepeatingCustomEventSchema,
+    ShortCourseSchema,
+} from 'antalmanac-types';
+import { router, procedure } from '../trpc';
+import { getById, insertById } from '$db/ddb';
+import LegacyUserModel from '$models/User';
+
+import connectToMongoDB from '$db/mongodb';
 
 export function convertLegacySchedule(legacyUserData: LegacyUserData) {
     const scheduleSaveState: ScheduleSaveState = { schedules: [], scheduleIndex: 0 };
@@ -23,10 +24,10 @@ export function convertLegacySchedule(legacyUserData: LegacyUserData) {
         });
     }
     for (const course of legacyUserData.addedCourses) {
-        const { data, problems } = ShortCourseSchema(course)
+        const { data, problems } = ShortCourseSchema(course);
         if (data === undefined) {
-            console.log(problems)
-            continue
+            console.log(problems);
+            continue;
         }
         for (const scheduleIndex of course.scheduleIndices) {
             scheduleSaveState.schedules[scheduleIndex].courses.push(data);
@@ -34,7 +35,7 @@ export function convertLegacySchedule(legacyUserData: LegacyUserData) {
     }
     for (const customEvent of legacyUserData.customEvents) {
         for (const scheduleIndex of customEvent.scheduleIndices) {
-            const { data } = RepeatingCustomEventSchema(customEvent)
+            const { data } = RepeatingCustomEventSchema(customEvent);
             if (data !== undefined) {
                 scheduleSaveState.schedules[scheduleIndex].customEvents.push(data);
             }
@@ -45,38 +46,33 @@ export function convertLegacySchedule(legacyUserData: LegacyUserData) {
 
 async function getLegacyUserData(userId: string) {
     await connectToMongoDB();
-    console.log('loading legacy user data')
-    const {data, problems} = LegacyUserSchema(await LegacyUserModel.findById(userId));
+    console.log('loading legacy user data');
+    const { data, problems } = LegacyUserSchema(await LegacyUserModel.findById(userId));
     if (problems !== undefined) {
-        return undefined
+        return undefined;
     }
-    console.log('loaded legacy user data')
+    console.log('loaded legacy user data');
     // console.log(JSON.stringify(data, null, 2))
-    const legacyUserData = data?.userData
+    const legacyUserData = data?.userData;
     return legacyUserData ? { id: userId, userData: convertLegacySchedule(legacyUserData) } : undefined;
 }
 
 async function getUserData(userId: string) {
-    const {data: userData, problems} = UserSchema(await getById(userId));
-    console.log(userData)
+    const { data: userData, problems } = UserSchema(await getById(userId));
+    console.log(userData);
     if (problems !== undefined) {
-        return undefined
+        return undefined;
     }
-    return userData
+    return userData;
 }
 
 const usersRouter = router({
-    getUserData: procedure
-        .input(type({userId: 'string'}).assert)
-        .query(async ({input}) => {
-            return await getUserData(input.userId) ?? await getLegacyUserData(input.userId)
-        }),
-    saveUserData: procedure
-        .input(UserSchema.assert)
-        .mutation(async ({input}) => {
-            await insertById(input.id, input.userData);
-        })
-})
+    getUserData: procedure.input(type({ userId: 'string' }).assert).query(async ({ input }) => {
+        return (await getUserData(input.userId)) ?? (await getLegacyUserData(input.userId));
+    }),
+    saveUserData: procedure.input(UserSchema.assert).mutation(async ({ input }) => {
+        await insertById(input.id, input.userData);
+    }),
+});
 
 export default usersRouter;
-
