@@ -180,8 +180,13 @@ function getColorForNewSection(newSection: ScheduleCourse, sectionsInSchedule: S
     if (existingSections.length > 0) {
         const originalColor = existingSections[0].section.color;
 
-        // Generate a slightly different color that does not conflict with any other section in the schedule
-        return generateCloseColor(originalColor, usedColors);
+        //If the sectionType is NOT the same, generate a slightly different color that does not conflict with any other section in the schedule
+        //Otherwise, return the same color
+        return (
+            newSection.section.sectionType != existingSections[0].section.sectionType ? 
+            generateCloseColor(originalColor, usedColors): 
+            originalColor
+        )
     }
 
     // If there are no existing sections with the same course title, generate a new color
@@ -342,6 +347,7 @@ export class Schedules {
 
         const existingSection = this.getExistingCourse(newCourse.section.sectionCode, newCourse.term);
         if (existingSection) {
+            this.schedules[scheduleIndex].courses.push(existingSection);
             return existingSection;
         }
 
