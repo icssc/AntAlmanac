@@ -347,7 +347,6 @@ export class Schedules {
 
         const existingSection = this.getExistingCourse(newCourse.section.sectionCode, newCourse.term);
         if (existingSection) {
-            this.schedules[scheduleIndex].courses.push(existingSection);
             return existingSection;
         }
 
