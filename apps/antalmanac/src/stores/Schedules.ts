@@ -175,18 +175,20 @@ function getColorForNewSection(newSection: ScheduleCourse, sectionsInSchedule: S
                 Math.abs(parseInt(b.section.sectionCode) - parseInt(newSection.section.sectionCode))
         );
 
+    //New array of courses that share the same sectionType & courseTitle
+    const existingSectionsType = existingSections.filter((course) => course.section.sectionType === newSection.section.sectionType)
+
     const usedColors = new Set(sectionsInSchedule.map((course) => course.section.color));
 
     if (existingSections.length > 0) {
-        const originalColor = existingSections[0].section.color;
+        let originalColor = existingSections[0].section.color;
 
-        //If the sectionType is NOT the same, generate a slightly different color that does not conflict with any other section in the schedule
-        //Otherwise, return the same color
-        return (
-            newSection.section.sectionType != existingSections[0].section.sectionType ? 
-            generateCloseColor(originalColor, usedColors): 
-            originalColor
-        )
+        //if another course of the same sectionType exists, return that color
+        if (existingSectionsType.length > 0){
+            originalColor = existingSectionsType[0].section.color;
+            return originalColor;
+        }
+        return (generateCloseColor(originalColor, usedColors));
     }
 
     // If there are no existing sections with the same course title, generate a new color
