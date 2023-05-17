@@ -1,10 +1,8 @@
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 
-import dotenv from 'dotenv';
 import { ScheduleSaveState } from 'antalmanac-types';
-
-dotenv.config();
+import env from '../env';
 
 // Initialise DynamoDB Client
 const client = new DynamoDB({
@@ -14,9 +12,9 @@ const client = new DynamoDB({
 // Create DynamoDB DocumentClient
 const documentClient = DynamoDBDocument.from(client);
 
-const TABLENAME = import.meta.env.USERDATA_TABLE_NAME;
+const TABLENAME = env.USERDATA_TABLE_NAME;
 
-async function getById(id: string){
+async function getById(id: string) {
     const params = {
         TableName: TABLENAME,
         Key: {

@@ -46,20 +46,16 @@ export function convertLegacySchedule(legacyUserData: LegacyUserData) {
 
 async function getLegacyUserData(userId: string) {
     await connectToMongoDB();
-    console.log('loading legacy user data');
     const { data, problems } = LegacyUserSchema(await LegacyUserModel.findById(userId));
     if (problems !== undefined) {
         return undefined;
     }
-    console.log('loaded legacy user data');
-    // console.log(JSON.stringify(data, null, 2))
     const legacyUserData = data?.userData;
     return legacyUserData ? { id: userId, userData: convertLegacySchedule(legacyUserData) } : undefined;
 }
 
 async function getUserData(userId: string) {
     const { data: userData, problems } = UserSchema(await getById(userId));
-    console.log(userData);
     if (problems !== undefined) {
         return undefined;
     }
