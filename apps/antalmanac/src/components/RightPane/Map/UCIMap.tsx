@@ -430,8 +430,8 @@ export default class UCIMap extends PureComponent {
             const courses = pins[buildingCode];
             for (let index = courses.length - 1; index >= 0; index--) {
                 const [event, eventIndex] = courses[index];
-                const courseString = `${event.title} ${event.sectionType} @ ${event.bldg} : ${event.sectionCode} @ ${event.term}`;
                 if (locationData === undefined) return;
+                const key = `${event.title} ${event.sectionType} @ ${event.bldg} : ${event.sectionCode} @ ${event.term}`;
 
                 // Acronym, if it exists, is in between parentheses
                 const acronym = locationData.name.substring(
@@ -441,7 +441,7 @@ export default class UCIMap extends PureComponent {
 
                 markers.push(
                     <MapMarker
-                        key={courseString}
+                        key={key}
                         image={locationData.imageURLs[0]}
                         markerColor={event.color}
                         location={locationData.name}
