@@ -4,7 +4,7 @@
     "description": "Backend for AntAlmanac",
     "scripts": {
         "dev": "esbuild --watch --bundle --sourcemap --outdir=dist --platform=node src/index.ts",
-        "build": "STAGE=prod esbuild --bundle --minify --outdir=dist --platform=node src/lambda.ts",
+        "build": "esbuild --bundle --minify --outdir=dist --platform=node src/lambda.ts",
         "start": "concurrently 'npm run dev' 'nodemon dist'",
         "format": "prettier --write src",
         "lint": "eslint src"
