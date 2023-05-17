@@ -179,17 +179,14 @@ function getColorForNewSection(newSection: ScheduleCourse, sectionsInSchedule: S
     const existingSectionsType = existingSections.filter((course) => course.section.sectionType === newSection.section.sectionType)
 
     const usedColors = new Set(sectionsInSchedule.map((course) => course.section.color));
-
-    if (existingSections.length > 0) {
-        let originalColor = existingSections[0].section.color;
-
-        //if another course of the same sectionType exists, return that color
-        if (existingSectionsType.length > 0){
-            originalColor = existingSectionsType[0].section.color;
-            return originalColor;
-        }
-        return (generateCloseColor(originalColor, usedColors));
-    }
+    
+    //If the same sectionType exists, return that color
+    if(existingSectionsType.length > 0) 
+        return (existingSectionsType[0].section.color);
+        
+    //If the same courseTitle exists, but not the same sectionType, return a hue
+    if(existingSections.length > 0)
+        return (generateCloseColor(existingSections[0].section.color, usedColors));
 
     // If there are no existing sections with the same course title, generate a new color
     return defaultColors.find((materialColor) => !usedColors.has(materialColor)) || '#5ec8e0';
