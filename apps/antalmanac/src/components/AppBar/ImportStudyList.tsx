@@ -147,7 +147,7 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                         Import
                     </Button>
                 </Tooltip>
-                <Dialog open={this.state.isOpen}>
+                <Dialog open={this.state.isOpen} onClose={this.handleClose}>
                     <DialogTitle>Import Schedule</DialogTitle>
                     <DialogContent>
                         <DialogContentText>

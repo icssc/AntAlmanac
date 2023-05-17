@@ -94,7 +94,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                 >
                     {this.props.actionName}
                 </LoadingButton>
-                <Dialog open={this.state.isOpen}>
+                <Dialog open={this.state.isOpen} onClose={this.handleClose}>
                     <DialogTitle>{this.props.actionName}</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
