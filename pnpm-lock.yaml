@@ -233,15 +233,9 @@ importers:
 
   apps/backend:
     dependencies:
-      '@prisma/client':
-        specifier: ^4.10.1
-        version: 4.10.1(prisma@4.10.1)
       '@trpc/server':
         specifier: ^10.23.0
         version: 10.23.0
-      '@typegoose/typegoose':
-        specifier: ^11.1.0
-        version: 11.1.0(mongoose@7.1.0)
       '@vendia/serverless-express':
         specifier: ^4.10.1
         version: 4.10.1
@@ -260,6 +254,9 @@ importers:
       dotenv:
         specifier: ^16.0.3
         version: 16.0.3
+      envalid:
+        specifier: ^7.3.1
+        version: 7.3.1
       express:
         specifier: ^4.18.2
         version: 4.18.2
@@ -275,9 +272,6 @@ importers:
       websoc-api:
         specifier: ^3.0.0
         version: 3.0.0
-      zod:
-        specifier: ^3.20.6
-        version: 3.20.6
     devDependencies:
       '@aws-sdk/client-dynamodb':
         specifier: ^3.332.0
@@ -330,21 +324,12 @@ importers:
       prettier:
         specifier: ^2.8.4
         version: 2.8.4
-      prisma:
-        specifier: ^4.10.1
-        version: 4.10.1
       tsx:
         specifier: ^3.12.3
         version: 3.12.3
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
-      vite:
-        specifier: ^4.3.5
-        version: 4.3.5
-      vite-plugin-node:
-        specifier: ^3.0.2
-        version: 3.0.2(vite@4.3.5)
 
   apps/cdk:
     dependencies:
@@ -2320,28 +2305,6 @@ packages:
     resolution: {integrity: sha512-50/17A98tWUfQ176raKiOGXuYpLyyVMkxxG6oylzL3BPOlA6ADGdK7EYunSa4I064xerltq9TGXs8HmOk5E+vw==}
     dev: false
 
-  /@prisma/client@4.10.1(prisma@4.10.1):
-    resolution: {integrity: sha512-VonXLJZybdt8e5XZH5vnIGCRNnIh6OMX1FS3H/yzMGLT3STj5TJ/OkMcednrvELgk8PK89Vo3aSh51MWNO0axA==}
-    engines: {node: '>=14.17'}
-    requiresBuild: true
-    peerDependencies:
-      prisma: '*'
-    peerDependenciesMeta:
-      prisma:
-        optional: true
-    dependencies:
-      '@prisma/engines-version': 4.10.1-2.aead147aa326ccb985dcfed5b065b4fdabd44b19
-      prisma: 4.10.1
-    dev: false
-
-  /@prisma/engines-version@4.10.1-2.aead147aa326ccb985dcfed5b065b4fdabd44b19:
-    resolution: {integrity: sha512-tsjTho7laDhf9EJ9EnDxAPEf7yrigSMDhniXeU4YoWc7azHAs4GPxRi2P9LTFonmHkJLMOLjR77J1oIP8Ife1w==}
-    dev: false
-
-  /@prisma/engines@4.10.1:
-    resolution: {integrity: sha512-B3tcTxjx196nuAu1GOTKO9cGPUgTFHYRdkPkTS4m5ptb2cejyBlH9X7GOfSt3xlI7p4zAJDshJP4JJivCg9ouA==}
-    requiresBuild: true
-
   /@remix-run/router@1.3.2:
     resolution: {integrity: sha512-t54ONhl/h75X94SWsHGQ4G/ZrCEguKSRQr7DrjTciJXW0YU1QhlwYeycvK5JgkzlxmvrK7wq1NB/PLtHxoiDcA==}
     engines: {node: '>=14'}
@@ -2355,14 +2318,6 @@ packages:
       dequal: 2.0.3
       react: 18.2.0
     dev: false
-
-  /@rollup/pluginutils@4.2.1:
-    resolution: {integrity: sha512-iKnFXr7NkdZAIHiIWE+BX5ULi/ucVFYWD6TbAV+rZctiRTY2PL6tsIKhoIOaoskiWAkgu+VsbXgUVDNLHf+InQ==}
-    engines: {node: '>= 8.0.0'}
-    dependencies:
-      estree-walker: 2.0.2
-      picomatch: 2.3.1
-    dev: true
 
   /@rollup/pluginutils@5.0.2:
     resolution: {integrity: sha512-pTd9rIsP92h+B6wWwFbW8RkZv4hiR/xKsqre4SIuAOaOEQRxi0lqLke9k2/7WegC85GgUs9pjmOjCUi3In4vwA==}
@@ -2535,20 +2490,6 @@ packages:
 
   /@trpc/server@10.23.0:
     resolution: {integrity: sha512-0CPfGZK3v3gfAL8ylV5vDJVBQtPp47EB4Vgx6WItSXmwYQlLC39ZC3gkZ4I5cGpQKl4l3QrNNeUvIcse4hlMxA==}
-    dev: false
-
-  /@typegoose/typegoose@11.1.0(mongoose@7.1.0):
-    resolution: {integrity: sha512-lrqtPyhenjK2KsvAigKjaAs54JC7qqQh6p/mejhiZXd/+s+EoBvwkvMxB+3ZrvzBPl07H/SFJLmp21qLKNc+EA==}
-    engines: {node: '>=14.17.0'}
-    peerDependencies:
-      mongoose: ~7.1.0
-    dependencies:
-      lodash: 4.17.21
-      loglevel: 1.8.1
-      mongoose: 7.1.0
-      reflect-metadata: 0.1.13
-      semver: 7.5.0
-      tslib: 2.5.0
     dev: false
 
   /@types/aws-lambda@8.10.110:
@@ -4103,6 +4044,13 @@ packages:
     resolution: {integrity: sha512-oYp7156SP8LkeGD0GF85ad1X9Ai79WtRsZ2gxJqtBuzH+98YUV6jkHEKlZkMbcrjJjIVJNIDP/3WL9wQkoPbWA==}
     engines: {node: '>=0.12'}
     dev: true
+
+  /envalid@7.3.1:
+    resolution: {integrity: sha512-KL1YRwn8WcoF/Ty7t+yLLtZol01xr9ZJMTjzoGRM8NaSU+nQQjSWOQKKJhJP2P57bpdakJ9jbxqQX4fGTOicZg==}
+    engines: {node: '>=8.12'}
+    dependencies:
+      tslib: 2.3.1
+    dev: false
 
   /error-ex@1.3.2:
     resolution: {integrity: sha512-7dFHNmqeFSEt2ZBsCriorKnn3Z2pj+fd9kmI6QoWw4//DL+icEBfc0U7qJCisqrTsKTjw4fNFy2pW9OqStD84g==}
@@ -5819,11 +5767,6 @@ packages:
       wrap-ansi: 6.2.0
     dev: true
 
-  /loglevel@1.8.1:
-    resolution: {integrity: sha512-tCRIJM51SHjAayKwC+QAg8hT8vg6z7GSgLJKGvzuPb1Wc+hLzqtuVLxp6/HzSPOozuK+8ErAhy7U/sVzw8Dgfg==}
-    engines: {node: '>= 0.6.0'}
-    dev: false
-
   /loose-envify@1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
@@ -6097,12 +6040,6 @@ packages:
     resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
-
-  /nanoid@3.3.6:
-    resolution: {integrity: sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==}
-    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
-    hasBin: true
-    dev: true
 
   /natural-compare-lite@1.4.0:
     resolution: {integrity: sha512-Tj+HTDSJJKaZnfiuw+iaF9skdPpTo2GtEly5JHnWV/hfv2Qj/9RKsGISQtLh2ox3l5EAGw487hnBee0sIJ6v2g==}
@@ -6462,15 +6399,6 @@ packages:
       source-map-js: 1.0.2
     dev: true
 
-  /postcss@8.4.23:
-    resolution: {integrity: sha512-bQ3qMcpF6A/YjR55xtoTr0jGOlnPOKAIMdOWiv0EIT6HVPEaJiJB4NLljSbiHoC2RX7DN5Uvjtpbg1NPdwv1oA==}
-    engines: {node: ^10 || ^12 || >=14}
-    dependencies:
-      nanoid: 3.3.6
-      picocolors: 1.0.0
-      source-map-js: 1.0.2
-    dev: true
-
   /prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
@@ -6498,14 +6426,6 @@ packages:
       ansi-styles: 4.3.0
       react-is: 17.0.2
     dev: true
-
-  /prisma@4.10.1:
-    resolution: {integrity: sha512-0jDxgg+DruB1kHVNlcspXQB9au62IFfVg9drkhzXudszHNUAQn0lVuu+T8np0uC2z1nKD5S3qPeCyR8u5YFLnA==}
-    engines: {node: '>=14.17'}
-    hasBin: true
-    requiresBuild: true
-    dependencies:
-      '@prisma/engines': 4.10.1
 
   /prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
@@ -6873,10 +6793,6 @@ packages:
       postcss-value-parser: 3.3.1
     dev: false
 
-  /reflect-metadata@0.1.13:
-    resolution: {integrity: sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==}
-    dev: false
-
   /regenerator-runtime@0.13.11:
     resolution: {integrity: sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==}
 
@@ -6959,14 +6875,6 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /rollup@3.21.7:
-    resolution: {integrity: sha512-KXPaEuR8FfUoK2uHwNjxTmJ18ApyvD6zJpYv9FOJSqLStmt6xOY84l1IjK2dSolQmoXknrhEFRaPRgOPdqCT5w==}
-    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
-    hasBin: true
-    optionalDependencies:
-      fsevents: 2.3.2
-    dev: true
-
   /run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
     dependencies:
@@ -7035,14 +6943,6 @@ packages:
     hasBin: true
     dependencies:
       lru-cache: 6.0.0
-
-  /semver@7.5.0:
-    resolution: {integrity: sha512-+XC0AD/R7Q2mPSRuy2Id0+CGTZ98+8f+KvwirxOKIEyid+XSx6HbC63p+O4IndTHuX5Z+JxQ0TghCkO5Cg/2HA==}
-    engines: {node: '>=10'}
-    hasBin: true
-    dependencies:
-      lru-cache: 6.0.0
-    dev: false
 
   /send@0.18.0:
     resolution: {integrity: sha512-qqWzuOjSFOuqPjFe4NOsMLafToQQwBSOEpS+FwEt3A2V3vKubTquT3vmLTQpFgMXp8AlFWFuP1qKaJZOtPpVXg==}
@@ -7443,8 +7343,13 @@ packages:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
     dev: true
 
+  /tslib@2.3.1:
+    resolution: {integrity: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==}
+    dev: false
+
   /tslib@2.5.0:
     resolution: {integrity: sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==}
+    dev: true
 
   /tsutils@3.21.0(typescript@4.9.5):
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
@@ -7717,23 +7622,6 @@ packages:
       d3-timer: 3.0.1
     dev: false
 
-  /vite-plugin-node@3.0.2(vite@4.3.5):
-    resolution: {integrity: sha512-pA/QZDe4VRFUSChTrR64EfdsnwHbTnkXKx1Be8MP2oW43TPeQgtIfqiGOuXTPUKjwINtyEl8JMzRN0+dYyfTow==}
-    peerDependencies:
-      '@swc/core': ^1.2.153
-      vite: ^4.0.0
-    peerDependenciesMeta:
-      '@swc/core':
-        optional: true
-    dependencies:
-      '@rollup/pluginutils': 4.2.1
-      chalk: 4.1.2
-      debug: 4.3.4
-      vite: 4.3.5
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
-
   /vite-plugin-svgr@2.4.0(vite@4.2.1):
     resolution: {integrity: sha512-q+mJJol6ThvqkkJvvVFEndI4EaKIjSI0I3jNFgSoC9fXAz1M7kYTVUin8fhUsFojFDKZ9VHKtX6NXNaOLpbsHA==}
     peerDependencies:
@@ -7777,38 +7665,6 @@ packages:
       postcss: 8.4.21
       resolve: 1.22.1
       rollup: 3.20.2
-    optionalDependencies:
-      fsevents: 2.3.2
-    dev: true
-
-  /vite@4.3.5:
-    resolution: {integrity: sha512-0gEnL9wiRFxgz40o/i/eTBwm+NEbpUeTWhzKrZDSdKm6nplj+z4lKz8ANDgildxHm47Vg8EUia0aicKbawUVVA==}
-    engines: {node: ^14.18.0 || >=16.0.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': '>= 14'
-      less: '*'
-      sass: '*'
-      stylus: '*'
-      sugarss: '*'
-      terser: ^5.4.0
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      less:
-        optional: true
-      sass:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-    dependencies:
-      esbuild: 0.17.10
-      postcss: 8.4.23
-      rollup: 3.21.7
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
@@ -7996,10 +7852,6 @@ packages:
       nanoclone: 0.2.1
       property-expr: 2.0.5
       toposort: 2.0.2
-    dev: false
-
-  /zod@3.20.6:
-    resolution: {integrity: sha512-oyu0m54SGCtzh6EClBVqDDlAYRz4jrVtKwQ7ZnsEmMI9HnzuZFj8QFwAY1M5uniIYACdGvv0PBWPF2kO0aNofA==}
     dev: false
 
   /zustand@4.3.3(react@18.2.0):

@@ -1,10 +1,10 @@
-import {morph, type} from "arktype";
+import {type} from "arktype";
 
 export const RepeatingCustomEventSchema = type({
     title: "string",
     start: "string",
     end: "string",
     days: "boolean[]",
-    customEventID: morph("string", (s) => parseInt(s)),
+    customEventID: "number | parsedNumber",
     "color?": "string",
 });

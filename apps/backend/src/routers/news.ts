@@ -6,7 +6,6 @@ const newsRouter = router({
      * return all news
      */
     findAll: procedure.query(async () => {
-        // return await NewsModel.find({}) as News[];
         return (await NewsModel.find({})) as News[];
     }),
 });

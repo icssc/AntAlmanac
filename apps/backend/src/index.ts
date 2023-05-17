@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import type { CorsOptions } from 'cors';
@@ -6,13 +5,13 @@ import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import AppRouter from './routers';
 import createContext from './context';
 import connectToMongoDB from '$db/mongodb';
+import env from './env';
 
 const corsOptions: CorsOptions = {
     origin: ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac'],
 };
 
 export async function start(corsEnabled = false) {
-    console.log('Starting server...');
     await connectToMongoDB();
 
     const app = express();
@@ -27,9 +26,8 @@ export async function start(corsEnabled = false) {
         })
     );
 
-    if (import.meta.env.MODE === 'development') {
+    if (env.STAGE === 'dev') {
         app.listen(3000, async () => {
-            // eslint-disable-next-line no-console
             console.log('Server listening at http://localhost:3000');
         });
     }

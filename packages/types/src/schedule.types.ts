@@ -1,47 +1,3 @@
-// import {arrayOf, scope} from "arktype";
-// import { RepeatingCustomEventSchema } from "./customevent.types";
-// import { AASection } from "./websoc";
-//
-// export const types = scope({
-//     scheduleCourse: {
-//         courseComment: "string",
-//         courseNumber: "string",
-//         courseTitle: "string",
-//         deptCode: "string",
-//         prerequisiteLink: "string",
-//         section: AASection,
-//         term: "string",
-//     },
-//     schedule: {
-//         scheduleName: "string",
-//         courses: "scheduleCourse[]",
-//         customEvents: arrayOf(RepeatingCustomEventSchema),
-//         scheduleNoteId: "number",
-//     },
-//     shortCourse: {
-//         color: "string",
-//         term: "string",
-//         sectionCode: "string",
-//     },
-//     shortCourseSchedule: {
-//         scheduleName: "string",
-//         courses: "shortCourse[]",
-//         customEvents: arrayOf(RepeatingCustomEventSchema),
-//         scheduleNote: "string",
-//     },
-//     scheduleSaveState: {
-//         schedules: "shortCourseSchedule[]",
-//         scheduleIndex: "number",
-//     },
-//     scheduleUndoState: {
-//         schedules: "schedule[]",
-//         scheduleIndex: "number",
-//     },
-// }).compile();
-//
-// export const ScheduleSaveStateSchema = types.scheduleSaveState
-// export type ScheduleSaveState = typeof types.scheduleSaveState.infer
-
 import { type, arrayOf } from "arktype";
 import { RepeatingCustomEventSchema } from "./customevent.types";
 import { AASection } from "./websoc";
@@ -72,12 +28,12 @@ export const ShortCourseSchema = type({
 });
 export type ShortCourse = typeof ShortCourseSchema.infer;
 
-export const ShortCourseScheduleSchema = type({
+export const ShortCourseScheduleSchema = type([{
     scheduleName: "string",
     courses: arrayOf(ShortCourseSchema),
     customEvents: arrayOf(RepeatingCustomEventSchema),
-    scheduleNote: "string",
-});
+    "scheduleNote?": "string",
+}, '|>', (s) => ({scheduleNote: '', ...s})]  );
 export type ShortCourseSchedule = typeof ShortCourseScheduleSchema.infer;
 
 export const ScheduleSaveStateSchema = type({
