@@ -1,6 +1,5 @@
 import { type } from "arktype";
-
-import { courseLevels, geCategories } from "../types/constants";
+import { courseLevels, geCategories } from "peterportal-api-next-types";
 import enumerate from "./enumerate";
 
 export const PrerequisiteTree = type({

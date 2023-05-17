@@ -1,6 +1,5 @@
 import { arrayOf, type } from "arktype";
-
-import { quarters } from "../types/constants";
+import { quarters } from "peterportal-api-next-types";
 import enumerate from "./enumerate";
 
 /**

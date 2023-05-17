@@ -1,6 +1,5 @@
 import { type Infer, arrayOf, type } from "arktype";
-
-import { type Quarter, quarters } from "../types/constants";
+import { type Quarter, quarters } from "peterportal-api-next-types";
 import enumerate from "./enumerate";
 
 export const WebsocSectionMeeting = type({

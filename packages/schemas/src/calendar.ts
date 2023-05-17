@@ -1,6 +1,5 @@
 import { type Infer, type } from "arktype";
-
-import { Quarter } from "../types/constants";
+import type { Quarter } from "peterportal-api-next-types";
 
 export const WeekData = type({
   week: "string",
