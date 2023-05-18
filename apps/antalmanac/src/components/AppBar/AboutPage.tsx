@@ -9,10 +9,6 @@ class AboutPage extends PureComponent {
         isOpen: false,
     };
 
-    // handleClose = () => {
-    //     this.setState({ isOpen: false })
-    // }
-
     render() {
         return (
             <>
