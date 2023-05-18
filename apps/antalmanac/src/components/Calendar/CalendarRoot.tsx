@@ -225,6 +225,13 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         return this.state.showFinalsSchedule ? this.state.finalsEventsInCalendar : this.state.eventsInCalendar;
     };
 
+    getStartTime = () => {
+        const eventStartHours = this.getEventsForCalendar().map((event) => event.start.getHours());
+        // If the earliest event has an earlier start time than 7am, return its hour;
+        // otherwise, just make 7am the start time
+        return new Date(2018, 0, 1, Math.min(7, Math.min(...eventStartHours)));
+    };
+
     render() {
         const { classes, isMobile } = this.props;
         const events = this.getEventsForCalendar();
@@ -301,7 +308,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                         step={15}
                         timeslots={2}
                         defaultDate={new Date(2018, 0, 1)}
-                        min={new Date(2018, 0, 1, 7)}
+                        min={this.getStartTime()}
                         max={new Date(2018, 0, 1, 23)}
                         events={events}
                         eventPropGetter={ScheduleCalendar.eventStyleGetter}
