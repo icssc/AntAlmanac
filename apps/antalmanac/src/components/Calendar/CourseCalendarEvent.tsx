@@ -3,6 +3,7 @@ import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
 import { Event } from 'react-big-calendar';
+import { useEffect, useRef } from 'react'; 
 
 import RightPaneStore, { BuildingFocusInfo } from '../RightPane/RightPaneStore';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
@@ -116,12 +117,33 @@ interface CourseCalendarEventProps {
 }
 
 const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
+
+    const isShown = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+      const handleKeyDown = (event: { keyCode: number; }) => {
+        if (event.keyCode === 27) {
+          if(isShown.current)
+                isShown.current.style.display = 'none';
+        }
+      };
+
+      document.addEventListener('keydown', handleKeyDown);
+
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+      };
+    }, []);
+    
     const { classes, courseInMoreInfo } = props;
     if (!courseInMoreInfo.isCustomEvent) {
         const { term, instructors, sectionCode, title, finalExam, bldg, sectionType } = courseInMoreInfo;
 
         return (
-            <Paper className={classes.courseContainer}>
+            <Paper 
+                className={classes.courseContainer}
+                ref={isShown}
+            >
                 <div className={classes.titleBar}>
                     <span className={classes.title}>{`${title} ${sectionType}`}</span>
                     <Tooltip title="Delete">
@@ -202,7 +224,10 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     } else {
         const { title, customEventID } = courseInMoreInfo;
         return (
-            <Paper className={classes.customEventContainer}>
+            <Paper 
+                className={classes.customEventContainer}
+                ref={isShown}
+            >
                 <div className={classes.title}>{title}</div>
                 <div className={classes.buttonBar}>
                     <div className={`${classes.colorPicker}`}>
