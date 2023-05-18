@@ -9,16 +9,9 @@ class AboutPage extends PureComponent {
         isOpen: false,
     };
 
-    handleClose = (wasCancelled: boolean) => {
-        if(wasCancelled)
-            this.setState({ isOpen: false}, () => {
-                document.removeEventListener('keydown', this.enterEvent, false); //this.enterEvent seems like nonsense
-                this.setState({ userID: '' })
-            });
-    }
-    
-    enterEvent = (event: KeyboardEvent) => {
-    };
+    // handleClose = () => {
+    //     this.setState({ isOpen: false })
+    // }
 
     render() {
         return (
@@ -36,7 +29,7 @@ class AboutPage extends PureComponent {
                 >
                     About
                 </Button>
-                <Dialog open={this.state.isOpen} onClose={this.handleClose}>
+                <Dialog open={this.state.isOpen} onClose={() => this.setState({ isOpen: false })}>
                     <DialogTitle>About</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
