@@ -147,7 +147,13 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                         Import
                     </Button>
                 </Tooltip>
-                <Dialog open={this.state.isOpen} onClose={() => this.setState({ isOpen: false, studyListText: '' })}>
+                <Dialog 
+                    open={this.state.isOpen} 
+                    onClose={() => this.setState(
+                        { isOpen: false, studyListText: ''}, 
+                        async () => {document.removeEventListener('keydown', this.enterEvent, false)}
+                    )}
+                >
                     <DialogTitle>Import Schedule</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
