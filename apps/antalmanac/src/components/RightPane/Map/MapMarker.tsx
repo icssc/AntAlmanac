@@ -94,6 +94,19 @@ const MapMarker = ({
         if (openPopup) _openPopup(markerRef);
     }, [markerRef, openPopup, lat, lng, location]);
 
+    function handleKeyPress(event: { key: string; }) {
+        if(event.key === 'Escape' && markerRef.current){
+            markerRef.current.leafletElement.closePopup();
+        }
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress)
+        };
+    }
+
+    function escListener () {
+        document.addEventListener('keydown', handleKeyPress)
+    }
+
     return (
         <Marker
             position={[lat, lng]}
@@ -105,6 +118,7 @@ const MapMarker = ({
                     category: analyticsEnum.map.title,
                     action: analyticsEnum.map.actions.CLICK_PIN,
                 });
+                escListener();
             }}
         >
             <Popup>
