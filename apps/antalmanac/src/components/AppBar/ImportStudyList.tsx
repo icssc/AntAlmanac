@@ -120,13 +120,6 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         });
     };
 
-    handleEscClose = () => {
-        this.setState({ isOpen: false }, async () => {
-            document.removeEventListener('keydown', this.enterEvent, false);
-            this.setState({ studyListText: '' });
-        });
-    }
-
     enterEvent = (event: KeyboardEvent) => {
         const charCode = event.which ? event.which : event.keyCode;
         // enter (13) or newline (10)
@@ -154,7 +147,7 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                         Import
                     </Button>
                 </Tooltip>
-                <Dialog open={this.state.isOpen} onClose={this.handleEscClose}>
+                <Dialog open={this.state.isOpen} onClose={() => this.setState({ isOpen: false, studyListText: '' })}>
                     <DialogTitle>Import Schedule</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
