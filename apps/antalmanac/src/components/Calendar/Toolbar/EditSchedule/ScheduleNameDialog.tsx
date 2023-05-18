@@ -58,6 +58,9 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
         if (event.key === 'Enter') {
             submitName();
         }
+        if (event.key === 'Escape') {
+            setIsOpen(false);
+        }
     };
 
     const submitName = () => {
@@ -88,6 +91,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
                 open={isOpen}
                 onKeyDown={handleKeyDown}
                 onClick={(event: React.MouseEvent<Element, MouseEvent>) => event.stopPropagation()}
+                onClose={() => setIsOpen(false)}
             >
                 <DialogTitle>{rename ? 'Rename Schedule' : 'Add a New Schedule'}</DialogTitle>
                 <DialogContent>
