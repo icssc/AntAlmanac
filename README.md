@@ -38,7 +38,7 @@ We welcome open-source contributions 🤗 Here is a rough guide on how to contri
 
 1. Look through the [issue tracker](https://github.com/icssc/AntAlmanac/issues) or [Kanban board](https://github.com/icssc/AntAlmanac/wiki/Kanban-Board-Docs) to find an open issue (nobody else is assigned) or create your own that describes the problem you want to fix. 
 2. Fork the repository. If you're on the ICSSC Projects Committee and we've given you write access, create a branch instead of forking.
-3. [Get Setup to Develop Locally](#get-setup-to-develop-locally)
+3. [Get setup to develop locally](#get-setup-to-develop-locally)
 4. Create a draft pull request so others can track your progress.
 5. Make your changes and push them as you complete them. Change the PR from draft to open once you're done.
 6. Wait for your request to get reviewed and respond to any changes until you get approval.
