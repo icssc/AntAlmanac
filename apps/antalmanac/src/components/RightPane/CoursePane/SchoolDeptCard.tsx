@@ -17,11 +17,13 @@ const styles: Styles<Theme, object> = (theme) => ({
         ...theme.mixins.gutters(),
         paddingTop: theme.spacing(),
         paddingBottom: theme.spacing(),
+        backgroundColor: '#515151',
     },
     text: {
         flexBasis: '50%',
         flexGrow: 1,
         display: 'inline',
+        cursor: 'pointer',
     },
     icon: {
         cursor: 'pointer',
@@ -54,6 +56,10 @@ class SchoolDeptCard extends PureComponent<SchoolDeptCardProps> {
                     <Typography
                         noWrap
                         variant={this.props.type === 'school' ? 'h6' : 'subtitle1'}
+                        onClick={() =>
+                            this.setState({
+                                commentsOpen: !this.state.commentsOpen,
+                            })}
                         className={this.props.classes.text}
                     >
                         {this.props.name}
