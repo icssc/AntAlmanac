@@ -184,7 +184,7 @@ function getColorForNewSection(newSection: ScheduleCourse, sectionsInSchedule: S
     if(existingSectionsType.length > 0) 
         return (existingSectionsType[0].section.color);
         
-    //If the same courseTitle exists, but not the same sectionType, return a hue
+    //If the same courseTitle exists, but not the same sectionType, return a close color
     if(existingSections.length > 0)
         return (generateCloseColor(existingSections[0].section.color, usedColors));
 
