@@ -24,7 +24,7 @@ interface MapMarkerProps {
     openPopup?: boolean;
 }
 
-type MarkerRef = React.MutableRefObject<Marker | null>;
+type MarkerRef = React.MutableRefObject<Marker | null >;
 
 const MapMarker = ({
     index,
@@ -79,7 +79,7 @@ const MapMarker = ({
     } else {
         locationLinkElement = location;
     }
-
+    
     const markerRef = useState(useRef(null))[0];
 
     function _openPopup(_markerRef: MarkerRef) {
@@ -96,15 +96,16 @@ const MapMarker = ({
 
     function handleKeyPress(event: { key: string; }) {
         if(event.key === 'Escape' && markerRef.current){
+            //@ts-ignore
             markerRef.current.leafletElement.closePopup();
         }
         return () => {
-            document.removeEventListener('keydown', handleKeyPress)
+            document.removeEventListener('keydown', handleKeyPress, false)
         };
     }
 
     function escListener () {
-        document.addEventListener('keydown', handleKeyPress)
+        document.addEventListener('keydown', handleKeyPress, false)
     }
 
     return (
