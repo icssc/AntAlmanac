@@ -24,7 +24,7 @@ interface MapMarkerProps {
     openPopup?: boolean;
 }
 
-type MarkerRef = React.MutableRefObject<Marker | null >;
+type MarkerRef = React.MutableRefObject<Marker | null>;
 
 const MapMarker = ({
     index,
