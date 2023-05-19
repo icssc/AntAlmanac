@@ -122,6 +122,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
 
     useEffect(() => {
       const handleKeyDown = (event: { keyCode: number; }) => {
+        //event.keyCode === 27 reads for the "escape" key
         if (event.keyCode === 27) {
           if(isShown.current)
                 isShown.current.style.display = 'none';
