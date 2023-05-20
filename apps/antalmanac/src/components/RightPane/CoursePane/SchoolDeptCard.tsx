@@ -1,4 +1,3 @@
-import { isDarkMode } from '$lib/helpers';
 import { Collapse, Grid, Paper, Theme, Typography, withStyles } from '@material-ui/core';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
@@ -18,7 +17,6 @@ const styles: Styles<Theme, object> = (theme) => ({
         ...theme.mixins.gutters(),
         paddingTop: theme.spacing(),
         paddingBottom: theme.spacing(),
-        backgroundColor: isDarkMode() ? '#515151' : '#F5F5F5',
     },
     text: {
         flexBasis: '50%',
