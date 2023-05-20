@@ -118,14 +118,14 @@ interface CourseCalendarEventProps {
 
 const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
 
-    const isShown = useRef<HTMLInputElement>(null);
+    const paperRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
       const handleKeyDown = (event: { keyCode: number; }) => {
         //event.keyCode === 27 reads for the "escape" key
         if (event.keyCode === 27) {
-          if(isShown.current)
-                isShown.current.style.display = 'none';
+          if(paperRef.current)
+                paperRef.current.style.display = 'none';
         }
       };
 
@@ -143,7 +143,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         return (
             <Paper 
                 className={classes.courseContainer}
-                ref={isShown}
+                ref={paperRef}
             >
                 <div className={classes.titleBar}>
                     <span className={classes.title}>{`${title} ${sectionType}`}</span>
@@ -227,7 +227,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         return (
             <Paper 
                 className={classes.customEventContainer}
-                ref={isShown}
+                ref={paperRef}
             >
                 <div className={classes.title}>{title}</div>
                 <div className={classes.buttonBar}>
