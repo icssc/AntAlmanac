@@ -5,6 +5,7 @@ import { Meeting, Section, WebsocResponse } from './peterportal.types';
 import { addCourse, openSnackbar } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import trpc from "$lib/api/trpc";
 
 interface GradesGraphQLResponse {
     data: {
@@ -79,12 +80,7 @@ export interface ZotCourseResponse {
     customEvents: RepeatingCustomEvent[];
 }
 export async function queryZotCourse(schedule_name: string) {
-    const url = new URL(ZOTCOURSE_ENDPOINT);
-    const response = await fetch(url, {
-        method: 'POST',
-        body: JSON.stringify({ scheduleName: schedule_name }),
-        headers: { 'Content-Type': 'application/json' },
-    }).then((r) => r.json());
+    const response = await trpc.zotcourse.getUserData.mutate({ scheduleName: schedule_name });
     // For custom event, there is no course attribute in each.
     const codes = response.data
         .filter((section: { eventType: number }) => section.eventType === 3)

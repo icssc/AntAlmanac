@@ -80,13 +80,6 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
 
             try {
                 await trpc.users.saveUserData.mutate({ id: userID, userData: scheduleSaveState })
-                // await fetch(SAVE_DATA_ENDPOINT, {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //     },
-                //     body: JSON.stringify({ userID, userData: scheduleSaveState }),
-                // });
 
                 openSnackbar(
                     'success',
