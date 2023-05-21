@@ -1,6 +1,16 @@
-import { Collapse, Grid, Paper, Theme, Typography, withStyles } from '@material-ui/core';
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Box,
+    Grid,
+    Paper,
+    Theme,
+    Typography,
+    withStyles,
+} from '@material-ui/core';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { ExpandLess, ExpandMore } from '@material-ui/icons';
+import { ExpandMore } from '@material-ui/icons';
 import { PureComponent } from 'react';
 
 const styles: Styles<Theme, object> = (theme) => ({
@@ -22,6 +32,7 @@ const styles: Styles<Theme, object> = (theme) => ({
         flexBasis: '50%',
         flexGrow: 1,
         display: 'inline',
+        cursor: 'pointer',
     },
     icon: {
         cursor: 'pointer',
@@ -47,34 +58,26 @@ class SchoolDeptCard extends PureComponent<SchoolDeptCardProps> {
 
     render() {
         const html = { __html: this.props.comment };
-        const ExpandIcon = this.state.commentsOpen ? ExpandLess : ExpandMore;
         return (
             <Grid item xs={12}>
-                <Paper className={this.props.classes[this.props.type]} elevation={1} square>
-                    <Typography
-                        noWrap
-                        variant={this.props.type === 'school' ? 'h6' : 'subtitle1'}
-                        className={this.props.classes.text}
-                    >
-                        {this.props.name}
-                    </Typography>
-                    <>
-                        <ExpandIcon
-                            onClick={() =>
-                                this.setState({
-                                    commentsOpen: !this.state.commentsOpen,
-                                })
-                            }
-                            className={this.props.classes.icon}
-                        />
-
-                        <Collapse in={this.state.commentsOpen} className={this.props.classes.collapse}>
-                            <Typography variant="body2">
-                                {this.props.comment === '' ? 'No comments found' : 'Comments:'}
+                <Paper elevation={1} square style={{ overflow: 'hidden' }}>
+                    <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMore />}>
+                            <Typography variant={this.props.type === 'school' ? 'h6' : 'subtitle1'}>
+                                {this.props.name}
                             </Typography>
-                            <div dangerouslySetInnerHTML={html} className={this.props.classes.comments} />
-                        </Collapse>
-                    </>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography variant="body2">
+                                <p>{this.props.comment === '' ? 'No comments found' : 'Comments:'}</p>
+                                <Box
+                                    dangerouslySetInnerHTML={html}
+                                    className={this.props.classes.comments}
+                                    component="p"
+                                />
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
                 </Paper>
             </Grid>
         );
