@@ -50,19 +50,16 @@ class SchoolDeptCard extends PureComponent<SchoolDeptCardProps> {
         const html = { __html: this.props.comment };
         return (
             <Grid item xs={12}>
-                <Paper className={this.props.classes[this.props.type]} elevation={1} square>
+                <Paper elevation={1} square>
                     <Accordion>
                         <AccordionSummary expandIcon={<ExpandMore />}>
-                            <Typography
-                                noWrap={true}
+                            <Typography 
                                 variant={this.props.type === 'school' ? 'h6' : 'subtitle1'}
-                                
                             >
                                 {this.props.name}
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                                {this.state.commentsOpen}
                                 <Typography variant="body2">
                                     {this.props.comment === '' ? 'No comments found' : 'Comments:'}
                                     <Box dangerouslySetInnerHTML={html} className={this.props.classes.comments} />
