@@ -1,4 +1,14 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Grid, Paper, Theme, Typography, withStyles } from '@material-ui/core';
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Box,
+    Grid,
+    Paper,
+    Theme,
+    Typography,
+    withStyles,
+} from '@material-ui/core';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { ExpandMore } from '@material-ui/icons';
 import { PureComponent } from 'react';
@@ -50,20 +60,22 @@ class SchoolDeptCard extends PureComponent<SchoolDeptCardProps> {
         const html = { __html: this.props.comment };
         return (
             <Grid item xs={12}>
-                <Paper elevation={1} square>
+                <Paper elevation={1} square style={{ overflow: 'hidden' }}>
                     <Accordion>
                         <AccordionSummary expandIcon={<ExpandMore />}>
-                            <Typography 
-                                variant={this.props.type === 'school' ? 'h6' : 'subtitle1'}
-                            >
+                            <Typography variant={this.props.type === 'school' ? 'h6' : 'subtitle1'}>
                                 {this.props.name}
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                                <Typography variant="body2">
-                                    {this.props.comment === '' ? 'No comments found' : 'Comments:'}
-                                    <Box dangerouslySetInnerHTML={html} className={this.props.classes.comments} />
-                                </Typography>
+                            <Typography variant="body2">
+                                <p>{this.props.comment === '' ? 'No comments found' : 'Comments:'}</p>
+                                <Box
+                                    dangerouslySetInnerHTML={html}
+                                    className={this.props.classes.comments}
+                                    component="p"
+                                />
+                            </Typography>
                         </AccordionDetails>
                     </Accordion>
                 </Paper>
