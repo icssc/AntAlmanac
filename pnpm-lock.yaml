@@ -9,7 +9,7 @@ importers:
         version: 8.0.3
       turbo:
         specifier: latest
-        version: 1.9.3
+        version: 1.8.8
 
   apps/antalmanac:
     dependencies:
@@ -233,15 +233,15 @@ importers:
 
   apps/backend:
     dependencies:
+      '@packages/antalmanac-types':
+        specifier: '*'
+        version: link:../../packages/types
       '@trpc/server':
         specifier: ^10.23.0
         version: 10.23.0
       '@vendia/serverless-express':
         specifier: ^4.10.1
         version: 4.10.1
-      antalmanac-types:
-        specifier: '*'
-        version: link:../../packages/types
       arktype:
         specifier: 1.0.14-alpha
         version: 1.0.14-alpha
@@ -303,12 +303,6 @@ importers:
       eslint:
         specifier: ^8.34.0
         version: 8.38.0
-      eslint-config-airbnb:
-        specifier: ^19.0.4
-        version: 19.0.4(eslint-plugin-import@2.27.5)(eslint-plugin-jsx-a11y@6.7.1)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react@7.32.2)(eslint@8.38.0)
-      eslint-config-airbnb-typescript:
-        specifier: ^17.0.0
-        version: 17.0.0(@typescript-eslint/eslint-plugin@5.57.1)(@typescript-eslint/parser@5.57.1)(eslint-plugin-import@2.27.5)(eslint@8.38.0)
       eslint-config-prettier:
         specifier: ^8.6.0
         version: 8.8.0(eslint@8.38.0)
@@ -383,7 +377,7 @@ importers:
         specifier: latest
         version: 5.0.4
 
-  packages/schemas:
+  packages/peterportal-schemas:
     dependencies:
       arktype:
         specifier: 1.0.14-alpha
@@ -398,12 +392,12 @@ importers:
 
   packages/types:
     dependencies:
+      '@packages/peterportal-schemas':
+        specifier: '*'
+        version: link:../peterportal-schemas
       arktype:
         specifier: 1.0.14-alpha
         version: 1.0.14-alpha
-      peterportal-api-next-types:
-        specifier: 1.0.0-alpha.6
-        version: 1.0.0-alpha.6
     devDependencies:
       typescript:
         specifier: ^4.9
@@ -3699,10 +3693,6 @@ packages:
       yargs: 17.7.2
     dev: true
 
-  /confusing-browser-globals@1.0.11:
-    resolution: {integrity: sha512-JsPKdmh8ZkmnHxDk55FZ1TqVLvEQTvoByJZRN9jzI0UjxK/QgAmsphz7PGtqgPieQZ/CQcHWXCR7ATDNhGe+YA==}
-    dev: true
-
   /constructs@10.1.252:
     resolution: {integrity: sha512-8j3bcoSTlIjbCu1tflWHvipVDWmllUNu3dEWb5GXvsXCiYuH0NtXCCN5q6GmFInDcspZp8WOYu66uqQ8Bk7jzQ==}
     engines: {node: '>= 14.17.0'}
@@ -4197,56 +4187,6 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
-  /eslint-config-airbnb-base@15.0.0(eslint-plugin-import@2.27.5)(eslint@8.38.0):
-    resolution: {integrity: sha512-xaX3z4ZZIcFLvh2oUNvcX5oEofXda7giYmuplVxoOg5A7EXJMrUyqRgR+mhDhPK8LZ4PttFOBvCYDbX3sUoUig==}
-    engines: {node: ^10.12.0 || >=12.0.0}
-    peerDependencies:
-      eslint: ^7.32.0 || ^8.2.0
-      eslint-plugin-import: ^2.25.2
-    dependencies:
-      confusing-browser-globals: 1.0.11
-      eslint: 8.38.0
-      eslint-plugin-import: 2.27.5(@typescript-eslint/parser@5.57.1)(eslint@8.38.0)
-      object.assign: 4.1.4
-      object.entries: 1.1.6
-      semver: 6.3.0
-    dev: true
-
-  /eslint-config-airbnb-typescript@17.0.0(@typescript-eslint/eslint-plugin@5.57.1)(@typescript-eslint/parser@5.57.1)(eslint-plugin-import@2.27.5)(eslint@8.38.0):
-    resolution: {integrity: sha512-elNiuzD0kPAPTXjFWg+lE24nMdHMtuxgYoD30OyMD6yrW1AhFZPAg27VX7d3tzOErw+dgJTNWfRSDqEcXb4V0g==}
-    peerDependencies:
-      '@typescript-eslint/eslint-plugin': ^5.13.0
-      '@typescript-eslint/parser': ^5.0.0
-      eslint: ^7.32.0 || ^8.2.0
-      eslint-plugin-import: ^2.25.3
-    dependencies:
-      '@typescript-eslint/eslint-plugin': 5.57.1(@typescript-eslint/parser@5.57.1)(eslint@8.38.0)(typescript@4.9.5)
-      '@typescript-eslint/parser': 5.57.1(eslint@8.38.0)(typescript@4.9.5)
-      eslint: 8.38.0
-      eslint-config-airbnb-base: 15.0.0(eslint-plugin-import@2.27.5)(eslint@8.38.0)
-      eslint-plugin-import: 2.27.5(@typescript-eslint/parser@5.57.1)(eslint@8.38.0)
-    dev: true
-
-  /eslint-config-airbnb@19.0.4(eslint-plugin-import@2.27.5)(eslint-plugin-jsx-a11y@6.7.1)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react@7.32.2)(eslint@8.38.0):
-    resolution: {integrity: sha512-T75QYQVQX57jiNgpF9r1KegMICE94VYwoFQyMGhrvc+lB8YF2E/M/PYDaQe1AJcWaEgqLE+ErXV1Og/+6Vyzew==}
-    engines: {node: ^10.12.0 || ^12.22.0 || ^14.17.0 || >=16.0.0}
-    peerDependencies:
-      eslint: ^7.32.0 || ^8.2.0
-      eslint-plugin-import: ^2.25.3
-      eslint-plugin-jsx-a11y: ^6.5.1
-      eslint-plugin-react: ^7.28.0
-      eslint-plugin-react-hooks: ^4.3.0
-    dependencies:
-      eslint: 8.38.0
-      eslint-config-airbnb-base: 15.0.0(eslint-plugin-import@2.27.5)(eslint@8.38.0)
-      eslint-plugin-import: 2.27.5(@typescript-eslint/parser@5.57.1)(eslint@8.38.0)
-      eslint-plugin-jsx-a11y: 6.7.1(eslint@8.38.0)
-      eslint-plugin-react: 7.32.2(eslint@8.38.0)
-      eslint-plugin-react-hooks: 4.6.0(eslint@8.38.0)
-      object.assign: 4.1.4
-      object.entries: 1.1.6
-    dev: true
-
   /eslint-config-prettier@8.6.0(eslint@8.38.0):
     resolution: {integrity: sha512-bAF0eLpLVqP5oEVUFKpMA+NnRFICwn9X8B5jrR9FcqnYBuPbqWEjTEspPWMj5ye6czoSLDweCzSo3Ko7gGrZaA==}
     hasBin: true
@@ -4433,31 +4373,6 @@ packages:
       semver: 6.3.0
     dev: true
 
-  /eslint-plugin-jsx-a11y@6.7.1(eslint@8.38.0):
-    resolution: {integrity: sha512-63Bog4iIethyo8smBklORknVjB0T2dwB8Mr/hIC+fBS0uyHdYYpzM/Ed+YC8VxTjlXHEWFOdmgwcDn1U2L9VCA==}
-    engines: {node: '>=4.0'}
-    peerDependencies:
-      eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
-    dependencies:
-      '@babel/runtime': 7.20.13
-      aria-query: 5.1.3
-      array-includes: 3.1.6
-      array.prototype.flatmap: 1.3.1
-      ast-types-flow: 0.0.7
-      axe-core: 4.6.3
-      axobject-query: 3.1.1
-      damerau-levenshtein: 1.0.8
-      emoji-regex: 9.2.2
-      eslint: 8.38.0
-      has: 1.0.3
-      jsx-ast-utils: 3.3.3
-      language-tags: 1.0.5
-      minimatch: 3.1.2
-      object.entries: 1.1.6
-      object.fromentries: 2.0.6
-      semver: 6.3.0
-    dev: true
-
   /eslint-plugin-prettier@4.2.1(eslint-config-prettier@8.6.0)(eslint@8.38.0)(prettier@2.8.4):
     resolution: {integrity: sha512-f/0rXLXUt0oFYs8ra4w49wYZBG5GKZpAYsJSm6rnYL5uVDjd+zowwMwVZHnAjf4edNrKpCDYfXDgmRE/Ak7QyQ==}
     engines: {node: '>=12.0.0'}
@@ -4484,15 +4399,6 @@ packages:
       eslint: 8.37.0
     dev: true
 
-  /eslint-plugin-react-hooks@4.6.0(eslint@8.38.0):
-    resolution: {integrity: sha512-oFc7Itz9Qxh2x4gNHStv3BqJq54ExXmfC+a1NjAta66IAN87Wu0R/QArgIS9qKzX3dXKPI9H5crl9QchNMY9+g==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0
-    dependencies:
-      eslint: 8.38.0
-    dev: true
-
   /eslint-plugin-react@7.32.2(eslint@8.37.0):
     resolution: {integrity: sha512-t2fBMa+XzonrrNkyVirzKlvn5RXzzPwRHtMvLAtVZrt8oxgnTQaYbU6SXTOO1mwQgp1y5+toMSKInnzGr0Knqg==}
     engines: {node: '>=4'}
@@ -4504,30 +4410,6 @@ packages:
       array.prototype.tosorted: 1.1.1
       doctrine: 2.1.0
       eslint: 8.37.0
-      estraverse: 5.3.0
-      jsx-ast-utils: 3.3.3
-      minimatch: 3.1.2
-      object.entries: 1.1.6
-      object.fromentries: 2.0.6
-      object.hasown: 1.1.2
-      object.values: 1.1.6
-      prop-types: 15.8.1
-      resolve: 2.0.0-next.4
-      semver: 6.3.0
-      string.prototype.matchall: 4.0.8
-    dev: true
-
-  /eslint-plugin-react@7.32.2(eslint@8.38.0):
-    resolution: {integrity: sha512-t2fBMa+XzonrrNkyVirzKlvn5RXzzPwRHtMvLAtVZrt8oxgnTQaYbU6SXTOO1mwQgp1y5+toMSKInnzGr0Knqg==}
-    engines: {node: '>=4'}
-    peerDependencies:
-      eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
-    dependencies:
-      array-includes: 3.1.6
-      array.prototype.flatmap: 1.3.1
-      array.prototype.tosorted: 1.1.1
-      doctrine: 2.1.0
-      eslint: 8.38.0
       estraverse: 5.3.0
       jsx-ast-utils: 3.3.3
       minimatch: 3.1.2
@@ -7398,65 +7280,65 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /turbo-darwin-64@1.9.3:
-    resolution: {integrity: sha512-0dFc2cWXl82kRE4Z+QqPHhbEFEpUZho1msHXHWbz5+PqLxn8FY0lEVOHkq5tgKNNEd5KnGyj33gC/bHhpZOk5g==}
+  /turbo-darwin-64@1.8.8:
+    resolution: {integrity: sha512-18cSeIm7aeEvIxGyq7PVoFyEnPpWDM/0CpZvXKHpQ6qMTkfNt517qVqUTAwsIYqNS8xazcKAqkNbvU1V49n65Q==}
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-darwin-arm64@1.9.3:
-    resolution: {integrity: sha512-1cYbjqLBA2zYE1nbf/qVnEkrHa4PkJJbLo7hnuMuGM0bPzh4+AnTNe98gELhqI1mkTWBu/XAEeF5u6dgz0jLNA==}
+  /turbo-darwin-arm64@1.8.8:
+    resolution: {integrity: sha512-ruGRI9nHxojIGLQv1TPgN7ud4HO4V8mFBwSgO6oDoZTNuk5ybWybItGR+yu6fni5vJoyMHXOYA2srnxvOc7hjQ==}
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-64@1.9.3:
-    resolution: {integrity: sha512-UuBPFefawEwpuxh5pM9Jqq3q4C8M0vYxVYlB3qea/nHQ80pxYq7ZcaLGEpb10SGnr3oMUUs1zZvkXWDNKCJb8Q==}
+  /turbo-linux-64@1.8.8:
+    resolution: {integrity: sha512-N/GkHTHeIQogXB1/6ZWfxHx+ubYeb8Jlq3b/3jnU4zLucpZzTQ8XkXIAfJG/TL3Q7ON7xQ8yGOyGLhHL7MpFRg==}
     cpu: [x64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-arm64@1.9.3:
-    resolution: {integrity: sha512-vUrNGa3hyDtRh9W0MkO+l1dzP8Co2gKnOVmlJQW0hdpOlWlIh22nHNGGlICg+xFa2f9j4PbQlWTsc22c019s8Q==}
+  /turbo-linux-arm64@1.8.8:
+    resolution: {integrity: sha512-hKqLbBHgUkYf2Ww8uBL9UYdBFQ5677a7QXdsFhONXoACbDUPvpK4BKlz3NN7G4NZ+g9dGju+OJJjQP0VXRHb5w==}
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-64@1.9.3:
-    resolution: {integrity: sha512-0BZ7YaHs6r+K4ksqWus1GKK3W45DuDqlmfjm/yuUbTEVc8szmMCs12vugU2Zi5GdrdJSYfoKfEJ/PeegSLIQGQ==}
+  /turbo-windows-64@1.8.8:
+    resolution: {integrity: sha512-2ndjDJyzkNslXxLt+PQuU21AHJWc8f6MnLypXy3KsN4EyX/uKKGZS0QJWz27PeHg0JS75PVvhfFV+L9t9i+Yyg==}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-arm64@1.9.3:
-    resolution: {integrity: sha512-QJUYLSsxdXOsR1TquiOmLdAgtYcQ/RuSRpScGvnZb1hY0oLc7JWU0llkYB81wVtWs469y8H9O0cxbKwCZGR4RQ==}
+  /turbo-windows-arm64@1.8.8:
+    resolution: {integrity: sha512-xCA3oxgmW9OMqpI34AAmKfOVsfDljhD5YBwgs0ZDsn5h3kCHhC4x9W5dDk1oyQ4F5EXSH3xVym5/xl1J6WRpUg==}
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo@1.9.3:
-    resolution: {integrity: sha512-ID7mxmaLUPKG/hVkp+h0VuucB1U99RPCJD9cEuSEOdIPoSIuomcIClEJtKamUsdPLhLCud+BvapBNnhgh58Nzw==}
+  /turbo@1.8.8:
+    resolution: {integrity: sha512-qYJ5NjoTX+591/x09KgsDOPVDUJfU9GoS+6jszQQlLp1AHrf1wRFA3Yps8U+/HTG03q0M4qouOfOLtRQP4QypA==}
     hasBin: true
     requiresBuild: true
     optionalDependencies:
-      turbo-darwin-64: 1.9.3
-      turbo-darwin-arm64: 1.9.3
-      turbo-linux-64: 1.9.3
-      turbo-linux-arm64: 1.9.3
-      turbo-windows-64: 1.9.3
-      turbo-windows-arm64: 1.9.3
+      turbo-darwin-64: 1.8.8
+      turbo-darwin-arm64: 1.8.8
+      turbo-linux-64: 1.8.8
+      turbo-linux-arm64: 1.8.8
+      turbo-windows-64: 1.8.8
+      turbo-windows-arm64: 1.8.8
     dev: true
 
   /type-check@0.4.0:

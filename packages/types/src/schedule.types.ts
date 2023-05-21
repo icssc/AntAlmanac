@@ -1,6 +1,6 @@
 import { type, arrayOf } from "arktype";
 import { RepeatingCustomEventSchema } from "./customevent.types";
-import { AASection } from "./websoc";
+import { AASectionSchema } from "./websoc";
 
 export const ScheduleCourseSchema = type({
     courseComment: "string",
@@ -8,7 +8,7 @@ export const ScheduleCourseSchema = type({
     courseTitle: "string",
     deptCode: "string",
     prerequisiteLink: "string",
-    section: AASection,
+    section: AASectionSchema,
     term: "string",
 });
 export type ScheduleCourse = typeof ScheduleCourseSchema.infer;

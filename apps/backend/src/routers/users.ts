@@ -6,7 +6,7 @@ import {
     ScheduleSaveState,
     RepeatingCustomEventSchema,
     ShortCourseSchema,
-} from 'antalmanac-types';
+} from '@packages/antalmanac-types';
 import { router, procedure } from '../trpc';
 import { getById, insertById } from '$db/ddb';
 import LegacyUserModel from '$models/User';

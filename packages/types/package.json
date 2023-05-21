@@ -1,5 +1,5 @@
 {
-  "name": "antalmanac-types",
+  "name": "@packages/antalmanac-types",
   "version": "0.0.1",
   "description": "Internal types for AntAlmanac",
   "main": "./src/index.ts",
@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "arktype": "1.0.14-alpha",
-    "peterportal-api-next-types": "1.0.0-alpha.6"
+    "@packages/peterportal-schemas": "*"
   },
   "devDependencies": {
     "typescript": "^4.9"
