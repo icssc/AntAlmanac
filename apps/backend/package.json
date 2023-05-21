@@ -1,0 +1,32 @@
+{
+    "name": "antalmanac-backend",
+    "version": "0.0.1",
+    "description": "Backend for AntAlmanac",
+    "main": "server.js",
+    "scripts": {
+        "build": "esbuild --platform=node --target=node16 --bundle  --outfile=dist/lambda.js lambda.js",
+        "start": "node server.local.js",
+        "format": "prettier --write src"
+    },
+    "devDependencies": {
+        "dotenv": "^16.0.0",
+        "esbuild": "^0.17.10",
+        "husky": "^7.0.4",
+        "prettier": "^2.5.1"
+    },
+    "dependencies": {
+        "@vendia/serverless-express": "^4.5.4",
+        "aws-sdk": "^2.1323.0",
+        "body-parser": "^1.19.0",
+        "cors": "^2.8.5",
+        "express": "^4.16.2",
+        "mongodb": "^3.5.9",
+        "mongoose": "^5.10.13"
+    },
+    "lint-staged": {
+        "*.{js,json,css,html}": [
+            "prettier --write",
+            "git add"
+        ]
+    }
+}

@@ -1,4 +1,4 @@
-![AntAlmanac](/public/banner.png)
+![AntAlmanac](apps/antalmanac/public/banner.png)
 
 ## About
 
@@ -38,7 +38,7 @@ We welcome open-source contributions 🤗 Here is a rough guide on how to contri
 
 1. Look through the [issue tracker](https://github.com/icssc/AntAlmanac/issues) or [Kanban board](https://github.com/icssc/AntAlmanac/wiki/Kanban-Board-Docs) to find an open issue (nobody else is assigned) or create your own that describes the problem you want to fix. 
 2. Fork the repository. If you're on the ICSSC Projects Committee and we've given you write access, create a branch instead of forking.
-3. [Get Setup to Develop Locally](#get-setup-to-develop-locally)
+3. [Get setup to develop locally](#get-setup-to-develop-locally)
 4. Create a draft pull request so others can track your progress.
 5. Make your changes and push them as you complete them. Change the PR from draft to open once you're done.
 6. Wait for your request to get reviewed and respond to any changes until you get approval.
@@ -54,11 +54,14 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 2. Navigate to the root directory and install the dependencies  
    `cd AntAlmanac`  
-   `npm i -g yarn` (if this fails, try running it with admin privileges)  
-   `yarn install`
+   `npm i -g pnpm` (if this fails, try running it with admin privileges)  
+   `pnpm install`
 
 3. Start the development server  
-   `yarn start`
+   - Frontend only
+      `pnpm start:aa`
+   - Frontend and Backend
+      `pnpm start`
 
 4. The site should load on http://localhost:5173  
    As you make changes to the React application in `src`, those changes will be automatically reflected on the site.
@@ -69,12 +72,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 The backend server **isn't necessary for frontend development**. By default, your frontend will send requests to `dev.api.antalmanac.com`, which has it's own database that is separate from production's.
 
-If you need run the backend, you must do the following:
-
--   Update the `endpointTransform` function in [api/endpoints.js](https://github.com/icssc/AntAlmanac/blob/main/src/api/endpoints.js#L2) to `return path;`. This will point it at the backend on `localhost:8080`
--   Clone the backend repository  
-    `git clone git@github.com:icssc/antalmanac-backend.git`
--   Follow the setup instructions in [antalmanac-backend/README.md](https://github.com/icssc/antalmanac-backend#readme)
+If you want to run the backend locally, use `pnpm start:all`.
 
 ## Manual Deployment
 
@@ -87,5 +85,5 @@ Make sure you are on the latest version of `main` before running the deploy comm
 ```bash
 git checkout main
 git pull
-npm run deploy
+pnpm run deploy
 ```
