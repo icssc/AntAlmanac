@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, ZOTCOURSE_ENDPOINT } from './api/endpoints';
-import { Meeting, Section, WebsocResponse } from './peterportal.types';
+import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT } from './api/endpoints';
+import { WebsocSectionMeeting, WebsocSection, WebsocAPIResponse } from 'peterportal-api-next-types';
 import { addCourse, openSnackbar } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
@@ -49,10 +49,10 @@ export interface CourseDetails {
 
 export interface CourseInfo {
     courseDetails: CourseDetails;
-    section: Section;
+    section: WebsocSection;
 }
 
-export function getCourseInfo(SOCObject: WebsocResponse) {
+export function getCourseInfo(SOCObject: WebsocAPIResponse) {
     const courseInfo: { [sectionCode: string]: CourseInfo } = {};
     for (const school of SOCObject.schools) {
         for (const department of school.departments) {
@@ -105,7 +105,7 @@ export async function queryZotCourse(schedule_name: string) {
     };
 }
 
-interface CacheEntry extends WebsocResponse {
+interface CacheEntry extends WebsocAPIResponse {
     timestamp: number;
 }
 
@@ -115,7 +115,7 @@ export function clearCache() {
     Object.keys(websocCache).forEach((key) => delete websocCache[key]); //https://stackoverflow.com/a/19316873/14587004
 }
 
-export async function queryWebsoc(params: Record<string, string>): Promise<WebsocResponse> {
+export async function queryWebsoc(params: Record<string, string>): Promise<WebsocAPIResponse> {
     // Construct a request to PeterPortal with the params as a query string
     const url = new URL(PETERPORTAL_WEBSOC_ENDPOINT);
     const searchString = new URLSearchParams(params).toString();
@@ -131,24 +131,24 @@ export async function queryWebsoc(params: Record<string, string>): Promise<Webso
     //courses[i].sections[j].meetings will have two entries, despite it being the same section.
     //For now, I'm correcting it with removeDuplicateMeetings, but the API should handle this
 
-    const response = (await fetch(url).then((r) => r.json())) as WebsocResponse;
+    const response = (await fetch(url).then((r) => r.json())) as WebsocAPIResponse;
     websocCache[searchString] = { ...response, timestamp: Date.now() };
     return removeDuplicateMeetings(response);
 }
 
-// Removes duplicate meetings as a result of multiple locations from WebsocResponse.
+// Removes duplicate meetings as a result of multiple locations from WebsocAPIResponse.
 // See queryWebsoc for more info
 // NOTE: The separator is currently an ampersand. Maybe it should be refactored to be an array
 // TODO: Remove if and when API is fixed
 // Maybe put this into CourseRenderPane.tsx -> flattenSOCObject()
-function removeDuplicateMeetings(websocResp: WebsocResponse): WebsocResponse {
+function removeDuplicateMeetings(websocResp: WebsocAPIResponse): WebsocAPIResponse {
     websocResp.schools.forEach((school, schoolIndex) => {
         school.departments.forEach((department, departmentIndex) => {
             department.courses.forEach((course, courseIndex) => {
                 course.sections.forEach((section, sectionIndex) => {
                     // Merge meetings that have the same meeting day and time
 
-                    const existingMeetings: Meeting[] = [];
+                    const existingMeetings: WebsocSectionMeeting[] = [];
 
                     // I know that this is n^2, but a section can't have *that* many locations
                     for (const meeting of section.meetings) {
@@ -170,7 +170,7 @@ function removeDuplicateMeetings(websocResp: WebsocResponse): WebsocResponse {
                                 existingMeetings[i] = {
                                     days: existingMeetings[i].days,
                                     time: existingMeetings[i].time,
-                                    bldg: existingMeetings[i].bldg + ' & ' + meeting.bldg,
+                                    bldg: [existingMeetings[i].bldg + ' & ' + meeting.bldg],
                                 };
                                 isNewMeeting = false;
                             }
@@ -231,8 +231,8 @@ export async function queryGrades(deptCode: string, courseNumber: string) {
     return grades;
 }
 
-export function combineSOCObjects(SOCObjects: WebsocResponse[]) {
-    const combined = SOCObjects.shift() as WebsocResponse;
+export function combineSOCObjects(SOCObjects: WebsocAPIResponse[]) {
+    const combined = SOCObjects.shift() as WebsocAPIResponse;
     for (const res of SOCObjects) {
         for (const school of res.schools) {
             const schoolIndex = combined.schools.findIndex((s) => s.schoolName === school.schoolName);
@@ -266,7 +266,7 @@ export function combineSOCObjects(SOCObjects: WebsocResponse[]) {
 }
 
 export async function queryWebsocMultiple(params: { [key: string]: string }, fieldName: string) {
-    const responses: WebsocResponse[] = [];
+    const responses: WebsocAPIResponse[] = [];
     for (const field of params[fieldName].trim().replace(' ', '').split(',')) {
         const req = JSON.parse(JSON.stringify(params)) as Record<string, string>;
         req[fieldName] = field;
@@ -305,7 +305,7 @@ export const warnMultipleTerms = (terms: Set<string>) => {
 export function clickToCopy(event: React.MouseEvent<HTMLElement, MouseEvent>, sectionCode: string) {
     event.stopPropagation();
     void navigator.clipboard.writeText(sectionCode);
-    openSnackbar('success', 'Section code copied to clipboard');
+    openSnackbar('success', 'WebsocSection code copied to clipboard');
 }
 
 export function isDarkMode() {

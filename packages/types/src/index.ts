@@ -1,4 +1,4 @@
-export * from './schedule.types'
-export * from './customevent.types'
-export * from './user.types'
+export * from './schedule'
+export * from './customevent'
+export * from './user'
 export * from './legacy'

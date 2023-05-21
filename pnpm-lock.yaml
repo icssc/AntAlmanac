@@ -43,6 +43,9 @@ importers:
       '@mui/material':
         specifier: ^5.11.7
         version: 5.11.10(@emotion/react@11.10.6)(@emotion/styled@11.10.6)(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
+      '@packages/antalmanac-types':
+        specifier: '*'
+        version: link:../../packages/types
       '@tanstack/react-query':
         specifier: ^4.24.4
         version: 4.24.10(react-dom@18.2.0)(react@18.2.0)
@@ -97,6 +100,9 @@ importers:
       notistack:
         specifier: ^2.0.8
         version: 2.0.8(@emotion/react@11.10.6)(@emotion/styled@11.10.6)(@mui/material@5.11.10)(react-dom@18.2.0)(react@18.2.0)
+      peterportal-api-next-types:
+        specifier: 1.0.0-alpha.6
+        version: 1.0.0-alpha.6
       react:
         specifier: ^18.2.0
         version: 18.2.0

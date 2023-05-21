@@ -3,17 +3,15 @@ import { VariantType } from 'notistack';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { LOAD_DATA_ENDPOINT, LOAD_LEGACY_DATA_ENDPOINT, SAVE_DATA_ENDPOINT } from '$lib/api/endpoints';
 import { CourseDetails, courseNumAsDecimal, termsInSchedule, warnMultipleTerms } from '$lib/helpers';
-import { Section } from '$lib/peterportal.types';
 import AppStore from '$stores/AppStore';
-import { convertLegacySchedule, LegacyUserData } from '$stores/legacyScheduleHelpers';
-import { ScheduleCourse, ScheduleSaveState } from '$stores/schedule.types';
 import trpc from '$lib/api/trpc'
 import {TRPCError} from "@trpc/server";
+import {WebsocSection} from "peterportal-api-next-types";
+import {ScheduleCourse} from "@packages/antalmanac-types";
 
 export const addCourse = (
-    section: Section,
+    section: WebsocSection,
     courseDetails: CourseDetails,
     term: string,
     scheduleIndex: number,

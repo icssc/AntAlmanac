@@ -1,7 +1,7 @@
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 
-import { ScheduleSaveState } from 'antalmanac-types';
+import { ScheduleSaveState } from '@packages/antalmanac-types';
 import env from '../env';
 
 // Initialise DynamoDB Client

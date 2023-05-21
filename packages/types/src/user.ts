@@ -1,4 +1,4 @@
-import { ScheduleSaveStateSchema } from "./schedule.types";
+import { ScheduleSaveStateSchema } from "./schedule";
 import { type } from "arktype"
 
 export const UserSchema = type({

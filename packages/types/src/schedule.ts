@@ -1,5 +1,5 @@
 import { type, arrayOf } from "arktype";
-import { RepeatingCustomEventSchema } from "./customevent.types";
+import { RepeatingCustomEventSchema } from "./customevent";
 import { AASectionSchema } from "./websoc";
 
 export const ScheduleCourseSchema = type({

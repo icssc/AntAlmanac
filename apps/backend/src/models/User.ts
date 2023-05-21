@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { LegacyUser } from 'antalmanac-types';
+import { LegacyUser } from '@packages/antalmanac-types';
 
 const UserSchema = new Schema<LegacyUser>(
     {
