@@ -38,7 +38,8 @@ export const WebsocCourse = type({
   courseTitle: "string",
   courseComment: "string",
   prerequisiteLink: "string",
-  sections: arrayOf(WebsocSection),
+  // sections: arrayOf(WebsocSection),
+  // Commenting out sections because I don't know how to override this property
 });
 
 export const WebsocDepartment = type({
