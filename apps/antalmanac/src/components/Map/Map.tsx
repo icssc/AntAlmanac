@@ -91,12 +91,7 @@ export function getMarkersFromCourses() {
   return buildingToPins;
 }
 
-/**
- * Unique buildings. TODO, FIXME: this should already be a unique array??
- */
-const uniqueBuildings = Object.values(buildingCatalogue).filter(
-  (building, index, self) => self.findIndex((foundBuilding) => building.name === foundBuilding.name) === index
-);
+const buildings = Object.values(buildingCatalogue)
 
 /**
  * map of all course locations on UCI campus
@@ -218,7 +213,7 @@ export default function CourseMap() {
             ))}
           </Tabs>
           <Autocomplete
-            options={uniqueBuildings}
+            options={buildings}
             getOptionLabel={(option) => option.name || ''}
             onChange={handleSearch}
             renderInput={(params) => <TextField {...params} label="Search for a place" variant="filled" />}
