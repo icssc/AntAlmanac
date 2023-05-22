@@ -47,13 +47,13 @@ export function getMarkersFromCourses() {
   /**
    * Each building has an array of courses that occur in the building.
    */
-  const pins: Record<string, (CourseEvent & Building & MarkerContent)[]> = {};
+  const buildingToPins: Record<string, (CourseEvent & Building & MarkerContent)[]> = {};
 
   /**
    * Associate each building code to courses that have a matching building code.
    */
   uniqueBuildingCodes.forEach((buildingCode) => {
-    pins[buildingCode] = courseEvents
+    buildingToPins[buildingCode] = courseEvents
       /**
        * Get course events that occur in this building.
        */
@@ -74,7 +74,7 @@ export function getMarkersFromCourses() {
           locationData.name.indexOf(')')
         );
 
-        const aponia = {
+        const markerData = {
           key,
           image: locationData.imageURLs[0],
           acronym,
@@ -84,11 +84,11 @@ export function getMarkersFromCourses() {
           ...event,
         };
 
-        return aponia;
+        return markerData;
       });
   });
 
-  return pins;
+  return buildingToPins;
 }
 
 /**
