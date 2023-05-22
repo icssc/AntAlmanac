@@ -168,22 +168,40 @@ export default function CourseMap() {
   };
 
   /**
-   * Markers for all courses happening today, sorted by start time.
+   * Markers for courses happening today, removing duplicates by sectionCode
    */
-  const markersToday = Object.keys(markers)
+  const getMarkersToDisplay = () => {
+    const markersToday = Object.keys(markers)
     .flatMap((markerKey) => markers[markerKey].filter((course) => course.start.toString().includes(today)))
     .sort((a, b) => a.start.getTime() - b.start.getTime());
+
+    const existingSections = new Set<string>();
+    let markersToDisplay: typeof markersToday = [];
+
+    markersToday.forEach((marker) => {
+      if (!existingSections.has(marker.sectionCode)) {
+        console.log(marker.sectionCode)
+        existingSections.add(marker.sectionCode);
+        markersToDisplay.push(marker);
+      }
+    });
+
+    console.log(existingSections);
+    return markersToDisplay;
+  }
+
+  const markersToDisplay = getMarkersToDisplay();
 
   /**
    * Group every two markers as [start, destination] tuples.
    */
-  const startDestPairs = markersToday.reduce((acc, cur, index) => {
+  const startDestPairs = markersToDisplay.reduce((acc, cur, index) => {
     acc.push([cur]);
     if (index > 0) {
       acc[index - 1].push(cur);
     }
     return acc;
-  }, [] as (typeof markersToday)[]);
+  }, [] as (typeof markersToDisplay)[]);
 
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}>
@@ -224,8 +242,8 @@ export default function CourseMap() {
           })}
 
         {/* Draw a marker for each class that occurs today. */}
-        {markersToday.map((marker, index) => {
-          const coursesSameBuildingPrior = markersToday.slice(0, index).filter(m => m.bldg === marker.bldg)
+        {markersToDisplay.map((marker, index) => {
+          const coursesSameBuildingPrior = markersToDisplay.slice(0, index).filter(m => m.bldg === marker.bldg)
           return (
             <Fragment key={Object.values(marker).join('')}>
               <LocationMarker {...marker} label={today ? index + 1 : undefined} stackIndex={coursesSameBuildingPrior.length}>
