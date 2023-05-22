@@ -113,11 +113,11 @@ export default function CourseMap() {
    * Whenever search params changes, update the selected location if possible.
    */
   useEffect(() => {
-    const location = +(searchParams.get('location') ?? 0);
+    const locationID = Number(searchParams.get('location') ?? 0);
 
-    if (!(location in buildingCatalogue)) return;
+    if (!(locationID in buildingCatalogue)) return;
 
-    setSelected(buildingCatalogue[location]);
+    setSelected(buildingCatalogue[locationID]);
   }, [searchParams]);
 
   /**
@@ -243,6 +243,7 @@ export default function CourseMap() {
 
         {/* Draw a marker for each class that occurs today. */}
         {markersToDisplay.map((marker, index) => {
+          // Find all courses that occur in the same building prior to this one to stack them properly
           const coursesSameBuildingPrior = markersToDisplay.slice(0, index).filter(m => m.bldg === marker.bldg)
           return (
             <Fragment key={Object.values(marker).join('')}>
