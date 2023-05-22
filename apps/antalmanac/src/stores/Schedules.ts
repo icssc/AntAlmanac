@@ -380,7 +380,7 @@ export class Schedules {
     /**
      * Convert courses and custom events into calendar friendly format
      */
-    toCalendarizedEvents() {
+    getCalendarizedEvents() {
         return [
             ...calendarizeCourseEvents(this.getCurrentCourses()),
             ...calendarizeCustomEvents(this.getCurrentCustomEvents()),
@@ -390,14 +390,14 @@ export class Schedules {
     /**
      * Convert just courses into calendar compatible format.
      */
-    toCalendarizedCourseEvents() {
+    getCalendarizedCourseEvents() {
         return calendarizeCourseEvents(this.getCurrentCourses())
     }
 
     /**
      * Convert finals into calendar friendly format
      */
-    toCalendarizedFinals() {
+    getCalendarizedFinals() {
         return calendarizeFinals(this.getCurrentCourses());
     }
 
