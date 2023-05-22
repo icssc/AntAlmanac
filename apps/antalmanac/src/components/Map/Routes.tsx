@@ -128,12 +128,11 @@ const useRouter = createElementHook(createRouter)
  * Forward the props to a custom hook that manages the leaflet element's lifecycle.
  */
 export default function CourseRoutes(props: Props) {
-  const map = useMap()
   const context = useLeafletContext()
   const routerRef = useRouter(props, context)
 
   useEffect(() => {
-    routerRef.current.instance.addTo(map)
+    routerRef.current.instance.addTo(context.map)
     routerRef.current.instance.hide()
     return () => {
       routerRef.current.instance.remove()

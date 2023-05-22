@@ -1,7 +1,7 @@
 import './Map.css'
 
 import { Fragment, useEffect, useRef, useState } from 'react'
-import { useSearchParams, useNavigate, useNavigation } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import L from 'leaflet'
 import type { Map, LatLngTuple } from 'leaflet'
 import { MapContainer, TileLayer } from 'react-leaflet'
@@ -19,7 +19,7 @@ import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent'
 const ACCESS_TOKEN = 'pk.eyJ1IjoicGVkcmljIiwiYSI6ImNsZzE0bjk2ajB0NHEzanExZGFlbGpwazIifQ.l14rgv5vmu5wIMgOUUhUXw';
 
 const ATTRIBUTION_MARKUP =
-    '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
+  '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
 
 const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`
 
@@ -27,6 +27,14 @@ const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{
  * empty day is alias for "All Days"
  */
 const days = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
+
+interface Yeet {
+  key: string
+  image: string
+  acronym: string
+  markerColor: string
+  location: string
+}
 
 
 /**
@@ -40,33 +48,31 @@ export function getMarkersFromCourses() {
   /**
    * Each building has an array of courses that occur in the building.
    */
-  const pins: Record<string, CourseEvent[]> = {}
+  const pins: Record<string, (CourseEvent & Building & Yeet)[]> = {}
 
   /**
-   * associate each building code to courses that have a matching building code
+   * Associate each building code to courses that have a matching building code.
    */
   uniqueBuildingCodes.forEach((buildingCode) => {
-    pins[buildingCode] = courseEvents.filter((event) => {
-      const eventBuildingCode = event.bldg.split(' ').slice(0, -1).join(' ')
-      return eventBuildingCode === buildingCode
-    })
-  })
+    pins[buildingCode] = courseEvents
+      /**
+       * Get course events that occur in this building.
+       */
+      .filter((event) => {
+        const eventBuildingCode = event.bldg.split(' ').slice(0, -1).join(' ')
+        return eventBuildingCode === buildingCode
+      })
 
-  const markers = Object.entries(pins)
-    /**
-     * Filter out buildings that don't exist in the building catalogue.
-     */
-    .filter(([buildingCode]) => Boolean(buildingCatalogue[locationIds[buildingCode]]))
-
-    /**
-     * FlatMap each building code to an array of course events that occur in the building.
-     */
-    .flatMap(([buildingCode, courseEvents]) => {
-      const locationData = buildingCatalogue[locationIds[buildingCode]]
-      const eventLocationData = courseEvents.map((event) => {
+      /**
+       * Filter out non-existent matches.
+       */
+      .filter(() => buildingCatalogue[locationIds[buildingCode]])
+      .map((event) => {
+        const locationData = buildingCatalogue[locationIds[buildingCode]]
         const key = `${event.title} ${event.sectionType} @ ${event.bldg}`
         const acronym = locationData.name.substring(locationData.name.indexOf('(') + 1, locationData.name.indexOf(')'))
-        return {
+
+        const aponia = {
           key,
           image: locationData.imageURLs[0],
           acronym,
@@ -75,13 +81,21 @@ export function getMarkersFromCourses() {
           ...locationData,
           ...event,
         }
-      })
-      return eventLocationData
-    })
 
-  const markersByTime = markers.sort((a, b) => a.start.getTime() - b.start.getTime())
-  return markersByTime
+        return aponia
+      })
+  })
+
+  return pins
 }
+
+
+/**
+ * Unique buildings. TODO, FIXME: this should already be a unique array??
+ */
+const uniqueBuildings = Object.values(buildingCatalogue).filter(
+  (building, index, self) => self.findIndex((foundBuilding) => building.name === foundBuilding.name) === index
+)
 
 /**
  * map of all course locations on UCI campus
@@ -91,8 +105,6 @@ export default function CourseMap() {
   const [selectedDayIndex, setSelectedDay] = useState(0)
   const [selected, setSelected] = useState<Building>()
   const [searchParams] = useSearchParams()
-
-  const navigate = useNavigate()
 
   /**
    * Whenever search params changes, update the selected location if possible.
@@ -107,7 +119,9 @@ export default function CourseMap() {
     setSelected(building)
 
     /** TODO FIXME: this is alright, but I don't really like it. */
-    setTimeout(() => map.current?.setView(L.latLng(building.lat, building.lng), 18))
+    setTimeout(() => {
+      map.current?.setView(L.latLng(building.lat, building.lng), 18) 
+    })
   }, [searchParams])
 
   /**
@@ -137,51 +151,41 @@ export default function CourseMap() {
   const handleSearch = (_event: React.SyntheticEvent, value: Building | null) => {
     if (!value) {
       setSelected(undefined)
-    } else {
+    } else if (map.current) {
       setSelected(value)
       const location = L.latLng(value.lat, value.lng)
-      map.current?.setView(location, 18)
+      map.current.setView(location, 18)
     }
   }
 
-  /**
-   * unique buildings
-   */
-  const uniqueBuildings = Object.values(buildingCatalogue).filter(
-    (building, index, self) => self.findIndex((foundBuilding) => building.name === foundBuilding.name) === index
-  )
+  const markerKeys: (keyof typeof markers)[] = Object.keys(markers)
 
   /**
-   * only get markers for courses happening today
+   * Markers for all courses happening today, sorted by start time.
    */
-  const markersToday = markers.filter((marker) => marker.start.toString().includes(today))
+  const markersToday = markerKeys
+    .flatMap(markerKey => {
+      const coursesAtMarker = markers[markerKey]
+      return coursesAtMarker.filter(course => course.start.toString().includes(today))
+    })
+    .sort((a, b) => a.start.getTime() - b.start.getTime())
 
-  /**
-   * unique array of markers that occur today
-   */
-  const uniqueMarkersToday = markersToday.filter(
-    (marker, index, self) => self.findIndex((foundMarker) => marker.key === foundMarker.key) === index
-  )
 
   /**
    * group every two markers as [start, destination] tuples
    */
-  const startDestPairs = uniqueMarkersToday.reduce((acc, cur, index) => {
+  const startDestPairs = markersToday.reduce((acc, cur, index) => {
     acc.push([cur])
     if (index > 0) {
       acc[index - 1].push(cur)
     }
     return acc
-  }, [] as (typeof uniqueMarkersToday)[])
+  }, [] as (typeof markersToday)[])
 
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}>
-    <button onClick={() => navigate('/?location=83038')}>A</button>
-    <button onClick={() => navigate('/?location=83095')}>B</button>
-    <button onClick={() => navigate('/?location=83169')}>C</button>
-    <button onClick={() => navigate('/')}>Home</button>
       <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
-        {/** menu floats above the map */}
+        {/** Menu floats above the map. */}
         <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.942, marginX: '15%', marginY: 8 }}>
           <Tabs value={selectedDayIndex} onChange={handleChange} variant="fullWidth" sx={{ minHeight: 0 }}>
             {days.map((day) => (
@@ -200,7 +204,7 @@ export default function CourseMap() {
 
         <UserLocator />
 
-        {/* draw out routes if the user is viewing a specific day */}
+        {/* Draw out routes if the user is viewing a specific day. */}
         {today !== '' &&
           startDestPairs.map((startDestPair) => {
             const latLngTuples = startDestPair.map((marker) => [marker.lat, marker.lng] as LatLngTuple)
@@ -212,9 +216,9 @@ export default function CourseMap() {
             return <CourseRoutes key={key} latLngTuples={latLngTuples} color={color} />
           })}
 
-        {/* draw a marker for each class */}
-        {uniqueMarkersToday.map((marker, index) => (
-          <Fragment key={Object.values(marker).join()}>
+        {/* Draw a marker for each class that occurs today. */}
+        {markersToday.map((marker, index) => (
+          <Fragment key={Object.values(marker).join('')}>
             <LocationMarker {...marker} label={today ? index + 1 : undefined} stackIndex={index}>
               <hr />
               <Typography variant="body2">Class: {`${marker.title} ${marker.sectionType}`}</Typography>
@@ -223,7 +227,7 @@ export default function CourseMap() {
           </Fragment>
         ))}
 
-        {/* render an additional marker if the user searched up a location */}
+        {/* Render an additional marker if the user searched up a location. */}
         {selected && (
           <LocationMarker {...selected} label="!" color="red" location={selected.name} image={selected.imageURLs?.[0]} />
         )}

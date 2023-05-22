@@ -69,7 +69,7 @@ interface Props {
 /**
  * Custom map marker + popup with course info.
  */
-export default function LocationMarker({
+const LocationMarker = ({
   lat,
   lng,
   color,
@@ -79,7 +79,7 @@ export default function LocationMarker({
   stackIndex,
   label,
   children,
-}: Props) {
+}: Props) => {
   return (
     <Marker position={[lat, lng]} icon={getMarkerIcon(color, stackIndex, label)} zIndexOffset={stackIndex}>
       <Popup>
@@ -114,3 +114,5 @@ export default function LocationMarker({
     </Marker>
   )
 }
+
+export default LocationMarker
