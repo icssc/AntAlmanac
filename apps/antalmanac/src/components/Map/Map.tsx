@@ -125,12 +125,12 @@ export default function CourseMap() {
    */
   useEffect(() => {
     if (!selected) return
+    setTimeout(() => {
+      map.current?.setView(L.latLng(selected?.lat, selected?.lng), 18);
       setTimeout(() => {
-        map.current?.setView(L.latLng(selected?.lat, selected?.lng), 18);
-        setTimeout(() => {
-          markerRef.current?.openPopup()
-        })
-      });
+        markerRef.current?.openPopup()
+      })
+    });
   }, [selected, markerRef])
 
   /**
@@ -217,22 +217,25 @@ export default function CourseMap() {
             const latLngTuples = startDestPair.map((marker) => [marker.lat, marker.lng] as LatLngTuple);
             const color = startDestPair[0]?.color;
             /**
-             * previous renders of the routes will be left behind if the keys aren't unique
+             * Previous renders of the routes will be left behind if the keys aren't unique.
              */
             const key = Math.random().toString(36).substring(7);
             return <CourseRoutes key={key} latLngTuples={latLngTuples} color={color} />;
           })}
 
         {/* Draw a marker for each class that occurs today. */}
-        {markersToday.map((marker, index) => (
-          <Fragment key={Object.values(marker).join('')}>
-            <LocationMarker {...marker} label={today ? index + 1 : undefined} stackIndex={index}>
-              <hr />
-              <Typography variant="body2">Class: {`${marker.title} ${marker.sectionType}`}</Typography>
-              <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
-            </LocationMarker>
-          </Fragment>
-        ))}
+        {markersToday.map((marker, index) => {
+          const coursesSameBuildingPrior = markersToday.slice(0, index).filter(m => m.bldg === marker.bldg)
+          return (
+            <Fragment key={Object.values(marker).join('')}>
+              <LocationMarker {...marker} label={today ? index + 1 : undefined} stackIndex={coursesSameBuildingPrior.length}>
+                <hr />
+                <Typography variant="body2">Class: {`${marker.title} ${marker.sectionType}`}</Typography>
+                <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
+              </LocationMarker>
+            </Fragment>
+          )
+        })}
 
         {/* Render an additional marker if the user searched up a location. */}
         {selected && (
