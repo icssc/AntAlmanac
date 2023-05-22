@@ -28,7 +28,7 @@ const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{
  */
 const days = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
-interface Yeet {
+interface MarkerContent {
   key: string;
   image: string;
   acronym: string;
@@ -47,7 +47,7 @@ export function getMarkersFromCourses() {
   /**
    * Each building has an array of courses that occur in the building.
    */
-  const pins: Record<string, (CourseEvent & Building & Yeet)[]> = {};
+  const pins: Record<string, (CourseEvent & Building & MarkerContent)[]> = {};
 
   /**
    * Associate each building code to courses that have a matching building code.
