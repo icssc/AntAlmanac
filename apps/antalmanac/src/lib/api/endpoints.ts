@@ -15,5 +15,5 @@ export const REGISTER_NOTIFICATIONS_ENDPOINT = endpointTransform('/api/notificat
 
 // PeterPortal API
 export const PETERPORTAL_GRAPHQL_ENDPOINT = 'https://api.peterportal.org/graphql';
-export const PETERPORTAL_REST_ENDPOINT = 'https://api.peterportal.org/rest/v0';
-export const PETERPORTAL_WEBSOC_ENDPOINT = `${PETERPORTAL_REST_ENDPOINT}/schedule/soc`;
+export const PETERPORTAL_REST_ENDPOINT = 'https://api-next.peterportal.org/v1/rest';
+export const PETERPORTAL_WEBSOC_ENDPOINT = `${PETERPORTAL_REST_ENDPOINT}/websoc`;

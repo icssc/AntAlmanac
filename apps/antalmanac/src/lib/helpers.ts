@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT } from './api/endpoints';
 import { WebsocSectionMeeting, WebsocSection, WebsocAPIResponse } from 'peterportal-api-next-types';
+import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT } from './api/endpoints';
 import { addCourse, openSnackbar } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import trpc from "$lib/api/trpc";
+import trpc from '$lib/api/trpc';
 
 interface GradesGraphQLResponse {
     data: {
@@ -115,10 +115,41 @@ export function clearCache() {
     Object.keys(websocCache).forEach((key) => delete websocCache[key]); //https://stackoverflow.com/a/19316873/14587004
 }
 
-export async function queryWebsoc(params: Record<string, string>): Promise<WebsocAPIResponse> {
+function cleanParams(record: Record<string, string>) {
+    if ('term' in record) {
+        const termValue = record['term'];
+        const termParts = termValue.split(' ');
+
+        if (termParts.length === 2) {
+            const [year, quarter] = termParts;
+
+            delete record['term'];
+
+            record['quarter'] = quarter;
+            record['year'] = year;
+        }
+    }
+
+    if ('startTime' in record) {
+        if (record['startTime'] === '') {
+            delete record['startTime'];
+        }
+    }
+
+    if ('endTime' in record) {
+        if (record['endTime'] === '') {
+            delete record['endTime'];
+        }
+    }
+
+    return record;
+}
+
+// Construct a request to PeterPortal with the params as a query string
+export async function queryWebsoc(params: Record<string, string>) {
     // Construct a request to PeterPortal with the params as a query string
     const url = new URL(PETERPORTAL_WEBSOC_ENDPOINT);
-    const searchString = new URLSearchParams(params).toString();
+    const searchString = new URLSearchParams(cleanParams(params)).toString();
     if (websocCache[searchString]?.timestamp > Date.now() - 30 * 60 * 1000) {
         //NOTE: Check out how caching works
         //if cache hit and less than 30 minutes old
@@ -131,7 +162,13 @@ export async function queryWebsoc(params: Record<string, string>): Promise<Webso
     //courses[i].sections[j].meetings will have two entries, despite it being the same section.
     //For now, I'm correcting it with removeDuplicateMeetings, but the API should handle this
 
-    const response = (await fetch(url).then((r) => r.json())) as WebsocAPIResponse;
+    const response: WebsocAPIResponse = await fetch(url, {
+        headers: {
+            Referer: 'https://antalmanac.com/',
+        },
+    })
+        .then((r) => r.json())
+        .then((r) => r.payload);
     websocCache[searchString] = { ...response, timestamp: Date.now() };
     return removeDuplicateMeetings(response);
 }

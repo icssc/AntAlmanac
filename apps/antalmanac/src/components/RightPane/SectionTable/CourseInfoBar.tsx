@@ -5,10 +5,10 @@ import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { Skeleton } from '@material-ui/lab';
 import { useState } from 'react';
 
+import { RawResponse, Course, isErrorResponse } from 'peterportal-api-next-types';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { PETERPORTAL_REST_ENDPOINT } from '$lib/api/endpoints';
-import { CourseResponse } from '$lib/peterportal.types';
 
 const styles = () => ({
     rightSpace: {
@@ -71,17 +71,19 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
                     const courseId = encodeURIComponent(
                         `${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`
                     );
-                    const response = await fetch(`${PETERPORTAL_REST_ENDPOINT}/courses/${courseId}`);
+                    const res: RawResponse<Course> = await fetch(
+                        `${PETERPORTAL_REST_ENDPOINT}/courses/${courseId}`
+                    ).then((r) => r.json());
 
-                    if (response.ok) {
-                        const jsonResp = (await response.json()) as CourseResponse;
+                    if (!isErrorResponse(res)) {
+                        const data = res.payload;
 
                         setCourseInfo({
-                            title: jsonResp.title,
-                            prerequisite_text: jsonResp.prerequisite_text,
-                            prerequisite_for: jsonResp.prerequisite_for.join(', '),
-                            description: jsonResp.description,
-                            ge_list: jsonResp.ge_list.join(', '),
+                            title: data.title,
+                            prerequisite_text: data.prerequisiteText,
+                            prerequisite_for: data.prerequisiteFor.join(', '),
+                            description: data.description,
+                            ge_list: data.geList.join(', '),
                         });
                     } else {
                         setCourseInfo(noCourseInfo);
