@@ -1,7 +1,7 @@
 import './Map.css'
 
 import { Fragment, useEffect, useRef, useState } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useSearchParams, useNavigate, useNavigation } from 'react-router-dom'
 import L from 'leaflet'
 import type { Map, LatLngTuple } from 'leaflet'
 import { MapContainer, TileLayer } from 'react-leaflet'
@@ -92,6 +92,8 @@ export default function CourseMap() {
   const [selected, setSelected] = useState<Building>()
   const [searchParams] = useSearchParams()
 
+  const navigate = useNavigate()
+
   /**
    * Whenever search params changes, update the selected location if possible.
    */
@@ -104,13 +106,12 @@ export default function CourseMap() {
 
     setSelected(building)
 
-    map.current?.setView(L.latLng(building.lat, building.lng), 18)
+    /** TODO FIXME: this is alright, but I don't really like it. */
+    setTimeout(() => map.current?.setView(L.latLng(building.lat, building.lng), 18))
   }, [searchParams])
 
-  const navigate = useNavigate()
-
   /**
-   * extract a bunch of relevant metadata from courses into a top-level object for MapMarkers
+   * Extract a bunch of relevant metadata from courses into a top-level object for MapMarkers.
    */
   const [markers, setMarkers] = useState(getMarkersFromCourses())
 

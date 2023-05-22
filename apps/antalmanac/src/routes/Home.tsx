@@ -3,12 +3,12 @@ import { Box, CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import Split from 'react-split';
 
-import Bar from './AppBar/CustomAppBar';
-import NotificationSnackbar from './AppBar/NotificationSnackbar';
-import Calendar from './Calendar/CalendarRoot';
-import MobileHome from './MobileHome';
-import PatchNotes from './PatchNotes';
-import DesktopTabs from './RightPane/RightPaneRoot';
+import Bar from '$components/AppBar/CustomAppBar';
+import NotificationSnackbar from '$components/AppBar/NotificationSnackbar';
+import Calendar from '$components/Calendar/CalendarRoot';
+import MobileHome from '$components/MobileHome';
+import PatchNotes from '$components/PatchNotes';
+import DesktopTabs from '$components/RightPane/RightPaneRoot';
 
 const Home = () => {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
