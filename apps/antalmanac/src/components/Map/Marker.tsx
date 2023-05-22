@@ -1,3 +1,4 @@
+import { forwardRef, type Ref } from 'react'
 import Leaflet from 'leaflet'
 import { Marker, Popup } from 'react-leaflet'
 import { Button, Link, Typography } from '@mui/material'
@@ -69,7 +70,7 @@ interface Props {
 /**
  * Custom map marker + popup with course info.
  */
-const LocationMarker = ({
+const LocationMarker = forwardRef(({
   lat,
   lng,
   color,
@@ -79,9 +80,9 @@ const LocationMarker = ({
   stackIndex,
   label,
   children,
-}: Props) => {
+}: Props, ref?: Ref<Leaflet.Marker>) => {
   return (
-    <Marker position={[lat, lng]} icon={getMarkerIcon(color, stackIndex, label)} zIndexOffset={stackIndex}>
+    <Marker ref={ref} position={[lat, lng]} icon={getMarkerIcon(color, stackIndex, label)} zIndexOffset={stackIndex}>
       <Popup>
         {location ? (
           <Link
@@ -113,6 +114,6 @@ const LocationMarker = ({
       </Popup>
     </Marker>
   )
-}
+})
 
 export default LocationMarker
