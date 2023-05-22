@@ -14,6 +14,6 @@ export const LOOKUP_NOTIFICATIONS_ENDPOINT = endpointTransform('/api/notificatio
 export const REGISTER_NOTIFICATIONS_ENDPOINT = endpointTransform('/api/notifications/registerNotifications');
 
 // PeterPortal API
-export const PETERPORTAL_GRAPHQL_ENDPOINT = 'https://api.peterportal.org/graphql';
+export const PETERPORTAL_GRAPHQL_ENDPOINT = 'https://api-next.peterportal.org/v1/graphql';
 export const PETERPORTAL_REST_ENDPOINT = 'https://api-next.peterportal.org/v1/rest';
 export const PETERPORTAL_WEBSOC_ENDPOINT = `${PETERPORTAL_REST_ENDPOINT}/websoc`;

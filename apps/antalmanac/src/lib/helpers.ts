@@ -9,17 +9,8 @@ import trpc from '$lib/api/trpc';
 
 interface GradesGraphQLResponse {
     data: {
-        courseGrades: {
-            aggregate: {
-                average_gpa: number;
-                sum_grade_a_count: number;
-                sum_grade_b_count: number;
-                sum_grade_c_count: number;
-                sum_grade_d_count: number;
-                sum_grade_f_count: number;
-                sum_grade_np_count: number;
-                sum_grade_p_count: number;
-            };
+        aggregateGrades: {
+            gradeDistribution: Grades;
         };
     };
 }
@@ -228,14 +219,14 @@ function removeDuplicateMeetings(websocResp: WebsocAPIResponse): WebsocAPIRespon
 }
 
 export interface Grades {
-    average_gpa: number;
-    sum_grade_a_count: number;
-    sum_grade_b_count: number;
-    sum_grade_c_count: number;
-    sum_grade_d_count: number;
-    sum_grade_f_count: number;
-    sum_grade_np_count: number;
-    sum_grade_p_count: number;
+    averageGPA: number;
+    gradeACount: number;
+    gradeBCount: number;
+    gradeCCount: number;
+    gradeDCount: number;
+    gradeFCount: number;
+    gradePCount: number;
+    gradeNPCount: number;
 }
 
 const gradesCache: { [key: string]: Grades } = {};
@@ -246,22 +237,22 @@ export async function queryGrades(deptCode: string, courseNumber: string) {
     }
 
     const queryString = `
-      { courseGrades: grades(department: "${deptCode}", number: "${courseNumber}", ) {
-          aggregate {
-            sum_grade_a_count
-            sum_grade_b_count
-            sum_grade_c_count
-            sum_grade_d_count
-            sum_grade_f_count
-            sum_grade_p_count
-            sum_grade_np_count
-            average_gpa
-          }
+      { aggregateGrades(department: "${deptCode}", courseNumber: "${courseNumber}", ) {
+        gradeDistribution {
+        gradeACount
+        gradeBCount
+        gradeCCount
+        gradeDCount
+        gradeFCount
+        gradePCount
+        gradeNPCount
+        averageGPA
+        }
       },
     }`;
 
     const resp = await queryGraphQL(queryString);
-    const grades = resp.data.courseGrades.aggregate;
+    const grades = resp.data.aggregateGrades.gradeDistribution;
 
     gradesCache[deptCode + courseNumber] = grades;
 
