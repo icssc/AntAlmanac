@@ -166,7 +166,7 @@ const InstructorsCell = withStyles(styles)((props: InstructorsCellProps) => {
                     </div>
                 );
             } else {
-                return profName;
+                return <div key={profName}> {profName} </div>;
             }
         });
     };
