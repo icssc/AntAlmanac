@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Button, Popover, TableCell, TableRow, Theme, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
@@ -10,9 +11,10 @@ import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import restrictionsMapping from './static/restrictionsMapping.json';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
+import { clickToCopy, CourseDetails, FAKE_LOCATIONS, isDarkMode } from '$lib/helpers';
 import { AASection, EnrollmentCount, Meeting } from '$lib/peterportal.types';
 import AppStore from '$stores/AppStore';
+import locationIds from '$lib/location_ids';
 
 const styles: Styles<Theme, object> = (theme) => ({
     popover: {
@@ -45,13 +47,13 @@ const styles: Styles<Theme, object> = (theme) => ({
         color: isDarkMode() ? 'dodgerblue' : 'blue',
         cursor: 'pointer',
     },
-    mapLink: {
-        color: isDarkMode() ? 'dodgerblue' : 'blue',
+    clickableLocation: {
         cursor: 'pointer',
+        color: isDarkMode() ? '#1cbeff' : 'blue',
         background: 'none !important',
         border: 'none',
         padding: '0 !important',
-        fontSize: '0.85rem', // Not sure why this is not inherited
+        fontSize: 'inherit',
     },
     paper: {
         padding: theme.spacing(),
@@ -176,28 +178,23 @@ const InstructorsCell = withStyles(styles)((props: InstructorsCellProps) => {
 interface LocationsCellProps {
     classes: ClassNameMap;
     meetings: Meeting[];
-    courseName: string; // Used in map pin popup
 }
 
 const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
-    const { classes, meetings, courseName } = props;
+    const { classes, meetings } = props;
 
     return (
         <NoPaddingTableCell className={classes.cell}>
-            {meetings.map((meeting) => {
-                return meeting.bldg !== 'TBA' ? (
-                    <Fragment key={meeting.days + meeting.time + meeting.bldg}>
-                        <button
-                            className={classes.mapLink}
-                        >
-                            {meeting.bldg}
-                        </button>
-                        <br />
-                    </Fragment>
-                ) : (
-                    <div>{meeting.bldg}</div>
-                );
-            })}
+            {meetings.map((meeting) => !FAKE_LOCATIONS.includes(meeting.bldg) ? (
+                <Fragment key={meeting.days + meeting.time + meeting.bldg}>
+                    <Link className={classes.clickableLocation} to={`/map?location=${locationIds[meeting.bldg.split(' ')[0]]}`}>
+                        {meeting.bldg}
+                    </Link>
+                    <br />
+                </Fragment>
+            ) : (
+                <div>{meeting.bldg}</div>
+            ))}
         </NoPaddingTableCell>
     );
 });
@@ -379,7 +376,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             <DayAndTimeCell meetings={section.meetings} />
             <LocationsCell
                 meetings={section.meetings}
-                courseName={courseDetails.deptCode + ' ' + courseDetails.courseNumber}
             />
             <SectionEnrollmentCell
                 numCurrentlyEnrolled={section.numCurrentlyEnrolled}
