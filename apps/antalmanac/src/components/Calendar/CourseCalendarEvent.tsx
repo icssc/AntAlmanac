@@ -76,12 +76,6 @@ const styles: Styles<Theme, object> = {
   },
 };
 
-const selectBuilding = (buildingFocusInfo: BuildingFocusInfo) => {
-  if (buildingFocusInfo.location !== 'TBA') {
-    RightPaneStore.focusOnBuilding(buildingFocusInfo);
-  }
-};
-
 interface CommonCalendarEvent extends Event {
   color: string;
   start: Date;

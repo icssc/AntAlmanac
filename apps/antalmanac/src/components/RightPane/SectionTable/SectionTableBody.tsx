@@ -5,7 +5,6 @@ import classNames from 'classnames';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
 import { Fragment, useEffect, useState } from 'react';
 
-import RightPaneStore from '../RightPaneStore';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
@@ -190,12 +189,6 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                     <Fragment key={meeting.days + meeting.time + meeting.bldg}>
                         <button
                             className={classes.mapLink}
-                            onClick={() => {
-                                RightPaneStore.focusOnBuilding({
-                                    location: meeting.bldg,
-                                    courseName: courseName,
-                                });
-                            }}
                         >
                             {meeting.bldg}
                         </button>
