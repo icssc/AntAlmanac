@@ -5,7 +5,6 @@ import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
 import { Event } from 'react-big-calendar';
 
-import RightPaneStore, { BuildingFocusInfo } from '../RightPane/RightPaneStore';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
