@@ -72,6 +72,7 @@ const styles: Styles<Theme, object> = {
     border: 'none',
     padding: '0 !important',
     fontSize: 'inherit',
+    textDecoration: 'none',
   },
 };
 

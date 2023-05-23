@@ -54,6 +54,7 @@ const styles: Styles<Theme, object> = (theme) => ({
         border: 'none',
         padding: '0 !important',
         fontSize: 'inherit',
+        textDecoration: 'none',
     },
     paper: {
         padding: theme.spacing(),
