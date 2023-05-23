@@ -121,7 +121,7 @@ export default function CourseMap() {
   useEffect(() => {
     if (!selected) return
     setTimeout(() => {
-      map.current?.setView(L.latLng(selected?.lat, selected?.lng), 18);
+      focusOnLocation(selected.lat, selected.lng);
       setTimeout(() => {
         markerRef.current?.openPopup()
       })
@@ -148,6 +148,13 @@ export default function CourseMap() {
 
   const today = days[selectedDayIndex];
 
+  const focusOnLocation = (lat: number, lng: number, zoom = 18) => {
+    if (!map.current) return;
+
+    const focusLocation = L.latLng(lat + 0.0005, lng);
+    map.current.setView(focusLocation, zoom);
+  }
+
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setSelectedDay(newValue);
   };
@@ -157,8 +164,7 @@ export default function CourseMap() {
       setSelected(undefined);
     } else if (map.current) {
       setSelected(value);
-      const location = L.latLng(value.lat, value.lng);
-      map.current.setView(location, 18);
+      focusOnLocation(value.lat, value.lng);
     }
   };
 
