@@ -16,10 +16,14 @@ import React, { PureComponent } from 'react';
 
 import DaySelector from './DaySelector';
 import ScheduleSelector from './ScheduleSelector';
+import LocationSelector from './LocationSelector';
 import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
+
+// import MapMarker from '../../../RightPane/Map/MapMarker';
+import Building from '../../../RightPane/Map/static/building';
 
 const styles = {
     textField: {
@@ -38,6 +42,7 @@ export interface RepeatingCustomEvent {
     days: boolean[];
     customEventID: number;
     color?: string;
+    location: string;
 }
 
 interface CustomEventDialogProps {
@@ -57,6 +62,7 @@ const defaultCustomEvent: RepeatingCustomEvent = {
     title: '',
     days: [false, false, false, false, false, false, false],
     customEventID: 0,
+    location: "",
 };
 
 class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEventDialogState> {
@@ -116,6 +122,7 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
             days: this.state.days,
             start: this.state.start,
             end: this.state.end,
+            location: this.state.location,
             customEventID: this.props.customEvent ? this.props.customEvent.customEventID : Date.now(),
         };
 
@@ -125,6 +132,12 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
 
     handleSelectScheduleIndices = (scheduleIndices: number[]) => {
         this.setState({ scheduleIndices: scheduleIndices });
+    };
+
+
+    handleSearch = (event: React.ChangeEvent<unknown>, searchValue: Building | null) => {
+        console.log(searchValue?.name)
+        this.setState({ location: searchValue ? searchValue.name : ""});
     };
 
     isAddDisabled = () => {
@@ -196,6 +209,9 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
                             />
                         </form>
                         <DaySelector onSelectDay={this.handleDayChange} days={this.props.customEvent?.days} />
+
+                        <LocationSelector handleSearch={this.handleSearch}/>
+
                         <ScheduleSelector
                             scheduleIndices={this.state.scheduleIndices}
                             onSelectScheduleIndices={this.handleSelectScheduleIndices}

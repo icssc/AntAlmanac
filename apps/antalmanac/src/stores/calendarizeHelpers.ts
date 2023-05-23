@@ -131,6 +131,7 @@ export const calendarizeCustomEvents = (currentCustomEvents: RepeatingCustomEven
                     isCustomEvent: true,
                     end: new Date(2018, 0, dayIndex, endHour, endMin),
                     title: customEvent.title,
+                    bldg: customEvent.location,
                 });
             }
         }

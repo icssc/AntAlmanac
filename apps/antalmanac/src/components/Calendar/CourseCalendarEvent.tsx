@@ -104,6 +104,7 @@ export interface CourseEvent extends CommonCalendarEvent {
 export interface CustomEvent extends CommonCalendarEvent {
     customEventID: number;
     isCustomEvent: true;
+    bldg: string;
 }
 
 export type CalendarEvent = CourseEvent | CustomEvent;
@@ -200,10 +201,25 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             </Paper>
         );
     } else {
-        const { title, customEventID } = courseInMoreInfo;
+        const { title, customEventID, bldg } = courseInMoreInfo;
         return (
             <Paper className={classes.customEventContainer}>
                 <div className={classes.title}>{title}</div>
+                <table className={classes.table}>
+                    <tbody>
+                        <tr>
+                            <td className={classes.alignToTop}>Location:  </td>
+                            <td className={`${classes.multiline} ${classes.rightCells}`}>
+                                { <button
+                                    className={classes.clickableLocation}
+                                    onClick={() => selectBuilding({ location: bldg, courseName: title })}
+                                >
+                                    {bldg}
+                                </button> }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
                 <div className={classes.buttonBar}>
                     <div className={`${classes.colorPicker}`}>
                         <ColorPicker
