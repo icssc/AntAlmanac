@@ -124,7 +124,7 @@ export default function CourseMap() {
       focusOnLocation(selected.lat, selected.lng);
       setTimeout(() => {
         markerRef.current?.openPopup()
-      })
+      }, 250) // wait for the map to finish moving for more natural experience
     });
   }, [selected, markerRef])
 
