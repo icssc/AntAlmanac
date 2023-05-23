@@ -8,7 +8,7 @@ import type { LeafletContextInterface } from '@react-leaflet/core'
 
 const ACCESS_TOKEN = 'pk.eyJ1IjoicGVkcmljIiwiYSI6ImNsZzE0bjk2ajB0NHEzanExZGFlbGpwazIifQ.l14rgv5vmu5wIMgOUUhUXw';
 
-interface Props {
+interface ClassRoutesProps {
   /**
    * Waypoints needs to be `L.Routing.Waypoint[]` or `LatLng[]` when creating an `L.Routing.plan`.
    * For ease of use from outside, pass in a valid `LatLngTuple[]`, and convert to LatLng inside.
@@ -26,7 +26,7 @@ interface Props {
  * Use react-leaflet's core API to manage lifecycle of leaflet elements properly.
  * @see {@link https://react-leaflet.js.org/docs/core-architecture/#element-hook-factory}
  */
-function createRouter(props: Props, context: LeafletContextInterface) {
+function createRouter(props: ClassRoutesProps, context: LeafletContextInterface) {
   const latLngTuples = props.latLngTuples || []
 
   /**
@@ -127,7 +127,7 @@ const useRouter = createElementHook(createRouter)
  * Given waypoints of a route and a color for the route, draw a route to the map.
  * Forward the props to a custom hook that manages the leaflet element's lifecycle.
  */
-export default function CourseRoutes(props: Props) {
+export default function ClassRoutes(props: ClassRoutesProps) {
   const context = useLeafletContext()
   const routerRef = useRouter(props, context)
 

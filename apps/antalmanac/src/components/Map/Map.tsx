@@ -12,7 +12,7 @@ import locationIds from '$lib/location_ids';
 import buildingCatalogue from '$lib/buildingCatalogue';
 import type { Building } from '$lib/buildingCatalogue';
 import LocationMarker from './Marker';
-import CourseRoutes from './Routes';
+import ClassRoutes from './Routes';
 import UserLocator from './UserLocator';
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 
@@ -239,7 +239,7 @@ export default function CourseMap() {
              * Previous renders of the routes will be left behind if the keys aren't unique.
              */
             const key = Math.random().toString(36).substring(7);
-            return <CourseRoutes key={key} latLngTuples={latLngTuples} color={color} />;
+            return <ClassRoutes key={key} latLngTuples={latLngTuples} color={color} />;
           })}
 
         {/* Draw a marker for each class that occurs today. */}
