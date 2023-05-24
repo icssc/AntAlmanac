@@ -13,7 +13,7 @@ const google = Google({
   async onAuth(user) {
     // i.e. add the user to the database, assign them schedules, 
     // return a modified user object with only the necessary information for the accessToken.
-    return { user };
+    return { user, redirect: '/', status: 302 };
   },
 });
 
