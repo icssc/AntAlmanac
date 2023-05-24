@@ -72,6 +72,17 @@ const styles: Styles<Theme, object> = {
         padding: '0 !important',
         fontSize: 'inherit',
     },
+    eventMarkText: {
+        fontSize: '0.8rem',
+        fontWeight: 'bold',
+        borderColor: 'white',
+        border: 'solid 0.15rem',
+        padding: '0.15rem',
+
+    },
+    eventMarkDiv: {
+        marginTop: '0.4rem',
+    },
 };
 
 const selectBuilding = (buildingFocusInfo: BuildingFocusInfo) => {
@@ -217,6 +228,11 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                                     {bldg}
                                 </button> }
                             </td>
+                        </tr>
+                        <tr>
+                            <div className={classes.eventMarkDiv}>
+                                <text className={classes.eventMarkText}>EVENT</text>
+                            </div>
                         </tr>
                     </tbody>
                 </table>

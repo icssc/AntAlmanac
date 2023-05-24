@@ -136,7 +136,6 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
 
 
     handleSearch = (event: React.ChangeEvent<unknown>, searchValue: Building | null) => {
-        console.log(searchValue?.name)
         this.setState({ location: searchValue ? searchValue.name : ""});
     };
 

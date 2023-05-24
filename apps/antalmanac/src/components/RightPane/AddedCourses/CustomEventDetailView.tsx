@@ -13,6 +13,11 @@ const styles = {
     root: {
         padding: '4px 4px 0px 8px',
     },
+    customEventLocation: {
+        margin: '0.75rem',
+        color: '#bbbbbb',
+        fontSize: '1rem',
+    },
     colorPicker: {
         cursor: 'pointer',
         '& > div': {
@@ -59,6 +64,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                 title={customEvent.title}
                 subheader={readableDateAndTimeFormat(customEvent.start, customEvent.end, customEvent.days)}
             />
+            <div className={classes.customEventLocation}>{customEvent.location}</div>
             <CardActions disableSpacing={true}>
                 <div className={classes.colorPicker}>
                     <ColorPicker
@@ -68,6 +74,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                         analyticsCategory={analyticsEnum.addedClasses.title}
                     />
                 </div>
+                <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
                 <IconButton
                     onClick={() => {
                         deleteCustomEvent(customEvent.customEventID);
@@ -75,7 +82,6 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                 >
                     <Delete fontSize="small" />
                 </IconButton>
-                <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
             </CardActions>
         </Card>
     );
