@@ -1,0 +1,207 @@
+:root {
+    --grey-light-theme: #8d8d8d;
+    --background-grey-light-theme: #e0e0e0;
+  }
+
+.dependency-list-branch {
+    margin: auto;
+}
+
+
+.prereq-tree {
+    display: flex;
+    flex-direction: column;
+    overflow-x: auto;
+}
+
+.prereq-clump {
+    display: flex;
+    position: relative;
+    margin-left: 20px;
+}
+
+/* creates the left notch of the branch for each prereq-clump*/
+.prereq-clump::before {
+    content: '';
+    position: absolute;
+    background: var(--grey-light-theme);
+    top: 50%;
+    left: -1.5rem;
+    width: 0.5rem;
+    height: 1px;
+}
+
+.prereq-list {
+    margin: 0;
+    padding: 0;
+}
+
+/* styling for the words between branches e.g. "needs", "all of"*/
+.prereq-branch,
+.dependency-branch {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.125rem 0.25rem;
+    margin: 0 0.25rem 1px 0.25rem;
+    border-radius: 0.25rem;
+    flex: 0 0 auto;
+    border: 0;
+}
+
+/* creates the notch to the left of the "needs" key word*/
+.dependency-needs::before {
+    content: '';
+    position: absolute;
+    background: var(--grey-light-theme);
+    top: 50%;
+    left: -0.8rem;
+    width: 0.7rem;
+    height: 1px;
+}
+
+/* creates the notch to the right of the "needs" key word*/
+.dependency-needs::after {
+    content: '';
+    position: absolute;
+    background: var(--grey-light-theme);
+    top: 50%;
+    right: -1rem;
+    width: 1rem;
+    height: 1px;
+}
+
+
+.course-node {
+    margin: auto 1rem auto 0;
+}
+
+.dependency-node {
+    position: relative;
+    display: flex;
+    width: fit-content;
+    margin: auto;
+    margin-right: 0;
+}
+
+
+.dependency-node:first-child:last-child::after {
+    height: 0 !important;
+}
+
+/* creates the vertical branch that connects the first dependency node*/
+.dependency-node:first-child::after {
+    width: 1px;
+    height: 50%;
+    right: -1rem;
+    content: '';
+    background: var(--grey-light-theme);
+    position: absolute;
+    bottom: 0;
+    top: auto;
+}
+
+/* creates the vertical branch that connects the last dependency node*/
+.dependency-node:last-child::after {
+    width: 1px;
+    height: 50%;
+    right: -1rem;
+    content: '';
+    background: var(--grey-light-theme);
+    position: absolute;
+    top: 0;
+}
+
+/* creates the vertical branch that connects all dependency nodes that are not the first or last*/
+.dependency-node::after {
+    width: 1px;
+    height: 100%;
+    right: -1rem;
+    content: '';
+    background: var(--grey-light-theme);
+    position: absolute;
+    top: 0;
+}
+
+/* creates the horizontal branch that connects the each dependency node*/
+.dependency-node::before {
+    content: '';
+    position: absolute;
+    background: var(--grey-light-theme);
+    top: 50%;
+    right: -1rem;
+    width: 1rem;
+    height: 1px;
+}
+
+.prerequisite-node {
+    position: relative;
+    display: flex;
+    width: fit-content;
+    margin: auto 0;
+    padding: 0;
+}
+
+.prerequisite-node:first-child:last-child::after {
+    height: 0 !important;
+}
+
+/* creates the vertical branch that connects the first prerequisite node*/
+.prerequisite-node:first-child::after {
+    width: 1px;
+    height: 50%;
+    left: -1rem;
+    content: '';
+    background: var(--grey-light-theme);
+    position: absolute;
+    bottom: 0;
+    top: auto;
+    margin: 0;
+}
+
+/* creates the vertical branch that connects the last prerequisite node*/
+.prerequisite-node:last-child::after {
+    width: 1px;
+    height: 50%;
+    left: -1rem;
+    content: '';
+    background: var(--grey-light-theme);
+    position: absolute;
+    top: 0;
+}
+
+/* creates the vertical branch that connects all prerequisite nodes that are not the first or last*/
+.prerequisite-node::after {
+    width: 1px;
+    height: 100%;
+    left: -1rem;
+    content: '';
+    background: var(--grey-light-theme);
+    position: absolute;
+    top: 0;
+}
+
+/* creates the horizontal branch that connects the each prerequisite node*/
+.prerequisite-node::before {
+    content: '';
+    position: absolute;
+    background: var(--grey-light-theme);
+    top: 50%;
+    left: -1rem;
+    width: 1rem;
+    height: 1px;
+}
+
+.course {
+  border-radius: 3px;
+  font-size: .8rem;
+  font-weight: 500;
+  padding: 0.35rem;
+}
+
+.missing-tree {
+    padding: 1em;
+    background-color: #f5f5f5;
+    margin-top: 2em;
+}
