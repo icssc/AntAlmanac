@@ -1,9 +1,10 @@
 import React from 'react';
 
-import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT } from './api/endpoints';
+import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, ZOTCOURSE_ENDPOINT } from './api/endpoints';
 import { Meeting, Section, WebsocResponse } from './peterportal.types';
 import { addCourse, openSnackbar } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
+import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 
 interface GradesGraphQLResponse {
     data: {
@@ -71,6 +72,41 @@ export function getCourseInfo(SOCObject: WebsocResponse) {
         }
     }
     return courseInfo;
+}
+
+export interface ZotCourseResponse {
+    codes: string[];
+    customEvents: RepeatingCustomEvent[];
+}
+export async function queryZotCourse(schedule_name: string) {
+    const url = new URL(ZOTCOURSE_ENDPOINT);
+    const response = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({ scheduleName: schedule_name }),
+        headers: { 'Content-Type': 'application/json' },
+    }).then((r) => r.json());
+    // For custom event, there is no course attribute in each.
+    const codes = response.data
+        .filter((section: { eventType: number }) => section.eventType === 3)
+        .map((section: { course: { code: string } }) => section.course.code) as string[];
+    const days = [false, false, false, false, false, false, false];
+    const customEvents: RepeatingCustomEvent[] = response.data
+        .filter((section: { eventType: number }) => section.eventType === 1)
+        .map((event: { title: string; start: string; end: string; dow: number[] }) => {
+            return {
+                title: event.title,
+                start: event.start,
+                end: event.end,
+                days: days.map((_, index) => event.dow.includes(index)),
+                scheduleIndices: [AppStore.getCurrentScheduleIndex()],
+                customEventID: Date.now(),
+                color: '#551a8b',
+            };
+        }) as RepeatingCustomEvent[];
+    return {
+        codes: codes,
+        customEvents: customEvents,
+    };
 }
 
 interface CacheEntry extends WebsocResponse {

@@ -8,6 +8,7 @@ class AboutPage extends PureComponent {
     state: { isOpen: boolean } = {
         isOpen: false,
     };
+
     render() {
         return (
             <>
@@ -24,7 +25,7 @@ class AboutPage extends PureComponent {
                 >
                     About
                 </Button>
-                <Dialog open={this.state.isOpen}>
+                <Dialog open={this.state.isOpen} onClose={() => this.setState({ isOpen: false })}>
                     <DialogTitle>About</DialogTitle>
                     <DialogContent>
                         <DialogContentText>

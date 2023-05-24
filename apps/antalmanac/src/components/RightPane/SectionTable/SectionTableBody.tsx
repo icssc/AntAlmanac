@@ -371,7 +371,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             <SectionDetailsCell
                 sectionType={section.sectionType as SectionType}
                 sectionNum={section.sectionNum}
-                units={parseInt(section.units)}
+                units={parseFloat(section.units)}
             />
             <InstructorsCell instructors={section.instructors} />
             <DayAndTimeCell meetings={section.meetings} />
