@@ -1,7 +1,7 @@
 import './Map.css';
 
-import { Fragment, useEffect, useRef, useState, createRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Fragment, useEffect, useRef, useCallback, useState, createRef } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import type { Map, LatLngTuple } from 'leaflet';
 import { MapContainer, TileLayer } from 'react-leaflet';
@@ -19,7 +19,7 @@ import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 const ACCESS_TOKEN = 'pk.eyJ1IjoicGVkcmljIiwiYSI6ImNsZzE0bjk2ajB0NHEzanExZGFlbGpwazIifQ.l14rgv5vmu5wIMgOUUhUXw';
 
 const ATTRIBUTION_MARKUP =
-  '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
+    '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
 
 const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`;
 
@@ -29,246 +29,239 @@ const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{
 const days = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
 interface MarkerContent {
-  key: string;
-  image: string;
-  acronym: string;
-  markerColor: string;
-  location: string;
+    key: string;
+    image: string;
+    acronym: string;
+    markerColor: string;
+    location: string;
 }
 
 /**
- * extracts all metadata from courses to the top level in preparation to use in the map
+ * Extracts all metadata from courses to the top level in preparation to use in the map.
  */
 export function getMarkersFromCourses() {
-  const courseEvents = AppStore.getCourseEventsInCalendar();
+    const courseEvents = AppStore.getCourseEventsInCalendar();
 
-  const uniqueBuildingCodes = new Set(courseEvents.map((event) => event.bldg.split(' ').slice(0, -1).join(' ')));
+    const uniqueBuildingCodes = new Set(courseEvents.map((event) => event.bldg.split(' ').slice(0, -1).join(' ')));
 
-  /**
-   * Each building has an array of courses that occur in the building.
-   */
-  const buildingToPins: Record<string, (CourseEvent & Building & MarkerContent)[]> = {};
+    /**
+     * Each building has an array of courses that occur in the building.
+     */
+    const buildingToPins: Record<string, (CourseEvent & Building & MarkerContent)[]> = {};
 
-  /**
-   * Associate each building code to courses that have a matching building code.
-   */
-  uniqueBuildingCodes.forEach((buildingCode) => {
-    buildingToPins[buildingCode] = courseEvents
-      /**
-       * Get course events that occur in this building.
-       */
-      .filter((event) => {
-        const eventBuildingCode = event.bldg.split(' ').slice(0, -1).join(' ');
-        return eventBuildingCode === buildingCode;
-      })
+    /**
+     * Associate each building code to courses that have a matching building code.
+     */
+    uniqueBuildingCodes.forEach((buildingCode) => {
+        buildingToPins[buildingCode] = courseEvents
+            /**
+             * Get course events that occur in this building.
+             */
+            .filter((event) => {
+                const eventBuildingCode = event.bldg.split(' ').slice(0, -1).join(' ');
+                return eventBuildingCode === buildingCode;
+            })
 
-      /**
-       * Filter out non-existent matches.
-       */
-      .filter(() => buildingCatalogue[locationIds[buildingCode]])
-      .map((event) => {
-        const locationData = buildingCatalogue[locationIds[buildingCode]];
-        const key = `${event.title} ${event.sectionType} @ ${event.bldg}`;
-        const acronym = locationData.name.substring(
-          locationData.name.indexOf('(') + 1,
-          locationData.name.indexOf(')')
-        );
+            /**
+             * Filter out non-existent matches.
+             */
+            .filter(() => buildingCatalogue[locationIds[buildingCode]] != null)
+            .map((event) => {
+                const locationData = buildingCatalogue[locationIds[buildingCode]];
+                const key = `${event.title} ${event.sectionType} @ ${event.bldg}`;
+                const acronym = locationData.name.substring(
+                    locationData.name.indexOf('(') + 1,
+                    locationData.name.indexOf(')')
+                );
 
-        const markerData = {
-          key,
-          image: locationData.imageURLs[0],
-          acronym,
-          markerColor: event.color,
-          location: locationData.name,
-          ...locationData,
-          ...event,
-        };
+                const markerData = {
+                    key,
+                    image: locationData.imageURLs[0],
+                    acronym,
+                    markerColor: event.color,
+                    location: locationData.name,
+                    ...locationData,
+                    ...event,
+                };
 
-        return markerData;
-      });
-  });
+                return markerData;
+            });
+    });
 
-  return buildingToPins;
+    return buildingToPins;
 }
 
-const buildings = Object.values(buildingCatalogue)
+const buildings = Object.entries(buildingCatalogue)
+
+    /**
+     * Filter for unique names by checking that the current index is the same as the found index.
+     */
+    .filter(
+        ([_, building], index, array) =>
+            array.findIndex(([_, otherBuilding]) => otherBuilding.name === building.name) === index
+    );
 
 /**
  * map of all course locations on UCI campus
  */
 export default function CourseMap() {
-  const map = useRef<Map | null>(null);
-  const [selectedDayIndex, setSelectedDay] = useState(0);
-  const [selected, setSelected] = useState<Building>();
-  const [searchParams] = useSearchParams();
+    const map = useRef<Map | null>(null);
+    const [selectedDayIndex, setSelectedDay] = useState(0);
+    const [markers, setMarkers] = useState(getMarkersFromCourses());
+    const [searchParams] = useSearchParams();
 
-  const markerRef = createRef<L.Marker>();
+    const updateMarkers = useCallback(() => {
+        setMarkers(getMarkersFromCourses());
+    }, []);
 
-  /**
-   * Whenever search params changes, update the selected location if possible.
-   */
-  useEffect(() => {
-    const locationID = Number(searchParams.get('location') ?? 0);
+    /**
+     * Attach listeners and handlers to the global store on mount, and remove them on unmount.
+     */
+    useEffect(() => {
+        AppStore.on('addedCoursesChange', updateMarkers);
+        AppStore.on('currentScheduleIndexChange', updateMarkers);
+        return () => {
+            AppStore.removeListener('addedCoursesChange', updateMarkers);
+            AppStore.removeListener('currentScheduleIndexChange', updateMarkers);
+        };
+    }, []);
 
-    if (!(locationID in buildingCatalogue)) return;
+    /**
+     * Whenever the search params change, check if a building should be focused.
+     */
+    useEffect(() => {
+        const locationID = Number(searchParams.get('location') ?? 0);
+        const building = locationID in buildingCatalogue ? buildingCatalogue[locationID] : undefined;
 
-    setSelected(buildingCatalogue[locationID]);
-  }, [searchParams]);
+        if (building == null) return;
 
-  /**
-   * Whenever the selected location or markerRef changes, attempt to focus on the selected marker.
-   */
-  useEffect(() => {
-    if (!selected) return
-    setTimeout(() => {
-      focusOnLocation(selected.lat, selected.lng);
-      setTimeout(() => {
-        markerRef.current?.openPopup()
-      }, 250) // wait for the map to finish moving for more natural experience
-    });
-  }, [selected, markerRef])
+        setTimeout(() => {
+            map.current?.setView([building.lat, building.lng]);
+            markerRef.current?.openPopup();
+        });
+    }, [searchParams]);
 
-  /**
-   * Extract a bunch of relevant metadata from courses into a top-level object for MapMarkers.
-   */
-  const [markers, setMarkers] = useState(getMarkersFromCourses());
-
-  const updateMarkers = () => {
-    setMarkers(getMarkersFromCourses());
-  };
-
-  useEffect(() => {
-    AppStore.on('addedCoursesChange', updateMarkers);
-    AppStore.on('currentScheduleIndexChange', updateMarkers);
-    return () => {
-      AppStore.removeListener('addedCoursesChange', updateMarkers);
-      AppStore.removeListener('currentScheduleIndexChange', updateMarkers);
+    const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
+        setSelectedDay(newValue);
     };
-  }, []);
 
-  const today = days[selectedDayIndex];
+    const handleSearch = (_event: React.SyntheticEvent, value: [string, Building] | null) => {
+        navigate(`/map?location=${value?.[0]}`);
+    };
 
-  const focusOnLocation = (lat: number, lng: number, zoom = 18) => {
-    if (!map.current) return;
+    const navigate = useNavigate();
 
-    const focusLocation = L.latLng(lat + 0.0005, lng);
-    map.current.setView(focusLocation, zoom);
-  }
+    const markerRef = createRef<L.Marker>();
 
-  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setSelectedDay(newValue);
-  };
+    const locationID = +(searchParams.get('location') ?? 0);
 
-  const handleSearch = (_event: React.SyntheticEvent, value: Building | null) => {
-    if (!value) {
-      setSelected(undefined);
-    } else if (map.current) {
-      setSelected(value);
-      focusOnLocation(value.lat, value.lng);
-    }
-  };
+    const building = locationID in buildingCatalogue ? buildingCatalogue[locationID] : undefined;
 
-  /**
-   * Markers for courses happening today, removing duplicates by sectionCode
-   */
-  const getMarkersToDisplay = () => {
-    const markersToday = Object.keys(markers)
-    .flatMap((markerKey) => markers[markerKey].filter((course) => course.start.toString().includes(today)))
-    .sort((a, b) => a.start.getTime() - b.start.getTime());
+    const today = days[selectedDayIndex];
 
-    const existingSections = new Set<string>();
-    let markersToDisplay: typeof markersToday = [];
+    const markersToDisplay = Object.keys(markers)
+        /**
+         * Filter markers for courses that occur today.
+         */
+        .flatMap((markerKey) => markers[markerKey].filter((course) => course.start.toString().includes(today)))
 
-    markersToday.forEach((marker) => {
-      if (!existingSections.has(marker.sectionCode)) {
-        console.log(marker.sectionCode)
-        existingSections.add(marker.sectionCode);
-        markersToDisplay.push(marker);
-      }
-    });
+        /**
+         * Sort the course markers by start time.
+         */
+        .sort((a, b) => a.start.getTime() - b.start.getTime())
 
-    console.log(existingSections);
-    return markersToDisplay;
-  }
+        /**
+         * Remove duplicate section codes by checking that the current index is the same as the found index.
+         * This works because a duplicate section code found later in the array will have a higher index.
+         */
+        .filter(
+            (a, index, array) => array.findIndex((otherCourse) => otherCourse.sectionCode === a.sectionCode) === index
+        );
 
-  const markersToDisplay = getMarkersToDisplay();
+    /**
+     * Every two markers grouped as [start, destination] tuples for the routes.
+     */
+    const startDestPairs = markersToDisplay.reduce((acc, cur, index) => {
+        acc.push([cur]);
+        if (index > 0) {
+            acc[index - 1].push(cur);
+        }
+        return acc;
+    }, [] as (typeof markersToDisplay)[]);
 
-  /**
-   * Group every two markers as [start, destination] tuples.
-   */
-  const startDestPairs = markersToDisplay.reduce((acc, cur, index) => {
-    acc.push([cur]);
-    if (index > 0) {
-      acc[index - 1].push(cur);
-    }
-    return acc;
-  }, [] as (typeof markersToDisplay)[]);
+    return (
+        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}>
+            <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
+                {/** Menu floats above the map. */}
+                <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.942, marginX: '15%', marginY: 8 }}>
+                    <Tabs value={selectedDayIndex} onChange={handleChange} variant="fullWidth" sx={{ minHeight: 0 }}>
+                        {days.map((day) => (
+                            <Tab
+                                key={day}
+                                label={day || 'All'}
+                                sx={{ padding: 1, minHeight: 'auto', minWidth: '10%', p: 1 }}
+                            />
+                        ))}
+                    </Tabs>
+                    <Autocomplete
+                        options={buildings}
+                        getOptionLabel={(option) => option[1].name ?? ''}
+                        onChange={handleSearch}
+                        renderInput={(params) => <TextField {...params} label="Search for a place" variant="filled" />}
+                    />
+                </Paper>
 
-  return (
-    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}>
-      <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
-        {/** Menu floats above the map. */}
-        <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.942, marginX: '15%', marginY: 8 }}>
-          <Tabs value={selectedDayIndex} onChange={handleChange} variant="fullWidth" sx={{ minHeight: 0 }}>
-            {days.map((day) => (
-              <Tab
-                key={day}
-                label={day || 'All'}
-                sx={{ padding: 1, minHeight: 'auto', minWidth: '10%', p: 1 }}
-              />
-            ))}
-          </Tabs>
-          <Autocomplete
-            options={buildings}
-            getOptionLabel={(option) => option.name || ''}
-            onChange={handleSearch}
-            renderInput={(params) => <TextField {...params} label="Search for a place" variant="filled" />}
-          />
-        </Paper>
+                <TileLayer attribution={ATTRIBUTION_MARKUP} url={url} tileSize={512} maxZoom={21} zoomOffset={-1} />
 
-        <TileLayer attribution={ATTRIBUTION_MARKUP} url={url} tileSize={512} maxZoom={21} zoomOffset={-1} />
+                <UserLocator />
 
-        <UserLocator />
+                {/* Draw out routes if the user is viewing a specific day. */}
+                {today !== '' &&
+                    startDestPairs.map((startDestPair) => {
+                        const latLngTuples = startDestPair.map((marker) => [marker.lat, marker.lng] as LatLngTuple);
+                        const color = startDestPair[0]?.color;
+                        /**
+                         * Previous renders of the routes will be left behind if the keys aren't unique.
+                         */
+                        const key = Math.random().toString(36).substring(7);
+                        return <ClassRoutes key={key} latLngTuples={latLngTuples} color={color} />;
+                    })}
 
-        {/* Draw out routes if the user is viewing a specific day. */}
-        {today !== '' &&
-          startDestPairs.map((startDestPair) => {
-            const latLngTuples = startDestPair.map((marker) => [marker.lat, marker.lng] as LatLngTuple);
-            const color = startDestPair[0]?.color;
-            /**
-             * Previous renders of the routes will be left behind if the keys aren't unique.
-             */
-            const key = Math.random().toString(36).substring(7);
-            return <ClassRoutes key={key} latLngTuples={latLngTuples} color={color} />;
-          })}
+                {/* Draw a marker for each class that occurs today. */}
+                {markersToDisplay.map((marker, index) => {
+                    // Find all courses that occur in the same building prior to this one to stack them properly.
+                    const coursesSameBuildingPrior = markersToDisplay
+                        .slice(0, index)
+                        .filter((m) => m.bldg === marker.bldg);
+                    return (
+                        <Fragment key={Object.values(marker).join('')}>
+                            <LocationMarker
+                                {...marker}
+                                label={today ? index + 1 : undefined}
+                                stackIndex={coursesSameBuildingPrior.length}
+                            >
+                                <hr />
+                                <Typography variant="body2">
+                                    Class: {`${marker.title} ${marker.sectionType}`}
+                                </Typography>
+                                <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
+                            </LocationMarker>
+                        </Fragment>
+                    );
+                })}
 
-        {/* Draw a marker for each class that occurs today. */}
-        {markersToDisplay.map((marker, index) => {
-          // Find all courses that occur in the same building prior to this one to stack them properly
-          const coursesSameBuildingPrior = markersToDisplay.slice(0, index).filter(m => m.bldg === marker.bldg)
-          return (
-            <Fragment key={Object.values(marker).join('')}>
-              <LocationMarker {...marker} label={today ? index + 1 : undefined} stackIndex={coursesSameBuildingPrior.length}>
-                <hr />
-                <Typography variant="body2">Class: {`${marker.title} ${marker.sectionType}`}</Typography>
-                <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
-              </LocationMarker>
-            </Fragment>
-          )
-        })}
-
-        {/* Render an additional marker if the user searched up a location. */}
-        {selected && (
-          <LocationMarker
-            {...selected}
-            label="!"
-            color="red"
-            location={selected.name}
-            image={selected.imageURLs?.[0]}
-            ref={markerRef}
-          />
-        )}
-      </MapContainer>
-    </Box>
-  );
+                {/* Render an additional marker if the user searched up a location. */}
+                {building && (
+                    <LocationMarker
+                        {...building}
+                        label="!"
+                        color="red"
+                        location={building.name}
+                        image={building.imageURLs?.[0]}
+                        ref={markerRef}
+                    />
+                )}
+            </MapContainer>
+        </Box>
+    );
 }
