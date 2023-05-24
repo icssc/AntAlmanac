@@ -7,13 +7,13 @@ import type { Map, LatLngTuple } from 'leaflet';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet-routing-machine';
 import { Autocomplete, Box, Paper, Tab, Tabs, TextField, Typography } from '@mui/material';
+import LocationMarker from './Marker';
+import ClassRoutes from './Routes';
+import UserLocator from './UserLocator';
 import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
 import buildingCatalogue from '$lib/buildingCatalogue';
 import type { Building } from '$lib/buildingCatalogue';
-import LocationMarker from './Marker';
-import ClassRoutes from './Routes';
-import UserLocator from './UserLocator';
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 
 const ACCESS_TOKEN = 'pk.eyJ1IjoicGVkcmljIiwiYSI6ImNsZzE0bjk2ajB0NHEzanExZGFlbGpwazIifQ.l14rgv5vmu5wIMgOUUhUXw';
@@ -91,18 +91,17 @@ export function getMarkersFromCourses() {
     return buildingToPins;
 }
 
-const buildings = Object.entries(buildingCatalogue)
-
-    /**
-     * Filter for unique names by checking that the current index is the same as the found index.
-     */
-    .filter(
-        ([_, building], index, array) =>
-            array.findIndex(([_, otherBuilding]) => otherBuilding.name === building.name) === index
-    );
+/**
+ * Filter for unique building names by checking that the current index is the same as the found index.
+ * This works because a duplicate name found later in the array will have a higher index.
+ */
+const buildings = Object.entries(buildingCatalogue).filter(
+    ([_, building], index, array) =>
+        array.findIndex(([_, otherBuilding]) => otherBuilding.name === building.name) === index
+);
 
 /**
- * map of all course locations on UCI campus
+ * Map of all course locations on UCI campus.
  */
 export default function CourseMap() {
     const navigate = useNavigate();
@@ -151,7 +150,7 @@ export default function CourseMap() {
         navigate(`/map?location=${value?.[0]}`);
     };
 
-    const locationID = +(searchParams.get('location') ?? 0);
+    const locationID = Number(searchParams.get('location') ?? 0);
 
     const building = locationID in buildingCatalogue ? buildingCatalogue[locationID] : undefined;
 
