@@ -105,10 +105,12 @@ const buildings = Object.entries(buildingCatalogue)
  * map of all course locations on UCI campus
  */
 export default function CourseMap() {
+    const navigate = useNavigate();
     const map = useRef<Map | null>(null);
+    const markerRef = createRef<L.Marker>();
+    const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getMarkersFromCourses());
-    const [searchParams] = useSearchParams();
 
     const updateMarkers = useCallback(() => {
         setMarkers(getMarkersFromCourses());
@@ -148,10 +150,6 @@ export default function CourseMap() {
     const handleSearch = (_event: React.SyntheticEvent, value: [string, Building] | null) => {
         navigate(`/map?location=${value?.[0]}`);
     };
-
-    const navigate = useNavigate();
-
-    const markerRef = createRef<L.Marker>();
 
     const locationID = +(searchParams.get('location') ?? 0);
 
