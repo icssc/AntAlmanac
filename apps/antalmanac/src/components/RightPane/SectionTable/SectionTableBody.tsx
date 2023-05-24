@@ -1,4 +1,14 @@
-import { Button, Popover, TableCell, TableRow, Theme, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
+import {
+    Box,
+    Button,
+    Popover,
+    TableCell,
+    TableRow,
+    Theme,
+    Tooltip,
+    Typography,
+    useMediaQuery,
+} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
@@ -129,15 +139,15 @@ const SectionDetailsCell = withStyles(styles)((props: SectionDetailCellProps) =>
 
     return (
         <NoPaddingTableCell className={classes.cell} style={isMobileScreen ? { textAlign: 'center' } : {}}>
-            <div className={classes[sectionType]}>{sectionType}</div>
-            <div>
+            <Box className={classes[sectionType]}>{sectionType}</Box>
+            <Box>
                 {!isMobileScreen && <>Sec: </>}
                 {sectionNum}
-            </div>
-            <div>
+            </Box>
+            <Box>
                 {!isMobileScreen && <>Units: </>}
                 {units}
-            </div>
+            </Box>
         </NoPaddingTableCell>
     );
 });
@@ -155,7 +165,7 @@ const InstructorsCell = withStyles(styles)((props: InstructorsCellProps) => {
             if (profName !== 'STAFF') {
                 const lastName = profName.substring(0, profName.indexOf(','));
                 return (
-                    <div key={profName}>
+                    <Box key={profName}>
                         <a
                             href={`https://www.ratemyprofessors.com/search/teachers?sid=U2Nob29sLTEwNzQ=&query=${lastName}`}
                             target="_blank"
@@ -163,10 +173,10 @@ const InstructorsCell = withStyles(styles)((props: InstructorsCellProps) => {
                         >
                             {profName}
                         </a>
-                    </div>
+                    </Box>
                 );
             } else {
-                return <div key={profName}> {profName} </div>;
+                return <Box key={profName}> {profName} </Box>;
             }
         });
     };
@@ -202,7 +212,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                         <br />
                     </Fragment>
                 ) : (
-                    <div>{meeting.bldg}</div>
+                    <Box>{meeting.bldg}</Box>
                 );
             })}
         </NoPaddingTableCell>
@@ -224,15 +234,15 @@ const SectionEnrollmentCell = withStyles(styles)((props: SectionEnrollmentCellPr
 
     return (
         <NoPaddingTableCell className={classes.cell}>
-            <div>
-                <div>
+            <Box>
+                <Box>
                     <strong>
                         {numCurrentlyEnrolled.totalEnrolled} / {maxCapacity}
                     </strong>
-                </div>
-                {numOnWaitlist !== '' && <div>WL: {numOnWaitlist}</div>}
-                {numNewOnlyReserved !== '' && <div>NOR: {numNewOnlyReserved}</div>}
-            </div>
+                </Box>
+                {numOnWaitlist !== '' && <Box>WL: {numOnWaitlist}</Box>}
+                {numNewOnlyReserved !== '' && <Box>NOR: {numNewOnlyReserved}</Box>}
+            </Box>
         </NoPaddingTableCell>
     );
 });
@@ -262,7 +272,7 @@ const RestrictionsCell = withStyles(styles)((props: RestrictionsCellProps) => {
 
     return (
         <NoPaddingTableCell className={classes.cell}>
-            <div>
+            <Box>
                 <Typography {...bindHover(popupState)}>
                     <a
                         href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
@@ -282,7 +292,7 @@ const RestrictionsCell = withStyles(styles)((props: RestrictionsCellProps) => {
                 >
                     <Typography>{parseRestrictions(restrictions)}</Typography>
                 </Popover>
-            </div>
+            </Box>
         </NoPaddingTableCell>
     );
 });
@@ -299,7 +309,7 @@ const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
                 const timeString = meeting.time.replace(/\s/g, '').split('-').join(' - ');
-                return <div key={meeting.days + meeting.time + meeting.bldg}>{`${meeting.days} ${timeString}`}</div>;
+                return <Box key={meeting.days + meeting.time + meeting.bldg}>{`${meeting.days} ${timeString}`}</Box>;
             })}
         </NoPaddingTableCell>
     );
