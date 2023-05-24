@@ -155,6 +155,9 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
                                 scheduleIndices: AppStore.schedule.getIndexesOfCustomEvent(
                                     this.props.customEvent ? this.props.customEvent.customEventID : 0
                                 ),
+                                location: this.props.customEvent?.location ? 
+                                this.props.customEvent.location 
+                                : "",
                             })
                         }
                     >
@@ -209,7 +212,9 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
                         </form>
                         <DaySelector onSelectDay={this.handleDayChange} days={this.props.customEvent?.days} />
 
-                        <LocationSelector handleSearch={this.handleSearch}/>
+                        <LocationSelector handleSearch={this.handleSearch} 
+                                          previousOption={this.props.customEvent?.location?this.props.customEvent?.location : ""}
+                        />
 
                         <ScheduleSelector
                             scheduleIndices={this.state.scheduleIndices}

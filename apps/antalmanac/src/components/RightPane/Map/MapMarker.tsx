@@ -126,6 +126,7 @@ const MapMarker = ({
                     startIcon={<WalkIcon />}
                     href={`${GOOGLE_MAPS_URL}${lat},${lng}`}
                     target="_blank"
+                    style={{marginTop: '1rem'}}
                 >
                     Directions
                 </Button>

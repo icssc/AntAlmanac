@@ -9,7 +9,7 @@ import React, { PureComponent } from 'react';
 // @ts-ignore
 import { LeafletContext, Map, Marker, Polyline, TileLayer, withLeaflet } from 'react-leaflet';
 
-import { CalendarEvent, CourseEvent } from '../../Calendar/CourseCalendarEvent';
+import { CalendarEvent, CourseEvent, CustomEvent } from '../../Calendar/CourseCalendarEvent';
 import RightPaneStore, { BuildingFocusInfo } from '../RightPaneStore';
 import locations from '../SectionTable/static/locations.json';
 import MapMarker from './MapMarker';
@@ -20,6 +20,11 @@ import { Coord, MapBoxResponse } from './static/mapbox';
 import AppStore from '$stores/AppStore';
 import { FAKE_LOCATIONS } from '$lib/helpers';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+
+import { Theme, withStyles } from '@material-ui/core/styles';
+import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+
+const styles: Styles<Theme, object> = {};
 
 // TODO investigate less jank ways of doing this if at all possible
 
@@ -69,8 +74,9 @@ interface UCIMapState {
     info_markers: [string[], string, string][];
     info_marker: Marker | null;
     pins: Record<string, [CourseEvent, number][]>;
+    customEventPins: Record<string, [CustomEvent, number][]>;
 }
-export default class UCIMap extends PureComponent {
+class UCIMap extends PureComponent  {
     state: UCIMapState = {
         lat: 33.6459,
         lng: -117.842717,
@@ -83,6 +89,7 @@ export default class UCIMap extends PureComponent {
         info_markers: [],
         info_marker: null,
         pins: {},
+        customEventPins: {},
     };
 
     generateRoute = async (day: number) => {
@@ -107,27 +114,62 @@ export default class UCIMap extends PureComponent {
                                 courses.has(event.sectionCode) || // Remove duplicate courses that appear in the calendar
                                 !courses.add(event.sectionCode)
                             ) // Adds to the set and return false
+                            &&
+                            (
+                                !event.isCustomEvent ||
+                                !event.start.toString().includes(DAYS[day])
+                            )
                         )
                 )
                 .sort((event, event2) => event.start.getTime() - event2.start.getTime())
                 .forEach((event) => {
-                    if (event.isCustomEvent) return;
-                    // Get building code, get id of building code, which will get us the building data from buildingCatalogue
-                    const buildingCode = event.bldg.split(' ').slice(0, -1).join(' ') as keyof typeof locations;
-                    const id = locations[buildingCode] as keyof typeof buildingCatalogue;
-                    const locationData = buildingCatalogue[id];
+                    if (event.isCustomEvent) {
+                        // Get building code, get id of building code, which will get us the building data from buildingCatalogue
+                        var buildingCode;
+                        var id;
+                        var locationData;
+                        if (event.bldg.includes("(")){
+                            buildingCode = event.bldg.split('(')[1].slice(0, -1) as keyof typeof locations;
+                            id = locations[buildingCode] as keyof typeof buildingCatalogue;
+                            locationData = buildingCatalogue[id];
+                        } else {
+                            const values = Object.values(buildingCatalogue);
+                            values.forEach((value) => {
+                                if (event.bldg == value.name){
+                                    locationData = value;
+                                }
+                            });
+                        }
 
-                    if (locationData === undefined) return;
+                        if (locationData === undefined) return;
 
-                    colors.push(event.color);
+                        colors.push(event.color);
 
-                    if (coords) {
-                        coords += ';';
+                        if (coords) {
+                            coords += ';';
+                        }
+                        coords += `${locationData.lng},${locationData.lat}`;
+                        coords_array.push([locationData.lat, locationData.lng]);
+
+                        index++;
+                    } else {
+                        // Get building code, get id of building code, which will get us the building data from buildingCatalogue
+                        const buildingCode = event.bldg.split(' ').slice(0, -1).join(' ') as keyof typeof locations;
+                        const id = locations[buildingCode] as keyof typeof buildingCatalogue;
+                        const locationData = buildingCatalogue[id];
+
+                        if (locationData === undefined) return;
+
+                        colors.push(event.color);
+
+                        if (coords) {
+                            coords += ';';
+                        }
+                        coords += `${locationData.lng},${locationData.lat}`;
+                        coords_array.push([locationData.lat, locationData.lng]);
+
+                        index++;
                     }
-                    coords += `${locationData.lng},${locationData.lat}`;
-                    coords_array.push([locationData.lat, locationData.lng]);
-
-                    index++;
                 });
             if (index > 1) {
                 const url = new URL(DIRECTIONS_ENDPOINT + encodeURIComponent(coords));
@@ -266,8 +308,20 @@ export default class UCIMap extends PureComponent {
         }
     };
 
+    fromNonbracketBuildingNameToDetail(name: string){
+        const values = Object.values(buildingCatalogue);
+        var result = {name: "", lat: 1, lng: 1, imageURLs: [""]};
+        values.forEach((value) => {
+            if (name == value.name){
+                result = value;
+            }
+        });
+        return result;
+    };
+
     locationDataFromBuildingCode = (
-        buildingCode: string
+        buildingCode: string,
+        nonBracketLocationName: boolean
     ): {
         name: string;
         lat: number;
@@ -275,8 +329,12 @@ export default class UCIMap extends PureComponent {
         imageURLs: string[];
     } => {
         // Get building code, get id of building code, which will get us the building data from buildingCatalogue
-        const id = locations[buildingCode as keyof typeof locations] as keyof typeof buildingCatalogue;
-        return buildingCatalogue[id];
+        if(!nonBracketLocationName){
+            const id = locations[buildingCode as keyof typeof locations] as keyof typeof buildingCatalogue;
+            return buildingCatalogue[id];
+        } else {
+            return this.fromNonbracketBuildingNameToDetail(buildingCode);
+        }
     };
 
     pinBuilding = (args: {
@@ -342,20 +400,30 @@ export default class UCIMap extends PureComponent {
         }
 
         const buildingCode = buildingCodeMatch[0];
-        const locationData = this.locationDataFromBuildingCode(buildingCode);
+        const locationData = this.locationDataFromBuildingCode(buildingCode, false);
 
         if (!locationData) {
-            console.warn('Building data could not be found for: ', buildingCode);
-            return;
+            var locationData2 = this.locationDataFromBuildingCode(buildingFocusInfo.location, true);
+            if (!locationData2){
+                console.warn('Building data could not be found for: ', buildingCode);
+                return;
+            }
+            this.pinBuilding({
+                buildingName: locationData2.name,
+                lat: locationData2.lat,
+                lng: locationData2.lng,
+                imageURL: locationData2.imageURLs.length > 0 ? locationData2.imageURLs[0] : null,
+                courseName: buildingFocusInfo.courseName,
+            });
+        } else {
+            this.pinBuilding({
+                buildingName: locationData.name,
+                lat: locationData.lat,
+                lng: locationData.lng,
+                imageURL: locationData.imageURLs.length > 0 ? locationData.imageURLs[0] : null,
+                courseName: buildingFocusInfo.courseName,
+            });
         }
-
-        this.pinBuilding({
-            buildingName: locationData.name,
-            lat: locationData.lat,
-            lng: locationData.lng,
-            imageURL: locationData.imageURLs.length > 0 ? locationData.imageURLs[0] : null,
-            courseName: buildingFocusInfo.courseName,
-        });
     };
 
     updateCurrentScheduleIndex = () => {
@@ -392,13 +460,14 @@ export default class UCIMap extends PureComponent {
 
     createMarkers = (day: number) => {
         const pins: typeof this.state.pins = {};
+        const customEventPins: typeof this.state.customEventPins = {};
         const courses = new Set();
         // Tracks courses that have already been pinned on the map, so there are no duplicates
         // Filter out those in a different schedule or those not on a certain day (mon, tue, etc)
         this.state.eventsInCalendar
             .filter(
                 (event) =>
-                    !(
+                    !( 
                         (
                             event.isCustomEvent ||
                             !event.start.toString().includes(DAYS[day]) ||
@@ -407,26 +476,41 @@ export default class UCIMap extends PureComponent {
                             // trim inconsistent white spacing in event.bldg from API
                             FAKE_LOCATIONS.includes(event.bldg.trim())
                         ) // Adds to the set and return false
+                        &&
+                        (
+                            !event.isCustomEvent ||
+                            !event.start.toString().includes(DAYS[day])
+                        )
                     )
             )
             .sort((event, event2) => event.start.getTime() - event2.start.getTime())
             .forEach((event, index) => {
-                if (event.isCustomEvent) return;
-                const buildingCode = event.bldg.split(' ').slice(0, -1).join(' ');
-                if (buildingCode in pins) {
-                    pins[buildingCode].push([event, index + 1]);
-                } else {
-                    pins[buildingCode] = [[event, index + 1]];
+                if (event.isCustomEvent && event.bldg) {
+                    var buildingCode = "0";
+                    buildingCode = event.bldg;
+                    if (buildingCode in customEventPins) {
+                        customEventPins[buildingCode].push([event, index + 1]);
+                    } else {
+                        customEventPins[buildingCode] = [[event, index + 1]];
+                    }
+                } else if (!event.isCustomEvent){
+                    const buildingCode = event.bldg.split(' ').slice(0, -1).join(' ');
+                    if (buildingCode in pins) {
+                        pins[buildingCode].push([event, index + 1]);
+                    } else {
+                        pins[buildingCode] = [[event, index + 1]];
+                    }
                 }
             }); // Creates a map between buildingCodes to pins to determine stacks and store in pins
-        this.setState({ pins: pins });
+        this.setState({ pins: pins, customEventPins: customEventPins});
     };
 
     drawMarkers = () => {
         const markers = [];
         const pins = this.state.pins;
+        const customEventPins = this.state.customEventPins;
         for (const buildingCode in pins) {
-            const locationData = this.locationDataFromBuildingCode(buildingCode);
+            const locationData = this.locationDataFromBuildingCode(buildingCode, false);
             const courses = pins[buildingCode];
             for (let index = courses.length - 1; index >= 0; index--) {
                 const [event, eventIndex] = courses[index];
@@ -456,6 +540,50 @@ export default class UCIMap extends PureComponent {
                             Class: {`${event.title} ${event.sectionType}`}
                             <br />
                             Room: {event.bldg.split(' ').slice(-1)}
+                        </>
+                    </MapMarker>
+                );
+            }
+        }
+        for (const buildingCode in customEventPins) {
+            var locationData;
+            if(buildingCode.includes('(')){
+                locationData = this.locationDataFromBuildingCode(buildingCode.split('(')[1].slice(0, -1) as keyof typeof locations, false);
+            } else {
+                locationData = this.locationDataFromBuildingCode(buildingCode, true);
+            }
+            const courses = customEventPins[buildingCode];
+            for (let index = courses.length - 1; index >= 0; index--) {
+                const [event, eventIndex] = courses[index];
+                const courseString = `${event.title} @ ${event.bldg}`;
+                if (locationData === undefined) return;
+
+                // Acronym, if it exists, is in between parentheses
+                const acronym = locationData.name.substring(
+                    locationData.name.indexOf('(') + 1,
+                    locationData.name.indexOf(')')
+                );
+
+                markers.push(
+                    <MapMarker
+                        key={courseString}
+                        image={locationData.imageURLs[0]}
+                        markerColor={event.color}
+                        location={locationData.name}
+                        lat={locationData.lat}
+                        lng={locationData.lng}
+                        acronym={acronym}
+                        index={this.state.day ? eventIndex.toString() : ''}
+                        stackIndex={courses.length - 1 - index}
+                    >
+                        <>
+                            <hr/>
+                            <div style={{paddingBottom: '0.2rem'}}>
+                                <text style={{ fontSize: '1rem'}}>{`NAME: ${event.title}`}</text>
+                            </div>
+                            <text style={{fontSize: '0.9rem', fontWeight: 'bold', borderColor: 'black',
+                                        border: 'solid 0.24rem', marginRight: '0.5rem', paddingLeft: '0.1rem',
+                                        paddingRight: '0.1rem', color: `${event.color}`}}>EVENT</text>
                         </>
                     </MapMarker>
                 );
@@ -515,3 +643,5 @@ export default class UCIMap extends PureComponent {
         );
     }
 }
+
+export default withStyles(styles)(UCIMap);

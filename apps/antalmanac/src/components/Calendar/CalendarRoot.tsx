@@ -66,7 +66,6 @@ const styles: Styles<Theme, object> = {
     eventMarkText: {
         fontSize: '0.8rem',
         fontWeight: 'bold',
-        borderColor: 'white',
         border: 'solid 0.15rem',
         padding: '0.15rem',
 

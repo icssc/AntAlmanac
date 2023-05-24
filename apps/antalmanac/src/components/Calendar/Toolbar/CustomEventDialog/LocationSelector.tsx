@@ -9,6 +9,7 @@ import { Autocomplete } from '@material-ui/lab';
 
 import Building from '../../../RightPane/Map/static/building';
 import buildingCatalogue from '../../../RightPane/Map/static/buildingCatalogue';
+import locations from '../../../RightPane/SectionTable/static/locations.json';
 
 const styles: Styles<Theme, object> = {
     tabContainer: {
@@ -42,6 +43,7 @@ const StyledTab = styled(Tab)({
 
 interface LocationSelectorProps {
     handleSearch: (event: React.ChangeEvent<unknown>, value: Building | null) => void;
+    previousOption: string;
 }
 
 class LocationSelector extends PureComponent<LocationSelectorProps>  {
@@ -49,12 +51,33 @@ class LocationSelector extends PureComponent<LocationSelectorProps>  {
         filteredItems: Object.values(buildingCatalogue),
     };
 
+    fromBuildingNameToDetail(name: string){
+        if (name.includes("(")){
+            const buildingCode = name.split('(')[1].slice(0, -1) as keyof typeof locations;
+            const id = locations[buildingCode] as keyof typeof buildingCatalogue;
+            const locationData = buildingCatalogue[id];
+            return locationData;
+        } else {
+            const values = Object.values(buildingCatalogue);
+            var result = null;
+            values.forEach((value) => {
+                if (name == value.name){
+                    result = value;
+                }
+            });
+            return result;
+        }
+    }
+
     render() {
         return (
             <Paper elevation={0}>
                 <Autocomplete
                     options={this.state.filteredItems}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={((option) => option.name)}
+                    defaultValue={this.props.previousOption 
+                        ? this.fromBuildingNameToDetail(this.props.previousOption)
+                        : null}
                     onChange={this.props.handleSearch}
                     renderInput={(params) => <TextField {...params} label="Search for a place" variant="filled" />}
                 />

@@ -75,10 +75,9 @@ const styles: Styles<Theme, object> = {
     eventMarkText: {
         fontSize: '0.8rem',
         fontWeight: 'bold',
-        borderColor: 'white',
         border: 'solid 0.15rem',
+        borderColor: 'auto',
         padding: '0.15rem',
-
     },
     eventMarkDiv: {
         marginTop: '0.4rem',
@@ -223,7 +222,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             <td className={`${classes.multiline} ${classes.rightCells}`}>
                                 { <button
                                     className={classes.clickableLocation}
-                                    onClick={() => selectBuilding({ location: bldg, courseName: title })}
+                                    onClick={() => selectBuilding({ location: bldg.includes('(') ? (bldg.split('(')[1].slice(0, -1)) : bldg, courseName: title })}
                                 >
                                     {bldg}
                                 </button> }
