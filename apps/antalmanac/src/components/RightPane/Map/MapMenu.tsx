@@ -66,11 +66,13 @@ class MapMenu extends PureComponent<MapMenuProps> {
                         centered
                     >
                         <StyledTab label="All" />
+                        <StyledTab label="Sun" />
                         <StyledTab label="Mon" />
                         <StyledTab label="Tue" />
                         <StyledTab label="Wed" />
                         <StyledTab label="Thu" />
                         <StyledTab label="Fri" />
+                        <StyledTab label="Sat" />
                     </StyledTabs>
                 </Paper>
 
