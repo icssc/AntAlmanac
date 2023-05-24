@@ -243,8 +243,8 @@ importers:
   apps/backend:
     dependencies:
       '@aponia/integrations-express':
-        specifier: ^0.1.50
-        version: 0.1.50
+        specifier: ^0.1.51
+        version: 0.1.51
       '@aponia/providers':
         specifier: ^0.1.47
         version: 0.1.47
@@ -443,8 +443,8 @@ packages:
       '@jridgewell/trace-mapping': 0.3.17
     dev: true
 
-  /@aponia/integrations-express@0.1.50:
-    resolution: {integrity: sha512-UX6ioG7q5yaBonaAn2QjyX5NlIyRzhbYAjD6i315taCYiSvvycp7Ibe13PtccTqGHNepuaxNX4sNu46i7cJNxA==}
+  /@aponia/integrations-express@0.1.51:
+    resolution: {integrity: sha512-MU4W7nOM9YSyqcVFw1c+E+Lalgl8aEkH9FtGKp9QQYB6sQcZDJGFJdHQs3NvlmELeZwp9142MZYgix60D2WtQQ==}
     dependencies:
       aponia: 0.1.47
       cookie: 0.5.0

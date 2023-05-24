@@ -10,7 +10,7 @@
         "lint": "eslint src"
     },
     "dependencies": {
-        "@aponia/integrations-express": "^0.1.50",
+        "@aponia/integrations-express": "^0.1.51",
         "@aponia/providers": "^0.1.47",
         "@packages/antalmanac-types": "*",
         "@trpc/server": "^10.23.0",
