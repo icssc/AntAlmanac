@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import L from 'leaflet';
 import type { LatLngTuple } from 'leaflet';
-import { useMap } from 'react-leaflet';
 import 'leaflet-routing-machine';
 import { createElementHook, createElementObject, useLeafletContext } from '@react-leaflet/core';
 import type { LeafletContextInterface } from '@react-leaflet/core';
@@ -21,6 +20,12 @@ interface ClassRoutesProps {
      */
     color?: string;
 }
+
+/**
+ * leaflet-routing-machine's `Plan` accepts a `createMarker` function that returns a `Marker` object.
+ * If you return false, then no marker will be created.
+ */
+const dontCreateMarker = () => false;
 
 /**
  * Use react-leaflet's core API to manage lifecycle of leaflet elements properly.
@@ -51,7 +56,7 @@ function createRouter(props: ClassRoutesProps, context: LeafletContextInterface)
 
         plan: L.Routing.plan(waypoints, {
             addWaypoints: false,
-            createMarker: () => false,
+            createMarker: dontCreateMarker,
         }),
 
         routeLine(route) {
