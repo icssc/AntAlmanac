@@ -167,7 +167,7 @@ const InstructorsCell = withStyles(styles)((props: InstructorsCellProps) => {
                 return (
                     <Box key={profName}>
                         <a
-                            href={`https://www.ratemyprofessors.com/search/professors?sid=U2Nob29sLTEwNzQ=&q=${lastName}`}
+                            href={`https://www.ratemyprofessors.com/search/professors/1074?q=${lastName}`}
                             target="_blank"
                             rel="noopener noreferrer"
                         >
