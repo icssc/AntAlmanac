@@ -2,13 +2,12 @@ import './Map.css';
 
 import { Fragment, useEffect, useRef, useCallback, useState, createRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import L from 'leaflet';
-import type { Map, LatLngTuple } from 'leaflet';
+import L, { type Map, type LatLngTuple } from 'leaflet';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet-routing-machine';
 import { Autocomplete, Box, Paper, Tab, Tabs, TextField, Typography } from '@mui/material';
-import LocationMarker from './Marker';
 import ClassRoutes from './Routes';
+import LocationMarker from './Marker';
 import UserLocator from './UserLocator';
 import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
@@ -37,35 +36,25 @@ interface MarkerContent {
 }
 
 /**
- * Extracts all metadata from courses to the top level in preparation to use in the map.
+ * Get an array of courses that occur in every building.
+ * Each course's info is used to render a marker to the map.
  */
-export function getMarkersFromCourses() {
+export function getCoursesPerBuilding() {
     const courseEvents = AppStore.getCourseEventsInCalendar();
 
-    const uniqueBuildingCodes = new Set(courseEvents.map((event) => event.bldg.split(' ').slice(0, -1).join(' ')));
+    const allBuildingCodes = courseEvents.map((event) => event.bldg.split(' ').slice(0, -1).join(' '));
 
-    /**
-     * Each building has an array of courses that occur in the building.
-     */
-    const buildingToPins: Record<string, (CourseEvent & Building & MarkerContent)[]> = {};
+    const uniqueBuildingCodes = new Set(allBuildingCodes);
 
-    /**
-     * Associate each building code to courses that have a matching building code.
-     */
-    uniqueBuildingCodes.forEach((buildingCode) => {
-        buildingToPins[buildingCode] = courseEvents
-            /**
-             * Get course events that occur in this building.
-             */
-            .filter((event) => {
-                const eventBuildingCode = event.bldg.split(' ').slice(0, -1).join(' ');
-                return eventBuildingCode === buildingCode;
-            })
+    const validBuildingCodes = [...uniqueBuildingCodes].filter(
+        (buildingCode) => buildingCatalogue[locationIds[buildingCode]] != null
+    );
 
-            /**
-             * Filter out non-existent matches.
-             */
-            .filter(() => buildingCatalogue[locationIds[buildingCode]] != null)
+    const coursesPerBuilding: Record<string, (CourseEvent & Building & MarkerContent)[]> = {};
+
+    validBuildingCodes.forEach((buildingCode) => {
+        coursesPerBuilding[buildingCode] = courseEvents
+            .filter((event) => event.bldg.split(' ').slice(0, -1).join(' ') === buildingCode)
             .map((event) => {
                 const locationData = buildingCatalogue[locationIds[buildingCode]];
                 const key = `${event.title} ${event.sectionType} @ ${event.bldg}`;
@@ -73,7 +62,6 @@ export function getMarkersFromCourses() {
                     locationData.name.indexOf('(') + 1,
                     locationData.name.indexOf(')')
                 );
-
                 const markerData = {
                     key,
                     image: locationData.imageURLs[0],
@@ -83,17 +71,15 @@ export function getMarkersFromCourses() {
                     ...locationData,
                     ...event,
                 };
-
                 return markerData;
             });
     });
-
-    return buildingToPins;
+    return coursesPerBuilding;
 }
 
 /**
- * Filter for unique building names by checking that the current index is the same as the found index.
- * This works because a duplicate name found later in the array will have a higher index.
+ * Get unique building names for the MUI Autocomplete.
+ * A building with a duplicate name will have a higher index then a `findIndex` for another building with the same name.
  */
 const buildings = Object.entries(buildingCatalogue).filter(
     ([_, building], index, array) =>
@@ -109,15 +95,12 @@ export default function CourseMap() {
     const markerRef = createRef<L.Marker>();
     const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
-    const [markers, setMarkers] = useState(getMarkersFromCourses());
+    const [markers, setMarkers] = useState(getCoursesPerBuilding());
 
     const updateMarkers = useCallback(() => {
-        setMarkers(getMarkersFromCourses());
+        setMarkers(getCoursesPerBuilding());
     }, []);
 
-    /**
-     * Attach listeners and handlers to the global store on mount, and remove them on unmount.
-     */
     useEffect(() => {
         AppStore.on('addedCoursesChange', updateMarkers);
         AppStore.on('currentScheduleIndexChange', updateMarkers);
@@ -127,9 +110,6 @@ export default function CourseMap() {
         };
     }, []);
 
-    /**
-     * Whenever the search params change, check if a building should be focused.
-     */
     useEffect(() => {
         const locationID = Number(searchParams.get('location') ?? 0);
         const building = locationID in buildingCatalogue ? buildingCatalogue[locationID] : undefined;
@@ -156,21 +136,13 @@ export default function CourseMap() {
 
     const today = days[selectedDayIndex];
 
+    /**
+     * Get markers for unique courses (identified by  section ID) that occur today, sorted by start time.
+     * A duplicate section code found later in the array will have a higher index.
+     */
     const markersToDisplay = Object.keys(markers)
-        /**
-         * Filter markers for courses that occur today.
-         */
         .flatMap((markerKey) => markers[markerKey].filter((course) => course.start.toString().includes(today)))
-
-        /**
-         * Sort the course markers by start time.
-         */
         .sort((a, b) => a.start.getTime() - b.start.getTime())
-
-        /**
-         * Remove duplicate section codes by checking that the current index is the same as the found index.
-         * This works because a duplicate section code found later in the array will have a higher index.
-         */
         .filter(
             (a, index, array) => array.findIndex((otherCourse) => otherCourse.sectionCode === a.sectionCode) === index
         );
@@ -230,6 +202,7 @@ export default function CourseMap() {
                     const coursesSameBuildingPrior = markersToDisplay
                         .slice(0, index)
                         .filter((m) => m.bldg === marker.bldg);
+
                     return (
                         <Fragment key={Object.values(marker).join('')}>
                             <LocationMarker
