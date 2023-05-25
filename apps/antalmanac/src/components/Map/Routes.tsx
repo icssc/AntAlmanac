@@ -65,7 +65,7 @@ function createRouter(props: ClassRoutesProps, context: LeafletContextInterface)
                 extendToWaypoints: true,
                 missingRouteTolerance: 0,
                 styles: [
-                    { color: 'skyblue', opacity: 0.5, weight: 30 }, // invisble line extends the range of click/hover events
+                    { opacity: 0, weight: 30 }, // invisble line extends the range of click/hover events
                     { color: props.color, weight: 3 },
                 ],
             });
@@ -95,7 +95,7 @@ function createRouter(props: ClassRoutesProps, context: LeafletContextInterface)
        <br>
        <span style="color:#888888">${miles}</span>
       `;
-            const popup = L.popup({ content });
+            const popup = L.popup({ content, closeButton: false });
 
             /**
              * @see {@link https://github.com/perliedman/leaflet-routing-machine/issues/117}
@@ -110,7 +110,7 @@ function createRouter(props: ClassRoutesProps, context: LeafletContextInterface)
                 lineLayer.on('mousemove', (leafletMouseEvent) => {
                     popup.setLatLng(leafletMouseEvent.latlng).openOn(context.map);
                 });
-                lineLayer.on('mouseout', () => {
+                lineLayer.on('click', () => {
                     popup.close();
                 });
             });

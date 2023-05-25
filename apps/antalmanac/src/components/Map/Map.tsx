@@ -117,9 +117,9 @@ export default function CourseMap() {
         if (building == null) return;
 
         setTimeout(() => {
-            map.current?.setView([building.lat, building.lng]);
+            map.current?.flyTo([building.lat + 0.001, building.lng], 18);
             markerRef.current?.openPopup();
-        });
+        }, 250);
     }, [searchParams]);
 
     const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
@@ -210,11 +210,12 @@ export default function CourseMap() {
                                 label={today ? index + 1 : undefined}
                                 stackIndex={coursesSameBuildingPrior.length}
                             >
-                                <hr />
-                                <Typography variant="body2">
-                                    Class: {`${marker.title} ${marker.sectionType}`}
-                                </Typography>
-                                <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
+                                <Box>
+                                    <Typography variant="body2">
+                                        Class: {marker.title} {marker.sectionType}
+                                    </Typography>
+                                    <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
+                                </Box>
                             </LocationMarker>
                         </Fragment>
                     );

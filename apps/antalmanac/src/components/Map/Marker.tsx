@@ -1,7 +1,7 @@
 import { forwardRef, type Ref } from 'react';
 import Leaflet from 'leaflet';
 import { Marker, Popup } from 'react-leaflet';
-import { Button, Link, Typography } from '@mui/material';
+import { Box, Button, Link, Typography } from '@mui/material';
 import { DirectionsWalk as DirectionsWalkIcon } from '@mui/icons-material';
 
 const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';
@@ -80,39 +80,62 @@ const LocationMarker = forwardRef(
                 zIndexOffset={stackIndex}
             >
                 <Popup>
-                    {location ? (
-                        <Link
-                            href={`http://www.classrooms.uci.edu/classrooms/${acronym}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            textAlign="center"
-                        >
-                            {location}
-                        </Link>
-                    ) : (
-                        <Typography>{location}</Typography>
-                    )}
-
-                    {image && (
-                        <img src={`${IMAGE_CMS_URL}${image}`} alt="Building Snapshot" style={{ width: '100%' }} />
-                    )}
-
-                    {children}
-
-                    <Button
-                        variant="contained"
-                        color="inherit"
-                        startIcon={<DirectionsWalkIcon />}
-                        href={`${GOOGLE_MAPS_URL}${lat},${lng}`}
-                        target="_blank"
-                        sx={{ alignSelf: 'center' }}
+                    <Box
+                        sx={{
+                            width: 200,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 0.5,
+                            justifyContent: 'center',
+                            m: 2,
+                        }}
                     >
-                        Directions
-                    </Button>
+                        <Box>
+                            {location ? (
+                                <Link
+                                    href={`http://www.classrooms.uci.edu/classrooms/${acronym}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    textAlign="center"
+                                    variant="h6"
+                                >
+                                    {location}
+                                </Link>
+                            ) : (
+                                <Typography textAlign="center">{location}</Typography>
+                            )}
+                        </Box>
+
+                        {image && (
+                            <Box sx={{ my: 1, width: 200, height: 200 }}>
+                                <Box
+                                    component="img"
+                                    src={`${IMAGE_CMS_URL}${image}`}
+                                    alt="Building Snapshot"
+                                    sx={{ width: 1, height: 1, objectFit: 'cover' }}
+                                />
+                            </Box>
+                        )}
+
+                        {children}
+
+                        <Button
+                            variant="contained"
+                            color="inherit"
+                            startIcon={<DirectionsWalkIcon />}
+                            href={`${GOOGLE_MAPS_URL}${lat},${lng}`}
+                            target="_blank"
+                            sx={{ alignSelf: 'center' }}
+                        >
+                            Directions
+                        </Button>
+                    </Box>
                 </Popup>
             </Marker>
         );
     }
 );
+
+LocationMarker.displayName = 'LocationMarker';
 
 export default LocationMarker;

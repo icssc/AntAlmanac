@@ -6,8 +6,20 @@
 }
 
 /**
+ */
+.leaflet-popup-content {
+  margin: unset;
+}
+
+/**
  * Remove the forced margin between paragraphs in the leaflet popup.
  */
 .leaflet-popup-content p {
     margin: unset;
+}
+
+/**
+ */
+.leaflet-popup-content-wrapper {
+  border-radius: unset;
 }

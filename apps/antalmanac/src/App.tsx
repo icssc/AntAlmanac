@@ -8,6 +8,7 @@ import ReactGA4 from 'react-ga4';
 import { undoDelete } from './actions/AppStoreActions';
 import AppQueryProvider from './providers/Query';
 import AppThemeProvider from './providers/Theme';
+import AppThemev5Provider from './providers/Themev5';
 
 import Home from './routes/Home';
 import Feedback from './routes/Feedback';
@@ -43,9 +44,11 @@ export default function App() {
     return (
         <AppQueryProvider>
             <AppThemeProvider>
-                <SnackbarProvider>
-                    <RouterProvider router={BrowserRouter} />
-                </SnackbarProvider>
+                <AppThemev5Provider>
+                    <SnackbarProvider>
+                        <RouterProvider router={BrowserRouter} />
+                    </SnackbarProvider>
+                </AppThemev5Provider>
             </AppThemeProvider>
         </AppQueryProvider>
     );
