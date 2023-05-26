@@ -1,4 +1,3 @@
-import {calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals} from './calendarizeHelpers';
 import {
     Schedule,
     ScheduleCourse,
@@ -6,9 +5,10 @@ import {
     ScheduleUndoState,
     ShortCourseSchedule,
 } from '@packages/antalmanac-types';
-import {RepeatingCustomEvent} from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import {combineSOCObjects, CourseInfo, getCourseInfo, queryWebsoc} from '$lib/helpers';
-import {getColorForNewSection} from "$stores/scheduleHelpers";
+import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
+import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
+import { getColorForNewSection } from '$stores/scheduleHelpers';
 
 export class Schedules {
     private schedules: Schedule[];
@@ -434,23 +434,10 @@ export class Schedules {
                 const sectionCodes = Array.from(courseSet);
                 // Code from ImportStudyList
                 const courseInfo = getCourseInfo(
-                    combineSOCObjects(
-                        await Promise.all(
-                            sectionCodes
-                                .reduce((result: string[][], item, index) => {
-                                    // WebSOC queries can have a maximum of 10 course codes in tandem
-                                    const chunkIndex = Math.floor(index / 10);
-                                    result[chunkIndex] ? result[chunkIndex].push(item) : (result[chunkIndex] = [item]);
-                                    return result;
-                                }, []) // https://stackoverflow.com/a/37826698
-                                .map((sectionCode: string[]) =>
-                                    queryWebsoc({
-                                        term: term,
-                                        sectionCodes: sectionCode.join(','),
-                                    })
-                                )
-                        )
-                    )
+                    await queryWebsoc({
+                        term: term,
+                        sectionCodes: sectionCodes.join(','),
+                    })
                 );
                 courseInfoDict.set(term, courseInfo);
             }

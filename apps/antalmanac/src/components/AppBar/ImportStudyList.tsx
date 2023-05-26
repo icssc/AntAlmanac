@@ -101,25 +101,10 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                 try {
                     const sectionsAdded = addCoursesMultiple(
                         getCourseInfo(
-                            combineSOCObjects(
-                                await Promise.all(
-                                    sectionCodes
-                                        .reduce((result: string[][], item, index) => {
-                                            // WebSOC queries can have a maximum of 10 course codes in tandem
-                                            const chunkIndex = Math.floor(index / 10);
-                                            result[chunkIndex]
-                                                ? result[chunkIndex].push(item)
-                                                : (result[chunkIndex] = [item]);
-                                            return result;
-                                        }, []) // https://stackoverflow.com/a/37826698
-                                        .map((sectionCode: string[]) =>
-                                            queryWebsoc({
-                                                term: this.state.selectedTerm,
-                                                sectionCodes: sectionCode.join(','),
-                                            })
-                                        )
-                                )
-                            )
+                            await queryWebsoc({
+                                term: this.state.selectedTerm,
+                                sectionCodes: sectionCodes.join(','),
+                            })
                         ),
                         this.state.selectedTerm,
                         currSchedule
@@ -183,12 +168,13 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                         Import
                     </Button>
                 </Tooltip>
-                <Dialog 
-                    open={this.state.isOpen} 
-                    onClose={() => this.setState(
-                        { isOpen: false, studyListText: ''}, 
-                        async () => {document.removeEventListener('keydown', this.enterEvent, false)}
-                    )}
+                <Dialog
+                    open={this.state.isOpen}
+                    onClose={() =>
+                        this.setState({ isOpen: false, studyListText: '' }, async () => {
+                            document.removeEventListener('keydown', this.enterEvent, false);
+                        })
+                    }
                 >
                     <DialogTitle>Import Schedule</DialogTitle>
                     <DialogContent>
