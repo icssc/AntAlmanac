@@ -1,6 +1,7 @@
-import { TextField } from '@material-ui/core';
+import { FormControlLabel, Switch, TextField } from '@material-ui/core';
 import { ChangeEvent, PureComponent } from 'react';
 
+import { Box } from '@mui/material';
 import RightPaneStore from '../../RightPaneStore';
 
 interface CourseNumberSearchBarState {
@@ -14,27 +15,52 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
     }
 
     getCourseNumber() {
-      return RightPaneStore.getUrlCourseNumValue().trim() 
-        ? this.updateCourseNumAndGetFormData() 
-        : RightPaneStore.getFormData().courseNumber;
+        return RightPaneStore.getUrlCourseNumValue().trim()
+            ? this.updateCourseNumAndGetFormData()
+            : RightPaneStore.getFormData().courseNumber;
     }
 
     state = {
         courseNumber: this.getCourseNumber(),
     };
 
-    handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        this.setState({ courseNumber: event.target.value });
-        RightPaneStore.updateFormValue('courseNumber', event.target.value);
-        const url = new URL(window.location.href);
-        const urlParam = new URLSearchParams(url.search);
-        urlParam.delete('courseNumber');
-        if (event.target.value) {
-            urlParam.append('courseNumber', event.target.value);
+    handleChange = (name: string) => (event: ChangeEvent<HTMLInputElement>) => {
+        if (name === 'upper') {
+            if (event.target.checked) {
+                this.setState({ courseNumber: '100-199' });
+                RightPaneStore.updateFormValue('courseNumber', '100-199');
+                const url = new URL(window.location.href);
+                const urlParam = new URLSearchParams(url.search);
+                urlParam.delete('courseNumber');
+
+                urlParam.append('courseNumber', '100-199');
+                const param = urlParam.toString();
+                const new_url = `${param.trim() ? '?' : ''}${param}`;
+                history.replaceState({ url: 'url' }, 'url', '/' + new_url);
+            } else {
+                this.setState({ courseNumber: '' });
+                RightPaneStore.updateFormValue('courseNumber', '');
+                const url = new URL(window.location.href);
+                const urlParam = new URLSearchParams(url.search);
+                urlParam.delete('courseNumber');
+
+                const param = urlParam.toString();
+                const new_url = `${param.trim() ? '?' : ''}${param}`;
+                history.replaceState({ url: 'url' }, 'url', '/' + new_url);
+            }
+        } else {
+            this.setState({ courseNumber: event.target.value });
+            RightPaneStore.updateFormValue('courseNumber', event.target.value);
+            const url = new URL(window.location.href);
+            const urlParam = new URLSearchParams(url.search);
+            urlParam.delete('courseNumber');
+            if (event.target.value) {
+                urlParam.append('courseNumber', event.target.value);
+            }
+            const param = urlParam.toString();
+            const new_url = `${param.trim() ? '?' : ''}${param}`;
+            history.replaceState({ url: 'url' }, 'url', '/' + new_url);
         }
-        const param = urlParam.toString();
-        const new_url = `${param.trim() ? '?' : ''}${param}`;
-        history.replaceState({ url: 'url' }, 'url', '/' + new_url);
     };
 
     componentDidMount() {
@@ -51,15 +77,28 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
 
     render() {
         return (
-            <div>
+            <>
                 <TextField
                     label="Course Number(s)"
                     type="search"
                     value={this.state.courseNumber}
-                    onChange={this.handleChange}
+                    onChange={this.handleChange('number')}
                     helperText="ex. 6B, 17, 30-40"
                 />
-            </div>
+
+                <FormControlLabel
+                    control={
+                        <Switch
+                            onChange={this.handleChange('upper')}
+                            value="100-199"
+                            color="primary"
+                            checked={this.state.courseNumber === '100-199'}
+                        />
+                    }
+                    labelPlacement="top"
+                    label="Upper Div Only"
+                />
+            </>
         );
     }
 }
