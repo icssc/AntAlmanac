@@ -37,6 +37,15 @@ export async function queryGraphQL<ResponseT>(queryString: string): Promise<Resp
 
 const gradesCache: Record<string, Grades> = {};
 
+/*
+ * Query the PeterPortal GraphQL API for a course's grades with caching
+ *
+ * @param deptCode The department code of the course.
+ * @param courseNumber The course number of the course.
+ * @param instructor The instructor's name (optional)
+ *
+ * @returns Grades
+ */
 export async function queryGrades(deptCode: string, courseNumber: string, instructor = '') {
     instructor = instructor.replace('STAFF', '').trim();
 
