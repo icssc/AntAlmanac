@@ -43,7 +43,7 @@ export async function queryGrades(deptCode: string, courseNumber: string, instru
     const cacheKey = deptCode + courseNumber + instructor;
 
     if (gradesCache[cacheKey]) {
-        return gradesCache[deptCode + courseNumber];
+        return gradesCache[cacheKey];
     }
 
     const queryString = `
