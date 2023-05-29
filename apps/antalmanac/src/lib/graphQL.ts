@@ -1,13 +1,13 @@
 import { PETERPORTAL_GRAPHQL_ENDPOINT } from '$lib/api/endpoints';
 
 export interface Grades {
-    aCount: number;
-    bCount: number;
-    cCount: number;
-    dCount: number;
-    fCount: number;
-    pCount: number;
-    npCount: number;
+    a: number;
+    b: number;
+    c: number;
+    d: number;
+    f: number;
+    p: number;
+    np: number;
     avg: number;
 }
 
@@ -49,13 +49,13 @@ export async function queryGrades(deptCode: string, courseNumber: string, instru
     const queryString = `
       { courseGrades: grades(department: "${deptCode}", number: "${courseNumber}",) {
           aggregate {
-            aCount: sum_grade_a_count
-            bCount: sum_grade_b_count
-            cCount: sum_grade_c_count
-            dCount: sum_grade_d_count
-            fCount: sum_grade_f_count
-            pCount: sum_grade_p_count
-            npCount: sum_grade_np_count
+            a: sum_grade_a_count
+            b: sum_grade_b_count
+            c: sum_grade_c_count
+            d: sum_grade_d_count
+            f: sum_grade_f_count
+            p: sum_grade_p_count
+            np: sum_grade_np_count
             avg: average_gpa
           }
       },
