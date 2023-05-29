@@ -44,7 +44,7 @@ const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }: Grades
     const [gradeData, setGradeData] = useState<GradeData[] | null>(null);
 
     const loadGrades = async () => {
-        if (loading === false) {
+        if (!loading) {
             return;
         }
 
