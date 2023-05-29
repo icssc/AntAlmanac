@@ -1,7 +1,6 @@
 import { FormControlLabel, Switch, TextField } from '@material-ui/core';
 import { ChangeEvent, PureComponent } from 'react';
 
-import { Box } from '@mui/material';
 import RightPaneStore from '../../RightPaneStore';
 
 interface CourseNumberSearchBarState {
