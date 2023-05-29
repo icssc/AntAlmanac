@@ -55,8 +55,10 @@ export async function queryGrades(deptCode: string, courseNumber: string, instru
         return gradesCache[cacheKey];
     }
 
+    const instructorFilter = instructor ? `instructor: "${instructor}"` : '';
+
     const queryString = `
-      { courseGrades: grades(department: "${deptCode}", number: "${courseNumber}",) {
+      { courseGrades: grades(department: "${deptCode}", number: "${courseNumber}", ${instructorFilter}) {
           aggregate {
             a: sum_grade_a_count
             b: sum_grade_b_count
@@ -71,6 +73,8 @@ export async function queryGrades(deptCode: string, courseNumber: string, instru
     }`;
 
     const resp = await queryGraphQL<GradesGraphQLResponse>(queryString);
+    console.log(resp);
+
     const grades = resp.data.courseGrades.aggregate;
 
     gradesCache[cacheKey] = grades;
