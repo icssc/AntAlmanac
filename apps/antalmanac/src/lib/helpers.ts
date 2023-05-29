@@ -1,43 +1,11 @@
 import React from 'react';
 
-import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT, ZOTCOURSE_ENDPOINT } from './api/endpoints';
+import { PETERPORTAL_WEBSOC_ENDPOINT, ZOTCOURSE_ENDPOINT } from './api/endpoints';
 import { Meeting, Section, WebsocResponse } from './peterportal.types';
 import { addCourse, openSnackbar } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 
-interface GradesGraphQLResponse {
-    data: {
-        courseGrades: {
-            aggregate: {
-                average_gpa: number;
-                sum_grade_a_count: number;
-                sum_grade_b_count: number;
-                sum_grade_c_count: number;
-                sum_grade_d_count: number;
-                sum_grade_f_count: number;
-                sum_grade_np_count: number;
-                sum_grade_p_count: number;
-            };
-        };
-    };
-}
-
-export async function queryGraphQL(queryString: string): Promise<GradesGraphQLResponse> {
-    const query = JSON.stringify({
-        query: queryString,
-    });
-
-    const res = await fetch(`${PETERPORTAL_GRAPHQL_ENDPOINT}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
-        body: query,
-    });
-    return res.json() as Promise<GradesGraphQLResponse>;
-}
 export interface CourseDetails {
     deptCode: string;
     courseNumber: string;
@@ -192,47 +160,6 @@ function removeDuplicateMeetings(websocResp: WebsocResponse): WebsocResponse {
         });
     });
     return websocResp;
-}
-
-export interface Grades {
-    average_gpa: number;
-    sum_grade_a_count: number;
-    sum_grade_b_count: number;
-    sum_grade_c_count: number;
-    sum_grade_d_count: number;
-    sum_grade_f_count: number;
-    sum_grade_np_count: number;
-    sum_grade_p_count: number;
-}
-
-const gradesCache: { [key: string]: Grades } = {};
-
-export async function queryGrades(deptCode: string, courseNumber: string) {
-    if (gradesCache[deptCode + courseNumber]) {
-        return gradesCache[deptCode + courseNumber];
-    }
-
-    const queryString = `
-      { courseGrades: grades(department: "${deptCode}", number: "${courseNumber}", ) {
-          aggregate {
-            sum_grade_a_count
-            sum_grade_b_count
-            sum_grade_c_count
-            sum_grade_d_count
-            sum_grade_f_count
-            sum_grade_p_count
-            sum_grade_np_count
-            average_gpa
-          }
-      },
-    }`;
-
-    const resp = await queryGraphQL(queryString);
-    const grades = resp.data.courseGrades.aggregate;
-
-    gradesCache[deptCode + courseNumber] = grades;
-
-    return grades;
 }
 
 export function combineSOCObjects(SOCObjects: WebsocResponse[]) {

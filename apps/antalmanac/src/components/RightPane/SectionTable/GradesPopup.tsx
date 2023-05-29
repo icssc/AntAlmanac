@@ -5,7 +5,8 @@ import { Skeleton } from '@material-ui/lab';
 import { useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
-import { isDarkMode, queryGrades } from '$lib/helpers';
+import { isDarkMode } from '$lib/helpers';
+import { queryGrades } from '$lib/graphQL';
 
 const styles: Styles<Theme, object> = {
     button: {
@@ -53,13 +54,12 @@ const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }: Grades
             const data = [];
             for (const [key, value] of Object.entries(courseGrades)) {
                 // format data for display in chart
-                // key formatting: sum_grade_a_count -> A
-                if (key !== 'average_gpa') {
-                    data.push({ name: key.split('_')[2]?.toUpperCase(), all: value as number });
+                if (key !== 'avg') {
+                    data.push({ name: key.toUpperCase(), all: value as number });
                 }
             }
 
-            setGraphTitle(`Grade Distribution | Average GPA: ${courseGrades.average_gpa.toFixed(2)}`);
+            setGraphTitle(`Grade Distribution | Average GPA: ${courseGrades.avg.toFixed(2)}`);
             setGradeData(data);
             setLoading(false);
         } catch (e) {
