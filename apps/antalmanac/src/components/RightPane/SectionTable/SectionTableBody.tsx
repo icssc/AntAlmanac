@@ -24,6 +24,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
 import { AASection, EnrollmentCount, Meeting } from '$lib/peterportal.types';
 import AppStore from '$stores/AppStore';
+import { queryGrades } from '$lib/graphQL';
 
 const styles: Styles<Theme, object> = (theme) => ({
     popover: {
@@ -297,6 +298,41 @@ const RestrictionsCell = withStyles(styles)((props: RestrictionsCellProps) => {
     );
 });
 
+interface GPACellProps {
+    classes: ClassNameMap;
+    dept: string;
+    courseNumber: string;
+    instructors: string[];
+}
+
+const GPACell = withStyles(styles)((props: GPACellProps) => {
+    const { classes, dept, courseNumber, instructors } = props;
+
+    const [gpa, setGpa] = useState<string>('');
+
+    useEffect(() => {
+        const loadGpa = async (dept: string, courseNumber: string, instructors: string[]) => {
+            // Get the GPA of the first instructor of this section where data exists
+            for (const instructor of instructors.filter((instructor) => instructor !== 'STAFF')) {
+                const grades = await queryGrades(dept, courseNumber, instructor);
+
+                if (grades.avg) {
+                    setGpa(grades.avg.toFixed(2).toString());
+                    return;
+                }
+            }
+        };
+
+        loadGpa(dept, courseNumber, instructors).catch(console.log);
+    }, [dept, courseNumber, instructors]);
+
+    return (
+        <NoPaddingTableCell className={classes.cell}>
+            <Box>{gpa}</Box>
+        </NoPaddingTableCell>
+    );
+});
+
 interface DayAndTimeCellProps {
     classes: ClassNameMap;
     meetings: Meeting[];
@@ -393,6 +429,11 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                 units={parseFloat(section.units)}
             />
             <InstructorsCell instructors={section.instructors} />
+            <GPACell
+                dept={courseDetails.deptCode}
+                courseNumber={courseDetails.courseNumber}
+                instructors={section.instructors}
+            />
             <DayAndTimeCell meetings={section.meetings} />
             <LocationsCell
                 meetings={section.meetings}

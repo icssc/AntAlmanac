@@ -44,21 +44,24 @@ const styles = {
             width: '8%',
         },
         '&:nth-child(4)': {
-            width: '15%',
+            width: '13%',
         },
         '&:nth-child(5)': {
-            width: '12%',
+            width: '5%',
         },
         '&:nth-child(6)': {
-            width: '10%',
+            width: '15%',
         },
         '&:nth-child(7)': {
-            width: '10%',
-        },
-        '&:nth-child(8)': {
             width: '8%',
         },
+        '&:nth-child(8)': {
+            width: '10%',
+        },
         '&:nth-child(9)': {
+            width: '8%',
+        },
+        '&:nth-child(10)': {
             width: '8%',
         },
     },
@@ -133,6 +136,9 @@ const SectionTable = (props: SectionTableProps) => {
                             </TableCell>
                             <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
                                 Instructors
+                            </TableCell>
+                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
+                                GPA
                             </TableCell>
                             <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
                                 Times
