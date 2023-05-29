@@ -37,8 +37,10 @@ export async function queryGraphQL<T>(queryString: string): Promise<T> {
 
 const gradesCache: Record<string, Grades> = {};
 
-export async function queryGrades(deptCode: string, courseNumber: string) {
-    const cacheKey = deptCode + courseNumber;
+export async function queryGrades(deptCode: string, courseNumber: string, instructor = '') {
+    instructor = instructor.replace('STAFF', '').trim();
+
+    const cacheKey = deptCode + courseNumber + instructor;
 
     if (gradesCache[cacheKey]) {
         return gradesCache[deptCode + courseNumber];
