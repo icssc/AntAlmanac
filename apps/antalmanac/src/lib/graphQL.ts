@@ -19,7 +19,7 @@ interface GradesGraphQLResponse {
     };
 }
 
-export async function queryGraphQL<T>(queryString: string): Promise<T> {
+export async function queryGraphQL<ResponseT>(queryString: string): Promise<ResponseT> {
     const query = JSON.stringify({
         query: queryString,
     });
@@ -32,7 +32,7 @@ export async function queryGraphQL<T>(queryString: string): Promise<T> {
         },
         body: query,
     });
-    return (await res.json()) as Promise<T>;
+    return (await res.json()) as Promise<ResponseT>;
 }
 
 const gradesCache: Record<string, Grades> = {};
