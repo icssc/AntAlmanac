@@ -17,7 +17,6 @@ const google = Google<User>({
     clientSecret: env.GOOGLE_CLIENT_SECRET,
 
     async onAuth(user) {
-        console.log('ON AUTH');
         return {
             user: { type: 'Google', id: user.sub },
             redirect: '/',
@@ -26,7 +25,8 @@ const google = Google<User>({
     },
 });
 
-const newExpires = () => 60 * 60 * 24 * 7; // 1 week
+const refreshExpires = 60 * 60 * 24 * 7 * 4; // 4 week
+const accessExpires = 60 * 60 * 24 * 7; // 1 week
 
 const session = AponiaSession<User, Session, Refresh>({
     secret: 'secret',
@@ -34,25 +34,19 @@ const session = AponiaSession<User, Session, Refresh>({
     async createSession(user) {
         // i.e. create a new session in the database, randomly generate a refresh token, etc.
         console.log('CREATE SESSION');
-        const expires = newExpires();
-        const token = { ...user, expires}
-        return { user, accessToken: token, refreshToken: token };
+        const accessToken = {...user, expires: accessExpires}
+        const refreshToken = {...user, expires: refreshExpires}
+        return { user, accessToken: accessToken, refreshToken: refreshToken };
     },
 
     handleRefresh(tokens) {
-        console.log('HANDLE REFRESH');
-        console.log(tokens);
-        if (tokens.refreshToken === undefined) {
-            return undefined;
-        }
-
-        const expires = newExpires();
-        const newToken = { ...tokens.refreshToken, expires };
-
+        console.log('HANDLE REFRESH')
+        const accessToken = {...tokens.refreshToken, expires: accessExpires}
+        const refreshToken = {...tokens.refreshToken, expires: refreshExpires}
         return {
-            user: newToken,
-            accessToken: newToken,
-            refreshToken: newToken
+            user: refreshToken,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
         };
     },
 });
