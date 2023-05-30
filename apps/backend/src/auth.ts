@@ -26,7 +26,7 @@ const google = Google<User>({
     },
 });
 
-const newExpires = () => Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7; // 1 week
+const newExpires = () => 60 * 60 * 24 * 7; // 1 week
 
 const session = AponiaSession<User, Session, Refresh>({
     secret: 'secret',
@@ -35,11 +35,8 @@ const session = AponiaSession<User, Session, Refresh>({
         // i.e. create a new session in the database, randomly generate a refresh token, etc.
         console.log('CREATE SESSION');
         const expires = newExpires();
-        const token = jwt.sign({ id: user.id, exp: expires }, this.secret);
-        console.log(token);
-        console.log(user);
-        user.id = token
-        return { user, accessToken: user, refreshToken: user };
+        const token = { ...user, expires}
+        return { user, accessToken: token, refreshToken: token };
     },
 
     handleRefresh(tokens) {
@@ -49,15 +46,13 @@ const session = AponiaSession<User, Session, Refresh>({
             return undefined;
         }
 
-        const { id } = jwt.verify(tokens.refreshToken.id, this.secret) as any
         const expires = newExpires();
-        const newToken = jwt.sign({ id: id, exp: expires }, this.secret);
-        const refreshToken = { ...tokens.refreshToken, id: newToken };
+        const newToken = { ...tokens.refreshToken, expires };
 
         return {
-            user: refreshToken,
-            accessToken: refreshToken,
-            refreshToken: refreshToken
+            user: newToken,
+            accessToken: newToken,
+            refreshToken: newToken
         };
     },
 });
