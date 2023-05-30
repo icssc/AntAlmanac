@@ -8,7 +8,7 @@ import {
     ShortCourseSchema,
 } from '@packages/antalmanac-types';
 import { router, procedure } from '../trpc';
-import { getById, insertById } from '$db/ddb';
+import { ScheduleCodeClient } from '$db/ddb';
 import LegacyUserModel from '$models/User';
 
 import connectToMongoDB from '$db/mongodb';
@@ -55,7 +55,7 @@ async function getLegacyUserData(userId: string) {
 }
 
 async function getUserData(userId: string) {
-    const { data: userData, problems } = UserSchema(await getById(userId));
+    const { data: userData, problems } = UserSchema(await ScheduleCodeClient.getById(userId));
     if (problems !== undefined) {
         return undefined;
     }
@@ -67,7 +67,7 @@ const usersRouter = router({
         return (await getUserData(input.userId)) ?? (await getLegacyUserData(input.userId));
     }),
     saveUserData: procedure.input(UserSchema.assert).mutation(async ({ input }) => {
-        await insertById(input.id, input.userData);
+        await ScheduleCodeClient.insertById(input.id, {userdata: input.userData});
     }),
 });
 

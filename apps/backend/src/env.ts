@@ -8,6 +8,7 @@ const Environment = type([
     {
         'STAGE?': "'dev' | 'prod' | 'staging'",
         USERDATA_TABLE_NAME: 'string',
+        AUTH_USERDATA_TABLE_NAME: 'string',
         AA_MONGODB_URI: 'string',
         GOOGLE_CLIENT_ID: 'string',
         GOOGLE_CLIENT_SECRET: 'string',
