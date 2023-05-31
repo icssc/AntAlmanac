@@ -67,7 +67,7 @@ const usersRouter = router({
         return (await getUserData(input.userId)) ?? (await getLegacyUserData(input.userId));
     }),
     saveUserData: procedure.input(UserSchema.assert).mutation(async ({ input }) => {
-        await ScheduleCodeClient.insertById(input.id, {userdata: input.userData});
+        await ScheduleCodeClient.insertItem(input);
     }),
 });
 

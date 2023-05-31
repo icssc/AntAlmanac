@@ -1,20 +1,23 @@
-import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
-import { DynamoDB } from '@aws-sdk/client-dynamodb';
+import {DynamoDBDocument} from '@aws-sdk/lib-dynamodb';
+import {DynamoDB} from '@aws-sdk/client-dynamodb';
 import env from "../env";
+import {AuthUser, AuthUserSchema, ScheduleSaveState, User, UserSchema} from "@packages/antalmanac-types";
 
 // Initialise DynamoDB Client
 const client = new DynamoDB({
-    region: 'us-east-1',
+    region: 'us-west-1',
 });
 
 // Create DynamoDB DocumentClient
 const documentClient = DynamoDBDocument.from(client);
 
-class DDBClient {
+class DDBClient<T> {
     private tableName: string;
+    private schema: any;
 
-    constructor(tableName: string) {
+    constructor(tableName: string, schema: any) {
         this.tableName = tableName;
+        this.schema = schema;
     }
 
     async getById(id: string) {
@@ -26,21 +29,32 @@ class DDBClient {
         };
 
         const data = await documentClient.get(params);
-        return data.Item;
+        this.schema.assert(data.Item)
+        return data.Item as T
     }
 
-    async insertById(id: string, item: any): Promise<void> {
+    async insertItem(item: T) {
         const params = {
             TableName: this.tableName,
-            Item: {
+            Item: item as any
+        };
+        await documentClient.put(params);
+    }
+
+    async updateSchedule(id: string, schedule: ScheduleSaveState) {
+        const params = {
+            TableName: this.tableName,
+            Key: {
                 id: id,
-                ...item
+            },
+            UpdateExpression: "set userData = :u",
+            ExpressionAttributeValues: {
+                ":u": schedule
             },
         };
-
-        await documentClient.put(params);
+        await documentClient.update(params);
     }
 }
 
-export const ScheduleCodeClient = new DDBClient(env.USERDATA_TABLE_NAME);
-export const AuthUserClient = new DDBClient(env.AUTH_USERDATA_TABLE_NAME);
+export const ScheduleCodeClient = new DDBClient<User>(env.USERDATA_TABLE_NAME, UserSchema);
+export const AuthUserClient = new DDBClient<AuthUser>(env.AUTH_USERDATA_TABLE_NAME, AuthUserSchema);

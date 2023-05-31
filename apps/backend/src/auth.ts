@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import { AponiaAuth, AponiaSession } from 'aponia';
 import { Google } from '@aponia/providers';
 import env from './env';
