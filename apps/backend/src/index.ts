@@ -10,7 +10,7 @@ import { createAuthMiddleware } from '@aponia/integrations-express';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import connectToMongoDB from '$db/mongodb';
 import AppRouter from './routers';
-import createContext from './context';
+import { createContext } from './context';
 import { auth } from './auth';
 import env from './env';
 
@@ -32,7 +32,6 @@ export async function start(corsEnabled = false) {
     app.use(createAuthMiddleware(auth));
 
     app.use(async (req, _res, next) => {
-        console.log(await (req as any).getUser());
         next();
     });
 

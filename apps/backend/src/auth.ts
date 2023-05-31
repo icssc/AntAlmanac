@@ -3,13 +3,13 @@ import { Google } from '@aponia/providers';
 import env from './env';
 
 type User = {
-    type: 'Google' | 'Legacy'
-    id: string
-}
+    type: 'Google' | 'Legacy';
+    id: string;
+};
 
-type Session = User
+type Session = User;
 
-type Refresh = User
+type Refresh = User;
 
 const google = Google<User>({
     clientId: env.GOOGLE_CLIENT_ID,
@@ -19,7 +19,7 @@ const google = Google<User>({
         return {
             user: { type: 'Google', id: user.sub },
             redirect: '/',
-            status: 302
+            status: 302,
         };
     },
 });
@@ -33,15 +33,15 @@ const session = AponiaSession<User, Session, Refresh>({
     async createSession(user) {
         // i.e. create a new session in the database, randomly generate a refresh token, etc.
         console.log('CREATE SESSION');
-        const accessToken = {...user, expires: accessExpires}
-        const refreshToken = {...user, expires: refreshExpires}
+        const accessToken = { ...user, expires: accessExpires };
+        const refreshToken = { ...user, expires: refreshExpires };
         return { user, accessToken: accessToken, refreshToken: refreshToken };
     },
 
     handleRefresh(tokens) {
-        console.log('HANDLE REFRESH')
-        const accessToken = {...tokens.refreshToken, expires: accessExpires}
-        const refreshToken = {...tokens.refreshToken, expires: refreshExpires}
+        console.log('HANDLE REFRESH');
+        const accessToken = { ...tokens.refreshToken, expires: accessExpires };
+        const refreshToken = { ...tokens.refreshToken, expires: refreshExpires };
         return {
             user: refreshToken,
             accessToken: accessToken,

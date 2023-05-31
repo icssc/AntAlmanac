@@ -51,15 +51,11 @@ async function getLegacyUserData(userId: string) {
         return undefined;
     }
     const legacyUserData = data?.userData;
-    return legacyUserData ? { id: userId, userData: convertLegacySchedule(legacyUserData) } : undefined;
+    return legacyUserData ? convertLegacySchedule(legacyUserData) : undefined;
 }
 
 async function getUserData(userId: string) {
-    const { data: userData, problems } = UserSchema(await ScheduleCodeClient.getById(userId));
-    if (problems !== undefined) {
-        return undefined;
-    }
-    return userData;
+    return (await ScheduleCodeClient.get(userId))?.userData;
 }
 
 const usersRouter = router({

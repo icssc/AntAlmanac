@@ -1,5 +1,8 @@
-import type { CreateExpressContextOptions } from '@trpc/server/adapters/express';
+import * as trpcExpress from '@trpc/server/adapters/express';
+import { inferAsyncReturnType } from '@trpc/server';
 
-const createContext = (opts: CreateExpressContextOptions) => opts;
-export type context = typeof createContext;
-export default createContext;
+export const createContext = async ({ req }: trpcExpress.CreateExpressContextOptions) => ({
+    authId: (await (req as any).getUser()).id,
+});
+
+export type context = inferAsyncReturnType<typeof createContext>;

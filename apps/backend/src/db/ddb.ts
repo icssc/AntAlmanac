@@ -1,7 +1,7 @@
-import {DynamoDBDocument} from '@aws-sdk/lib-dynamodb';
-import {DynamoDB} from '@aws-sdk/client-dynamodb';
-import env from "../env";
-import {AuthUser, AuthUserSchema, ScheduleSaveState, User, UserSchema} from "@packages/antalmanac-types";
+import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
+import { DynamoDB } from '@aws-sdk/client-dynamodb';
+import env from '../env';
+import { AuthUser, AuthUserSchema, ScheduleSaveState, User, UserSchema } from '@packages/antalmanac-types';
 
 // Initialise DynamoDB Client
 const client = new DynamoDB({
@@ -20,7 +20,7 @@ class DDBClient<T> {
         this.schema = schema;
     }
 
-    async getById(id: string) {
+    async get(id: string) {
         const params = {
             TableName: this.tableName,
             Key: {
@@ -29,14 +29,17 @@ class DDBClient<T> {
         };
 
         const data = await documentClient.get(params);
-        this.schema.assert(data.Item)
-        return data.Item as T
+        const { data: userData, problems } = this.schema(data.Item);
+        if (problems !== undefined) {
+            return undefined;
+        }
+        return userData as T;
     }
 
     async insertItem(item: T) {
         const params = {
             TableName: this.tableName,
-            Item: item as any
+            Item: item as any,
         };
         await documentClient.put(params);
     }
@@ -47,9 +50,9 @@ class DDBClient<T> {
             Key: {
                 id: id,
             },
-            UpdateExpression: "set userData = :u",
+            UpdateExpression: 'set userData = :u',
             ExpressionAttributeValues: {
-                ":u": schedule
+                ':u': schedule,
             },
         };
         await documentClient.update(params);

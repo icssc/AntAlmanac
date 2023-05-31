@@ -1,14 +1,14 @@
 import { VariantType } from 'notistack';
 
+import { TRPCError } from '@trpc/server';
+import { WebsocSection } from 'peterportal-api-next-types';
+import { ScheduleCourse } from '@packages/antalmanac-types';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { CourseDetails, courseNumAsDecimal, termsInSchedule, warnMultipleTerms } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
-import trpc from '$lib/api/trpc'
-import {TRPCError} from "@trpc/server";
-import {WebsocSection} from "peterportal-api-next-types";
-import {ScheduleCourse} from "@packages/antalmanac-types";
+import trpc from '$lib/api/trpc';
 
 export const addCourse = (
     section: WebsocSection,
@@ -74,10 +74,10 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
                 window.localStorage.removeItem('userID');
             }
 
-                const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
             try {
-                await trpc.users.saveUserData.mutate({ id: userID, userData: scheduleSaveState })
+                await trpc.users.saveUserData.mutate({ id: userID, userData: scheduleSaveState });
 
                 openSnackbar(
                     'success',
@@ -85,11 +85,10 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
                 );
                 AppStore.saveSchedule();
             } catch (e) {
-                if (e instanceof TRPCError){
+                if (e instanceof TRPCError) {
                     openSnackbar('error', `Schedule could not be saved under username "${userID}`);
-                }
-                else {
-                    openSnackbar('error', 'Network error or server is down.')
+                } else {
+                    openSnackbar('error', 'Network error or server is down.');
                 }
             }
         }
@@ -118,18 +117,18 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
             }
 
             try {
-                const res = await trpc.users.getUserData.query({userId})
-                const scheduleSaveState = res?.userData;
+                const scheduleSaveState = await trpc.users.getUserData.query({ userId });
 
                 if (scheduleSaveState === undefined) {
                     openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
-                }
-                else if (await AppStore.loadSchedule(scheduleSaveState)) {
+                } else if (await AppStore.loadSchedule(scheduleSaveState)) {
                     openSnackbar('success', `Schedule for username "${userId}" loaded.`);
-                }
-                else {
-                    openSnackbar('error', `Couldn't load schedules for username "${userId}". 
-                    If this continues happening please submit a feedback form.`);
+                } else {
+                    openSnackbar(
+                        'error',
+                        `Couldn't load schedules for username "${userId}". 
+                    If this continues happening please submit a feedback form.`
+                    );
                 }
             } catch (e) {
                 openSnackbar('error', `Got a network error when trying to load schedules.`);
