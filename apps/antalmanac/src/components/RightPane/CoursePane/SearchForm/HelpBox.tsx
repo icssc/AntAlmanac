@@ -8,7 +8,7 @@ const HelpBox = (/*{ classes }: HelpBoxProps*/) => {
             <Typography variant="h5" fontWeight={'bold'}>
                 Need help planning your schedule?
             </Typography>
-            <List sx={{ listStyle: 'decimal', pl: 2, pb: 0 }}>
+            <List component="ol" sx={{ listStyle: 'decimal', pl: 2, pb: 0 }}>
                 <ListItem sx={{ display: 'list-item', p: 0 }}>
                     <ListItemText>
                         Browse undergraduate majors on the{' '}
