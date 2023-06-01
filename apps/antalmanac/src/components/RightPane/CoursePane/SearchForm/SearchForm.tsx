@@ -70,7 +70,8 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
         toggleSearch();
     };
 
-    const currentMonth = new Date().getMonth(); // 0=Jan
+    const currentMonthIndex = new Date().getMonth(); // 0=Jan
+    const activeMonthIndices = [false, false, false, false, false, false, false, true, true, false, false, false];
 
     return (
         <div className={classes.rightPane}>
@@ -108,8 +109,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                 </div>
             </form>
 
-            const activeMonthIndices = [false, false, false, false, false, false, false, true, true, false, false, false]
-            {/* activeMonthIndices[currentMonthIndex] && */ <HelpBox />}
+            {/*activeMonthIndices[currentMonthIndex] &&*/ <HelpBox />}
             <PrivacyPolicyBanner />
         </div>
     );
