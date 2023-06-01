@@ -71,7 +71,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
     };
 
     const currentMonthIndex = new Date().getMonth(); // 0=Jan
-    const activeMonthIndices = [false, false, false, false, false, false, false, true, true, false, false, false];
+    const activeMonthIndices = [false, false, false, false, false, false, false, false, true, true, false, false];
 
     return (
         <div className={classes.rightPane}>
