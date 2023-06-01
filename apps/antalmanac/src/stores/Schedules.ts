@@ -1,6 +1,6 @@
-import {amber, blue, deepOrange, deepPurple, green, pink, purple,} from '@material-ui/core/colors';
+import { amber, blue, deepOrange, deepPurple, green, pink, purple } from '@material-ui/core/colors';
 
-import {calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals} from './calendarizeHelpers';
+import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 import {
     HSLColor,
     Schedule,
@@ -9,18 +9,10 @@ import {
     ScheduleUndoState,
     ShortCourseSchedule,
 } from './schedule.types';
-import {RepeatingCustomEvent} from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import {combineSOCObjects, CourseInfo, getCourseInfo, queryWebsoc} from '$lib/helpers';
+import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { combineSOCObjects, CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
 
-const defaultColors = [
-    blue[500],
-    pink[500],
-    purple[500],
-    green[500],
-    amber[500],
-    deepPurple[500],
-    deepOrange[500],
-];
+const defaultColors = [blue[500], pink[500], purple[500], green[500], amber[500], deepPurple[500], deepOrange[500]];
 
 /**
  * Converts a hex color to HSL
@@ -154,7 +146,7 @@ function generateCloseColor(originalColor: string, usedColors: Set<string>, vari
     ) {
         color = {
             ...color,
-            l: Math.round((color.l + delta) * 100 % 100)/100,
+            l: Math.round(((color.l + delta) * 100) % 100) / 100,
         };
     }
 
@@ -176,17 +168,17 @@ function getColorForNewSection(newSection: ScheduleCourse, sectionsInSchedule: S
         );
 
     //New array of courses that share the same sectionType & courseTitle
-    const existingSectionsType = existingSections.filter((course) => course.section.sectionType === newSection.section.sectionType)
+    const existingSectionsType = existingSections.filter(
+        (course) => course.section.sectionType === newSection.section.sectionType
+    );
 
     const usedColors = new Set(sectionsInSchedule.map((course) => course.section.color));
-    
+
     //If the same sectionType exists, return that color
-    if(existingSectionsType.length > 0) 
-        return (existingSectionsType[0].section.color);
-        
+    if (existingSectionsType.length > 0) return existingSectionsType[0].section.color;
+
     //If the same courseTitle exists, but not the same sectionType, return a close color
-    if(existingSections.length > 0)
-        return (generateCloseColor(existingSections[0].section.color, usedColors));
+    if (existingSections.length > 0) return generateCloseColor(existingSections[0].section.color, usedColors);
 
     // If there are no existing sections with the same course title, generate a new color
     return defaultColors.find((materialColor) => !usedColors.has(materialColor)) || '#5ec8e0';
@@ -339,7 +331,7 @@ export class Schedules {
      * @param addUndoState Defaults to true
      * @returns The course object that was added.
      */
-    addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.getCurrentScheduleIndex(), addUndoState = true) {
+    addCourse(newCourse: ScheduleCourse, scheduleIndex: number, addUndoState = true) {
         if (addUndoState) {
             this.addUndoState();
         }
