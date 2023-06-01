@@ -17,7 +17,9 @@ interface HelpBoxProps {
 const HelpBox = ({ classes }: HelpBoxProps) => {
     return (
         <Paper variant="outlined" className={classes.container}>
-            <Typography variant="h4">Need help planning your schedule?</Typography>
+            <Typography variant="h5" fontWeight={'bold'}>
+                Need help planning your schedule?
+            </Typography>
             <Typography>
                 <ol>
                     <li>
