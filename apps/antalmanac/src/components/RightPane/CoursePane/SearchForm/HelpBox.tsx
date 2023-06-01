@@ -1,45 +1,37 @@
-import { Paper, withStyles } from '@material-ui/core';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { ImageList, ImageListItem, Typography } from '@mui/material';
+// import { withStyles } from '@material-ui/core';
+// import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { Paper, ImageList, ImageListItem, Typography, Link, List, ListItemText, ListItem } from '@mui/material';
 
-const styles = {
-    container: {
-        padding: 12,
-        marginBottom: '10px',
-        marginRight: '5px',
-    },
-};
-
-interface HelpBoxProps {
-    classes: ClassNameMap;
-}
-
-const HelpBox = ({ classes }: HelpBoxProps) => {
+const HelpBox = (/*{ classes }: HelpBoxProps*/) => {
     return (
-        <Paper variant="outlined" className={classes.container}>
+        <Paper variant="outlined" sx={{ padding: 2, marginBottom: '10px', marginRight: '5px' }}>
             <Typography variant="h5" fontWeight={'bold'}>
                 Need help planning your schedule?
             </Typography>
-            <Typography>
-                <ol>
-                    <li>
+            <List sx={{ listStyle: 'decimal', pl: 2, pb: 0 }}>
+                <ListItem sx={{ display: 'list-item', p: 0 }}>
+                    <ListItemText>
                         Browse undergraduate majors on the{' '}
-                        <a
+                        <Link
                             href="https://catalogue.uci.edu/undergraduatedegrees/"
                             target="_blank"
                             rel="noopener noreferrer"
                         >
                             UCI Catalogue
-                        </a>
+                        </Link>
                         .
-                    </li>
-                    <li>Select your major.</li>
-                    <li>
+                    </ListItemText>
+                </ListItem>
+                <ListItem sx={{ display: 'list-item', p: 0 }}>
+                    <ListItemText>Select your major.</ListItemText>
+                </ListItem>
+                <ListItem sx={{ display: 'list-item', p: 0 }}>
+                    <ListItemText>
                         View the &quot;REQUIREMENTS&quot; and &quot;SAMPLE PROGRAM&quot; tabs to see what classes you
                         should take.
-                    </li>
-                </ol>
-            </Typography>
+                    </ListItemText>
+                </ListItem>
+            </List>
             <ImageList gap={10} cols={3}>
                 <ImageListItem>
                     <img
@@ -61,4 +53,4 @@ const HelpBox = ({ classes }: HelpBoxProps) => {
     );
 };
 
-export default withStyles(styles)(HelpBox);
+export default HelpBox;
