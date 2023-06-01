@@ -51,12 +51,14 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
     const search = new URLSearchParams(window.location.search);
 
     const [showLegacySearch, setShowLegacySearch] = useState(
-      Boolean(search.get('courseCode') ||
-        search.get('courseNumber') ||
-        search.get('deptLabel') ||
-        search.get('GE') ||
-        search.get('deptValue') ||
-        search.get('term'))
+        Boolean(
+            search.get('courseCode') ||
+                search.get('courseNumber') ||
+                search.get('deptLabel') ||
+                search.get('GE') ||
+                search.get('deptValue') ||
+                search.get('term')
+        )
     );
 
     const toggleShowLegacySearch = () => {
@@ -106,7 +108,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                 </div>
             </form>
 
-            {(currentMonth === 8 || currentMonth === 9) && <HelpBox />}
+            {/*(currentMonth === 8 || currentMonth === 9) &&*/ <HelpBox />}
             <PrivacyPolicyBanner />
         </div>
     );
