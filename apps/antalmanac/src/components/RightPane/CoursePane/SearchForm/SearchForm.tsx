@@ -108,7 +108,8 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                 </div>
             </form>
 
-            {/*(currentMonth === 8 || currentMonth === 9) &&*/ <HelpBox />}
+            const activeMonthIndices = [false, false, false, false, false, false, false, true, true, false, false, false]
+            {/* activeMonthIndices[currentMonthIndex] && */ <HelpBox />}
             <PrivacyPolicyBanner />
         </div>
     );
