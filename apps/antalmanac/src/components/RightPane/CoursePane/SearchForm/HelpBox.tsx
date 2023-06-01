@@ -40,7 +40,7 @@ const HelpBox = ({ classes }: HelpBoxProps) => {
                     </li>
                 </ol>
             </Typography>
-            <ImageList cols={3}>
+            <ImageList gap={10} cols={3}>
                 <ImageListItem>
                     <img
                         src="/helpbox1.png"
