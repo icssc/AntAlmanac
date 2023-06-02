@@ -102,17 +102,20 @@ function createRouter(props: ClassRoutesProps, context: LeafletContextInterface)
              */
             line.eachLayer((lineLayer) => {
                 lineLayer.on('click', (leafletMouseEvent) => {
-                    popup.setLatLng(leafletMouseEvent.latlng).openOn(context.map);
+                    popup.setLatLng(leafletMouseEvent.latlng).addTo(context.map);
                 });
                 lineLayer.on('mouseover', (leafletMouseEvent) => {
-                    popup.setLatLng(leafletMouseEvent.latlng).openOn(context.map);
+                    popup.setLatLng(leafletMouseEvent.latlng).addTo(context.map);
                 });
                 lineLayer.on('mousemove', (leafletMouseEvent) => {
-                    popup.setLatLng(leafletMouseEvent.latlng).openOn(context.map);
+                    popup.setLatLng(leafletMouseEvent.latlng).addTo(context.map);
                 });
-                lineLayer.on('mouseout', () => {
-                    popup.close();
-                });
+            });
+
+            context.map.on('mousemove', (leafletMouseEvent) => {
+                if (!line.getBounds().contains(leafletMouseEvent.latlng)) {
+                    popup.remove();
+                }
             });
 
             return line;
