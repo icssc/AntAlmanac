@@ -1,17 +1,23 @@
-import { Paper, Tab, Tabs } from '@material-ui/core';
+import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-
+import { Paper, Tab, Tabs } from '@material-ui/core';
 import Calendar from './Calendar/CalendarRoot';
 import DesktopTabs from './RightPane/RightPaneRoot';
-import RightPaneStore, { BuildingFocusInfo } from './RightPane/RightPaneStore';
+
+const components = [
+    <Calendar isMobile={true} key="calendar" />,
+    <DesktopTabs style={{ height: 'calc(100% - 50px' }} key="desktop" />,
+];
 
 const MobileHome = () => {
     const [selectedTab, setSelectedTab] = useState(0);
+    const params = useParams();
 
-    const components = [
-        <Calendar isMobile={true} key="calendar" />,
-        <DesktopTabs style={{ height: 'calc(100% - 50px' }} key="desktop" />,
-    ];
+    useEffect(() => {
+        if (params.tab === 'map') {
+            setSelectedTab(1);
+        }
+    }, [params, setSelectedTab]);
 
     return (
         <div style={{ height: 'calc(100% - 60px)' }}>

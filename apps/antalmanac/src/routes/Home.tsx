@@ -1,16 +1,16 @@
-import DateFnsUtils from '@date-io/date-fns';
-import { Box, CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import Split from 'react-split';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { Box, CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
 
 import Bar from '$components/AppBar/CustomAppBar';
-import NotificationSnackbar from '$components/AppBar/NotificationSnackbar';
-import Calendar from '$components/Calendar/CalendarRoot';
 import MobileHome from '$components/MobileHome';
 import PatchNotes from '$components/PatchNotes';
+import Calendar from '$components/Calendar/CalendarRoot';
 import DesktopTabs from '$components/RightPane/RightPaneRoot';
+import NotificationSnackbar from '$components/AppBar/NotificationSnackbar';
 
-const Home = () => {
+export default function Home() {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
     const theme = useTheme();
 
@@ -50,6 +50,4 @@ const Home = () => {
             <NotificationSnackbar />
         </MuiPickersUtilsProvider>
     );
-};
-
-export default Home;
+}

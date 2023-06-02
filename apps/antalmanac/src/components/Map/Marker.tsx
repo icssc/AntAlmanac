@@ -107,7 +107,7 @@ const LocationMarker = forwardRef(
                         </Box>
 
                         {image && (
-                            <Box sx={{ my: 1, width: 200, height: 200 }}>
+                            <Box sx={{ mx: 'auto', my: 1, width: 150, height: 150 }}>
                                 <Box
                                     component="img"
                                     src={`${IMAGE_CMS_URL}${image}`}

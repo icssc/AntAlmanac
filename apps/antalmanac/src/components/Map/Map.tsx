@@ -99,7 +99,7 @@ export default function CourseMap() {
 
     const updateMarkers = useCallback(() => {
         setMarkers(getCoursesPerBuilding());
-    }, []);
+    }, [setMarkers, getCoursesPerBuilding]);
 
     useEffect(() => {
         AppStore.on('addedCoursesChange', updateMarkers);
@@ -108,7 +108,7 @@ export default function CourseMap() {
             AppStore.removeListener('addedCoursesChange', updateMarkers);
             AppStore.removeListener('currentScheduleIndexChange', updateMarkers);
         };
-    }, []);
+    }, [AppStore, updateMarkers]);
 
     useEffect(() => {
         const locationID = Number(searchParams.get('location') ?? 0);
@@ -117,7 +117,7 @@ export default function CourseMap() {
         if (building == null) return;
 
         setTimeout(() => {
-            map.current?.flyTo([building.lat + 0.001, building.lng], 18);
+            map.current?.flyTo([building.lat + 0.001, building.lng], 18, { duration: 250, animate: false });
             markerRef.current?.openPopup();
         }, 250);
     }, [searchParams]);
@@ -222,8 +222,10 @@ export default function CourseMap() {
                 })}
 
                 {/* Render an additional marker if the user searched up a location. */}
+                {/* A unique key based on the building is used to make sure the previous marker un-renders. */}
                 {building && (
                     <LocationMarker
+                        key={building.name}
                         {...building}
                         label="!"
                         color="red"

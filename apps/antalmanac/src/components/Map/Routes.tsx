@@ -110,7 +110,7 @@ function createRouter(props: ClassRoutesProps, context: LeafletContextInterface)
                 lineLayer.on('mousemove', (leafletMouseEvent) => {
                     popup.setLatLng(leafletMouseEvent.latlng).openOn(context.map);
                 });
-                lineLayer.on('click', () => {
+                lineLayer.on('mouseout', () => {
                     popup.close();
                 });
             });
