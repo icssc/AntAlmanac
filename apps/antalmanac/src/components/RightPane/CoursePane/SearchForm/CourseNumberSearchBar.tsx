@@ -24,42 +24,33 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
     };
 
     handleChange = (name: string) => (event: ChangeEvent<HTMLInputElement>) => {
+        const url = new URL(window.location.href);
+        const urlParam = new URLSearchParams(url.search);
+        urlParam.delete('courseNumber');
+
         if (name === 'upper') {
             if (event.target.checked) {
                 this.setState({ courseNumber: '100-199' });
                 RightPaneStore.updateFormValue('courseNumber', '100-199');
-                const url = new URL(window.location.href);
-                const urlParam = new URLSearchParams(url.search);
-                urlParam.delete('courseNumber');
-
                 urlParam.append('courseNumber', '100-199');
-                const param = urlParam.toString();
-                const new_url = `${param.trim() ? '?' : ''}${param}`;
-                history.replaceState({ url: 'url' }, 'url', '/' + new_url);
             } else {
                 this.setState({ courseNumber: '' });
                 RightPaneStore.updateFormValue('courseNumber', '');
-                const url = new URL(window.location.href);
-                const urlParam = new URLSearchParams(url.search);
                 urlParam.delete('courseNumber');
-
-                const param = urlParam.toString();
-                const new_url = `${param.trim() ? '?' : ''}${param}`;
-                history.replaceState({ url: 'url' }, 'url', '/' + new_url);
             }
-        } else {
+        }
+
+        if (name === 'number') {
             this.setState({ courseNumber: event.target.value });
             RightPaneStore.updateFormValue('courseNumber', event.target.value);
-            const url = new URL(window.location.href);
-            const urlParam = new URLSearchParams(url.search);
-            urlParam.delete('courseNumber');
             if (event.target.value) {
                 urlParam.append('courseNumber', event.target.value);
             }
-            const param = urlParam.toString();
-            const new_url = `${param.trim() ? '?' : ''}${param}`;
-            history.replaceState({ url: 'url' }, 'url', '/' + new_url);
         }
+
+        const param = urlParam.toString();
+        const new_url = `${param.trim() ? '?' : ''}${param}`;
+        history.replaceState({ url: 'url' }, 'url', '/' + new_url);
     };
 
     componentDidMount() {
