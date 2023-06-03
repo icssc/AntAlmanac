@@ -132,7 +132,19 @@ export default function CourseMap() {
 
     const locationID = Number(searchParams.get('location') ?? 0);
 
-    const building = locationID in buildingCatalogue ? buildingCatalogue[locationID] : undefined;
+    const focusedBuilding = locationID in buildingCatalogue ? buildingCatalogue[locationID] : undefined;
+
+    const focusedLocation = focusedBuilding
+        ? {
+              ...focusedBuilding,
+              image: focusedBuilding.imageURLs[0],
+              acronym: focusedBuilding.name.substring(
+                  focusedBuilding?.name.indexOf('(') + 1,
+                  focusedBuilding?.name.indexOf(')')
+              ),
+              location: focusedBuilding.name,
+          }
+        : undefined;
 
     const today = days[selectedDayIndex];
 
@@ -223,14 +235,14 @@ export default function CourseMap() {
 
                 {/* Render an additional marker if the user searched up a location. */}
                 {/* A unique key based on the building is used to make sure the previous marker un-renders. */}
-                {building && (
+                {focusedLocation && (
                     <LocationMarker
-                        key={building.name}
-                        {...building}
+                        key={focusedLocation.name}
+                        {...focusedLocation}
                         label="!"
                         color="red"
-                        location={building.name}
-                        image={building.imageURLs?.[0]}
+                        location={focusedLocation.name}
+                        image={focusedLocation.imageURLs?.[0]}
                         ref={markerRef}
                     />
                 )}
