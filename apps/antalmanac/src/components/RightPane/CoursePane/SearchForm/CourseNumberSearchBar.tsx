@@ -23,29 +23,27 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
         courseNumber: this.getCourseNumber(),
     };
 
-    handleChange = (name: string) => (event: ChangeEvent<HTMLInputElement>) => {
+    handleUpperDivChange = (event: ChangeEvent<HTMLInputElement>) => {
+        if (event.target.checked) {
+            this.handleCourseNumbers('100-199');
+        } else {
+            this.handleCourseNumbers('');
+        }
+    };
+
+    handleNumberChange = (event: ChangeEvent<HTMLInputElement>) => {
+        this.handleCourseNumbers(event.target.value);
+    };
+
+    handleCourseNumbers = (eventCourseNumbers: string) => {
         const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
         urlParam.delete('courseNumber');
 
-        if (name === 'upper') {
-            if (event.target.checked) {
-                this.setState({ courseNumber: '100-199' });
-                RightPaneStore.updateFormValue('courseNumber', '100-199');
-                urlParam.append('courseNumber', '100-199');
-            } else {
-                this.setState({ courseNumber: '' });
-                RightPaneStore.updateFormValue('courseNumber', '');
-                urlParam.delete('courseNumber');
-            }
-        }
-
-        if (name === 'number') {
-            this.setState({ courseNumber: event.target.value });
-            RightPaneStore.updateFormValue('courseNumber', event.target.value);
-            if (event.target.value) {
-                urlParam.append('courseNumber', event.target.value);
-            }
+        this.setState({ courseNumber: eventCourseNumbers });
+        RightPaneStore.updateFormValue('courseNumber', eventCourseNumbers);
+        if (eventCourseNumbers !== '') {
+            urlParam.append('courseNumber', eventCourseNumbers);
         }
 
         const param = urlParam.toString();
@@ -72,14 +70,14 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
                     label="Course Number(s)"
                     type="search"
                     value={this.state.courseNumber}
-                    onChange={this.handleChange('number')}
+                    onChange={this.handleNumberChange}
                     helperText="ex. 6B, 17, 30-40"
                 />
 
                 <FormControlLabel
                     control={
                         <Switch
-                            onChange={this.handleChange('upper')}
+                            onChange={this.handleUpperDivChange}
                             value="100-199"
                             color="primary"
                             checked={this.state.courseNumber === '100-199'}
