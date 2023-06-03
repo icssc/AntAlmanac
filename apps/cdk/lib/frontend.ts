@@ -62,6 +62,18 @@ export default class FrontendStack extends Stack {
             certificate: cert,
             defaultRootObject: 'index.html',
             domainNames: [url],
+            errorResponses: [
+                {
+                    httpStatus: 403,
+                    responseHttpStatus: 200,
+                    responsePagePath: '/index.html',
+                },
+                {
+                    httpStatus: 404,
+                    responseHttpStatus: 200,
+                    responsePagePath: '/index.html',
+                },
+            ],
             defaultBehavior: {
                 origin: new S3Origin(websiteBucket, {
                     originAccessIdentity: cloudfrontOAI,
