@@ -31,7 +31,7 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
         }
     };
 
-    handleNumbersChange = (event: ChangeEvent<HTMLInputElement>) => {
+    handleNumbersChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
         this.handleCourseNumbers(event.target.value);
     };
 
