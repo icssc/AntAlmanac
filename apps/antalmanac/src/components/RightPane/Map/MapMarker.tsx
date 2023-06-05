@@ -79,7 +79,7 @@ const MapMarker = ({
     } else {
         locationLinkElement = location;
     }
-    
+
     const markerRef = useState(useRef(null))[0];
 
     function _openPopup(_markerRef: MarkerRef) {
@@ -94,18 +94,19 @@ const MapMarker = ({
         if (openPopup) _openPopup(markerRef);
     }, [markerRef, openPopup, lat, lng, location]);
 
-    function handleKeyPress(event: { key: string; }) {
-        if(event.key === 'Escape' && markerRef.current){
-            //@ts-ignore
+    function handleKeyPress(event: { key: string }) {
+        if (event.key === 'Escape' && markerRef.current) {
+            // eslint-disable-next-line
+            // @ts-ignore
             markerRef.current.leafletElement.closePopup();
         }
         return () => {
-            document.removeEventListener('keydown', handleKeyPress, false)
+            document.removeEventListener('keydown', handleKeyPress, false);
         };
     }
 
-    function escListener () {
-        document.addEventListener('keydown', handleKeyPress, false)
+    function escListener() {
+        document.addEventListener('keydown', handleKeyPress, false);
     }
 
     return (
