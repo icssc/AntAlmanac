@@ -131,7 +131,10 @@ const PrereqTree: FC<PrereqProps> = (props) => {
                     {/* Spawns the root of the prerequisite tree */}
                     {hasPrereqs && (
                         <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
-                            <Tree prerequisiteNames={props.prerequisite_list} prerequisite={props.prerequisite_tree} />
+                            <Tree
+                                prerequisiteNames={props.prerequisite_list}
+                                prerequisite={JSON.parse(JSON.stringify(props.prerequisite_tree))}
+                            />
                         </div>
                     )}
                 </div>
