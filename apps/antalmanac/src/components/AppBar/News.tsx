@@ -18,7 +18,7 @@ import moment from 'moment-timezone';
 import { Fragment, MouseEventHandler, PureComponent } from 'react';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import trpc from '$lib/api/trpc'
+import trpc from '$lib/api/trpc';
 
 const styles: Styles<Theme, object> = (theme) => ({
     list: {
@@ -43,10 +43,6 @@ interface NewsItem {
     body: string;
     date: string; // TODO: what format is this in?
     _id: string; // mongoose object id
-}
-
-interface NewsResponse {
-    news: Array<NewsItem>;
 }
 
 interface NewsProps {

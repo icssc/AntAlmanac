@@ -20,7 +20,7 @@ const google = Google<User>({
     clientSecret: env.GOOGLE_CLIENT_SECRET,
 
     async onAuth(user) {
-        if (AuthUserClient.get(user.sub) === undefined) {
+        if (await AuthUserClient.get(user.sub) === undefined) {
             await AuthUserClient.insertItem({
                 id: user.sub,
                 userData: {
@@ -34,13 +34,13 @@ const google = Google<User>({
         }
         return {
             user: { type: 'Google', id: user.sub, name: user.name, email: user.email, picture: user.picture },
-            redirect: '/',
+            redirect: 'http://localhost:5173',
             status: 302,
         };
     },
 });
 
-const refreshExpires = 60 * 60 * 24 * 7 * 4; // 4 week
+const refreshExpires = 60 * 60 * 24 * 7 * 4; // 4 weeks
 const accessExpires = 60 * 60 * 24 * 7; // 1 week
 
 const session = AponiaSession<User, Session, Refresh>({

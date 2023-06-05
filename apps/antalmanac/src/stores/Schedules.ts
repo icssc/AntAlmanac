@@ -1,4 +1,3 @@
-import {calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals} from './calendarizeHelpers';
 import {
     Schedule,
     ScheduleCourse,
@@ -6,9 +5,10 @@ import {
     ScheduleUndoState,
     ShortCourseSchedule,
 } from '@packages/antalmanac-types';
-import {RepeatingCustomEvent} from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import {combineSOCObjects, CourseInfo, getCourseInfo, queryWebsoc} from '$lib/helpers';
-import {getColorForNewSection} from "$stores/scheduleHelpers";
+import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
+import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { combineSOCObjects, CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
+import { getColorForNewSection } from '$stores/scheduleHelpers';
 
 export class Schedules {
     private schedules: Schedule[];

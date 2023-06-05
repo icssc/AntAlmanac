@@ -5,7 +5,7 @@ import { AuthUser, AuthUserSchema, ScheduleSaveState, User, UserSchema } from '@
 
 // Initialise DynamoDB Client
 const client = new DynamoDB({
-    region: 'us-west-1',
+    region: env.AWS_REGION,
 });
 
 // Create DynamoDB DocumentClient

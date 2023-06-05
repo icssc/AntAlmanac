@@ -103,10 +103,26 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
         value: rememberMe ? 1 : 0,
     });
     if (
-        userId != null &&
-        (!AppStore.hasUnsavedChanges() ||
-            window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
+        !AppStore.hasUnsavedChanges() ||
+        window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`)
     ) {
+        // Try auth to get auth user first
+        try {
+            const authUser = await trpc.authusers.getUserData.query();
+            if (authUser) {
+                AppStore.user = { name: authUser.name, email: authUser.email, picture: authUser.picture };
+
+                if (await AppStore.loadSchedule(authUser.userData)) {
+                    openSnackbar('success', `Your schedule has been loaded.`);
+                } else {
+                    openSnackbar('error', `Couldn't load your schedule.`);
+                }
+                return;
+            }
+        } catch {
+            // Do nothing
+        }
+
         userId = userId.replace(/\s+/g, '');
 
         if (userId.length > 0) {

@@ -1,5 +1,5 @@
-import {amber, blue, deepOrange, deepPurple, green, pink, purple} from "@material-ui/core/colors";
-import {ScheduleCourse} from "@packages/antalmanac-types";
+import { amber, blue, deepOrange, deepPurple, green, pink, purple } from '@material-ui/core/colors';
+import { ScheduleCourse } from '@packages/antalmanac-types';
 
 export interface HSLColor {
     h: number;
@@ -7,15 +7,7 @@ export interface HSLColor {
     l: number;
 }
 
-const defaultColors = [
-    blue[500],
-    pink[500],
-    purple[500],
-    green[500],
-    amber[500],
-    deepPurple[500],
-    deepOrange[500],
-];
+const defaultColors = [blue[500], pink[500], purple[500], green[500], amber[500], deepPurple[500], deepOrange[500]];
 
 /**
  * Converts a hex color to HSL
@@ -149,7 +141,7 @@ function generateCloseColor(originalColor: string, usedColors: Set<string>, vari
     ) {
         color = {
             ...color,
-            l: Math.round((color.l + delta) * 100 % 100)/100,
+            l: Math.round(((color.l + delta) * 100) % 100) / 100,
         };
     }
 

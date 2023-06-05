@@ -19,9 +19,7 @@ class TermSelector extends PureComponent<TermSelectorProps> {
     }
 
     getTerm() {
-      return RightPaneStore.getUrlTermValue() 
-        ? this.updateTermAndGetFormData()
-        : RightPaneStore.getFormData().term
+        return RightPaneStore.getUrlTermValue() ? this.updateTermAndGetFormData() : RightPaneStore.getFormData().term;
     }
 
     state = {

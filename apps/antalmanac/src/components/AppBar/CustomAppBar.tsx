@@ -14,6 +14,7 @@ import { ReactComponent as Logo } from './logo.svg';
 import { ReactComponent as MobileLogo } from './mobile-logo.svg';
 import News from './News';
 import SettingsMenu from './SettingsMenu';
+import LoginButton from './LoginButton';
 
 const styles = {
     appBar: {
@@ -79,6 +80,7 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
                             <Feedback key="feedback" />,
                             <News key="news" />,
                             <AboutPage key="about" />,
+                            <LoginButton key={'login'} />,
                         ].map((element, index) => (
                             <ConditionalWrapper
                                 key={index}

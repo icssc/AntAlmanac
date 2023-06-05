@@ -14,9 +14,9 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
     }
 
     getCourseNumber() {
-      return RightPaneStore.getUrlCourseNumValue().trim() 
-        ? this.updateCourseNumAndGetFormData() 
-        : RightPaneStore.getFormData().courseNumber;
+        return RightPaneStore.getUrlCourseNumValue().trim()
+            ? this.updateCourseNumAndGetFormData()
+            : RightPaneStore.getFormData().courseNumber;
     }
 
     state = {

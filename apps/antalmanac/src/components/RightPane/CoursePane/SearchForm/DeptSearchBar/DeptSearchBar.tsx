@@ -50,15 +50,15 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
     }
 
     getDeptValue() {
-      return RightPaneStore.getUrlDeptValue().trim() 
-        ? this.updatedeptValueAndGetFormData() 
-        : RightPaneStore.getFormData().deptValue
+        return RightPaneStore.getUrlDeptValue().trim()
+            ? this.updatedeptValueAndGetFormData()
+            : RightPaneStore.getFormData().deptValue;
     }
 
     getDeptLabel() {
-      return RightPaneStore.getUrlDeptLabel().trim() 
-        ? this.updatedeptLabelAndGetFormData()
-        : RightPaneStore.getFormData().deptLabel;
+        return RightPaneStore.getUrlDeptLabel().trim()
+            ? this.updatedeptLabelAndGetFormData()
+            : RightPaneStore.getFormData().deptLabel;
     }
 
     constructor(props: DeptSearchBarProps) {
@@ -67,7 +67,7 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
         let favorites: Department[] = [];
         if (typeof Storage !== 'undefined') {
             const locallyStoredFavorites = window.localStorage.getItem('favorites');
-            favorites = locallyStoredFavorites != null ? (JSON.parse(locallyStoredFavorites)) : [];
+            favorites = locallyStoredFavorites != null ? JSON.parse(locallyStoredFavorites) : [];
         }
         this.state = {
             value: {

@@ -23,7 +23,9 @@ export async function start(corsEnabled = false) {
 
     const app = express();
 
-    app.use(cors(corsEnabled ? corsOptions : undefined));
+    const corsSettings = corsEnabled ? corsOptions : {origin: true};
+
+    app.use(cors({...corsSettings, credentials: true }));
 
     app.use(express.json());
 

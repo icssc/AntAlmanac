@@ -12,6 +12,7 @@ const Environment = type([
         AA_MONGODB_URI: 'string',
         GOOGLE_CLIENT_ID: 'string',
         GOOGLE_CLIENT_SECRET: 'string',
+        AWS_REGION: 'string',
         'PR_NUM?': 'number',
     },
     '|>',

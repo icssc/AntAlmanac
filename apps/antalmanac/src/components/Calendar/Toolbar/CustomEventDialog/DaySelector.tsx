@@ -9,49 +9,49 @@ const normal_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Fr
 const abbreviated_days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
 
 interface DaySelectorProps {
-  days?: boolean[];
-  onSelectDay: (days: boolean[]) => void;
+    days?: boolean[];
+    onSelectDay: (days: boolean[]) => void;
 }
 
 const DaySelector: React.FC<DaySelectorProps> = ({
-  days = [false, false, false, false, false, false, false],
-  onSelectDay,
+    days = [false, false, false, false, false, false, false],
+    onSelectDay,
 }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [selectedDays, setSelectedDays] = useState(days);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const [selectedDays, setSelectedDays] = useState(days);
 
-  useEffect(() => {
-    onSelectDay(selectedDays);
-  }, [selectedDays]);
+    useEffect(() => {
+        onSelectDay(selectedDays);
+    }, [selectedDays]);
 
-  const handleChange = (dayIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDays(prevDays => {
-      prevDays[dayIndex] = event.target.checked;
-      return prevDays
-    });
-  };
+    const handleChange = (dayIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedDays((prevDays) => {
+            prevDays[dayIndex] = event.target.checked;
+            return prevDays;
+        });
+    };
 
-  const dayNames = isMobile ? abbreviated_days : normal_days;
+    const dayNames = isMobile ? abbreviated_days : normal_days;
 
-  return (
-    <FormGroup row>
-      {dayNames.map((day, index) => (
-        <FormControlLabel
-          key={index}
-          control={
-            <Checkbox
-              checked={selectedDays[index]}
-              onChange={handleChange(index)}
-              value={index}
-              color="primary"
-            />
-          }
-          label={day}
-        />
-      ))}
-    </FormGroup>
-  );
+    return (
+        <FormGroup row>
+            {dayNames.map((day, index) => (
+                <FormControlLabel
+                    key={index}
+                    control={
+                        <Checkbox
+                            checked={selectedDays[index]}
+                            onChange={handleChange(index)}
+                            value={index}
+                            color="primary"
+                        />
+                    }
+                    label={day}
+                />
+            ))}
+        </FormGroup>
+    );
 };
 
 export default DaySelector;

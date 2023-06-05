@@ -7,8 +7,15 @@ import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 
+export interface User {
+    name: string;
+    email: string;
+    picture: string;
+}
+
 class AppStore extends EventEmitter {
     schedule: Schedules;
+    user?: User;
     customEvents: RepeatingCustomEvent[];
     colorPickers: { [key: string]: EventEmitter };
     snackbarMessage: string;
@@ -218,6 +225,7 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
+        this.emit('userAuthenticated');
         return true;
     }
 

@@ -3,7 +3,7 @@ function endpointTransform(path: string) {
         return `https://${import.meta.env.VITE_ENDPOINT}.api.antalmanac.com${path}`;
     }
     if (import.meta.env.VITE_LOCAL_SERVER) {
-        return `http://localhost:8080${path}`;
+        return `http://localhost:3000${path}`;
     }
     return import.meta.env.MODE === 'development'
         ? `https://dev.api.antalmanac.com${path}`
@@ -12,6 +12,9 @@ function endpointTransform(path: string) {
 
 export const LOOKUP_NOTIFICATIONS_ENDPOINT = endpointTransform('/api/notifications/lookupNotifications');
 export const REGISTER_NOTIFICATIONS_ENDPOINT = endpointTransform('/api/notifications/registerNotifications');
+
+export const LOGIN_ENDPOINT = endpointTransform('/auth/login/google');
+export const LOGOUT_ENDPOINT = endpointTransform('/auth/logout');
 
 // PeterPortal API
 export const PETERPORTAL_GRAPHQL_ENDPOINT = 'https://api-next.peterportal.org/v1/graphql';
