@@ -1,8 +1,8 @@
 /* eslint-disable prefer-const */
 import { FC } from 'react';
 
-import { PrerequisiteNode, Prerequisite } from '$lib/peterportal.types';
 import { CourseInfo } from './CourseInfoBar';
+import { PrerequisiteNode, Prerequisite } from '$lib/peterportal.types';
 import { isDarkMode } from '$lib/helpers';
 
 import './PrereqTree.css';
@@ -16,7 +16,6 @@ interface NodeProps {
 const Node: FC<NodeProps> = (props) => {
     return (
         <div style={{ padding: '1px 0' }} className={`${props.node}`} key={props.index}>
-            
             <div
                 className={'course'}
                 style={{
@@ -26,7 +25,7 @@ const Node: FC<NodeProps> = (props) => {
             >
                 {props.label}
             </div>
-   </div>
+        </div>
     );
 };
 

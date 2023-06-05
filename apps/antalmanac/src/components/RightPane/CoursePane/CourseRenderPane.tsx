@@ -1,4 +1,4 @@
-import { Button, Grid, IconButton, Paper, Theme, useTheme } from '@material-ui/core';
+import { IconButton, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import CloseIcon from '@material-ui/icons/Close';

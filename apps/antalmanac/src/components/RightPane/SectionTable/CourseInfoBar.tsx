@@ -4,9 +4,10 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { Skeleton } from '@material-ui/lab';
 import { useState } from 'react';
-import PrereqTree from './PrereqTree';
 
 import { MOBILE_BREAKPOINT } from '../../../globals';
+
+import PrereqTree from './PrereqTree';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { PETERPORTAL_REST_ENDPOINT } from '$lib/api/endpoints';
 import { CourseResponse } from '$lib/peterportal.types';
