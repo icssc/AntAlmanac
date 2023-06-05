@@ -4,7 +4,7 @@ import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
 import { Event } from 'react-big-calendar';
-import { useEffect, useRef } from 'react'; 
+import { useEffect, useRef, useContext, useCallback } from 'react';
 
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
@@ -13,6 +13,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
+import { mobileContext } from '$components/MobileHome';
 
 const styles: Styles<Theme, object> = {
     courseContainer: {
@@ -113,25 +114,29 @@ interface CourseCalendarEventProps {
 }
 
 const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
-
     const paperRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-      const handleKeyDown = (event: { keyCode: number; }) => {
-        //event.keyCode === 27 reads for the "escape" key
-        if (event.keyCode === 27) {
-          if(paperRef.current)
-                paperRef.current.style.display = 'none';
-        }
-      };
+        const handleKeyDown = (event: { keyCode: number }) => {
+            // event.keyCode === 27 reads for the "escape" key
+            if (event.keyCode === 27) {
+                if (paperRef.current) paperRef.current.style.display = 'none';
+            }
+        };
 
-      document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener('keydown', handleKeyDown);
 
-      return () => {
-        document.removeEventListener('keydown', handleKeyDown);
-      };
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
     }, []);
-    
+
+    const { setSelectedTab } = useContext(mobileContext);
+
+    const focusMap = useCallback(() => {
+        setSelectedTab(1);
+    }, [setSelectedTab]);
+
     const { classes, courseInMoreInfo } = props;
     if (!courseInMoreInfo.isCustomEvent) {
         const { term, instructors, sectionCode, title, finalExam, bldg, sectionType } = courseInMoreInfo;
@@ -141,10 +146,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         const buildingId = locationIds[buildingName] ?? 69420;
 
         return (
-            <Paper 
-                className={classes.courseContainer}
-                ref={paperRef}
-            >
+            <Paper className={classes.courseContainer} ref={paperRef}>
                 <div className={classes.titleBar}>
                     <span className={classes.title}>{`${title} ${sectionType}`}</span>
                     <Tooltip title="Delete">
@@ -194,7 +196,11 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         <tr>
                             <td className={classes.alignToTop}>Location</td>
                             <td className={`${classes.multiline} ${classes.rightCells}`}>
-                                <Link className={classes.clickableLocation} to={`/map?location=${buildingId}`}>
+                                <Link
+                                    className={classes.clickableLocation}
+                                    to={`/map?location=${buildingId}`}
+                                    onClick={focusMap}
+                                >
                                     {bldg}
                                 </Link>
                             </td>
@@ -222,10 +228,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     } else {
         const { title, customEventID } = courseInMoreInfo;
         return (
-            <Paper 
-                className={classes.customEventContainer}
-                ref={paperRef}
-            >
+            <Paper className={classes.customEventContainer} ref={paperRef}>
                 <div className={classes.title}>{title}</div>
                 <div className={classes.buttonBar}>
                     <div className={`${classes.colorPicker}`}>

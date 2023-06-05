@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, createContext } from 'react';
 import { Paper, Tab, Tabs } from '@material-ui/core';
 import Calendar from './Calendar/CalendarRoot';
 import DesktopTabs from './RightPane/RightPaneRoot';
@@ -8,6 +8,15 @@ const components = [
     <Calendar isMobile={true} key="calendar" />,
     <DesktopTabs style={{ height: 'calc(100% - 50px' }} key="desktop" />,
 ];
+
+export type MobileContext = {
+    setSelectedTab: React.Dispatch<React.SetStateAction<number>>;
+};
+
+export const mobileContext = createContext<MobileContext>({
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    setSelectedTab: () => {},
+});
 
 const MobileHome = () => {
     const [selectedTab, setSelectedTab] = useState(0);
@@ -38,7 +47,7 @@ const MobileHome = () => {
                     <Tab label={<div>Search</div>} />
                 </Tabs>
             </Paper>
-            {components[selectedTab]}
+            <mobileContext.Provider value={{ setSelectedTab }}>{components[selectedTab]}</mobileContext.Provider>
         </div>
     );
 };
