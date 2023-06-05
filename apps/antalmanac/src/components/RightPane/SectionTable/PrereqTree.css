@@ -1,12 +1,11 @@
 :root {
     --grey-light-theme: #8d8d8d;
     --background-grey-light-theme: #e0e0e0;
-  }
+}
 
 .dependency-list-branch {
     margin: auto;
 }
-
 
 .prereq-tree {
     display: flex;
@@ -72,7 +71,6 @@
     height: 1px;
 }
 
-
 .course-node {
     margin: auto 1rem auto 0;
 }
@@ -84,7 +82,6 @@
     margin: auto;
     margin-right: 0;
 }
-
 
 .dependency-node:first-child:last-child::after {
     height: 0 !important;
@@ -194,10 +191,10 @@
 }
 
 .course {
-  border-radius: 3px;
-  font-size: .8rem;
-  font-weight: 500;
-  padding: 0.35rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.35rem;
 }
 
 .missing-tree {

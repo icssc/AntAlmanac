@@ -123,7 +123,7 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
                 <IconButton {...bindTrigger(popupState)}>
                     <ArrowDropDown fontSize="small" />
                 </IconButton>
-                <Menu {...bindMenu(popupState)} >
+                <Menu {...bindMenu(popupState)}>
                     {scheduleNames.map((name, index) => (
                         <MenuItem key={index} onClick={() => closeAndAddCourse(index, true)}>
                             Add to {name}
