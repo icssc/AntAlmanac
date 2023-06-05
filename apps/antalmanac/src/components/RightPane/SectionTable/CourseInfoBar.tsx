@@ -5,7 +5,7 @@ import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { Skeleton } from '@material-ui/lab';
 import { useState } from 'react';
 
-import { RawResponse, Course, isErrorResponse } from 'peterportal-api-next-types';
+import { RawResponse, Course, isErrorResponse, PrerequisiteTree } from 'peterportal-api-next-types';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import PrereqTree from './PrereqTree';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
@@ -33,7 +33,7 @@ const styles = () => ({
 const noCourseInfo = {
     id: '',
     title: 'No description available',
-    prerequisite_tree: '',
+    prerequisite_tree: {},
     prerequisite_list: [],
     prerequisite_text: '',
     prerequisite_for: [],
@@ -53,7 +53,7 @@ interface CourseInfoBarProps {
 export interface CourseInfo {
     id: string;
     title: string;
-    prerequisite_tree: string;
+    prerequisite_tree: PrerequisiteTree;
     prerequisite_list: string[];
     prerequisite_text: string;
     prerequisite_for: string[];
@@ -130,7 +130,7 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
                         <strong>{title}</strong>
                     </p>
                     <p>{description}</p>
-                    {prerequisite_tree !== '' && <PrereqTree {...courseInfo} />}
+                    {JSON.stringify(prerequisite_tree) !== '{}' && <PrereqTree {...courseInfo} />}
 
                     {prerequisite_text !== '' && (
                         <p>

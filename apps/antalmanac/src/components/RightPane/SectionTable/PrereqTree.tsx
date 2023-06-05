@@ -82,7 +82,7 @@ const Tree: FC<TreeProps> = (props) => {
 type PrereqProps = CourseInfo;
 
 const PrereqTree: FC<PrereqProps> = (props) => {
-    let hasPrereqs = props.prerequisite_tree !== '';
+    let hasPrereqs = JSON.stringify(props.prerequisite_tree) !== '{}';
     let hasDependencies = Object.keys(props.prerequisite_for).length !== 0;
 
     if (props.id === undefined) return <></>;
@@ -131,10 +131,7 @@ const PrereqTree: FC<PrereqProps> = (props) => {
                     {/* Spawns the root of the prerequisite tree */}
                     {hasPrereqs && (
                         <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
-                            <Tree
-                                prerequisiteNames={props.prerequisite_list}
-                                prerequisite={JSON.parse(props.prerequisite_tree)}
-                            />
+                            <Tree prerequisiteNames={props.prerequisite_list} prerequisite={props.prerequisite_tree} />
                         </div>
                     )}
                 </div>
