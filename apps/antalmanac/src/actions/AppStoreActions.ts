@@ -64,31 +64,49 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
         label: userID,
         value: rememberMe ? 1 : 0,
     });
-    if (userID != null) {
-        userID = userID.replace(/\s+/g, '');
-
-        if (userID.length > 0) {
-            if (rememberMe) {
-                window.localStorage.setItem('userID', userID);
+    if (AppStore.user !== undefined) {
+        const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+        try {
+            await trpc.authusers.updateUserData.mutate(scheduleSaveState);
+            openSnackbar(
+                'success',
+                `Schedule saved under your account. Don't forget to sign up for classes on WebReg!`
+            );
+            AppStore.saveSchedule();
+        } catch (e) {
+            if (e instanceof TRPCError) {
+                openSnackbar('error', `Schedule could not be saved under username "${userID}`);
             } else {
-                window.localStorage.removeItem('userID');
+                openSnackbar('error', 'Network error or server is down.');
             }
+        }
+    } else {
+        if (userID != null) {
+            userID = userID.replace(/\s+/g, '');
 
-            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
-
-            try {
-                await trpc.users.saveUserData.mutate({ id: userID, userData: scheduleSaveState });
-
-                openSnackbar(
-                    'success',
-                    `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
-                );
-                AppStore.saveSchedule();
-            } catch (e) {
-                if (e instanceof TRPCError) {
-                    openSnackbar('error', `Schedule could not be saved under username "${userID}`);
+            if (userID.length > 0) {
+                if (rememberMe) {
+                    window.localStorage.setItem('userID', userID);
                 } else {
-                    openSnackbar('error', 'Network error or server is down.');
+                    window.localStorage.removeItem('userID');
+                }
+
+                const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+
+                try {
+                    await trpc.users.saveUserData.mutate({ id: userID, userData: scheduleSaveState });
+
+                    openSnackbar(
+                        'success',
+                        `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
+                    );
+                    AppStore.saveSchedule();
+                } catch (e) {
+                    if (e instanceof TRPCError) {
+                        openSnackbar('error', `Schedule could not be saved under username "${userID}`);
+                    } else {
+                        openSnackbar('error', 'Network error or server is down.');
+                    }
                 }
             }
         }

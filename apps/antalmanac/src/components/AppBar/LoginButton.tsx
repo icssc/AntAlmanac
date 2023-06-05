@@ -1,7 +1,8 @@
 import { useState, MouseEvent, useEffect } from 'react';
 import { AssignmentReturn, AssignmentReturned } from '@mui/icons-material';
-import { Button, Avatar, Box, MenuItem, Popover } from '@mui/material';
+import { Button, Avatar, Box, MenuItem, MenuList, Popover } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { Typography } from '@material-ui/core';
 import { LOGIN_ENDPOINT, LOGOUT_ENDPOINT } from '$lib/api/endpoints';
 import AppStore, { User } from '$stores/AppStore';
 
@@ -11,9 +12,8 @@ const StyledButton = styled(Button)({
 });
 
 const StyledAvatar = styled(Avatar)({
-    marginRight: 5,
-    width: 25,
-    height: 25,
+    width: 30,
+    height: 30,
 });
 
 const StyledBox = styled(Box)({
@@ -51,7 +51,6 @@ const LoginButton = () => {
         const updateAuthUser = async () => {
             const user = AppStore.user;
             setAuthUser(user);
-            console.log(user);
         };
         updateAuthUser();
         AppStore.on('userAuthenticated', updateAuthUser);
@@ -67,7 +66,6 @@ const LoginButton = () => {
                             src={authUser.picture}
                             imgProps={{ referrerPolicy: 'no-referrer' }}
                         />
-                        <StyledBox color="inherit">{authUser.name.toLocaleUpperCase()}</StyledBox>
                     </StyledButton>
 
                     <Popover
@@ -78,11 +76,20 @@ const LoginButton = () => {
                         open={Boolean(anchorEl)}
                         onClose={handleClose}
                     >
-                        <MenuItem>
-                            <Button onClick={logout} color="inherit" startIcon={<AssignmentReturn />}>
-                                Logout
-                            </Button>
-                        </MenuItem>
+                        <MenuList>
+                            <MenuItem style={{ pointerEvents: 'none' }}>
+                                <Box display="flex" justifyContent="center" width="100%">
+                                    <Typography variant="button" align="center">
+                                        {authUser.name}
+                                    </Typography>
+                                </Box>
+                            </MenuItem>
+                            <MenuItem>
+                                <Button onClick={logout} color="inherit" startIcon={<AssignmentReturn />}>
+                                    Logout
+                                </Button>
+                            </MenuItem>
+                        </MenuList>
                     </Popover>
                 </>
             ) : (

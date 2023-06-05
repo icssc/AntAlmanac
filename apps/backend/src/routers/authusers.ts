@@ -4,8 +4,6 @@ import { AuthUserClient } from '$db/ddb';
 
 const authUsersRouter = router({
     getUserData: procedure.query(async ({ ctx }) => {
-        console.log('got user data')
-        console.log(ctx.authId)
         const authUser = await AuthUserClient.get(ctx.authId);
         if (authUser) {
             const {id, ...cleanedAuthUser} = authUser;
