@@ -7,8 +7,9 @@ import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { CourseDetails, courseNumAsDecimal, termsInSchedule, warnMultipleTerms } from '$lib/helpers';
-import AppStore from '$stores/AppStore';
 import trpc from '$lib/api/trpc';
+import { saveAuthenticatedUserSchedule, saveCodeUserSchedule } from '$actions/helpers';
+import AppStore from '$stores/AppStore';
 
 export const addCourse = (
     section: WebsocSection,
@@ -64,51 +65,21 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
         label: userID,
         value: rememberMe ? 1 : 0,
     });
-    if (AppStore.user !== undefined) {
-        const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
-        try {
-            await trpc.authusers.updateUserData.mutate(scheduleSaveState);
-            openSnackbar(
-                'success',
-                `Schedule saved under your account. Don't forget to sign up for classes on WebReg!`
-            );
-            AppStore.saveSchedule();
-        } catch (e) {
-            if (e instanceof TRPCError) {
-                openSnackbar('error', `Schedule could not be saved under username "${userID}`);
+
+    const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+
+    if (AppStore.isAuthedUser()) {
+        await saveAuthenticatedUserSchedule(userID, scheduleSaveState);
+    } else if (userID) {
+        userID = userID.replace(/\s+/g, '');
+
+        if (userID.length > 0) {
+            if (rememberMe) {
+                window.localStorage.setItem('userID', userID);
             } else {
-                openSnackbar('error', 'Network error or server is down.');
+                window.localStorage.removeItem('userID');
             }
-        }
-    } else {
-        if (userID != null) {
-            userID = userID.replace(/\s+/g, '');
-
-            if (userID.length > 0) {
-                if (rememberMe) {
-                    window.localStorage.setItem('userID', userID);
-                } else {
-                    window.localStorage.removeItem('userID');
-                }
-
-                const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
-
-                try {
-                    await trpc.users.saveUserData.mutate({ id: userID, userData: scheduleSaveState });
-
-                    openSnackbar(
-                        'success',
-                        `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
-                    );
-                    AppStore.saveSchedule();
-                } catch (e) {
-                    if (e instanceof TRPCError) {
-                        openSnackbar('error', `Schedule could not be saved under username "${userID}`);
-                    } else {
-                        openSnackbar('error', 'Network error or server is down.');
-                    }
-                }
-            }
+            await saveCodeUserSchedule(userID, scheduleSaveState);
         }
     }
 };

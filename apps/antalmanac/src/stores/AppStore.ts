@@ -283,6 +283,10 @@ class AppStore extends EventEmitter {
         this.schedule.updateScheduleNote(newScheduleNote, scheduleIndex);
         this.emit('scheduleNotesChange');
     }
+
+    isAuthedUser() {
+        return this.user !== undefined;
+    }
 }
 
 const store = new AppStore();

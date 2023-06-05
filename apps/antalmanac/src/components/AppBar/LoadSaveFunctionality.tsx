@@ -15,6 +15,7 @@ import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 import { LoadingButton } from '@mui/lab';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
+import AppStore from '$stores/AppStore';
 
 interface LoadSaveButtonBaseProps {
     action: typeof saveSchedule;
@@ -37,11 +38,15 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
     };
 
     handleOpen = () => {
-        this.setState({ isOpen: true });
-        if (typeof Storage !== 'undefined') {
-            const userID = window.localStorage.getItem('userID');
-            if (userID !== null) {
-                this.setState({ userID: userID });
+        if (this.props.actionName === 'Save' && AppStore.isAuthedUser()) {
+            void this.props.action(this.state.userID, this.state.rememberMe);
+        } else {
+            this.setState({ isOpen: true });
+            if (typeof Storage !== 'undefined') {
+                const userID = window.localStorage.getItem('userID');
+                if (userID !== null) {
+                    this.setState({ userID: userID });
+                }
             }
         }
     };
