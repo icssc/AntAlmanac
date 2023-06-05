@@ -7,6 +7,7 @@ const defaultFormValues: Record<string, string> = {
     deptValue: 'ALL',
     deptLabel: 'ALL: Include All Departments',
     ge: 'ANY',
+    restrictions: 'ALL',
     term: getDefaultTerm().shortName,
     courseNumber: '',
     sectionCode: '',
@@ -32,6 +33,7 @@ class RightPaneStore extends EventEmitter {
     private urlCourseCodeValue: string;
     private urlTermValue: string;
     private urlGEValue: string;
+    private urlRestrictionsValue: string;
     private urlCourseNumValue: string;
     private urlDeptLabel: string;
     private urlDeptValue: string;
@@ -47,6 +49,7 @@ class RightPaneStore extends EventEmitter {
         this.urlCourseCodeValue = search.get('courseCode') || '';
         this.urlTermValue = search.get('term') || '';
         this.urlGEValue = search.get('GE') || '';
+        this.urlRestrictionsValue = search.get('restrictions') || '';
         this.urlCourseNumValue = search.get('courseNumber') || '';
         this.urlDeptLabel = search.get('deptLabel') || '';
         this.urlDeptValue = search.get('deptValue') || '';
@@ -71,6 +74,7 @@ class RightPaneStore extends EventEmitter {
     getUrlCourseCodeValue = () => this.urlCourseCodeValue;
     getUrlTermValue = () => this.urlTermValue;
     getUrlGEValue = () => this.urlGEValue;
+    getUrlRestrictionsValue = () => this.urlRestrictionsValue;
     getUrlCourseNumValue = () => this.urlCourseNumValue;
     getUrlDeptLabel = () => this.urlDeptLabel;
     getUrlDeptValue = () => this.urlDeptValue;

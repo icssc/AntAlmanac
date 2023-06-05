@@ -7,7 +7,7 @@ import CourseNumberSearchBar from './CourseNumberSearchBar';
 import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
 import GESelector from './GESelector';
 import SectionCodeSearchBar from './SectionCodeSearchBar';
-import RestrictionSelector from './RestrictionSelector';
+import RestrictionsFilter from './RestrictionsFilter';
 
 const styles: Styles<Theme, object> = {
     container: {
@@ -58,7 +58,7 @@ function LegacySearch(props: { classes: ClassNameMap; onSubmit: () => void; onRe
 
             <div className={classes.margin}>
                 <GESelector />
-                <RestrictionSelector />
+                <RestrictionsFilter />
                 <SectionCodeSearchBar />
             </div>
 
