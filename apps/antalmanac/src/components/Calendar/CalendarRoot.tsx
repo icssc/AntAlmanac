@@ -55,24 +55,6 @@ const styles: Styles<Theme, object> = {
         justifyContent: 'space-between',
         fontSize: '0.7rem',
     },
-    customEventContainer: {
-        marginTop: 2,
-        marginBottom: 2,
-    },
-    customEventTitle: {
-        fontWeight: 500,
-        fontSize: '0.9rem',
-    },
-    eventMarkText: {
-        fontSize: '0.8rem',
-        fontWeight: 'bold',
-        border: 'solid 0.15rem',
-        padding: '0.15rem',
-
-    },
-    eventMarkDiv: {
-        marginTop: '0.8rem',
-    },
 };
 
 const AntAlmanacEvent =
@@ -95,14 +77,12 @@ const AntAlmanacEvent =
         else {
             return (
                 <div>
-                    <div className={classes.customEventContainer}>
-                        <div className={classes.customEventTitle}>{event.title}</div>
+                    <div className={classes.firstLineContainer}>
+                        <div>{event.title}</div>
+                        <div className={classes.sectionType}> Event</div>
                     </div>
                     <div className={classes.secondLineContainer}>
                         <div>{event.bldg}</div>
-                    </div>
-                    <div className={classes.eventMarkDiv}>
-                        <text className={classes.eventMarkText}>EVENT</text>
                     </div>
                 </div>
             );

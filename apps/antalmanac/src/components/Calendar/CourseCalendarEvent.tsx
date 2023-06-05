@@ -228,11 +228,6 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                                 </button> }
                             </td>
                         </tr>
-                        <tr>
-                            <div className={classes.eventMarkDiv}>
-                                <text className={classes.eventMarkText}>EVENT</text>
-                            </div>
-                        </tr>
                     </tbody>
                 </table>
                 <div className={classes.buttonBar}>

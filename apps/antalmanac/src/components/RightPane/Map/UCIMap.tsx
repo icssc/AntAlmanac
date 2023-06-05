@@ -22,7 +22,7 @@ import { FAKE_LOCATIONS } from '$lib/helpers';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 import { Theme, withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { Styles } from '@material-ui/core/styles/withStyles';
 
 const styles: Styles<Theme, object> = {};
 
@@ -123,11 +123,11 @@ class UCIMap extends PureComponent  {
                 )
                 .sort((event, event2) => event.start.getTime() - event2.start.getTime())
                 .forEach((event) => {
+                    var locationData;
                     if (event.isCustomEvent) {
                         // Get building code, get id of building code, which will get us the building data from buildingCatalogue
                         var buildingCode;
                         var id;
-                        var locationData;
                         if (event.bldg.includes("(")){
                             buildingCode = event.bldg.split('(')[1].slice(0, -1) as keyof typeof locations;
                             id = locations[buildingCode] as keyof typeof buildingCatalogue;
@@ -140,36 +140,22 @@ class UCIMap extends PureComponent  {
                                 }
                             });
                         }
-
-                        if (locationData === undefined) return;
-
-                        colors.push(event.color);
-
-                        if (coords) {
-                            coords += ';';
-                        }
-                        coords += `${locationData.lng},${locationData.lat}`;
-                        coords_array.push([locationData.lat, locationData.lng]);
-
-                        index++;
                     } else {
                         // Get building code, get id of building code, which will get us the building data from buildingCatalogue
                         const buildingCode = event.bldg.split(' ').slice(0, -1).join(' ') as keyof typeof locations;
                         const id = locations[buildingCode] as keyof typeof buildingCatalogue;
-                        const locationData = buildingCatalogue[id];
-
-                        if (locationData === undefined) return;
-
-                        colors.push(event.color);
-
-                        if (coords) {
-                            coords += ';';
-                        }
-                        coords += `${locationData.lng},${locationData.lat}`;
-                        coords_array.push([locationData.lat, locationData.lng]);
-
-                        index++;
+                        locationData = buildingCatalogue[id];
                     }
+                    if (locationData === undefined) return;
+
+                    colors.push(event.color);
+
+                    if (coords) {
+                        coords += ';';
+                    }
+                    coords += `${locationData.lng},${locationData.lat}`;
+                    coords_array.push([locationData.lat, locationData.lng]);
+                    index++;
                 });
             if (index > 1) {
                 const url = new URL(DIRECTIONS_ENDPOINT + encodeURIComponent(coords));
@@ -577,13 +563,12 @@ class UCIMap extends PureComponent  {
                         stackIndex={courses.length - 1 - index}
                     >
                         <>
-                            <hr/>
-                            <div style={{paddingBottom: '0.2rem'}}>
-                                <text style={{ fontSize: '1rem'}}>{`NAME: ${event.title}`}</text>
-                            </div>
-                            <text style={{fontSize: '0.9rem', fontWeight: 'bold', borderColor: 'black',
+                           <hr />
+                           Event: {`${event.title} `}
+                            {/* An event marker [CURRENTLY NOT IN USE] */}
+                            {/* <text style={{fontSize: '0.9rem', fontWeight: 'bold', borderColor: 'black',
                                         border: 'solid 0.24rem', marginRight: '0.5rem', paddingLeft: '0.1rem',
-                                        paddingRight: '0.1rem', color: `${event.color}`}}>EVENT</text>
+                                        paddingRight: '0.1rem', color: `${event.color}`}}>EVENT</text> */}
                         </>
                     </MapMarker>
                 );
@@ -621,6 +606,7 @@ class UCIMap extends PureComponent  {
                         this.setState({ day: day });
                     }}
                     handleSearch={this.handleSearch}
+                    defaultValue = {null}
                 />
 
                 <LocateControlLeaflet />

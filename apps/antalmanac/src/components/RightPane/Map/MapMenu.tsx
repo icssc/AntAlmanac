@@ -1,11 +1,11 @@
-import { Paper, Tab, Tabs, TextField } from '@material-ui/core';
+import { Paper, Tab, Tabs } from '@material-ui/core';
 import { styled, Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { Autocomplete } from '@material-ui/lab';
 import React, { PureComponent } from 'react';
 
 import Building from './static/building';
 import buildingCatalogue from './static/buildingCatalogue';
+import LocationSelector from '../../Calendar/Toolbar/CustomEventDialog/LocationSelector';
 
 const styles: Styles<Theme, object> = {
     tabContainer: {
@@ -37,10 +37,11 @@ const StyledTab = styled(Tab)({
 });
 
 interface MapMenuProps {
-    classes: ClassNameMap;
     day: number;
     setDay: (newDay: number) => void;
+    classes: ClassNameMap;
     handleSearch: (event: React.ChangeEvent<unknown>, value: Building | null) => void;
+    defaultValue: any;
 }
 
 class MapMenu extends PureComponent<MapMenuProps> {
@@ -73,13 +74,12 @@ class MapMenu extends PureComponent<MapMenuProps> {
                         <StyledTab label="Fri" />
                     </StyledTabs>
                 </Paper>
-
-                <Paper elevation={0} className={classes.searchBarContainer}>
-                    <Autocomplete
-                        options={this.state.filteredItems}
-                        getOptionLabel={(option) => option.name}
-                        onChange={this.props.handleSearch}
-                        renderInput={(params) => <TextField {...params} label="Search for a place" variant="filled" />}
+                <Paper elevation={0} className={classes.tabContainer}>
+                    <LocationSelector
+                        handleSearch={this.props.handleSearch}
+                        defaultValue = {this.props.defaultValue}
+                        classes={this.props.classes}
+                        previousOption = {null}
                     />
                 </Paper>
             </>

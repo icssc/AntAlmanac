@@ -22,7 +22,6 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 
-// import MapMarker from '../../../RightPane/Map/MapMarker';
 import Building from '../../../RightPane/Map/static/building';
 
 const styles = {
@@ -213,7 +212,11 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
                         <DaySelector onSelectDay={this.handleDayChange} days={this.props.customEvent?.days} />
 
                         <LocationSelector handleSearch={this.handleSearch} 
-                                          previousOption={this.props.customEvent?.location?this.props.customEvent?.location : ""}
+                                          previousOption={this.props.customEvent?.location
+                                                            ? this.props.customEvent?.location
+                                                            : null}
+                                          defaultValue = {null}
+                                          classes={null}
                         />
 
                         <ScheduleSelector
