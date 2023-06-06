@@ -1,4 +1,4 @@
-import { IconButton, Theme } from '@material-ui/core';
+import { Button, Grid, IconButton, Paper, Theme, useTheme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import CloseIcon from '@material-ui/icons/Close';
@@ -6,8 +6,6 @@ import React, { PureComponent } from 'react';
 import LazyLoad from 'react-lazyload';
 
 import { Alert } from '@mui/material';
-import { AACourse, AASection } from '@packages/antalmanac-types';
-import { WebsocDepartment, WebsocSchool, WebsocAPIResponse } from 'peterportal-api-next-types';
 import RightPaneStore from '../RightPaneStore';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
@@ -17,6 +15,7 @@ import loadingGif from './SearchForm/Gifs/loading.gif';
 import darkNoNothing from './static/dark-no_results.png';
 import noNothing from './static/no_results.png';
 import AppStore from '$stores/AppStore';
+import { AACourse, AASection, Department, School, WebsocResponse } from '$lib/peterportal.types';
 import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '$lib/helpers';
 import analyticsEnum from '$lib/analytics';
 
@@ -70,12 +69,12 @@ const styles: Styles<Theme, object> = (theme) => ({
     },
 });
 
-const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocDepartment | AACourse)[] => {
+const flattenSOCObject = (SOCObject: WebsocResponse): (School | Department | AACourse)[] => {
     const courseColors = AppStore.getAddedCourses().reduce((accumulator, { section }) => {
         accumulator[section.sectionCode] = section.color;
         return accumulator;
     }, {} as { [key: string]: string });
-    return SOCObject.schools.reduce((accumulator: (WebsocSchool | WebsocDepartment | AACourse)[], school) => {
+    return SOCObject.schools.reduce((accumulator: (School | Department | AACourse)[], school) => {
         accumulator.push(school);
 
         school.departments.forEach((dept) => {
@@ -146,18 +145,18 @@ const RecruitmentBanner = () => {
  */
 const SectionTableWrapped = (
     index: number,
-    data: { scheduleNames: string[]; courseData: (WebsocSchool | WebsocDepartment | AACourse)[] }
+    data: { scheduleNames: string[]; courseData: (School | Department | AACourse)[] }
 ) => {
     const { courseData, scheduleNames } = data;
     const formData = RightPaneStore.getFormData();
 
     let component;
 
-    if ((courseData[index] as WebsocSchool).departments !== undefined) {
-        const school = courseData[index] as WebsocSchool;
+    if ((courseData[index] as School).departments !== undefined) {
+        const school = courseData[index] as School;
         component = <SchoolDeptCard comment={school.schoolComment} type={'school'} name={school.schoolName} />;
-    } else if ((courseData[index] as WebsocDepartment).courses !== undefined) {
-        const dept = courseData[index] as WebsocDepartment;
+    } else if ((courseData[index] as Department).courses !== undefined) {
+        const dept = courseData[index] as Department;
         component = <SchoolDeptCard name={`Department of ${dept.deptName}`} comment={dept.deptComment} type={'dept'} />;
     } else if (formData.ge !== 'ANY') {
         const course = courseData[index] as AACourse;
@@ -193,7 +192,7 @@ interface CourseRenderPaneProps {
 }
 
 interface CourseRenderPaneState {
-    courseData: (WebsocSchool | WebsocDepartment | AACourse)[];
+    courseData: (School | Department | AACourse)[];
     loading: boolean;
     error: boolean;
     scheduleNames: string[];
@@ -286,20 +285,18 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
                                 <img src={isDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
                             </div>
                         ) : (
-                            this.state.courseData.map(
-                                (_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
-                                    let heightEstimate = 200;
-                                    if ((this.state.courseData[index] as AACourse).sections !== undefined)
-                                        heightEstimate =
-                                            (this.state.courseData[index] as AACourse).sections.length * 60 + 20 + 40;
+                            this.state.courseData.map((_: School | Department | AACourse, index: number) => {
+                                let heightEstimate = 200;
+                                if ((this.state.courseData[index] as AACourse).sections !== undefined)
+                                    heightEstimate =
+                                        (this.state.courseData[index] as AACourse).sections.length * 60 + 20 + 40;
 
-                                    return (
-                                        <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
-                                            {SectionTableWrapped(index, renderData)}
-                                        </LazyLoad>
-                                    );
-                                }
-                            )
+                                return (
+                                    <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
+                                        {SectionTableWrapped(index, renderData)}
+                                    </LazyLoad>
+                                );
+                            })
                         )}
                     </div>
                 </>

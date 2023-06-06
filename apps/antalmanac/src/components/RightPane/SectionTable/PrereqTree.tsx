@@ -1,13 +1,11 @@
 /* eslint-disable prefer-const */
 import { FC } from 'react';
 
+import { PrerequisiteNode, Prerequisite } from '$lib/peterportal.types';
 import { CourseInfo } from './CourseInfoBar';
 import { isDarkMode } from '$lib/helpers';
 
 import './PrereqTree.css';
-
-export type Prerequisite = Record<string, PrerequisiteNode[]>;
-export type PrerequisiteNode = Prerequisite | string;
 
 interface NodeProps {
     node: string;
@@ -18,6 +16,7 @@ interface NodeProps {
 const Node: FC<NodeProps> = (props) => {
     return (
         <div style={{ padding: '1px 0' }} className={`${props.node}`} key={props.index}>
+            
             <div
                 className={'course'}
                 style={{
@@ -27,7 +26,7 @@ const Node: FC<NodeProps> = (props) => {
             >
                 {props.label}
             </div>
-        </div>
+   </div>
     );
 };
 
@@ -82,7 +81,7 @@ const Tree: FC<TreeProps> = (props) => {
 type PrereqProps = CourseInfo;
 
 const PrereqTree: FC<PrereqProps> = (props) => {
-    let hasPrereqs = JSON.stringify(props.prerequisite_tree) !== '{}';
+    let hasPrereqs = props.prerequisite_tree !== '';
     let hasDependencies = Object.keys(props.prerequisite_for).length !== 0;
 
     if (props.id === undefined) return <></>;
@@ -133,7 +132,7 @@ const PrereqTree: FC<PrereqProps> = (props) => {
                         <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
                             <Tree
                                 prerequisiteNames={props.prerequisite_list}
-                                prerequisite={JSON.parse(JSON.stringify(props.prerequisite_tree))}
+                                prerequisite={JSON.parse(props.prerequisite_tree)}
                             />
                         </div>
                     )}

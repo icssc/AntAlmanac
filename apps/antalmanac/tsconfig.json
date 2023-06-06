@@ -22,7 +22,7 @@
             "$lib/*": ["src/lib/*"],
             "$providers/*": ["src/providers/*"],
             "$routes/*": ["src/routes/*"],
-            "$stores/*": ["src/stores/*"],
+            "$stores/*": ["src/stores/*"]
         }
     },
 }
