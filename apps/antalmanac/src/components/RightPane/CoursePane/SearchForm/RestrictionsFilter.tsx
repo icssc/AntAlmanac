@@ -49,11 +49,12 @@ const restrictionList = [
     'X: Separate authorization codes required to add, drop, or change enrollment',
 ];
 
+// clean up styling later
 const styles = {
     formControl: {
         flexGrow: 1,
         marginRight: 15,
-        width: '50%',
+        width: 120,
     },
 };
 
@@ -63,8 +64,10 @@ interface RestrictionFilterProps {
 
 interface RestrictionFilterState {
     restrictions: string[];
+    checkedList: string[];
 }
 
+// url is not being grabbed to set the values correctly on refresh
 class RestrictionsFilter extends PureComponent<RestrictionFilterProps, RestrictionFilterState> {
     updateRestrictionsAndGetFormData() {
         RightPaneStore.updateFormValue('restrictions', RightPaneStore.getUrlRestrictionsValue());
@@ -79,6 +82,27 @@ class RestrictionsFilter extends PureComponent<RestrictionFilterProps, Restricti
 
     state = {
         restrictions: [
+            // 'A: Prerequisite required',
+            // 'B: Authorization code required',
+            // 'C: Fee required',
+            // 'D: Pass/Not Pass option only',
+            // 'E: Freshmen only',
+            // 'F: Sophomores only',
+            // 'G: Lower-division only',
+            // 'H: Juniors only',
+            // 'I: Seniors only',
+            // 'J: Upper-division only',
+            // 'K: Graduate only',
+            // 'L: Major only',
+            // 'M: Non-major only',
+            // 'N: School major only',
+            // 'O: Non-school major only',
+            // 'R: Biomedical Pass/Fail course (School of Medicine only',
+            // 'S: Satisfactory/Unsatisfactory only',
+            // 'X: Separate authorization codes required to add, drop, or change enrollment',
+            this.getRestrictions(),
+        ],
+        checkedList: [
             'A: Prerequisite required',
             'B: Authorization code required',
             'C: Fee required',
@@ -101,7 +125,7 @@ class RestrictionsFilter extends PureComponent<RestrictionFilterProps, Restricti
     };
 
     handleChange = (event: ChangeEvent<{ restrictions?: string | undefined; value: unknown }>) => {
-        this.setState({ restrictions: event.target.value as string[] });
+        this.setState({ checkedList: event.target.value as string[] });
         RightPaneStore.updateFormValue('restrictions', event.target.value as string);
 
         const stateObj = { url: 'url' };
@@ -151,19 +175,26 @@ class RestrictionsFilter extends PureComponent<RestrictionFilterProps, Restricti
                     <InputLabel>Restrictions</InputLabel>
                     <Select
                         multiple
-                        value={this.state.restrictions}
+                        value={this.state.checkedList}
                         onChange={this.handleChange}
+                        //some giga nonsense to keep the selections clean
                         renderValue={(selected) =>
                             (selected as string[])
                                 .map((value) => value.split(':')[0].trim())
                                 .sort((a, b) => a.localeCompare(b))
                                 .join(', ')
+                                .replace(/[, ]/g, '') == 'ABCDEFGHIJKLMNORSX'
+                                ? "ALL: Don't filter for restrictions"
+                                : (selected as string[])
+                                      .map((value) => value.split(':')[0].trim())
+                                      .sort((a, b) => a.localeCompare(b))
+                                      .join(', ')
                         }
                         // MenuProps={MenuProps}
                     >
                         {restrictionList.map((restrictions) => (
                             <MenuItem key={restrictions} value={restrictions}>
-                                <Checkbox checked={this.state.restrictions.indexOf(restrictions) > -1} />
+                                <Checkbox checked={this.state.checkedList.indexOf(restrictions) > -1} />
                                 <ListItemText primary={restrictions} />
                             </MenuItem>
                         ))}
