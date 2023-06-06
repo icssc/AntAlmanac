@@ -209,11 +209,11 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         e.stopPropagation();
 
         if (event.isCustomEvent || event.sectionType !== 'Fin') {
-            this.setState({
-                anchorEl: currentTarget,
+            this.setState((prevState) => ({
+                anchorEl: prevState.anchorEl === currentTarget ? null : currentTarget,
                 courseInMoreInfo: event,
                 calendarEventKey: Math.random(),
-            });
+            }));
         }
     };
 

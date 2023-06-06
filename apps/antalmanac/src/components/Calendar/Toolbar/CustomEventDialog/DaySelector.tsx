@@ -1,123 +1,56 @@
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
-import React, { PureComponent } from 'react';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import React, { useEffect, useState } from 'react';
+
+const normal_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const abbreviated_days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
 
 interface DaySelectorProps {
     days?: boolean[];
     onSelectDay: (days: boolean[]) => void;
 }
 
-interface DaySelectorState {
-    days: boolean[];
-}
-class DaySelector extends PureComponent<DaySelectorProps, DaySelectorState> {
-    state: DaySelectorState = {
-        days: this.props.days || [false, false, false, false, false, false, false],
+const DaySelector: React.FC<DaySelectorProps> = ({
+    days = [false, false, false, false, false, false, false],
+    onSelectDay,
+}) => {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const [selectedDays, setSelectedDays] = useState(days);
+
+    useEffect(() => {
+        onSelectDay(selectedDays);
+    }, [selectedDays]);
+
+    const handleChange = (dayIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newSelectedDays = [...selectedDays];
+        newSelectedDays[dayIndex] = event.target.checked;
+        setSelectedDays(newSelectedDays);
     };
 
-    handleChange = (dayIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        const checked = event.target.checked;
+    const dayNames = isMobile ? abbreviated_days : normal_days;
 
-        this.setState(
-            (prevState) => {
-                const newDays = [...prevState.days];
-                newDays[dayIndex] = checked;
-                return { days: newDays };
-            },
-            () => this.props.onSelectDay(this.state.days)
-        );
-    };
-
-    render() {
-        return (
-            <FormGroup row>
+    return (
+        <FormGroup row>
+            {dayNames.map((day, index) => (
                 <FormControlLabel
+                    key={index}
                     control={
                         <Checkbox
-                            checked={this.state.days[0]}
-                            onChange={this.handleChange(0)}
-                            value="0"
+                            checked={selectedDays[index]}
+                            onChange={handleChange(index)}
+                            value={index}
                             color="primary"
                         />
                     }
-                    label="Sunday"
+                    label={day}
                 />
-
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={this.state.days[1]}
-                            onChange={this.handleChange(1)}
-                            value="1"
-                            color="primary"
-                        />
-                    }
-                    label="Monday"
-                />
-
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={this.state.days[2]}
-                            onChange={this.handleChange(2)}
-                            value="2"
-                            color="primary"
-                        />
-                    }
-                    label="Tuesday"
-                />
-
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={this.state.days[3]}
-                            onChange={this.handleChange(3)}
-                            value="3"
-                            color="primary"
-                        />
-                    }
-                    label="Wednesday"
-                />
-
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={this.state.days[4]}
-                            onChange={this.handleChange(4)}
-                            value="4"
-                            color="primary"
-                        />
-                    }
-                    label="Thursday"
-                />
-
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={this.state.days[5]}
-                            onChange={this.handleChange(5)}
-                            value="5"
-                            color="primary"
-                        />
-                    }
-                    label="Friday"
-                />
-
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={this.state.days[6]}
-                            onChange={this.handleChange(6)}
-                            value="6"
-                            color="primary"
-                        />
-                    }
-                    label="Saturday"
-                />
-            </FormGroup>
-        );
-    }
-}
+            ))}
+        </FormGroup>
+    );
+};
 
 export default DaySelector;

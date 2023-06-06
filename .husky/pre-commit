@@ -1,4 +1,4 @@
 #!/bin/sh
-source "$(dirname "$0")/_/husky.sh"
+. "$(dirname -- "$0")/_/husky.sh"
 
-#pnpm lint-staged
+npx --no -- lint-staged

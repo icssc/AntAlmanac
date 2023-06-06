@@ -39,7 +39,7 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
             <MenuItem onClick={handleOpen} disabled={AppStore.schedules.getNumberOfSchedules() === 1}>
                 Delete Schedule
             </MenuItem>
-            <Dialog open={isOpen}>
+            <Dialog open={isOpen} onClose={handleClose}>
                 <DialogTitle>Delete Schedule</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
