@@ -44,7 +44,7 @@ const restrictionList = [
     'M: Non-major only',
     'N: School major only',
     'O: Non-school major only',
-    'R: Biomedical Pass/Fail course (School of Medicine only',
+    'R: Biomedical Pass/Fail course (School of Medicine only)',
     'S: Satisfactory/Unsatisfactory only',
     'X: Separate authorization codes required to add, drop, or change enrollment',
 ];
@@ -118,7 +118,7 @@ class RestrictionsFilter extends PureComponent<RestrictionFilterProps, Restricti
             'M: Non-major only',
             'N: School major only',
             'O: Non-school major only',
-            'R: Biomedical Pass/Fail course (School of Medicine only',
+            'R: Biomedical Pass/Fail course (School of Medicine only)',
             'S: Satisfactory/Unsatisfactory only',
             'X: Separate authorization codes required to add, drop, or change enrollment',
         ],
@@ -131,7 +131,7 @@ class RestrictionsFilter extends PureComponent<RestrictionFilterProps, Restricti
         const stateObj = { url: 'url' };
         const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
-        urlParam.delete('Restrictions');
+        urlParam.delete('restrictions');
 
         const changedValue = (event.target.value as string[])
             .map((value) => value.split(':')[0].trim())
@@ -140,7 +140,7 @@ class RestrictionsFilter extends PureComponent<RestrictionFilterProps, Restricti
 
         if (changedValue && changedValue !== 'ABCDEFGHIJKLMNORSX') {
             urlParam.append(
-                'Restrictions',
+                'restrictions',
 
                 (event.target.value as string[])
                     .map((value) => value.split(':')[0].trim())
