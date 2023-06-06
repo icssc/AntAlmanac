@@ -4,12 +4,12 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { Skeleton } from '@material-ui/lab';
 import { useState } from 'react';
-
-import { RawResponse, Course, isErrorResponse, PrerequisiteTree } from 'peterportal-api-next-types';
-import { MOBILE_BREAKPOINT } from '../../../globals';
 import PrereqTree from './PrereqTree';
+
+import { MOBILE_BREAKPOINT } from '../../../globals';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { PETERPORTAL_REST_ENDPOINT } from '$lib/api/endpoints';
+import { CourseResponse } from '$lib/peterportal.types';
 
 const styles = () => ({
     rightSpace: {
@@ -33,7 +33,7 @@ const styles = () => ({
 const noCourseInfo = {
     id: '',
     title: 'No description available',
-    prerequisite_tree: {},
+    prerequisite_tree: '',
     prerequisite_list: [],
     prerequisite_text: '',
     prerequisite_for: [],
@@ -53,7 +53,7 @@ interface CourseInfoBarProps {
 export interface CourseInfo {
     id: string;
     title: string;
-    prerequisite_tree: PrerequisiteTree;
+    prerequisite_tree: string;
     prerequisite_list: string[];
     prerequisite_text: string;
     prerequisite_for: string[];
@@ -78,22 +78,20 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
                     const courseId = encodeURIComponent(
                         `${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`
                     );
-                    const res: RawResponse<Course> = await fetch(
-                        `${PETERPORTAL_REST_ENDPOINT}/courses/${courseId}`
-                    ).then((r) => r.json());
+                    const response = await fetch(`${PETERPORTAL_REST_ENDPOINT}/courses/${courseId}`);
 
-                    if (!isErrorResponse(res)) {
-                        const data = res.payload;
-
+                    if (response.ok) {
+                        const jsonResp = (await response.json()) as CourseResponse;
+                        console.log(jsonResp.prerequisite_list);
                         setCourseInfo({
-                            id: data.id,
-                            title: data.title,
-                            prerequisite_tree: data.prerequisiteTree,
-                            prerequisite_list: data.prerequisiteList,
-                            prerequisite_text: data.prerequisiteText,
-                            prerequisite_for: data.prerequisiteFor,
-                            description: data.description,
-                            ge_list: data.geList.join(', '),
+                            id: jsonResp.id,
+                            title: jsonResp.title,
+                            prerequisite_tree: jsonResp.prerequisite_tree,
+                            prerequisite_list: jsonResp.prerequisite_list,
+                            prerequisite_text: jsonResp.prerequisite_text,
+                            prerequisite_for: jsonResp.prerequisite_for,
+                            description: jsonResp.description,
+                            ge_list: jsonResp.ge_list.join(', '),
                         });
                     } else {
                         setCourseInfo(noCourseInfo);
@@ -130,7 +128,7 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
                         <strong>{title}</strong>
                     </p>
                     <p>{description}</p>
-                    {JSON.stringify(prerequisite_tree) !== '{}' && <PrereqTree {...courseInfo} />}
+                    {prerequisite_tree !== '' && <PrereqTree {...courseInfo} />}
 
                     {prerequisite_text !== '' && (
                         <p>

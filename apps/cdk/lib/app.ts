@@ -22,7 +22,7 @@ if (process.env.PR_NUM) {
         `antalmanac-frontend-staging-${process.env.PR_NUM}`,
         {
             env,
-            stage: 'staging',
+            stage: 'dev',
             certificateArn: process.env.CERTIFICATE_ARN,
             hostedZoneId: process.env.HOSTED_ZONE_ID,
             prNum: process.env.PR_NUM,
@@ -34,7 +34,7 @@ if (process.env.PR_NUM) {
             `antalmanac-backend-staging-${process.env.PR_NUM}`,
             {
                 env,
-                stage: 'staging',
+                stage: 'dev',
                 certificateArn: process.env.CERTIFICATE_ARN,
                 hostedZoneId: process.env.HOSTED_ZONE_ID,
                 mongoDbUriProd: process.env.MONGODB_URI_PROD,

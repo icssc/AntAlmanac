@@ -4,12 +4,12 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 import { PureComponent } from 'react';
 
-import { AACourse } from '@packages/antalmanac-types';
 import { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
 import { clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { AACourse } from '$lib/peterportal.types';
 import AppStore from '$stores/AppStore';
 
 const styles = {
