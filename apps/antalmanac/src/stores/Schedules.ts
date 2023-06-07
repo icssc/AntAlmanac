@@ -612,27 +612,27 @@ export class Schedules {
                 for (const [term, courseSet] of Object.entries(courseDict)) {
                     const sectionCodes = Array.from(courseSet);
                     // Code from ImportStudyList
-                    const courseInfo = getCourseInfo(
-                        combineSOCObjects(
-                            await Promise.all(
-                                sectionCodes
-                                    .reduce((result: string[][], item, index) => {
-                                        // WebSOC queries can have a maximum of 10 course codes in tandem
-                                        const chunkIndex = Math.floor(index / 10);
-                                        result[chunkIndex]
-                                            ? result[chunkIndex].push(item)
-                                            : (result[chunkIndex] = [item]);
-                                        return result;
-                                    }, []) // https://stackoverflow.com/a/37826698
-                                    .map((sectionCode: string[]) =>
-                                        queryWebsoc({
-                                            term: term,
-                                            sectionCodes: sectionCode.join(','),
-                                        })
-                                    )
-                            )
+                    const sectionsGroupedByTen = sectionCodes.reduce((accumulated, item, index) => {
+                        if (index % 10) {
+                            accumulated.push([item]);
+                        } else {
+                            accumulated.push([]);
+                            // The ? is to placate ts-lint. If accumulated is empty, the condition above would apply
+                            accumulated.at(-1)?.push(item);
+                        }
+                        return accumulated;
+                    }, [] as string[][]);
+
+                    const socObjects = await Promise.all(
+                        sectionsGroupedByTen.map((sectionCode) =>
+                            queryWebsoc({
+                                term: term,
+                                sectionCodes: sectionCode.join(','),
+                            })
                         )
                     );
+
+                    const courseInfo = getCourseInfo(combineSOCObjects(socObjects));
                     courseInfoDict.set(term, courseInfo);
                 }
             } catch (error) {
