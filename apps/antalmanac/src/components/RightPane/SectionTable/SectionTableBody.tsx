@@ -252,7 +252,6 @@ interface RestrictionsCellProps {
     restrictions: string;
 }
 
-// gimme
 const RestrictionsCell = withStyles(styles)((props: RestrictionsCellProps) => {
     const { classes, restrictions } = props;
     const popupState = usePopupState({ popupId: 'RestrictionsCellPopup', variant: 'popover' });
