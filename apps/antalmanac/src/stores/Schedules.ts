@@ -614,11 +614,9 @@ export class Schedules {
                     // Code from ImportStudyList
                     const sectionsGroupedByTen = sectionCodes.reduce((accumulated, item, index) => {
                         if (index % 10) {
-                            accumulated.push([item]);
-                        } else {
-                            accumulated.push([]);
-                            // The ? is to placate ts-lint. If accumulated is empty, the condition above would apply
                             accumulated.at(-1)?.push(item);
+                        } else {
+                            accumulated.push([item]);
                         }
                         return accumulated;
                     }, [] as string[][]);
