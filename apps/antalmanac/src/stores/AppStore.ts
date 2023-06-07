@@ -76,7 +76,7 @@ class AppStore extends EventEmitter {
         if (scheduleIndex === this.schedules.getNumberOfSchedules()) {
             addedCourse = this.schedules.addCourseToAllSchedules(newCourse);
         } else {
-            addedCourse = this.schedule.addCourse(newCourse, scheduleIndex);
+            addedCourse = this.schedules.addCourse(newCourse, scheduleIndex);
         }
         this.unsavedChanges = true;
         this.emit('addedCoursesChange');

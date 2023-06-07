@@ -90,7 +90,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
     }
 
     loadCourses = () => {
-        const currentCourses = AppStore.schedule.getCurrentCourses();
+        const currentCourses = AppStore.schedules.getCurrentCourses();
         const formattedCourses: CourseWithTerm[] = [];
 
         for (const course of currentCourses) {
