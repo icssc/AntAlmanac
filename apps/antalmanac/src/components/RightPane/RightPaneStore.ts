@@ -49,7 +49,7 @@ class RightPaneStore extends EventEmitter {
         this.urlCourseCodeValue = search.get('courseCode') || '';
         this.urlTermValue = search.get('term') || '';
         this.urlGEValue = search.get('GE') || '';
-        this.urlRestrictionsValue = search.get('restrictions') || '';
+        this.urlRestrictionsValue = search.get('Restrictions') || '';
         this.urlCourseNumValue = search.get('courseNumber') || '';
         this.urlDeptLabel = search.get('deptLabel') || '';
         this.urlDeptValue = search.get('deptValue') || '';
