@@ -161,13 +161,13 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         return totalUnits;
     };
 
-    getGrid = () => {
+    AddedSectionsGrid = () => {
         const scheduleName = this.state.scheduleNames[AppStore.getCurrentScheduleIndex()];
         const scheduleUnits = this.getTotalUnits();
         const NOTE_MAX_LEN = 5000;
 
         return (
-            <>
+            <Grid container spacing={2}>
                 <div className={this.props.classes.titleRow}>
                     <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
 
@@ -267,11 +267,11 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                         multiline
                     />
                 </Paper>
-            </>
+            </Grid>
         );
     };
 
-    getSkeletonSchedule = () => {
+    SkeletonSchedule = () => {
         const sectionsByTerm = AppStore.getSkeletonSchedule().courses.reduce(
             (acc: Record<string, string[]>, course) => {
                 if (!acc[course.term]) {
@@ -315,13 +315,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
     };
 
     render() {
-        return this.state.skeletonMode ? (
-            this.getSkeletonSchedule()
-        ) : (
-            <Grid container spacing={2}>
-                {this.getGrid()}
-            </Grid>
-        );
+        return this.state.skeletonMode ? <this.SkeletonSchedule /> : <this.AddedSectionsGrid />;
     }
 }
 
