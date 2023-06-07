@@ -50,7 +50,7 @@ interface AddedCoursePaneState {
     customEvents: RepeatingCustomEvent[];
     scheduleNames: string[];
     scheduleNote: string;
-    barebonesMode: boolean;
+    skeletonMode: boolean;
 }
 
 class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePaneState> {
@@ -59,7 +59,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         customEvents: [],
         scheduleNames: AppStore.getScheduleNames(),
         scheduleNote: AppStore.getCurrentScheduleNote(),
-        barebonesMode: AppStore.getBarebonesMode(),
+        skeletonMode: AppStore.getSkeletonMode(),
     };
 
     componentDidMount = () => {
@@ -71,7 +71,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         AppStore.on('currentScheduleIndexChange', this.loadCustomEvents);
         AppStore.on('scheduleNamesChange', this.loadScheduleNames);
         AppStore.on('scheduleNotesChange', this.loadScheduleNote);
-        AppStore.on('barebonesModeChange', this.barebonesModeChange);
+        AppStore.on('skeletonModeChange', this.skeletonModeChange);
 
         logAnalytics({
             category: analyticsEnum.addedClasses.title,
@@ -86,7 +86,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         AppStore.removeListener('currentScheduleIndexChange', this.loadCustomEvents);
         AppStore.removeListener('scheduleNamesChange', this.loadScheduleNames);
         AppStore.removeListener('scheduleNotesChange', this.loadScheduleNote);
-        AppStore.removeListener('barebonesModeChange', this.barebonesModeChange);
+        AppStore.removeListener('skeletonModeChange', this.skeletonModeChange);
     }
 
     loadCourses = () => {
@@ -271,15 +271,17 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         );
     };
 
-    getBarebonesSchedule = () => {
-        const sectionsByTerm = AppStore.getBarebonesSchedule().courses.reduce(
+    getSkeletonSchedule = () => {
+        const sectionsByTerm = AppStore.getSkeletonSchedule().courses.reduce(
             (acc: Record<string, string[]>, course) => {
                 if (!acc[course.term]) {
                     acc[course.term] = [];
                 }
                 acc[course.term].push(course.sectionCode);
                 return acc;
-            }, {});
+            },
+            {}
+        );
 
         return (
             <>
@@ -290,37 +292,35 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                             <>
                                 <Typography variant="h6">{term}</Typography>
                                 <Paper key={term} elevation={1}>
-                                    <Grid item md={12} xs={12} key={term} style={{padding: "15px 0px 15px"}}>
+                                    <Grid item md={12} xs={12} key={term} style={{ padding: '15px 0px 15px' }}>
                                         <Typography variant="body1">
                                             Sections enrolled: {sections.join(', ')}
                                         </Typography>
                                     </Grid>
                                 </Paper>
                             </>
-
                         );
                     })
                 }
                 <Typography variant="body1">
-                    PeterPortal or WebSoc is currently unreachable.
-                    This is the information that we can currently retrieve.
+                    PeterPortal or WebSoc is currently unreachable. This is the information that we can currently
+                    retrieve.
                 </Typography>
             </>
-        )
-    }
+        );
+    };
 
-    barebonesModeChange = () => {
-        this.setState({ barebonesMode: AppStore.getBarebonesMode() }, () => console.log(this.state.barebonesMode));
-    }
+    skeletonModeChange = () => {
+        this.setState({ skeletonMode: AppStore.getSkeletonMode() }, () => console.log(this.state.skeletonMode));
+    };
 
     render() {
-        return (
-            this.state.barebonesMode ?
-                this.getBarebonesSchedule()
-                :
-                <Grid container spacing={2}>
-                    {this.getGrid()}
-                </Grid>
+        return this.state.skeletonMode ? (
+            this.getSkeletonSchedule()
+        ) : (
+            <Grid container spacing={2}>
+                {this.getGrid()}
+            </Grid>
         );
     }
 }

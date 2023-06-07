@@ -9,20 +9,12 @@ import {
     ScheduleUndoState,
     ShortCourseSchedule,
 } from './schedule.types';
-import {RepeatingCustomEvent} from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import {combineSOCObjects, CourseInfo, getCourseInfo, queryWebsoc} from '$lib/helpers';
-import { openSnackbar } from '$actions/AppStoreActions';
 import AppStore from './AppStore';
+import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { combineSOCObjects, CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
+import { openSnackbar } from '$actions/AppStoreActions';
 
-const defaultColors = [
-    blue[500],
-    pink[500],
-    purple[500],
-    green[500],
-    amber[500],
-    deepPurple[500],
-    deepOrange[500],
-];
+const defaultColors = [blue[500], pink[500], purple[500], green[500], amber[500], deepPurple[500], deepOrange[500]];
 
 /**
  * Converts a hex color to HSL
@@ -198,7 +190,7 @@ export class Schedules {
     private schedules: Schedule[];
     private currentScheduleIndex: number;
     private previousStates: ScheduleUndoState[];
-    private barebonesSchedules: ShortCourseSchedule[];
+    private skeletonSchedules: ShortCourseSchedule[];
 
     // We do not want schedule notes to be undone; to avoid this,
     // we keep track of every schedule note in an object where each key
@@ -213,7 +205,7 @@ export class Schedules {
         this.currentScheduleIndex = 0;
         this.previousStates = [];
         this.scheduleNoteMap = { [scheduleNoteId]: '' };
-        this.barebonesSchedules = [];
+        this.skeletonSchedules = [];
     }
 
     // --- Schedule index methods ---
@@ -627,7 +619,9 @@ export class Schedules {
                                     .reduce((result: string[][], item, index) => {
                                         // WebSOC queries can have a maximum of 10 course codes in tandem
                                         const chunkIndex = Math.floor(index / 10);
-                                        result[chunkIndex] ? result[chunkIndex].push(item) : (result[chunkIndex] = [item]);
+                                        result[chunkIndex]
+                                            ? result[chunkIndex].push(item)
+                                            : (result[chunkIndex] = [item]);
                                         return result;
                                     }, []) // https://stackoverflow.com/a/37826698
                                     .map((sectionCode: string[]) =>
@@ -644,10 +638,9 @@ export class Schedules {
             } catch (error) {
                 console.error(error);
                 openSnackbar('error', 'Could not retrieve course information.');
-                AppStore.loadBarebonesSchedule(saveState);
+                AppStore.loadSkeletonSchedule(saveState);
                 return;
             }
-
 
             // Map course info to courses and transform shortened schedule to normal schedule
             for (const shortCourseSchedule of saveState.schedules) {
@@ -706,11 +699,11 @@ export class Schedules {
         this.scheduleNoteMap[scheduleNoteId] = newScheduleNote;
     }
 
-    getBarebonesSchedule(): ShortCourseSchedule {
-        return this.barebonesSchedules[this.currentScheduleIndex];
+    getSkeletonSchedule(): ShortCourseSchedule {
+        return this.skeletonSchedules[this.currentScheduleIndex];
     }
 
-    setBarebonesSchedules(barebonesSchedules: ShortCourseSchedule[]) {
-        this.barebonesSchedules = barebonesSchedules;
+    setSkeletonSchedules(skeletonSchedules: ShortCourseSchedule[]) {
+        this.skeletonSchedules = skeletonSchedules;
     }
 }
