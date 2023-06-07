@@ -1,4 +1,4 @@
-import { Button, Grid, IconButton, Paper, Theme, useTheme } from '@material-ui/core';
+import { IconButton, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import CloseIcon from '@material-ui/icons/Close';
@@ -214,6 +214,7 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
                 department: formData.deptValue,
                 term: formData.term,
                 ge: formData.ge,
+                restrictions: formData.restrictions,
                 courseNumber: formData.courseNumber,
                 sectionCodes: formData.sectionCode,
                 instructorName: formData.instructor,
@@ -232,11 +233,75 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
                 } else {
                     jsonResp = await queryWebsoc(params);
                 }
-                this.setState({
-                    loading: false,
-                    error: false,
-                    courseData: flattenSOCObject(jsonResp),
-                });
+
+                // WHEN PETERPORTAL HAS AN ENDPOINT, GET RID OF THIS :)), AND MAYBE REDO THE RESTRICTION PARAMS TO MESH PROPERLY IF NEEDED ^
+                if (params.restrictions === 'ALL') {
+                    // console.log(flattenSOCObject(jsonResp)) // (31 in GE-5B)
+                    this.setState({
+                        loading: false,
+                        error: false,
+                        courseData: flattenSOCObject(jsonResp),
+                    });
+                } else {
+                    // formData.restrictions is an array of strings BUT is of type string (?!)...
+                    // so it must be converted to a string, split into an array (again), then can befiltered
+                    // this returns just the restriction letters in an array with '' (<- must be '', not "") concatenated (for courses w/o restrictions)
+                    // (ex: ["A", "B", "X", ''])
+                    // if there's a cleaner way, please fix / LMK :)
+                    const restrictionLetters = formData.restrictions
+                        .toString()
+                        .split(',')
+                        .map((value) => value.split(':')[0].trim())
+                        .filter((value) => /^[A-Z]$/.test(value))
+                        .sort((a, b) => a.localeCompare(b))
+                        .concat('');
+
+                    const courseData = flattenSOCObject(jsonResp)
+                        // Filters for courses that have ALL of its restriction values  within the search restriction params
+                        // ex: ["A", "L"] in ["A", "B", "L", ""] works
+                        // ex: ["A", "L"] in ["B", "L", ""] does not work because "A" is not in the search restriction params
+                        .filter((course) => {
+                            // sections doesn't exist on type School, so it has to be pre-checked
+                            if ('sections' in course) {
+                                return course.sections[0].restrictions
+                                    .split(' and ')
+                                    .every((element) => restrictionLetters.includes(element));
+                            }
+                            return true;
+                        })
+                        // The first filter may result in "empty" schools and/or departments, so this second round filters out any School | Department object which:
+                        .filter((currentObj, index, array) => {
+                            const nextIndex = index + 1;
+
+                            if ('deptName' in currentObj) {
+                                // A. The next object is a School | Department object
+                                if (nextIndex < array.length && currentObj.deptName) {
+                                    return Object.prototype.hasOwnProperty.call(array[nextIndex], 'schoolName') ||
+                                        Object.prototype.hasOwnProperty.call(array[nextIndex], 'deptName')
+                                        ? false
+                                        : true;
+                                }
+
+                                // B.The object is at the end of the array and is a School | Department object
+                                if (
+                                    index == array.length - 1 &&
+                                    Object.prototype.hasOwnProperty.call(array[index], 'deptName')
+                                ) {
+                                    return false;
+                                }
+                            }
+
+                            return true;
+                        });
+
+                    // console.log(courseData) // (16 in GE-5B; All rstr except A => (["B", "C", ...]).
+                    // Checks out because there are 15 total removed objects: courses (13), departments w/ only A courses (2: Stats & Math) 31-15=16!)
+                    this.setState({
+                        loading: false,
+                        error: false,
+                        courseData: courseData,
+                    });
+                }
             } catch (error) {
                 this.setState({
                     loading: false,
