@@ -6,6 +6,7 @@ const Environment = type([
         'STAGE?': "'dev' | 'prod' | 'staging'",
         USERDATA_TABLE_NAME: 'string',
         AA_MONGODB_URI: 'string',
+        AWS_REGION: 'string',
         'PR_NUM?': 'number',
     },
     '|>',

@@ -6,7 +6,7 @@ import env from '../env';
 
 // Initialise DynamoDB Client
 const client = new DynamoDB({
-    region: 'us-east-1',
+    region: env.AWS_REGION,
 });
 
 // Create DynamoDB DocumentClient
