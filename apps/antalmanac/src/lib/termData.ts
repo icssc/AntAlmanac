@@ -12,9 +12,11 @@ class Term {
     }
 }
 
-// Quarterly Academic Calendar: https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html
-// The `startDate`, if available, should correspond to the instruction start date (not the quarter start date)
-// Note: months are 0-indexed
+/**
+ * Quarterly Academic Calendar {@link https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html}
+ * The `startDate`, if available, should correspond to the __instruction start date__ (not the quarter start date)
+ * Months are 0-indexed
+ */
 const termData = [
     new Term('2023 Fall', '2023 Fall Quarter', [2023, 8, 28]),
     new Term('2023 Summer2', '2023 Summer Session 2', [2023, 7, 7]),
