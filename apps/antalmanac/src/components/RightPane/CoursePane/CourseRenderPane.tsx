@@ -244,37 +244,43 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
                     });
                 } else {
                     // formData.restrictions is an array of strings BUT is of type string (?!)...
-                    // so it must be converted to a string, split into an array (again), then can befiltered
-                    // this returns just the restriction letters in an array with '' (<- must be '', not "") concatenated (for courses w/o restrictions)
+                    // so it must be converted to a string, split into an array (again), then can be filtered
                     // (ex: ["A", "B", "X", ''])
                     // if there's a cleaner way, please fix / LMK :)
-                    const restrictionLetters = formData.restrictions
-                        .toString()
-                        .split(',')
-                        .map((value) => value.split(':')[0].trim())
-                        .filter((value) => /^[A-Z]$/.test(value))
-                        .sort((a, b) => a.localeCompare(b))
-                        .concat('');
+                    const restrictionLetters = formData.restrictions.toString().includes(':')
+                        ? formData.restrictions
+                              .toString()
+                              .split(',')
+                              .map((value) => value.split(':')[0].trim())
+                              .filter((value) => /^[A-Z]$/.test(value))
+                              .sort((a, b) => a.localeCompare(b))
+                        : formData.restrictions
+                              .toString()
+                              .split('')
+                              .filter((value) => /^[A-Z]$/.test(value))
+                              .sort((a, b) => a.localeCompare(b));
 
                     const courseData = flattenSOCObject(jsonResp)
-                        // Filters for courses that have ALL of its restriction values  within the search restriction params
-                        // ex: ["A", "L"] in ["A", "B", "L", ""] works
-                        // ex: ["A", "L"] in ["B", "L", ""] does not work because "A" is not in the search restriction params
+                        // IF the letter is checked, it CANNOT be in the returned courses
+
+                        // Filters for courses that have NONE of its restriction values within the search restriction params
+                        // ex: 'C and D' with ["A", "B", "L", ""] works
+                        // ex: 'A and D' with ["A", "B", "L", ""] does not work because "A" IS in the search restriction params
                         .filter((course) => {
                             // sections doesn't exist on type School, so it has to be pre-checked
                             if ('sections' in course) {
                                 return course.sections[0].restrictions
-                                    .split(' and ')
-                                    .every((element) => restrictionLetters.includes(element));
+                                    .split(' and ') // converts "A and L" into ["A", "L"]
+                                    .every((element) => !restrictionLetters.includes(element));
                             }
                             return true;
                         })
-                        // The first filter may result in "empty" schools and/or departments, so this second round filters out any School | Department object which:
+                        // The prior filter may result in "empty" schools and/or departments, so this second round filters out any School | Department object which:
                         .filter((currentObj, index, array) => {
                             const nextIndex = index + 1;
 
                             if ('deptName' in currentObj) {
-                                // A. The next object is a School | Department object
+                                // A. The next object is a School | Department object (thus it must not have a course associatied)
                                 if (nextIndex < array.length && currentObj.deptName) {
                                     return Object.prototype.hasOwnProperty.call(array[nextIndex], 'schoolName') ||
                                         Object.prototype.hasOwnProperty.call(array[nextIndex], 'deptName')
@@ -290,11 +296,16 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
                                     return false;
                                 }
                             }
-
                             return true;
+                        })
+                        // The first filter may create an instance where there is an empty School and Department remaining.
+                        // The second filter DOES removes the "empty" Department, but "forgets" to iterate back and check if School now has nothing following.
+                        // This final filter checks for a final remaining School
+                        .filter((obj, index, array) => {
+                            return array.length == 1 ? false : true;
                         });
 
-                    // console.log(courseData) // (16 in GE-5B; All rstr except A => (["B", "C", ...]).
+                    // console.log(courseData) // (16 in GE-5B; No A restrictions)
                     // Checks out because there are 15 total removed objects: courses (13), departments w/ only A courses (2: Stats & Math) 31-15=16!)
                     this.setState({
                         loading: false,
