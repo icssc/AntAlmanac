@@ -12,10 +12,11 @@ class Term {
     }
 }
 
-// Quarterly Academic Calendar: https://www.reg.uci.edu/calendars/quarterly/2022-2023/quarterly22-23.html
+// Quarterly Academic Calendar: https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html
+// The `startDate`, if available, should correspond to the instruction start date (not the quarter start date)
 // Note: months are 0-indexed
 const termData = [
-    new Term('2023 Fall', '2023 Fall Quarter', [2023, 8, 25]),
+    new Term('2023 Fall', '2023 Fall Quarter', [2023, 8, 28]),
     new Term('2023 Summer2', '2023 Summer Session 2', [2023, 7, 7]),
     new Term('2023 Summer10wk', '2023 10-wk Summer', [2023, 5, 26]),
     new Term('2023 Summer1', '2023 Summer Session 1', [2023, 5, 26]),
