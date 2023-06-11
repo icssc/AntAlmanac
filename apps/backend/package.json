@@ -2,26 +2,46 @@
     "name": "antalmanac-backend",
     "version": "0.0.1",
     "description": "Backend for AntAlmanac",
-    "main": "server.js",
     "scripts": {
-        "build": "esbuild --platform=node --target=node16 --bundle  --outfile=dist/lambda.js lambda.js",
-        "start": "node server.local.js",
-        "format": "prettier --write src"
-    },
-    "devDependencies": {
-        "dotenv": "^16.0.0",
-        "esbuild": "^0.17.10",
-        "husky": "^7.0.4",
-        "prettier": "^2.5.1"
+        "dev": "esbuild --watch --bundle --sourcemap --outdir=dist --platform=node src/index.ts",
+        "build": "esbuild --bundle --minify --outdir=dist --platform=node src/lambda.ts",
+        "start": "concurrently 'npm run dev' 'nodemon dist'",
+        "format": "prettier --write src",
+        "lint": "eslint src"
     },
     "dependencies": {
-        "@vendia/serverless-express": "^4.5.4",
-        "aws-sdk": "^2.1323.0",
-        "body-parser": "^1.19.0",
+        "@trpc/server": "^10.23.0",
+        "@vendia/serverless-express": "^4.10.1",
+        "@packages/antalmanac-types": "*",
+        "arktype": "1.0.14-alpha",
+        "aws-lambda": "^1.0.7",
         "cors": "^2.8.5",
-        "express": "^4.16.2",
-        "mongodb": "^3.5.9",
-        "mongoose": "^5.10.13"
+        "dotenv": "^16.0.3",
+        "envalid": "^7.3.1",
+        "express": "^4.18.2",
+        "mongodb": "^5.0.1",
+        "mongoose": "^7.1.0j",
+        "superjson": "^1.12.3",
+        "websoc-api": "^3.0.0"
+    },
+    "devDependencies": {
+        "@aws-sdk/client-dynamodb": "^3.332.0",
+        "@aws-sdk/lib-dynamodb": "^3.332.0",
+        "@types/aws-lambda": "^8.10.110",
+        "@types/cors": "^2.8.13",
+        "@types/express": "^4.17.17",
+        "@typescript-eslint/eslint-plugin": "^5.52.0",
+        "@typescript-eslint/parser": "^5.52.0",
+        "concurrently": "^8.0.1",
+        "esbuild": "^0.17.19",
+        "eslint": "^8.34.0",
+        "eslint-config-prettier": "^8.6.0",
+        "eslint-plugin-import": "^2.27.5",
+        "husky": "^8.0.3",
+        "lint-staged": "^13.1.2",
+        "nodemon": "^2.0.22",
+        "prettier": "^2.8.4",
+        "typescript": "^4.9.5"
     },
     "lint-staged": {
         "*.{js,json,css,html}": [

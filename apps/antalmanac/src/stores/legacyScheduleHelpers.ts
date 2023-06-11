@@ -1,4 +1,4 @@
-import { ScheduleSaveState } from './schedule.types';
+import { ScheduleSaveState } from '@packages/antalmanac-types';
 
 interface LegacyShortCourseInfo {
     color: string;

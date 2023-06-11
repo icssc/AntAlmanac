@@ -15,6 +15,8 @@ import classNames from 'classnames';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
 import { Fragment, useEffect, useState } from 'react';
 
+import { AASection } from '@packages/antalmanac-types';
+import { WebsocSectionEnrollment, WebsocSectionMeeting } from 'peterportal-api-next-types';
 import RightPaneStore from '../RightPaneStore';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
@@ -22,7 +24,6 @@ import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import restrictionsMapping from './static/restrictionsMapping.json';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
-import { AASection, EnrollmentCount, Meeting } from '$lib/peterportal.types';
 import AppStore from '$stores/AppStore';
 
 const styles: Styles<Theme, object> = (theme) => ({
@@ -186,7 +187,7 @@ const InstructorsCell = withStyles(styles)((props: InstructorsCellProps) => {
 
 interface LocationsCellProps {
     classes: ClassNameMap;
-    meetings: Meeting[];
+    meetings: WebsocSectionMeeting[];
     courseName: string; // Used in map pin popup
 }
 
@@ -196,13 +197,13 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
-                return meeting.bldg !== 'TBA' ? (
-                    <Fragment key={meeting.days + meeting.time + meeting.bldg}>
+                return meeting.bldg[0] !== 'TBA' ? (
+                    <Fragment key={meeting.days + meeting.time + meeting.bldg[0]}>
                         <button
                             className={classes.mapLink}
                             onClick={() => {
                                 RightPaneStore.focusOnBuilding({
-                                    location: meeting.bldg,
+                                    location: meeting.bldg[0],
                                     courseName: courseName,
                                 });
                             }}
@@ -221,7 +222,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
 
 interface SectionEnrollmentCellProps {
     classes: ClassNameMap;
-    numCurrentlyEnrolled: EnrollmentCount;
+    numCurrentlyEnrolled: WebsocSectionEnrollment;
     maxCapacity: number;
     /** This is a string because sometimes it's "n/a" */
     numOnWaitlist: string;
@@ -299,7 +300,7 @@ const RestrictionsCell = withStyles(styles)((props: RestrictionsCellProps) => {
 
 interface DayAndTimeCellProps {
     classes: ClassNameMap;
-    meetings: Meeting[];
+    meetings: WebsocSectionMeeting[];
 }
 
 const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
