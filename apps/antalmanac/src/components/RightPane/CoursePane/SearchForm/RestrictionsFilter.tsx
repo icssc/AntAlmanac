@@ -39,25 +39,25 @@ const styles = {
 
 // this typecasting is pretty nasty, but it won't work without it
 // If there's a more proper workaround please fix/LMK
-const staticRestrictionList = {
-    [String('A')]: 'A: Prerequisite required',
-    [String('M')]: 'M: Non-major only',
-    [String('E')]: 'E: Freshmen only',
-    [String('G')]: 'G: Lower-division only',
-    [String('I')]: 'I: Seniors only',
-    [String('N')]: 'N: School major only',
-    [String('F')]: 'F: Sophomores only',
-    [String('O')]: 'O: Non-school major only',
-    [String('H')]: 'H: Juniors only',
-    [String('J')]: 'J: Upper-division only',
-    [String('C')]: 'C: Fee required',
-    [String('D')]: 'D: Pass/Not Pass option only',
-    [String('X')]: 'X: Separate authorization codes required to add, drop, or change enrollment',
-    [String('R')]: 'R: Biomedical Pass/Fail course (School of Medicine only)',
-    [String('K')]: 'K: Graduate only',
-    [String('S')]: 'S: Satisfactory/Unsatisfactory only',
-    [String('B')]: 'B: Authorization code required',
-    [String('L')]: 'L: Major only',
+const staticRestrictionList: Record<string, string> = {
+    A: 'A: Prerequisite required',
+    M: 'M: Non-major only',
+    E: 'E: Freshmen only',
+    G: 'G: Lower-division only',
+    I: 'I: Seniors only',
+    N: 'N: School major only',
+    F: 'F: Sophomores only',
+    O: 'O: Non-school major only',
+    H: 'H: Juniors only',
+    J: 'J: Upper-division only',
+    C: 'C: Fee required',
+    D: 'D: Pass/Not Pass option only',
+    X: 'X: Separate authorization codes required to add, drop, or change enrollment',
+    R: 'R: Biomedical Pass/Fail course (School of Medicine only)',
+    K: 'K: Graduate only',
+    S: 'S: Satisfactory/Unsatisfactory only',
+    B: 'B: Authorization code required',
+    L: 'L: Major only',
 };
 
 interface RestrictionFilterProps {
