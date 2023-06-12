@@ -96,9 +96,7 @@ const MapMarker = ({
 
     function handleKeyPress(event: { key: string }) {
         if (event.key === 'Escape' && markerRef.current) {
-            // eslint-disable-next-line
-            // @ts-ignore
-            markerRef.current.leafletElement.closePopup();
+            (markerRef.current as any).leafletElement.closePopup();
         }
         return () => {
             document.removeEventListener('keydown', handleKeyPress, false);
