@@ -68,7 +68,6 @@ interface RestrictionFilterState {
     restrictions: string[];
 }
 
-// url is not being grabbed to set the values correctly on refresh
 class RestrictionsFilter extends PureComponent<RestrictionFilterProps, RestrictionFilterState> {
     updateRestrictionsAndGetFormData() {
         RightPaneStore.updateFormValue('restrictions', RightPaneStore.getUrlRestrictionsValue());
@@ -152,7 +151,9 @@ class RestrictionsFilter extends PureComponent<RestrictionFilterProps, Restricti
                         multiple
                         value={
                             Array.isArray(this.state.restrictions)
-                                ? this.state.restrictions.filter((item: any) => !Array.isArray(item))
+                                ? this.state.restrictions.filter(
+                                      (item: unknown): item is string => typeof item === 'string'
+                                  )
                                 : this.state.restrictions
                         }
                         onChange={this.handleChange}
