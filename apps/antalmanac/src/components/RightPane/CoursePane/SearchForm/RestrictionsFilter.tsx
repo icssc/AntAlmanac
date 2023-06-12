@@ -86,7 +86,7 @@ class RestrictionsFilter extends PureComponent<RestrictionFilterProps, Restricti
             this.getRestrictions() !== 'ALL' && typeof this.getRestrictions() === 'string' // guards for type errors
                 ? this.getRestrictions()
                       .split('')
-                      .filter((item: any) => !Array.isArray(item))
+                      .filter((item: unknown): item is string => typeof item === 'string')
                       .map((restriction) => staticRestrictionList[restriction as string]) // Converts URL letters to the full code so the Select / Checkboxes can be checked/unchecked
                 : [this.getRestrictions()],
     };
