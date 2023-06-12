@@ -1,5 +1,5 @@
-import {amber, blue, deepOrange, deepPurple, green, pink, purple} from "@material-ui/core/colors";
-import {ScheduleCourse} from "@packages/antalmanac-types";
+import { amber, blue, deepOrange, deepPurple, green, pink, purple } from '@material-ui/core/colors';
+import { ScheduleCourse } from '@packages/antalmanac-types';
 
 export interface HSLColor {
     h: number;
@@ -7,15 +7,7 @@ export interface HSLColor {
     l: number;
 }
 
-const defaultColors = [
-    blue[500],
-    pink[500],
-    purple[500],
-    green[500],
-    amber[500],
-    deepPurple[500],
-    deepOrange[500],
-];
+const defaultColors = [blue[500], pink[500], purple[500], green[500], amber[500], deepPurple[500], deepOrange[500]];
 
 /**
  * Converts a hex color to HSL
@@ -149,7 +141,7 @@ function generateCloseColor(originalColor: string, usedColors: Set<string>, vari
     ) {
         color = {
             ...color,
-            l: Math.round((color.l + delta) * 100 % 100)/100,
+            l: Math.round(((color.l + delta) * 100) % 100) / 100,
         };
     }
 
@@ -170,14 +162,18 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
                 Math.abs(parseInt(b.section.sectionCode) - parseInt(newSection.section.sectionCode))
         );
 
+    // New array of courses that share the same sectionType & courseTitle
+    const existingSectionsType = existingSections.filter(
+        (course) => course.section.sectionType === newSection.section.sectionType
+    );
+
     const usedColors = new Set(sectionsInSchedule.map((course) => course.section.color));
 
-    if (existingSections.length > 0) {
-        const originalColor = existingSections[0].section.color;
+    // If the same sectionType exists, return that color
+    if (existingSectionsType.length > 0) return existingSectionsType[0].section.color;
 
-        // Generate a slightly different color that does not conflict with any other section in the schedule
-        return generateCloseColor(originalColor, usedColors);
-    }
+    // If the same courseTitle exists, but not the same sectionType, return a close color
+    if (existingSections.length > 0) return generateCloseColor(existingSections[0].section.color, usedColors);
 
     // If there are no existing sections with the same course title, generate a new color
     return defaultColors.find((materialColor) => !usedColors.has(materialColor)) || '#5ec8e0';
