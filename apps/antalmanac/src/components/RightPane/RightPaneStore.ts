@@ -19,6 +19,18 @@ const defaultFormValues: Record<string, string> = {
     room: '',
 };
 
+// If there's a best practice that doesn't use 'let', LMK!
+let activeColumns = [
+    'sectionCode',
+    'sectionDetails',
+    'instructors',
+    'dayAndTime',
+    'location',
+    'sectionEnrollment',
+    'restrictions',
+    'status',
+];
+
 export interface BuildingFocusInfo {
     location: string; // E.g., ICS 174
     courseName: string;
@@ -117,6 +129,15 @@ class RightPaneStore extends EventEmitter {
          *  The choice was between prop-drilling from Home and having cascading listeners, and
          *  I think the latter is reasonable.
          */
+    };
+
+    setColumns = (columns: string[]) => {
+        activeColumns = columns;
+        this.emit('columnChange');
+    };
+
+    getColumns = (): string[] => {
+        return activeColumns;
     };
 }
 
