@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import {
     Box,
     Button,
@@ -13,7 +14,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useCallback, useContext, useEffect, useState } from 'react';
 
 import RightPaneStore from '../RightPaneStore';
 import { MOBILE_BREAKPOINT } from '../../../globals';
@@ -24,6 +25,8 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
 import { AASection, EnrollmentCount, Meeting } from '$lib/peterportal.types';
 import AppStore from '$stores/AppStore';
+import { mobileContext } from '$components/MobileHome';
+import locationIds from '$lib/location_ids';
 
 const styles: Styles<Theme, object> = (theme) => ({
     popover: {
@@ -192,23 +195,26 @@ interface LocationsCellProps {
 
 const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
     const { classes, meetings, courseName } = props;
+    const { setSelectedTab } = useContext(mobileContext);
+
+    const focusMap = useCallback(() => {
+        setSelectedTab(1);
+    }, [setSelectedTab]);
 
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
+                const [buildingName = ''] = meeting.bldg.split(' ');
+                const buildingId = locationIds[buildingName] ?? 69420;
                 return meeting.bldg !== 'TBA' ? (
                     <Fragment key={meeting.days + meeting.time + meeting.bldg}>
-                        <button
-                            className={classes.mapLink}
-                            onClick={() => {
-                                RightPaneStore.focusOnBuilding({
-                                    location: meeting.bldg,
-                                    courseName: courseName,
-                                });
-                            }}
+                        <Link
+                            className={classes.clickableLocation}
+                            to={`/map?location=${buildingId}`}
+                            onClick={focusMap}
                         >
                             {meeting.bldg}
-                        </button>
+                        </Link>
                         <br />
                     </Fragment>
                 ) : (
