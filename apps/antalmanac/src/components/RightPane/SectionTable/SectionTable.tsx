@@ -14,7 +14,9 @@ import { withStyles } from '@material-ui/core/styles';
 import { Assessment, Help, RateReview } from '@material-ui/icons';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 // import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back and restore the files (https://github.com/icssc/AntAlmanac/tree/5e89e035e66f00608042871d43730ba785f756b0/src/components/RightPane/SectionTable/EnrollmentGraph)
+import { useEffect, useState } from 'react';
 import { MOBILE_BREAKPOINT } from '../../../globals';
+import RightPaneStore from '../RightPaneStore';
 import CourseInfoBar from './CourseInfoBar';
 import CourseInfoButton from './CourseInfoButton';
 import GradesPopup from './GradesPopup';
@@ -64,11 +66,52 @@ const styles = {
     },
 };
 
+const TableHeadColumns: { value: string; label: string }[] = [
+    { value: 'sectionCode', label: 'Code' },
+    { value: 'sectionDetails', label: 'Type' },
+    { value: 'instructors', label: 'Instructors' },
+    { value: 'dayAndTime', label: 'Times' },
+    { value: 'location', label: 'Places' },
+    { value: 'sectionEnrollment', label: 'Enrollment' },
+    { value: 'restrictions', label: 'Rstr' },
+    { value: 'status', label: 'Status' },
+];
+
 const SectionTable = (props: SectionTableProps) => {
     const { classes, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames, analyticsCategory } = props;
     const courseId = courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     const encodedDept = encodeURIComponent(courseDetails.deptCode);
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
+
+    const [columns, setColumns] = useState([
+        'sectionCode',
+        'sectionDetails',
+        'instructors',
+        'dayAndTime',
+        'location',
+        'sectionEnrollment',
+        'restrictions',
+        'status',
+    ]);
+
+    let activeTableHeadColumns = TableHeadColumns.filter((column) => columns.includes(column.value));
+
+    useEffect(() => {
+        const setActiveColumns = () => {
+            setColumns(RightPaneStore.getActiveColumns());
+        };
+
+        const setActiveTableBodyColumns = () => {
+            activeTableHeadColumns = TableHeadColumns.filter((column) => columns.includes(column.value));
+        };
+
+        setActiveTableBodyColumns();
+        RightPaneStore.on('columnChange', setActiveColumns);
+
+        return () => {
+            RightPaneStore.removeListener('columnChange', setActiveColumns);
+        };
+    }, [columns]);
 
     return (
         <>
@@ -125,7 +168,40 @@ const SectionTable = (props: SectionTableProps) => {
                     <TableHead>
                         <TableRow>
                             <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row} />
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
+                            {activeTableHeadColumns.map((column) => {
+                                return (
+                                    <TableCell
+                                        classes={{ sizeSmall: classes?.cellPadding }}
+                                        className={classes?.row}
+                                        key={column.label}
+                                    >
+                                        {!(column.label === 'Enrollment') ? (
+                                            column.label
+                                        ) : (
+                                            <div className={classes?.flex}>
+                                                <span className={classes?.iconMargin}>{column.label}</span>
+                                                {!isMobileScreen && (
+                                                    <Tooltip
+                                                        title={
+                                                            <Typography>
+                                                                Enrolled/Capacity
+                                                                <br />
+                                                                Waitlist
+                                                                <br />
+                                                                New-Only Reserved
+                                                            </Typography>
+                                                        }
+                                                    >
+                                                        <Help fontSize="small" />
+                                                    </Tooltip>
+                                                )}
+                                            </div>
+                                        )}
+                                    </TableCell>
+                                );
+                            })}
+
+                            {/* <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
                                 Code
                             </TableCell>
                             <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
@@ -165,7 +241,7 @@ const SectionTable = (props: SectionTableProps) => {
                             </TableCell>
                             <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
                                 Status
-                            </TableCell>
+                            </TableCell> */}
                         </TableRow>
                     </TableHead>
                     <TableBody>

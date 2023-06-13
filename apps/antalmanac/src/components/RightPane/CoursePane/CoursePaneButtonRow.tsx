@@ -1,8 +1,8 @@
-import { IconButton, InputLabel, Paper, Select, Theme, Tooltip } from '@material-ui/core';
+import { IconButton, Select, Theme, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { ArrowBack, MoreVert, Refresh } from '@material-ui/icons';
-import { Checkbox, FormControl, ListItemText, MenuItem, Popover } from '@material-ui/core';
+import { Checkbox, FormControl, ListItemText, MenuItem } from '@material-ui/core';
 import { ChangeEvent, PureComponent } from 'react';
 import RightPaneStore from '../RightPaneStore';
 
@@ -40,6 +40,7 @@ const columnList: { value: string; label: string }[] = [
 interface CoursePaneButtonRowProps {
     classes: ClassNameMap;
     showSearch: boolean;
+    columnSelector: boolean;
     onDismissSearchResults: () => void;
     onRefreshSearch: () => void;
 }
@@ -60,7 +61,7 @@ class CoursePaneButtonRow extends PureComponent<CoursePaneButtonRowProps> {
     };
 
     handleClick = () => {
-        this.setState((prevState: any) => ({
+        this.setState((prevState: CoursePaneButtonRowProps) => ({
             columnSelector: !prevState.columnSelector,
         }));
     };
@@ -71,7 +72,7 @@ class CoursePaneButtonRow extends PureComponent<CoursePaneButtonRowProps> {
                 activeColumns: event.target.value,
             },
             () => {
-                RightPaneStore.setColumns(this.state.activeColumns);
+                RightPaneStore.setActiveColumns(this.state.activeColumns);
             }
         );
     };

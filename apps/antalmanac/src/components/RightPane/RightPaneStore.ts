@@ -131,12 +131,12 @@ class RightPaneStore extends EventEmitter {
          */
     };
 
-    setColumns = (columns: string[]) => {
+    setActiveColumns = (columns: string[]) => {
         activeColumns = columns;
         this.emit('columnChange');
     };
 
-    getColumns = (): string[] => {
+    getActiveColumns = (): string[] => {
         return activeColumns;
     };
 }

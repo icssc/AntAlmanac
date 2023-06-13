@@ -391,7 +391,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         };
 
         const setActiveColumns = () => {
-            setColumns(RightPaneStore.getColumns());
+            setColumns(RightPaneStore.getActiveColumns());
         };
 
         const setActiveTableBodyColumns = () => {
@@ -413,7 +413,10 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     }, [section.sectionCode, term, columns]); //should only run once on first render since these shouldn't change.
 
     return (
-        <TableRow>
+        <TableRow
+            classes={{ root: classes.row }}
+            className={classNames(classes.tr, { addedCourse: addedCourse && highlightAdded })}
+        >
             {!addedCourse ? (
                 <ScheduleAddCell
                     section={section}
