@@ -5,29 +5,6 @@ import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
 
-const restrictionList = [
-    // "All: Include All Restrictions",
-    // "NONE: Filter all restrictions",
-    'A: Prerequisite required',
-    'B: Authorization code required',
-    'C: Fee required',
-    'D: Pass/Not Pass option only',
-    'E: Freshmen only',
-    'F: Sophomores only',
-    'G: Lower-division only',
-    'H: Juniors only',
-    'I: Seniors only',
-    'J: Upper-division only',
-    'K: Graduate only',
-    'L: Major only',
-    'M: Non-major only',
-    'N: School major only',
-    'O: Non-school major only',
-    'R: Biomedical Pass/Fail course (School of Medicine only)',
-    'S: Satisfactory/Unsatisfactory only',
-    'X: Separate authorization codes required to add, drop, or change enrollment',
-];
-
 // clean up styling later
 const styles = {
     formControl: {
@@ -37,29 +14,6 @@ const styles = {
     },
 };
 
-// this typecasting is pretty nasty, but it won't work without it
-// If there's a more proper workaround please fix/LMK
-const staticRestrictionList: Record<string, string> = {
-    A: 'A: Prerequisite required',
-    M: 'M: Non-major only',
-    E: 'E: Freshmen only',
-    G: 'G: Lower-division only',
-    I: 'I: Seniors only',
-    N: 'N: School major only',
-    F: 'F: Sophomores only',
-    O: 'O: Non-school major only',
-    H: 'H: Juniors only',
-    J: 'J: Upper-division only',
-    C: 'C: Fee required',
-    D: 'D: Pass/Not Pass option only',
-    X: 'X: Separate authorization codes required to add, drop, or change enrollment',
-    R: 'R: Biomedical Pass/Fail course (School of Medicine only)',
-    K: 'K: Graduate only',
-    S: 'S: Satisfactory/Unsatisfactory only',
-    B: 'B: Authorization code required',
-    L: 'L: Major only',
-};
-
 interface RestrictionFilterProps {
     classes: ClassNameMap;
 }
@@ -67,6 +21,28 @@ interface RestrictionFilterProps {
 interface RestrictionFilterState {
     restrictions: string[];
 }
+const restrictionList: { value: string; label: string }[] = [
+    // "All: Include All Restrictions",
+    // "NONE: Filter all restrictions",
+    { value: 'A', label: 'Prerequisite required' },
+    { value: 'B', label: 'Authorization code required' },
+    { value: 'C', label: 'Fee required' },
+    { value: 'D', label: 'Pass/Not Pass option only' },
+    { value: 'E', label: 'Freshmen only' },
+    { value: 'F', label: 'Sophomores only' },
+    { value: 'G', label: 'Lower-division only' },
+    { value: 'H', label: 'Juniors only' },
+    { value: 'I', label: 'Seniors only' },
+    { value: 'J', label: 'Upper-division only' },
+    { value: 'K', label: 'Graduate only' },
+    { value: 'L', label: 'Major only' },
+    { value: 'M', label: 'Non-major only' },
+    { value: 'N', label: 'School major only' },
+    { value: 'O', label: 'Non-school major only' },
+    { value: 'R', label: 'Biomedical Pass/Fail course (School of Medicine only)' },
+    { value: 'S', label: 'Satisfactory/Unsatisfactory only' },
+    { value: 'X', label: 'Separate authorization codes required to add, drop, or change enrollment' },
+];
 
 class RestrictionsFilter extends PureComponent<RestrictionFilterProps, RestrictionFilterState> {
     updateRestrictionsAndGetFormData() {
@@ -86,8 +62,8 @@ class RestrictionsFilter extends PureComponent<RestrictionFilterProps, Restricti
                 ? this.getRestrictions()
                       .split('')
                       .filter((item: unknown): item is string => typeof item === 'string')
-                      .map((restriction) => staticRestrictionList[restriction as string]) // Converts URL letters to the full code so the Select / Checkboxes can be checked/unchecked
-                : [this.getRestrictions()],
+                : //   .map((restriction) => staticRestrictionList[restriction as string]) // Converts URL letters to the full code so the Select / Checkboxes can be checked/unchecked
+                  [this.getRestrictions()],
     };
 
     handleChange = (event: ChangeEvent<{ restrictions?: string | undefined; value: unknown }>) => {
@@ -169,9 +145,12 @@ class RestrictionsFilter extends PureComponent<RestrictionFilterProps, Restricti
                         }
                     >
                         {restrictionList.map((restriction) => (
-                            <MenuItem key={restriction} value={restriction}>
-                                <Checkbox checked={this.state.restrictions.indexOf(restriction) >= 0} color="default" />
-                                <ListItemText primary={restriction} />
+                            <MenuItem key={restriction.value} value={restriction.value}>
+                                <Checkbox
+                                    checked={this.state.restrictions.indexOf(restriction.value) >= 0}
+                                    color="default"
+                                />
+                                <ListItemText primary={`${restriction.value}: ${restriction.label}`} />
                             </MenuItem>
                         ))}
                     </Select>
