@@ -4,12 +4,12 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Add, ArrowDropDown, Delete } from '@material-ui/icons';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 
+import { AASection } from '@packages/antalmanac-types';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { CourseDetails } from '$lib/helpers';
-import { AASection } from '$lib/peterportal.types';
 import AppStore from '$stores/AppStore';
 
 // Reset these params in url becasue when copy a specific class's link, it only copy its course code
@@ -83,16 +83,14 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
             }
         }
 
-        if (scheduleIndex !== -1) {
-            if (specificSchedule) {
-                logAnalytics({
-                    category: analyticsEnum.classSearch.title,
-                    action: analyticsEnum.classSearch.actions.ADD_SPECIFIC,
-                });
-            }
-            const newCourse = addCourse(section, courseDetails, term, scheduleIndex);
-            section.color = newCourse.section.color;
+        if (specificSchedule) {
+            logAnalytics({
+                category: analyticsEnum.classSearch.title,
+                action: analyticsEnum.classSearch.actions.ADD_SPECIFIC,
+            });
         }
+        const newCourse = addCourse(section, courseDetails, term, scheduleIndex);
+        section.color = newCourse.section.color;
     };
 
     const addCourseHandler = () => {
@@ -125,7 +123,7 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
                 <IconButton {...bindTrigger(popupState)}>
                     <ArrowDropDown fontSize="small" />
                 </IconButton>
-                <Menu {...bindMenu(popupState)} onClose={() => closeAndAddCourse(-1)}>
+                <Menu {...bindMenu(popupState)}>
                     {scheduleNames.map((name, index) => (
                         <MenuItem key={index} onClick={() => closeAndAddCourse(index, true)}>
                             Add to {name}

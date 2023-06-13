@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { VariantType } from 'notistack';
 
-import { ScheduleCourse, ScheduleSaveState } from './schedule.types';
+import { ScheduleCourse, ScheduleSaveState } from '@packages/antalmanac-types';
 import { Schedules } from './Schedules';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
@@ -64,12 +64,12 @@ class AppStore extends EventEmitter {
         return this.schedule.getAllCustomEvents();
     }
 
-    addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
+    addCourse(newCourse: ScheduleCourse, scheduleIndex: number) {
         let addedCourse: ScheduleCourse;
         if (scheduleIndex === this.schedule.getNumberOfSchedules()) {
             addedCourse = this.schedule.addCourseToAllSchedules(newCourse);
         } else {
-            addedCourse = this.schedule.addCourse(newCourse);
+            addedCourse = this.schedule.addCourse(newCourse, scheduleIndex);
         }
         this.unsavedChanges = true;
         this.emit('addedCoursesChange');
@@ -81,7 +81,7 @@ class AppStore extends EventEmitter {
     }
 
     getCourseEventsInCalendar() {
-        return this.schedule.getCalendarizedCourseEvents()
+        return this.schedule.getCalendarizedCourseEvents();
     }
 
     getFinalEventsInCalendar() {

@@ -54,12 +54,12 @@ const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }: Grades
             for (const [key, value] of Object.entries(courseGrades)) {
                 // format data for display in chart
                 // key formatting: sum_grade_a_count -> A
-                if (key !== 'average_gpa') {
+                if (key !== 'averageGPA') {
                     data.push({ name: key.split('_')[2]?.toUpperCase(), all: value as number });
                 }
             }
 
-            setGraphTitle(`Grade Distribution | Average GPA: ${courseGrades.average_gpa.toFixed(2)}`);
+            setGraphTitle(`Grade Distribution | Average GPA: ${courseGrades.averageGPA.toFixed(2)}`);
             setGradeData(data);
             setLoading(false);
         } catch (e) {
