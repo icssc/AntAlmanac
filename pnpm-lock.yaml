@@ -56,6 +56,12 @@ importers:
       '@tanstack/react-query':
         specifier: ^4.24.4
         version: 4.24.10(react-dom@18.2.0)(react@18.2.0)
+      '@trpc/client':
+        specifier: ^10.30.0
+        version: 10.30.0(@trpc/server@10.23.0)
+      '@trpc/server':
+        specifier: ^10.23.0
+        version: 10.23.0
       chart.js:
         specifier: ^4.2.1
         version: 4.2.1
@@ -101,6 +107,9 @@ importers:
       notistack:
         specifier: ^2.0.8
         version: 2.0.8(@emotion/react@11.10.6)(@emotion/styled@11.10.6)(@mui/material@5.11.10)(react-dom@18.2.0)(react@18.2.0)
+      peterportal-api-next-types:
+        specifier: 1.0.0-alpha.6
+        version: 1.0.0-alpha.6
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -137,6 +146,9 @@ importers:
       recharts:
         specifier: ^2.4.2
         version: 2.4.3(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)
+      superjson:
+        specifier: ^1.12.3
+        version: 1.12.3
       websoc-fuzzy-search:
         specifier: ^0.10.0
         version: 0.10.0
@@ -2695,6 +2707,14 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       use-sync-external-store: 1.2.0(react@18.2.0)
+    dev: false
+
+  /@trpc/client@10.30.0(@trpc/server@10.23.0):
+    resolution: {integrity: sha512-utz0qRI4eU3QcHvBwcSONEnt5pWR3Dyk4VFJnySHysBT6GQRRpJifWX5+RxDhFK93LxcAmiirFbYXjZ40gbobw==}
+    peerDependencies:
+      '@trpc/server': 10.30.0
+    dependencies:
+      '@trpc/server': 10.23.0
     dev: false
 
   /@trpc/server@10.23.0:
