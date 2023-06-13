@@ -94,22 +94,21 @@ const SectionTable = (props: SectionTableProps) => {
         'status',
     ]);
 
-    let activeTableHeadColumns = TableHeadColumns.filter((column) => columns.includes(column.value));
+    const [activeTableHeadColumns, setActiveTableHeadColumns] = useState(
+        TableHeadColumns.filter((column) => columns.includes(column.value))
+    );
 
     useEffect(() => {
-        const setActiveColumns = () => {
-            setColumns(RightPaneStore.getActiveColumns());
-        };
-
-        const setActiveTableBodyColumns = () => {
-            activeTableHeadColumns = TableHeadColumns.filter((column) => columns.includes(column.value));
-        };
-
-        setActiveTableBodyColumns();
-        RightPaneStore.on('columnChange', setActiveColumns);
+        RightPaneStore.on('columnChange', (columns) => {
+            setColumns(columns);
+            setActiveTableHeadColumns(TableHeadColumns.filter((column) => columns.includes(column.value)));
+        });
 
         return () => {
-            RightPaneStore.removeListener('columnChange', setActiveColumns);
+            RightPaneStore.removeListener('columnChange', (columns) => {
+                setColumns(columns);
+                setActiveTableHeadColumns(TableHeadColumns.filter((column) => columns.includes(column.value)));
+            });
         };
     }, [columns]);
 
@@ -200,48 +199,6 @@ const SectionTable = (props: SectionTableProps) => {
                                     </TableCell>
                                 );
                             })}
-
-                            {/* <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
-                                Code
-                            </TableCell>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
-                                Type
-                            </TableCell>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
-                                Instructors
-                            </TableCell>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
-                                Times
-                            </TableCell>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
-                                Places
-                            </TableCell>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
-                                <div className={classes?.flex}>
-                                    <span className={classes?.iconMargin}>Enrollment</span>
-                                    {!isMobileScreen && (
-                                        <Tooltip
-                                            title={
-                                                <Typography>
-                                                    Enrolled/Capacity
-                                                    <br />
-                                                    Waitlist
-                                                    <br />
-                                                    New-Only Reserved
-                                                </Typography>
-                                            }
-                                        >
-                                            <Help fontSize="small" />
-                                        </Tooltip>
-                                    )}
-                                </div>
-                            </TableCell>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
-                                Rstr
-                            </TableCell>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row}>
-                                Status
-                            </TableCell> */}
                         </TableRow>
                     </TableHead>
                     <TableBody>

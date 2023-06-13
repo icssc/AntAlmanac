@@ -68,14 +68,9 @@ class CoursePaneButtonRow extends PureComponent<CoursePaneButtonRowProps> {
     };
 
     handleChange = (event: ChangeEvent<{ restrictions?: string | undefined; value: unknown }>) => {
-        this.setState(
-            {
-                activeColumns: event.target.value,
-            },
-            () => {
-                RightPaneStore.setActiveColumns(this.state.activeColumns);
-            }
-        );
+        this.setState({ activeColumns: event.target.value }, () => {
+            RightPaneStore.setActiveColumns(this.state.activeColumns);
+        });
     };
 
     render() {

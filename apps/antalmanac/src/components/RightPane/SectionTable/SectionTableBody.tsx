@@ -382,7 +382,9 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         'status',
     ]);
 
-    let activeTableBodyColumns = TableBodyColumns.filter((column) => columns.includes(column.name));
+    const [activeTableBodyColumns, setActiveTableBodyColumns] = useState(
+        TableBodyColumns.filter((column) => columns.includes(column.name))
+    );
 
     useEffect(() => {
         const toggleHighlight = () => {
@@ -390,25 +392,22 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             setAddedCourse(doAdd);
         };
 
-        const setActiveColumns = () => {
-            setColumns(RightPaneStore.getActiveColumns());
-        };
-
-        const setActiveTableBodyColumns = () => {
-            activeTableBodyColumns = TableBodyColumns.filter((column) => columns.includes(column.name));
-        };
-
         toggleHighlight();
-        setActiveTableBodyColumns();
 
         AppStore.on('addedCoursesChange', toggleHighlight);
         AppStore.on('currentScheduleIndexChange', toggleHighlight);
-        RightPaneStore.on('columnChange', setActiveColumns);
+        RightPaneStore.on('columnChange', (columns) => {
+            setColumns(columns);
+            setActiveTableBodyColumns(TableBodyColumns.filter((column) => columns.includes(column.name)));
+        });
 
         return () => {
             AppStore.removeListener('addedCoursesChange', toggleHighlight);
             AppStore.removeListener('currentScheduleIndexChange', toggleHighlight);
-            RightPaneStore.removeListener('columnChange', setActiveColumns);
+            RightPaneStore.removeListener('columnChange', (columns) => {
+                setColumns(columns);
+                setActiveTableBodyColumns(TableBodyColumns.filter((column) => columns.includes(column.name)));
+            });
         };
     }, [section.sectionCode, term, columns]); //should only run once on first render since these shouldn't change.
 

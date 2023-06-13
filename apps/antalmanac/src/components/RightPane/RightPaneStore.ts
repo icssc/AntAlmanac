@@ -20,7 +20,7 @@ const defaultFormValues: Record<string, string> = {
 };
 
 // If there's a best practice that doesn't use 'let', LMK!
-let activeColumns = [
+const activeColumns = [
     'sectionCode',
     'sectionDetails',
     'instructors',
@@ -132,12 +132,7 @@ class RightPaneStore extends EventEmitter {
     };
 
     setActiveColumns = (columns: string[]) => {
-        activeColumns = columns;
-        this.emit('columnChange');
-    };
-
-    getActiveColumns = (): string[] => {
-        return activeColumns;
+        this.emit('columnChange', columns);
     };
 }
 
