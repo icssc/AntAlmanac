@@ -5,6 +5,7 @@ import { ArrowBack, MoreVert, Refresh } from '@material-ui/icons';
 import { Checkbox, FormControl, ListItemText, MenuItem } from '@material-ui/core';
 import { ChangeEvent, PureComponent } from 'react';
 import RightPaneStore from '../RightPaneStore';
+import { isDarkMode } from '$lib/helpers';
 
 const styles: Styles<Theme, object> = {
     buttonRow: {
@@ -94,34 +95,22 @@ class CoursePaneButtonRow extends PureComponent<CoursePaneButtonRowProps> {
                     </IconButton>
                 </Tooltip>
 
-                <Tooltip title="Hide Columns" id="target">
+                <Tooltip title="Hide Columns">
                     <IconButton onClick={this.handleClick} className={classes.button}>
                         <MoreVert />
                     </IconButton>
                 </Tooltip>
 
                 {this.state.columnSelector && (
-                    <FormControl className={classes.formControl} style={{ position: 'fixed' }}>
+                    <FormControl className={classes.formControl}>
                         <Select
-                            style={{ maxWidth: '0', display: 'none', position: 'fixed' }}
+                            style={{ width: '0', zIndex: -1, color: isDarkMode() ? '#303030' : '#FAFAFA' }}
+                            inputProps={{ IconComponent: () => null }} // some styling nonsense to Thanos snap away the little arrow icon: https://aguidehub.com/blog/2023-02-25-how-to-hide-arrow-from-mui-select-in-react-js/
                             open={this.state.columnSelector}
                             multiple
                             onClose={this.handleClick}
                             value={this.state.activeColumns}
                             onChange={this.handleChange}
-                            // the styling is so giga scuffed rn, but I'm leaving it for future me to deal with
-                            MenuProps={{
-                                anchorEl: document.getElementById('target'),
-                                getContentAnchorEl: undefined,
-                                anchorOrigin: {
-                                    vertical: 'top',
-                                    horizontal: 'center',
-                                },
-                                transformOrigin: {
-                                    vertical: 'top',
-                                    horizontal: 'center',
-                                },
-                            }}
                         >
                             {columnList.map((column) => (
                                 <MenuItem key={column.value} value={column.value} style={{ maxWidth: '200px' }}>
