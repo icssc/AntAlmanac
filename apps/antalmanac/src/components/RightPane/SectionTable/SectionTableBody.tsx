@@ -32,6 +32,7 @@ const styles: Styles<Theme, object> = (theme) => ({
     },
     sectionCode: {
         padding: 0,
+        textAlign: 'left',
         display: 'inline-block',
         cursor: 'pointer',
         '&:hover': {
@@ -106,7 +107,7 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
 
     return (
         <NoPaddingTableCell className={classes.cell}>
-            <Tooltip title="Click to copy course code" placement="bottom" enterDelay={300}>
+            <Tooltip title="Click to copy course code" placement="bottom" enterDelay={150}>
                 <Button
                     size="small"
                     onClick={(event) => {
@@ -117,6 +118,7 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
                         });
                     }}
                     className={classes.sectionCode}
+                    style={{ backgroundColor: 'transparent', marginRight: '-15px' }}
                 >
                     {sectionCode}
                 </Button>
