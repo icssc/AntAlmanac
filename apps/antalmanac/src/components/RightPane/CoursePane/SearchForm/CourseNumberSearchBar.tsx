@@ -47,12 +47,16 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
                 case '200-999':
                     this.handleCourseNumbers('200-999');
                     break;
+                default:
+                    this.handleCourseNumbers('');
+                    break;
             }
         });
     };
 
     handleNumbersChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
         this.handleCourseNumbers(event.target.value);
+        this.setState({ courseLevel: '0' });
     };
 
     handleCourseNumbers = (eventCourseNumbers: string) => {
