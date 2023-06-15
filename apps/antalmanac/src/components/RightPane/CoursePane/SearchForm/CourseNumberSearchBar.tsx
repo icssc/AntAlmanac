@@ -1,10 +1,18 @@
-import { FormControlLabel, Switch, TextField } from '@material-ui/core';
+import { FormControl, InputLabel, ListItemText, MenuItem, Select, TextField } from '@material-ui/core';
 import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
 
+const courseLevelList: { level: string; label: string }[] = [
+    { level: '0', label: 'Any Course Division' },
+    { level: '1-99', label: 'Lower Division Only' },
+    { level: '100-199', label: 'Upper Division Only' },
+    { level: '200-999', label: 'Graduate/Professional Only' },
+];
+
 interface CourseNumberSearchBarState {
     courseNumber: string;
+    courseLevel: string;
 }
 
 class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseNumberSearchBarState> {
@@ -21,14 +29,26 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
 
     state = {
         courseNumber: this.getCourseNumber(),
+        courseLevel: '',
     };
 
-    handleUpperDivChange = (event: ChangeEvent<HTMLInputElement>) => {
-        if (event.target.checked) {
-            this.handleCourseNumbers('100-199');
-        } else {
-            this.handleCourseNumbers('');
-        }
+    handleDivChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
+        this.setState({ courseLevel: event.target.value as string }, () => {
+            switch (event.target.value as string) {
+                case '0':
+                    this.handleCourseNumbers('');
+                    break;
+                case '1-99':
+                    this.handleCourseNumbers('1-99');
+                    break;
+                case '100-199':
+                    this.handleCourseNumbers('100-199');
+                    break;
+                case '200-999':
+                    this.handleCourseNumbers('200-999');
+                    break;
+            }
+        });
     };
 
     handleNumbersChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -74,18 +94,25 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
                     helperText="ex. 6B, 17, 30-40"
                 />
 
-                <FormControlLabel
-                    control={
-                        <Switch
-                            onChange={this.handleUpperDivChange}
-                            value="100-199"
-                            color="primary"
-                            checked={this.state.courseNumber === '100-199'}
-                        />
-                    }
-                    labelPlacement="top"
-                    label="Upper Div Only"
-                />
+                <FormControl style={{ marginLeft: 15, marginRight: 15, width: 125 }}>
+                    <InputLabel>Course Level</InputLabel>
+                    <Select
+                        value={this.state.courseLevel}
+                        renderValue={(selected) =>
+                            courseLevelList.find((item) => item.level === selected)?.label as string
+                        }
+                        onChange={this.handleDivChange}
+                        fullWidth
+                    >
+                        {courseLevelList.map((level) => {
+                            return (
+                                <MenuItem key={level.level} value={level.level}>
+                                    <ListItemText>{level.label}</ListItemText>
+                                </MenuItem>
+                            );
+                        })}
+                    </Select>
+                </FormControl>
             </>
         );
     }
