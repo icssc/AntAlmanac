@@ -92,9 +92,10 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
                     value={this.state.courseNumber}
                     onChange={this.handleNumbersChange}
                     helperText="ex. 6B, 17, 30-40"
+                    style={{ marginRight: 15 }}
                 />
 
-                <FormControl style={{ marginLeft: 15, marginRight: 15, width: 125 }}>
+                <FormControl style={{ minWidth: 75 }}>
                     <InputLabel>Course Level</InputLabel>
                     <Select
                         value={this.state.courseLevel}
