@@ -162,7 +162,7 @@ const InstructorsCell = withStyles(styles)((props: InstructorsCellProps) => {
     const { classes, instructors } = props;
 
     const getLinks = (professorNames: string[]) => {
-        return professorNames.map((profName) => {
+        return professorNames.map((profName, index) => {
             if (profName !== 'STAFF') {
                 const lastName = profName.substring(0, profName.indexOf(','));
                 return (
@@ -177,7 +177,7 @@ const InstructorsCell = withStyles(styles)((props: InstructorsCellProps) => {
                     </Box>
                 );
             } else {
-                return <Box key={profName}> {profName} </Box>;
+                return <Box key={profName + index}> {profName} </Box>; // The key should be fine as we're not changing ['STAFF, 'STAFF']
             }
         });
     };

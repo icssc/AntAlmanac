@@ -17,14 +17,24 @@ const styles: Styles<Theme, object> = (theme) => ({
     school: {
         display: 'flex',
         flexWrap: 'wrap',
-        ...theme.mixins.gutters(),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        [theme.breakpoints.up('sm')]: {
+            paddingLeft: theme.spacing(3),
+            paddingRight: theme.spacing(3),
+        },
         paddingTop: theme.spacing(),
         paddingBottom: theme.spacing(),
     },
     dept: {
         display: 'flex',
         flexWrap: 'wrap',
-        ...theme.mixins.gutters(),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        [theme.breakpoints.up('sm')]: {
+            paddingLeft: theme.spacing(3),
+            paddingRight: theme.spacing(3),
+        },
         paddingTop: theme.spacing(),
         paddingBottom: theme.spacing(),
     },
@@ -68,8 +78,10 @@ class SchoolDeptCard extends PureComponent<SchoolDeptCardProps> {
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Typography variant="body2">
-                                <p>{this.props.comment === '' ? 'No comments found' : 'Comments:'}</p>
+                            <Typography variant="body2" component={'span'}>
+                                {' '}
+                                {/*The default component for this seems to be <p> which is giving warnings with DOMnesting */}
+                                <Typography>{this.props.comment === '' ? 'No comments found' : 'Comments:'}</Typography>
                                 <Box
                                     dangerouslySetInnerHTML={html}
                                     className={this.props.classes.comments}
