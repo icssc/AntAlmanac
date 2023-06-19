@@ -79,8 +79,7 @@ class SchoolDeptCard extends PureComponent<SchoolDeptCardProps> {
                         </AccordionSummary>
                         <AccordionDetails>
                             <Typography variant="body2" component={'span'}>
-                                {' '}
-                                {/*The default component for this seems to be <p> which is giving warnings with DOMnesting */}
+                                {/*The default component for the body2 typography seems to be <p> which is giving warnings with DOMnesting */}
                                 <Typography>{this.props.comment === '' ? 'No comments found' : 'Comments:'}</Typography>
                                 <Box
                                     dangerouslySetInnerHTML={html}
