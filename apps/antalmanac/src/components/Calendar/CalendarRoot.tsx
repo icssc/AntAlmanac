@@ -245,6 +245,10 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
             },
         });
 
+        const handleOnView = () => {
+            return;
+        };
+
         return (
             <div className={classes.container} style={isMobile ? { height: 'calc(100% - 50px)' } : undefined}>
                 <CalendarToolbar
@@ -303,7 +307,9 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                             dayFormat: 'ddd',
                         }}
                         views={[Views.WEEK, Views.WORK_WEEK]}
-                        defaultView={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
+                        defaultView={Views.WORK_WEEK}
+                        view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
+                        onView={handleOnView}
                         step={15}
                         timeslots={2}
                         defaultDate={new Date(2018, 0, 1)}
