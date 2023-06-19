@@ -52,6 +52,7 @@ const EditSchedule = (props: EditScheduleProps) => {
                     vertical: 'top',
                     horizontal: 'left',
                 }}
+                getContentAnchorEl={null}
             >
                 <ScheduleNameDialog
                     scheduleNames={scheduleNames}
