@@ -205,9 +205,9 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
-                const [buildingName = ''] = meeting.bldg.split(' ');
+                const [buildingName = ''] = meeting.bldg;
                 const buildingId = locationIds[buildingName] ?? 69420;
-                return meeting.bldg !== 'TBA' ? (
+                return meeting.bldg[0] !== 'TBA' ? (
                     <Fragment key={meeting.days + meeting.time + meeting.bldg}>
                         <Link
                             className={classes.clickableLocation}
