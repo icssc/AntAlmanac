@@ -1,35 +1,18 @@
-import DateFnsUtils from '@date-io/date-fns';
-import { Box, CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { MoreVert as MoreVertIcon } from '@mui/icons-material';
-import { useEffect, useRef } from 'react';
 import Split from 'react-split';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { Box, CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
 
-import Bar from './AppBar/CustomAppBar';
-import NotificationSnackbar from './AppBar/NotificationSnackbar';
-import Calendar from './Calendar/CalendarRoot';
-import MobileHome from './MobileHome';
-import PatchNotes from './PatchNotes';
-import DesktopTabs from './RightPane/RightPaneRoot';
+import Bar from '$components/AppBar/CustomAppBar';
+import MobileHome from '$components/MobileHome';
+import PatchNotes from '$components/PatchNotes';
+import Calendar from '$components/Calendar/CalendarRoot';
+import DesktopTabs from '$components/RightPane/RightPaneRoot';
+import NotificationSnackbar from '$components/AppBar/NotificationSnackbar';
 
-const Home = () => {
+export default function Home() {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
     const theme = useTheme();
-
-    /**
-     * ref to the DOM node that has the ellipsis MUI icon
-     */
-    const ellipsisRef = useRef<SVGSVGElement>(null);
-
-    useEffect(() => {
-        /**
-         * the gutter is the middle bar used to resize the split pane
-         * grab the ellipsis DOM node and relocate it under the gutter
-         */
-        if (!isMobileScreen && ellipsisRef.current) {
-            document.querySelector('.gutter')?.appendChild(ellipsisRef.current);
-        }
-    }, [isMobileScreen]);
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -61,15 +44,10 @@ const Home = () => {
 
                     <Box>
                         <DesktopTabs style={{ height: 'calc(100vh - 58px)' }} />
-
-                        {/* render an ellipsis icon and manually teleport it to the gutter */}
-                        <MoreVertIcon ref={ellipsisRef} sx={{ color: 'white' }} />
                     </Box>
                 </Split>
             )}
             <NotificationSnackbar />
         </MuiPickersUtilsProvider>
     );
-};
-
-export default Home;
+}
