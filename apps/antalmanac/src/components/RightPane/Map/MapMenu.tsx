@@ -6,6 +6,7 @@ import React, { PureComponent } from 'react';
 
 import Building from './static/building';
 import buildingCatalogue from './static/buildingCatalogue';
+import AppStore from '$stores/AppStore';
 
 const styles: Styles<Theme, object> = {
     tabContainer: {
@@ -51,6 +52,9 @@ class MapMenu extends PureComponent<MapMenuProps> {
     render() {
         const { classes } = this.props;
 
+        const events = AppStore.getEventsInCalendar();
+        const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
+
         return (
             <>
                 <Paper elevation={0} className={classes.tabContainer}>
@@ -66,11 +70,13 @@ class MapMenu extends PureComponent<MapMenuProps> {
                         centered
                     >
                         <StyledTab label="All" />
+                        {hasWeekendCourse ? <StyledTab label="Sun" /> : null}
                         <StyledTab label="Mon" />
                         <StyledTab label="Tue" />
                         <StyledTab label="Wed" />
                         <StyledTab label="Thu" />
                         <StyledTab label="Fri" />
+                        {hasWeekendCourse ? <StyledTab label="Sat" /> : null}
                     </StyledTabs>
                 </Paper>
 
