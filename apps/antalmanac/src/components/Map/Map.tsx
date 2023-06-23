@@ -25,7 +25,7 @@ const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{
 /**
  * empty day is alias for "All Days"
  */
-const days = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const days = ['', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 interface MarkerContent {
     key: string;
@@ -146,6 +146,10 @@ export default function CourseMap() {
           }
         : undefined;
 
+    const hasWeekendCourse = AppStore.getCourseEventsInCalendar().some(
+        (event) => event.start.getDay() === 0 || event.start.getDay() === 6
+    );
+
     const today = days[selectedDayIndex];
 
     /**
@@ -176,13 +180,15 @@ export default function CourseMap() {
                 {/** Menu floats above the map. */}
                 <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.942, marginX: '15%', marginY: 8 }}>
                     <Tabs value={selectedDayIndex} onChange={handleChange} variant="fullWidth" sx={{ minHeight: 0 }}>
-                        {days.map((day) => (
-                            <Tab
-                                key={day}
-                                label={day || 'All'}
-                                sx={{ padding: 1, minHeight: 'auto', minWidth: '10%', p: 1 }}
-                            />
-                        ))}
+                        {days
+                            .filter((day) => hasWeekendCourse || (day !== 'Sat' && day !== 'Sun'))
+                            .map((day) => (
+                                <Tab
+                                    key={day}
+                                    label={day || 'All'}
+                                    sx={{ padding: 1, minHeight: 'auto', minWidth: '10%', p: 1 }}
+                                />
+                            ))}
                     </Tabs>
                     <Autocomplete
                         options={buildings}
