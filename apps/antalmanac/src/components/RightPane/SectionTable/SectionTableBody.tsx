@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import {
     Box,
     Button,
@@ -13,8 +14,10 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useCallback, useContext, useEffect, useState } from 'react';
 
+import { AASection } from '@packages/antalmanac-types';
+import { WebsocSectionEnrollment, WebsocSectionMeeting } from 'peterportal-api-next-types';
 import RightPaneStore from '../RightPaneStore';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
@@ -22,8 +25,9 @@ import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import restrictionsMapping from './static/restrictionsMapping.json';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
-import { AASection, EnrollmentCount, Meeting } from '$lib/peterportal.types';
 import AppStore from '$stores/AppStore';
+import { mobileContext } from '$components/MobileHome';
+import locationIds from '$lib/location_ids';
 
 const styles: Styles<Theme, object> = (theme) => ({
     popover: {
@@ -186,29 +190,32 @@ const InstructorsCell = withStyles(styles)((props: InstructorsCellProps) => {
 
 interface LocationsCellProps {
     classes: ClassNameMap;
-    meetings: Meeting[];
+    meetings: WebsocSectionMeeting[];
     courseName: string; // Used in map pin popup
 }
 
 const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
     const { classes, meetings, courseName } = props;
+    const { setSelectedTab } = useContext(mobileContext);
+
+    const focusMap = useCallback(() => {
+        setSelectedTab(1);
+    }, [setSelectedTab]);
 
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
-                return meeting.bldg !== 'TBA' ? (
+                const [buildingName = ''] = meeting.bldg;
+                const buildingId = locationIds[buildingName] ?? 69420;
+                return meeting.bldg[0] !== 'TBA' ? (
                     <Fragment key={meeting.days + meeting.time + meeting.bldg}>
-                        <button
-                            className={classes.mapLink}
-                            onClick={() => {
-                                RightPaneStore.focusOnBuilding({
-                                    location: meeting.bldg,
-                                    courseName: courseName,
-                                });
-                            }}
+                        <Link
+                            className={classes.clickableLocation}
+                            to={`/map?location=${buildingId}`}
+                            onClick={focusMap}
                         >
                             {meeting.bldg}
-                        </button>
+                        </Link>
                         <br />
                     </Fragment>
                 ) : (
@@ -221,7 +228,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
 
 interface SectionEnrollmentCellProps {
     classes: ClassNameMap;
-    numCurrentlyEnrolled: EnrollmentCount;
+    numCurrentlyEnrolled: WebsocSectionEnrollment;
     maxCapacity: number;
     /** This is a string because sometimes it's "n/a" */
     numOnWaitlist: string;
@@ -299,7 +306,7 @@ const RestrictionsCell = withStyles(styles)((props: RestrictionsCellProps) => {
 
 interface DayAndTimeCellProps {
     classes: ClassNameMap;
-    meetings: Meeting[];
+    meetings: WebsocSectionMeeting[];
 }
 
 const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {

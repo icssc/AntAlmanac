@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { VariantType } from 'notistack';
 
-import { ScheduleCourse, ScheduleSaveState } from './schedule.types';
+import { ScheduleCourse, ScheduleSaveState } from '@packages/antalmanac-types';
 import { Schedules } from './Schedules';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
@@ -84,11 +84,11 @@ class AppStore extends EventEmitter {
     }
 
     getEventsInCalendar() {
-        return this.schedules.toCalendarizedEvents();
+        return this.schedules.getCalendarizedEvents();
     }
 
     getFinalEventsInCalendar() {
-        return this.schedules.toCalendarizedFinals();
+        return this.schedules.getCalendarizedFinals();
     }
 
     getSnackbarMessage() {
