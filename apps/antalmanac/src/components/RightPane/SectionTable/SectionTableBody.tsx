@@ -352,16 +352,16 @@ interface SectionTableBodyProps {
 }
 
 const tableBodyColumns = [
-    { name: 'scheduleAdd', Component: ScheduleAddCell },
-    { name: 'colorAndDelete', Component: ColorAndDelete },
-    { name: 'sectionCode', Component: CourseCodeCell },
-    { name: 'sectionDetails', Component: SectionDetailsCell },
-    { name: 'instructors', Component: InstructorsCell },
-    { name: 'dayAndTime', Component: DayAndTimeCell },
-    { name: 'location', Component: LocationsCell },
-    { name: 'sectionEnrollment', Component: SectionEnrollmentCell },
-    { name: 'restrictions', Component: RestrictionsCell },
-    { name: 'status', Component: StatusCell },
+    { value: 'scheduleAdd', Component: ScheduleAddCell },
+    { value: 'colorAndDelete', Component: ColorAndDelete },
+    { value: 'sectionCode', Component: CourseCodeCell },
+    { value: 'sectionDetails', Component: SectionDetailsCell },
+    { value: 'instructors', Component: InstructorsCell },
+    { value: 'dayAndTime', Component: DayAndTimeCell },
+    { value: 'location', Component: LocationsCell },
+    { value: 'sectionEnrollment', Component: SectionEnrollmentCell },
+    { value: 'restrictions', Component: RestrictionsCell },
+    { value: 'status', Component: StatusCell },
 ];
 
 //TODO: SectionNum name parity -> SectionNumber
@@ -420,13 +420,13 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             )}
 
             {tableBodyColumns
-                .filter((column) => columns.includes(column.name))
+                .filter((column) => columns.includes(column.value))
                 .map((column) => {
                     const Component = column.Component;
                     return (
                         // All of this is a little bulky, so if the props can be added specifically to activeTableBodyColumns, LMK!
                         <Component
-                            key={column.name}
+                            key={column.value}
                             section={section}
                             courseDetails={courseDetails}
                             term={term}
