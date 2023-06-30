@@ -351,7 +351,7 @@ interface SectionTableBodyProps {
     scheduleNames: string[];
 }
 
-const TableBodyColumns = [
+const tableBodyColumns = [
     { name: 'scheduleAdd', Component: ScheduleAddCell },
     { name: 'colorAndDelete', Component: ColorAndDelete },
     { name: 'sectionCode', Component: CourseCodeCell },
@@ -370,8 +370,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
 
     const [columns, setColumns] = useState([
-        // 'scheduleAdd',
-        // 'colorAndDelete', // these aren't really columns, so I'm leaving them out (and it makes my life easier too)
         'sectionCode',
         'sectionDetails',
         'instructors',
@@ -381,10 +379,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         'restrictions',
         'status',
     ]);
-
-    const [activeTableBodyColumns, setActiveTableBodyColumns] = useState(
-        TableBodyColumns.filter((column) => columns.includes(column.name))
-    );
 
     useEffect(() => {
         const toggleHighlight = () => {
@@ -398,7 +392,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         AppStore.on('currentScheduleIndexChange', toggleHighlight);
         RightPaneStore.on('columnChange', (columns) => {
             setColumns(columns);
-            setActiveTableBodyColumns(TableBodyColumns.filter((column) => columns.includes(column.name)));
         });
 
         return () => {
@@ -406,7 +399,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             AppStore.removeListener('currentScheduleIndexChange', toggleHighlight);
             RightPaneStore.removeListener('columnChange', (columns) => {
                 setColumns(columns);
-                setActiveTableBodyColumns(TableBodyColumns.filter((column) => columns.includes(column.name)));
             });
         };
     }, [section.sectionCode, term, columns]); //should only run once on first render since these shouldn't change.
@@ -427,25 +419,27 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                 <ColorAndDelete color={section.color} sectionCode={section.sectionCode} term={term} />
             )}
 
-            {activeTableBodyColumns.map((column) => {
-                const Component = column.Component;
-                return (
-                    // All of this is a little bulky, so if the props can be added specifically to activeTableBodyColumns, LMK!
-                    <Component
-                        key={column.name}
-                        section={section}
-                        courseDetails={courseDetails}
-                        term={term}
-                        scheduleNames={scheduleNames}
-                        {...section}
-                        sectionType={section.sectionType as SectionType}
-                        maxCapacity={parseInt(section.maxCapacity)}
-                        units={parseFloat(section.units)}
-                        courseName={courseDetails.deptCode + ' ' + courseDetails.courseNumber}
-                        {...courseDetails}
-                    />
-                );
-            })}
+            {tableBodyColumns
+                .filter((column) => columns.includes(column.name))
+                .map((column) => {
+                    const Component = column.Component;
+                    return (
+                        // All of this is a little bulky, so if the props can be added specifically to activeTableBodyColumns, LMK!
+                        <Component
+                            key={column.name}
+                            section={section}
+                            courseDetails={courseDetails}
+                            term={term}
+                            scheduleNames={scheduleNames}
+                            {...section}
+                            sectionType={section.sectionType as SectionType}
+                            maxCapacity={parseInt(section.maxCapacity)}
+                            units={parseFloat(section.units)}
+                            courseName={courseDetails.deptCode + ' ' + courseDetails.courseNumber}
+                            {...courseDetails}
+                        />
+                    );
+                })}
         </TableRow>
     );
 });
