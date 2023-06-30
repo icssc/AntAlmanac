@@ -1,4 +1,3 @@
-
 import {
     Schedule,
     ScheduleCourse,
@@ -10,7 +9,6 @@ import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } f
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
 import { getColorForNewSection } from '$stores/scheduleHelpers';
-
 
 export class Schedules {
     private schedules: Schedule[];
@@ -345,7 +343,7 @@ export class Schedules {
     /**
      * Convert courses and custom events into calendar friendly format
      */
-    toCalendarizedEvents() {
+    getCalendarizedEvents() {
         return [
             ...calendarizeCourseEvents(this.getCurrentCourses()),
             ...calendarizeCustomEvents(this.getCurrentCustomEvents()),
@@ -353,9 +351,16 @@ export class Schedules {
     }
 
     /**
+     * Convert just courses into calendar compatible format.
+     */
+    getCalendarizedCourseEvents() {
+        return calendarizeCourseEvents(this.getCurrentCourses());
+    }
+
+    /**
      * Convert finals into calendar friendly format
      */
-    toCalendarizedFinals() {
+    getCalendarizedFinals() {
         return calendarizeFinals(this.getCurrentCourses());
     }
 

@@ -1,3 +1,10 @@
+export interface Building {
+    imageURLs: string[];
+    lat: number;
+    lng: number;
+    name: string;
+}
+
 export default {
     83021: {
         name: 'Art Studio (ART)',
@@ -1955,4 +1962,4 @@ export default {
         lng: -117.843788,
         imageURLs: ['463/1R7A7978.jpg'],
     },
-};
+} as Record<number, Building>;

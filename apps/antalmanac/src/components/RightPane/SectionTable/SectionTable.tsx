@@ -64,6 +64,10 @@ const styles = {
             width: '8%',
         },
     },
+    container: {},
+    titleRow: {},
+    clearSchedule: {},
+    scheduleNoteContainer: {},
 };
 
 const tableHeadColumns: { value: string; label: string }[] = [

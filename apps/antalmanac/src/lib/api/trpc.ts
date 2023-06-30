@@ -1,6 +1,6 @@
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
-import type { AppRouter } from '../../../../backend/src/routers';
 import superjson from 'superjson';
+import type { AppRouter } from '../../../../backend/src/routers';
 
 function getEndpoint() {
     if (import.meta.env.VITE_ENDPOINT) {
