@@ -38,17 +38,52 @@ const columnList: { value: string; label: string }[] = [
     { value: 'status', label: 'Status' },
 ];
 
+interface ColumnFilterProps {
+    activeColumns: string[];
+    displayColumnSelector: boolean;
+    handleClick: () => void;
+    handleChange: (event: ChangeEvent<{ restrictions?: string | undefined; value: unknown }>) => void;
+}
+
+class ColumnFilter extends PureComponent<ColumnFilterProps> {
+    render() {
+        const { activeColumns, displayColumnSelector, handleClick, handleChange } = this.props;
+
+        return (
+            <FormControl>
+                <Select
+                    style={{ width: '0', zIndex: -1, color: isDarkMode() ? '#303030' : '#FAFAFA' }}
+                    inputProps={{ IconComponent: () => null }}
+                    open={displayColumnSelector}
+                    multiple
+                    onClose={handleClick}
+                    value={activeColumns}
+                    onChange={handleChange}
+                >
+                    {columnList.map((column) => (
+                        <MenuItem key={column.value} value={column.value} style={{ maxWidth: '200px' }}>
+                            <Checkbox checked={activeColumns.indexOf(column.value) >= 0} color="default" />
+                            <ListItemText primary={column.label} />
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        );
+    }
+}
+
 interface CoursePaneButtonRowProps {
     classes: ClassNameMap;
     showSearch: boolean;
-    columnSelector: boolean;
+    displayColumnSelector: boolean;
     onDismissSearchResults: () => void;
     onRefreshSearch: () => void;
 }
 
 class CoursePaneButtonRow extends PureComponent<CoursePaneButtonRowProps> {
     state = {
-        columnSelector: false,
+        displayColumnSelector: false,
+        // value (sectionCode), label (Code), component (CourseCodeCell)
         activeColumns: [
             'sectionCode',
             'sectionDetails',
@@ -63,7 +98,7 @@ class CoursePaneButtonRow extends PureComponent<CoursePaneButtonRowProps> {
 
     handleClick = () => {
         this.setState((prevState: CoursePaneButtonRowProps) => ({
-            columnSelector: !prevState.columnSelector,
+            displayColumnSelector: !prevState.displayColumnSelector,
         }));
     };
 
@@ -75,6 +110,7 @@ class CoursePaneButtonRow extends PureComponent<CoursePaneButtonRowProps> {
 
     render() {
         const { classes } = this.props;
+        const { displayColumnSelector, activeColumns } = this.state;
 
         return (
             <div className={classes.buttonRow} style={{ display: this.props.showSearch ? 'block' : 'none' }}>
@@ -96,29 +132,12 @@ class CoursePaneButtonRow extends PureComponent<CoursePaneButtonRowProps> {
                     </IconButton>
                 </Tooltip>
 
-                {this.state.columnSelector && (
-                    <FormControl className={classes.formControl}>
-                        <Select
-                            style={{ width: '0', zIndex: -1, color: isDarkMode() ? '#303030' : '#FAFAFA' }}
-                            inputProps={{ IconComponent: () => null }} // some styling nonsense to Thanos snap away the little arrow icon: https://aguidehub.com/blog/2023-02-25-how-to-hide-arrow-from-mui-select-in-react-js/
-                            open={this.state.columnSelector}
-                            multiple
-                            onClose={this.handleClick}
-                            value={this.state.activeColumns}
-                            onChange={this.handleChange}
-                        >
-                            {columnList.map((column) => (
-                                <MenuItem key={column.value} value={column.value} style={{ maxWidth: '200px' }}>
-                                    <Checkbox
-                                        checked={this.state.activeColumns.indexOf(column.value) >= 0}
-                                        color="default"
-                                    />
-                                    <ListItemText primary={column.label} />
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                )}
+                <ColumnFilter
+                    activeColumns={activeColumns}
+                    displayColumnSelector={displayColumnSelector}
+                    handleClick={this.handleClick}
+                    handleChange={this.handleChange}
+                />
             </div>
         );
     }
