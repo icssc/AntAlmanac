@@ -66,7 +66,7 @@ const styles = {
     },
 };
 
-const TableHeadColumns: { value: string; label: string }[] = [
+const tableHeadColumns: { value: string; label: string }[] = [
     { value: 'sectionCode', label: 'Code' },
     { value: 'sectionDetails', label: 'Type' },
     { value: 'instructors', label: 'Instructors' },
@@ -94,20 +94,14 @@ const SectionTable = (props: SectionTableProps) => {
         'status',
     ]);
 
-    const [activeTableHeadColumns, setActiveTableHeadColumns] = useState(
-        TableHeadColumns.filter((column) => columns.includes(column.value))
-    );
-
     useEffect(() => {
         RightPaneStore.on('columnChange', (columns) => {
             setColumns(columns);
-            setActiveTableHeadColumns(TableHeadColumns.filter((column) => columns.includes(column.value)));
         });
 
         return () => {
             RightPaneStore.removeListener('columnChange', (columns) => {
                 setColumns(columns);
-                setActiveTableHeadColumns(TableHeadColumns.filter((column) => columns.includes(column.value)));
             });
         };
     }, [columns]);
@@ -167,38 +161,40 @@ const SectionTable = (props: SectionTableProps) => {
                     <TableHead>
                         <TableRow>
                             <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row} />
-                            {activeTableHeadColumns.map((column) => {
-                                return (
-                                    <TableCell
-                                        classes={{ sizeSmall: classes?.cellPadding }}
-                                        className={classes?.row}
-                                        key={column.label}
-                                    >
-                                        {!(column.label === 'Enrollment') ? (
-                                            column.label
-                                        ) : (
-                                            <div className={classes?.flex}>
-                                                <span className={classes?.iconMargin}>{column.label}</span>
-                                                {!isMobileScreen && (
-                                                    <Tooltip
-                                                        title={
-                                                            <Typography>
-                                                                Enrolled/Capacity
-                                                                <br />
-                                                                Waitlist
-                                                                <br />
-                                                                New-Only Reserved
-                                                            </Typography>
-                                                        }
-                                                    >
-                                                        <Help fontSize="small" />
-                                                    </Tooltip>
-                                                )}
-                                            </div>
-                                        )}
-                                    </TableCell>
-                                );
-                            })}
+                            {tableHeadColumns
+                                .filter((column) => columns.includes(column.value))
+                                .map((column) => {
+                                    return (
+                                        <TableCell
+                                            classes={{ sizeSmall: classes?.cellPadding }}
+                                            className={classes?.row}
+                                            key={column.label}
+                                        >
+                                            {!(column.label === 'Enrollment') ? (
+                                                column.label
+                                            ) : (
+                                                <div className={classes?.flex}>
+                                                    <span className={classes?.iconMargin}>{column.label}</span>
+                                                    {!isMobileScreen && (
+                                                        <Tooltip
+                                                            title={
+                                                                <Typography>
+                                                                    Enrolled/Capacity
+                                                                    <br />
+                                                                    Waitlist
+                                                                    <br />
+                                                                    New-Only Reserved
+                                                                </Typography>
+                                                            }
+                                                        >
+                                                            <Help fontSize="small" />
+                                                        </Tooltip>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </TableCell>
+                                    );
+                                })}
                         </TableRow>
                     </TableHead>
                     <TableBody>
