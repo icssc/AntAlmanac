@@ -23,10 +23,8 @@ const ATTRIBUTION_MARKUP =
 const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`;
 
 /**
- * empty day is alias for "All Days"
- * This is used in subsequent lines of code for comparison; all event days will contain an empty string,
- * which is why it's used to represent "All". Any non-empty string will filter out certain days;
- * filtering by "All" would literally filter out all the days since no day starts with "All".
+* When filtering for events that occur on a specific day, every event's start datetime (string)
+* is checked if it includes the day. All strings contain an empty string, so "" is an alias for "all days".
  */
 const workWeek = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const fullWeek = ['', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
