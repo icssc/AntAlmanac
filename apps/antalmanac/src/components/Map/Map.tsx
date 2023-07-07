@@ -22,12 +22,8 @@ const ATTRIBUTION_MARKUP =
 
 const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`;
 
-/**
-* When filtering for events that occur on a specific day, every event's start datetime (string)
-* is checked if it includes the day. All strings contain an empty string, so "" is an alias for "all days".
- */
-const workWeek = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-const fullWeek = ['', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const work_week = ['All', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const full_week = ['All', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 interface MarkerContent {
     key: string;
@@ -152,7 +148,7 @@ export default function CourseMap() {
         (event) => event.start.getDay() === 0 || event.start.getDay() === 6
     );
 
-    const days = hasWeekendCourse ? fullWeek : workWeek;
+    const days = hasWeekendCourse ? full_week : work_week;
     const today = days[selectedDayIndex];
 
     /**
@@ -160,7 +156,9 @@ export default function CourseMap() {
      * A duplicate section code found later in the array will have a higher index.
      */
     const markersToDisplay = Object.keys(markers)
-        .flatMap((markerKey) => markers[markerKey].filter((course) => course.start.toString().includes(today)))
+        .flatMap((markerKey) =>
+            markers[markerKey].filter((course) => today == 'All' || course.start.toString().includes(today))
+        )
         .sort((a, b) => a.start.getTime() - b.start.getTime())
         .filter(
             (a, index, array) => array.findIndex((otherCourse) => otherCourse.sectionCode === a.sectionCode) === index
@@ -184,11 +182,7 @@ export default function CourseMap() {
                 <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.942, marginX: '15%', marginY: 8 }}>
                     <Tabs value={selectedDayIndex} onChange={handleChange} variant="fullWidth" sx={{ minHeight: 0 }}>
                         {days.map((day) => (
-                            <Tab
-                                key={day}
-                                label={day || 'all'}
-                                sx={{ padding: 1, minHeight: 'auto', minWidth: '10%' }}
-                            />
+                            <Tab key={day} label={day} sx={{ padding: 1, minHeight: 'auto', minWidth: '10%' }} />
                         ))}
                     </Tabs>
                     <Autocomplete
@@ -204,7 +198,7 @@ export default function CourseMap() {
                 <UserLocator />
 
                 {/* Draw out routes if the user is viewing a specific day. */}
-                {today !== '' &&
+                {today !== 'All' &&
                     startDestPairs.map((startDestPair) => {
                         const latLngTuples = startDestPair.map((marker) => [marker.lat, marker.lng] as LatLngTuple);
                         const color = startDestPair[0]?.color;
@@ -226,7 +220,7 @@ export default function CourseMap() {
                         <Fragment key={Object.values(marker).join('')}>
                             <LocationMarker
                                 {...marker}
-                                label={today ? index + 1 : undefined}
+                                label={today !== 'All' ? index + 1 : undefined}
                                 stackIndex={coursesSameBuildingPrior.length}
                             >
                                 <Box>
