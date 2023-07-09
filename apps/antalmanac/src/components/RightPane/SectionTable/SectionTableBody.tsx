@@ -209,7 +209,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                 const buildingIds = buildingNames.map((b) => locationIds[b] ?? 0);
                 return meeting.bldg[0] !== 'TBA' ? (
                     meeting.bldg.map((b, index) => (
-                        <div key={b}>
+                        <div key={`${courseName} @ ${b}`}>
                             <Link
                                 className={classes.clickableLocation}
                                 to={`/map?location=${buildingIds[index]}`}

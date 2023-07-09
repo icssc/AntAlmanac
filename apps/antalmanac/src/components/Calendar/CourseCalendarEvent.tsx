@@ -196,7 +196,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             <td className={classes.alignToTop}>Location{bldg.length > 1 && 's'}</td>
                             <td className={`${classes.multiline} ${classes.rightCells}`}>
                                 {bldg.map((b, index) => (
-                                    <div key={b}>
+                                    <div key={`${sectionCode} @ ${b}`}>
                                         <Link
                                             className={classes.clickableLocation}
                                             to={`/map?location=${buildingIds[index]}`}
