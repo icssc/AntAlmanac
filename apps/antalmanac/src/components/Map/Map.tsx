@@ -42,7 +42,9 @@ interface MarkerContent {
 export function getCoursesPerBuilding() {
     const courseEvents = AppStore.getCourseEventsInCalendar();
 
-    const allBuildingCodes = courseEvents.map((event) => event.bldg.split(' ').slice(0, -1).join(' '));
+    const allBuildingCodes = courseEvents
+        .map((event) => event.bldg.map((b) => b.split(' ').slice(0, -1).join(' ')))
+        .reduce((prev, cur) => prev.concat(cur), []);
 
     const uniqueBuildingCodes = new Set(allBuildingCodes);
 
@@ -54,10 +56,11 @@ export function getCoursesPerBuilding() {
 
     validBuildingCodes.forEach((buildingCode) => {
         coursesPerBuilding[buildingCode] = courseEvents
-            .filter((event) => event.bldg.split(' ').slice(0, -1).join(' ') === buildingCode)
+            .filter((event) => event.bldg.map((b) => b.split(' ').slice(0, -1).join(' ')).includes(buildingCode))
             .map((event) => {
                 const locationData = buildingCatalogue[locationIds[buildingCode]];
-                const key = `${event.title} ${event.sectionType} @ ${event.bldg}`;
+                const room = event.bldg.find((b) => b.includes(buildingCode)) ?? 'Unknown';
+                const key = `${event.title} ${event.sectionType} @ ${room}`;
                 const acronym = locationData.name.substring(
                     locationData.name.indexOf('(') + 1,
                     locationData.name.indexOf(')')
@@ -213,7 +216,7 @@ export default function CourseMap() {
                     // Find all courses that occur in the same building prior to this one to stack them properly.
                     const coursesSameBuildingPrior = markersToDisplay
                         .slice(0, index)
-                        .filter((m) => m.bldg === marker.bldg);
+                        .filter((m) => m.bldg[0] === marker.bldg[0]); // TODO Handle multiple buildings between class comparisons on markers
 
                     return (
                         <Fragment key={Object.values(marker).join('')}>
@@ -226,7 +229,10 @@ export default function CourseMap() {
                                     <Typography variant="body2">
                                         Class: {marker.title} {marker.sectionType}
                                     </Typography>
-                                    <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
+                                    <Typography variant="body2">
+                                        {/* TODO Handle multiple buildings per class on markers */}
+                                        Room: {marker.bldg[0].split(' ').slice(-1)}
+                                    </Typography>
                                 </Box>
                             </LocationMarker>
                         </Fragment>

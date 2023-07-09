@@ -86,7 +86,7 @@ interface CommonCalendarEvent extends Event {
 }
 
 export interface CourseEvent extends CommonCalendarEvent {
-    bldg: string; // E.g., ICS 174, which is actually building + room
+    bldg: string[]; // E.g., ICS 174, which is actually building + room
     finalExam: string;
     instructors: string[];
     isCustomEvent: false;
@@ -141,9 +141,8 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     if (!courseInMoreInfo.isCustomEvent) {
         const { term, instructors, sectionCode, title, finalExam, bldg, sectionType } = courseInMoreInfo;
 
-        const [buildingName = ''] = bldg.split(' ');
-
-        const buildingId = locationIds[buildingName] ?? 69420;
+        const buildingNames = bldg.map((b) => b.split(' ')[0] ?? '');
+        const buildingIds = buildingNames.map((b) => locationIds[b] ?? 0);
 
         return (
             <Paper className={classes.courseContainer} ref={paperRef}>
@@ -194,15 +193,19 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             <td className={`${classes.multiline} ${classes.rightCells}`}>{instructors.join('\n')}</td>
                         </tr>
                         <tr>
-                            <td className={classes.alignToTop}>Location</td>
+                            <td className={classes.alignToTop}>Location{bldg.length > 1 && 's'}</td>
                             <td className={`${classes.multiline} ${classes.rightCells}`}>
-                                <Link
-                                    className={classes.clickableLocation}
-                                    to={`/map?location=${buildingId}`}
-                                    onClick={focusMap}
-                                >
-                                    {bldg}
-                                </Link>
+                                {bldg.map((b, index) => (
+                                    <div key={b}>
+                                        <Link
+                                            className={classes.clickableLocation}
+                                            to={`/map?location=${buildingIds[index]}`}
+                                            onClick={focusMap}
+                                        >
+                                            {b}
+                                        </Link>
+                                    </div>
+                                ))}
                             </td>
                         </tr>
                         <tr>

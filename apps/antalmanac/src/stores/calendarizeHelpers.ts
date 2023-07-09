@@ -42,7 +42,7 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []) =
                             term: course.term,
                             title: course.deptCode + ' ' + course.courseNumber,
                             courseTitle: course.courseTitle,
-                            bldg: meeting.bldg[0],
+                            bldg: meeting.bldg,
                             instructors: course.section.instructors,
                             sectionCode: course.section.sectionCode,
                             sectionType: course.section.sectionType,
