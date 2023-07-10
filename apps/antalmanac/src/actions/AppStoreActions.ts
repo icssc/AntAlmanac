@@ -1,6 +1,5 @@
 import { VariantType } from 'notistack';
 
-import { TRPCError } from '@trpc/server';
 import { WebsocSection } from 'peterportal-api-next-types';
 import { ScheduleCourse } from '@packages/antalmanac-types';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
@@ -141,6 +140,43 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
         }
     }
 };
+
+export const appendSchedule = async (userId: string, rememberMe: boolean) => {
+    logAnalytics({
+        category: analyticsEnum.nav.title,
+        action: analyticsEnum.nav.actions.APPEND_SCHEDULE,
+        label: userId,
+        value: rememberMe ? 1 : 0,
+    });
+
+    userId = userId.replace(/\s+/g, '');
+
+    if (userId.length > 0) {
+        if (rememberMe) {
+            window.localStorage.setItem('userID', userId);
+        } else {
+            window.localStorage.removeItem('userID');
+        }
+
+        try {
+            const scheduleSaveState = await trpc.users.getUserData.query({ userId });
+
+            if (scheduleSaveState === undefined) {
+                openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
+            } else if (await AppStore.appendSchedule(scheduleSaveState)) {
+                openSnackbar('success', `Schedule for username "${userId}" loaded.`);
+            } else {
+                openSnackbar(
+                    'error',
+                    `Couldn't load schedules for username "${userId}". 
+                If this continues happening please submit a feedback form.`
+                );
+            }
+        } catch (e) {
+            openSnackbar('error', `Got a network error when trying to load schedules.`);
+        }
+    }
+}
 
 export const deleteCourse = (sectionCode: string, term: string) => {
     AppStore.deleteCourse(sectionCode, term);

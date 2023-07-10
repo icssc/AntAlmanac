@@ -1,10 +1,10 @@
 import { TRPCError } from '@trpc/server';
-import { Schedule, ScheduleSaveState } from '@packages/antalmanac-types';
+import { ScheduleSaveState } from '@packages/antalmanac-types';
 import trpc from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$actions/AppStoreActions';
 
-const handleSaveError = (error: any, userID: string): void => {
+const handleSaveError = (error: Error, userID: string): void => {
     if (error instanceof TRPCError) {
         openSnackbar('error', `Schedule could not be saved under username "${userID}`);
     } else {

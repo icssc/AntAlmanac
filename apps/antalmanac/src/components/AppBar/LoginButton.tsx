@@ -53,7 +53,7 @@ const LoginButton = () => {
             setAuthUser(user);
         };
         updateAuthUser();
-        AppStore.on('userAuthenticated', updateAuthUser);
+        AppStore.on('userAuthChange', updateAuthUser);
     });
 
     return (

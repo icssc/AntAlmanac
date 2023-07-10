@@ -9,12 +9,12 @@ import ConditionalWrapper from '../ConditionalWrapper';
 import AboutPage from './AboutPage';
 import Feedback from './Feedback';
 import ImportStudyList from './ImportStudyList';
-import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { ReactComponent as Logo } from './logo.svg';
 import { ReactComponent as MobileLogo } from './mobile-logo.svg';
 import News from './News';
 import SettingsMenu from './SettingsMenu';
 import LoginButton from './LoginButton';
+import LoadSaveButtons from './LoadSaveButtons';
 
 const styles = {
     appBar: {
@@ -59,7 +59,7 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
 
                 <div style={{ flexGrow: '1' }} />
 
-                <LoadSaveScheduleFunctionality />
+                <LoadSaveButtons />
 
                 <ConditionalWrapper
                     condition={isMobileScreen}

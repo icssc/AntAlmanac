@@ -511,4 +511,11 @@ export class Schedules {
         const scheduleNoteId = this.schedules[scheduleIndex].scheduleNoteId;
         this.scheduleNoteMap[scheduleNoteId] = newScheduleNote;
     }
+
+    appendSchedule(other: Schedules) {
+        this.addUndoState();
+        this.schedules.push(...other.schedules);
+        this.previousStates.push(...other.previousStates);
+        this.scheduleNoteMap = { ...this.scheduleNoteMap, ...other.scheduleNoteMap };
+    }
 }

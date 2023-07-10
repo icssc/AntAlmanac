@@ -225,7 +225,27 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
-        this.emit('userAuthenticated');
+        this.emit('userAuthChange');
+        return true;
+    }
+
+    async appendSchedule(savedSchedule: ScheduleSaveState) {
+        const newSchedule = new Schedules();
+        try {
+            await newSchedule.fromScheduleSaveState(savedSchedule);
+            console.log(newSchedule)
+            console.log(this.schedule)
+            this.schedule.appendSchedule(newSchedule);
+        } catch {
+            return false;
+        }
+        this.unsavedChanges = false;
+        this.emit('addedCoursesChange');
+        this.emit('customEventsChange');
+        this.emit('scheduleNamesChange');
+        this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
+        this.emit('userAuthChange');
         return true;
     }
 
