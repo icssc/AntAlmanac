@@ -28,7 +28,7 @@ export async function start(corsEnabled = false) {
         })
     );
 
-    if (env.STAGE === 'dev') {
+    if (env.STAGE === 'local') {
         app.listen(PORT, async () => {
             console.log(`🚀 Server listening at http://localhost:${PORT}`);
         });
