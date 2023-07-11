@@ -172,7 +172,7 @@ export class Schedules {
             ...newCourse,
             section: {
                 ...newCourse.section,
-                color: getColorForNewSection(newCourse, this.getCurrentCourses()),
+                color: getColorForNewSection(newCourse, this.getAllCourses()),
             },
         };
 
