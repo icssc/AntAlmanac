@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import AppStore from "$stores/AppStore";
-import LoadSaveButtonsAuth from "$components/AppBar/LoadSaveButtonsAuth";
-import LoadSaveButtonsCode from "$components/AppBar/LoadSaveButtonsCode";
+import LoadSaveButtonsAuth from "$components/AppBar/LoadSaveButtons/LoadSaveButtonsAuth";
+import LoadSaveButtonsCode from "$components/AppBar/LoadSaveButtons/LoadSaveButtonsCode";
 
 const LoadSaveButtons = () => {
     // Add a state to track authentication

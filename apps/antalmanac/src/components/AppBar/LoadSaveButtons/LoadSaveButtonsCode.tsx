@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
-import LoadSaveButtonBase from "$components/AppBar/LoadSaveButtonBase";
+import LoadSaveButtonBase from "$components/AppBar/LoadSaveButtons/LoadSaveButtonBase";
 
 const LoadSaveButtonsCode = () => {
     const [loading, setLoading] = useState(false);

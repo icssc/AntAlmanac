@@ -14,7 +14,7 @@ import { ReactComponent as MobileLogo } from './mobile-logo.svg';
 import News from './News';
 import SettingsMenu from './SettingsMenu';
 import LoginButton from './LoginButton';
-import LoadSaveButtons from './LoadSaveButtons';
+import LoadSaveButtons from './LoadSaveButtons/LoadSaveButtons';
 
 const styles = {
     appBar: {
