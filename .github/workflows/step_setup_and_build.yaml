@@ -23,6 +23,8 @@ jobs:
 
       - name: install pnpm
         uses: pnpm/action-setup@v2
+        with:
+          version: 8.6.0
 
       - name: setup node with pnpm cache
         uses: actions/setup-node@v3

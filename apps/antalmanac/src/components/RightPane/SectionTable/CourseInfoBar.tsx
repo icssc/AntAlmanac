@@ -5,8 +5,9 @@ import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { Skeleton } from '@material-ui/lab';
 import { useState } from 'react';
 
-import { RawResponse, Course, isErrorResponse } from 'peterportal-api-next-types';
+import { RawResponse, Course, isErrorResponse, PrerequisiteTree } from 'peterportal-api-next-types';
 import { MOBILE_BREAKPOINT } from '../../../globals';
+import PrereqTree from './PrereqTree';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { PETERPORTAL_REST_ENDPOINT } from '$lib/api/endpoints';
 
@@ -30,9 +31,12 @@ const styles = () => ({
 });
 
 const noCourseInfo = {
+    id: '',
     title: 'No description available',
+    prerequisite_tree: {},
+    prerequisite_list: [],
     prerequisite_text: '',
-    prerequisite_for: '',
+    prerequisite_for: [],
     description: '',
     ge_list: '',
 };
@@ -46,10 +50,13 @@ interface CourseInfoBarProps {
     analyticsCategory: string;
 }
 
-interface CourseInfo {
+export interface CourseInfo {
+    id: string;
     title: string;
+    prerequisite_tree: PrerequisiteTree;
+    prerequisite_list: string[];
     prerequisite_text: string;
-    prerequisite_for: string;
+    prerequisite_for: string[];
     description: string;
     ge_list: string;
 }
@@ -79,9 +86,12 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
                         const data = res.payload;
 
                         setCourseInfo({
+                            id: data.id,
                             title: data.title,
+                            prerequisite_tree: data.prerequisiteTree,
+                            prerequisite_list: data.prerequisiteList,
                             prerequisite_text: data.prerequisiteText,
-                            prerequisite_for: data.prerequisiteFor.join(', '),
+                            prerequisite_for: data.prerequisiteFor,
                             description: data.description,
                             ge_list: data.geList.join(', '),
                         });
@@ -112,7 +122,7 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
                 </div>
             );
         } else {
-            const { title, description, prerequisite_text, prerequisite_for, ge_list } = courseInfo;
+            const { title, prerequisite_tree, prerequisite_text, prerequisite_for, description, ge_list } = courseInfo;
 
             return (
                 <div className={classes.courseInfoPane}>
@@ -120,6 +130,8 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
                         <strong>{title}</strong>
                     </p>
                     <p>{description}</p>
+                    {JSON.stringify(prerequisite_tree) !== '{}' && <PrereqTree {...courseInfo} />}
+
                     {prerequisite_text !== '' && (
                         <p>
                             <a
@@ -138,12 +150,13 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
                             {prerequisite_text}
                         </p>
                     )}
-                    {prerequisite_for !== '' && (
+                    {prerequisite_for.length !== 0 && (
                         <p>
                             <span className={classes.rightSpace}>Prerequisite for:</span>
-                            {prerequisite_for}
+                            {prerequisite_for.join(', ')}
                         </p>
                     )}
+
                     {ge_list !== '' && (
                         <p>
                             <span className={classes.rightSpace}>General Education Categories:</span>

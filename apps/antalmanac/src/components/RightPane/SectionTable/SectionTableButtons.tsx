@@ -83,16 +83,14 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
             }
         }
 
-        if (scheduleIndex !== -1) {
-            if (specificSchedule) {
-                logAnalytics({
-                    category: analyticsEnum.classSearch.title,
-                    action: analyticsEnum.classSearch.actions.ADD_SPECIFIC,
-                });
-            }
-            const newCourse = addCourse(section, courseDetails, term, scheduleIndex);
-            section.color = newCourse.section.color;
+        if (specificSchedule) {
+            logAnalytics({
+                category: analyticsEnum.classSearch.title,
+                action: analyticsEnum.classSearch.actions.ADD_SPECIFIC,
+            });
         }
+        const newCourse = addCourse(section, courseDetails, term, scheduleIndex);
+        section.color = newCourse.section.color;
     };
 
     const addCourseHandler = () => {
@@ -125,7 +123,7 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
                 <IconButton {...bindTrigger(popupState)}>
                     <ArrowDropDown fontSize="small" />
                 </IconButton>
-                <Menu {...bindMenu(popupState)} onClose={() => closeAndAddCourse(-1)}>
+                <Menu {...bindMenu(popupState)}>
                     {scheduleNames.map((name, index) => (
                         <MenuItem key={index} onClick={() => closeAndAddCourse(index, true)}>
                             Add to {name}

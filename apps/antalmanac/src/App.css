@@ -1,16 +1,27 @@
-/**
- * styling react-split @see {@link https://github.com/nathancahill/split/tree/master/packages/splitjs#css}
- */
 .gutter {
-    /**
-   * config to vertically align icon in center
-   */
     display: flex;
     justify-content: center;
     align-items: center;
-
-    /**
-   * it should also show the resize cursor on hover
-   */
     cursor: col-resize;
+}
+
+.gutter::before {
+    content: '⋮';
+    font-size: 30pt;
+    color: white;
+}
+
+/**
+ * Needed to set the table cells to the correct height...for some reason?
+ */
+@media (min-resolution: 120dpi) {
+    html {
+        font-size: 14px;
+    }
+}
+
+@media (min-resolution: 144dpi) {
+    html {
+        font-size: 12px;
+    }
 }

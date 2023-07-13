@@ -1,4 +1,4 @@
-import { TextField } from '@material-ui/core';
+import { FormControlLabel, Switch, TextField } from '@material-ui/core';
 import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
@@ -23,15 +23,29 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
         courseNumber: this.getCourseNumber(),
     };
 
-    handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        this.setState({ courseNumber: event.target.value });
-        RightPaneStore.updateFormValue('courseNumber', event.target.value);
+    handleUpperDivChange = (event: ChangeEvent<HTMLInputElement>) => {
+        if (event.target.checked) {
+            this.handleCourseNumbers('100-199');
+        } else {
+            this.handleCourseNumbers('');
+        }
+    };
+
+    handleNumbersChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        this.handleCourseNumbers(event.target.value);
+    };
+
+    handleCourseNumbers = (eventCourseNumbers: string) => {
         const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
         urlParam.delete('courseNumber');
-        if (event.target.value) {
-            urlParam.append('courseNumber', event.target.value);
+
+        this.setState({ courseNumber: eventCourseNumbers });
+        RightPaneStore.updateFormValue('courseNumber', eventCourseNumbers);
+        if (eventCourseNumbers !== '') {
+            urlParam.append('courseNumber', eventCourseNumbers);
         }
+
         const param = urlParam.toString();
         const new_url = `${param.trim() ? '?' : ''}${param}`;
         history.replaceState({ url: 'url' }, 'url', '/' + new_url);
@@ -51,15 +65,28 @@ class CourseNumberSearchBar extends PureComponent<Record<string, never>, CourseN
 
     render() {
         return (
-            <div>
+            <>
                 <TextField
                     label="Course Number(s)"
                     type="search"
                     value={this.state.courseNumber}
-                    onChange={this.handleChange}
+                    onChange={this.handleNumbersChange}
                     helperText="ex. 6B, 17, 30-40"
                 />
-            </div>
+
+                <FormControlLabel
+                    control={
+                        <Switch
+                            onChange={this.handleUpperDivChange}
+                            value="100-199"
+                            color="primary"
+                            checked={this.state.courseNumber === '100-199'}
+                        />
+                    }
+                    labelPlacement="top"
+                    label="Upper Div Only"
+                />
+            </>
         );
     }
 }

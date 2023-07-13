@@ -71,12 +71,12 @@ class AppStore extends EventEmitter {
         return this.schedule.getAllCustomEvents();
     }
 
-    addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
+    addCourse(newCourse: ScheduleCourse, scheduleIndex: number) {
         let addedCourse: ScheduleCourse;
         if (scheduleIndex === this.schedule.getNumberOfSchedules()) {
             addedCourse = this.schedule.addCourseToAllSchedules(newCourse);
         } else {
-            addedCourse = this.schedule.addCourse(newCourse);
+            addedCourse = this.schedule.addCourse(newCourse, scheduleIndex);
         }
         this.unsavedChanges = true;
         this.emit('addedCoursesChange');
@@ -84,11 +84,15 @@ class AppStore extends EventEmitter {
     }
 
     getEventsInCalendar() {
-        return this.schedule.toCalendarizedEvents();
+        return this.schedule.getCalendarizedEvents();
+    }
+
+    getCourseEventsInCalendar() {
+        return this.schedule.getCalendarizedCourseEvents();
     }
 
     getFinalEventsInCalendar() {
-        return this.schedule.toCalendarizedFinals();
+        return this.schedule.getCalendarizedFinals();
     }
 
     getSnackbarMessage() {

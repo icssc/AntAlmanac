@@ -7,7 +7,7 @@ import {
 } from '@packages/antalmanac-types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { combineSOCObjects, CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
+import { CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
 import { getColorForNewSection } from '$stores/scheduleHelpers';
 
 export class Schedules {
@@ -157,7 +157,7 @@ export class Schedules {
      * @param addUndoState Defaults to true
      * @returns The course object that was added.
      */
-    addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.getCurrentScheduleIndex(), addUndoState = true) {
+    addCourse(newCourse: ScheduleCourse, scheduleIndex: number, addUndoState = true) {
         if (addUndoState) {
             this.addUndoState();
         }
@@ -343,7 +343,7 @@ export class Schedules {
     /**
      * Convert courses and custom events into calendar friendly format
      */
-    toCalendarizedEvents() {
+    getCalendarizedEvents() {
         return [
             ...calendarizeCourseEvents(this.getCurrentCourses()),
             ...calendarizeCustomEvents(this.getCurrentCustomEvents()),
@@ -351,9 +351,16 @@ export class Schedules {
     }
 
     /**
+     * Convert just courses into calendar compatible format.
+     */
+    getCalendarizedCourseEvents() {
+        return calendarizeCourseEvents(this.getCurrentCourses());
+    }
+
+    /**
      * Convert finals into calendar friendly format
      */
-    toCalendarizedFinals() {
+    getCalendarizedFinals() {
         return calendarizeFinals(this.getCurrentCourses());
     }
 
@@ -434,23 +441,10 @@ export class Schedules {
                 const sectionCodes = Array.from(courseSet);
                 // Code from ImportStudyList
                 const courseInfo = getCourseInfo(
-                    combineSOCObjects(
-                        await Promise.all(
-                            sectionCodes
-                                .reduce((result: string[][], item, index) => {
-                                    // WebSOC queries can have a maximum of 10 course codes in tandem
-                                    const chunkIndex = Math.floor(index / 10);
-                                    result[chunkIndex] ? result[chunkIndex].push(item) : (result[chunkIndex] = [item]);
-                                    return result;
-                                }, []) // https://stackoverflow.com/a/37826698
-                                .map((sectionCode: string[]) =>
-                                    queryWebsoc({
-                                        term: term,
-                                        sectionCodes: sectionCode.join(','),
-                                    })
-                                )
-                        )
-                    )
+                    await queryWebsoc({
+                        term: term,
+                        sectionCodes: sectionCodes.join(','),
+                    })
                 );
                 courseInfoDict.set(term, courseInfo);
             }

@@ -1,17 +1,19 @@
+import { Link } from 'react-router-dom';
 import { Button, IconButton, Paper, Tooltip } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
 import { Event } from 'react-big-calendar';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useContext, useCallback } from 'react';
 
-import RightPaneStore, { BuildingFocusInfo } from '../RightPane/RightPaneStore';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
+import locationIds from '$lib/location_ids';
+import { mobileContext } from '$components/MobileHome';
 
 const styles: Styles<Theme, object> = {
     courseContainer: {
@@ -72,13 +74,8 @@ const styles: Styles<Theme, object> = {
         border: 'none',
         padding: '0 !important',
         fontSize: 'inherit',
+        textDecoration: 'none',
     },
-};
-
-const selectBuilding = (buildingFocusInfo: BuildingFocusInfo) => {
-    if (buildingFocusInfo.location !== 'TBA') {
-        RightPaneStore.focusOnBuilding(buildingFocusInfo);
-    }
 };
 
 interface CommonCalendarEvent extends Event {
@@ -121,7 +118,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
 
     useEffect(() => {
         const handleKeyDown = (event: { keyCode: number }) => {
-            //event.keyCode === 27 reads for the "escape" key
+            // event.keyCode === 27 reads for the "escape" key
             if (event.keyCode === 27) {
                 if (paperRef.current) paperRef.current.style.display = 'none';
             }
@@ -134,9 +131,19 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         };
     }, []);
 
+    const { setSelectedTab } = useContext(mobileContext);
+
+    const focusMap = useCallback(() => {
+        setSelectedTab(1);
+    }, [setSelectedTab]);
+
     const { classes, courseInMoreInfo } = props;
     if (!courseInMoreInfo.isCustomEvent) {
         const { term, instructors, sectionCode, title, finalExam, bldg, sectionType } = courseInMoreInfo;
+
+        const [buildingName = ''] = bldg.split(' ');
+
+        const buildingId = locationIds[buildingName] ?? 69420;
 
         return (
             <Paper className={classes.courseContainer} ref={paperRef}>
@@ -189,12 +196,13 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         <tr>
                             <td className={classes.alignToTop}>Location</td>
                             <td className={`${classes.multiline} ${classes.rightCells}`}>
-                                <button
+                                <Link
                                     className={classes.clickableLocation}
-                                    onClick={() => selectBuilding({ location: bldg, courseName: title })}
+                                    to={`/map?location=${buildingId}`}
+                                    onClick={focusMap}
                                 >
                                     {bldg}
-                                </button>
+                                </Link>
                             </td>
                         </tr>
                         <tr>

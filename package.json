@@ -12,16 +12,15 @@
     "deploy:cdk": "turbo deploy --filter=cdk",
     "deploy": "turbo deploy"
   },
-  "workspaces": [
-    "apps/*"
-  ],
   "devDependencies": {
     "husky": "^8.0.3",
     "lint-staged": "^13.1.1",
+    "prettier": "^2.8.4",
     "turbo": "latest"
   },
-  "packageManager": "pnpm@8.2.0",
+  "packageManager": "pnpm@8.6.0",
   "engines": {
-    "pnpm": "^8"
+    "pnpm": "^8.0.0",
+    "node": ">=16"
   }
 }

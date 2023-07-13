@@ -26,10 +26,9 @@ const DaySelector: React.FC<DaySelectorProps> = ({
     }, [selectedDays]);
 
     const handleChange = (dayIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSelectedDays((prevDays) => {
-            prevDays[dayIndex] = event.target.checked;
-            return prevDays;
-        });
+        const newSelectedDays = [...selectedDays];
+        newSelectedDays[dayIndex] = event.target.checked;
+        setSelectedDays(newSelectedDays);
     };
 
     const dayNames = isMobile ? abbreviated_days : normal_days;

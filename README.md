@@ -14,7 +14,7 @@ AntAlmanac is a schedule planner website for classes at UC Irvine. Here are some
 
 ### Tech Stack
 
-Our site is a React single page application bootstrapped with create-react-app and hosted on Github Pages. We use the Material UI component library for most of our styling. The site gets its course data from the [PeterPortal API](https://api.peterportal.org/), which is also maintained by ICSSC.
+Our site is a React single page application bootstrapped with create-react-app and hosted on Github Pages. We use the Material UI component library for most of our styling. The site gets its course data from the [PeterPortal API](https://api.peterportal.org/), which is also maintained by ICS Student Council (ICSSC).
 
 ### History
 

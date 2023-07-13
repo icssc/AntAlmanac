@@ -209,11 +209,11 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         e.stopPropagation();
 
         if (event.isCustomEvent || event.sectionType !== 'Fin') {
-            this.setState({
-                anchorEl: currentTarget,
+            this.setState((prevState) => ({
+                anchorEl: prevState.anchorEl === currentTarget ? null : currentTarget,
                 courseInMoreInfo: event,
                 calendarEventKey: Math.random(),
-            });
+            }));
         }
     };
 
@@ -244,6 +244,10 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                 dow: hasWeekendCourse && this.state.showFinalsSchedule ? 6 : 0,
             },
         });
+
+        const handleOnView = () => {
+            return;
+        };
 
         return (
             <div className={classes.container} style={isMobile ? { height: 'calc(100% - 50px)' } : undefined}>
@@ -302,9 +306,10 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                                 date.getMinutes() > 0 || !localizer ? '' : localizer.format(date, 'h A', culture),
                             dayFormat: 'ddd',
                         }}
-                        defaultView={Views.WORK_WEEK}
                         views={[Views.WEEK, Views.WORK_WEEK]}
+                        defaultView={Views.WORK_WEEK}
                         view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
+                        onView={handleOnView}
                         step={15}
                         timeslots={2}
                         defaultDate={new Date(2018, 0, 1)}
