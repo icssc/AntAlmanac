@@ -18,7 +18,6 @@ import { Fragment, useCallback, useContext, useEffect, useState } from 'react';
 
 import { AASection } from '@packages/antalmanac-types';
 import { WebsocSectionEnrollment, WebsocSectionMeeting } from 'peterportal-api-next-types';
-import RightPaneStore from '../RightPaneStore';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
@@ -48,8 +47,31 @@ const styles: Styles<Theme, object> = (theme) => ({
         },
     },
     tr: {
+        // styling changes (e.g. color, spacing of gradient) needs input and tweaking
+        '&.timingWarning': {
+            '&:nth-of-type(odd)': {
+                background: `repeating-linear-gradient(
+                    45deg,
+                    #f44336,
+                    #f44336 2px,
+                    #515151 2px,
+                    #515151 80px
+                )`,
+            },
+            '&:nth-of-type(even)': {
+                background: `repeating-linear-gradient(
+                    45deg,
+                    #f44336,
+                    #f44336 2px,
+                    #424242 2px,
+                    #424242 80px
+                )`,
+            },
+        },
         '&.addedCourse': {
-            backgroundColor: isDarkMode() ? '#b0b04f' : '#fcfc97',
+            // I'm told !important is bad practice,
+            //but something something CSS heirarchy is kicking my butt so I'll fix it later
+            background: isDarkMode() ? '#b0b04f !important' : '#fcfc97 !important',
         },
     },
     cell: {
@@ -195,7 +217,7 @@ interface LocationsCellProps {
 }
 
 const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
-    const { classes, meetings, courseName } = props;
+    const { classes, meetings } = props;
     const { setSelectedTab } = useContext(mobileContext);
 
     const focusMap = useCallback(() => {
@@ -362,15 +384,94 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames } = props;
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
 
+    // Google Chrome console is telling me I have trememdnous amounts of event listeners pepege
+    const [timingWarning, setTimingWarning] = useState(false);
+
+    const translateDaysToNums = { Su: '0', M: '1', Tu: '2', W: '3', Th: '4', F: '5', Sa: '6' };
+
     useEffect(() => {
         const toggleHighlight = () => {
             const doAdd = AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`);
             setAddedCourse(doAdd);
         };
 
+        const timingWarning = () => {
+            if (AppStore.getEventsInCalendar().length < 1) {
+                setTimingWarning(false);
+                return;
+            }
+
+            // An array of lists of time information on every added event
+            const calendarEventTimes = AppStore.getEventsInCalendar().map((event) => {
+                const courseDay = event.start.getDay();
+                const courseStartTime = event.start.toString().split(' ')[4];
+                const courseEndTime = event.end.toString().split(' ')[4];
+                return { day: courseDay, startTime: courseStartTime, endTime: courseEndTime };
+            });
+
+            const coursePaneEvent = {
+                // If there already exists a more well-written way
+                // to translate secton.meetings into a day number LMK
+                day: section.meetings[0].days.match(/[A-Z][a-z]*/g)?.map((day: string) => translateDaysToNums[day]),
+                startTime: '',
+                endTime: '',
+            };
+
+            // the following timeString code is stolen from ${calendarizeCourseEvents}
+            const timeString = section.meetings[0].time.replace(/\s/g, '');
+
+            if (timeString !== 'TBA' && timeString !== undefined) {
+                const [, startHrStr, startMinStr, endHrStr, endMinStr, ampm] = timeString?.match(
+                    /(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/
+                ) as RegExpMatchArray;
+
+                let startHr = parseInt(startHrStr, 10);
+                let endHr = parseInt(endHrStr, 10);
+
+                if (ampm === 'p' && endHr !== 12) {
+                    startHr += 12;
+                    endHr += 12;
+                    if (startHr > endHr) startHr -= 12;
+                }
+
+                coursePaneEvent.startTime = `${startHr}:${startMinStr}:00`;
+                coursePaneEvent.endTime = `${endHr}:${endMinStr}:00`;
+            }
+
+            // my comments sound like trash but my brain is ticking away like sludge
+            // TLDR:
+            // check if its on the same day first
+            // if it starts AND ends before OR starts AND ends after, that's good
+            // otherwise, slap on some red lines
+            for (let i = 0; i < calendarEventTimes.length; i++) {
+                if (!coursePaneEvent?.day?.includes(calendarEventTimes[i]?.day.toString())) {
+                    continue;
+                }
+
+                const startCheckVar =
+                    coursePaneEvent.startTime < calendarEventTimes[i].startTime &&
+                    coursePaneEvent.endTime < calendarEventTimes[i].startTime;
+                const endCheckVar =
+                    coursePaneEvent.startTime > calendarEventTimes[i].endTime &&
+                    coursePaneEvent.endTime > calendarEventTimes[i].endTime;
+
+                if (!(startCheckVar || endCheckVar)) {
+                    setTimingWarning(true);
+                    return;
+                }
+            }
+            setTimingWarning(false);
+            return;
+        };
+
         toggleHighlight();
         AppStore.on('addedCoursesChange', toggleHighlight);
         AppStore.on('currentScheduleIndexChange', toggleHighlight);
+
+        // will note again, my listeners go crazy here brrrr
+        timingWarning();
+        AppStore.on('addedCoursesChange', timingWarning);
+        AppStore.on('currentScheduleIndexChange', timingWarning);
 
         return () => {
             AppStore.removeListener('addedCoursesChange', toggleHighlight);
@@ -381,7 +482,11 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     return (
         <TableRow
             classes={{ root: classes.row }}
-            className={classNames(classes.tr, { addedCourse: addedCourse && highlightAdded })}
+            className={classNames(
+                classes.tr,
+                { timingWarning: timingWarning },
+                { addedCourse: addedCourse && highlightAdded }
+            )}
         >
             {!addedCourse ? (
                 <ScheduleAddCell
