@@ -54,8 +54,8 @@ const styles: Styles<Theme, object> = (theme) => ({
                     45deg,
                     #f44336,
                     #f44336 2px,
-                    #515151 2px,
-                    #515151 80px
+                    ${theme.palette.action.hover} 2px,
+                    ${theme.palette.action.hover} 80px
                 )`,
             },
             '&:nth-of-type(even)': {
@@ -63,8 +63,8 @@ const styles: Styles<Theme, object> = (theme) => ({
                     45deg,
                     #f44336,
                     #f44336 2px,
-                    #424242 2px,
-                    #424242 80px
+                    ${theme.palette.background.paper} 2px,
+                    ${theme.palette.background.paper} 80px
                 )`,
             },
         },
