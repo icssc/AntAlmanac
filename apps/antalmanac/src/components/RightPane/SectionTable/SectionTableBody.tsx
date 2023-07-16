@@ -384,8 +384,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames } = props;
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
 
-    // Google Chrome console is telling me I have trememdnous amounts of event listeners pepege
-    const [timingWarning, setTimingWarning] = useState(false);
+    const [scheduleConflict, setScheduleConflict] = useState(false);
 
     const translateDaysToNums: { [key: string]: number } = {
         Su: 0,
@@ -415,7 +414,11 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                 if (startHr > endHr) startHr -= 12;
             }
 
-            return { startTime: `${startHr}:${startMinStr}:00`, endTime: `${endHr}:${endMinStr}:00` };
+            // Times are standardized to ##:##:## for correct comparisons as strings
+            return {
+                startTime: `${startHr < 10 ? `0${startHr}` : startHr}:${startMinStr}:00`,
+                endTime: `${endHr < 10 ? `0${endHr}` : endHr}:${endMinStr}:00`,
+            };
         }
 
         return undefined;
@@ -427,9 +430,9 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             setAddedCourse(doAdd);
         };
 
-        const timingWarning = () => {
+        const checkScheduleConflict = () => {
             if (AppStore.getEventsInCalendar().length < 1) {
-                setTimingWarning(false);
+                setScheduleConflict(false);
                 return;
             }
 
@@ -463,35 +466,37 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                 }
 
                 // Then, IF the course ( starts AND ends BEFORE) OR ( starts AND ends AFTER), it's good
+                // Currently, it's coded to be greater/less than or equal to, but... if class A ends at 1:00 PM and class B starts at 1:00 PM, you're kinda boned, no?
                 const happensBefore =
-                    coursePaneEvent.startTime < calendarEventTimes[i].startTime &&
-                    coursePaneEvent.endTime < calendarEventTimes[i].startTime;
+                    coursePaneEvent.startTime <= calendarEventTimes[i].startTime &&
+                    coursePaneEvent.endTime <= calendarEventTimes[i].startTime;
                 const happensAfter =
-                    coursePaneEvent.startTime > calendarEventTimes[i].endTime &&
-                    coursePaneEvent.endTime > calendarEventTimes[i].endTime;
+                    coursePaneEvent.startTime >= calendarEventTimes[i].endTime &&
+                    coursePaneEvent.endTime >= calendarEventTimes[i].endTime;
 
                 // Otherwise, mark it in red
                 if (!(happensBefore || happensAfter)) {
-                    setTimingWarning(true);
+                    setScheduleConflict(true);
                     return;
                 }
             }
-            setTimingWarning(false);
+            setScheduleConflict(false);
             return;
         };
 
-        const handleChanges = () => {
-            toggleHighlight();
-            timingWarning();
-        };
+        toggleHighlight();
+        AppStore.on('addedCoursesChange', toggleHighlight);
+        AppStore.on('currentScheduleIndexChange', toggleHighlight);
 
-        handleChanges();
-        AppStore.on('addedCoursesChange', handleChanges);
-        AppStore.on('currentScheduleIndexChange', handleChanges);
+        checkScheduleConflict();
+        AppStore.on('addedCoursesChange', checkScheduleConflict);
+        AppStore.on('currentScheduleIndexChange', checkScheduleConflict);
 
         return () => {
-            AppStore.removeListener('addedCoursesChange', handleChanges);
-            AppStore.removeListener('currentScheduleIndexChange', handleChanges);
+            AppStore.removeListener('addedCoursesChange', toggleHighlight);
+            AppStore.removeListener('currentScheduleIndexChange', toggleHighlight);
+            AppStore.removeListener('addedCoursesChange', checkScheduleConflict);
+            AppStore.removeListener('currentScheduleIndexChange', checkScheduleConflict);
         };
     }, [section.sectionCode, term]); //should only run once on first render since these shouldn't change.
 
@@ -500,7 +505,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             classes={{ root: classes.row }}
             className={classNames(
                 classes.tr,
-                { timingWarning: timingWarning },
+                { timingWarning: scheduleConflict },
                 { addedCourse: addedCourse && highlightAdded }
             )}
         >
