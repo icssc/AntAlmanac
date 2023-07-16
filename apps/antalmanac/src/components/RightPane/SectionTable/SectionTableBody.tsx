@@ -47,8 +47,14 @@ const styles: Styles<Theme, object> = (theme) => ({
         },
     },
     tr: {
-        // styling changes (e.g. color, spacing of gradient) needs input and tweaking
-        '&.timingWarning': {
+        '&.addedCourse': {
+            // Additional specificity is needed so addedCourse takes precendence when timingWarning is also true
+            '&:nth-of-type(n)': {
+                background: isDarkMode() ? '#b0b04f' : '#fcfc97',
+            },
+        },
+        // Input on the stripe colors (currently red) would be appreciated
+        '&.scheduleConflict': {
             '&:nth-of-type(odd)': {
                 background: `repeating-linear-gradient(
                     45deg,
@@ -67,11 +73,6 @@ const styles: Styles<Theme, object> = (theme) => ({
                     ${theme.palette.background.paper} 80px
                 )`,
             },
-        },
-        '&.addedCourse': {
-            // I'm told !important is bad practice,
-            //but something something CSS heirarchy is kicking my butt so I'll fix it later
-            background: isDarkMode() ? '#b0b04f !important' : '#fcfc97 !important',
         },
     },
     cell: {
@@ -505,7 +506,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             classes={{ root: classes.row }}
             className={classNames(
                 classes.tr,
-                { timingWarning: scheduleConflict },
+                { scheduleConflict: scheduleConflict },
                 { addedCourse: addedCourse && highlightAdded }
             )}
         >
