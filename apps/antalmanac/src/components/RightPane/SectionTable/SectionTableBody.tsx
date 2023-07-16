@@ -58,8 +58,8 @@ const styles: Styles<Theme, object> = (theme) => ({
             '&:nth-of-type(odd)': {
                 background: `repeating-linear-gradient(
                     45deg,
-                    #f44336,
-                    #f44336 2px,
+                    rgba(244, 67, 54, 0.5),
+                    rgba(244, 67, 54, 0.5) 2px,
                     ${theme.palette.action.hover} 2px,
                     ${theme.palette.action.hover} 80px
                 )`,
@@ -67,8 +67,8 @@ const styles: Styles<Theme, object> = (theme) => ({
             '&:nth-of-type(even)': {
                 background: `repeating-linear-gradient(
                     45deg,
-                    #f44336,
-                    #f44336 2px,
+                    rgba(244, 67, 54, 0.5),
+                    rgba(244, 67, 54, 0.5) 2px,
                     ${theme.palette.background.paper} 2px,
                     ${theme.palette.background.paper} 80px
                 )`,
