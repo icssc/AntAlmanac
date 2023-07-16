@@ -442,7 +442,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             });
 
             const coursePaneEvent = {
-                // If there already exists a more well-written way to translate secton.meetings into a day number LMK
+                // If there already exists a more well-written way to translate secton.meetings days (string) into a number, LMK
                 // Converts SuTuTh -> [Su, Tu, Th] -> [0, 2, 4]
                 day: section.meetings[0].days.match(/[A-Z][a-z]*/g)?.map((day: string) => translateDaysToNums[day]),
                 startTime: '',
