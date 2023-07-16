@@ -387,14 +387,38 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     // Google Chrome console is telling me I have trememdnous amounts of event listeners pepege
     const [timingWarning, setTimingWarning] = useState(false);
 
-    const translateDaysToNums: { [key: string]: string } = {
-        Su: '0',
-        M: '1',
-        Tu: '2',
-        W: '3',
-        Th: '4',
-        F: '5',
-        Sa: '6',
+    const translateDaysToNums: { [key: string]: number } = {
+        Su: 0,
+        M: 1,
+        Tu: 2,
+        W: 3,
+        Th: 4,
+        F: 5,
+        Sa: 6,
+    };
+
+    // the following timeString code is stolen from ${calendarizeCourseEvents}
+    const translateTimeString = () => {
+        const timeString = section.meetings[0].time.replace(/\s/g, '');
+
+        if (timeString !== 'TBA' && timeString !== undefined) {
+            const [, startHrStr, startMinStr, endHrStr, endMinStr, ampm] = timeString?.match(
+                /(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/
+            ) as RegExpMatchArray;
+
+            let startHr = parseInt(startHrStr, 10);
+            let endHr = parseInt(endHrStr, 10);
+
+            if (ampm === 'p' && endHr !== 12) {
+                startHr += 12;
+                endHr += 12;
+                if (startHr > endHr) startHr -= 12;
+            }
+
+            return { startTime: `${startHr}:${startMinStr}:00`, endTime: `${endHr}:${endMinStr}:00` };
+        }
+
+        return undefined;
     };
 
     useEffect(() => {
@@ -418,53 +442,36 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             });
 
             const coursePaneEvent = {
-                // If there already exists a more well-written way
-                // to translate secton.meetings into a day number LMK
-                // Converts SuTuTh -> [Su, Tu, Th]
+                // If there already exists a more well-written way to translate secton.meetings into a day number LMK
+                // Converts SuTuTh -> [Su, Tu, Th] -> [0, 2, 4]
                 day: section.meetings[0].days.match(/[A-Z][a-z]*/g)?.map((day: string) => translateDaysToNums[day]),
                 startTime: '',
                 endTime: '',
             };
 
-            // the following timeString code is stolen from ${calendarizeCourseEvents}
-            const timeString = section.meetings[0].time.replace(/\s/g, '');
-
-            if (timeString !== 'TBA' && timeString !== undefined) {
-                const [, startHrStr, startMinStr, endHrStr, endMinStr, ampm] = timeString?.match(
-                    /(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/
-                ) as RegExpMatchArray;
-
-                let startHr = parseInt(startHrStr, 10);
-                let endHr = parseInt(endHrStr, 10);
-
-                if (ampm === 'p' && endHr !== 12) {
-                    startHr += 12;
-                    endHr += 12;
-                    if (startHr > endHr) startHr -= 12;
-                }
-
-                coursePaneEvent.startTime = `${startHr}:${startMinStr}:00`;
-                coursePaneEvent.endTime = `${endHr}:${endMinStr}:00`;
+            // Wasn't sure if running the function constantly in useEffect was bad, so moved it out just in case
+            const translatedTimeString = translateTimeString();
+            if (translatedTimeString) {
+                coursePaneEvent.startTime = translatedTimeString.startTime;
+                coursePaneEvent.endTime = translatedTimeString.endTime;
             }
 
-            // my comments sound like trash but my brain is ticking away like sludge
-            // TLDR:
-            // check if its on the same day first
-            // if it starts AND ends before OR starts AND ends after, that's good
-            // otherwise, slap on some red lines
             for (let i = 0; i < calendarEventTimes.length; i++) {
-                if (!coursePaneEvent?.day?.includes(calendarEventTimes[i]?.day.toString())) {
+                // Check if there is day overlap
+                if (!coursePaneEvent?.day?.includes(calendarEventTimes[i]?.day)) {
                     continue;
                 }
 
-                const startCheckVar =
+                // Then, IF the course ( starts AND ends BEFORE) OR ( starts AND ends AFTER), it's good
+                const happensBefore =
                     coursePaneEvent.startTime < calendarEventTimes[i].startTime &&
                     coursePaneEvent.endTime < calendarEventTimes[i].startTime;
-                const endCheckVar =
+                const happensAfter =
                     coursePaneEvent.startTime > calendarEventTimes[i].endTime &&
                     coursePaneEvent.endTime > calendarEventTimes[i].endTime;
 
-                if (!(startCheckVar || endCheckVar)) {
+                // Otherwise, mark it in red
+                if (!(happensBefore || happensAfter)) {
                     setTimingWarning(true);
                     return;
                 }
@@ -473,18 +480,18 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             return;
         };
 
-        toggleHighlight();
-        AppStore.on('addedCoursesChange', toggleHighlight);
-        AppStore.on('currentScheduleIndexChange', toggleHighlight);
+        const handleChanges = () => {
+            toggleHighlight();
+            timingWarning();
+        };
 
-        // will note again, my listeners go crazy here brrrr
-        timingWarning();
-        AppStore.on('addedCoursesChange', timingWarning);
-        AppStore.on('currentScheduleIndexChange', timingWarning);
+        handleChanges();
+        AppStore.on('addedCoursesChange', handleChanges);
+        AppStore.on('currentScheduleIndexChange', handleChanges);
 
         return () => {
-            AppStore.removeListener('addedCoursesChange', toggleHighlight);
-            AppStore.removeListener('currentScheduleIndexChange', toggleHighlight);
+            AppStore.removeListener('addedCoursesChange', handleChanges);
+            AppStore.removeListener('currentScheduleIndexChange', handleChanges);
         };
     }, [section.sectionCode, term]); //should only run once on first render since these shouldn't change.
 
