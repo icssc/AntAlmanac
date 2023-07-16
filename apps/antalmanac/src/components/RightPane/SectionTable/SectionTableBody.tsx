@@ -387,7 +387,15 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     // Google Chrome console is telling me I have trememdnous amounts of event listeners pepege
     const [timingWarning, setTimingWarning] = useState(false);
 
-    const translateDaysToNums = { Su: '0', M: '1', Tu: '2', W: '3', Th: '4', F: '5', Sa: '6' };
+    const translateDaysToNums: { [key: string]: string } = {
+        Su: '0',
+        M: '1',
+        Tu: '2',
+        W: '3',
+        Th: '4',
+        F: '5',
+        Sa: '6',
+    };
 
     useEffect(() => {
         const toggleHighlight = () => {
@@ -412,6 +420,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             const coursePaneEvent = {
                 // If there already exists a more well-written way
                 // to translate secton.meetings into a day number LMK
+                // Converts SuTuTh -> [Su, Tu, Th]
                 day: section.meetings[0].days.match(/[A-Z][a-z]*/g)?.map((day: string) => translateDaysToNums[day]),
                 startTime: '',
                 endTime: '',
