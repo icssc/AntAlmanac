@@ -485,19 +485,18 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             return;
         };
 
-        toggleHighlight();
-        AppStore.on('addedCoursesChange', toggleHighlight);
-        AppStore.on('currentScheduleIndexChange', toggleHighlight);
+        const handleEventListeners = () => {
+            toggleHighlight();
+            checkScheduleConflict();
+        };
 
-        checkScheduleConflict();
-        AppStore.on('addedCoursesChange', checkScheduleConflict);
-        AppStore.on('currentScheduleIndexChange', checkScheduleConflict);
+        handleEventListeners();
+        AppStore.on('addedCoursesChange', handleEventListeners);
+        AppStore.on('currentScheduleIndexChange', handleEventListeners);
 
         return () => {
-            AppStore.removeListener('addedCoursesChange', toggleHighlight);
-            AppStore.removeListener('currentScheduleIndexChange', toggleHighlight);
-            AppStore.removeListener('addedCoursesChange', checkScheduleConflict);
-            AppStore.removeListener('currentScheduleIndexChange', checkScheduleConflict);
+            AppStore.removeListener('addedCoursesChange', handleEventListeners);
+            AppStore.removeListener('currentScheduleIndexChange', handleEventListeners);
         };
     }, [section.sectionCode, term]); //should only run once on first render since these shouldn't change.
 
