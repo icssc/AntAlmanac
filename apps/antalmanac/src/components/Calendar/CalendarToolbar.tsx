@@ -88,6 +88,11 @@ const CalendarPaneToolbar = ({
         setOpenSchedules((prev) => !prev);
     };
 
+    const handleClose = (event: React.ChangeEvent<unknown>) => {
+        event.stopPropagation();
+        setOpenSchedules(false);
+    };
+
     return (
         <Paper elevation={0} variant="outlined" square className={classes.toolbar}>
             <EditSchedule scheduleNames={scheduleNames} scheduleIndex={currentScheduleIndex} />
@@ -99,6 +104,7 @@ const CalendarPaneToolbar = ({
                 onChange={handleScheduleChange}
                 open={openSchedules}
                 onClick={handleScheduleClick}
+                onClose={handleClose}
             >
                 {scheduleNames.map((name, index) => (
                     <MenuItem key={index} value={index}>
