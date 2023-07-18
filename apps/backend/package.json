@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "description": "Backend for AntAlmanac",
     "scripts": {
-        "dev": "tsx src/index.ts",
+        "dev": "tsx watch src/index.ts",
         "build": "node scripts/build.mjs",
         "start": "npm run dev",
         "format": "prettier --write src",

@@ -80,6 +80,8 @@ By default, your frontend will send requests to `dev.api.antalmanac.com`, which 
 
 If you want to run the backend locally, use `pnpm start:all` from the root of the repository.
 
+[More in-depth instructions for working with the server can be found in its README](apps/backend/README.md)
+
 ## Manual Deployment
 
 (For ICSSC Projects Committee members with write access to the repository only)
@@ -95,12 +97,6 @@ git checkout main
 git pull
 pnpm run deploy
 ```
-
-## Further Reading
-Sub-projects have their own READMEs with more in-depth information.
-
-[AntAlamanc](apps/antalmanac)
-[Backend Server](apps/backend/README.md)
 
 ## Troubleshooting
 
