@@ -18,8 +18,9 @@ Since AntAlmanac now uses the [PeterPortal API](https://api.peterportal.org) for
 Returns information about course enrollment from previous terms.
 
 ## Running Locally
-_Only ICSSC Project Committee Members will the credentials necessary to connect to the databases._
+__Only ICSSC Project Committee Members will the credentials necessary to connect to the databases.__
 1. Add the `.env` file  
+  - Change the `.env.sample` to `.env` to get started with sample credentials.
 2. Obtain AWS credentials
 3. Run the backend: `pnpm start`  
-_Only do this if you just want to run the backend by itself. To run the whole project with the frontend and backend, you shoudl run `pnpm start:all` inside of the main [AntAlmanac repository](https://github.com/icssc-projects/AntAlmanac)._
+__Only do this if you just want to run the backend by itself. To run the whole project with the frontend and backend, you shoudl run `pnpm start:all` inside of the main [AntAlmanac repository](https://github.com/icssc-projects/AntAlmanac).__
