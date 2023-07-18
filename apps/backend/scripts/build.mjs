@@ -7,7 +7,7 @@ async function main() {
     platform: 'node',
     outdir: 'dist',
     entryPoints: {
-      index: 'src/index.ts',
+      lambda: 'src/lambda.ts',
     }
   })
 }
