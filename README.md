@@ -96,6 +96,12 @@ git pull
 pnpm run deploy
 ```
 
+## Further Reading
+Sub-projects have their own READMEs with more in-depth information.
+
+[AntAlamanc](apps/antalmanac)
+[Backend Server](apps/backend/README.md)
+
 ## Troubleshooting
 
 ### `npm i -g <package>` fails
