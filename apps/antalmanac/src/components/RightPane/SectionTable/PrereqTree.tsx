@@ -1,4 +1,5 @@
 /* eslint-disable prefer-const */
+import { Prerequisite, PrerequisiteTree } from 'peterportal-api-next-types';
 import { FC } from 'react';
 
 import { CourseInfo } from './CourseInfoBar';
@@ -6,8 +7,13 @@ import { isDarkMode } from '$lib/helpers';
 
 import './PrereqTree.css';
 
-export type Prerequisite = Record<string, PrerequisiteNode[]>;
-export type PrerequisiteNode = Prerequisite | string;
+export type PrerequisiteNode = Prerequisite | PrerequisiteTree;
+
+const phraseMapping = {
+    AND: 'all of',
+    OR: 'one of',
+    NOT: 'none of',
+};
 
 interface NodeProps {
     node: string;
@@ -40,30 +46,37 @@ interface TreeProps {
 
 const Tree: FC<TreeProps> = (props) => {
     // eslint-disable-next-line prefer-const
-    let prerequisite = props.prerequisite;
-    let isValueNode = typeof prerequisite === 'string';
+    const prerequisite = props.prerequisite;
+    const isValueNode = 'courseId' in prerequisite || 'examName' in prerequisite;
 
-    // if value is a string, render leaf node
     if (isValueNode) {
         return (
             <li key={props.index} className={'prerequisite-node'}>
-                <Node label={prerequisite as string} node={'prerequisite-node'} />
+                <Node
+                    label={`${prerequisite.courseId ?? prerequisite.examName ?? ''}${
+                        prerequisite?.minGrade ? ` (min grade = ${prerequisite?.minGrade})` : ''
+                    }${prerequisite?.coreq ? ' (coreq)' : ''}`}
+                    node={'prerequisite-node'}
+                />
             </li>
         );
-    }
-    // if value is an object, render the rest of the sub tree
-    else {
+    } else {
+        const prereqTree = prerequisite as Record<string, PrerequisiteNode[]>;
         return (
             <div className={'prerequisite-node'}>
                 <div style={{ display: 'inline-flex', flexDirection: 'row', padding: '0.5rem 0' }}>
                     <span style={{ margin: 'auto' }}>
                         <div className={'prereq-branch'}>
-                            {Object.prototype.hasOwnProperty.call(prerequisite, 'OR') ? 'one of' : 'all of'}
+                            {
+                                Object.entries(phraseMapping).filter(([x, _]) =>
+                                    Object.prototype.hasOwnProperty.call(prerequisite, x)
+                                )[0][1]
+                            }
                         </div>
                     </span>
                     <div className={'prereq-clump'}>
                         <ul className="prereq-list">
-                            {(prerequisite as Prerequisite)[Object.keys(prerequisite)[0]].map((child, index) => (
+                            {prereqTree[Object.keys(prerequisite)[0]].map((child, index) => (
                                 <Tree
                                     key={`tree-${index}`}
                                     prerequisiteNames={props.prerequisiteNames}
@@ -131,10 +144,7 @@ const PrereqTree: FC<PrereqProps> = (props) => {
                     {/* Spawns the root of the prerequisite tree */}
                     {hasPrereqs && (
                         <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
-                            <Tree
-                                prerequisiteNames={props.prerequisite_list}
-                                prerequisite={JSON.parse(JSON.stringify(props.prerequisite_tree))}
-                            />
+                            <Tree prerequisiteNames={props.prerequisite_list} prerequisite={props.prerequisite_tree} />
                         </div>
                     )}
                 </div>
