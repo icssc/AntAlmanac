@@ -11,7 +11,7 @@ const corsOptions: CorsOptions = {
     origin: ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac'],
 };
 
-const PORT = 8080;
+const PORT = 3000;
 
 export async function start(corsEnabled = false) {
     await connectToMongoDB();
@@ -28,7 +28,7 @@ export async function start(corsEnabled = false) {
         })
     );
 
-    if (env.STAGE === 'dev') {
+    if (env.STAGE === 'local') {
         app.listen(PORT, async () => {
             console.log(`🚀 Server listening at http://localhost:${PORT}`);
         });
