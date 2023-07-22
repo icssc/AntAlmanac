@@ -44,7 +44,7 @@ interface TreeProps {
     index?: number;
 }
 
-const Tree: FC<TreeProps> = (props) => {
+const PrereqTreeNode: FC<TreeProps> = (props) => {
     // eslint-disable-next-line prefer-const
     const prerequisite = props.prerequisite;
     const isValueNode = 'courseId' in prerequisite || 'examName' in prerequisite;
@@ -68,8 +68,8 @@ const Tree: FC<TreeProps> = (props) => {
                     <span style={{ margin: 'auto' }}>
                         <div className={'prereq-branch'}>
                             {
-                                Object.entries(phraseMapping).filter(([x, _]) =>
-                                    Object.prototype.hasOwnProperty.call(prerequisite, x)
+                                Object.entries(phraseMapping).filter(([subtreeType, _]) =>
+                                    Object.prototype.hasOwnProperty.call(prerequisite, subtreeType)
                                 )[0][1]
                             }
                         </div>
@@ -77,7 +77,7 @@ const Tree: FC<TreeProps> = (props) => {
                     <div className={'prereq-clump'}>
                         <ul className="prereq-list">
                             {prereqTree[Object.keys(prerequisite)[0]].map((child, index) => (
-                                <Tree
+                                <PrereqTreeNode
                                     key={`tree-${index}`}
                                     prerequisiteNames={props.prerequisiteNames}
                                     index={index}
@@ -144,7 +144,10 @@ const PrereqTree: FC<PrereqProps> = (props) => {
                     {/* Spawns the root of the prerequisite tree */}
                     {hasPrereqs && (
                         <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
-                            <Tree prerequisiteNames={props.prerequisite_list} prerequisite={props.prerequisite_tree} />
+                            <PrereqTreeNode
+                                prerequisiteNames={props.prerequisite_list}
+                                prerequisite={props.prerequisite_tree}
+                            />
                         </div>
                     )}
                 </div>
