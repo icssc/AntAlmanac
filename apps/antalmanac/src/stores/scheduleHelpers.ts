@@ -175,6 +175,9 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
     // If the same courseTitle exists, but not the same sectionType, return a close color
     if (existingSections.length > 0) return generateCloseColor(existingSections[0].section.color, usedColors);
 
-    // If there are no existing sections with the same course title, generate a new color
-    return defaultColors.find((materialColor) => !usedColors.has(materialColor)) || '#5ec8e0';
+    // If there are no existing sections with the same course title, generate a new color. If we run out of unique colors, return a random one that's been used already.
+    return (
+        defaultColors.find((materialColor) => !usedColors.has(materialColor)) ||
+        defaultColors[Math.floor(Math.random() * defaultColors.length)]
+    );
 }
