@@ -1,4 +1,3 @@
-
 import {
     Schedule,
     ScheduleCourse,
@@ -10,7 +9,6 @@ import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } f
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
 import { getColorForNewSection } from '$stores/scheduleHelpers';
-
 
 export class Schedules {
     private schedules: Schedule[];
@@ -165,8 +163,19 @@ export class Schedules {
         }
 
         const existingSection = this.getExistingCourse(newCourse.section.sectionCode, newCourse.term);
+
+        const existsInSchedule = this.doesCourseExistInSchedule(
+            newCourse.section.sectionCode,
+            newCourse.term,
+            scheduleIndex
+        );
+
+        if (existsInSchedule) {
+            return existingSection; // If it's already present in a schedule, then no need to push it
+        }
+
         if (existingSection) {
-            this.schedules[scheduleIndex].courses.push(existingSection);
+            this.schedules[scheduleIndex].courses.push(existingSection); // existingSection is pushed so methods (e.g. @changeCourseColor) have the appropriate (i.e. same) course reference across all schedules
             return existingSection;
         }
 
@@ -174,7 +183,7 @@ export class Schedules {
             ...newCourse,
             section: {
                 ...newCourse.section,
-                color: getColorForNewSection(newCourse, this.getCurrentCourses()),
+                color: getColorForNewSection(newCourse, this.getAllCourses()), // New colors are drawn from a Set of unused colors across all schedules
             },
         };
 
@@ -345,7 +354,7 @@ export class Schedules {
     /**
      * Convert courses and custom events into calendar friendly format
      */
-    toCalendarizedEvents() {
+    getCalendarizedEvents() {
         return [
             ...calendarizeCourseEvents(this.getCurrentCourses()),
             ...calendarizeCustomEvents(this.getCurrentCustomEvents()),
@@ -353,9 +362,16 @@ export class Schedules {
     }
 
     /**
+     * Convert just courses into calendar compatible format.
+     */
+    getCalendarizedCourseEvents() {
+        return calendarizeCourseEvents(this.getCurrentCourses());
+    }
+
+    /**
      * Convert finals into calendar friendly format
      */
-    toCalendarizedFinals() {
+    getCalendarizedFinals() {
         return calendarizeFinals(this.getCurrentCourses());
     }
 

@@ -62,6 +62,10 @@ const styles = {
             width: '8%',
         },
     },
+    container: {},
+    titleRow: {},
+    clearSchedule: {},
+    scheduleNoteContainer: {},
 };
 
 const SectionTable = (props: SectionTableProps) => {
