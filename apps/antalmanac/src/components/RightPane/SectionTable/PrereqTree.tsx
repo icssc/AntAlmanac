@@ -47,15 +47,16 @@ interface TreeProps {
 const PrereqTreeNode: FC<TreeProps> = (props) => {
     // eslint-disable-next-line prefer-const
     const prerequisite = props.prerequisite;
-    const isValueNode = 'courseId' in prerequisite || 'examName' in prerequisite;
+    const isValueNode = Object.prototype.hasOwnProperty.call(prerequisite, 'prereqType');
 
     if (isValueNode) {
+        const prereq = prerequisite as Prerequisite;
         return (
             <li key={props.index} className={'prerequisite-node'}>
                 <Node
-                    label={`${prerequisite.courseId ?? prerequisite.examName ?? ''}${
-                        prerequisite?.minGrade ? ` (min grade = ${prerequisite?.minGrade})` : ''
-                    }${prerequisite?.coreq ? ' (coreq)' : ''}`}
+                    label={`${prereq.courseId ?? prereq.examName ?? ''}${
+                        prereq?.minGrade ? ` (min grade = ${prereq?.minGrade})` : ''
+                    }${prereq?.coreq ? ' (coreq)' : ''}`}
                     node={'prerequisite-node'}
                 />
             </li>
