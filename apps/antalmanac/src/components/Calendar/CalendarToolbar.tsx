@@ -88,7 +88,8 @@ const CalendarPaneToolbar = ({
         setOpenSchedules((prev) => !prev);
     };
 
-    const handleClose = (event: React.ChangeEvent<unknown>) => {
+    // I'm not entirely sure why the schedule Select element requires a separate onClose prop to process [esc], but this provides that functionality
+    const handleScheduleClose = (event: React.ChangeEvent<unknown>) => {
         event.stopPropagation();
         setOpenSchedules(false);
     };
@@ -102,9 +103,9 @@ const CalendarPaneToolbar = ({
                 className={classes.scheduleSelector}
                 value={currentScheduleIndex}
                 onChange={handleScheduleChange}
-                open={openSchedules}
+                onClose={handleScheduleClose}
                 onClick={handleScheduleClick}
-                onClose={handleClose}
+                open={openSchedules}
             >
                 {scheduleNames.map((name, index) => (
                     <MenuItem key={index} value={index}>
