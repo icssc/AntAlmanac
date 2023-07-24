@@ -140,7 +140,7 @@ const PrereqTree: FC<PrereqProps> = (props) => {
                     )}
 
                     {/* Display the class id */}
-                    <Node label={props.id} node={'course-node'} />
+                    <Node label={`${props.department} ${props.courseNumber}`} node={'course-node'} />
 
                     {/* Spawns the root of the prerequisite tree */}
                     {hasPrereqs && (
