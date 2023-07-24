@@ -32,6 +32,8 @@ const styles = () => ({
 
 const noCourseInfo = {
     id: '',
+    department: '',
+    courseNumber: '',
     title: 'No description available',
     prerequisite_tree: {},
     prerequisite_list: [],
@@ -52,6 +54,8 @@ interface CourseInfoBarProps {
 
 export interface CourseInfo {
     id: string;
+    department: string;
+    courseNumber: string;
     title: string;
     prerequisite_tree: PrerequisiteTree;
     prerequisite_list: string[];
@@ -87,6 +91,8 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
 
                         setCourseInfo({
                             id: data.id,
+                            department: data.department,
+                            courseNumber: data.courseNumber,
                             title: data.title,
                             prerequisite_tree: data.prerequisiteTree,
                             prerequisite_list: data.prerequisiteList,
