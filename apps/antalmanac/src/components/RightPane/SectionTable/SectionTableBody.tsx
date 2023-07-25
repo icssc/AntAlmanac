@@ -367,7 +367,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
 
     const [scheduleConflict, setScheduleConflict] = useState(false);
 
-    const translateDaysToNums: { [key: string]: number } = {
+    const DAYS_TO_NUMS: { [key: string]: number } = {
         Su: 0,
         M: 1,
         Tu: 2,
@@ -395,10 +395,10 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                 if (startHr > endHr) startHr -= 12;
             }
 
-            // Times are standardized to ##:##:## for correct comparisons as strings
+            // Times are standardized to ##:## (i.e. leading zero) for correct comparisons as strings
             return {
-                startTime: `${startHr < 10 ? `0${startHr}` : startHr}:${startMinStr}:00`,
-                endTime: `${endHr < 10 ? `0${endHr}` : endHr}:${endMinStr}:00`,
+                startTime: `${startHr < 10 ? `0${startHr}` : startHr}:${startMinStr}`,
+                endTime: `${endHr < 10 ? `0${endHr}` : endHr}:${endMinStr}`,
             };
         }
 
@@ -406,12 +406,12 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     };
 
     useEffect(() => {
-        const toggleHighlight = () => {
+        const updateHighlight = () => {
             const doAdd = AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`);
             setAddedCourse(doAdd);
         };
 
-        const checkScheduleConflict = () => {
+        const checkAndDisplayScheduleConflict = () => {
             if (AppStore.getEventsInCalendar().length < 1) {
                 setScheduleConflict(false);
                 return;
@@ -420,15 +420,16 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             // An array of lists of time information on every added event
             const calendarEventTimes = AppStore.getEventsInCalendar().map((event) => {
                 const courseDay = event.start.getDay();
-                const courseStartTime = event.start.toString().split(' ')[4];
-                const courseEndTime = event.end.toString().split(' ')[4];
+                //courseStart/EndTime is normalized to ##:## (i.e. leading zero, no seconds)
+                const courseStartTime = event.start.toString().split(' ')[4].slice(0, -3);
+                const courseEndTime = event.end.toString().split(' ')[4].slice(0, -3);
                 return { day: courseDay, startTime: courseStartTime, endTime: courseEndTime };
             });
 
             const coursePaneEvent = {
                 // If there already exists a more well-written way to translate secton.meetings days (string) into a number, LMK
                 // Converts SuTuTh -> [Su, Tu, Th] -> [0, 2, 4]
-                day: section.meetings[0].days.match(/[A-Z][a-z]*/g)?.map((day: string) => translateDaysToNums[day]),
+                day: section.meetings[0].days.match(/[A-Z][a-z]*/g)?.map((day: string) => DAYS_TO_NUMS[day]),
                 startTime: '',
                 endTime: '',
             };
@@ -440,22 +441,21 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                 coursePaneEvent.endTime = translatedTimeString.endTime;
             }
 
-            for (let i = 0; i < calendarEventTimes.length; i++) {
+            for (const calendarEvent of calendarEventTimes) {
                 // Check if there is day overlap
-                if (!coursePaneEvent?.day?.includes(calendarEventTimes[i]?.day)) {
+                if (!coursePaneEvent?.day?.includes(calendarEvent?.day)) {
                     continue;
                 }
 
-                // Then, IF the course ( starts AND ends BEFORE) OR ( starts AND ends AFTER), it's good
-                // Currently, it's coded to be greater/less than or equal to, but... if class A ends at 1:00 PM and class B starts at 1:00 PM, you're kinda boned, no?
+                // Then, IF the course ( starts AND ends BEFORE) OR ( starts AND ends AFTER), it wouldn't conflict
                 const happensBefore =
-                    coursePaneEvent.startTime <= calendarEventTimes[i].startTime &&
-                    coursePaneEvent.endTime <= calendarEventTimes[i].startTime;
+                    coursePaneEvent.startTime <= calendarEvent.startTime &&
+                    coursePaneEvent.endTime <= calendarEvent.startTime;
                 const happensAfter =
-                    coursePaneEvent.startTime >= calendarEventTimes[i].endTime &&
-                    coursePaneEvent.endTime >= calendarEventTimes[i].endTime;
+                    coursePaneEvent.startTime >= calendarEvent.endTime &&
+                    coursePaneEvent.endTime >= calendarEvent.endTime;
 
-                // Otherwise, mark it in red
+                // If neither happensBefore or happensAfter is true, set scheduleConflict to true
                 if (!(happensBefore || happensAfter)) {
                     setScheduleConflict(true);
                     return;
@@ -465,18 +465,18 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             return;
         };
 
-        const handleEventListeners = () => {
-            toggleHighlight();
-            checkScheduleConflict();
+        const updateCourseState = () => {
+            updateHighlight();
+            checkAndDisplayScheduleConflict();
         };
 
-        handleEventListeners();
-        AppStore.on('addedCoursesChange', handleEventListeners);
-        AppStore.on('currentScheduleIndexChange', handleEventListeners);
+        updateCourseState();
+        AppStore.on('addedCoursesChange', updateCourseState);
+        AppStore.on('currentScheduleIndexChange', updateCourseState);
 
         return () => {
-            AppStore.removeListener('addedCoursesChange', handleEventListeners);
-            AppStore.removeListener('currentScheduleIndexChange', handleEventListeners);
+            AppStore.removeListener('addedCoursesChange', updateCourseState);
+            AppStore.removeListener('currentScheduleIndexChange', updateCourseState);
         };
     }, [section.sectionCode, term]); //should only run once on first render since these shouldn't change.
 
