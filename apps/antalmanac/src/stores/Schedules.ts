@@ -183,7 +183,10 @@ export class Schedules {
             ...newCourse,
             section: {
                 ...newCourse.section,
-                color: getColorForNewSection(newCourse, this.getAllCourses()), // New colors are drawn from a Set of unused colors across all schedules
+                color: getColorForNewSection(
+                    newCourse,
+                    this.getAllCourses().filter((course) => course.term === newCourse.term)
+                ), // New colors are drawn from a Set of unused colors across the newCourse's term
             },
         };
 
