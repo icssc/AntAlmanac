@@ -27,6 +27,7 @@ import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
+import { translateWebSOCTimeTo24HourTime } from '$stores/calendarizeHelpers';
 
 const styles: Styles<Theme, object> = (theme) => ({
     popover: {
@@ -377,34 +378,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         Sa: 6,
     };
 
-    // the following timeString code is stolen from ${calendarizeCourseEvents}
-    const translateTimeString = () => {
-        const timeString = section.meetings[0].time.replace(/\s/g, '');
-
-        if (timeString !== 'TBA' && timeString !== undefined) {
-            const [, startHrStr, startMinStr, endHrStr, endMinStr, ampm] = timeString?.match(
-                /(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/
-            ) as RegExpMatchArray;
-
-            let startHr = parseInt(startHrStr, 10);
-            let endHr = parseInt(endHrStr, 10);
-
-            if (ampm === 'p' && endHr !== 12) {
-                startHr += 12;
-                endHr += 12;
-                if (startHr > endHr) startHr -= 12;
-            }
-
-            // Times are standardized to ##:## (i.e. leading zero) for correct comparisons as strings
-            return {
-                startTime: `${startHr < 10 ? `0${startHr}` : startHr}:${startMinStr}`,
-                endTime: `${endHr < 10 ? `0${endHr}` : endHr}:${endMinStr}`,
-            };
-        }
-
-        return undefined;
-    };
-
     useEffect(() => {
         const updateHighlight = () => {
             const doAdd = AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`);
@@ -434,8 +407,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                 endTime: '',
             };
 
-            // Wasn't sure if running the function constantly in useEffect was bad, so moved it out just in case
-            const translatedTimeString = translateTimeString();
+            const translatedTimeString = translateWebSOCTimeTo24HourTime(section);
             if (translatedTimeString) {
                 coursePaneEvent.startTime = translatedTimeString.startTime;
                 coursePaneEvent.endTime = translatedTimeString.endTime;
@@ -447,7 +419,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                     continue;
                 }
 
-                // Then, IF the course ( starts AND ends BEFORE) OR ( starts AND ends AFTER), it wouldn't conflict
+                // Then, IF the course ( starts AND ends BEFORE) OR ( starts AND ends AFTER), it doesn't conflict
                 const happensBefore =
                     coursePaneEvent.startTime <= calendarEvent.startTime &&
                     coursePaneEvent.endTime <= calendarEvent.startTime;

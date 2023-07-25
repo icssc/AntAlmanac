@@ -138,3 +138,35 @@ export const calendarizeCustomEvents = (currentCustomEvents: RepeatingCustomEven
 
     return customEventsInCalendar;
 };
+
+/**
+ * @param section
+ * @returns the start and end time of a course in a 24 hour time with a leading zero (##:##)
+ * @returns undefined if there is no WebSOC time (e.g. 'TBA', undefined)
+ */
+export const translateWebSOCTimeTo24HourTime = (section: AASection) => {
+    const timeString = section.meetings[0].time.replace(/\s/g, '');
+
+    if (timeString !== 'TBA' && timeString !== undefined) {
+        const [, startHrStr, startMinStr, endHrStr, endMinStr, ampm] = timeString?.match(
+            /(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/
+        ) as RegExpMatchArray;
+
+        let startHr = parseInt(startHrStr, 10);
+        let endHr = parseInt(endHrStr, 10);
+
+        if (ampm === 'p' && endHr !== 12) {
+            startHr += 12;
+            endHr += 12;
+            if (startHr > endHr) startHr -= 12;
+        }
+
+        // Times are standardized to ##:## (i.e. leading zero) for correct comparisons as strings
+        return {
+            startTime: `${startHr < 10 ? `0${startHr}` : startHr}:${startMinStr}`,
+            endTime: `${endHr < 10 ? `0${endHr}` : endHr}:${endMinStr}`,
+        };
+    }
+
+    return undefined;
+};
