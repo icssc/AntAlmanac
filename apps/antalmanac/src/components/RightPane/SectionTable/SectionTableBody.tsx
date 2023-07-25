@@ -48,31 +48,11 @@ const styles: Styles<Theme, object> = (theme) => ({
     },
     tr: {
         '&.addedCourse': {
-            // Additional specificity is needed so addedCourse takes precendence when timingWarning is also true
-            '&:nth-of-type(n)': {
-                background: isDarkMode() ? '#b0b04f' : '#fcfc97',
-            },
+            background: isDarkMode() ? '#b0b04f' : '#fcfc97',
         },
-        // Input on the stripe colors (currently red) would be appreciated
         '&.scheduleConflict': {
-            '&:nth-of-type(odd)': {
-                background: `repeating-linear-gradient(
-                    45deg,
-                    rgba(244, 67, 54, 0.5),
-                    rgba(244, 67, 54, 0.5) 2px,
-                    ${theme.palette.action.hover} 2px,
-                    ${theme.palette.action.hover} 80px
-                )`,
-            },
-            '&:nth-of-type(even)': {
-                background: `repeating-linear-gradient(
-                    45deg,
-                    rgba(244, 67, 54, 0.5),
-                    rgba(244, 67, 54, 0.5) 2px,
-                    ${theme.palette.background.paper} 2px,
-                    ${theme.palette.background.paper} 80px
-                )`,
-            },
+            background: '#121212',
+            opacity: 0.6,
         },
     },
     cell: {
@@ -505,8 +485,11 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             classes={{ root: classes.row }}
             className={classNames(
                 classes.tr,
-                { scheduleConflict: scheduleConflict },
-                { addedCourse: addedCourse && highlightAdded }
+                // If the course is added, then don't apply scheduleConflict
+                // The ternary is needed since the added course conflicts with itself
+                addedCourse && highlightAdded
+                    ? { addedCourse: addedCourse && highlightAdded }
+                    : { scheduleConflict: scheduleConflict }
             )}
         >
             {!addedCourse ? (
