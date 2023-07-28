@@ -23,9 +23,9 @@ export const addCourse = (
         label: courseDetails.deptCode,
         value: courseNumAsDecimal(courseDetails.courseNumber),
     });
-    const terms = termsInSchedule(term);
+    // const terms = termsInSchedule(term);
 
-    if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
+    // if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 
     // The color will be set properly in Schedules
     const newCourse: ScheduleCourse = {
@@ -176,7 +176,7 @@ export const appendSchedule = async (userId: string, rememberMe: boolean) => {
             openSnackbar('error', `Got a network error when trying to load schedules.`);
         }
     }
-}
+};
 
 export const deleteCourse = (sectionCode: string, term: string) => {
     AppStore.deleteCourse(sectionCode, term);

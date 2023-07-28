@@ -312,18 +312,18 @@ export const addCoursesMultiple = (
     for (const section of Object.values(courseInfo)) {
         addCourse(section.section, section.courseDetails, term, scheduleIndex, true);
     }
-    const terms = termsInSchedule(term);
-    if (terms.size > 1) warnMultipleTerms(terms);
+    // const terms = termsInSchedule(term);
+    // if (terms.size > 1) warnMultipleTerms(terms);
     return Object.values(courseInfo).length;
 };
 
 export const termsInSchedule = (term: string) =>
     new Set([term, ...AppStore.schedule.getCurrentCourses().map((course) => course.term)]);
 
-export const warnMultipleTerms = (terms: Set<string>) => {
+export const warnMultipleTerms = (scheduleTerm: string, addedTerm: string) => {
     openSnackbar(
         'warning',
-        `Course added from different term.\nSchedule now contains courses from ${[...terms].sort().join(', ')}.`,
+        `Course from ${addedTerm} was not added.\nSchedule can contain courses from ${scheduleTerm} only.`,
         undefined,
         undefined,
         { whiteSpace: 'pre-line' }

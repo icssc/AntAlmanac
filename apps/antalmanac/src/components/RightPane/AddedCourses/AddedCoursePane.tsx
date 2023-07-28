@@ -158,13 +158,14 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
 
     getGrid = () => {
         const scheduleName = this.state.scheduleNames[AppStore.getCurrentScheduleIndex()];
+        const scheduleTerm = AppStore.schedule.getCurrentScheduleTerm();
         const scheduleUnits = this.getTotalUnits();
         const NOTE_MAX_LEN = 5000;
 
         return (
             <>
                 <div className={this.props.classes.titleRow}>
-                    <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
+                    <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units), ${scheduleTerm}`}</Typography>
 
                     <div>
                         <PopupState variant="popover">

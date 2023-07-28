@@ -7,8 +7,9 @@ import {
 } from '@packages/antalmanac-types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
-import { getColorForNewSection } from '$stores/scheduleHelpers';
+import { CourseInfo, getCourseInfo, queryWebsoc, warnMultipleTerms } from '$lib/helpers';
+import { getColorForNewSection, getScheduleTerm } from '$stores/scheduleHelpers';
+import { getDefaultTerm } from '$lib/termData';
 
 export class Schedules {
     private schedules: Schedule[];
@@ -22,8 +23,9 @@ export class Schedules {
 
     constructor() {
         const scheduleNoteId = Math.random();
+        const term = getDefaultTerm().shortName;
         this.schedules = [
-            { scheduleName: 'Schedule 1', courses: [], customEvents: [], scheduleNoteId: scheduleNoteId },
+            { scheduleName: 'Schedule 1', courses: [], term: term, customEvents: [], scheduleNoteId: scheduleNoteId },
         ];
         this.currentScheduleIndex = 0;
         this.previousStates = [];
@@ -42,6 +44,14 @@ export class Schedules {
 
     getCurrentScheduleName() {
         return this.schedules[this.currentScheduleIndex].scheduleName;
+    }
+
+    getCurrentScheduleTerm() {
+        return this.getScheduleTerm(this.currentScheduleIndex);
+    }
+
+    getScheduleTerm(scheduleIndex: number) {
+        return this.schedules[scheduleIndex].term;
     }
 
     /**
@@ -67,6 +77,7 @@ export class Schedules {
         const scheduleNoteId = Math.random();
         this.schedules.push({
             scheduleName: newScheduleName,
+            term: getDefaultTerm().shortName,
             courses: [],
             customEvents: [],
             scheduleNoteId: scheduleNoteId,
@@ -158,6 +169,14 @@ export class Schedules {
      * @returns The course object that was added.
      */
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number, addUndoState = true) {
+        if (this.schedules[scheduleIndex].courses.length === 0) {
+            // Change term of schedule if it is empty
+            this.schedules[scheduleIndex].term = newCourse.term;
+        } else if (this.getScheduleTerm(scheduleIndex) !== newCourse.term) {
+            warnMultipleTerms(this.getScheduleTerm(scheduleIndex), newCourse.term);
+            throw new Error('Cannot add course from different term');
+        }
+
         if (addUndoState) {
             this.addUndoState();
         }
@@ -188,7 +207,9 @@ export class Schedules {
     addCourseToAllSchedules(newCourse: ScheduleCourse) {
         this.addUndoState();
         for (let i = 0; i < this.getNumberOfSchedules(); i++) {
-            this.addCourse(newCourse, i, false);
+            if (this.getScheduleTerm(i) === newCourse.term) {
+                this.addCourse(newCourse, i, false);
+            }
         }
         return newCourse;
     }
@@ -482,6 +503,7 @@ export class Schedules {
 
                 this.schedules.push({
                     scheduleName: shortCourseSchedule.scheduleName,
+                    term: getScheduleTerm(shortCourseSchedule),
                     courses: courses,
                     customEvents: shortCourseSchedule.customEvents,
                     scheduleNoteId: scheduleNoteId,

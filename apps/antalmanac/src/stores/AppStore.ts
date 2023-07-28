@@ -237,8 +237,6 @@ class AppStore extends EventEmitter {
         const newSchedule = new Schedules();
         try {
             await newSchedule.fromScheduleSaveState(savedSchedule);
-            console.log(newSchedule)
-            console.log(this.schedule)
             this.schedule.appendSchedule(newSchedule);
         } catch {
             return false;
