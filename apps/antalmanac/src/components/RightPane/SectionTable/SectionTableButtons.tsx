@@ -1,4 +1,4 @@
-import { IconButton, Menu, MenuItem, TableCell, useMediaQuery } from '@material-ui/core';
+import { IconButton, Menu, MenuItem, TableCell, Tooltip, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Add, ArrowDropDown, Delete } from '@material-ui/icons';
@@ -11,6 +11,7 @@ import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { CourseDetails } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
+import ConditionalWrapper from '$components/ConditionalWrapper';
 
 // Reset these params in url becasue when copy a specific class's link, it only copy its course code
 // if there is random value let in the url, it will mess up the url copied.
@@ -66,10 +67,11 @@ interface ScheduleAddCellProps {
     courseDetails: CourseDetails;
     term: string;
     scheduleNames: string[];
+    scheduleConflict: boolean;
 }
 
 export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) => {
-    const { classes, section, courseDetails, term, scheduleNames } = props;
+    const { classes, section, courseDetails, term, scheduleNames, scheduleConflict } = props;
     const popupState = usePopupState({ popupId: 'SectionTableAddCellPopup', variant: 'popover' });
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
@@ -117,9 +119,18 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
     return (
         <TableCell padding="none">
             <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
-                <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
-                    <Add fontSize="small" />
-                </IconButton>
+                <ConditionalWrapper
+                    condition={scheduleConflict}
+                    wrapper={(children) => (
+                        <Tooltip title="This course overlaps with another event in your calendar!" arrow>
+                            {children}
+                        </Tooltip>
+                    )}
+                >
+                    <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
+                        <Add fontSize="small" />
+                    </IconButton>
+                </ConditionalWrapper>
                 <IconButton {...bindTrigger(popupState)}>
                     <ArrowDropDown fontSize="small" />
                 </IconButton>

@@ -470,6 +470,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                     courseDetails={courseDetails}
                     term={term}
                     scheduleNames={scheduleNames}
+                    scheduleConflict={scheduleConflict}
                 />
             ) : (
                 <ColorAndDelete color={section.color} sectionCode={section.sectionCode} term={term} />
