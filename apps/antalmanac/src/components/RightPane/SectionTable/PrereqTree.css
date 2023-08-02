@@ -205,3 +205,7 @@
     background-color: #f5f5f5;
     margin-top: 2em;
 }
+
+.MuiPopover-paper {
+    overflow-x: auto;
+}
