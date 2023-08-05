@@ -85,8 +85,14 @@ interface CommonCalendarEvent extends Event {
     title: string;
 }
 
+export interface Location {
+    building: string; // E.g., ICS
+    room: string; // E.g., 174
+    days?: string[]; // If the location only applies on specific days, this is non-null
+}
+
 export interface CourseEvent extends CommonCalendarEvent {
-    bldg: string[]; // E.g., ICS 174, which is actually building + room
+    bldg: Location[];
     finalExam: string;
     instructors: string[];
     isCustomEvent: false;
@@ -141,9 +147,6 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     if (!courseInMoreInfo.isCustomEvent) {
         const { term, instructors, sectionCode, title, finalExam, bldg, sectionType } = courseInMoreInfo;
 
-        const buildingNames = bldg.map((b) => b.split(' ')[0] ?? '');
-        const buildingIds = buildingNames.map((b) => locationIds[b] ?? 0);
-
         return (
             <Paper className={classes.courseContainer} ref={paperRef}>
                 <div className={classes.titleBar}>
@@ -195,14 +198,14 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         <tr>
                             <td className={classes.alignToTop}>Location{bldg.length > 1 && 's'}</td>
                             <td className={`${classes.multiline} ${classes.rightCells}`}>
-                                {bldg.map((b, index) => (
-                                    <div key={`${sectionCode} @ ${b}`}>
+                                {bldg.map((location) => (
+                                    <div key={`${sectionCode} @ ${location.building} ${location.room}`}>
                                         <Link
                                             className={classes.clickableLocation}
-                                            to={`/map?location=${buildingIds[index]}`}
+                                            to={`/map?location=${locationIds[location.building] ?? 0}`}
                                             onClick={focusMap}
                                         >
-                                            {b}
+                                            {location.building} {location.room}
                                         </Link>
                                     </div>
                                 ))}

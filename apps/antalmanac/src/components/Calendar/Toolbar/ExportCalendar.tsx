@@ -236,7 +236,7 @@ const exportCalendar = () => {
                 endOutputType: 'local' as const,
                 title: `${deptCode} ${courseNumber} ${sectionType}`,
                 description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
-                location: `${meeting.bldg}`,
+                location: meeting.bldg.join(', '),
                 start: firstClassStart as DateTimeArray,
                 end: firstClassEnd as DateTimeArray,
                 recurrenceRule: rrule,

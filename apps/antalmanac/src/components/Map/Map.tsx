@@ -43,10 +43,13 @@ export function getCoursesPerBuilding() {
     const courseEvents = AppStore.getCourseEventsInCalendar();
 
     const allBuildingCodes = courseEvents
-        .map((event) => event.bldg.map((b) => b.split(' ').slice(0, -1).join(' ')))
+        .map((event) => event.bldg.map((location) => location.building))
         .reduce((prev, cur) => prev.concat(cur), []);
 
     const uniqueBuildingCodes = new Set(allBuildingCodes);
+
+    console.log(allBuildingCodes);
+    console.log(uniqueBuildingCodes);
 
     const validBuildingCodes = [...uniqueBuildingCodes].filter(
         (buildingCode) => buildingCatalogue[locationIds[buildingCode]] != null
@@ -56,10 +59,10 @@ export function getCoursesPerBuilding() {
 
     validBuildingCodes.forEach((buildingCode) => {
         coursesPerBuilding[buildingCode] = courseEvents
-            .filter((event) => event.bldg.map((b) => b.split(' ').slice(0, -1).join(' ')).includes(buildingCode))
+            .filter((event) => event.bldg.map((b) => b.building).includes(buildingCode))
             .map((event) => {
                 const locationData = buildingCatalogue[locationIds[buildingCode]];
-                const room = event.bldg.find((b) => b.includes(buildingCode)) ?? 'Unknown';
+                const room = event.bldg.find((b) => b.building == buildingCode) ?? 'Unknown';
                 const key = `${event.title} ${event.sectionType} @ ${room}`;
                 const acronym = locationData.name.substring(
                     locationData.name.indexOf('(') + 1,
@@ -216,7 +219,11 @@ export default function CourseMap() {
                     // Find all courses that occur in the same building prior to this one to stack them properly.
                     const coursesSameBuildingPrior = markersToDisplay
                         .slice(0, index)
-                        .filter((m) => m.bldg[0] === marker.bldg[0]); // TODO Handle multiple buildings between class comparisons on markers
+                        .filter((m) => m.bldg.map((location) => location.building).includes(marker.bldg[0].building)); // TODO Handle multiple buildings between class comparisons on markers
+
+                    const allRoomsInBuilding: string[] = marker.bldg
+                        .filter((location) => location.building == marker.bldg[0].building)
+                        .reduce((roomList, location) => [...roomList, location.room], []);
 
                     return (
                         <Fragment key={Object.values(marker).join('')}>
@@ -231,7 +238,8 @@ export default function CourseMap() {
                                     </Typography>
                                     <Typography variant="body2">
                                         {/* TODO Handle multiple buildings per class on markers */}
-                                        Room: {marker.bldg[0].split(' ').slice(-1)}
+                                        Room{allRoomsInBuilding.length > 1 && 's'}: {marker.bldg[0].building}{' '}
+                                        {allRoomsInBuilding.join('/')}
                                     </Typography>
                                 </Box>
                             </LocationMarker>

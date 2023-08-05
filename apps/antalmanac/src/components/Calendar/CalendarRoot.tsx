@@ -77,7 +77,11 @@ const AntAlmanacEvent =
                         <div className={classes.sectionType}> {event.sectionType}</div>
                     </div>
                     <div className={classes.secondLineContainer}>
-                        <div>{event.bldg.length > 1 ? `${event.bldg.length} Locatns` : event.bldg[0]}</div>
+                        <div>
+                            {event.bldg.length > 1
+                                ? `${event.bldg.length} Locatns`
+                                : `${event.bldg[0].building} ${event.bldg[0].room}`}
+                        </div>
                         <div>{event.sectionCode}</div>
                     </div>
                 </div>

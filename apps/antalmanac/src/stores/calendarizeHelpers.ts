@@ -1,5 +1,5 @@
 import { ScheduleCourse } from '@packages/antalmanac-types';
-import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 
 export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []) => {
@@ -42,7 +42,13 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []) =
                             term: course.term,
                             title: course.deptCode + ' ' + course.courseNumber,
                             courseTitle: course.courseTitle,
-                            bldg: meeting.bldg,
+                            bldg: meeting.bldg.map(
+                                (location: string) =>
+                                    ({
+                                        building: location.split(' ')[0] ?? '',
+                                        room: location.split(' ')[1] ?? '',
+                                    } as Location)
+                            ),
                             instructors: course.section.instructors,
                             sectionCode: course.section.sectionCode,
                             sectionType: course.section.sectionType,
@@ -97,7 +103,13 @@ export const calendarizeFinals = (currentCourses: ScheduleCourse[] = []) => {
                         title: course.deptCode + ' ' + course.courseNumber,
                         sectionCode: course.section.sectionCode,
                         sectionType: 'Fin',
-                        bldg: course.section.meetings[0].bldg[0],
+                        bldg: course.section.meetings[0].bldg.map(
+                            (location: string) =>
+                                ({
+                                    building: location.split(' ')[0] ?? '',
+                                    room: location.split(' ')[1] ?? '',
+                                } as Location)
+                        ),
                         color: course.section.color,
                         start: new Date(2018, 0, index - 1, startHour, startMin),
                         end: new Date(2018, 0, index - 1, endHour, endMin),
