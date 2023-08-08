@@ -4,12 +4,12 @@ import FormGroup from '@material-ui/core/FormGroup';
 import React, { PureComponent } from 'react';
 
 import { RepeatingCustomEvent } from './CustomEventDialog';
+import AppStore from '$stores/AppStore';
 
 interface ScheduleSelectorProps {
     customEvent?: RepeatingCustomEvent;
     scheduleIndices: number[];
     onSelectScheduleIndices: (scheduleIndices: number[]) => void;
-    scheduleNames: string[];
 }
 
 interface ScheduleSelectorState {
@@ -41,7 +41,7 @@ class ScheduleSelector extends PureComponent<ScheduleSelectorProps, ScheduleSele
     render() {
         return (
             <FormGroup row>
-                {this.props.scheduleNames.map((name, index) => {
+                {AppStore.getScheduleNames().map((name, index) => {
                     return (
                         <FormControlLabel
                             control={

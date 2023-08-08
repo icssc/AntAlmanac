@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 
 import { addSchedule, renameSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
+import AppStore from '$stores/AppStore';
 
 const styles = () => ({
     addButton: {
@@ -20,17 +21,18 @@ interface ScheduleNameDialogProps {
     classes: ClassNameMap;
     onOpen?: () => void;
     onClose: () => void;
-    scheduleNames: string[];
     scheduleRenameIndex?: number;
 }
 
 const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
-    const { classes, onOpen, onClose, scheduleNames, scheduleRenameIndex } = props;
+    const { classes, onOpen, onClose, scheduleRenameIndex } = props;
     const rename = scheduleRenameIndex !== undefined;
+    const currentScheduleName = AppStore.schedule.getCurrentScheduleName();
+    const numSchedules = AppStore.schedule.getNumberOfSchedules();
 
     const [isOpen, setIsOpen] = useState(false);
     const [scheduleName, setScheduleName] = useState(
-        scheduleRenameIndex !== undefined ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`
+        scheduleRenameIndex !== undefined ? currentScheduleName : `Schedule ${numSchedules + 1}`
     );
 
     const handleOpen: React.MouseEventHandler<HTMLLIElement> = (event) => {
@@ -46,7 +48,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
         setIsOpen(false);
         // If the user cancelled renaming the schedule, the schedule name is changed to its original value;
         // if the user cancelled adding a new schedule, the schedule name is changed to the default schedule name
-        setScheduleName(rename ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`);
+        setScheduleName(rename ? currentScheduleName : `Schedule ${numSchedules + 1}`);
     };
 
     const handleNameChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -102,7 +104,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
                         fullWidth
                         className={classes.textField}
                         label="Name"
-                        placeholder={`Schedule ${scheduleNames.length + 1}`}
+                        placeholder={`Schedule ${numSchedules + 1}`}
                         onChange={handleNameChange}
                         value={scheduleName}
                     />

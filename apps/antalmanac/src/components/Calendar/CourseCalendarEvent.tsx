@@ -109,7 +109,6 @@ export type CalendarEvent = CourseEvent | CustomEvent;
 interface CourseCalendarEventProps {
     classes: ClassNameMap;
     courseInMoreInfo: CalendarEvent;
-    scheduleNames: string[];
     closePopover: () => void;
 }
 
@@ -242,7 +241,6 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                     <CustomEventDialog
                         onDialogClose={props.closePopover}
                         customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
-                        scheduleNames={props.scheduleNames}
                     />
 
                     <Tooltip title="Delete">

@@ -43,7 +43,6 @@ export interface RepeatingCustomEvent {
 interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
     onDialogClose?: () => void;
-    scheduleNames: string[];
 }
 
 interface CustomEventDialogState extends RepeatingCustomEvent {
@@ -200,7 +199,6 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
                             scheduleIndices={this.state.scheduleIndices}
                             onSelectScheduleIndices={this.handleSelectScheduleIndices}
                             customEvent={this.props.customEvent}
-                            scheduleNames={this.props.scheduleNames}
                         />
                     </DialogContent>
 

@@ -63,6 +63,10 @@ class AppStore extends EventEmitter {
         return this.schedule.getScheduleNames();
     }
 
+    getTermToScheduleMap() {
+        return this.schedule.getTermToScheduleMap();
+    }
+
     getAddedCourses() {
         return this.schedule.getAllCourses();
     }

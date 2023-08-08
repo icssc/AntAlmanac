@@ -59,11 +59,11 @@ importers:
         specifier: ^4.24.4
         version: 4.24.10(react-dom@18.2.0)(react@18.2.0)
       '@trpc/client':
-        specifier: ^10.30.0
-        version: 10.30.0(@trpc/server@10.30.0)
+        specifier: ^10.37.1
+        version: 10.37.1(@trpc/server@10.37.1)
       '@trpc/server':
-        specifier: ^10.30.0
-        version: 10.30.0
+        specifier: ^10.37.1
+        version: 10.37.1
       chart.js:
         specifier: ^4.2.1
         version: 4.2.1
@@ -258,8 +258,8 @@ importers:
         specifier: '*'
         version: link:../../packages/types
       '@trpc/server':
-        specifier: ^10.23.0
-        version: 10.23.0
+        specifier: ^10.37.1
+        version: 10.37.1
       '@vendia/serverless-express':
         specifier: ^4.10.1
         version: 4.10.1
@@ -2757,20 +2757,16 @@ packages:
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
-  /@trpc/client@10.30.0(@trpc/server@10.30.0):
-    resolution: {integrity: sha512-utz0qRI4eU3QcHvBwcSONEnt5pWR3Dyk4VFJnySHysBT6GQRRpJifWX5+RxDhFK93LxcAmiirFbYXjZ40gbobw==}
+  /@trpc/client@10.37.1(@trpc/server@10.37.1):
+    resolution: {integrity: sha512-OSblNfeI0Z9ERn3usgLV2x63CwwPoNOHf1FQK85cOT7F8MNaWyEHoEv7tHUwNGJwyzKXmpU+ockZ0movzX3D0g==}
     peerDependencies:
-      '@trpc/server': 10.30.0
+      '@trpc/server': 10.37.1
     dependencies:
-      '@trpc/server': 10.30.0
+      '@trpc/server': 10.37.1
     dev: false
 
-  /@trpc/server@10.23.0:
-    resolution: {integrity: sha512-0CPfGZK3v3gfAL8ylV5vDJVBQtPp47EB4Vgx6WItSXmwYQlLC39ZC3gkZ4I5cGpQKl4l3QrNNeUvIcse4hlMxA==}
-    dev: false
-
-  /@trpc/server@10.30.0:
-    resolution: {integrity: sha512-pRsrHCuar3fbyOdJvO4b80OMP1Tx/wOSy5Ozy6cFDFWVUmfAyIX3En5Hoysy4cmMUuCsQsfTEYQwo+OcpjzBkg==}
+  /@trpc/server@10.37.1:
+    resolution: {integrity: sha512-r3VeA319/braYMBIzj+XLgLKQ9lJSVglvPvP9HUv4kr5w6Y5grQMxMcExhTiZWltE9bnSJHKtBBzHafOo7KC8A==}
     dev: false
 
   /@types/aws-lambda@8.10.110:

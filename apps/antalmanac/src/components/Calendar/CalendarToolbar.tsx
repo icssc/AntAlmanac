@@ -1,4 +1,4 @@
-import { Button, IconButton, Menu, Paper, Tooltip, useMediaQuery } from '@material-ui/core';
+import { Button, IconButton, ListSubheader, Menu, Paper, Tooltip, useMediaQuery } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { Theme, withStyles } from '@material-ui/core/styles';
@@ -48,7 +48,7 @@ const styles: Styles<Theme, object> = {
 
 interface CalendarPaneToolbarProps {
     classes: ClassNameMap;
-    scheduleNames: string[];
+    scheduleMap: Map<string, [number, string][]>;
     currentScheduleIndex: number;
     showFinalsSchedule: boolean;
     toggleDisplayFinalsSchedule: () => void;
@@ -57,7 +57,7 @@ interface CalendarPaneToolbarProps {
 
 const CalendarPaneToolbar = ({
     classes,
-    scheduleNames,
+    scheduleMap,
     currentScheduleIndex,
     showFinalsSchedule,
     toggleDisplayFinalsSchedule,
@@ -90,26 +90,26 @@ const CalendarPaneToolbar = ({
 
     return (
         <Paper elevation={0} variant="outlined" square className={classes.toolbar}>
-            <EditSchedule scheduleNames={scheduleNames} scheduleIndex={currentScheduleIndex} />
+            <EditSchedule />
 
             <Select
                 classes={{ root: classes.rootScheduleSelector }}
                 className={classes.scheduleSelector}
-                value={currentScheduleIndex}
+                value={currentScheduleIndex.toString()}
                 onChange={handleScheduleChange}
                 open={openSchedules}
                 onClick={handleScheduleClick}
             >
-                {scheduleNames.map((name, index) => (
-                    <MenuItem key={index} value={index}>
-                        {name}
-                    </MenuItem>
-                ))}
-                <ScheduleNameDialog
-                    onOpen={() => setOpenSchedules(true)}
-                    onClose={() => setOpenSchedules(false)}
-                    scheduleNames={scheduleNames}
-                />
+                {Array.from(scheduleMap.entries()).flatMap(([term, schedules]) => [
+                    <ListSubheader key={term}>{term}</ListSubheader>,
+                    ...schedules.map(([scheduleIndex, scheduleName]) => (
+                        <MenuItem key={scheduleIndex} value={scheduleIndex.toString()}>
+                            {scheduleName}
+                        </MenuItem>
+                    )),
+                ])}
+
+                <ScheduleNameDialog onOpen={() => setOpenSchedules(true)} onClose={() => setOpenSchedules(false)} />
             </Select>
 
             <Tooltip title="Toggle showing finals schedule">
@@ -180,7 +180,7 @@ const CalendarPaneToolbar = ({
                     {[
                         <ExportCalendar key="export" />,
                         <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />,
-                        <CustomEventDialog scheduleNames={scheduleNames} key="custom" />,
+                        <CustomEventDialog key="custom" />,
                     ].map((element, index) => (
                         <ConditionalWrapper
                             key={index}

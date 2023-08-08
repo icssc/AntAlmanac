@@ -13,7 +13,7 @@
         "@aponia/integrations-express": "^0.1.54",
         "@aponia/providers": "^0.1.47",
         "@packages/antalmanac-types": "*",
-        "@trpc/server": "^10.23.0",
+        "@trpc/server": "^10.37.1",
         "@vendia/serverless-express": "^4.10.1",
         "aponia": "^0.1.53",
         "arktype": "1.0.14-alpha",

@@ -105,7 +105,7 @@ interface ScheduleCalendarState {
     eventsInCalendar: CalendarEvent[];
     finalsEventsInCalendar: CalendarEvent[];
     currentScheduleIndex: number;
-    scheduleNames: string[];
+    schedules: Map<string, [number, string][]>;
 }
 class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCalendarState> {
     state: ScheduleCalendarState = {
@@ -118,7 +118,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         eventsInCalendar: AppStore.getEventsInCalendar(),
         finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
         currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
-        scheduleNames: AppStore.getScheduleNames(),
+        schedules: AppStore.getTermToScheduleMap(),
     };
 
     static eventStyleGetter = (event: CalendarEvent) => {
@@ -173,7 +173,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
 
     updateScheduleNames = () => {
         this.setState({
-            scheduleNames: AppStore.getScheduleNames(),
+            schedules: AppStore.getTermToScheduleMap(),
         });
     };
 
@@ -256,7 +256,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                     currentScheduleIndex={this.state.currentScheduleIndex}
                     toggleDisplayFinalsSchedule={this.toggleDisplayFinalsSchedule}
                     showFinalsSchedule={this.state.showFinalsSchedule}
-                    scheduleNames={this.state.scheduleNames}
+                    scheduleMap={this.state.schedules}
                 />
                 <div
                     id="screenshot"
@@ -293,7 +293,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                                     key={this.state.calendarEventKey}
                                     closePopover={this.handleClosePopover}
                                     courseInMoreInfo={this.state.courseInMoreInfo as CalendarEvent}
-                                    scheduleNames={this.state.scheduleNames}
                                 />
                             </Box>
                         </ClickAwayListener>

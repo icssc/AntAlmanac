@@ -61,6 +61,22 @@ export class Schedules {
         return this.schedules.map((schedule) => schedule.scheduleName);
     }
 
+    getTermToScheduleMap() {
+        return this.schedules.reduce((map, schedule, scheduleIndex) => {
+            const schedulePairs = map.get(schedule.term);
+            if (schedulePairs) {
+                schedulePairs.push([scheduleIndex, schedule.scheduleName]);
+            } else {
+                map.set(schedule.term, [[scheduleIndex, schedule.scheduleName]]);
+            }
+            return map;
+        }, new Map());
+    }
+
+    setCurrentScheduleTerm() {
+        this.schedules[this.getCurrentScheduleIndex()].term = getDefaultTerm().shortName;
+    }
+
     /**
      * Changes schedule to one at new index
      */
@@ -196,6 +212,7 @@ export class Schedules {
         };
 
         this.schedules[scheduleIndex].courses.push(sectionToAdd);
+        this.setCurrentScheduleTerm();
 
         return sectionToAdd;
     }
@@ -211,6 +228,7 @@ export class Schedules {
                 this.addCourse(newCourse, i, false);
             }
         }
+        this.setCurrentScheduleTerm();
         return newCourse;
     }
 
@@ -233,6 +251,7 @@ export class Schedules {
         this.schedules[this.currentScheduleIndex].courses = this.getCurrentCourses().filter((course) => {
             return !(course.section.sectionCode === sectionCode && course.term === term);
         });
+        this.setCurrentScheduleTerm();
     }
 
     /**

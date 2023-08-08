@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 
 import DeleteScheduleDialog from './DeleteScheduleDialog';
 import ScheduleNameDialog from './ScheduleNameDialog';
+import AppStore from '$stores/AppStore';
 
 const styles = () => ({
     editButton: {
@@ -17,12 +18,10 @@ const styles = () => ({
 
 interface EditScheduleProps {
     classes: ClassNameMap;
-    scheduleNames: string[];
-    scheduleIndex: number;
 }
 
 const EditSchedule = (props: EditScheduleProps) => {
-    const { classes, scheduleNames, scheduleIndex } = props;
+    const { classes } = props;
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
@@ -54,11 +53,7 @@ const EditSchedule = (props: EditScheduleProps) => {
                 }}
                 getContentAnchorEl={null}
             >
-                <ScheduleNameDialog
-                    scheduleNames={scheduleNames}
-                    scheduleRenameIndex={scheduleIndex}
-                    onClose={handleClose}
-                />
+                <ScheduleNameDialog scheduleRenameIndex={AppStore.getCurrentScheduleIndex()} onClose={handleClose} />
                 <DeleteScheduleDialog onClose={handleClose} />
             </Menu>
         </>
