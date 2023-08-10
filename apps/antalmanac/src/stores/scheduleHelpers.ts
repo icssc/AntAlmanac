@@ -187,7 +187,7 @@ export function getScheduleTerm(schedule: ShortCourseSchedule): string {
 
     for (const course of schedule.courses) {
         if (course.term !== term) {
-            return 'NONE';
+            return 'MULTIPLE TERMS';
         }
     }
 

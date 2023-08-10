@@ -74,7 +74,23 @@ export class Schedules {
     }
 
     setCurrentScheduleTerm() {
-        this.schedules[this.getCurrentScheduleIndex()].term = getDefaultTerm().shortName;
+        const currentCourses = this.getCurrentCourses();
+        const currentSchedule = this.schedules[this.getCurrentScheduleIndex()];
+
+        // If no courses in the current schedule and there never was a term, set to default term
+        if (currentCourses.length === 0) {
+            if (currentSchedule.term !== undefined) {
+                return;
+            }
+            currentSchedule.term = getDefaultTerm().shortName;
+            return;
+        }
+
+        // Extract unique terms from the current courses
+        const uniqueTerms = new Set(currentCourses.map((course) => course.term));
+
+        // If there are multiple terms, set to 'Multiple Terms'; otherwise, set to the single term
+        currentSchedule.term = uniqueTerms.size > 1 ? 'MULTIPLE TERMS' : Array.from(uniqueTerms)[0];
     }
 
     /**
@@ -185,11 +201,13 @@ export class Schedules {
      * @returns The course object that was added.
      */
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number, addUndoState = true) {
-        if (this.schedules[scheduleIndex].courses.length === 0) {
-            // Change term of schedule if it is empty
+        const currentTerm = this.schedules[scheduleIndex].term;
+
+        if (!currentTerm) {
+            // If schedule has no term, set it
             this.schedules[scheduleIndex].term = newCourse.term;
-        } else if (this.getScheduleTerm(scheduleIndex) !== newCourse.term) {
-            warnMultipleTerms(this.getScheduleTerm(scheduleIndex), newCourse.term);
+        } else if (currentTerm !== newCourse.term) {
+            warnMultipleTerms(currentTerm, newCourse.term);
             throw new Error('Cannot add course from different term');
         }
 
@@ -212,7 +230,6 @@ export class Schedules {
         };
 
         this.schedules[scheduleIndex].courses.push(sectionToAdd);
-        this.setCurrentScheduleTerm();
 
         return sectionToAdd;
     }
@@ -228,7 +245,6 @@ export class Schedules {
                 this.addCourse(newCourse, i, false);
             }
         }
-        this.setCurrentScheduleTerm();
         return newCourse;
     }
 
