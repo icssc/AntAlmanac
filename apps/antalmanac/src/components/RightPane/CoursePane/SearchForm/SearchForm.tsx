@@ -1,4 +1,4 @@
-import { IconButton, Theme, Tooltip } from '@material-ui/core';
+import {FormControl, IconButton, Theme, Tooltip} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Tune } from '@material-ui/icons';
@@ -11,6 +11,7 @@ import LegacySearch from './LegacySearch';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import TermSelector from './TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import InputLabel from "@material-ui/core/InputLabel";
 
 const styles: Styles<Theme, object> = {
     rightPane: {
@@ -77,10 +78,12 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
             <form onSubmit={onFormSubmit} className={classes.form}>
                 <div className={classes.container}>
                     <div className={classes.margin}>
-                        <TermSelector
-                            changeState={(field: string, value: string) => RightPaneStore.updateFormValue(field, value)}
-                            fieldName={'term'}
-                        />
+                        <FormControl fullWidth>
+                            <InputLabel>Term</InputLabel>
+                            <TermSelector
+                                changeState={(field: string, value: string) => RightPaneStore.updateFormValue(field, value)}
+                            />
+                        </FormControl>
                     </div>
 
                     <div className={classes.container}>

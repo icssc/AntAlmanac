@@ -2,31 +2,24 @@ import { useEffect, useState } from 'react';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import RightPaneStore from '../RightPane/RightPaneStore';
 import { termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
 
-interface TermSelectorProps {
-    changeState: (field: string, value: string) => void;
-    fieldName?: string;
-    right_pane?: boolean;
-}
+// interface TermViewerProps {
+// }
 
-const TermSelector = ({ changeState, fieldName = 'term', right_pane = true }: TermSelectorProps) => {
+const TermViewer = () => {
     const getTerm = () => {
-        let term = AppStore.schedule.getCurrentScheduleTerm();
-        // debug term
-        if ((right_pane && term === 'MULTIPLE TERMS') || term === 'NONE') {
-            term = RightPaneStore.getUrlTermValue() ?? RightPaneStore.getFormData().term;
-        }
-        updateTermAndGetFormData(term);
+        const term = AppStore.schedule.getCurrentScheduleTerm();
+        updateTermAndGetFormData();
 
         return term;
     };
 
-    const updateTermAndGetFormData = (term: string) => {
+    const updateTermAndGetFormData = () => {
         // RightPaneStore.updateFormValue(fieldName, RightPaneStore.getUrlTermValue());
-        RightPaneStore.updateFormValue(fieldName, term);
+        // RightPaneStore.updateFormValue(fieldName, term);
         return RightPaneStore.getFormData().term;
     };
 
@@ -37,10 +30,6 @@ const TermSelector = ({ changeState, fieldName = 'term', right_pane = true }: Te
             setTerm(RightPaneStore.getFormData().term);
         };
 
-        if (right_pane) {
-            RightPaneStore.on('formReset', resetField);
-        }
-
         const handleTermChange = () => {
             // debug log the new term
             // console.log('TermSelector: handleTermChange: AppStore.schedule.getCurrentScheduleTerm() = ' + AppStore.schedule.getCurrentScheduleTerm());
@@ -50,15 +39,14 @@ const TermSelector = ({ changeState, fieldName = 'term', right_pane = true }: Te
 
         AppStore.on('addedCoursesChange', handleTermChange);
         return () => {
-            RightPaneStore.removeListener('formReset', resetField);
             AppStore.removeListener('addedCoursesChange', handleTermChange);
         };
-    }, [getTerm, right_pane]);
+    }, [getTerm]);
 
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         const selectedTerm = event.target.value as string;
         setTerm(selectedTerm);
-        changeState('term', selectedTerm);
+        // changeState('term', selectedTerm);
 
         const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
@@ -86,4 +74,4 @@ const TermSelector = ({ changeState, fieldName = 'term', right_pane = true }: Te
     );
 };
 
-export default TermSelector;
+export default TermViewer;

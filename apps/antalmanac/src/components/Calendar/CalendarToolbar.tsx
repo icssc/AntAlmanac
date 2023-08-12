@@ -14,6 +14,7 @@ import ExportCalendar from './Toolbar/ExportCalendar';
 import ScreenshotButton from './Toolbar/ScreenshotButton';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
+import TermViewer from '$components/Calendar/TermViewer';
 
 const styles: Styles<Theme, object> = {
     toolbar: {
@@ -40,6 +41,9 @@ const styles: Styles<Theme, object> = {
     scheduleSelector: {
         marginLeft: '10px',
         maxWidth: '9rem',
+    },
+    termSelector: {
+        flexGrow: 1,
     },
     rootScheduleSelector: {
         paddingLeft: '5px',
@@ -130,7 +134,9 @@ const CalendarPaneToolbar = ({
                 </Button>
             </Tooltip>
 
-            <div className={classes.spacer} />
+            <div className={classes.termSelector}>
+                <TermViewer />
+            </div>
 
             <Tooltip title="Undo last action">
                 <IconButton

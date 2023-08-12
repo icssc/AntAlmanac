@@ -9,7 +9,7 @@ import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } f
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { CourseInfo, getCourseInfo, queryWebsoc, warnMultipleTerms } from '$lib/helpers';
 import { getColorForNewSection, getScheduleTerm } from '$stores/scheduleHelpers';
-import { getDefaultTerm } from '$lib/termData';
+import {getDefaultTerm } from '$lib/termData';
 
 export class Schedules {
     private schedules: Schedule[];
@@ -40,6 +40,10 @@ export class Schedules {
     // --- Schedule related methods ---
     getNumberOfSchedules() {
         return this.schedules.length;
+    }
+
+    getCurrentSchedule() {
+        return this.schedules[this.currentScheduleIndex];
     }
 
     getCurrentScheduleName() {
@@ -202,6 +206,9 @@ export class Schedules {
      */
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number, addUndoState = true) {
         const currentTerm = this.schedules[scheduleIndex].term;
+        // debug currentterm and newterm
+        console.log('currentTerm: ' + currentTerm);
+        console.log('newTerm: ' + newCourse.term);
 
         if (!currentTerm) {
             // If schedule has no term, set it
