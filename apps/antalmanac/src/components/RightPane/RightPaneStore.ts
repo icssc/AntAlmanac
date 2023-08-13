@@ -1,12 +1,22 @@
 import { EventEmitter } from 'events';
 
 import { getDefaultTerm } from '$lib/termData';
+import AppStore from '$stores/AppStore';
+
+const getDefaultStoreTerm = () => {
+    // Get the current term from the schedule (if it exists) or the default term
+    let term = AppStore.schedule.getCurrentScheduleTerm();
+    if (term === 'MULTIPLE TERMS' || term === 'NONE') {
+        term = getDefaultTerm();
+    }
+    return term;
+};
 
 const defaultFormValues: Record<string, string> = {
     deptValue: 'ALL',
     deptLabel: 'ALL: Include All Departments',
     ge: 'ANY',
-    term: getDefaultTerm().shortName,
+    term: getDefaultStoreTerm(),
     courseNumber: '',
     sectionCode: '',
     instructor: '',
@@ -96,7 +106,23 @@ class RightPaneStore extends EventEmitter {
     toggleOpenSpotAlert = () => {
         this.openSpotAlertPopoverActive = !this.openSpotAlertPopoverActive;
     };
+
+    updateTerm = (term: string) => {
+        this.formData.term = term;
+    };
 }
 
 const store = new RightPaneStore();
+
+const updateTerm = () => {
+    const newTerm = getDefaultStoreTerm();
+    defaultFormValues.term = newTerm;
+    store.updateTerm(newTerm);
+    // debug the value with description of line
+    console.log(`defaultFormValues.term: ${defaultFormValues.term}`);
+};
+
+AppStore.on('addedCoursesChange', updateTerm);
+AppStore.on('currentScheduleIndexChange', updateTerm);
+
 export default store;

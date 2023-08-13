@@ -3,7 +3,6 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import { termData } from '$lib/termData';
-import AppStore from '$stores/AppStore';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 interface TermSelectorProps {
@@ -14,11 +13,11 @@ interface TermSelectorProps {
 
 const TermSelector = ({ changeState, fieldName = 'term', right_pane = true }: TermSelectorProps) => {
     const getTerm = () => {
-        let term = AppStore.schedule.getCurrentScheduleTerm();
-        // debug term
-        if ((right_pane && term === 'MULTIPLE TERMS') || term === 'NONE') {
-            term = RightPaneStore.getUrlTermValue() ?? RightPaneStore.getFormData().term;
-        }
+        const term = RightPaneStore.getUrlTermValue() || RightPaneStore.getFormData().term;
+        // console.log(`TermSelector: getTerm: RightPaneStore.getUrlTermValue() = ${RightPaneStore.getUrlTermValue()}`)
+        // console.log(`TermSelector: getTerm: RightPaneStore.getFormData().term = ${RightPaneStore.getFormData().term}`)
+        // console.log(`TermSelector: getTerm: term = ${term}`)
+
         updateTermAndGetFormData(term);
 
         return term;
@@ -41,17 +40,8 @@ const TermSelector = ({ changeState, fieldName = 'term', right_pane = true }: Te
             RightPaneStore.on('formReset', resetField);
         }
 
-        const handleTermChange = () => {
-            // debug log the new term
-            // console.log('TermSelector: handleTermChange: AppStore.schedule.getCurrentScheduleTerm() = ' + AppStore.schedule.getCurrentScheduleTerm());
-            // setTerm(AppStore.schedule.getCurrentScheduleTerm());
-            setTerm(getTerm());
-        };
-
-        AppStore.on('addedCoursesChange', handleTermChange);
         return () => {
             RightPaneStore.removeListener('formReset', resetField);
-            AppStore.removeListener('addedCoursesChange', handleTermChange);
         };
     }, [getTerm, right_pane]);
 

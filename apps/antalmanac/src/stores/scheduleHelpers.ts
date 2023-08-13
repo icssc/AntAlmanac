@@ -182,7 +182,7 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
 
 export function getScheduleTerm(schedule: ShortCourseSchedule): string {
     if (schedule.term) return schedule.term;
-    if (schedule.courses.length === 0) return getDefaultTerm().shortName;
+    if (schedule.courses.length === 0) return getDefaultTerm();
     const term = schedule.courses[0].term;
 
     for (const course of schedule.courses) {

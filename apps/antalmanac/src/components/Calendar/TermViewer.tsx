@@ -31,30 +31,20 @@ const TermViewer = () => {
         };
 
         const handleTermChange = () => {
-            // debug log the new term
-            // console.log('TermSelector: handleTermChange: AppStore.schedule.getCurrentScheduleTerm() = ' + AppStore.schedule.getCurrentScheduleTerm());
-            // setTerm(AppStore.schedule.getCurrentScheduleTerm());
             setTerm(getTerm());
         };
 
         AppStore.on('addedCoursesChange', handleTermChange);
+        AppStore.on('currentScheduleIndexChange', handleTermChange);
         return () => {
             AppStore.removeListener('addedCoursesChange', handleTermChange);
+            AppStore.removeListener('currentScheduleIndexChange', handleTermChange);
         };
     }, [getTerm]);
 
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         const selectedTerm = event.target.value as string;
         setTerm(selectedTerm);
-        // changeState('term', selectedTerm);
-
-        const url = new URL(window.location.href);
-        const urlParam = new URLSearchParams(url.search);
-        urlParam.delete('term');
-        urlParam.append('term', selectedTerm);
-        const param = urlParam.toString();
-        const new_url = `${param && param !== 'null' ? '?' : ''}${param}`;
-        history.replaceState({ url: 'url' }, 'url', '/' + new_url);
     };
 
     return (

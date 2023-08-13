@@ -9,7 +9,7 @@ import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } f
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { CourseInfo, getCourseInfo, queryWebsoc, warnMultipleTerms } from '$lib/helpers';
 import { getColorForNewSection, getScheduleTerm } from '$stores/scheduleHelpers';
-import {getDefaultTerm } from '$lib/termData';
+import { getDefaultTerm } from '$lib/termData';
 
 export class Schedules {
     private schedules: Schedule[];
@@ -23,7 +23,7 @@ export class Schedules {
 
     constructor() {
         const scheduleNoteId = Math.random();
-        const term = getDefaultTerm().shortName;
+        const term = getDefaultTerm();
         this.schedules = [
             { scheduleName: 'Schedule 1', courses: [], term: term, customEvents: [], scheduleNoteId: scheduleNoteId },
         ];
@@ -81,20 +81,30 @@ export class Schedules {
         const currentCourses = this.getCurrentCourses();
         const currentSchedule = this.schedules[this.getCurrentScheduleIndex()];
 
-        // If no courses in the current schedule and there never was a term, set to default term
+        // If no courses in the current schedule and there never was a term, set to most recent term
         if (currentCourses.length === 0) {
             if (currentSchedule.term !== undefined) {
                 return;
             }
-            currentSchedule.term = getDefaultTerm().shortName;
+            currentSchedule.term = getDefaultTerm();
             return;
         }
 
-        // Extract unique terms from the current courses
-        const uniqueTerms = new Set(currentCourses.map((course) => course.term));
+        // Initialize firstTerm with the term of the first course
+        const firstTerm = currentCourses[0].term;
+        let multipleTerms = false;
 
-        // If there are multiple terms, set to 'Multiple Terms'; otherwise, set to the single term
-        currentSchedule.term = uniqueTerms.size > 1 ? 'MULTIPLE TERMS' : Array.from(uniqueTerms)[0];
+        // Iterate through the current courses, starting from the second course
+        for (let i = 1; i < currentCourses.length; i++) {
+            if (currentCourses[i].term !== firstTerm) {
+                // If a different term is found, set multipleTerms to true and break the loop
+                multipleTerms = true;
+                break;
+            }
+        }
+
+        // If there are multiple terms, set to 'MULTIPLE TERMS'; otherwise, set to the single term
+        currentSchedule.term = multipleTerms ? 'MULTIPLE TERMS' : firstTerm;
     }
 
     /**
@@ -113,7 +123,7 @@ export class Schedules {
         const scheduleNoteId = Math.random();
         this.schedules.push({
             scheduleName: newScheduleName,
-            term: getDefaultTerm().shortName,
+            term: getDefaultTerm(),
             courses: [],
             customEvents: [],
             scheduleNoteId: scheduleNoteId,
