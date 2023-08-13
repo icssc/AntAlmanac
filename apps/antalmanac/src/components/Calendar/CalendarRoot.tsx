@@ -16,7 +16,7 @@ const localizer = momentLocalizer(moment);
 
 /*
 This is the composition structure of everything in components/Calendar, updated as of PR #411
-I did the file restructure for the folder based on this tree, so thought I 
+I did the file restructure for the folder based on this tree, so thought I
 might as well include it since I made it. The file structure is close but doesn't
 match exactly.
 
@@ -171,6 +171,12 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         if (close) this.handleClosePopover();
     };
 
+    updateScheduleTermMap = () => {
+        this.setState({
+            schedules: AppStore.getTermToScheduleMap(),
+        });
+    };
+
     updateScheduleNames = () => {
         this.setState({
             schedules: AppStore.getTermToScheduleMap(),
@@ -183,6 +189,8 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         AppStore.on('colorChange', this.updateEventsInCalendar);
         AppStore.on('currentScheduleIndexChange', this.updateEventsInCalendar);
         AppStore.on('scheduleNamesChange', this.updateScheduleNames);
+
+        AppStore.on('addedCoursesChange', this.updateScheduleTermMap);
     };
 
     componentWillUnmount = () => {
@@ -191,6 +199,8 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         AppStore.removeListener('colorChange', this.updateEventsInCalendar);
         AppStore.removeListener('currentScheduleIndexChange', this.updateEventsInCalendar);
         AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
+
+        AppStore.on('addedCoursesChange', this.updateScheduleTermMap);
     };
 
     handleTakeScreenshot = (html2CanvasScreenshot: () => void) => {
