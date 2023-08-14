@@ -123,7 +123,7 @@ export class Schedules {
         const scheduleNoteId = Math.random();
         this.schedules.push({
             scheduleName: newScheduleName,
-            term: getDefaultTerm(),
+            term: 'NONE',
             courses: [],
             customEvents: [],
             scheduleNoteId: scheduleNoteId,
@@ -216,14 +216,10 @@ export class Schedules {
      */
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number, addUndoState = true) {
         const currentTerm = this.schedules[scheduleIndex].term;
-        // debug currentterm and newterm
-        console.log('currentTerm: ' + currentTerm);
-        console.log('newTerm: ' + newCourse.term);
-
-        if (!currentTerm) {
+        if (!currentTerm || currentTerm === 'NONE') {
             // If schedule has no term, set it
             this.schedules[scheduleIndex].term = newCourse.term;
-        } else if (currentTerm !== newCourse.term) {
+        } else if (currentTerm != 'NONE' && currentTerm !== newCourse.term) {
             warnMultipleTerms(currentTerm, newCourse.term);
             throw new Error('Cannot add course from different term');
         }

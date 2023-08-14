@@ -36,7 +36,8 @@ const TermSelector = ({ changeState, fieldName = 'term' }: TermSelectorProps) =>
     const [showWarning, setShowWarning] = useState(false);
 
     const handleWarning = () => {
-        setShowWarning(term !== AppStore.schedule.getCurrentScheduleTerm());
+        const currentTerm = AppStore.schedule.getCurrentScheduleTerm();
+        setShowWarning(currentTerm !== 'NONE' && term !== currentTerm);
     };
 
     const resetField = () => {
