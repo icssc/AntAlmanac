@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import { FormControl, Tooltip } from '@material-ui/core';
+import WarningIcon from '@material-ui/icons/Warning';
 
+import InputLabel from '@material-ui/core/InputLabel';
 import { termData } from '$lib/termData';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import AppStore from '$stores/AppStore';
 
 interface TermSelectorProps {
     changeState: (field: string, value: string) => void;
     fieldName?: string;
-    right_pane?: boolean;
 }
 
-const TermSelector = ({ changeState, fieldName = 'term', right_pane = true }: TermSelectorProps) => {
+const TermSelector = ({ changeState, fieldName = 'term' }: TermSelectorProps) => {
     const getTerm = () => {
         const term = RightPaneStore.getUrlTermValue() || RightPaneStore.getFormData().term;
         // console.log(`TermSelector: getTerm: RightPaneStore.getUrlTermValue() = ${RightPaneStore.getUrlTermValue()}`)
@@ -30,20 +33,28 @@ const TermSelector = ({ changeState, fieldName = 'term', right_pane = true }: Te
     };
 
     const [term, setTerm] = useState(getTerm);
+    const [showWarning, setShowWarning] = useState(false);
+
+    const handleWarning = () => {
+        setShowWarning(term !== AppStore.schedule.getCurrentScheduleTerm());
+    };
 
     useEffect(() => {
         const resetField = () => {
             setTerm(RightPaneStore.getFormData().term);
         };
 
-        if (right_pane) {
-            RightPaneStore.on('formReset', resetField);
-        }
+        AppStore.on('addedCoursesChange', handleWarning);
+        AppStore.on('currentScheduleIndexChange', handleWarning);
+        RightPaneStore.on('formDataChange', handleWarning);
 
         return () => {
             RightPaneStore.removeListener('formReset', resetField);
+            AppStore.removeListener('addedCoursesChange', handleWarning);
+            AppStore.removeListener('currentScheduleIndexChange', handleWarning);
+            RightPaneStore.removeListener('formDataChange', handleWarning);
         };
-    }, [getTerm, right_pane]);
+    }, [getTerm]);
 
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         const selectedTerm = event.target.value as string;
@@ -60,19 +71,34 @@ const TermSelector = ({ changeState, fieldName = 'term', right_pane = true }: Te
     };
 
     return (
-        <Select value={term} onChange={handleChange} fullWidth={true}>
-            {termData.map((term, index) => (
-                <MenuItem key={index} value={term.shortName}>
-                    {term.longName}
-                </MenuItem>
-            ))}
-            <MenuItem value="MULTIPLE TERMS" style={{ display: 'none' }}>
-                MULTIPLE TERMS
-            </MenuItem>
-            <MenuItem value="NONE" style={{ display: 'none' }}>
-                NONE
-            </MenuItem>
-        </Select>
+        <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
+            <FormControl fullWidth>
+                <InputLabel>Term</InputLabel>
+                <Select value={term} onChange={handleChange} fullWidth={true}>
+                    {termData.map((term, index) => (
+                        <MenuItem key={index} value={term.shortName}>
+                            {term.longName}
+                        </MenuItem>
+                    ))}
+                    <MenuItem value="MULTIPLE TERMS" style={{ display: 'none' }}>
+                        MULTIPLE TERMS
+                    </MenuItem>
+                    <MenuItem value="NONE" style={{ display: 'none' }}>
+                        NONE
+                    </MenuItem>
+                </Select>
+            </FormControl>
+            {showWarning && (
+                <Tooltip
+                    title="Classes will not add because the term selected and the schedule term are different!"
+                    placement="right"
+                >
+                    <div style={{ marginLeft: '8px' }}>
+                        <WarningIcon style={{ color: 'yellow' }} />
+                    </div>
+                </Tooltip>
+            )}
+        </div>
     );
 };
 

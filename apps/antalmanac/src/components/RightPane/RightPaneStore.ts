@@ -119,7 +119,7 @@ const updateTerm = () => {
     defaultFormValues.term = newTerm;
     store.updateTerm(newTerm);
     // debug the value with description of line
-    console.log(`defaultFormValues.term: ${defaultFormValues.term}`);
+    // console.log(`defaultFormValues.term: ${defaultFormValues.term}`);
 };
 
 AppStore.on('addedCoursesChange', updateTerm);
