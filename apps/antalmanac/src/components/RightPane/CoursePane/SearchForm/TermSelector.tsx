@@ -39,11 +39,14 @@ const TermSelector = ({ changeState, fieldName = 'term' }: TermSelectorProps) =>
         setShowWarning(term !== AppStore.schedule.getCurrentScheduleTerm());
     };
 
-    useEffect(() => {
-        const resetField = () => {
-            setTerm(RightPaneStore.getFormData().term);
-        };
+    const resetField = () => {
+        setTerm(RightPaneStore.getFormData().term);
+    };
 
+    useEffect(() => {
+        handleWarning();
+
+        RightPaneStore.on('formReset', resetField);
         AppStore.on('addedCoursesChange', handleWarning);
         AppStore.on('currentScheduleIndexChange', handleWarning);
         RightPaneStore.on('formDataChange', handleWarning);

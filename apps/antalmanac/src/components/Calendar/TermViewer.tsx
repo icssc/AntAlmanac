@@ -5,28 +5,33 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 
-// interface TermViewerProps {
-// }
-
 const TermViewer = () => {
     const getTerm = () => {
         return AppStore.schedule.getCurrentScheduleTerm();
     };
 
-    const [term, setTerm] = useState(getTerm);
+    const [term, setTerm] = useState(getTerm());
+    const [termToScheduleMap, setTermToScheduleMap] = useState(AppStore.getTermToScheduleMap());
+
+    const handleTermChange = () => {
+        setTerm(getTerm());
+    };
+
+    const updateTermToScheduleMap = () => {
+        setTermToScheduleMap(AppStore.getTermToScheduleMap());
+    };
 
     useEffect(() => {
-        const handleTermChange = () => {
-            setTerm(getTerm());
-        };
-
         AppStore.on('addedCoursesChange', handleTermChange);
+        AppStore.on('addedCoursesChange', updateTermToScheduleMap);
         AppStore.on('currentScheduleIndexChange', handleTermChange);
+
         return () => {
             AppStore.removeListener('addedCoursesChange', handleTermChange);
+            AppStore.removeListener('addedCoursesChange', updateTermToScheduleMap);
             AppStore.removeListener('currentScheduleIndexChange', handleTermChange);
         };
-    }, [getTerm]);
+    }, [handleTermChange, updateTermToScheduleMap]);
 
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         const selectedTerm = event.target.value as string;
@@ -43,14 +48,23 @@ const TermViewer = () => {
 
     return (
         <Select value={term} onChange={handleChange} fullWidth={true}>
-            {termData.map((term, index) => (
-                <MenuItem key={index} value={term.shortName}>
-                    {term.longName}
-                </MenuItem>
-            ))}
-            <MenuItem value="MULTIPLE TERMS" style={{ display: 'none' }}>
-                MULTIPLE TERMS
-            </MenuItem>
+            {/*Only show option if termToScheduleMap has "MULTIPLE TERMS"*/}
+            {termToScheduleMap.has('MULTIPLE TERMS') && <MenuItem value="MULTIPLE TERMS">MULTIPLE TERMS</MenuItem>}
+
+            {termData.map((term, index) => {
+                const isTermInMap = termToScheduleMap.has(term.shortName);
+                return (
+                    <MenuItem
+                        key={index}
+                        value={term.shortName}
+                        style={{
+                            opacity: isTermInMap ? 1 : 0.7,
+                        }}
+                    >
+                        {term.longName}
+                    </MenuItem>
+                );
+            })}
             <MenuItem value="NONE" style={{ display: 'none' }}>
                 NONE
             </MenuItem>
