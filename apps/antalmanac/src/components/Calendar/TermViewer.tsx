@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import RightPaneStore from '../RightPane/RightPaneStore';
 import { termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 
@@ -11,25 +10,12 @@ import AppStore from '$stores/AppStore';
 
 const TermViewer = () => {
     const getTerm = () => {
-        const term = AppStore.schedule.getCurrentScheduleTerm();
-        updateTermAndGetFormData();
-
-        return term;
-    };
-
-    const updateTermAndGetFormData = () => {
-        // RightPaneStore.updateFormValue(fieldName, RightPaneStore.getUrlTermValue());
-        // RightPaneStore.updateFormValue(fieldName, term);
-        return RightPaneStore.getFormData().term;
+        return AppStore.schedule.getCurrentScheduleTerm();
     };
 
     const [term, setTerm] = useState(getTerm);
 
     useEffect(() => {
-        const resetField = () => {
-            setTerm(RightPaneStore.getFormData().term);
-        };
-
         const handleTermChange = () => {
             setTerm(getTerm());
         };
@@ -45,6 +31,14 @@ const TermViewer = () => {
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         const selectedTerm = event.target.value as string;
         setTerm(selectedTerm);
+
+        const termToScheduleMap = AppStore.getTermToScheduleMap();
+        const schedulePairs = termToScheduleMap.get(selectedTerm);
+
+        if (schedulePairs && schedulePairs.length > 0) {
+            const scheduleIndex = schedulePairs[0][0];
+            AppStore.changeCurrentSchedule(scheduleIndex);
+        }
     };
 
     return (

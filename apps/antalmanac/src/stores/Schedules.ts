@@ -74,7 +74,7 @@ export class Schedules {
                 map.set(schedule.term, [[scheduleIndex, schedule.scheduleName]]);
             }
             return map;
-        }, new Map());
+        }, new Map<string, [number, string][]>()); // Explicitly type the initial value
     }
 
     setCurrentScheduleTerm() {
