@@ -1,146 +1,160 @@
-import { IconButton, Select, Theme, Tooltip } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { ArrowBack, MoreVert, Refresh } from '@material-ui/icons';
-import { Checkbox, FormControl, ListItemText, MenuItem } from '@material-ui/core';
-import { ChangeEvent, PureComponent } from 'react';
-import RightPaneStore from '../RightPaneStore';
-import { isDarkMode } from '$lib/helpers';
+import { useCallback, useEffect, useState } from 'react';
+import {
+    Box,
+    Checkbox,
+    FormControl,
+    IconButton,
+    ListItemText,
+    MenuItem,
+    Select,
+    Tooltip,
+    type SelectChangeEvent,
+    type SxProps,
+} from '@mui/material';
+import { ArrowBack, MoreVert, Refresh } from '@mui/icons-material';
+import RightPaneStore, { type SectionTableColumn } from '../RightPaneStore';
 
-const styles: Styles<Theme, object> = {
-    buttonRow: {
-        width: '100%',
-        zIndex: 3,
-        marginBottom: 8,
-        position: 'absolute',
-        pointerEvents: 'none',
+/**
+ * All the interactive buttons have the same styles.
+ */
+const buttonSx: SxProps = {
+    backgroundColor: 'rgba(236, 236, 236, 1)',
+    marginRight: 5,
+    boxShadow: '2',
+    color: 'black',
+    '&:hover': {
+        backgroundColor: 'grey',
     },
-    button: {
-        backgroundColor: 'rgba(236, 236, 236, 1)',
-        marginRight: 5,
-        boxShadow: '2',
-        color: 'black',
-        '&:hover': {
-            backgroundColor: 'grey',
-        },
-        pointerEvents: 'auto',
-    },
+    pointerEvents: 'auto',
 };
 
-const columnList: { value: string; label: string }[] = [
-    { value: 'sectionCode', label: 'Code' },
-    { value: 'sectionDetails', label: 'Type' },
-    { value: 'instructors', label: 'Instructors' },
-    { value: 'dayAndTime', label: 'Times' },
-    { value: 'location', label: 'Places' },
-    { value: 'sectionEnrollment', label: 'Enrollment' },
-    { value: 'restrictions', label: 'Restrictions' },
-    { value: 'status', label: 'Status' },
-];
+const columnLabels: Record<SectionTableColumn, string> = {
+    sectionCode: 'Code',
+    sectionDetails: 'Type',
+    instructors: 'Instructors',
+    dayAndTime: 'Times',
+    location: 'Places',
+    sectionEnrollment: 'Enrollment',
+    restrictions: 'Restrictions',
+    status: 'Status',
+};
 
-interface ColumnFilterProps {
-    activeColumns: string[];
-    displayColumnSelector: boolean;
-    handleClick: () => void;
-    handleChange: (event: ChangeEvent<{ restrictions?: string | undefined; value: unknown }>) => void;
-}
+/**
+ * Toggles certain columns on/off.
+ *
+ * e.g. show/hide the section code, instructors, etc.
+ */
+export function ColumnToggleButton() {
+    const [activeColumns, setActiveColumns] = useState(RightPaneStore.getActiveColumns());
+    const [open, setOpen] = useState(false);
 
-class ColumnFilter extends PureComponent<ColumnFilterProps> {
-    render() {
-        const { activeColumns, displayColumnSelector, handleClick, handleChange } = this.props;
+    const handleColumnChange = useCallback(
+        (newActiveColumns: SectionTableColumn[]) => {
+            setActiveColumns(newActiveColumns);
+        },
+        [setActiveColumns]
+    );
 
-        return (
+    const handleChange = useCallback(
+        (e: SelectChangeEvent<SectionTableColumn[]>) => {
+            if (typeof e.target.value !== 'string') {
+                RightPaneStore.setActiveColumns(e.target.value);
+            }
+        },
+        [RightPaneStore.setActiveColumns]
+    );
+
+    const handleOpen = useCallback(() => {
+        setOpen(true);
+    }, [setOpen]);
+
+    const handleClose = useCallback(() => {
+        setOpen(false);
+    }, [setOpen]);
+
+    useEffect(() => {
+        RightPaneStore.on('columnChange', handleColumnChange);
+
+        return () => {
+            RightPaneStore.removeListener('columnChange', handleColumnChange);
+        };
+    }, [handleColumnChange]);
+
+    return (
+        <>
+            <Tooltip title="Show/Hide Columns" sx={buttonSx}>
+                <IconButton onClick={handleOpen}>
+                    <MoreVert />
+                </IconButton>
+            </Tooltip>
             <FormControl>
                 <Select
-                    style={{ width: '0', zIndex: -1, color: isDarkMode() ? '#303030' : '#FAFAFA' }}
-                    inputProps={{ IconComponent: () => null }}
-                    open={displayColumnSelector}
                     multiple
-                    onClose={handleClick}
                     value={activeColumns}
+                    open={open}
                     onChange={handleChange}
+                    onClose={handleClose}
+                    renderValue={() => ''}
+                    sx={{ visibility: 'hidden' }}
                 >
-                    {columnList.map((column) => (
-                        <MenuItem key={column.value} value={column.value} style={{ maxWidth: '200px' }}>
-                            <Checkbox checked={activeColumns.indexOf(column.value) >= 0} color="default" />
-                            <ListItemText primary={column.label} />
+                    {Object.entries(columnLabels).map(([column, label]) => (
+                        <MenuItem key={column} value={column}>
+                            <Checkbox
+                                checked={activeColumns.indexOf(column as SectionTableColumn) >= 0}
+                                color="default"
+                            />
+                            <ListItemText primary={label} />
                         </MenuItem>
                     ))}
                 </Select>
             </FormControl>
-        );
-    }
+        </>
+    );
 }
 
-interface CoursePaneButtonRowProps {
-    classes: ClassNameMap;
+export interface CoursePaneButtonRowProps {
+    /**
+     * Whether the search results are currently being shown.
+     *
+     * @FIXME
+     * This is an indescribably stupid way of managing app state.
+     * This boolean literally causes components to re-render and fetch data when it's flipped,
+     * and it's controlled by a component's local state.
+     */
     showSearch: boolean;
-    displayColumnSelector: boolean;
     onDismissSearchResults: () => void;
     onRefreshSearch: () => void;
 }
 
-class CoursePaneButtonRow extends PureComponent<CoursePaneButtonRowProps> {
-    state = {
-        displayColumnSelector: false,
-        // value (sectionCode), label (Code), component (CourseCodeCell)
-        activeColumns: [
-            'sectionCode',
-            'sectionDetails',
-            'instructors',
-            'dayAndTime',
-            'location',
-            'sectionEnrollment',
-            'restrictions',
-            'status',
-        ],
-    };
+/**
+ * Buttons to interact with the search results.
+ */
+export function CoursePaneButtonRow(props: CoursePaneButtonRowProps) {
+    return (
+        <Box
+            sx={{
+                display: props.showSearch ? 'block' : 'none',
+                width: '100%',
+                zIndex: 3,
+                marginBottom: 8,
+                position: 'absolute',
+            }}
+        >
+            <Tooltip title="Back" sx={buttonSx}>
+                <IconButton onClick={props.onDismissSearchResults}>
+                    <ArrowBack />
+                </IconButton>
+            </Tooltip>
 
-    handleClick = () => {
-        this.setState((prevState: CoursePaneButtonRowProps) => ({
-            displayColumnSelector: !prevState.displayColumnSelector,
-        }));
-    };
+            <Tooltip title="Refresh Search Results" sx={buttonSx}>
+                <IconButton onClick={props.onRefreshSearch}>
+                    <Refresh />
+                </IconButton>
+            </Tooltip>
 
-    handleChange = (event: ChangeEvent<{ restrictions?: string | undefined; value: unknown }>) => {
-        this.setState({ activeColumns: event.target.value }, () => {
-            RightPaneStore.setActiveColumns(this.state.activeColumns);
-        });
-    };
-
-    render() {
-        const { classes } = this.props;
-        const { displayColumnSelector, activeColumns } = this.state;
-
-        return (
-            <div className={classes.buttonRow} style={{ display: this.props.showSearch ? 'block' : 'none' }}>
-                <Tooltip title="Back">
-                    <IconButton onClick={this.props.onDismissSearchResults} className={classes.button}>
-                        <ArrowBack />
-                    </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Refresh Search Results">
-                    <IconButton onClick={this.props.onRefreshSearch} className={classes.button}>
-                        <Refresh />
-                    </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Hide Columns">
-                    <IconButton onClick={this.handleClick} className={classes.button}>
-                        <MoreVert />
-                    </IconButton>
-                </Tooltip>
-
-                <ColumnFilter
-                    activeColumns={activeColumns}
-                    displayColumnSelector={displayColumnSelector}
-                    handleClick={this.handleClick}
-                    handleChange={this.handleChange}
-                />
-            </div>
-        );
-    }
+            <ColumnToggleButton />
+        </Box>
+    );
 }
 
-export default withStyles(styles)(CoursePaneButtonRow);
+export default CoursePaneButtonRow;
