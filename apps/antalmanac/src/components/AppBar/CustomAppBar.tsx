@@ -3,7 +3,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import MenuIcon from '@material-ui/icons/Menu';
-import React, { MouseEventHandler } from 'react';
+import { useState, type MouseEventHandler } from 'react';
 
 import AboutPage from './AboutPage';
 import Feedback from './Feedback';
@@ -48,7 +48,7 @@ const components = [
 const CustomAppBar = ({ classes }: CustomAppBarProps) => {
     const isMobileScreen = useMediaQuery('(max-width:750px)');
 
-    const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
+    const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
     const handleClick: MouseEventHandler<SVGSVGElement> = (event) => {
         setAnchorEl(event.currentTarget);

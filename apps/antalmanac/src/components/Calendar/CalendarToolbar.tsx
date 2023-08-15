@@ -4,7 +4,7 @@ import Select from '@material-ui/core/Select';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete, MoreHoriz, Undo } from '@material-ui/icons';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import EditSchedule from './Toolbar/EditSchedule/EditSchedule';
