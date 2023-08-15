@@ -19,7 +19,8 @@ import RightPaneStore, { type SectionTableColumn } from '../RightPaneStore';
  */
 const buttonSx: SxProps = {
     backgroundColor: 'rgba(236, 236, 236, 1)',
-    marginRight: 5,
+    marginRight: 1,
+    padding: 1.5,
     boxShadow: '2',
     color: 'black',
     '&:hover': {
@@ -100,7 +101,7 @@ export function ColumnToggleButton() {
                     {Object.entries(columnLabels).map(([column, label]) => (
                         <MenuItem key={column} value={column}>
                             <Checkbox
-                                checked={activeColumns.indexOf(column as SectionTableColumn) >= 0}
+                                checked={activeColumns.indexOf(column as SectionTableColumn) > -1}
                                 color="default"
                             />
                             <ListItemText primary={label} />
