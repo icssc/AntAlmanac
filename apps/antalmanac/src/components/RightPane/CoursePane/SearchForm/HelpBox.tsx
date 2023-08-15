@@ -1,64 +1,62 @@
-import { Paper, withStyles } from '@material-ui/core';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { Paper, ImageList, ImageListItem, Typography, Link, List, ListItemText, ListItem } from '@mui/material';
 
-const styles = {
-    container: {
-        padding: 12,
-        marginBottom: '10px',
-        marginRight: '5px',
+const images = [
+    {
+        src: '/helpbox1.png',
+        alt: 'UCI General Catalogue with "Explore Undergraduate Programs" button highlighted',
     },
-    heading: {
-        marginTop: 2,
+    {
+        src: '/helpbox2.png',
+        alt: 'Undergraduate Majors and Minors page with catalogue highlighted',
     },
-    list: {
-        paddingLeft: '1.5em',
+    {
+        src: '/helpbox3.png',
+        alt: 'Electrical Engineering page with "REQUIREMENTS" and "SAMPLE PROGRAM" tabs highlighted',
     },
-    images: {
-        display: 'flex',
-        gap: 10,
-        overflow: 'auto',
-    },
-    image: {
-        height: 250,
-    },
-};
-interface HelpBoxProps {
-    classes: ClassNameMap;
-}
+];
 
-const HelpBox = ({ classes }: HelpBoxProps) => {
+function HelpBox() {
     return (
-        <Paper variant="outlined" className={classes.container}>
-            <h2 className={classes.heading}>Need help planning your schedule?</h2>
-            <ol className={classes.list}>
-                <li>
-                    Browse undergraduate majors on the{' '}
-                    <a href="https://catalogue.uci.edu/undergraduatedegrees/" target="_blank" rel="noopener noreferrer">
-                        UCI Catalogue
-                    </a>
-                    .
-                </li>
-                <li>Select your major.</li>
-                <li>
-                    View the &quot;REQUIREMENTS&quot; and &quot;SAMPLE PROGRAM&quot; tabs to see what classes you should
-                    take.
-                </li>
-            </ol>
-            <div className={classes.images}>
-                <img
-                    className={classes.image}
-                    src="/helpbox1.png"
-                    alt='UCI General Catalogue with "Explore Undergraduate Programs" button highlighted'
-                />
-                <img className={classes.image} src="/helpbox2.png" alt="Undergraduate Majors and Minors page" />
-                <img
-                    className={classes.image}
-                    src="/helpbox3.png"
-                    alt='Electrical Engineering page with "REQUIREMENTS" and "SAMPLE PROGRAM" tabs highlighted'
-                />
-            </div>
+        <Paper variant="outlined" sx={{ padding: 2, marginBottom: '10px', marginRight: '5px' }}>
+            <Typography variant="h5" fontWeight="bold">
+                Need help planning your schedule?
+            </Typography>
+
+            <List component="ol" sx={{ listStyle: 'decimal', pl: 2, pb: 0 }}>
+                <ListItem sx={{ display: 'list-item', p: 0 }}>
+                    <ListItemText>
+                        Browse undergraduate majors on the{' '}
+                        <Link
+                            href="https://catalogue.uci.edu/undergraduatedegrees/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            UCI Catalogue
+                        </Link>
+                        .
+                    </ListItemText>
+                </ListItem>
+
+                <ListItem sx={{ display: 'list-item', p: 0 }}>
+                    <ListItemText>Select your major.</ListItemText>
+                </ListItem>
+
+                <ListItem sx={{ display: 'list-item', p: 0 }}>
+                    <ListItemText>
+                        View the &quot;REQUIREMENTS&quot; and &quot;SAMPLE PROGRAM&quot; tabs to see what classes you
+                        should take.
+                    </ListItemText>
+                </ListItem>
+            </List>
+            <ImageList gap={10} cols={3}>
+                {images.map((image) => (
+                    <ImageListItem key={image.src}>
+                        <img src={image.src} alt={image.alt} />
+                    </ImageListItem>
+                ))}
+            </ImageList>
         </Paper>
     );
-};
+}
 
-export default withStyles(styles)(HelpBox);
+export default HelpBox;
