@@ -11,7 +11,7 @@ import {
     type SelectChangeEvent,
     type SxProps,
 } from '@mui/material';
-import { ArrowBack, MoreVert, Refresh } from '@mui/icons-material';
+import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
 import RightPaneStore, { type SectionTableColumn } from '../RightPaneStore';
 
 /**
@@ -84,7 +84,7 @@ export function ColumnToggleButton() {
         <>
             <Tooltip title="Show/Hide Columns" sx={buttonSx}>
                 <IconButton onClick={handleOpen}>
-                    <MoreVert />
+                    <Visibility />
                 </IconButton>
             </Tooltip>
             <FormControl>
