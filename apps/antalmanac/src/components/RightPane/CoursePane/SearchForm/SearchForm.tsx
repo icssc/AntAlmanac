@@ -109,7 +109,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                 </div>
             </form>
 
-            {/*activeMonthIndices[currentMonthIndex] &&*/ <HelpBox />}
+            {activeMonthIndices[currentMonthIndex] && <HelpBox />}
             <PrivacyPolicyBanner />
         </div>
     );
