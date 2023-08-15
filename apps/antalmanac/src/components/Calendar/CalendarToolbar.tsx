@@ -6,7 +6,6 @@ import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete, MoreHoriz, Undo } from '@material-ui/icons';
 import React, { useState } from 'react';
 
-import ConditionalWrapper from '../ConditionalWrapper';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import EditSchedule from './Toolbar/EditSchedule/EditSchedule';
 import ScheduleNameDialog from './Toolbar/EditSchedule/ScheduleNameDialog';
@@ -162,36 +161,33 @@ const CalendarPaneToolbar = ({
                 </IconButton>
             </Tooltip>
 
-            <ConditionalWrapper
-                condition={isMobileScreen}
-                wrapper={(children) => (
-                    <div>
-                        <IconButton onClick={handleMenuClick}>
-                            <MoreHoriz />
-                        </IconButton>
+            {isMobileScreen ? (
+                <div>
+                    <IconButton onClick={handleMenuClick}>
+                        <MoreHoriz />
+                    </IconButton>
 
-                        <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                            {children}
-                        </Menu>
-                    </div>
-                )}
-            >
+                    <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleMenuClose}>
+                        <MenuItem onClick={handleMenuClose}>
+                            <ExportCalendar />
+                        </MenuItem>
+
+                        <MenuItem onClick={handleMenuClose}>
+                            <ScreenshotButton onTakeScreenshot={onTakeScreenshot} />
+                        </MenuItem>
+
+                        <MenuItem onClick={handleMenuClose}>
+                            <CustomEventDialog scheduleNames={scheduleNames} />
+                        </MenuItem>
+                    </Menu>
+                </div>
+            ) : (
                 <>
-                    {[
-                        <ExportCalendar key="export" />,
-                        <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />,
-                        <CustomEventDialog scheduleNames={scheduleNames} key="custom" />,
-                    ].map((element, index) => (
-                        <ConditionalWrapper
-                            key={index}
-                            condition={isMobileScreen}
-                            wrapper={(children) => <MenuItem onClick={handleMenuClose}>{children}</MenuItem>}
-                        >
-                            {element}
-                        </ConditionalWrapper>
-                    ))}
+                    <ExportCalendar key="export" />
+                    <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />
+                    <CustomEventDialog scheduleNames={scheduleNames} key="custom" />
                 </>
-            </ConditionalWrapper>
+            )}
         </Paper>
     );
 };
