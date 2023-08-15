@@ -377,8 +377,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const [activeColumns, setColumns] = useState(RightPaneStore.getActiveColumns());
 
     const toggleHighlight = useCallback(() => {
-        const doAdd = AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`);
-        setAddedCourse(doAdd);
+        setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
     }, [setAddedCourse, AppStore.getAddedSectionCodes]);
 
     const handleColumnChange = useCallback(
@@ -431,9 +430,9 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                             scheduleNames={scheduleNames}
                             {...section}
                             sectionType={section.sectionType as SectionType}
-                            maxCapacity={parseInt(section.maxCapacity)}
+                            maxCapacity={parseInt(section.maxCapacity, 10)}
                             units={parseFloat(section.units)}
-                            courseName={courseDetails.deptCode + ' ' + courseDetails.courseNumber}
+                            courseName={`${courseDetails.deptCode} ${courseDetails.courseNumber}`}
                             {...courseDetails}
                         />
                     );
