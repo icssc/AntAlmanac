@@ -7,7 +7,7 @@ const images = [
     },
     {
         src: '/helpbox2.png',
-        alt: 'Undergraduate Majors and Minors page',
+        alt: 'Undergraduate Majors and Minors page with catalogue highlighted',
     },
     {
         src: '/helpbox3.png',
