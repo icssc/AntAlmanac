@@ -16,7 +16,7 @@ import ShowChartIcon from '@material-ui/icons/ShowChart';
 // import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back and restore the files (https://github.com/icssc/AntAlmanac/tree/5e89e035e66f00608042871d43730ba785f756b0/src/components/RightPane/SectionTable/EnrollmentGraph)
 import { useCallback, useEffect, useState } from 'react';
 import { MOBILE_BREAKPOINT } from '../../../globals';
-import RightPaneStore, { SectionTableColumn } from '../RightPaneStore';
+import RightPaneStore, { type SectionTableColumn } from '../RightPaneStore';
 import CourseInfoBar from './CourseInfoBar';
 import CourseInfoButton from './CourseInfoButton';
 import GradesPopup from './GradesPopup';
