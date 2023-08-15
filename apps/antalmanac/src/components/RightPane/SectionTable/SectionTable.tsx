@@ -14,9 +14,9 @@ import { withStyles } from '@material-ui/core/styles';
 import { Assessment, Help, RateReview } from '@material-ui/icons';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 // import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back and restore the files (https://github.com/icssc/AntAlmanac/tree/5e89e035e66f00608042871d43730ba785f756b0/src/components/RightPane/SectionTable/EnrollmentGraph)
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { MOBILE_BREAKPOINT } from '../../../globals';
-import RightPaneStore from '../RightPaneStore';
+import RightPaneStore, { SectionTableColumn } from '../RightPaneStore';
 import CourseInfoBar from './CourseInfoBar';
 import CourseInfoButton from './CourseInfoButton';
 import GradesPopup from './GradesPopup';
@@ -70,16 +70,16 @@ const styles = {
     scheduleNoteContainer: {},
 };
 
-const tableHeadColumns: { value: string; label: string }[] = [
-    { value: 'sectionCode', label: 'Code' },
-    { value: 'sectionDetails', label: 'Type' },
-    { value: 'instructors', label: 'Instructors' },
-    { value: 'dayAndTime', label: 'Times' },
-    { value: 'location', label: 'Places' },
-    { value: 'sectionEnrollment', label: 'Enrollment' },
-    { value: 'restrictions', label: 'Rstr' },
-    { value: 'status', label: 'Status' },
-];
+const tableHeaderColumns: Record<SectionTableColumn, string> = {
+    sectionCode: 'Code',
+    sectionDetails: 'Type',
+    instructors: 'Instructors',
+    dayAndTime: 'Times',
+    location: 'Places',
+    sectionEnrollment: 'Enrollment',
+    restrictions: 'Restr',
+    status: 'Status',
+};
 
 const SectionTable = (props: SectionTableProps) => {
     const { classes, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames, analyticsCategory } = props;
@@ -87,28 +87,22 @@ const SectionTable = (props: SectionTableProps) => {
     const encodedDept = encodeURIComponent(courseDetails.deptCode);
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
-    const [columns, setColumns] = useState([
-        'sectionCode',
-        'sectionDetails',
-        'instructors',
-        'dayAndTime',
-        'location',
-        'sectionEnrollment',
-        'restrictions',
-        'status',
-    ]);
+    const [activeColumns, setActiveColumns] = useState(RightPaneStore.getActiveColumns());
+
+    const handleColumnChange = useCallback(
+        (newActiveColumns: SectionTableColumn[]) => {
+            setActiveColumns(newActiveColumns);
+        },
+        [setActiveColumns]
+    );
 
     useEffect(() => {
-        RightPaneStore.on('columnChange', (columns) => {
-            setColumns(columns);
-        });
+        RightPaneStore.on('columnChange', handleColumnChange);
 
         return () => {
-            RightPaneStore.removeListener('columnChange', (columns) => {
-                setColumns(columns);
-            });
+            RightPaneStore.removeListener('columnChange', handleColumnChange);
         };
-    }, [columns]);
+    }, [handleColumnChange]);
 
     return (
         <>
@@ -165,20 +159,20 @@ const SectionTable = (props: SectionTableProps) => {
                     <TableHead>
                         <TableRow>
                             <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row} />
-                            {tableHeadColumns
-                                .filter((column) => columns.includes(column.value))
-                                .map((column) => {
+                            {Object.entries(tableHeaderColumns)
+                                .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
+                                .map(([column, label]) => {
                                     return (
                                         <TableCell
                                             classes={{ sizeSmall: classes?.cellPadding }}
                                             className={classes?.row}
-                                            key={column.label}
+                                            key={column}
                                         >
-                                            {!(column.label === 'Enrollment') ? (
-                                                column.label
+                                            {label !== 'Enrollment' ? (
+                                                label
                                             ) : (
                                                 <div className={classes?.flex}>
-                                                    <span className={classes?.iconMargin}>{column.label}</span>
+                                                    <span className={classes?.iconMargin}>{label}</span>
                                                     {!isMobileScreen && (
                                                         <Tooltip
                                                             title={

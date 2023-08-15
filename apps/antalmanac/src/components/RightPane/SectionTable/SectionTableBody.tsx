@@ -18,7 +18,7 @@ import { Fragment, useCallback, useContext, useEffect, useState } from 'react';
 
 import { AASection } from '@packages/antalmanac-types';
 import { WebsocSectionEnrollment, WebsocSectionMeeting } from 'peterportal-api-next-types';
-import RightPaneStore from '../RightPaneStore';
+import RightPaneStore, { type SectionTableColumn } from '../RightPaneStore';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
@@ -357,57 +357,50 @@ interface SectionTableBodyProps {
     scheduleNames: string[];
 }
 
-const tableBodyColumns = [
-    { value: 'scheduleAdd', Component: ScheduleAddCell },
-    { value: 'colorAndDelete', Component: ColorAndDelete },
-    { value: 'sectionCode', Component: CourseCodeCell },
-    { value: 'sectionDetails', Component: SectionDetailsCell },
-    { value: 'instructors', Component: InstructorsCell },
-    { value: 'dayAndTime', Component: DayAndTimeCell },
-    { value: 'location', Component: LocationsCell },
-    { value: 'sectionEnrollment', Component: SectionEnrollmentCell },
-    { value: 'restrictions', Component: RestrictionsCell },
-    { value: 'status', Component: StatusCell },
-];
+const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
+    sectionCode: CourseCodeCell,
+    sectionDetails: SectionDetailsCell,
+    instructors: InstructorsCell,
+    dayAndTime: DayAndTimeCell,
+    location: LocationsCell,
+    sectionEnrollment: SectionEnrollmentCell,
+    restrictions: RestrictionsCell,
+    status: StatusCell,
+};
 
-//TODO: SectionNum name parity -> SectionNumber
+// TODO: SectionNum name parity -> SectionNumber
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames } = props;
+
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
 
-    const [columns, setColumns] = useState([
-        'sectionCode',
-        'sectionDetails',
-        'instructors',
-        'dayAndTime',
-        'location',
-        'sectionEnrollment',
-        'restrictions',
-        'status',
-    ]);
+    const [activeColumns, setColumns] = useState(RightPaneStore.getActiveColumns());
+
+    const toggleHighlight = useCallback(() => {
+        const doAdd = AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`);
+        setAddedCourse(doAdd);
+    }, [setAddedCourse, AppStore.getAddedSectionCodes]);
+
+    const handleColumnChange = useCallback(
+        (newActiveColumns: SectionTableColumn[]) => {
+            setColumns(newActiveColumns);
+        },
+        [setColumns]
+    );
 
     useEffect(() => {
-        const toggleHighlight = () => {
-            const doAdd = AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`);
-            setAddedCourse(doAdd);
-        };
-
         toggleHighlight();
 
         AppStore.on('addedCoursesChange', toggleHighlight);
         AppStore.on('currentScheduleIndexChange', toggleHighlight);
-        RightPaneStore.on('columnChange', (columns) => {
-            setColumns(columns);
-        });
+        RightPaneStore.on('columnChange', handleColumnChange);
 
         return () => {
             AppStore.removeListener('addedCoursesChange', toggleHighlight);
             AppStore.removeListener('currentScheduleIndexChange', toggleHighlight);
-            RightPaneStore.removeListener('columnChange', (columns) => {
-                setColumns(columns);
-            });
+            RightPaneStore.removeListener('columnChange', handleColumnChange);
         };
-    }, [section.sectionCode, term, columns]); //should only run once on first render since these shouldn't change.
+    }, [toggleHighlight, handleColumnChange]);
 
     return (
         <TableRow
@@ -425,14 +418,13 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                 <ColorAndDelete color={section.color} sectionCode={section.sectionCode} term={term} />
             )}
 
-            {tableBodyColumns
-                .filter((column) => columns.includes(column.value))
-                .map((column) => {
-                    const Component = column.Component;
+            {Object.entries(tableBodyCells)
+                .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
+                .map(([column, Component]) => {
                     return (
                         // All of this is a little bulky, so if the props can be added specifically to activeTableBodyColumns, LMK!
                         <Component
-                            key={column.value}
+                            key={column}
                             section={section}
                             courseDetails={courseDetails}
                             term={term}
