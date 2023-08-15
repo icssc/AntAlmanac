@@ -41,6 +41,18 @@ const columnLabels: Record<SectionTableColumn, string> = {
 };
 
 /**
+ * The {@link Select} input renders an input (text) box which describes the currently selected value(s).
+ *
+ * This input is triggered with a custom button, not the one that comes with the component.
+ *
+ * So render an empty string, to make the input text box empty. Although the input ends
+ * up being invisible anyways, making it empty ensures that it doesn't take up space.
+ */
+function renderEmptySelectValue() {
+    return '';
+}
+
+/**
  * Toggles certain columns on/off.
  *
  * e.g. show/hide the section code, instructors, etc.
@@ -95,7 +107,7 @@ export function ColumnToggleButton() {
                     open={open}
                     onChange={handleChange}
                     onClose={handleClose}
-                    renderValue={() => ''}
+                    renderValue={renderEmptySelectValue}
                     sx={{ visibility: 'hidden' }}
                 >
                     {Object.entries(columnLabels).map(([column, label]) => (
