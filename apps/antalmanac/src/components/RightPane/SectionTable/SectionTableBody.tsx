@@ -1,15 +1,5 @@
+import { Box, Chip, Popover, TableCell, TableRow, Theme, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
 import { Link } from 'react-router-dom';
-import {
-    Box,
-    Button,
-    Popover,
-    TableCell,
-    TableRow,
-    Theme,
-    Tooltip,
-    Typography,
-    useMediaQuery,
-} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
@@ -33,8 +23,7 @@ const styles: Styles<Theme, object> = (theme) => ({
         pointerEvents: 'none',
     },
     sectionCode: {
-        padding: 0,
-        display: 'inline-block',
+        display: 'inline-flex',
         cursor: 'pointer',
         '&:hover': {
             color: isDarkMode() ? 'gold' : 'blueviolet',
@@ -108,9 +97,8 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
 
     return (
         <NoPaddingTableCell className={classes.cell}>
-            <Tooltip title="Click to copy course code" placement="bottom" enterDelay={300}>
-                <Button
-                    size="small"
+            <Tooltip title="Click to copy course code" placement="bottom" enterDelay={150}>
+                <Chip
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);
                         logAnalytics({
@@ -119,9 +107,9 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
                         });
                     }}
                     className={classes.sectionCode}
-                >
-                    {sectionCode}
-                </Button>
+                    label={sectionCode}
+                    size="small"
+                />
             </Tooltip>
         </NoPaddingTableCell>
     );

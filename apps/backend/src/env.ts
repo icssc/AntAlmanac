@@ -6,7 +6,7 @@ config({ path: '.env' });
 
 const Environment = type([
     {
-        'STAGE?': "'dev' | 'prod' | 'staging'",
+        'STAGE?': "'dev' | 'prod' | 'staging' | 'local'",
         USERDATA_TABLE_NAME: 'string',
         AUTH_USERDATA_TABLE_NAME: 'string',
         AA_MONGODB_URI: 'string',
@@ -16,7 +16,7 @@ const Environment = type([
         'PR_NUM?': 'number',
     },
     '|>',
-    (s) => ({ STAGE: 'dev', ...s }),
+    (s) => ({ STAGE: 'local', ...s }),
 ]);
 
 const env = Environment.assert(process.env);

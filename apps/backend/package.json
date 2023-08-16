@@ -3,11 +3,11 @@
     "version": "0.0.1",
     "description": "Backend for AntAlmanac",
     "scripts": {
-        "dev": "esbuild --watch --bundle --sourcemap --outdir=dist --platform=node src/index.ts",
-        "build": "esbuild --bundle --minify --outdir=dist --platform=node src/lambda.ts",
-        "start": "concurrently 'npm run dev' 'nodemon dist'",
+        "dev": "tsx watch src/index.ts",
+        "build": "node scripts/build.mjs",
+        "start": "npm run dev",
         "format": "prettier --write src",
-        "lint": "eslint src"
+        "lint": "eslint --fix src"
     },
     "dependencies": {
         "@aponia/integrations-express": "^0.1.54",
@@ -48,7 +48,7 @@
         "lint-staged": "^13.1.2",
         "nodemon": "^2.0.22",
         "prettier": "^2.8.4",
-        "tsx": "^3.12.3",
+        "tsx": "^3.12.7",
         "typescript": "^4.9.5"
     },
     "lint-staged": {
