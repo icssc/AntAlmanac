@@ -1,4 +1,4 @@
-import { Button, IconButton, ListSubheader, Menu, Paper, Tooltip, useMediaQuery } from '@material-ui/core';
+import { IconButton, ListSubheader, Menu, Paper, Tooltip, useMediaQuery } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { Theme, withStyles } from '@material-ui/core/styles';
@@ -15,6 +15,7 @@ import ScreenshotButton from './Toolbar/ScreenshotButton';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
 import TermViewer from '$components/Calendar/TermViewer';
+import FinalsButton from '$components/Calendar/Toolbar/FinalsButton';
 
 const styles: Styles<Theme, object> = {
     toolbar: {
@@ -44,6 +45,9 @@ const styles: Styles<Theme, object> = {
     },
     termSelector: {
         flexGrow: 1,
+        flexShrink: 1,
+        minWidth: '50px',
+        overflow: 'hidden',
     },
     rootScheduleSelector: {
         paddingLeft: '5px',
@@ -75,7 +79,7 @@ const CalendarPaneToolbar = ({
         changeCurrentSchedule(event.target.value as number);
     };
 
-    const isMobileScreen = useMediaQuery('(max-width:630px)');
+    const isNotWideEnough = useMediaQuery('(max-width:1800px)');
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();
     const [openSchedules, setOpenSchedules] = useState<boolean>(false);
@@ -116,24 +120,6 @@ const CalendarPaneToolbar = ({
                 <ScheduleNameDialog onOpen={() => setOpenSchedules(true)} onClose={() => setOpenSchedules(false)} />
             </Select>
 
-            <Tooltip title="Toggle showing finals schedule">
-                <Button
-                    id="finalButton"
-                    variant={showFinalsSchedule ? 'contained' : 'outlined'}
-                    onClick={() => {
-                        logAnalytics({
-                            category: analyticsEnum.calendar.title,
-                            action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
-                        });
-                        toggleDisplayFinalsSchedule();
-                    }}
-                    size="small"
-                    color={showFinalsSchedule ? 'primary' : 'default'}
-                >
-                    Finals
-                </Button>
-            </Tooltip>
-
             <div className={classes.termSelector}>
                 <TermViewer />
             </div>
@@ -169,7 +155,7 @@ const CalendarPaneToolbar = ({
             </Tooltip>
 
             <ConditionalWrapper
-                condition={isMobileScreen}
+                condition={isNotWideEnough}
                 wrapper={(children) => (
                     <div>
                         <IconButton onClick={handleMenuClick}>
@@ -184,13 +170,18 @@ const CalendarPaneToolbar = ({
             >
                 <>
                     {[
-                        <ExportCalendar key="export" />,
                         <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />,
+                        <ExportCalendar key="export" />,
                         <CustomEventDialog key="custom" />,
+                        <FinalsButton
+                            key="finals"
+                            showFinalsSchedule={showFinalsSchedule}
+                            toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
+                        />,
                     ].map((element, index) => (
                         <ConditionalWrapper
                             key={index}
-                            condition={isMobileScreen}
+                            condition={isNotWideEnough}
                             wrapper={(children) => <MenuItem onClick={handleMenuClose}>{children}</MenuItem>}
                         >
                             {element}
