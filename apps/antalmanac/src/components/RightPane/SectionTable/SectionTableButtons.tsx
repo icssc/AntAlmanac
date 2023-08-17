@@ -11,7 +11,6 @@ import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { CourseDetails } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
-import ConditionalWrapper from '$components/ConditionalWrapper';
 
 // Reset these params in url becasue when copy a specific class's link, it only copy its course code
 // if there is random value let in the url, it will mess up the url copied.
@@ -119,18 +118,17 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
     return (
         <TableCell padding="none">
             <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
-                <ConditionalWrapper
-                    condition={scheduleConflict}
-                    wrapper={(children) => (
-                        <Tooltip title="This course overlaps with another event in your calendar!" arrow>
-                            {children}
-                        </Tooltip>
-                    )}
-                >
+                {scheduleConflict ? (
+                    <Tooltip title="This course overlaps with another event in your calendar!" arrow>
+                        <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
+                            <Add fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                ) : (
                     <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
                         <Add fontSize="small" />
                     </IconButton>
-                </ConditionalWrapper>
+                )}
                 <IconButton {...bindTrigger(popupState)}>
                     <ArrowDropDown fontSize="small" />
                 </IconButton>
