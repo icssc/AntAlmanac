@@ -36,6 +36,22 @@ export default class BackendStack extends Stack {
             },
         )
 
+        const authUserDataDDB = new dynamnodb.Table(
+            this,
+            `antalmanac-authuserdata-ddb-${props.stage}`,
+            {
+                partitionKey: {
+                    name: 'id',
+                    type: dynamnodb.AttributeType.STRING,
+                },
+                billingMode: dynamnodb.BillingMode.PAY_PER_REQUEST,
+                removalPolicy:
+                    props.stage === 'dev' || props.stage === 'prod'
+                        ? RemovalPolicy.RETAIN
+                        : RemovalPolicy.DESTROY,
+            },
+        )
+
         const api = new lambda.Function(
             this,
             `antalmanac-api-${props.stage}-lambda`,
@@ -50,7 +66,7 @@ export default class BackendStack extends Stack {
                     AA_MONGODB_URI: props.mongoDbUriProd,
                     STAGE: props.stage,
                     USERDATA_TABLE_NAME: userDataDDB.tableName,
-                    AUTH_USERDATA_TABLE_NAME: 'antalmanac-auth-test',
+                    AUTH_USERDATA_TABLE_NAME: authUserDataDDB.tableName,
                     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
                     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
                 },
@@ -58,6 +74,7 @@ export default class BackendStack extends Stack {
         )
 
         userDataDDB.grantReadWriteData(api)
+        authUserDataDDB.grantReadWriteData(api)
 
         const zone = route53.HostedZone.fromHostedZoneAttributes(
             this,
