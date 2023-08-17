@@ -50,6 +50,7 @@ export default class BackendStack extends Stack {
                     AA_MONGODB_URI: props.mongoDbUriProd,
                     STAGE: props.stage,
                     USERDATA_TABLE_NAME: userDataDDB.tableName,
+                    AUTH_USERDATA_TABLE_NAME: 'antalmanac-auth-test',
                     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
                     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
                 },
