@@ -385,13 +385,13 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         };
 
         const checkAndDisplayScheduleConflict = () => {
-            if (AppStore.getEventsInCalendar().length < 1) {
+            if (AppStore.getCourseEventsInCalendar().length < 1) {
                 setScheduleConflict(false);
                 return;
             }
 
             // An array of lists of time information on every added event
-            const calendarEventTimes = AppStore.getEventsInCalendar().map((event) => {
+            const calendarEventTimes = AppStore.getCourseEventsInCalendar().map((event) => {
                 const courseDay = event.start.getDay();
 
                 // courseStart/EndTime is normalized to ##:## (i.e. leading zero, no seconds)
