@@ -5,7 +5,7 @@ import { ScheduleCourse } from '@packages/antalmanac-types';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { CourseDetails, courseNumAsDecimal, termsInSchedule, warnMultipleTerms } from '$lib/helpers';
+import { CourseDetails, courseNumAsDecimal } from '$lib/helpers';
 import trpc from '$lib/api/trpc';
 import { saveAuthenticatedUserSchedule, saveCodeUserSchedule } from '$actions/helpers';
 import AppStore from '$stores/AppStore';
@@ -14,8 +14,7 @@ export const addCourse = (
     section: WebsocSection,
     courseDetails: CourseDetails,
     term: string,
-    scheduleIndex: number,
-    quiet?: boolean
+    scheduleIndex: number
 ) => {
     logAnalytics({
         category: analyticsEnum.classSearch.title,
@@ -23,9 +22,6 @@ export const addCourse = (
         label: courseDetails.deptCode,
         value: courseNumAsDecimal(courseDetails.courseNumber),
     });
-    // const terms = termsInSchedule(term);
-
-    // if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 
     // The color will be set properly in Schedules
     const newCourse: ScheduleCourse = {
@@ -83,7 +79,7 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
     }
 };
 
-export const loadSchedule = async (userId: string, rememberMe: boolean) => {
+export const loadSchedule = async (userId?: string, rememberMe?: boolean) => {
     logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
@@ -96,11 +92,22 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
     ) {
         // Try auth to get auth user first
         try {
+            const tempUserData = window.localStorage.getItem('tempUserData');
+            if (tempUserData) {
+                const scheduleSaveState = JSON.parse(tempUserData);
+                if (await AppStore.loadSchedule(scheduleSaveState)) {
+                    openSnackbar('success', `Your previous schedule has been imported.`);
+                } else {
+                    openSnackbar('error', `Couldn't import your schedule.`);
+                }
+                window.localStorage.removeItem('tempUserData');
+            }
+
             const authUser = await trpc.authusers.getUserData.query();
             if (authUser) {
                 AppStore.user = { name: authUser.name, email: authUser.email, picture: authUser.picture };
 
-                if (await AppStore.loadSchedule(authUser.userData)) {
+                if (await AppStore.appendSchedule(authUser.userData)) {
                     openSnackbar('success', `Your schedule has been loaded.`);
                 } else {
                     openSnackbar('error', `Couldn't load your schedule.`);
@@ -109,6 +116,10 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
             }
         } catch {
             // Do nothing
+        }
+
+        if (userId === undefined) {
+            return;
         }
 
         userId = userId.replace(/\s+/g, '');

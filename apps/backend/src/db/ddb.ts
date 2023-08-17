@@ -1,7 +1,7 @@
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
-import env from '../env';
 import { AuthUser, AuthUserSchema, ScheduleSaveState, User, UserSchema } from '@packages/antalmanac-types';
+import env from '../env';
 
 // Initialise DynamoDB Client
 const client = new DynamoDB({

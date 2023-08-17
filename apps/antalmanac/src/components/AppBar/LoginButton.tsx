@@ -2,7 +2,7 @@ import { useState, MouseEvent, useEffect } from 'react';
 import { AssignmentReturn, AssignmentReturned } from '@mui/icons-material';
 import { Button, Avatar, Box, MenuItem, MenuList, Popover } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Typography } from '@material-ui/core';
+import { Typography, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText } from '@material-ui/core';
 import { LOGIN_ENDPOINT, LOGOUT_ENDPOINT } from '$lib/api/endpoints';
 import AppStore, { User } from '$stores/AppStore';
 
@@ -16,35 +16,38 @@ const StyledAvatar = styled(Avatar)({
     height: 30,
 });
 
-const StyledBox = styled(Box)({
-    fontSize: '0.9rem',
-    fontWeight: 500,
-    marginRight: 5,
-});
-
-const login = () => {
-    window.location.href = LOGIN_ENDPOINT;
-};
-
-const logout = () => {
-    fetch(LOGOUT_ENDPOINT, {
-        method: 'POST',
-        credentials: 'include',
-    });
-    // force page reload
-    window.location.reload();
-};
-
 const LoginButton = () => {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [authUser, setAuthUser] = useState<User | undefined>(undefined);
+    const [dialogOpen, setDialogOpen] = useState(false);
 
+    const login = () => {
+        if (AppStore.schedule.wasScheduleChanged()) {
+            setDialogOpen(true);
+        } else {
+            window.location.href = LOGIN_ENDPOINT;
+        }
+    };
+
+    const logout = () => {
+        fetch(LOGOUT_ENDPOINT, {
+            method: 'POST',
+            credentials: 'include',
+        });
+        // force page reload
+        window.location.reload();
+    };
     const handleClick = (event: MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
+        console.log(event.currentTarget);
     };
 
     const handleClose = () => {
         setAnchorEl(null);
+    };
+
+    const cacheSchedule = () => {
+        window.localStorage.setItem('tempUserData', JSON.stringify(AppStore.schedule.getScheduleAsSaveState()));
     };
 
     useEffect(() => {
@@ -54,6 +57,10 @@ const LoginButton = () => {
         };
         updateAuthUser();
         AppStore.on('userAuthChange', updateAuthUser);
+
+        return () => {
+            AppStore.removeListener('userAuthChange', updateAuthUser);
+        };
     });
 
     return (
@@ -97,6 +104,35 @@ const LoginButton = () => {
                     Login
                 </Button>
             )}
+
+            <Dialog open={dialogOpen}>
+                <DialogTitle>Before logging in, should we import current schedules?</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Would you like to import these current schedules into your AntAlmanac account?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={() => {
+                            cacheSchedule();
+                            window.localStorage.removeItem('userID');
+                            window.location.href = LOGIN_ENDPOINT;
+                        }}
+                        color="primary"
+                    >
+                        Import
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            window.location.href = LOGIN_ENDPOINT;
+                        }}
+                    >
+                        Don&apos;t Import
+                    </Button>
+                    <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+                </DialogActions>
+            </Dialog>
         </>
     );
 };

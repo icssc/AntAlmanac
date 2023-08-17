@@ -1,5 +1,5 @@
-import { procedure, router } from '../trpc';
 import { ScheduleSaveStateSchema } from '@packages/antalmanac-types';
+import { procedure, router } from '../trpc';
 import { AuthUserClient } from '$db/ddb';
 
 const authUsersRouter = router({

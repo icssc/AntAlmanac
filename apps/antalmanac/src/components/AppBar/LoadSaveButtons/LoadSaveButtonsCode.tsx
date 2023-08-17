@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
-import LoadSaveButtonBase from "$components/AppBar/LoadSaveButtons/LoadSaveButtonBase";
+import LoadSaveButtonBase from '$components/AppBar/LoadSaveButtons/LoadSaveButtonBase';
 
 const LoadSaveButtonsCode = () => {
     const [loading, setLoading] = useState(false);
 
-    const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
+    const loadScheduleAndSetLoading = async (userID: string | undefined, rememberMe: boolean) => {
         setLoading(true);
         await loadSchedule(userID, rememberMe);
         setLoading(false);
@@ -19,11 +19,9 @@ const LoadSaveButtonsCode = () => {
 
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
-            const savedUserID = window.localStorage.getItem('userID');
-            if (savedUserID != null) {
-                // this `void` is for eslint "no floating promises"
-                void loadScheduleAndSetLoading(savedUserID, true);
-            }
+            const savedUserID = window.localStorage.getItem('userID') ?? undefined;
+            // this `void` is for eslint "no floating promises"
+            void loadScheduleAndSetLoading(savedUserID, true);
         }
     }, []);
 

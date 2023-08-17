@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import {appendSchedule, saveSchedule} from '$actions/AppStoreActions';
-import LoadSaveButtonBase from "$components/AppBar/LoadSaveButtons/LoadSaveButtonBase";
+import { appendSchedule, saveSchedule } from '$actions/AppStoreActions';
+import LoadSaveButtonBase from '$components/AppBar/LoadSaveButtons/LoadSaveButtonBase';
 
 const LoadSaveButtonsAuth = () => {
     const [loading, setLoading] = useState(false);
 
-    const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
+    const appendScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
         setLoading(true);
         await appendSchedule(userID, rememberMe);
         setLoading(false);
@@ -27,10 +27,12 @@ const LoadSaveButtonsAuth = () => {
             />
             <LoadSaveButtonBase
                 actionName={'Load Legacy'}
-                action={loadScheduleAndSetLoading}
+                action={appendScheduleAndSetLoading}
                 disabled={false}
                 loading={loading}
-                dialogText={'Enter your username here to load your legacy schedule and append it to your current schedule.'}
+                dialogText={
+                    'Enter your username here to load your legacy schedule and append it to your current schedule.'
+                }
             />
         </>
     );

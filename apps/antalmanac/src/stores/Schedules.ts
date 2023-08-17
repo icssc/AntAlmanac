@@ -55,7 +55,7 @@ export class Schedules {
     }
 
     getScheduleTerm(scheduleIndex: number) {
-        return this.schedules[scheduleIndex].term;
+        return this.schedules[scheduleIndex]?.term ?? 'NONE';
     }
 
     /**
@@ -236,11 +236,11 @@ export class Schedules {
             scheduleIndex
         );
 
-        if (existsInSchedule) {
-            return existingSection; // If it's already present in a schedule, then no need to push it
-        }
-
         if (existingSection) {
+            if (existsInSchedule) {
+                return existingSection; // If it's already present in a schedule, then no need to push it
+            }
+
             this.schedules[scheduleIndex].courses.push(existingSection); // existingSection is pushed so methods (e.g. @changeCourseColor) have the appropriate (i.e. same) course reference across all schedules
             return existingSection;
         }
@@ -473,6 +473,13 @@ export class Schedules {
             this.schedules = state.schedules;
             this.currentScheduleIndex = state.scheduleIndex;
         }
+    }
+
+    /**
+     * Check if the schedule was changed (i.e. if there are any undo states)
+     */
+    wasScheduleChanged() {
+        return this.previousStates.length > 0;
     }
 
     /*

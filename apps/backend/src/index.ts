@@ -9,11 +9,11 @@ import cookieParser from 'cookie-parser';
 import cors, { type CorsOptions } from 'cors';
 import { createAuthMiddleware } from '@aponia/integrations-express';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
-import connectToMongoDB from '$db/mongodb';
 import AppRouter from './routers';
 import { createContext } from './context';
 import { auth } from './auth';
 import env from './env';
+import connectToMongoDB from '$db/mongodb';
 
 const corsOptions: CorsOptions = {
     origin: ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac'],
