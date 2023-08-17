@@ -52,7 +52,7 @@ const styles: Styles<Theme, object> = (theme) => ({
             background: isDarkMode() ? '#b0b04f' : '#fcfc97',
         },
         '&.scheduleConflict': {
-            background: isDarkMode() ? '#121212' : '#bdbdbd', // The light mode color might not be readable enough
+            background: isDarkMode() ? '#121212' : '#7c7c7c',
             opacity: 0.6,
         },
     },
