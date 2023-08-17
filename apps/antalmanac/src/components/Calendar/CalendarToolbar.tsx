@@ -48,6 +48,7 @@ const styles: Styles<Theme, object> = {
         flexShrink: 1,
         minWidth: '50px',
         overflow: 'hidden',
+        padding: '1.5rem',
     },
     rootScheduleSelector: {
         paddingLeft: '5px',
