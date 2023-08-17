@@ -5,6 +5,7 @@ async function main() {
     bundle: true,
     minify: true,
     platform: 'node',
+    target: 'node18',
     outdir: 'dist',
     entryPoints: {
       lambda: 'src/lambda.ts',

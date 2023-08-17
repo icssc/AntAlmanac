@@ -1,3 +1,10 @@
+/**
+ * Why isn't the global crypto defined???
+ */
+// global.crypto = require('crypto');
+// import crypto from 'crypto';
+// (global as any).crypto = crypto;
+
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors, { type CorsOptions } from 'cors';
