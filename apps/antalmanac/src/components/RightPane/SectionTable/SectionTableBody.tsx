@@ -393,7 +393,8 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             // An array of lists of time information on every added event
             const calendarEventTimes = AppStore.getEventsInCalendar().map((event) => {
                 const courseDay = event.start.getDay();
-                //courseStart/EndTime is normalized to ##:## (i.e. leading zero, no seconds)
+
+                // courseStart/EndTime is normalized to ##:## (i.e. leading zero, no seconds)
                 const courseStartTime = event.start.toString().split(' ')[4].slice(0, -3);
                 const courseEndTime = event.end.toString().split(' ')[4].slice(0, -3);
                 return { day: courseDay, startTime: courseStartTime, endTime: courseEndTime };
@@ -419,7 +420,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                     continue;
                 }
 
-                // Then, IF the course ( starts AND ends BEFORE) OR ( starts AND ends AFTER), it doesn't conflict
+                // Then, IF the course doesn't ( start AND end BEFORE) AND doesn't ( start AND end AFTER), it does conflict!
                 const happensBefore =
                     coursePaneEvent.startTime <= calendarEvent.startTime &&
                     coursePaneEvent.endTime <= calendarEvent.startTime;
@@ -428,7 +429,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                     coursePaneEvent.endTime >= calendarEvent.endTime;
 
                 // If neither happensBefore or happensAfter is true, set scheduleConflict to true
-                if (!(happensBefore || happensAfter)) {
+                if (!happensBefore && !happensAfter) {
                     setScheduleConflict(true);
                     return;
                 }
