@@ -23,9 +23,14 @@ export class Schedules {
 
     constructor() {
         const scheduleNoteId = Math.random();
-        const term = getDefaultTerm();
         this.schedules = [
-            { scheduleName: 'Schedule 1', courses: [], term: term, customEvents: [], scheduleNoteId: scheduleNoteId },
+            {
+                scheduleName: 'Schedule 1',
+                courses: [],
+                term: 'Any Term',
+                customEvents: [],
+                scheduleNoteId: scheduleNoteId,
+            },
         ];
         this.currentScheduleIndex = 0;
         this.previousStates = [];
@@ -104,7 +109,7 @@ export class Schedules {
         }
 
         // If there are multiple terms, set to 'MULTIPLE TERMS'; otherwise, set to the single term
-        currentSchedule.term = multipleTerms ? 'MULTIPLE TERMS' : firstTerm;
+        currentSchedule.term = multipleTerms ? 'Multiple Terms' : firstTerm;
     }
 
     /**

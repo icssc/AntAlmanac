@@ -1,4 +1,4 @@
-import { IconButton, ListSubheader, Menu, Paper, Tooltip, useMediaQuery } from '@material-ui/core';
+import { IconButton, ListSubheader, Menu, Paper, Tooltip } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { Theme, withStyles } from '@material-ui/core/styles';
@@ -40,18 +40,28 @@ const styles: Styles<Theme, object> = {
         flexGrow: 1,
     },
     scheduleSelector: {
-        marginLeft: '10px',
-        maxWidth: '9rem',
+        paddingLeft: '1em',
     },
     termSelector: {
         flexGrow: 1,
         flexShrink: 1,
-        minWidth: '50px',
+        display: 'flex',
         overflow: 'hidden',
-        padding: '1.5rem',
+        paddingLeft: '1rem',
+        paddingRight: '1rem',
+        alignItems: 'center',
+        maxWidth: '16rem',
+        justifyContent: 'center',
+        margin: '0 auto',
+    },
+    rootTermSelector: {
+        maxWidth: '15rem',
+        overflow: 'hidden',
+        textAlign: 'center',
     },
     rootScheduleSelector: {
-        paddingLeft: '5px',
+        overflow: 'hidden',
+        maxWidth: '5rem',
     },
 };
 
@@ -101,15 +111,14 @@ const CalendarPaneToolbar = ({
     useEffect(() => {
         const handleResize = () => {
             if (paperRef.current) {
-                const width = paperRef.current.clientWidth;
-                setIsWideEnough(width > 700);
+                const fontSize = parseFloat(getComputedStyle(paperRef.current).fontSize);
+                const widthInEm = paperRef.current.clientWidth / fontSize;
+                setIsWideEnough(widthInEm > 60);
             }
         };
-
         handleResize();
 
         const resizeObserver = new ResizeObserver(handleResize);
-
         if (paperRef.current) {
             resizeObserver.observe(paperRef.current);
         }
@@ -123,31 +132,34 @@ const CalendarPaneToolbar = ({
         <Paper elevation={0} variant="outlined" square className={classes.toolbar} ref={paperRef}>
             <EditSchedule />
 
-            <Select
-                classes={{ root: classes.rootScheduleSelector }}
-                className={classes.scheduleSelector}
-                value={currentScheduleIndex.toString()}
-                onChange={handleScheduleChange}
-                open={openSchedules}
-                onClick={handleScheduleClick}
-            >
-                {Array.from(scheduleMap.entries()).flatMap(([term, schedules]) => [
-                    <ListSubheader
-                        key={term}
-                        onClick={(event) => event.preventDefault()}
-                        style={{ pointerEvents: 'none' }}
-                    >
-                        Term
-                    </ListSubheader>,
-                    ...schedules.map(([scheduleIndex, scheduleName]) => (
-                        <MenuItem key={scheduleIndex} value={scheduleIndex.toString()}>
-                            {scheduleName}
-                        </MenuItem>
-                    )),
-                ])}
+            <div className={classes.scheduleSelector}>
+                <Select
+                    classes={{ root: classes.rootScheduleSelector }}
+                    value={currentScheduleIndex.toString()}
+                    onChange={handleScheduleChange}
+                    open={openSchedules}
+                    onClick={handleScheduleClick}
+                >
+                    {Array.from(scheduleMap.entries()).flatMap(([term, schedules]) => {
+                        return [
+                            <ListSubheader
+                                key={term}
+                                onClick={(event) => event.preventDefault()}
+                                style={{ pointerEvents: 'none' }}
+                            >
+                                {term}
+                            </ListSubheader>,
+                            ...schedules.map(([scheduleIndex, scheduleName]) => (
+                                <MenuItem key={scheduleIndex} value={scheduleIndex.toString()}>
+                                    {scheduleName}
+                                </MenuItem>
+                            )),
+                        ];
+                    })}
 
-                <ScheduleNameDialog onOpen={() => setOpenSchedules(true)} onClose={() => setOpenSchedules(false)} />
-            </Select>
+                    <ScheduleNameDialog onOpen={() => setOpenSchedules(true)} onClose={() => setOpenSchedules(false)} />
+                </Select>
+            </div>
 
             <div className={classes.termSelector}>
                 <TermViewer />

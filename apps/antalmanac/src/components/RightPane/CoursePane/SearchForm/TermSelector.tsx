@@ -31,7 +31,7 @@ const TermSelector = ({ changeState, fieldName = 'term' }: TermSelectorProps) =>
 
     const handleWarning = () => {
         const currentTerm = AppStore.schedule.getCurrentScheduleTerm();
-        setShowWarning(currentTerm !== 'NONE' && term !== currentTerm);
+        setShowWarning(currentTerm !== 'Any Term' && term !== currentTerm);
     };
 
     const resetField = () => {
@@ -52,7 +52,7 @@ const TermSelector = ({ changeState, fieldName = 'term' }: TermSelectorProps) =>
             AppStore.removeListener('currentScheduleIndexChange', handleWarning);
             RightPaneStore.removeListener('formDataChange', handleWarning);
         };
-    }, [getTerm]);
+    }, [getTerm, handleWarning]);
 
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         const selectedTerm = event.target.value as string;

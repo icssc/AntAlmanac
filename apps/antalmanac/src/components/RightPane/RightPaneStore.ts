@@ -6,7 +6,7 @@ import AppStore from '$stores/AppStore';
 const getDefaultStoreTerm = () => {
     // Get the current term from the schedule (if it exists) or the default term
     let term = AppStore.schedule.getCurrentScheduleTerm();
-    if (term === 'MULTIPLE TERMS' || term === 'NONE') {
+    if (term === 'Multiple Terms' || term === 'Any Term') {
         term = getDefaultTerm();
     }
     return term;

@@ -2,10 +2,22 @@ import { useEffect, useState } from 'react';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { Theme, withStyles } from '@material-ui/core/styles';
 import { termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 
-const TermViewer = () => {
+const styles: Styles<Theme, object> = {
+    rootTermSelector: {
+        textAlign: 'center',
+    },
+};
+
+interface TermViewerProps {
+    classes: ClassNameMap;
+}
+
+const TermViewer = ({ classes }: TermViewerProps) => {
     const getTerm = () => {
         return AppStore.schedule.getCurrentScheduleTerm();
     };
@@ -13,16 +25,12 @@ const TermViewer = () => {
     const [term, setTerm] = useState(getTerm());
     const [termToScheduleMap, setTermToScheduleMap] = useState(AppStore.getTermToScheduleMap());
 
-    const handleTermChange = () => {
-        setTermToScheduleMap(AppStore.getTermToScheduleMap());
-        setTerm(getTerm());
-    };
-
-    const updateTermToScheduleMap = () => {
-        console.log('termToScheduleMap', termToScheduleMap);
-    };
-
     useEffect(() => {
+        const handleTermChange = () => {
+            setTermToScheduleMap(AppStore.getTermToScheduleMap());
+            setTerm(getTerm());
+        };
+
         AppStore.on('addedCoursesChange', handleTermChange);
         AppStore.on('currentScheduleIndexChange', handleTermChange);
 
@@ -30,7 +38,7 @@ const TermViewer = () => {
             AppStore.removeListener('addedCoursesChange', handleTermChange);
             AppStore.removeListener('currentScheduleIndexChange', handleTermChange);
         };
-    }, [handleTermChange]);
+    }, []);
 
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         const selectedTerm = event.target.value as string;
@@ -46,22 +54,16 @@ const TermViewer = () => {
     };
 
     return (
-        <Select value={term} onChange={handleChange} fullWidth={true}>
-            {/*Only show Multiple Terms or None option if termToScheduleMap has "MULTIPLE TERMS"*/}
-            {termToScheduleMap.has('MULTIPLE TERMS') && <MenuItem value="MULTIPLE TERMS">Multiple Terms</MenuItem>}
+        <Select value={term} onChange={handleChange} fullWidth={true} classes={{ root: classes.rootTermSelector }}>
+            {/*Only show Multiple Terms or Any Term option if termToScheduleMap has "MULTIPLE TERMS"*/}
+            {termToScheduleMap.has('Multiple Terms') && <MenuItem value="Multiple Terms">Multiple Terms</MenuItem>}
 
-            {termToScheduleMap.has('NONE') && <MenuItem value="NONE">Any Term</MenuItem>}
+            {termToScheduleMap.has('Any Term') && <MenuItem value="Any Term">Any Term</MenuItem>}
 
             {termData.map((term, index) => {
                 const isTermInMap = termToScheduleMap.has(term.shortName);
                 return (
-                    <MenuItem
-                        key={index}
-                        value={term.shortName}
-                        style={{
-                            opacity: isTermInMap ? 1 : 0.7,
-                        }}
-                    >
+                    <MenuItem key={index} value={term.shortName} disabled={!isTermInMap}>
                         {term.longName}
                     </MenuItem>
                 );
@@ -70,4 +72,4 @@ const TermViewer = () => {
     );
 };
 
-export default TermViewer;
+export default withStyles(styles)(TermViewer);

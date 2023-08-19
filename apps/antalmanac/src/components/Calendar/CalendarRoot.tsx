@@ -105,7 +105,7 @@ interface ScheduleCalendarState {
     eventsInCalendar: CalendarEvent[];
     finalsEventsInCalendar: CalendarEvent[];
     currentScheduleIndex: number;
-    schedules: Map<string, [number, string][]>;
+    scheduleMap: Map<string, [number, string][]>;
 }
 class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCalendarState> {
     state: ScheduleCalendarState = {
@@ -118,7 +118,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         eventsInCalendar: AppStore.getEventsInCalendar(),
         finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
         currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
-        schedules: AppStore.getTermToScheduleMap(),
+        scheduleMap: AppStore.getTermToScheduleMap(),
     };
 
     static eventStyleGetter = (event: CalendarEvent) => {
@@ -173,13 +173,13 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
 
     updateScheduleTermMap = () => {
         this.setState({
-            schedules: AppStore.getTermToScheduleMap(),
+            scheduleMap: AppStore.getTermToScheduleMap(),
         });
     };
 
     updateScheduleNames = () => {
         this.setState({
-            schedules: AppStore.getTermToScheduleMap(),
+            scheduleMap: AppStore.getTermToScheduleMap(),
         });
     };
 
@@ -266,7 +266,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                     currentScheduleIndex={this.state.currentScheduleIndex}
                     toggleDisplayFinalsSchedule={this.toggleDisplayFinalsSchedule}
                     showFinalsSchedule={this.state.showFinalsSchedule}
-                    scheduleMap={this.state.schedules}
+                    scheduleMap={this.state.scheduleMap}
                 />
                 <div
                     id="screenshot"

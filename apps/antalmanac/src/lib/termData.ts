@@ -1,6 +1,3 @@
-import AppStore from '$stores/AppStore';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-
 /**
  * Quarterly Academic Calendar {@link https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html}
  * The `startDate`, if available, should correspond to the __instruction start date__ (not the quarter start date)
@@ -64,7 +61,7 @@ const termsArray = [
     { shortName: '2014 Fall', longName: '2014 Fall Quarter' },
 ] as const;
 
-export type TermNames = (typeof termsArray)[number]['shortName'] | 'MULTIPLE TERMS' | 'NO TERMS';
+export type TermNames = (typeof termsArray)[number]['shortName'] | 'Multiple Terms' | 'Any Term';
 
 // The index of the default term in termData, as per WebSOC
 const defaultTerm = 0;
@@ -93,11 +90,6 @@ const termData: Term[] = termsArray.map((term): Term => {
 //returns the default term
 function getDefaultTerm() {
     return termData[defaultTerm].shortName;
-    // let term = AppStore.schedule.getCurrentScheduleTerm();
-    // if ((term === 'MULTIPLE TERMS') || term === 'NONE') {
-    //     term = termData[defaultTerm].shortName;
-    // }
-    // return term
 }
 
 export { defaultTerm, getDefaultTerm, termData };

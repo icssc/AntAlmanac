@@ -1,5 +1,15 @@
-import { ChangeEvent, useEffect, useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, FormControlLabel, Checkbox } from '@material-ui/core';
+import { ChangeEvent, useState } from 'react';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    TextField,
+    FormControlLabel,
+    Checkbox,
+} from '@material-ui/core';
 import { CloudDownload, Save } from '@material-ui/icons';
 import { LoadingButton } from '@mui/lab';
 import { isDarkMode } from '$lib/helpers';
@@ -33,7 +43,6 @@ const LoadSaveButtonBase = ({ actionName, dialogText, action, loading, disabled 
 
     const handleClose = (wasCancelled: boolean) => {
         setIsOpen(false);
-        setUserID('');
         if (!wasCancelled) {
             action(userID, rememberMe);
         }
@@ -43,38 +52,33 @@ const LoadSaveButtonBase = ({ actionName, dialogText, action, loading, disabled 
         setRememberMe(event.target.checked);
     };
 
-    useEffect(() => {
-        const handleEnterKey = (event: KeyboardEvent) => {
-            if (isOpen && (event.key === 'Enter' || event.keyCode === 13)) {
-                event.preventDefault();
-                handleClose(false);
-            }
-        };
-
-        document.addEventListener('keydown', handleEnterKey);
-        return () => {
-            document.removeEventListener('keydown', handleEnterKey);
-        };
-    }, [isOpen]);
-
     return (
         <>
             <LoadingButton
                 onClick={handleOpen}
-                color='inherit'
+                color="inherit"
                 startIcon={actionName === 'Save' ? <Save /> : <CloudDownload />}
                 loading={loading}
                 disabled={disabled}
             >
                 {actionName}
             </LoadingButton>
-            <Dialog open={isOpen} onClose={() => handleClose(true)}>
+            <Dialog
+                open={isOpen}
+                onClose={() => handleClose(true)}
+                onKeyDown={(event) => {
+                    if (isOpen && (event.key === 'Enter' || event.keyCode === 13)) {
+                        event.preventDefault();
+                        handleClose(false);
+                    }
+                }}
+            >
                 <DialogTitle>{actionName}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        {dialogText}
-                    </DialogContentText>
+                    <DialogContentText>{dialogText}</DialogContentText>
                     <TextField
+                        // ignore jsx-ally/no-autofocus because this is a dialog
+                        // eslint-disable-next-line jsx-a11y/no-autofocus
                         autoFocus
                         margin="dense"
                         label="User ID"
@@ -85,13 +89,7 @@ const LoadSaveButtonBase = ({ actionName, dialogText, action, loading, disabled 
                         onChange={(event) => setUserID(event.target.value)}
                     />
                     <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={rememberMe}
-                                onChange={handleToggleRememberMe}
-                                color="primary"
-                            />
-                        }
+                        control={<Checkbox checked={rememberMe} onChange={handleToggleRememberMe} color="primary" />}
                         label="Remember Me (Uncheck on shared computers)"
                     />
                 </DialogContent>

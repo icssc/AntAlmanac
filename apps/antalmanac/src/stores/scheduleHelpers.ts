@@ -119,7 +119,7 @@ function colorIsContained(color: HSLColor, usedColors: Iterable<HSLColor>, delta
 
 /**
  * Takes in a hex color and returns a hex color that is close to the original but not already used.
- * Takes changes the lightness of the color by a small amount until a color that is not already used is found.
+ * Changes the lightness of the color by a small amount until a color that is not already used is found.
  *
  * @param originalColor string: Hex color ("#RRGGBB") as a basis.
  * @param usedColors Set<string>: A set of hex colors that are already used.
@@ -190,7 +190,7 @@ export function getScheduleTerm(schedule: ShortCourseSchedule): string {
 
     for (const course of schedule.courses) {
         if (course.term !== term) {
-            return 'MULTIPLE TERMS';
+            return 'Multiple Terms';
         }
     }
 
