@@ -150,7 +150,7 @@ const CalendarPaneToolbar = ({
                                 {term}
                             </ListSubheader>,
                             ...schedules.map(([scheduleIndex, scheduleName]) => (
-                                <MenuItem key={scheduleIndex} value={scheduleIndex.toString()}>
+                                <MenuItem key={scheduleIndex} value={scheduleIndex}>
                                     {scheduleName}
                                 </MenuItem>
                             )),
