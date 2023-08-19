@@ -51,12 +51,14 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
     const search = new URLSearchParams(window.location.search);
 
     const [showLegacySearch, setShowLegacySearch] = useState(
-      Boolean(search.get('courseCode') ||
-        search.get('courseNumber') ||
-        search.get('deptLabel') ||
-        search.get('GE') ||
-        search.get('deptValue') ||
-        search.get('term'))
+        Boolean(
+            search.get('courseCode') ||
+                search.get('courseNumber') ||
+                search.get('deptLabel') ||
+                search.get('GE') ||
+                search.get('deptValue') ||
+                search.get('term')
+        )
     );
 
     const toggleShowLegacySearch = () => {
@@ -68,7 +70,8 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
         toggleSearch();
     };
 
-    const currentMonth = new Date().getMonth(); // 0=Jan
+    const currentMonthIndex = new Date().getMonth(); // 0=Jan
+    const activeMonthIndices = [false, false, false, false, false, false, false, false, true, true, false, false];
 
     return (
         <div className={classes.rightPane}>
@@ -106,7 +109,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                 </div>
             </form>
 
-            {(currentMonth === 8 || currentMonth === 9) && <HelpBox />}
+            {activeMonthIndices[currentMonthIndex] && <HelpBox />}
             <PrivacyPolicyBanner />
         </div>
     );
