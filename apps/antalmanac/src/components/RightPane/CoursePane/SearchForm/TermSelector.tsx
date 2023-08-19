@@ -17,17 +17,11 @@ interface TermSelectorProps {
 const TermSelector = ({ changeState, fieldName = 'term' }: TermSelectorProps) => {
     const getTerm = () => {
         const term = RightPaneStore.getUrlTermValue() || RightPaneStore.getFormData().term;
-        // console.log(`TermSelector: getTerm: RightPaneStore.getUrlTermValue() = ${RightPaneStore.getUrlTermValue()}`)
-        // console.log(`TermSelector: getTerm: RightPaneStore.getFormData().term = ${RightPaneStore.getFormData().term}`)
-        // console.log(`TermSelector: getTerm: term = ${term}`)
-
         updateTermAndGetFormData(term);
-
         return term;
     };
 
     const updateTermAndGetFormData = (term: string) => {
-        // RightPaneStore.updateFormValue(fieldName, RightPaneStore.getUrlTermValue());
         RightPaneStore.updateFormValue(fieldName, term);
         return RightPaneStore.getFormData().term;
     };
@@ -84,12 +78,6 @@ const TermSelector = ({ changeState, fieldName = 'term' }: TermSelectorProps) =>
                             {term.longName}
                         </MenuItem>
                     ))}
-                    <MenuItem value="MULTIPLE TERMS" style={{ display: 'none' }}>
-                        MULTIPLE TERMS
-                    </MenuItem>
-                    <MenuItem value="NONE" style={{ display: 'none' }}>
-                        NONE
-                    </MenuItem>
                 </Select>
             </FormControl>
             {showWarning && (

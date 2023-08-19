@@ -510,8 +510,7 @@ export class Schedules {
     async fromScheduleSaveState(saveState: ScheduleSaveState) {
         this.addUndoState();
         try {
-            this.schedules.length = 0;
-            this.currentScheduleIndex = saveState.scheduleIndex;
+            const newSchedules = [];
 
             // Get a dictionary of all unique courses
             const courseDict: { [key: string]: Set<string> } = {};
@@ -570,13 +569,16 @@ export class Schedules {
                     this.scheduleNoteMap[scheduleNoteId] = '';
                 }
 
-                this.schedules.push({
+                newSchedules.push({
                     scheduleName: shortCourseSchedule.scheduleName,
                     term: getScheduleTerm(shortCourseSchedule),
                     courses: courses,
                     customEvents: shortCourseSchedule.customEvents,
                     scheduleNoteId: scheduleNoteId,
                 });
+
+                this.schedules = newSchedules;
+                this.currentScheduleIndex = saveState.scheduleIndex;
             }
         } catch (e) {
             this.revertState();

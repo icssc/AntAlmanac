@@ -4,7 +4,7 @@ import Select from '@material-ui/core/Select';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete, MoreHoriz, Undo } from '@material-ui/icons';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import ConditionalWrapper from '../ConditionalWrapper';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
@@ -80,7 +80,8 @@ const CalendarPaneToolbar = ({
         changeCurrentSchedule(event.target.value as number);
     };
 
-    const isNotWideEnough = useMediaQuery('(max-width:1800px)');
+    const paperRef = useRef<HTMLDivElement>();
+    const [isWideEnough, setIsWideEnough] = useState(false);
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();
     const [openSchedules, setOpenSchedules] = useState<boolean>(false);
@@ -97,8 +98,29 @@ const CalendarPaneToolbar = ({
         setOpenSchedules((prev) => !prev);
     };
 
+    useEffect(() => {
+        const handleResize = () => {
+            if (paperRef.current) {
+                const width = paperRef.current.clientWidth;
+                setIsWideEnough(width > 700);
+            }
+        };
+
+        handleResize();
+
+        const resizeObserver = new ResizeObserver(handleResize);
+
+        if (paperRef.current) {
+            resizeObserver.observe(paperRef.current);
+        }
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [paperRef]);
+
     return (
-        <Paper elevation={0} variant="outlined" square className={classes.toolbar}>
+        <Paper elevation={0} variant="outlined" square className={classes.toolbar} ref={paperRef}>
             <EditSchedule />
 
             <Select
@@ -110,7 +132,13 @@ const CalendarPaneToolbar = ({
                 onClick={handleScheduleClick}
             >
                 {Array.from(scheduleMap.entries()).flatMap(([term, schedules]) => [
-                    <ListSubheader key={term}>{term}</ListSubheader>,
+                    <ListSubheader
+                        key={term}
+                        onClick={(event) => event.preventDefault()}
+                        style={{ pointerEvents: 'none' }}
+                    >
+                        Term
+                    </ListSubheader>,
                     ...schedules.map(([scheduleIndex, scheduleName]) => (
                         <MenuItem key={scheduleIndex} value={scheduleIndex.toString()}>
                             {scheduleName}
@@ -156,7 +184,7 @@ const CalendarPaneToolbar = ({
             </Tooltip>
 
             <ConditionalWrapper
-                condition={isNotWideEnough}
+                condition={!isWideEnough}
                 wrapper={(children) => (
                     <div>
                         <IconButton onClick={handleMenuClick}>
@@ -169,26 +197,24 @@ const CalendarPaneToolbar = ({
                     </div>
                 )}
             >
-                <>
-                    {[
-                        <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />,
-                        <ExportCalendar key="export" />,
-                        <CustomEventDialog key="custom" />,
-                        <FinalsButton
-                            key="finals"
-                            showFinalsSchedule={showFinalsSchedule}
-                            toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
-                        />,
-                    ].map((element, index) => (
-                        <ConditionalWrapper
-                            key={index}
-                            condition={isNotWideEnough}
-                            wrapper={(children) => <MenuItem onClick={handleMenuClose}>{children}</MenuItem>}
-                        >
-                            {element}
-                        </ConditionalWrapper>
-                    ))}
-                </>
+                {[
+                    <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />,
+                    <ExportCalendar key="export" />,
+                    <CustomEventDialog key="custom" />,
+                    <FinalsButton
+                        key="finals"
+                        showFinalsSchedule={showFinalsSchedule}
+                        toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
+                    />,
+                ].map((element, index) => (
+                    <ConditionalWrapper
+                        key={index}
+                        condition={!isWideEnough}
+                        wrapper={(children) => <MenuItem onClick={handleMenuClose}>{children}</MenuItem>}
+                    >
+                        {element}
+                    </ConditionalWrapper>
+                ))}
             </ConditionalWrapper>
         </Paper>
     );

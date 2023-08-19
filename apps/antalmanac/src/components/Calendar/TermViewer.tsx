@@ -14,24 +14,23 @@ const TermViewer = () => {
     const [termToScheduleMap, setTermToScheduleMap] = useState(AppStore.getTermToScheduleMap());
 
     const handleTermChange = () => {
+        setTermToScheduleMap(AppStore.getTermToScheduleMap());
         setTerm(getTerm());
     };
 
     const updateTermToScheduleMap = () => {
-        setTermToScheduleMap(AppStore.getTermToScheduleMap());
+        console.log('termToScheduleMap', termToScheduleMap);
     };
 
     useEffect(() => {
         AppStore.on('addedCoursesChange', handleTermChange);
-        AppStore.on('addedCoursesChange', updateTermToScheduleMap);
         AppStore.on('currentScheduleIndexChange', handleTermChange);
 
         return () => {
             AppStore.removeListener('addedCoursesChange', handleTermChange);
-            AppStore.removeListener('addedCoursesChange', updateTermToScheduleMap);
             AppStore.removeListener('currentScheduleIndexChange', handleTermChange);
         };
-    }, [handleTermChange, updateTermToScheduleMap]);
+    }, [handleTermChange]);
 
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         const selectedTerm = event.target.value as string;
@@ -48,8 +47,10 @@ const TermViewer = () => {
 
     return (
         <Select value={term} onChange={handleChange} fullWidth={true}>
-            {/*Only show option if termToScheduleMap has "MULTIPLE TERMS"*/}
-            {termToScheduleMap.has('MULTIPLE TERMS') && <MenuItem value="MULTIPLE TERMS">MULTIPLE TERMS</MenuItem>}
+            {/*Only show Multiple Terms or None option if termToScheduleMap has "MULTIPLE TERMS"*/}
+            {termToScheduleMap.has('MULTIPLE TERMS') && <MenuItem value="MULTIPLE TERMS">Multiple Terms</MenuItem>}
+
+            {termToScheduleMap.has('NONE') && <MenuItem value="NONE">Any Term</MenuItem>}
 
             {termData.map((term, index) => {
                 const isTermInMap = termToScheduleMap.has(term.shortName);
@@ -65,9 +66,6 @@ const TermViewer = () => {
                     </MenuItem>
                 );
             })}
-            <MenuItem value="NONE" style={{ display: 'none' }}>
-                NONE
-            </MenuItem>
         </Select>
     );
 };
