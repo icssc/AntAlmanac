@@ -128,7 +128,7 @@ export class Schedules {
         const scheduleNoteId = Math.random();
         this.schedules.push({
             scheduleName: newScheduleName,
-            term: 'NONE',
+            term: 'Any Term',
             courses: [],
             customEvents: [],
             scheduleNoteId: scheduleNoteId,

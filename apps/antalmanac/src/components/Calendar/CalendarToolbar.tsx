@@ -41,6 +41,7 @@ const styles: Styles<Theme, object> = {
     },
     scheduleSelector: {
         paddingLeft: '1em',
+        width: '10rem',
     },
     termSelector: {
         flexGrow: 1,
@@ -61,7 +62,7 @@ const styles: Styles<Theme, object> = {
     },
     rootScheduleSelector: {
         overflow: 'hidden',
-        maxWidth: '5rem',
+        maxWidth: '10rem',
     },
 };
 
