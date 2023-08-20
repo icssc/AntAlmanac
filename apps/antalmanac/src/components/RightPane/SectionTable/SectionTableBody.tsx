@@ -413,7 +413,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     }, [setCalendarEvents]);
 
     // Because the idiot who set up state management didn't use an actual library solution,
-    // we need to attach ***memoized*** listeners to the store like bufoons.
+    // we need to attach ***memoized*** listeners to the store like buffoons.
 
     useEffect(() => {
         RightPaneStore.on('columnChange', handleColumnChange);
