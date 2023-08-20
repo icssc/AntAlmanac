@@ -1,9 +1,9 @@
-import { Button, IconButton, Menu, Paper, Tooltip, useMediaQuery } from '@material-ui/core';
+import { Box, Button, IconButton, Menu, Paper, Tooltip, useMediaQuery } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { Delete, MoreHoriz, Undo } from '@material-ui/icons';
+import { Delete, Edit, MoreHoriz, Undo } from '@material-ui/icons';
 import React, { useState } from 'react';
 
 import ConditionalWrapper from '../ConditionalWrapper';
@@ -43,6 +43,9 @@ const styles: Styles<Theme, object> = {
     },
     rootScheduleSelector: {
         paddingLeft: '5px',
+    },
+    actionButton: {
+        padding: '0px',
     },
 };
 
@@ -99,10 +102,29 @@ const CalendarPaneToolbar = ({
                 onChange={handleScheduleChange}
                 open={openSchedules}
                 onClick={handleScheduleClick}
+                renderValue={(currentScheduleIndex) => <>{scheduleNames[currentScheduleIndex as number]}</>} // Typecasting is done here to keep ts happy
             >
                 {scheduleNames.map((name, index) => (
-                    <MenuItem key={index} value={index}>
+                    <MenuItem key={index} value={index} style={{ gap: '2rem' }}>
                         {name}
+                        {
+                            <Box
+                                style={{
+                                    display: `${openSchedules ? 'flex' : 'flex'}`,
+                                    flexWrap: 'nowrap',
+                                    gap: '0.75rem',
+                                    overflow: 'hidden',
+                                    alignContent: 'space-around',
+                                }}
+                            >
+                                <IconButton className={classes.actionButton}>
+                                    <Delete />
+                                </IconButton>
+                                <IconButton className={classes.actionButton}>
+                                    <Edit />
+                                </IconButton>
+                            </Box>
+                        }
                     </MenuItem>
                 ))}
                 <ScheduleNameDialog
