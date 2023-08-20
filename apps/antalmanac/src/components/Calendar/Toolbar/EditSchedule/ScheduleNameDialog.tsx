@@ -1,7 +1,17 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, TextField } from '@material-ui/core';
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+    MenuItem,
+    TextField,
+} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { Add } from '@material-ui/icons';
+import { Add, Edit } from '@material-ui/icons';
 import React, { forwardRef, useState } from 'react';
 
 import { addSchedule, renameSchedule } from '$actions/AppStoreActions';
@@ -77,9 +87,13 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
     // We also need to stop the propagation when the dialog is clicked because if we don't,
     // both the select menu and dialog will close.
     return (
-        <>
+        <Box>
             {rename ? (
-                <MenuItem onClick={handleOpen}>Rename Schedule</MenuItem>
+                <MenuItem onClick={handleOpen} style={{ padding: 'inherit', borderRadius: '50%' }}>
+                    <IconButton style={{ padding: '5px' }}>
+                        <Edit />
+                    </IconButton>
+                </MenuItem>
             ) : (
                 <MenuItem onClick={handleOpen}>
                     <Add className={classes.addButton} />
@@ -122,7 +136,7 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </>
+        </Box>
     );
 });
 

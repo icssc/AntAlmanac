@@ -10,6 +10,7 @@ import ConditionalWrapper from '../ConditionalWrapper';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import EditSchedule from './Toolbar/EditSchedule/EditSchedule';
 import ScheduleNameDialog from './Toolbar/EditSchedule/ScheduleNameDialog';
+import DeleteScheduleDialog from './Toolbar/EditSchedule/DeleteScheduleDialog';
 import ExportCalendar from './Toolbar/ExportCalendar';
 import ScreenshotButton from './Toolbar/ScreenshotButton';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
@@ -44,8 +45,14 @@ const styles: Styles<Theme, object> = {
     rootScheduleSelector: {
         paddingLeft: '5px',
     },
-    actionButton: {
-        padding: '0px',
+    menuItem: {
+        gap: '1.5rem',
+        display: 'flex',
+        justifyContent: 'space-between',
+    },
+    dialogContainer: {
+        display: 'flex',
+        gap: '0.25rem',
     },
 };
 
@@ -87,8 +94,21 @@ const CalendarPaneToolbar = ({
         setAnchorEl(undefined);
     };
 
-    const handleScheduleClick = () => {
-        setOpenSchedules((prev) => !prev);
+    const handleScheduleOpen = () => {
+        setOpenSchedules(true);
+    };
+
+    const handleScheduleClose = () => {
+        setOpenSchedules(false);
+    };
+
+    const handleDialogButtonClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        e.stopPropagation(); // Propagation must be stopped otherwise the closing schedule Select element will also close the Dialogs
+    };
+
+    const handleDialogClose = () => {
+        setAnchorEl(undefined);
+        setOpenSchedules(false);
     };
 
     return (
@@ -99,32 +119,28 @@ const CalendarPaneToolbar = ({
                 classes={{ root: classes.rootScheduleSelector }}
                 className={classes.scheduleSelector}
                 value={currentScheduleIndex}
-                onChange={handleScheduleChange}
+                onChange={(e) => handleScheduleChange(e)}
+                renderValue={(currentScheduleIndex) => scheduleNames[currentScheduleIndex as number]} // Typecasting is done here to keep ts happy
                 open={openSchedules}
-                onClick={handleScheduleClick}
-                renderValue={(currentScheduleIndex) => <>{scheduleNames[currentScheduleIndex as number]}</>} // Typecasting is done here to keep ts happy
+                onOpen={handleScheduleOpen}
+                onClose={handleScheduleClose}
             >
                 {scheduleNames.map((name, index) => (
-                    <MenuItem key={index} value={index} style={{ gap: '2rem' }}>
+                    <MenuItem key={index} value={index} className={classes.menuItem}>
                         {name}
-                        {
-                            <Box
-                                style={{
-                                    display: `${openSchedules ? 'flex' : 'flex'}`,
-                                    flexWrap: 'nowrap',
-                                    gap: '0.75rem',
-                                    overflow: 'hidden',
-                                    alignContent: 'space-around',
-                                }}
-                            >
-                                <IconButton className={classes.actionButton}>
-                                    <Delete />
-                                </IconButton>
-                                <IconButton className={classes.actionButton}>
-                                    <Edit />
-                                </IconButton>
+
+                        <Box className={classes.dialogContainer}>
+                            <Box onClick={(e) => handleDialogButtonClick(e)}>
+                                <ScheduleNameDialog
+                                    scheduleNames={scheduleNames}
+                                    scheduleRenameIndex={index}
+                                    onClose={handleDialogClose}
+                                />
                             </Box>
-                        }
+                            <Box onClick={(e) => handleDialogButtonClick(e)}>
+                                <DeleteScheduleDialog onClose={handleDialogClose} scheduleIndex={index} />
+                            </Box>
+                        </Box>
                     </MenuItem>
                 ))}
                 <ScheduleNameDialog
