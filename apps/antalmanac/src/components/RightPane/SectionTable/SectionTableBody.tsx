@@ -443,8 +443,8 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     }, [updateCalendarEvents]);
 
     const scheduleConflict = useMemo(() => {
-        // base case: If there's 1 or less events, there can't be any conflicts.
-        if (calendarEvents.length < 1) {
+        // If there are currently no calendar events, there can't be any conflicts.
+        if (calendarEvents.length === 0) {
             return false;
         }
 
