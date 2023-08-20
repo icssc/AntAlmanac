@@ -3,12 +3,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { Delete, Edit, MoreHoriz, Undo } from '@material-ui/icons';
+import { Delete, MoreHoriz, Undo } from '@material-ui/icons';
 import React, { useState } from 'react';
 
 import ConditionalWrapper from '../ConditionalWrapper';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
-import EditSchedule from './Toolbar/EditSchedule/EditSchedule';
 import ScheduleNameDialog from './Toolbar/EditSchedule/ScheduleNameDialog';
 import DeleteScheduleDialog from './Toolbar/EditSchedule/DeleteScheduleDialog';
 import ExportCalendar from './Toolbar/ExportCalendar';
@@ -113,8 +112,6 @@ const CalendarPaneToolbar = ({
 
     return (
         <Paper elevation={0} variant="outlined" square className={classes.toolbar}>
-            <EditSchedule scheduleNames={scheduleNames} scheduleIndex={currentScheduleIndex} />
-
             <Select
                 classes={{ root: classes.rootScheduleSelector }}
                 className={classes.scheduleSelector}
