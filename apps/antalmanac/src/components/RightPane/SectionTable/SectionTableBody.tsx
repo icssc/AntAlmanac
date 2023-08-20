@@ -458,8 +458,8 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
              * Normalized to ##:##
              * @example 10:00
              */
-
             const eventStart = event.start.toString().split(' ')[4].slice(0, -3);
+
             /**
              * Normalized to ##:##
              * @example 10:00
