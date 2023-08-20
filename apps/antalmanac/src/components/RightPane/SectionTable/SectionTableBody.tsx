@@ -379,7 +379,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         F: 5,
         Sa: 6,
     };
-          
+
     const [activeColumns, setColumns] = useState(RightPaneStore.getActiveColumns());
 
     const handleColumnChange = useCallback(
@@ -389,11 +389,11 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         [setColumns]
     );
 
-    useEffect(() => {
-        const updateHighlight = useCallback(() => {
-          setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
-        }, [setAddedCourse, AppStore.getAddedSectionCodes]);
+    const updateHighlight = useCallback(() => {
+        setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
+    }, [setAddedCourse, AppStore.getAddedSectionCodes]);
 
+    useEffect(() => {
         const checkAndDisplayScheduleConflict = () => {
             if (AppStore.getCourseEventsInCalendar().length < 1) {
                 setScheduleConflict(false);
@@ -462,9 +462,8 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             AppStore.removeListener('addedCoursesChange', updateCourseState);
             AppStore.removeListener('currentScheduleIndexChange', updateCourseState);
             RightPaneStore.removeListener('columnChange', handleColumnChange);
-
         };
-    }, [toggleHighlight, handleColumnChange]);
+    }, [updateHighlight, handleColumnChange]);
 
     return (
         <TableRow
