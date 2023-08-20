@@ -29,8 +29,8 @@ const LoginButton = () => {
         }
     };
 
-    const logout = () => {
-        fetch(LOGOUT_ENDPOINT, {
+    const logout = async () => {
+        await fetch(LOGOUT_ENDPOINT, {
             method: 'POST',
             credentials: 'include',
         });
