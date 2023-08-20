@@ -475,7 +475,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
 
             const happensAfter = sectionDetails.startTime >= eventEnd && sectionDetails.endTime >= eventEnd;
 
-            return happensBefore || happensAfter;
+            return !(happensBefore || happensAfter);
         });
 
         return Boolean(conflictingEvent);
