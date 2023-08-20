@@ -1,4 +1,4 @@
-import { ScheduleCourse } from '@packages/antalmanac-types';
+import { AASection, ScheduleCourse } from '@packages/antalmanac-types';
 import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 
@@ -144,8 +144,8 @@ export const calendarizeCustomEvents = (currentCustomEvents: RepeatingCustomEven
  * @returns the start and end time of a course in a 24 hour time with a leading zero (##:##)
  * @returns undefined if there is no WebSOC time (e.g. 'TBA', undefined)
  */
-export const translateWebSOCTimeTo24HourTime = (section: AASection) => {
-    const timeString = section.meetings[0].time.replace(/\s/g, '');
+export const translateWebSOCTimeTo24HourTime = (time: string) => {
+    const timeString = time.replace(/\s/g, '');
 
     if (timeString !== 'TBA' && timeString !== undefined) {
         const [, startHrStr, startMinStr, endHrStr, endMinStr, ampm] = timeString?.match(

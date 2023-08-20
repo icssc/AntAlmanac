@@ -4,11 +4,12 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
-import { Fragment, useCallback, useContext, useEffect, useState } from 'react';
+import { Fragment, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { AASection } from '@packages/antalmanac-types';
 import { WebsocSectionEnrollment, WebsocSectionMeeting } from 'peterportal-api-next-types';
 
+import { j } from 'build/assets/index-68a33e08';
 import RightPaneStore, { type SectionTableColumn } from '../RightPaneStore';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
@@ -20,6 +21,16 @@ import AppStore from '$stores/AppStore';
 import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
 import { translateWebSOCTimeTo24HourTime } from '$stores/calendarizeHelpers';
+
+const DAYS_TO_NUMS: { [key: string]: number } = {
+    Su: 0,
+    M: 1,
+    Tu: 2,
+    W: 3,
+    Th: 4,
+    F: 5,
+    Sa: 6,
+};
 
 const styles: Styles<Theme, object> = (theme) => ({
     popover: {
@@ -368,19 +379,23 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
 
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
 
-    const [scheduleConflict, setScheduleConflict] = useState(false);
-
-    const DAYS_TO_NUMS: { [key: string]: number } = {
-        Su: 0,
-        M: 1,
-        Tu: 2,
-        W: 3,
-        Th: 4,
-        F: 5,
-        Sa: 6,
-    };
+    const [calendarEvents, setCalendarEvents] = useState(AppStore.getCourseEventsInCalendar());
 
     const [activeColumns, setColumns] = useState(RightPaneStore.getActiveColumns());
+
+    /**
+     * Additional information about the current section being rendered.
+     */
+    const sectionDetails = useMemo(() => {
+        return {
+            // If there already exists a more well-written way to translate secton.meetings days (string) into a number, LMK
+            // Converts SuTuTh -> [Su, Tu, Th] -> [0, 2, 4]
+            day: section.meetings[0].days.match(/[A-Z][a-z]*/g)?.map((day: string) => DAYS_TO_NUMS[day]),
+            translatedTime: translateWebSOCTimeTo24HourTime(section.meetings[0].time),
+            startTime: '',
+            endTime: '',
+        };
+    }, [section.meetings]);
 
     const handleColumnChange = useCallback(
         (newActiveColumns: SectionTableColumn[]) => {
@@ -393,77 +408,73 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
     }, [setAddedCourse, AppStore.getAddedSectionCodes]);
 
+    const updateCalendarEvents = useCallback(() => {
+        setCalendarEvents(AppStore.getCourseEventsInCalendar());
+    }, [setCalendarEvents]);
+
+    // Because the idiot who set up state management didn't use an actual library solution,
+    // we need to attach ***memoized*** listeners to the store like bufoons.
+
     useEffect(() => {
-        const checkAndDisplayScheduleConflict = () => {
-            if (AppStore.getCourseEventsInCalendar().length < 1) {
-                setScheduleConflict(false);
-                return;
-            }
-
-            // An array of lists of time information on every added event
-            const calendarEventTimes = AppStore.getCourseEventsInCalendar().map((event) => {
-                const courseDay = event.start.getDay();
-
-                // courseStart/EndTime is normalized to ##:## (i.e. leading zero, no seconds)
-                const courseStartTime = event.start.toString().split(' ')[4].slice(0, -3);
-                const courseEndTime = event.end.toString().split(' ')[4].slice(0, -3);
-                return { day: courseDay, startTime: courseStartTime, endTime: courseEndTime };
-            });
-
-            const coursePaneEvent = {
-                // If there already exists a more well-written way to translate secton.meetings days (string) into a number, LMK
-                // Converts SuTuTh -> [Su, Tu, Th] -> [0, 2, 4]
-                day: section.meetings[0].days.match(/[A-Z][a-z]*/g)?.map((day: string) => DAYS_TO_NUMS[day]),
-                startTime: '',
-                endTime: '',
-            };
-
-            const translatedTimeString = translateWebSOCTimeTo24HourTime(section);
-            if (translatedTimeString) {
-                coursePaneEvent.startTime = translatedTimeString.startTime;
-                coursePaneEvent.endTime = translatedTimeString.endTime;
-            }
-
-            for (const calendarEvent of calendarEventTimes) {
-                // Check if there is day overlap
-                if (!coursePaneEvent?.day?.includes(calendarEvent?.day)) {
-                    continue;
-                }
-
-                // Then, IF the course doesn't ( start AND end BEFORE) AND doesn't ( start AND end AFTER), it does conflict!
-                const happensBefore =
-                    coursePaneEvent.startTime <= calendarEvent.startTime &&
-                    coursePaneEvent.endTime <= calendarEvent.startTime;
-                const happensAfter =
-                    coursePaneEvent.startTime >= calendarEvent.endTime &&
-                    coursePaneEvent.endTime >= calendarEvent.endTime;
-
-                // If neither happensBefore or happensAfter is true, set scheduleConflict to true
-                if (!happensBefore && !happensAfter) {
-                    setScheduleConflict(true);
-                    return;
-                }
-            }
-            setScheduleConflict(false);
-            return;
-        };
-
-        const updateCourseState = () => {
-            updateHighlight();
-            checkAndDisplayScheduleConflict();
-        };
-
-        updateCourseState();
-        AppStore.on('addedCoursesChange', updateCourseState);
-        AppStore.on('currentScheduleIndexChange', updateCourseState);
         RightPaneStore.on('columnChange', handleColumnChange);
-
         return () => {
-            AppStore.removeListener('addedCoursesChange', updateCourseState);
-            AppStore.removeListener('currentScheduleIndexChange', updateCourseState);
             RightPaneStore.removeListener('columnChange', handleColumnChange);
         };
-    }, [updateHighlight, handleColumnChange]);
+    }, [handleColumnChange]);
+
+    useEffect(() => {
+        AppStore.on('addedCoursesChange', updateHighlight);
+        AppStore.on('currentScheduleIndexChange', updateHighlight);
+
+        return () => {
+            AppStore.removeListener('addedCoursesChange', updateHighlight);
+            AppStore.removeListener('currentScheduleIndexChange', updateHighlight);
+        };
+    }, [updateHighlight]);
+
+    useEffect(() => {
+        AppStore.on('addedCoursesChange', updateCalendarEvents);
+        AppStore.on('currentScheduleIndexChange', updateCalendarEvents);
+
+        return () => {
+            AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
+            AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
+        };
+    }, [updateCalendarEvents]);
+
+    const scheduleConflict = useMemo(() => {
+        // base case: If there's 1 or less events, there can't be any conflicts.
+        if (calendarEvents.length < 1) {
+            return false;
+        }
+
+        const conflictingEvent = calendarEvents.find((event) => {
+            // If it occurs on a different day, no conflict.
+            if (!sectionDetails?.day?.includes(event.start.getDay())) {
+                return false;
+            }
+
+            /**
+             * Normalized to ##:##
+             * @example 10:00
+             */
+
+            const eventStart = event.start.toString().split(' ')[4].slice(0, -3);
+            /**
+             * Normalized to ##:##
+             * @example 10:00
+             */
+            const eventEnd = event.end.toString().split(' ')[4].slice(0, -3);
+
+            const happensBefore = sectionDetails.startTime <= eventStart && sectionDetails.endTime <= eventStart;
+
+            const happensAfter = sectionDetails.startTime >= eventEnd && sectionDetails.endTime >= eventEnd;
+
+            return happensBefore || happensAfter;
+        });
+
+        return Boolean(conflictingEvent);
+    }, [calendarEvents, sectionDetails]);
 
     return (
         <TableRow
