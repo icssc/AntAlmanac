@@ -11,12 +11,11 @@
         "lint": "eslint --fix src"
     },
     "dependencies": {
-        "@aponia/integrations-express": "^0.1.54",
-        "@aponia/providers": "^0.1.47",
+        "@aponia/express": "^1.0.0",
         "@packages/antalmanac-types": "*",
         "@trpc/server": "^10.37.1",
         "@vendia/serverless-express": "^4.10.1",
-        "aponia": "^0.1.53",
+        "aponia": "^1.0.9",
         "arktype": "1.0.14-alpha",
         "aws-lambda": "^1.0.7",
         "cookie": "^0.5.0",

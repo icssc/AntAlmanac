@@ -1,7 +1,18 @@
-import { AponiaAuth, AponiaSession } from 'aponia';
-import { Google } from '@aponia/providers';
+import { AponiaAuth } from 'aponia';
+import { AponiaSession } from 'aponia/session'
+import { Google } from 'aponia/providers/google';
 import env from './env';
 import {AuthUserClient} from "$db/ddb";
+
+const getRedirectUrl = () => {
+    if (env.STAGE === 'local') {
+        return 'http://localhost:5173';
+    } else if (env.STAGE === 'staging') {
+        return 'https://staging-654.antalmanac.com/';
+    } else {
+        return 'https://antalmanac.com';
+    }
+}
 
 type User = {
     type: 'Google' | 'Legacy';
@@ -11,11 +22,7 @@ type User = {
     picture: string
 };
 
-type Session = User;
-
-type Refresh = User;
-
-const google = Google<User>({
+const google = Google({
     clientId: env.GOOGLE_CLIENT_ID,
     clientSecret: env.GOOGLE_CLIENT_SECRET,
 
@@ -34,7 +41,7 @@ const google = Google<User>({
         }
         return {
             user: { type: 'Google', id: user.sub, name: user.name, email: user.email, picture: user.picture },
-            redirect: 'http://localhost:5173',
+            redirect: getRedirectUrl(),
             status: 302,
         };
     },
@@ -43,7 +50,7 @@ const google = Google<User>({
 const refreshExpires = 60 * 60 * 24 * 7 * 4; // 4 weeks
 const accessExpires = 60 * 60 * 24 * 7; // 1 week
 
-const session = AponiaSession<User, Session, Refresh>({
+const session = AponiaSession({
     secret: 'secret',
 
     async createSession(user) {

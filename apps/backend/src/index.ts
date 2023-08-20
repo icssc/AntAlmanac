@@ -7,7 +7,7 @@ import crypto from 'crypto';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors, { type CorsOptions } from 'cors';
-import { createAuthMiddleware } from '@aponia/integrations-express';
+import { createAuthMiddleware } from '@aponia/express';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import AppRouter from './routers';
 import { createContext } from './context';
