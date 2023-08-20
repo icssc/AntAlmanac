@@ -205,3 +205,8 @@
     background-color: #f5f5f5;
     margin-top: 2em;
 }
+
+/* Styling that targets the Popover component (not sure why it can't be done inline)*/
+.MuiPopover-paper {
+    overflow-x: auto;
+}

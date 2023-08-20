@@ -17,6 +17,7 @@ import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
+import { translateWebSOCTimeTo24HourTime } from '$stores/calendarizeHelpers';
 
 const styles: Styles<Theme, object> = (theme) => ({
     popover: {
@@ -37,7 +38,11 @@ const styles: Styles<Theme, object> = (theme) => ({
     },
     tr: {
         '&.addedCourse': {
-            backgroundColor: isDarkMode() ? '#b0b04f' : '#fcfc97',
+            background: isDarkMode() ? '#b0b04f' : '#fcfc97',
+        },
+        '&.scheduleConflict': {
+            background: isDarkMode() ? '#121212' : '#7c7c7c',
+            opacity: 0.6,
         },
     },
     cell: {
@@ -349,26 +354,104 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames } = props;
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
 
+    const [scheduleConflict, setScheduleConflict] = useState(false);
+
+    const DAYS_TO_NUMS: { [key: string]: number } = {
+        Su: 0,
+        M: 1,
+        Tu: 2,
+        W: 3,
+        Th: 4,
+        F: 5,
+        Sa: 6,
+    };
+
     useEffect(() => {
-        const toggleHighlight = () => {
+        const updateHighlight = () => {
             const doAdd = AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`);
             setAddedCourse(doAdd);
         };
 
-        toggleHighlight();
-        AppStore.on('addedCoursesChange', toggleHighlight);
-        AppStore.on('currentScheduleIndexChange', toggleHighlight);
+        const checkAndDisplayScheduleConflict = () => {
+            if (AppStore.getCourseEventsInCalendar().length < 1) {
+                setScheduleConflict(false);
+                return;
+            }
+
+            // An array of lists of time information on every added event
+            const calendarEventTimes = AppStore.getCourseEventsInCalendar().map((event) => {
+                const courseDay = event.start.getDay();
+
+                // courseStart/EndTime is normalized to ##:## (i.e. leading zero, no seconds)
+                const courseStartTime = event.start.toString().split(' ')[4].slice(0, -3);
+                const courseEndTime = event.end.toString().split(' ')[4].slice(0, -3);
+                return { day: courseDay, startTime: courseStartTime, endTime: courseEndTime };
+            });
+
+            const coursePaneEvent = {
+                // If there already exists a more well-written way to translate secton.meetings days (string) into a number, LMK
+                // Converts SuTuTh -> [Su, Tu, Th] -> [0, 2, 4]
+                day: section.meetings[0].days.match(/[A-Z][a-z]*/g)?.map((day: string) => DAYS_TO_NUMS[day]),
+                startTime: '',
+                endTime: '',
+            };
+
+            const translatedTimeString = translateWebSOCTimeTo24HourTime(section);
+            if (translatedTimeString) {
+                coursePaneEvent.startTime = translatedTimeString.startTime;
+                coursePaneEvent.endTime = translatedTimeString.endTime;
+            }
+
+            for (const calendarEvent of calendarEventTimes) {
+                // Check if there is day overlap
+                if (!coursePaneEvent?.day?.includes(calendarEvent?.day)) {
+                    continue;
+                }
+
+                // Then, IF the course doesn't ( start AND end BEFORE) AND doesn't ( start AND end AFTER), it does conflict!
+                const happensBefore =
+                    coursePaneEvent.startTime <= calendarEvent.startTime &&
+                    coursePaneEvent.endTime <= calendarEvent.startTime;
+                const happensAfter =
+                    coursePaneEvent.startTime >= calendarEvent.endTime &&
+                    coursePaneEvent.endTime >= calendarEvent.endTime;
+
+                // If neither happensBefore or happensAfter is true, set scheduleConflict to true
+                if (!happensBefore && !happensAfter) {
+                    setScheduleConflict(true);
+                    return;
+                }
+            }
+            setScheduleConflict(false);
+            return;
+        };
+
+        const updateCourseState = () => {
+            updateHighlight();
+            checkAndDisplayScheduleConflict();
+        };
+
+        updateCourseState();
+        AppStore.on('addedCoursesChange', updateCourseState);
+        AppStore.on('currentScheduleIndexChange', updateCourseState);
 
         return () => {
-            AppStore.removeListener('addedCoursesChange', toggleHighlight);
-            AppStore.removeListener('currentScheduleIndexChange', toggleHighlight);
+            AppStore.removeListener('addedCoursesChange', updateCourseState);
+            AppStore.removeListener('currentScheduleIndexChange', updateCourseState);
         };
     }, [section.sectionCode, term]); //should only run once on first render since these shouldn't change.
 
     return (
         <TableRow
             classes={{ root: classes.row }}
-            className={classNames(classes.tr, { addedCourse: addedCourse && highlightAdded })}
+            className={classNames(
+                classes.tr,
+                // If the course is added, then don't apply scheduleConflict
+                // The ternary is needed since the added course conflicts with itself
+                addedCourse && highlightAdded
+                    ? { addedCourse: addedCourse && highlightAdded }
+                    : { scheduleConflict: scheduleConflict }
+            )}
         >
             {!addedCourse ? (
                 <ScheduleAddCell
@@ -376,6 +459,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                     courseDetails={courseDetails}
                     term={term}
                     scheduleNames={scheduleNames}
+                    scheduleConflict={scheduleConflict}
                 />
             ) : (
                 <ColorAndDelete color={section.color} sectionCode={section.sectionCode} term={term} />
