@@ -377,11 +377,11 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames } = props;
 
+    const [activeColumns, setColumns] = useState(RightPaneStore.getActiveColumns());
+
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
 
     const [calendarEvents, setCalendarEvents] = useState(AppStore.getCourseEventsInCalendar());
-
-    const [activeColumns, setColumns] = useState(RightPaneStore.getActiveColumns());
 
     /**
      * Additional information about the current section being rendered.
@@ -397,6 +397,8 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         };
     }, [section.meetings]);
 
+    // Stable references to event listeners will synchronize React state with the store.
+
     const handleColumnChange = useCallback(
         (newActiveColumns: SectionTableColumn[]) => {
             setColumns(newActiveColumns);
@@ -406,14 +408,13 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
 
     const updateHighlight = useCallback(() => {
         setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
-    }, [setAddedCourse, AppStore.getAddedSectionCodes]);
+    }, [setAddedCourse]);
 
     const updateCalendarEvents = useCallback(() => {
         setCalendarEvents(AppStore.getCourseEventsInCalendar());
     }, [setCalendarEvents]);
 
-    // Because the idiot who set up state management didn't use an actual library solution,
-    // we need to attach ***memoized*** listeners to the store like buffoons.
+    // Attach event listeners to the store.
 
     useEffect(() => {
         RightPaneStore.on('columnChange', handleColumnChange);
@@ -442,6 +443,10 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         };
     }, [updateCalendarEvents]);
 
+    /**
+     * Derived based on the current section and the calendar events.
+     * Whether the current section conflicts with any of the calendar events.
+     */
     const scheduleConflict = useMemo(() => {
         // If there are currently no calendar events, there can't be any conflicts.
         if (calendarEvents.length === 0) {
