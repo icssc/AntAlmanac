@@ -5,12 +5,15 @@ import { useEffect, useState } from 'react';
 const PatchNotes = () => {
     const [isOpen, setIsOpen] = useState(true);
 
-    // show modal only on first visit
+    // show modal only if the current patch notes haven't been shown
+    // This is denoted by a date string YYYYMMDD (e.g. 20230819)
+    const latestPatchNotesUpdate = '20230819';
+
     useEffect(() => {
-        if (localStorage.getItem('visitedCount') == 'y') {
+        if (localStorage.getItem('latestVisit') == latestPatchNotesUpdate) {
             setIsOpen(false);
         } else {
-            localStorage.setItem('visitedCount', 'y');
+            localStorage.setItem('latestVisit', latestPatchNotesUpdate);
         }
     }, []);
 
