@@ -448,9 +448,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                 classes.tr,
                 // If the course is added, then don't apply scheduleConflict
                 // The ternary is needed since the added course conflicts with itself
-                addedCourse && highlightAdded
-                    ? { addedCourse: addedCourse && highlightAdded }
-                    : { scheduleConflict: scheduleConflict }
+                addedCourse ? { addedCourse: addedCourse && highlightAdded } : { scheduleConflict: scheduleConflict }
             )}
         >
             {!addedCourse ? (
