@@ -43,8 +43,8 @@ const styles: Styles<Theme, object> = (theme) => ({
             background: isDarkMode() ? '#b0b04f' : '#fcfc97',
         },
         '&.scheduleConflict': {
-            background: isDarkMode() ? '#121212' : '#7c7c7c',
-            opacity: 0.6,
+            background: isDarkMode() ? '#121212' : '#a0a0a0',
+            opacity: isDarkMode() ? 0.6 : 1,
         },
     },
     cell: {
@@ -78,7 +78,7 @@ const styles: Styles<Theme, object> = (theme) => ({
     },
     Act: { color: '#c87137' },
     Col: { color: '#ff40b5' },
-    Dis: { color: '#8d63f0' },
+    Dis: { color: '#ff6e00' },
     Fld: { color: '#1ac805' },
     Lab: { color: '#1abbe9' },
     Lec: { color: '#d40000' },
