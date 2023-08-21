@@ -1,4 +1,14 @@
-import { Box, Button, Grid, /*IconButton,*/ Menu, MenuItem, Paper, TextField, Typography } from '@material-ui/core';
+import {
+    Box,
+    Button,
+    Grid,
+    /*IconButton,*/ Menu,
+    MenuItem,
+    Paper,
+    TextField,
+    Tooltip,
+    Typography,
+} from '@material-ui/core';
 import { IconButton } from '@mui/material';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
@@ -179,22 +189,24 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                     <PopupState variant="popover">
                         {(popupState) => (
                             <>
-                                <IconButton
-                                    {...bindTrigger(popupState)}
-                                    sx={{
-                                        backgroundColor: 'rgba(236, 236, 236, 1)',
-                                        marginRight: 1,
-                                        padding: 1.5,
-                                        boxShadow: '2',
-                                        color: 'black',
-                                        '&:hover': {
-                                            backgroundColor: 'grey',
-                                        },
-                                        pointerEvents: 'auto',
-                                    }}
-                                >
-                                    <ContentCopy />
-                                </IconButton>
+                                <Tooltip title="Copy Schedule">
+                                    <IconButton
+                                        {...bindTrigger(popupState)}
+                                        sx={{
+                                            backgroundColor: 'rgba(236, 236, 236, 1)',
+                                            marginRight: 1,
+                                            padding: 1.5,
+                                            boxShadow: '2',
+                                            color: 'black',
+                                            '&:hover': {
+                                                backgroundColor: 'grey',
+                                            },
+                                            pointerEvents: 'auto',
+                                        }}
+                                    >
+                                        <ContentCopy />
+                                    </IconButton>
+                                </Tooltip>
                                 <Menu {...bindMenu(popupState)}>
                                     {this.state.scheduleNames.map((name, index) => {
                                         return (
