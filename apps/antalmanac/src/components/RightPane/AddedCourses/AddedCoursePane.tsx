@@ -1,10 +1,12 @@
-import { Box, Button, Grid, Menu, MenuItem, Paper, TextField, Typography } from '@material-ui/core';
+import { Box, Button, Grid, /*IconButton,*/ Menu, MenuItem, Paper, TextField, Typography } from '@material-ui/core';
+import { IconButton } from '@mui/material';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 import { PureComponent } from 'react';
 
 import { AACourse } from '@packages/antalmanac-types';
+import { ContentCopy } from '@mui/icons-material';
 import { ColumnToggleButton } from '../CoursePane/CoursePaneButtonRow';
 import { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
@@ -174,12 +176,60 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                         padding: 4,
                     }}
                 >
+                    <PopupState variant="popover">
+                        {(popupState) => (
+                            <>
+                                <IconButton
+                                    {...bindTrigger(popupState)}
+                                    sx={{
+                                        backgroundColor: 'rgba(236, 236, 236, 1)',
+                                        marginRight: 1,
+                                        padding: 1.5,
+                                        boxShadow: '2',
+                                        color: 'black',
+                                        '&:hover': {
+                                            backgroundColor: 'grey',
+                                        },
+                                        pointerEvents: 'auto',
+                                    }}
+                                >
+                                    <ContentCopy />
+                                </IconButton>
+                                <Menu {...bindMenu(popupState)}>
+                                    {this.state.scheduleNames.map((name, index) => {
+                                        return (
+                                            <MenuItem
+                                                key={index}
+                                                disabled={AppStore.getCurrentScheduleIndex() === index}
+                                                onClick={() => {
+                                                    copySchedule(index);
+                                                    popupState.close();
+                                                }}
+                                            >
+                                                Copy to {name}
+                                            </MenuItem>
+                                        );
+                                    })}
+                                    <MenuItem
+                                        onClick={() => {
+                                            copySchedule(this.state.scheduleNames.length);
+                                            popupState.close();
+                                        }}
+                                    >
+                                        Copy to All Schedules
+                                    </MenuItem>
+                                </Menu>
+                            </>
+                        )}
+                    </PopupState>
                     <ColumnToggleButton />
                 </Box>
-                <div className={this.props.classes.titleRow}>
-                    <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
+                <div>
+                    <Typography variant="h6" className={this.props.classes.titleRow}>
+                        {`${scheduleName} (${scheduleUnits} Units)`}{' '}
+                    </Typography>
 
-                    <div>
+                    {/* <div>
                         <PopupState variant="popover">
                             {(popupState) => (
                                 <>
@@ -216,7 +266,6 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                         <Button
                             className={this.props.classes.clearSchedule}
                             variant="outlined"
-                            color="secondary"
                             onClick={() => {
                                 if (
                                     window.confirm(
@@ -233,7 +282,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                         >
                             Clear Schedule
                         </Button>
-                    </div>
+                    </div> */}
                 </div>
                 {this.state.courses.map((course) => {
                     return (
