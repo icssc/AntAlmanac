@@ -441,8 +441,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         };
     }, [section.sectionCode, term]); //should only run once on first render since these shouldn't change.
 
-    console.log(`addedCourse: ${addedCourse}`);
-    console.log(highlightAdded);
     return (
         <TableRow
             classes={{ root: classes.row }}
