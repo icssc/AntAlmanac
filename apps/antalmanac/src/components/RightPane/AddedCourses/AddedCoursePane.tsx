@@ -1,14 +1,4 @@
-import {
-    Box,
-    Button,
-    Grid,
-    /*IconButton,*/ Menu,
-    MenuItem,
-    Paper,
-    TextField,
-    Tooltip,
-    Typography,
-} from '@material-ui/core';
+import { Box, Grid, Menu, MenuItem, Paper, TextField, Tooltip, Typography } from '@material-ui/core';
 import { IconButton } from '@mui/material';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
@@ -16,7 +6,7 @@ import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 import { PureComponent } from 'react';
 
 import { AACourse } from '@packages/antalmanac-types';
-import { ContentCopy } from '@mui/icons-material';
+import { ContentCopy, DeleteOutline } from '@mui/icons-material';
 import { ColumnToggleButton } from '../CoursePane/CoursePaneButtonRow';
 import { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
@@ -234,67 +224,36 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                             </>
                         )}
                     </PopupState>
+                    <IconButton
+                        sx={{
+                            backgroundColor: 'rgba(236, 236, 236, 1)',
+                            marginRight: 1,
+                            padding: 1.5,
+                            boxShadow: '2',
+                            color: 'black',
+                            '&:hover': {
+                                backgroundColor: 'grey',
+                            },
+                            pointerEvents: 'auto',
+                        }}
+                        onClick={() => {
+                            if (window.confirm('Are you sure you want to clear this schedule?')) {
+                                clearSchedules();
+                                logAnalytics({
+                                    category: analyticsEnum.addedClasses.title,
+                                    action: analyticsEnum.addedClasses.actions.CLEAR_SCHEDULE,
+                                });
+                            }
+                        }}
+                    >
+                        <DeleteOutline />
+                    </IconButton>
                     <ColumnToggleButton />
                 </Box>
                 <div>
                     <Typography variant="h6" className={this.props.classes.titleRow}>
                         {`${scheduleName} (${scheduleUnits} Units)`}{' '}
                     </Typography>
-
-                    {/* <div>
-                        <PopupState variant="popover">
-                            {(popupState) => (
-                                <>
-                                    <Button variant="outlined" {...bindTrigger(popupState)}>
-                                        Copy Schedule
-                                    </Button>
-                                    <Menu {...bindMenu(popupState)}>
-                                        {this.state.scheduleNames.map((name, index) => {
-                                            return (
-                                                <MenuItem
-                                                    key={index}
-                                                    disabled={AppStore.getCurrentScheduleIndex() === index}
-                                                    onClick={() => {
-                                                        copySchedule(index);
-                                                        popupState.close();
-                                                    }}
-                                                >
-                                                    Copy to {name}
-                                                </MenuItem>
-                                            );
-                                        })}
-                                        <MenuItem
-                                            onClick={() => {
-                                                copySchedule(this.state.scheduleNames.length);
-                                                popupState.close();
-                                            }}
-                                        >
-                                            Copy to All Schedules
-                                        </MenuItem>
-                                    </Menu>
-                                </>
-                            )}
-                        </PopupState>
-                        <Button
-                            className={this.props.classes.clearSchedule}
-                            variant="outlined"
-                            onClick={() => {
-                                if (
-                                    window.confirm(
-                                        'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
-                                    )
-                                ) {
-                                    clearSchedules();
-                                    logAnalytics({
-                                        category: analyticsEnum.addedClasses.title,
-                                        action: analyticsEnum.addedClasses.actions.CLEAR_SCHEDULE,
-                                    });
-                                }
-                            }}
-                        >
-                            Clear Schedule
-                        </Button>
-                    </div> */}
                 </div>
                 {this.state.courses.map((course) => {
                     return (
