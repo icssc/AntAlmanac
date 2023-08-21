@@ -9,7 +9,6 @@ import { Fragment, useCallback, useContext, useEffect, useMemo, useState } from 
 import { AASection } from '@packages/antalmanac-types';
 import { WebsocSectionEnrollment, WebsocSectionMeeting } from 'peterportal-api-next-types';
 
-import { j } from 'build/assets/index-68a33e08';
 import RightPaneStore, { type SectionTableColumn } from '../RightPaneStore';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
@@ -20,17 +19,7 @@ import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
-import { translateWebSOCTimeTo24HourTime } from '$stores/calendarizeHelpers';
-
-const DAYS_TO_NUMS: { [key: string]: number } = {
-    Su: 0,
-    M: 1,
-    Tu: 2,
-    W: 3,
-    Th: 4,
-    F: 5,
-    Sa: 6,
-};
+import { translateWebSOCTimeTo24HourTime, parseDaysString } from '$stores/calendarizeHelpers';
 
 const styles: Styles<Theme, object> = (theme) => ({
     popover: {
@@ -373,7 +362,9 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     status: StatusCell,
 };
 
-// TODO: SectionNum name parity -> SectionNumber
+/**
+ * TODO: SectionNum name parity -> SectionNumber
+ */
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames } = props;
 
@@ -385,21 +376,18 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
 
     /**
      * Additional information about the current section being rendered.
+     * i.e. time information, which is compared with the calendar events to find conflicts.
      */
     const sectionDetails = useMemo(() => {
         return {
-            // If there already exists a more well-written way to translate secton.meetings days (string) into a number, LMK
-            // Converts SuTuTh -> [Su, Tu, Th] -> [0, 2, 4]
-            day: section.meetings[0].days.match(/[A-Z][a-z]*/g)?.map((day: string) => DAYS_TO_NUMS[day]),
-            translatedTime: translateWebSOCTimeTo24HourTime(section.meetings[0].time),
-            startTime: '',
-            endTime: '',
+            daysOccurring: parseDaysString(section.meetings[0].days),
+            ...translateWebSOCTimeTo24HourTime(section.meetings[0].time),
         };
-    }, [section.meetings]);
+    }, [section.meetings[0]]);
 
     // Stable references to event listeners will synchronize React state with the store.
 
-    const handleColumnChange = useCallback(
+    const updateColumns = useCallback(
         (newActiveColumns: SectionTableColumn[]) => {
             setColumns(newActiveColumns);
         },
@@ -417,11 +405,11 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     // Attach event listeners to the store.
 
     useEffect(() => {
-        RightPaneStore.on('columnChange', handleColumnChange);
+        RightPaneStore.on('columnChange', updateColumns);
         return () => {
-            RightPaneStore.removeListener('columnChange', handleColumnChange);
+            RightPaneStore.removeListener('columnChange', updateColumns);
         };
-    }, [handleColumnChange]);
+    }, [updateColumns]);
 
     useEffect(() => {
         AppStore.on('addedCoursesChange', updateHighlight);
@@ -444,7 +432,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     }, [updateCalendarEvents]);
 
     /**
-     * Derived based on the current section and the calendar events.
      * Whether the current section conflicts with any of the calendar events.
      */
     const scheduleConflict = useMemo(() => {
@@ -453,27 +440,34 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             return false;
         }
 
+        // If the section's time wasn't parseable, then don't consider conflicts.
+        if (sectionDetails.startTime == null || sectionDetails.endTime == null) {
+            return false;
+        }
+
+        const { startTime, endTime } = sectionDetails;
+
         const conflictingEvent = calendarEvents.find((event) => {
             // If it occurs on a different day, no conflict.
-            if (!sectionDetails?.day?.includes(event.start.getDay())) {
+            if (!sectionDetails?.daysOccurring?.includes(event.start.getDay())) {
                 return false;
             }
 
             /**
-             * Normalized to ##:##
-             * @example 10:00
+             * A time normalized to ##:##
+             * @example '10:00'
              */
-            const eventStart = event.start.toString().split(' ')[4].slice(0, -3);
+            const eventStartTime = event.start.toString().split(' ')[4].slice(0, -3);
 
             /**
              * Normalized to ##:##
-             * @example 10:00
+             * @example '10:00'
              */
-            const eventEnd = event.end.toString().split(' ')[4].slice(0, -3);
+            const eventEndTime = event.end.toString().split(' ')[4].slice(0, -3);
 
-            const happensBefore = sectionDetails.startTime <= eventStart && sectionDetails.endTime <= eventStart;
+            const happensBefore = startTime <= eventStartTime && endTime <= eventStartTime;
 
-            const happensAfter = sectionDetails.startTime >= eventEnd && sectionDetails.endTime >= eventEnd;
+            const happensAfter = startTime >= eventEndTime && endTime >= eventEndTime;
 
             return !(happensBefore || happensAfter);
         });
