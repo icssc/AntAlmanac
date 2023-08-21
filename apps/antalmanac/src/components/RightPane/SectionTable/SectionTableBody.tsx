@@ -76,7 +76,7 @@ const styles: Styles<Theme, object> = (theme) => ({
     },
     Act: { color: '#c87137' },
     Col: { color: '#ff40b5' },
-    Dis: { color: '#8d63f0' },
+    Dis: { color: '#ff6e00' },
     Fld: { color: '#1ac805' },
     Lab: { color: '#1abbe9' },
     Lec: { color: '#d40000' },
