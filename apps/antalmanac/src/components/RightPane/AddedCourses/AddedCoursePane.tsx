@@ -24,6 +24,9 @@ const styles = {
         display: 'flex',
         width: '100%',
         justifyContent: 'space-between',
+        alignItem: 'flex-end',
+        marginLeft: '4px',
+        marginRight: '4px',
     },
     clearSchedule: {
         marginLeft: '4px',
@@ -236,7 +239,11 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                         </Grid>
                     );
                 })}
-                {this.state.customEvents.length > 0 && <Typography variant="h6">Custom Events</Typography>}
+                {this.state.customEvents.length > 0 && (
+                    <Typography variant="h6" className={this.props.classes.titleRow}>
+                        Custom Events
+                    </Typography>
+                )}
                 {this.state.customEvents.map((customEvent) => {
                     return (
                         <Grid item md={12} xs={12} key={customEvent.title}>
@@ -248,7 +255,9 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                         </Grid>
                     );
                 })}
-                <Typography variant="h6">Schedule Notes</Typography>
+                <Typography variant="h6" className={this.props.classes.titleRow}>
+                    Schedule Notes
+                </Typography>
                 <Paper className={this.props.classes.scheduleNoteContainer}>
                     <TextField
                         type="text"
