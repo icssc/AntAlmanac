@@ -139,16 +139,21 @@ export const calendarizeCustomEvents = (currentCustomEvents: RepeatingCustomEven
     return customEventsInCalendar;
 };
 
+interface TranslatedWebSOCTime {
+    startTime: string;
+    endTime: string;
+}
+
 /**
- * @param section
- * @returns the start and end time of a course in a 24 hour time with a leading zero (##:##)
+ * @param time The time string.
+ * @returns The start and end time of a course in a 24 hour time with a leading zero (##:##).
  * @returns undefined if there is no WebSOC time (e.g. 'TBA', undefined)
  */
-export const translateWebSOCTimeTo24HourTime = (section: AASection) => {
-    const timeString = section.meetings[0].time.replace(/\s/g, '');
+export function translateWebSOCTimeTo24HourTime(time: string): TranslatedWebSOCTime | undefined {
+    const timeString = time.replace(/\s/g, '');
 
     if (timeString !== 'TBA' && timeString !== undefined) {
-        const [, startHrStr, startMinStr, endHrStr, endMinStr, ampm] = timeString?.match(
+        const [, startHrStr, startMinStr, endHrStr, endMinStr, ampm] = timeString.match(
             /(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/
         ) as RegExpMatchArray;
 
@@ -169,4 +174,29 @@ export const translateWebSOCTimeTo24HourTime = (section: AASection) => {
     }
 
     return undefined;
-};
+}
+
+export const SHORT_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
+
+export const SHORT_DAY_REGEX = new RegExp(`(${SHORT_DAYS.join('|')})`, 'g');
+
+/**
+ * Parses a day string into an array of numbers.
+ *
+ * i.e. intended to be used in conjunction with {@link Date.getDay}
+ *
+ * @example 'MWF' -> [1, 3, 5]
+ * @example 'TuTh' -> [2, 4]
+ * @example 'MWFTh' -> [1, 3, 5, 4]
+ */
+export function parseDaysString(daysString: string): number[] {
+    const days: number[] = [];
+
+    let match: RegExpExecArray | null;
+
+    while ((match = SHORT_DAY_REGEX.exec(daysString))) {
+        days.push(SHORT_DAYS.indexOf(match[1]));
+    }
+
+    return days;
+}

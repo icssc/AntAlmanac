@@ -1,7 +1,27 @@
 import { EventEmitter } from 'events';
 
-import { FAKE_LOCATIONS } from '$lib/helpers';
 import { getDefaultTerm } from '$lib/termData';
+
+/**
+ * Search results are displayed in a tabular format.
+ *
+ * Users can toggle certain columns on/off.
+ */
+export const SECTION_TABLE_COLUMNS = [
+    // These two are omitted since they're not iterated over in the template.
+    // 'scheduleAdd',
+    // 'colorAndDelete',
+    'sectionCode',
+    'sectionDetails',
+    'instructors',
+    'dayAndTime',
+    'location',
+    'sectionEnrollment',
+    'restrictions',
+    'status',
+] as const;
+
+export type SectionTableColumn = (typeof SECTION_TABLE_COLUMNS)[number];
 
 const defaultFormValues: Record<string, string> = {
     deptValue: 'ALL',
@@ -35,6 +55,11 @@ class RightPaneStore extends EventEmitter {
     private urlCourseNumValue: string;
     private urlDeptLabel: string;
     private urlDeptValue: string;
+
+    /**
+     * The columns that are currently being displayed in the search results.
+     */
+    private activeColumns: SectionTableColumn[] = [...SECTION_TABLE_COLUMNS];
 
     constructor() {
         super();
@@ -74,6 +99,7 @@ class RightPaneStore extends EventEmitter {
     getUrlCourseNumValue = () => this.urlCourseNumValue;
     getUrlDeptLabel = () => this.urlDeptLabel;
     getUrlDeptValue = () => this.urlDeptValue;
+    getActiveColumns = () => this.activeColumns;
 
     updateFormValue = (field: string, value: string) => {
         this.formData[field] = value;
@@ -96,6 +122,11 @@ class RightPaneStore extends EventEmitter {
 
     toggleOpenSpotAlert = () => {
         this.openSpotAlertPopoverActive = !this.openSpotAlertPopoverActive;
+    };
+
+    setActiveColumns = (newActiveColumns: SectionTableColumn[]) => {
+        this.activeColumns = newActiveColumns;
+        this.emit('columnChange', newActiveColumns);
     };
 }
 
