@@ -47,7 +47,7 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
                 disabled={AppStore.schedule.getNumberOfSchedules() === 1}
                 style={{ padding: 'inherit', borderRadius: '50%' }}
             >
-                <IconButton style={{ padding: '5px' }}>
+                <IconButton style={{ padding: '0.325rem' }}>
                     <Delete />
                 </IconButton>
             </MenuItem>

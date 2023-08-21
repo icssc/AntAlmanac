@@ -90,12 +90,12 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
         <Box>
             {rename ? (
                 <MenuItem onClick={handleOpen} style={{ padding: 'inherit', borderRadius: '50%' }}>
-                    <IconButton style={{ padding: '5px' }}>
+                    <IconButton style={{ padding: '0.325rem' }}>
                         <Edit />
                     </IconButton>
                 </MenuItem>
             ) : (
-                <MenuItem onClick={handleOpen} style={{ paddingTop: '11px', paddingBottom: '11px' }}>
+                <MenuItem onClick={handleOpen} style={{ paddingTop: '0.75rem', paddingBottom: '0.75rem' }}>
                     <Add className={classes.addButton} />
                     Add Schedule
                 </MenuItem>
