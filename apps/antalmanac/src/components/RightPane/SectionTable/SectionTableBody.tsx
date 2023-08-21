@@ -41,8 +41,8 @@ const styles: Styles<Theme, object> = (theme) => ({
             background: isDarkMode() ? '#b0b04f' : '#fcfc97',
         },
         '&.scheduleConflict': {
-            background: isDarkMode() ? '#121212' : '#7c7c7c',
-            opacity: 0.6,
+            background: isDarkMode() ? 'rgba(18, 18, 18)' : 'rgba(160, 160, 160)',
+            opacity: isDarkMode() ? 0.6 : 1,
         },
     },
     cell: {
