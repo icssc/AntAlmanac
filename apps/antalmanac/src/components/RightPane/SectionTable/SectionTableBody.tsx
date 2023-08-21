@@ -441,13 +441,16 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         };
     }, [section.sectionCode, term]); //should only run once on first render since these shouldn't change.
 
+    console.log(`addedCourse: ${addedCourse}`);
+    console.log(highlightAdded);
     return (
         <TableRow
             classes={{ root: classes.row }}
             className={classNames(
                 classes.tr,
-                // If the course is added, then don't apply scheduleConflict
-                // The ternary is needed since the added course conflicts with itself
+                // If the course is added, then don't check for/apply scheduleConflict
+                // highlightAdded is checked with addedCourse because AddedCoursePane *always* passes highlightAdded as false, thus preventing the row from displaying with the additional styling when in addedCourses
+                // sectionTableBody always passes highlight as true (?)
                 addedCourse ? { addedCourse: addedCourse && highlightAdded } : { scheduleConflict: scheduleConflict }
             )}
         >
