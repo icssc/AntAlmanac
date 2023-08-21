@@ -56,10 +56,6 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
                 <DialogContent>
                     <DialogContentText>
                         Are you sure you want to delete {`"${AppStore.schedule.getScheduleName(scheduleIndex)}"`}?
-                        {/* Are you sure you want to delete {scheduleIndex}? */}
-                        <br />
-                        <br />
-                        You cannot undo this action.
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
