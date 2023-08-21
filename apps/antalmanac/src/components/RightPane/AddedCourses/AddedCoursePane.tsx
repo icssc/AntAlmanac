@@ -1,10 +1,11 @@
-import { Button, Grid, Menu, MenuItem, Paper, TextField, Typography } from '@material-ui/core';
+import { Box, Button, Grid, Menu, MenuItem, Paper, TextField, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 import { PureComponent } from 'react';
 
 import { AACourse } from '@packages/antalmanac-types';
+import { ColumnToggleButton } from '../CoursePane/CoursePaneButtonRow';
 import { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
@@ -24,7 +25,7 @@ const styles = {
         display: 'flex',
         width: '100%',
         justifyContent: 'space-between',
-        alignItem: 'flex-end',
+        alignItems: 'flex-end',
         marginLeft: '4px',
         marginRight: '4px',
     },
@@ -166,6 +167,15 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
 
         return (
             <>
+                <Box
+                    sx={{
+                        width: '100%',
+                        zIndex: 3,
+                        padding: 4,
+                    }}
+                >
+                    <ColumnToggleButton />
+                </Box>
                 <div className={this.props.classes.titleRow}>
                     <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
 
