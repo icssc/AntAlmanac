@@ -366,7 +366,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
  * TODO: SectionNum name parity -> SectionNumber
  */
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
-    const { classes, section, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames } = props;
+    const { classes, section, courseDetails, term, colorAndDelete, allowHighlight, scheduleNames } = props;
 
     const [activeColumns, setColumns] = useState(RightPaneStore.getActiveColumns());
 
