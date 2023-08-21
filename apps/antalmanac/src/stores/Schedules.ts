@@ -116,6 +116,16 @@ export class Schedules {
                 this.addCourse(course, to, false);
             }
         }
+        for (const course of this.getCurrentCustomEvents()) {
+            if (to === this.getNumberOfSchedules()) {
+                this.addCustomEvent(
+                    course,
+                    [...Array(to).keys()] // Creates an array of indices from 0 to 'to'; https://stackoverflow.com/questions/3746725/how-to-create-an-array-containing-1-n
+                );
+            } else {
+                this.addCustomEvent(course, [to]);
+            }
+        }
     }
 
     // --- Course related methods ---
