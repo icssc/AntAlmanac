@@ -170,7 +170,6 @@ const SectionTableWrapped = (
             <GeDataFetchProvider
                 term={formData.term}
                 courseDetails={course}
-                colorAndDelete={false}
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch.title}
@@ -182,7 +181,6 @@ const SectionTableWrapped = (
             <SectionTableLazyWrapper
                 term={formData.term}
                 courseDetails={course}
-                colorAndDelete={false}
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch.title}

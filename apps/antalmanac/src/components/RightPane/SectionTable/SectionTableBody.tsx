@@ -346,7 +346,6 @@ interface SectionTableBodyProps {
     section: AASection;
     courseDetails: CourseDetails;
     term: string;
-    colorAndDelete: boolean;
     allowHighlight: boolean;
     scheduleNames: string[];
 }
@@ -366,11 +365,13 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
  * TODO: SectionNum name parity -> SectionNumber
  */
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
-    const { classes, section, courseDetails, term, colorAndDelete, allowHighlight, scheduleNames } = props;
+    const { classes, section, courseDetails, term, allowHighlight, scheduleNames } = props;
 
     const [activeColumns, setColumns] = useState(RightPaneStore.getActiveColumns());
 
-    const [addedCourse, setAddedCourse] = useState(colorAndDelete);
+    const [addedCourse, setAddedCourse] = useState(
+        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
+    );
 
     const [calendarEvents, setCalendarEvents] = useState(AppStore.getCourseEventsInCalendar());
 
