@@ -224,37 +224,37 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                             </>
                         )}
                     </PopupState>
-                    <IconButton
-                        sx={{
-                            backgroundColor: 'rgba(236, 236, 236, 1)',
-                            marginRight: 1,
-                            padding: 1.5,
-                            boxShadow: '2',
-                            color: 'black',
-                            '&:hover': {
-                                backgroundColor: 'grey',
-                            },
-                            pointerEvents: 'auto',
-                        }}
-                        onClick={() => {
-                            if (window.confirm('Are you sure you want to clear this schedule?')) {
-                                clearSchedules();
-                                logAnalytics({
-                                    category: analyticsEnum.addedClasses.title,
-                                    action: analyticsEnum.addedClasses.actions.CLEAR_SCHEDULE,
-                                });
-                            }
-                        }}
-                    >
-                        <DeleteOutline />
-                    </IconButton>
+                    <Tooltip title="Clear Schedule">
+                        <IconButton
+                            sx={{
+                                backgroundColor: 'rgba(236, 236, 236, 1)',
+                                marginRight: 1,
+                                padding: 1.5,
+                                boxShadow: '2',
+                                color: 'black',
+                                '&:hover': {
+                                    backgroundColor: 'grey',
+                                },
+                                pointerEvents: 'auto',
+                            }}
+                            onClick={() => {
+                                if (window.confirm('Are you sure you want to clear this schedule?')) {
+                                    clearSchedules();
+                                    logAnalytics({
+                                        category: analyticsEnum.addedClasses.title,
+                                        action: analyticsEnum.addedClasses.actions.CLEAR_SCHEDULE,
+                                    });
+                                }
+                            }}
+                        >
+                            <DeleteOutline />
+                        </IconButton>
+                    </Tooltip>
                     <ColumnToggleButton />
                 </Box>
-                <div>
-                    <Typography variant="h6" className={this.props.classes.titleRow}>
-                        {`${scheduleName} (${scheduleUnits} Units)`}{' '}
-                    </Typography>
-                </div>
+                <Typography variant="h6" className={this.props.classes.titleRow}>
+                    {`${scheduleName} (${scheduleUnits} Units)`}{' '}
+                </Typography>
                 {this.state.courses.map((course) => {
                     return (
                         <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber}>
