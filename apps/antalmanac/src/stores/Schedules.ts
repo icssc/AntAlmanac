@@ -101,9 +101,9 @@ export class Schedules {
     }
 
     /**
-     * Deletes current schedule and adjusts schedule index to current
+     * Deletes specific schedule and adjusts schedule index to current
      */
-    deleteCurrentSchedule(scheduleIndex: number) {
+    deleteSchedule(scheduleIndex: number) {
         this.addUndoState();
         this.schedules.splice(scheduleIndex, 1);
         this.currentScheduleIndex = Math.min(scheduleIndex, this.getNumberOfSchedules() - 1);
