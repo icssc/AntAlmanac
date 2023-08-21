@@ -127,16 +127,20 @@ const CalendarPaneToolbar = ({
                         {name}
 
                         <Box className={classes.dialogContainer}>
-                            <Box onClick={(e) => handleDialogButtonClick(e)}>
-                                <ScheduleNameDialog
-                                    scheduleNames={scheduleNames}
-                                    scheduleRenameIndex={index}
-                                    onClose={handleDialogClose}
-                                />
-                            </Box>
-                            <Box onClick={(e) => handleDialogButtonClick(e)}>
-                                <DeleteScheduleDialog onClose={handleDialogClose} scheduleIndex={index} />
-                            </Box>
+                            <Tooltip title="Rename Schedule">
+                                <Box onClick={(e) => handleDialogButtonClick(e)}>
+                                    <ScheduleNameDialog
+                                        scheduleNames={scheduleNames}
+                                        scheduleRenameIndex={index}
+                                        onClose={handleDialogClose}
+                                    />
+                                </Box>
+                            </Tooltip>
+                            <Tooltip title="Delete Schedule">
+                                <Box onClick={(e) => handleDialogButtonClick(e)}>
+                                    <DeleteScheduleDialog onClose={handleDialogClose} scheduleIndex={index} />
+                                </Box>
+                            </Tooltip>
                         </Box>
                     </MenuItem>
                 ))}
