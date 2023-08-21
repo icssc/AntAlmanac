@@ -345,13 +345,13 @@ interface SectionTableBodyProps {
     courseDetails: CourseDetails;
     term: string;
     colorAndDelete: boolean;
-    highlightAdded: boolean;
+    allowHighlight: boolean;
     scheduleNames: string[];
 }
 
 //TODO: SectionNum name parity -> SectionNumber
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
-    const { classes, section, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames } = props;
+    const { classes, section, courseDetails, term, colorAndDelete, allowHighlight, scheduleNames } = props;
     const [addedCourse, setAddedCourse] = useState(colorAndDelete);
 
     const [scheduleConflict, setScheduleConflict] = useState(false);
@@ -447,9 +447,8 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             className={classNames(
                 classes.tr,
                 // If the course is added, then don't check for/apply scheduleConflict
-                // highlightAdded is checked with addedCourse because AddedCoursePane *always* passes highlightAdded as false, thus preventing the row from displaying with the additional styling when in addedCourses
-                // sectionTableBody always passes highlight as true (?)
-                addedCourse ? { addedCourse: addedCourse && highlightAdded } : { scheduleConflict: scheduleConflict }
+                // allowHighlight is ALWAYS false when in Added Course Pane and ALWAYS true when in CourseRenderPane
+                addedCourse ? { addedCourse: addedCourse && allowHighlight } : { scheduleConflict: scheduleConflict }
             )}
         >
             {!addedCourse ? (
