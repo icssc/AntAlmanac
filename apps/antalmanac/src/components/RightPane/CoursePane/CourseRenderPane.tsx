@@ -171,7 +171,7 @@ const SectionTableWrapped = (
                 term={formData.term}
                 courseDetails={course}
                 colorAndDelete={false}
-                highlightAdded={true}
+                allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch.title}
             />
@@ -183,7 +183,7 @@ const SectionTableWrapped = (
                 term={formData.term}
                 courseDetails={course}
                 colorAndDelete={false}
-                highlightAdded={true}
+                allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch.title}
             />

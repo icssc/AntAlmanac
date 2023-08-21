@@ -82,7 +82,7 @@ const tableHeaderColumns: Record<SectionTableColumn, string> = {
 };
 
 const SectionTable = (props: SectionTableProps) => {
-    const { classes, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames, analyticsCategory } = props;
+    const { classes, courseDetails, term, colorAndDelete, allowHighlight, scheduleNames, analyticsCategory } = props;
     const courseId = courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     const encodedDept = encodeURIComponent(courseDetails.deptCode);
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
@@ -204,7 +204,7 @@ const SectionTable = (props: SectionTableProps) => {
                                     courseDetails={courseDetails}
                                     term={term}
                                     colorAndDelete={colorAndDelete}
-                                    highlightAdded={highlightAdded}
+                                    allowHighlight={allowHighlight}
                                     scheduleNames={scheduleNames}
                                 />
                             );

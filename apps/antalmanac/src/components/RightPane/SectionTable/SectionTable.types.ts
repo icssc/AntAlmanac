@@ -11,7 +11,7 @@ export interface SectionTableProps {
     courseDetails: AACourse;
     term: string;
     colorAndDelete: boolean;
-    highlightAdded: boolean;
+    allowHighlight: boolean;
     scheduleNames: string[];
     analyticsCategory: string;
 }
