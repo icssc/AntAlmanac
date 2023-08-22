@@ -251,7 +251,7 @@ export default function CourseMap() {
                     // Find all courses that occur in the same building prior to this one to stack them properly.
                     const coursesSameBuildingPrior = markersToDisplay
                         .slice(0, index)
-                        .filter((m) => m.bldg === marker.bldg);
+                        .filter((m) => m.bldg.split(' ')[0] === marker.bldg.split(' ')[0]);
 
                     return (
                         <Fragment key={Object.values(marker).join('')}>
