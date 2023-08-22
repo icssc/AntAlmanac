@@ -87,7 +87,21 @@ interface CommonCalendarEvent extends Event {
 
 export interface CourseEvent extends CommonCalendarEvent {
     bldg: string; // E.g., ICS 174, which is actually building + room
-    finalExam: string;
+    finalExam: {
+        examStatus: string;
+        dayOfWeek: string;
+        month: number;
+        day: number;
+        startTime: {
+            hour: number;
+            minute: number;
+        };
+        endTime: {
+            hour: number;
+            minute: number;
+        };
+        bldg: string[];
+    };
     instructors: string[];
     isCustomEvent: false;
     sectionCode: string;
@@ -147,13 +161,16 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
 
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+        // prettier-ignore
+        const finalExamStartTime = `${finalExam.startTime.hour}:${finalExam.startTime.minute === 0 ? '00' : finalExam.startTime.minute}`;
+        // prettier-ignore
+        const finalExamEndTime = `${finalExam.endTime.hour}:${finalExam.endTime.minute === 0 ? '00' : finalExam.endTime.minute}`
+
         // FORMAT: Fri Dec 15 1:30-3:30pm
         const finalExamString =
             finalExam.examStatus == 'SCHEDULED_FINAL'
-                ? `${finalExam.dayOfWeek} ${months[finalExam.month - 1]} ${finalExam.day} ${finalExam.startTime.hour}:${
-                      finalExam.startTime.minute == '0' ? '00' : finalExam.startTime.minute
-                  }-${finalExam.endTime.hour}:${finalExam.endTime.minute == '0' ? '00' : finalExam.endTime.minute}`
-                : '';
+                ? `${finalExam.dayOfWeek} ${months[finalExam.month - 1]} ${finalExamStartTime} - ${finalExamEndTime}`
+                : ''; // Should this be something more verbose, like "No Final" ?
 
         return (
             <Paper className={classes.courseContainer} ref={paperRef}>
