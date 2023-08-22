@@ -202,7 +202,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                 const [buildingName = ''] = meeting.bldg;
                 const buildingId = locationIds[buildingName] ?? 69420;
                 return meeting.bldg[0] !== 'TBA' ? (
-                    <Fragment key={meeting.days + meeting.time + meeting.bldg}>
+                    <Fragment key={meeting.days + meeting.startTime + meeting.bldg}>
                         <Link
                             className={classes.clickableLocation}
                             to={`/map?location=${buildingId}`}
@@ -306,20 +306,24 @@ interface DayAndTimeCellProps {
 const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
     const { classes, meetings } = props;
 
+    console.log(meetings);
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
                 // TO-DO: Fix lack of leading zero when minute is 0. PP-API returns 0, but preferably it should be 00
-                const timeString = meeting.timeIsTBA
-                    ? 'TBA'
-                    : `${meeting.startTime.hour}:${
-                          meeting.startTime.minute == '0' ? '00' : meeting.startTime.minute
-                      } - ${meeting.endTime.hour}:${meeting.endTime.minute == '0' ? '00' : meeting.endTime.minute}`;
+                if (meeting.timeIsTBA) {
+                    return <Box key={meeting.days + meeting.startTime + meeting.bldg}>TBA</Box>;
+                }
+
+                // prettier-ignore
+                const meetingStartTime = `${meeting.startTime.hour}:${meeting.startTime.minute === 0 ? '00' : meeting.startTime.minute}`;
+                // prettier-ignore
+                const meetingEndTime = `${meeting.endTime.hour}:${meeting.endTime.minute === 0 ? '00' : meeting.endTime.minute}`;
+
+                const timeString = `${meetingStartTime} - ${meetingEndTime}`;
 
                 return (
-                    <Box key={meeting.days + meeting.startTime + meeting.bldg}>{`${
-                        meeting.days ? meeting.days : ''
-                    } ${timeString}`}</Box>
+                    <Box key={meeting.days + meeting.startTime + meeting.bldg}>{`${meeting.days} ${timeString}`}</Box>
                 );
             })}
         </NoPaddingTableCell>
