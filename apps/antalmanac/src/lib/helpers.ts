@@ -231,30 +231,44 @@ export interface Grades {
 
 const gradesCache: { [key: string]: Grades } = {};
 
-export async function queryGrades(deptCode: string, courseNumber: string) {
-    if (gradesCache[deptCode + courseNumber]) {
-        return gradesCache[deptCode + courseNumber];
+/*
+ * Query the PeterPortal GraphQL API for a course's grades with caching
+ *
+ * @param deptCode The department code of the course.
+ * @param courseNumber The course number of the course.
+ * @param instructor The instructor's name (optional)
+ *
+ * @returns Grades
+ */
+export async function queryGrades(deptCode: string, courseNumber: string, instructor = '') {
+    const cacheKey = deptCode + courseNumber;
+
+    if (gradesCache[cacheKey]) {
+        return gradesCache[cacheKey];
     }
 
-    const queryString = `
-      { aggregateGrades(department: "${deptCode}", courseNumber: "${courseNumber}", ) {
-        gradeDistribution {
-        gradeACount
-        gradeBCount
-        gradeCCount
-        gradeDCount
-        gradeFCount
-        gradePCount
-        gradeNPCount
-        averageGPA
-        }
-      },
+    instructor = instructor.replace('STAFF', '').trim(); // Ignore STAFF
+    const instructorFilter = instructor ? `instructor: "${instructor}"` : '';
+
+    const queryString = `{ 
+        aggregateGrades(department: "${deptCode}", courseNumber: "${courseNumber}", ${instructorFilter}) {
+            gradeDistribution {
+                gradeACount
+                gradeBCount
+                gradeCCount
+                gradeDCount
+                gradeFCount
+                gradePCount
+                gradeNPCount
+                averageGPA
+            }
+        },
     }`;
 
     const resp = await queryGraphQL(queryString);
     const grades = resp.data.aggregateGrades.gradeDistribution;
 
-    gradesCache[deptCode + courseNumber] = grades;
+    gradesCache[cacheKey] = grades;
 
     return grades;
 }
