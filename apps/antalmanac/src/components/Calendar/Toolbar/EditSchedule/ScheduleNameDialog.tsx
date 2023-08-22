@@ -8,6 +8,7 @@ import {
     IconButton,
     MenuItem,
     TextField,
+    Tooltip,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
@@ -90,9 +91,11 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
         <Box>
             {rename ? (
                 <MenuItem onClick={handleOpen} style={{ padding: 'inherit', borderRadius: '50%' }}>
-                    <IconButton style={{ padding: '0.325rem' }}>
-                        <Edit />
-                    </IconButton>
+                    <Tooltip title="Rename Schedule">
+                        <IconButton style={{ padding: '0.325rem' }}>
+                            <Edit />
+                        </IconButton>
+                    </Tooltip>
                 </MenuItem>
             ) : (
                 <MenuItem onClick={handleOpen} style={{ paddingTop: '0.75rem', paddingBottom: '0.75rem' }}>

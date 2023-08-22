@@ -8,6 +8,7 @@ import {
     MenuItem,
     IconButton,
     Box,
+    Tooltip,
 } from '@material-ui/core';
 import { useState } from 'react';
 import { Delete } from '@material-ui/icons';
@@ -47,9 +48,11 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
                 disabled={AppStore.schedule.getNumberOfSchedules() === 1}
                 style={{ padding: 'inherit', borderRadius: '50%' }}
             >
-                <IconButton style={{ padding: '0.325rem' }}>
-                    <Delete />
-                </IconButton>
+                <Tooltip title="Delete Schedule">
+                    <IconButton style={{ padding: '0.325rem' }}>
+                        <Delete />
+                    </IconButton>
+                </Tooltip>
             </MenuItem>
             <Dialog open={isOpen} onClose={handleClose}>
                 <DialogTitle>Delete Schedule</DialogTitle>
