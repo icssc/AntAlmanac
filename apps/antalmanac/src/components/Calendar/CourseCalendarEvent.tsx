@@ -145,6 +145,20 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
 
         const buildingId = locationIds[buildingName] ?? 69420;
 
+        // FORMAT: Fri Dec 15 1:30-3:30pm
+        // TO-DO: Check if month can be returned as a Month abbreviation, not a number
+
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        const finalExamString =
+            finalExam.examStatus == 'SCHEDULED_FINAL'
+                ? `${finalExam.dayOfWeek} ${months[finalExam.month - 1]} ${finalExam.day} ${finalExam.startTime.hour}:${
+                      finalExam.startTime.minute == '0' ? '00' : finalExam.startTime.minute
+                  }-${finalExam.endTime.hour}:${finalExam.endTime.minute == '0' ? '00' : finalExam.endTime.minute}`
+                : '';
+
+        // console.log(finalExam);
+
         return (
             <Paper className={classes.courseContainer} ref={paperRef}>
                 <div className={classes.titleBar}>
@@ -207,7 +221,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         </tr>
                         <tr>
                             <td>Final</td>
-                            <td className={classes.rightCells}>{finalExam}</td>
+                            <td className={classes.rightCells}>{finalExamString}</td>
                         </tr>
                         <tr>
                             <td>Color</td>

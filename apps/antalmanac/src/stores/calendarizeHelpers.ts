@@ -12,7 +12,7 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []) =
             const endHour = parseInt(meeting.endTime.hour, 10);
             const endMin = parseInt(meeting.endTime.minute, 10);
 
-            const dates = [
+            const dates: boolean[] = [
                 meeting.days.includes('Su'),
                 meeting.days.includes('M'),
                 meeting.days.includes('Tu'),
@@ -53,15 +53,16 @@ export const calendarizeFinals = (currentCourses: ScheduleCourse[] = []) => {
 
     for (const course of currentCourses) {
         const finalExam = course.section.finalExam;
-        if (finalExam.length > 5) {
-            const [, date, , , startStr, startMinStr, endStr, endMinStr, ampm] = finalExam.match(
-                /([A-za-z]+) ([A-Za-z]+) *(\d{1,2}) *(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(am|pm)/
-            ) as RegExpMatchArray;
+        console.log(finalExam);
+        if (finalExam.examStatus == 'SCHEDULED_FINAL') {
+            const date = finalExam.dayOfWeek;
+
             // TODO: this block is almost the same as in calenarizeCourseEvents. we should refactor to remove the duplicate code.
-            let startHour = parseInt(startStr, 10);
-            const startMin = parseInt(startMinStr, 10);
-            let endHour = parseInt(endStr, 10);
-            const endMin = parseInt(endMinStr, 10);
+            const startHour = parseInt(finalExam.startTime.hour, 10);
+            const startMin = parseInt(finalExam.startTime.minute, 10);
+            const endHour = parseInt(finalExam.endTime.hour, 10);
+            const endMin = parseInt(finalExam.endTime.minute, 10);
+
             const weekdayInclusion: boolean[] = [
                 date.includes('Sat'),
                 date.includes('Sun'),
@@ -71,11 +72,6 @@ export const calendarizeFinals = (currentCourses: ScheduleCourse[] = []) => {
                 date.includes('Thu'),
                 date.includes('Fri'),
             ];
-            if (ampm === 'pm' && endHour !== 12) {
-                startHour += 12;
-                endHour += 12;
-                if (startHour > endHour) startHour -= 12;
-            }
 
             weekdayInclusion.forEach((shouldBeInCal, index) => {
                 if (shouldBeInCal)
