@@ -199,8 +199,8 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
-                const [buildingName = ''] = meeting.bldg;
-                const buildingId = locationIds[buildingName] ?? 69420;
+                const [buildingName = ''] = meeting.bldg[0].split(' ');
+                const buildingId = locationIds[buildingName];
                 return meeting.bldg[0] !== 'TBA' ? (
                     <Fragment key={meeting.days + meeting.time + meeting.bldg}>
                         <Link
@@ -224,9 +224,15 @@ interface SectionEnrollmentCellProps {
     classes: ClassNameMap;
     numCurrentlyEnrolled: WebsocSectionEnrollment;
     maxCapacity: number;
-    /** This is a string because sometimes it's "n/a" */
+
+    /**
+     * This is a string because sometimes it's "n/a"
+     */
     numOnWaitlist: string;
-    /** This is a string because numOnWaitlist is a string. I haven't seen this be "n/a" but it seems possible and I don't want it to break if that happens. */
+
+    /**
+     * This is a string because numOnWaitlist is a string. I haven't seen this be "n/a" but it seems possible and I don't want it to break if that happens.
+     */
     numNewOnlyReserved: string;
 }
 
