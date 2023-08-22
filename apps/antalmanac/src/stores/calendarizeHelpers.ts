@@ -7,55 +7,41 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []) =
 
     for (const course of currentCourses) {
         for (const meeting of course.section.meetings) {
-            const timeString = meeting.time.replace(/\s/g, '');
+            const startHour = parseInt(meeting.startTime.hour, 10);
+            const startMin = parseInt(meeting.startTime.minute, 10);
+            const endHour = parseInt(meeting.endTime.hour, 10);
+            const endMin = parseInt(meeting.endTime.minute, 10);
 
-            if (timeString !== 'TBA') {
-                const [, startHrStr, startMinStr, endHrStr, endMinStr, ampm] = timeString.match(
-                    /(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/
-                ) as RegExpMatchArray;
+            const dates = [
+                meeting.days.includes('Su'),
+                meeting.days.includes('M'),
+                meeting.days.includes('Tu'),
+                meeting.days.includes('W'),
+                meeting.days.includes('Th'),
+                meeting.days.includes('F'),
+                meeting.days.includes('Sa'),
+            ];
 
-                let startHr = parseInt(startHrStr, 10);
-                const startMin = parseInt(startMinStr, 10);
-                let endHr = parseInt(endHrStr, 10);
-                const endMin = parseInt(endMinStr, 10);
+            dates.forEach((shouldBeInCal, index) => {
+                if (shouldBeInCal) {
+                    const newEvent = {
+                        color: course.section.color,
+                        term: course.term,
+                        title: course.deptCode + ' ' + course.courseNumber,
+                        courseTitle: course.courseTitle,
+                        bldg: meeting.bldg[0],
+                        instructors: course.section.instructors,
+                        sectionCode: course.section.sectionCode,
+                        sectionType: course.section.sectionType,
+                        start: new Date(2018, 0, index, startHour, startMin),
+                        end: new Date(2018, 0, index, endHour, endMin),
+                        finalExam: course.section.finalExam,
+                        isCustomEvent: false as const,
+                    };
 
-                const dates = [
-                    meeting.days.includes('Su'),
-                    meeting.days.includes('M'),
-                    meeting.days.includes('Tu'),
-                    meeting.days.includes('W'),
-                    meeting.days.includes('Th'),
-                    meeting.days.includes('F'),
-                    meeting.days.includes('Sa'),
-                ];
-
-                if (ampm === 'p' && endHr !== 12) {
-                    startHr += 12;
-                    endHr += 12;
-                    if (startHr > endHr) startHr -= 12;
+                    courseEventsInCalendar.push(newEvent);
                 }
-
-                dates.forEach((shouldBeInCal, index) => {
-                    if (shouldBeInCal) {
-                        const newEvent = {
-                            color: course.section.color,
-                            term: course.term,
-                            title: course.deptCode + ' ' + course.courseNumber,
-                            courseTitle: course.courseTitle,
-                            bldg: meeting.bldg[0],
-                            instructors: course.section.instructors,
-                            sectionCode: course.section.sectionCode,
-                            sectionType: course.section.sectionType,
-                            start: new Date(2018, 0, index, startHr, startMin),
-                            finalExam: course.section.finalExam,
-                            end: new Date(2018, 0, index, endHr, endMin),
-                            isCustomEvent: false as const,
-                        };
-
-                        courseEventsInCalendar.push(newEvent);
-                    }
-                });
-            }
+            });
         }
     }
 

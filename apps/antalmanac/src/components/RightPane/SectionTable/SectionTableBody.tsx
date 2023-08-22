@@ -309,8 +309,18 @@ const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
-                const timeString = meeting.time.replace(/\s/g, '').split('-').join(' - ');
-                return <Box key={meeting.days + meeting.time + meeting.bldg}>{`${meeting.days} ${timeString}`}</Box>;
+                // TO-DO: Fix lack of leading zero when minute is 0. PP-API returns 0, but preferably it should be 00
+                const timeString = meeting.timeIsTBA
+                    ? 'TBA'
+                    : `${meeting.startTime.hour}:${
+                          meeting.startTime.minute == '0' ? '00' : meeting.startTime.minute
+                      } - ${meeting.endTime.hour}:${meeting.endTime.minute == '0' ? '00' : meeting.endTime.minute}`;
+
+                return (
+                    <Box key={meeting.days + meeting.startTime + meeting.bldg}>{`${
+                        meeting.days ? meeting.days : ''
+                    } ${timeString}`}</Box>
+                );
             })}
         </NoPaddingTableCell>
     );
@@ -382,7 +392,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const sectionDetails = useMemo(() => {
         return {
             daysOccurring: parseDaysString(section.meetings[0].days),
-            ...translateWebSOCTimeTo24HourTime(section.meetings[0].time),
+            // ...translateWebSOCTimeTo24HourTime(section.meetings[0].time),
         };
     }, [section.meetings[0]]);
 
@@ -435,46 +445,46 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     /**
      * Whether the current section conflicts with any of the calendar events.
      */
-    const scheduleConflict = useMemo(() => {
-        // If there are currently no calendar events, there can't be any conflicts.
-        if (calendarEvents.length === 0) {
-            return false;
-        }
+    // const scheduleConflict = useMemo(() => {
+    //     // If there are currently no calendar events, there can't be any conflicts.
+    //     if (calendarEvents.length === 0) {
+    //         return false;
+    //     }
 
-        // If the section's time wasn't parseable, then don't consider conflicts.
-        if (sectionDetails.startTime == null || sectionDetails.endTime == null) {
-            return false;
-        }
+    //     // If the section's time wasn't parseable, then don't consider conflicts.
+    //     if (sectionDetails.startTime == null || sectionDetails.endTime == null) {
+    //         return false;
+    //     }
 
-        const { startTime, endTime } = sectionDetails;
+    //     const { startTime, endTime } = sectionDetails;
 
-        const conflictingEvent = calendarEvents.find((event) => {
-            // If it occurs on a different day, no conflict.
-            if (!sectionDetails?.daysOccurring?.includes(event.start.getDay())) {
-                return false;
-            }
+    //     const conflictingEvent = calendarEvents.find((event) => {
+    //         // If it occurs on a different day, no conflict.
+    //         if (!sectionDetails?.daysOccurring?.includes(event.start.getDay())) {
+    //             return false;
+    //         }
 
-            /**
-             * A time normalized to ##:##
-             * @example '10:00'
-             */
-            const eventStartTime = event.start.toString().split(' ')[4].slice(0, -3);
+    //         /**
+    //          * A time normalized to ##:##
+    //          * @example '10:00'
+    //          */
+    //         const eventStartTime = event.start.toString().split(' ')[4].slice(0, -3);
 
-            /**
-             * Normalized to ##:##
-             * @example '10:00'
-             */
-            const eventEndTime = event.end.toString().split(' ')[4].slice(0, -3);
+    //         /**
+    //          * Normalized to ##:##
+    //          * @example '10:00'
+    //          */
+    //         const eventEndTime = event.end.toString().split(' ')[4].slice(0, -3);
 
-            const happensBefore = startTime <= eventStartTime && endTime <= eventStartTime;
+    //         const happensBefore = startTime <= eventStartTime && endTime <= eventStartTime;
 
-            const happensAfter = startTime >= eventEndTime && endTime >= eventEndTime;
+    //         const happensAfter = startTime >= eventEndTime && endTime >= eventEndTime;
 
-            return !(happensBefore || happensAfter);
-        });
+    //         return !(happensBefore || happensAfter);
+    //     });
 
-        return Boolean(conflictingEvent);
-    }, [calendarEvents, sectionDetails]);
+    //     return Boolean(conflictingEvent);
+    // }, [calendarEvents, sectionDetails]);
 
     return (
         <TableRow
@@ -483,7 +493,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                 classes.tr,
                 // If the course is added, then don't check for/apply scheduleConflict
                 // allowHighlight is ALWAYS false when in Added Course Pane and ALWAYS true when in CourseRenderPane
-                addedCourse ? { addedCourse: addedCourse && allowHighlight } : { scheduleConflict: scheduleConflict }
+                addedCourse ? { addedCourse: addedCourse && allowHighlight } : { scheduleConflict: false }
             )}
         >
             {!addedCourse ? (
@@ -492,7 +502,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                     courseDetails={courseDetails}
                     term={term}
                     scheduleNames={scheduleNames}
-                    scheduleConflict={scheduleConflict}
+                    scheduleConflict={false}
                 />
             ) : (
                 <ColorAndDelete color={section.color} sectionCode={section.sectionCode} term={term} />
