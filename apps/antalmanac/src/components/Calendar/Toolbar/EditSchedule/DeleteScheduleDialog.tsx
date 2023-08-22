@@ -11,7 +11,7 @@ import {
     Tooltip,
 } from '@material-ui/core';
 import { useState } from 'react';
-import { Delete } from '@material-ui/icons';
+import { Clear } from '@material-ui/icons';
 
 import { deleteSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
@@ -50,7 +50,7 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
             >
                 <Tooltip title="Delete Schedule">
                     <IconButton style={{ padding: '0.325rem' }}>
-                        <Delete />
+                        <Clear style={{ color: '#ff1744' }} />
                     </IconButton>
                 </Tooltip>
             </MenuItem>
