@@ -1,6 +1,6 @@
 import './Map.css';
 
-import { Fragment, useEffect, useRef, useCallback, useState, createRef } from 'react';
+import { Fragment, useEffect, useRef, useCallback, useState, createRef, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import L, { type Map, type LatLngTuple } from 'leaflet';
 import { MapContainer, TileLayer } from 'react-leaflet';
@@ -22,8 +22,9 @@ const ATTRIBUTION_MARKUP =
 
 const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`;
 
-const work_week = ['All', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-const full_week = ['All', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const WORK_WEEK = ['All', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const FULL_WEEK = ['All', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const weekendIndices = [0, 6];
 
 interface MarkerContent {
     key: string;
@@ -94,25 +95,43 @@ export default function CourseMap() {
     const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
+    const [calendarEvents, setCalendarEvents] = useState(AppStore.getCourseEventsInCalendar());
 
     const updateMarkers = useCallback(() => {
         setMarkers(getCoursesPerBuilding());
     }, [setMarkers, getCoursesPerBuilding]);
 
+    const updateCalendarEvents = useCallback(() => {
+        setCalendarEvents(AppStore.getCourseEventsInCalendar());
+    }, [setCalendarEvents]);
+
     useEffect(() => {
         AppStore.on('addedCoursesChange', updateMarkers);
         AppStore.on('currentScheduleIndexChange', updateMarkers);
+
         return () => {
             AppStore.removeListener('addedCoursesChange', updateMarkers);
             AppStore.removeListener('currentScheduleIndexChange', updateMarkers);
         };
-    }, [AppStore, updateMarkers]);
+    }, [updateMarkers]);
+
+    useEffect(() => {
+        AppStore.on('addedCoursesChange', updateCalendarEvents);
+        AppStore.on('currentScheduleIndexChange', updateCalendarEvents);
+
+        return () => {
+            AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
+            AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
+        };
+    }, [updateCalendarEvents]);
 
     useEffect(() => {
         const locationID = Number(searchParams.get('location') ?? 0);
         const building = locationID in buildingCatalogue ? buildingCatalogue[locationID] : undefined;
 
-        if (building == null) return;
+        if (building == null) {
+            return;
+        }
 
         setTimeout(() => {
             map.current?.flyTo([building.lat + 0.001, building.lng], 18, { duration: 250, animate: false });
@@ -120,60 +139,78 @@ export default function CourseMap() {
         }, 250);
     }, [searchParams]);
 
-    const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
-        setSelectedDay(newValue);
-    };
-
-    const handleSearch = (_event: React.SyntheticEvent, value: [string, Building] | null) => {
-        navigate(`/map?location=${value?.[0]}`);
-    };
-
-    const locationID = Number(searchParams.get('location') ?? 0);
-
-    const focusedBuilding = locationID in buildingCatalogue ? buildingCatalogue[locationID] : undefined;
-
-    const focusedLocation = focusedBuilding
-        ? {
-              ...focusedBuilding,
-              image: focusedBuilding.imageURLs[0],
-              acronym: focusedBuilding.name.substring(
-                  focusedBuilding?.name.indexOf('(') + 1,
-                  focusedBuilding?.name.indexOf(')')
-              ),
-              location: focusedBuilding.name,
-          }
-        : undefined;
-
-    const hasWeekendCourse = AppStore.getCourseEventsInCalendar().some(
-        (event) => event.start.getDay() === 0 || event.start.getDay() === 6
+    const handleChange = useCallback(
+        (_event: React.SyntheticEvent, newValue: number) => {
+            setSelectedDay(newValue);
+        },
+        [setSelectedDay]
     );
 
-    const days = hasWeekendCourse ? full_week : work_week;
-    const today = days[selectedDayIndex];
+    const handleSearch = useCallback(
+        (_event: React.SyntheticEvent, value: [string, Building] | null) => {
+            navigate(`/map?location=${value?.[0]}`);
+        },
+        [navigate]
+    );
+
+    const days = useMemo(() => {
+        const hasWeekendCourse = calendarEvents.some((event) => weekendIndices.includes(event.start.getDay()));
+        return hasWeekendCourse ? FULL_WEEK : WORK_WEEK;
+    }, [calendarEvents]);
+
+    const today = useMemo(() => {
+        return days[selectedDayIndex];
+    }, [days, selectedDayIndex]);
+
+    const focusedLocation = useMemo(() => {
+        const locationID = Number(searchParams.get('location') ?? 0);
+
+        const focusedBuilding = locationID in buildingCatalogue ? buildingCatalogue[locationID] : undefined;
+
+        if (focusedBuilding == null) {
+            return undefined;
+        }
+
+        const acronym = focusedBuilding.name.substring(
+            focusedBuilding?.name.indexOf('(') + 1,
+            focusedBuilding?.name.indexOf(')')
+        );
+
+        return {
+            ...focusedBuilding,
+            image: focusedBuilding.imageURLs[0],
+            acronym,
+            location: focusedBuilding.name,
+        };
+    }, [searchParams]);
 
     /**
      * Get markers for unique courses (identified by  section ID) that occur today, sorted by start time.
      * A duplicate section code found later in the array will have a higher index.
      */
-    const markersToDisplay = Object.keys(markers)
-        .flatMap((markerKey) =>
-            markers[markerKey].filter((course) => today == 'All' || course.start.toString().includes(today))
-        )
-        .sort((a, b) => a.start.getTime() - b.start.getTime())
-        .filter(
-            (a, index, array) => array.findIndex((otherCourse) => otherCourse.sectionCode === a.sectionCode) === index
-        );
+    const markersToDisplay = useMemo(() => {
+        const markerValues = Object.keys(markers).flatMap((markerKey) => markers[markerKey]);
+
+        const markersToday =
+            today === 'All' ? markerValues : markerValues.filter((course) => course.start.toString().includes(today));
+
+        return markersToday
+            .sort((a, b) => a.start.getTime() - b.start.getTime())
+            .filter((marker, i, arr) => arr.findIndex((other) => other.sectionCode === marker.sectionCode) === i);
+    }, [markers, today]);
 
     /**
      * Every two markers grouped as [start, destination] tuples for the routes.
      */
-    const startDestPairs = markersToDisplay.reduce((acc, cur, index) => {
-        acc.push([cur]);
-        if (index > 0) {
-            acc[index - 1].push(cur);
-        }
-        return acc;
-    }, [] as (typeof markersToDisplay)[]);
+    const startDestPairs = useMemo(() => {
+        return markersToDisplay.reduce((acc, cur, index) => {
+            acc.push([cur]);
+            if (index > 0) {
+                acc[index - 1].push(cur);
+            }
+            return acc;
+        }, [] as (typeof markersToDisplay)[]);
+    }, [markersToDisplay]);
 
     return (
         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}>
@@ -214,13 +251,13 @@ export default function CourseMap() {
                     // Find all courses that occur in the same building prior to this one to stack them properly.
                     const coursesSameBuildingPrior = markersToDisplay
                         .slice(0, index)
-                        .filter((m) => m.bldg === marker.bldg);
+                        .filter((m) => m.bldg.split(' ')[0] === marker.bldg.split(' ')[0]);
 
                     return (
                         <Fragment key={Object.values(marker).join('')}>
                             <LocationMarker
                                 {...marker}
-                                label={today !== 'All' ? index + 1 : undefined}
+                                label={today === 'All' ? undefined : index + 1}
                                 stackIndex={coursesSameBuildingPrior.length}
                             >
                                 <Box>
