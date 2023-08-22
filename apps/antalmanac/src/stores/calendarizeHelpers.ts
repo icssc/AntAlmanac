@@ -24,7 +24,7 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []) =
 
             dates.forEach((shouldBeInCal, index) => {
                 if (shouldBeInCal) {
-                    const newEvent = {
+                    courseEventsInCalendar.push({
                         color: course.section.color,
                         term: course.term,
                         title: course.deptCode + ' ' + course.courseNumber,
@@ -37,9 +37,7 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []) =
                         end: new Date(2018, 0, index, endHour, endMin),
                         finalExam: course.section.finalExam,
                         isCustomEvent: false as const,
-                    };
-
-                    courseEventsInCalendar.push(newEvent);
+                    });
                 }
             });
         }
@@ -53,7 +51,7 @@ export const calendarizeFinals = (currentCourses: ScheduleCourse[] = []) => {
 
     for (const course of currentCourses) {
         const finalExam = course.section.finalExam;
-        console.log(finalExam);
+
         if (finalExam.examStatus == 'SCHEDULED_FINAL') {
             const date = finalExam.dayOfWeek;
 
@@ -76,16 +74,17 @@ export const calendarizeFinals = (currentCourses: ScheduleCourse[] = []) => {
             weekdayInclusion.forEach((shouldBeInCal, index) => {
                 if (shouldBeInCal)
                     finalsEventsInCalendar.push({
+                        color: course.section.color,
+                        term: course.term,
                         title: course.deptCode + ' ' + course.courseNumber,
+                        courseTitle: course.courseTitle,
+                        bldg: course.section.meetings[0].bldg[0],
+                        instructors: course.section.instructors,
                         sectionCode: course.section.sectionCode,
                         sectionType: 'Fin',
-                        bldg: course.section.meetings[0].bldg[0],
-                        color: course.section.color,
                         start: new Date(2018, 0, index - 1, startHour, startMin),
                         end: new Date(2018, 0, index - 1, endHour, endMin),
                         finalExam: course.section.finalExam,
-                        instructors: course.section.instructors,
-                        term: course.term,
                         isCustomEvent: false,
                     });
             });
