@@ -231,8 +231,8 @@ const GPACell = withStyles(styles)((props: GPACellProps) => {
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-    const showDistribution = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(anchorEl ? null : event.currentTarget);
     };
 
     const hideDistribution = () => {
@@ -245,7 +245,7 @@ const GPACell = withStyles(styles)((props: GPACellProps) => {
         <NoPaddingTableCell className={classes.cell}>
             <Box className={classes.cell}>
                 <ClickAwayListener onClickAway={hideDistribution}>
-                    <Typography className={classes.popoverText} onClick={showDistribution}>
+                    <Typography className={classes.popoverText} onClick={handleClick} onScroll={hideDistribution}>
                         {gpa}
                     </Typography>
                 </ClickAwayListener>
