@@ -28,6 +28,7 @@ const styles: Styles<Theme, object> = {
 interface GradesPopupProps {
     deptCode: string;
     courseNumber: string;
+    instructor?: string;
     classes: ClassNameMap;
     isMobileScreen: boolean;
     showLink?: boolean;
@@ -38,7 +39,14 @@ interface GradeData {
     all: number;
 }
 
-const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen, showLink = true }: GradesPopupProps) => {
+const GradesPopup = ({
+    deptCode,
+    courseNumber,
+    instructor = '',
+    classes,
+    isMobileScreen,
+    showLink = true,
+}: GradesPopupProps) => {
     const [loading, setLoading] = useState(true);
     const [graphTitle, setGraphTitle] = useState<string | null>(null);
     const [gradeData, setGradeData] = useState<GradeData[] | null>(null);
@@ -49,7 +57,7 @@ const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen, showLink
         }
 
         try {
-            const courseGrades = await queryGrades(deptCode, courseNumber);
+            const courseGrades = await queryGrades(deptCode, courseNumber, instructor);
 
             const data = [];
             for (const [key, value] of Object.entries(courseGrades)) {
