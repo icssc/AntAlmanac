@@ -2,6 +2,7 @@ import {
     Box,
     Button,
     Chip,
+    ClickAwayListener,
     Popover,
     TableCell,
     TableRow,
@@ -236,9 +237,12 @@ const GPACell = withStyles(styles)((props: GPACellProps) => {
 
     return (
         // TODO: Pass instructor to GradesPopup for Zotistics link
+        // I don't know why the popover doesn't close on clickaway without the listener, but this does seem to be the usual recommendation
         <NoPaddingTableCell className={classes.cell}>
             <Box>
-                <Typography onClick={showDistribution}>{gpa}</Typography>
+                <ClickAwayListener onClickAway={hideDistribution}>
+                    <Typography onClick={showDistribution}>{gpa}</Typography>
+                </ClickAwayListener>
             </Box>
             <Popover
                 open={Boolean(anchorEl)}
