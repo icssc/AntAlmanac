@@ -241,14 +241,14 @@ const gradesCache: { [key: string]: Grades } = {};
  * @returns Grades
  */
 export async function queryGrades(deptCode: string, courseNumber: string, instructor = '') {
-    const cacheKey = deptCode + courseNumber;
+    instructor = instructor.replace('STAFF', '').trim(); // Ignore STAFF
+    const instructorFilter = instructor ? `instructor: "${instructor}"` : '';
+
+    const cacheKey = deptCode + courseNumber + instructor;
 
     if (gradesCache[cacheKey]) {
         return gradesCache[cacheKey];
     }
-
-    instructor = instructor.replace('STAFF', '').trim(); // Ignore STAFF
-    const instructorFilter = instructor ? `instructor: "${instructor}"` : '';
 
     const queryString = `{ 
         aggregateGrades(department: "${deptCode}", courseNumber: "${courseNumber}", ${instructorFilter}) {
