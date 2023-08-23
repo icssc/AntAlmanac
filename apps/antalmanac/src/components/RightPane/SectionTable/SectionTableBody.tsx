@@ -61,7 +61,7 @@ const styles: Styles<Theme, object> = (theme) => ({
         },
     },
     cell: {
-        fontSize: '0.85rem',
+        fontSize: '0.85rem !important',
     },
     link: {
         textDecoration: 'underline',
@@ -101,6 +101,10 @@ const styles: Styles<Theme, object> = (theme) => ({
     Stu: { color: '#179523' },
     Tap: { color: '#8d2df0' },
     Tut: { color: '#ffc705' },
+    popoverText: {
+        color: isDarkMode() ? 'dodgerblue' : 'blue',
+        cursor: 'pointer',
+    },
 });
 
 const NoPaddingTableCell = withStyles({
@@ -239,9 +243,11 @@ const GPACell = withStyles(styles)((props: GPACellProps) => {
         // TODO: Pass instructor to GradesPopup for Zotistics link
         // I don't know why the popover doesn't close on clickaway without the listener, but this does seem to be the usual recommendation
         <NoPaddingTableCell className={classes.cell}>
-            <Box>
+            <Box className={classes.cell}>
                 <ClickAwayListener onClickAway={hideDistribution}>
-                    <Typography onClick={showDistribution}>{gpa}</Typography>
+                    <Typography className={classes.popoverText} onClick={showDistribution}>
+                        {gpa}
+                    </Typography>
                 </ClickAwayListener>
             </Box>
             <Popover
