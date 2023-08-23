@@ -240,7 +240,6 @@ const GPACell = withStyles(styles)((props: GPACellProps) => {
     };
 
     return (
-        // TODO: Pass instructor to GradesPopup for Zotistics link
         // I don't know why the popover doesn't close on clickaway without the listener, but this does seem to be the usual recommendation
         <NoPaddingTableCell className={classes.cell}>
             <Box className={classes.cell}>
