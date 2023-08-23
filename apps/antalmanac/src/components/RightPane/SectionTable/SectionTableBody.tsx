@@ -1,4 +1,15 @@
-import { Box, Chip, Popover, TableCell, TableRow, Theme, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
+import {
+    Box,
+    Button,
+    Chip,
+    Popover,
+    TableCell,
+    TableRow,
+    Theme,
+    Tooltip,
+    Typography,
+    useMediaQuery,
+} from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
@@ -14,6 +25,7 @@ import { MOBILE_BREAKPOINT } from '../../../globals';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import restrictionsMapping from './static/restrictionsMapping.json';
+import GradesPopup from './GradesPopup';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy, CourseDetails, isDarkMode, queryGrades } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
@@ -193,6 +205,7 @@ const GPACell = withStyles(styles)((props: GPACellProps) => {
     const { classes, deptCode, courseNumber, instructors } = props;
 
     const [gpa, setGpa] = useState<string>('');
+    const [instructor, setInstructor] = useState<string>('');
 
     useEffect(() => {
         const loadGpa = async (deptCode: string, courseNumber: string, instructors: string[]) => {
@@ -202,6 +215,7 @@ const GPACell = withStyles(styles)((props: GPACellProps) => {
 
                 if (grades.averageGPA) {
                     setGpa(grades.averageGPA.toFixed(2).toString());
+                    setInstructor(instructor);
                     return;
                 }
             }
@@ -210,9 +224,38 @@ const GPACell = withStyles(styles)((props: GPACellProps) => {
         loadGpa(deptCode, courseNumber, instructors).catch(console.log);
     }, [deptCode, courseNumber, instructors]);
 
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+    const showDistribution = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const hideDistribution = () => {
+        setAnchorEl(null);
+    };
+
     return (
+        // TODO: Pass instructor to GradesPopup for Zotistics link
         <NoPaddingTableCell className={classes.cell}>
-            <Box>{gpa}</Box>
+            <Box>
+                <Typography onClick={showDistribution}>{gpa}</Typography>
+            </Box>
+            <Popover
+                open={Boolean(anchorEl)}
+                onClose={hideDistribution}
+                className={classes.popover}
+                anchorEl={anchorEl}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                disableRestoreFocus
+            >
+                <GradesPopup
+                    deptCode={deptCode}
+                    courseNumber={courseNumber}
+                    classes={classes}
+                    isMobileScreen={useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`)}
+                />
+            </Popover>
         </NoPaddingTableCell>
     );
 });
