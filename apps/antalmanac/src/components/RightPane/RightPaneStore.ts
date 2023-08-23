@@ -14,6 +14,7 @@ export const SECTION_TABLE_COLUMNS = [
     'sectionCode',
     'sectionDetails',
     'instructors',
+    'gpa',
     'dayAndTime',
     'location',
     'sectionEnrollment',

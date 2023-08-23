@@ -15,7 +15,7 @@ import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import restrictionsMapping from './static/restrictionsMapping.json';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
+import { clickToCopy, CourseDetails, isDarkMode, queryGrades } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
@@ -180,6 +180,41 @@ const InstructorsCell = withStyles(styles)((props: InstructorsCellProps) => {
     };
 
     return <NoPaddingTableCell className={classes.cell}>{getLinks(instructors)}</NoPaddingTableCell>;
+});
+
+interface GPACellProps {
+    classes: ClassNameMap;
+    deptCode: string;
+    courseNumber: string;
+    instructors: string[];
+}
+
+const GPACell = withStyles(styles)((props: GPACellProps) => {
+    const { classes, deptCode, courseNumber, instructors } = props;
+
+    const [gpa, setGpa] = useState<string>('');
+
+    useEffect(() => {
+        const loadGpa = async (deptCode: string, courseNumber: string, instructors: string[]) => {
+            // Get the GPA of the first instructor of this section where data exists
+            for (const instructor of instructors.filter((instructor) => instructor !== 'STAFF')) {
+                const grades = await queryGrades(deptCode, courseNumber, instructor);
+
+                if (grades.averageGPA) {
+                    setGpa(grades.averageGPA.toFixed(2).toString());
+                    return;
+                }
+            }
+        };
+
+        loadGpa(deptCode, courseNumber, instructors).catch(console.log);
+    }, [deptCode, courseNumber, instructors]);
+
+    return (
+        <NoPaddingTableCell className={classes.cell}>
+            <Box>{gpa}</Box>
+        </NoPaddingTableCell>
+    );
 });
 
 interface LocationsCellProps {
@@ -354,6 +389,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     sectionCode: CourseCodeCell,
     sectionDetails: SectionDetailsCell,
     instructors: InstructorsCell,
+    gpa: GPACell,
     dayAndTime: DayAndTimeCell,
     location: LocationsCell,
     sectionEnrollment: SectionEnrollmentCell,
@@ -367,7 +403,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, allowHighlight, scheduleNames } = props;
 
-    const [activeColumns, setColumns] = useState(RightPaneStore.getActiveColumns());
+    const [activeColumns, setColumns] = useState<SectionTableColumn[]>(RightPaneStore.getActiveColumns());
 
     const [addedCourse, setAddedCourse] = useState(
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)

@@ -74,6 +74,7 @@ const tableHeaderColumns: Record<SectionTableColumn, string> = {
     sectionCode: 'Code',
     sectionDetails: 'Type',
     instructors: 'Instructors',
+    gpa: 'GPA',
     dayAndTime: 'Times',
     location: 'Places',
     sectionEnrollment: 'Enrollment',
