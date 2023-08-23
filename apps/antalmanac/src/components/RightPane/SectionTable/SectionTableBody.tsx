@@ -264,6 +264,7 @@ const GPACell = withStyles(styles)((props: GPACellProps) => {
                     courseNumber={courseNumber}
                     classes={classes}
                     isMobileScreen={useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`)}
+                    showLink={false}
                 />
             </Popover>
         </NoPaddingTableCell>

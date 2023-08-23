@@ -30,6 +30,7 @@ interface GradesPopupProps {
     courseNumber: string;
     classes: ClassNameMap;
     isMobileScreen: boolean;
+    showLink?: boolean;
 }
 
 interface GradeData {
@@ -37,7 +38,7 @@ interface GradeData {
     all: number;
 }
 
-const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }: GradesPopupProps) => {
+const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen, showLink = true }: GradesPopupProps) => {
     const [loading, setLoading] = useState(true);
     const [graphTitle, setGraphTitle] = useState<string | null>(null);
     const [gradeData, setGradeData] = useState<GradeData[] | null>(null);
@@ -99,15 +100,17 @@ const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }: Grades
                         </BarChart>
                     </ResponsiveContainer>
                 )}
-                <div style={{ margin: '5px', textAlign: 'center' }}>
-                    <a
-                        href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        View on Zotistics
-                    </a>
-                </div>
+                {showLink && (
+                    <div style={{ margin: '5px', textAlign: 'center' }}>
+                        <a
+                            href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            View on Zotistics
+                        </a>
+                    </div>
+                )}
             </div>
         );
     }
