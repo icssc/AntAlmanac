@@ -64,7 +64,7 @@ const GradesPopup = ({
                 // format data for display in chart
                 // key formatting: sum_grade_a_count -> A
                 if (key !== 'averageGPA') {
-                    data.push({ name: key.split('_')[2]?.toUpperCase(), all: value as number });
+                    data.push({ name: key.replace('grade', '').replace('Count', ''), all: value as number });
                 }
             }
 
