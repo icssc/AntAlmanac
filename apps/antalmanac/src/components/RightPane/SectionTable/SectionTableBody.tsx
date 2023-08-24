@@ -315,14 +315,23 @@ const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
                     return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>TBA</Box>;
                 }
 
-                // prettier-ignore
-                const meetingStartTime = `${meeting.startTime?.hour}:${meeting.startTime?.minute === 0 ? '00' : meeting.startTime?.minute}`;
-                // prettier-ignore
-                const meetingEndTime = `${meeting.endTime?.hour}:${meeting.endTime?.minute === 0 ? '00' : meeting.endTime?.minute}`;
+                if (meeting.startTime && meeting.endTime) {
+                    const timeSuffix = meeting.endTime.hour >= 12 ? 'PM' : 'AM';
 
-                const timeString = `${meetingStartTime} - ${meetingEndTime}`;
+                    const formattedStartHour12 =
+                        meeting.startTime.hour > 12 ? meeting.startTime.hour - 12 : meeting.startTime.hour;
+                    const formattedEndHour12 =
+                        meeting.endTime.hour > 12 ? meeting.endTime.hour - 12 : meeting.endTime.hour;
 
-                return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>{`${meeting.days} ${timeString}`}</Box>;
+                    // prettier-ignore
+                    const meetingStartTime = `${formattedStartHour12}:${meeting.startTime?.minute === 0 ? '00' : meeting.startTime?.minute}`;
+                    // prettier-ignore
+                    const meetingEndTime = `${formattedEndHour12}:${meeting.endTime?.minute === 0 ? '00' : meeting.endTime?.minute}`;
+
+                    const timeString = `${meetingStartTime} - ${meetingEndTime} ${timeSuffix}`;
+
+                    return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>{`${meeting.days} ${timeString}`}</Box>;
+                }
             })}
         </NoPaddingTableCell>
     );

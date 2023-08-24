@@ -168,14 +168,21 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         } else if (finalExam.examStatus == 'TBA_FINAL') {
             finalExamString = 'Final TBA';
         } else {
+            const timeSuffix = finalExam.endTime.hour >= 12 ? 'PM' : 'AM';
+
+            const formattedStartHour12 =
+                finalExam.startTime.hour > 12 ? finalExam.startTime.hour - 12 : finalExam.startTime.hour;
+            const formattedEndHour12 =
+                finalExam.endTime.hour > 12 ? finalExam.endTime.hour - 12 : finalExam.endTime.hour;
+
             // prettier-ignore
-            const finalExamStartTime = `${finalExam.startTime?.hour}:${finalExam.startTime?.minute === 0 ? '00' : finalExam.startTime?.minute}`;
+            const finalExamStartTime = `${formattedStartHour12}:${finalExam.startTime?.minute === 0 ? '00' : finalExam.startTime?.minute}`;
             // prettier-ignore
-            const finalExamEndTime = `${finalExam.endTime?.hour}:${finalExam.endTime?.minute === 0 ? '00' : finalExam.endTime?.minute}`
+            const finalExamEndTime = `${formattedEndHour12}:${finalExam.endTime?.minute === 0 ? '00' : finalExam.endTime?.minute}`
 
             // FORMAT: Fri Dec 15 1:30-3:30pm
             // prettier-ignore
-            finalExamString = `${finalExam.dayOfWeek} ${months[finalExam.month - 1]} ${finalExamStartTime} - ${finalExamEndTime}`
+            finalExamString = `${finalExam.dayOfWeek} ${months[finalExam.month - 1]} ${finalExamStartTime} - ${finalExamEndTime} ${timeSuffix}`
         }
 
         return (
