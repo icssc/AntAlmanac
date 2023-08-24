@@ -123,43 +123,6 @@ export const calendarizeCustomEvents = (currentCustomEvents: RepeatingCustomEven
     return customEventsInCalendar;
 };
 
-interface TranslatedWebSOCTime {
-    startTime: string;
-    endTime: string;
-}
-
-/**
- * @param time The time string.
- * @returns The start and end time of a course in a 24 hour time with a leading zero (##:##).
- * @returns undefined if there is no WebSOC time (e.g. 'TBA', undefined)
- */
-export function translateWebSOCTimeTo24HourTime(time: string): TranslatedWebSOCTime | undefined {
-    const timeString = time.replace(/\s/g, '');
-
-    if (timeString !== 'TBA' && timeString !== undefined) {
-        const [, startHrStr, startMinStr, endHrStr, endMinStr, ampm] = timeString.match(
-            /(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})(p?)/
-        ) as RegExpMatchArray;
-
-        let startHr = parseInt(startHrStr, 10);
-        let endHr = parseInt(endHrStr, 10);
-
-        if (ampm === 'p' && endHr !== 12) {
-            startHr += 12;
-            endHr += 12;
-            if (startHr > endHr) startHr -= 12;
-        }
-
-        // Times are standardized to ##:## (i.e. leading zero) for correct comparisons as strings
-        return {
-            startTime: `${startHr < 10 ? `0${startHr}` : startHr}:${startMinStr}`,
-            endTime: `${endHr < 10 ? `0${endHr}` : endHr}:${endMinStr}`,
-        };
-    }
-
-    return undefined;
-}
-
 export const SHORT_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
 export const SHORT_DAY_REGEX = new RegExp(`(${SHORT_DAYS.join('|')})`, 'g');
@@ -183,6 +146,33 @@ export function parseDaysString(daysString: string): number[] {
     }
 
     return days;
+}
+
+interface NormalizedWebSOCTime {
+    startTime: string;
+    endTime: string;
+}
+
+/**
+ * @param section
+ * @returns The start and end time of a course in a 24 hour time with a leading zero (##:##).
+ * @returns undefined if there is no WebSOC time (e.g. 'TBA', undefined)
+ */
+export function normalizeTime(meeting: WebsocSectionMeeting): NormalizedWebSOCTime | undefined {
+    if (meeting.timeIsTBA) {
+        return undefined;
+    }
+
+    if (meeting.startTime && meeting.endTime) {
+        // Times are normalized to ##:## (10:00, 09:00 etc)
+        const startHour = `${meeting.startTime.hour < 10 ? `0${meeting.startTime.hour}` : meeting.startTime.hour}`;
+        const endHour = `${meeting.endTime.hour < 10 ? `0${meeting.endTime.hour}` : meeting.endTime.hour}`;
+
+        const startTime = `${startHour}:${meeting.startTime.minute}`;
+        const endTime = `${endHour}:${meeting.endTime.minute}`;
+
+        return { startTime: startTime, endTime: endTime };
+    }
 }
 
 export function translate24To12HourTime(section: WebsocSectionMeeting | WebsocSectionFinalExam): string | undefined {
