@@ -169,23 +169,38 @@ interface NormalizedWebSOCTime {
  * @returns The start and end time of a course in a 24 hour time with a leading zero (##:##).
  * @returns undefined if there is no WebSOC time (e.g. 'TBA', undefined)
  */
-export function normalizeTime(meeting: WebsocSectionMeeting): NormalizedWebSOCTime | undefined {
-    if (meeting.timeIsTBA) {
-        return undefined;
-    }
-
-    if (meeting.startTime && meeting.endTime) {
-        // Times are normalized to ##:## (10:00, 09:00 etc)
-        const startHour = `${meeting.startTime.hour < 10 ? `0${meeting.startTime.hour}` : meeting.startTime.hour}`;
-        const endHour = `${meeting.endTime.hour < 10 ? `0${meeting.endTime.hour}` : meeting.endTime.hour}`;
-
-        const startTime = `${startHour}:${meeting.startTime.minute}`;
-        const endTime = `${endHour}:${meeting.endTime.minute}`;
-
-        return { startTime: startTime, endTime: endTime };
-    }
+interface NormalizeTimeOptions {
+  timeIsTBA?: boolean;
+  startTime?: HourMinute | null;
+  endTime?: HourMinute | null;
 }
 
+// This also works.
+type NormalizeTimeOptions = Pick<WebsocSectionMeeting, 'timeIsTBA' | 'startTime' | 'endTime'>
+
+/**
+ * @param section
+ * @returns The start and end time of a course in a 24 hour time with a leading zero (##:##).
+ * @returns undefined if there is no WebSOC time (e.g. 'TBA', undefined)
+ */
+export function normalizeTime(options: NormalizeTimeOptions): NormalizedWebSOCTime | undefined {
+    if (options.timeIsTBA) {
+        return;
+    }
+
+    if (!options.startTime || !options.endTime) {
+        return;
+    }
+
+    // Times are normalized to ##:## (10:00, 09:00 etc)
+    const startHour = `${options.startTime.hour}`.padStart(2, '0')
+    const endHour = `${options.endTime.hour}`.padStart(2, '0')
+
+    const startTime = `${startHour}:${options.startTime.minute}`;
+    const endTime = `${endHour}:${options.endTime.minute}`;
+
+    return { startTime, endTime };
+}
 export function translate24To12HourTime(startTime?: HourMinute, endTime?: HourMinute): string | undefined {
     if (!startTime || !endTime) {
         return;
