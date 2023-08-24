@@ -56,7 +56,51 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []) =
 export const calendarizeFinals = (currentCourses: ScheduleCourse[] = []) => {
     const finalsEventsInCalendar: CourseEvent[] = [];
 
-    for (const course of currentCourses) {
+const WEEK_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+/**
+ * Given a string or string array of weekdays, return an array of booleans indicating whether
+ * each weekday occurs in the input.
+ */
+function getWeekdaysOcurring(weekDays?: string | string[] | null): boolean[] {
+    return weekDays ? WEEK_DAYS.map((day) => weekDays.includes(day)) : WEEK_DAYS.map(() => false);
+}
+
+export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
+    return currentCourses
+        .filter((course) => course.section.finalExam.examStatus === 'SCHEDULED_FINAL')
+        .filter(
+            (course) =>
+                course.section.finalExam.startTime &&
+                course.section.finalExam.endTime &&
+                course.section.finalExam.dayOfWeek
+        )
+        .flatMap((course) => {
+            const finalExam = course.section.finalExam;
+            const startHour = finalExam.startTime?.hour;
+            const startMin = finalExam.startTime?.minute;
+            const endHour = finalExam.endTime?.hour;
+            const endMin = finalExam.endTime?.minute;
+
+            const weekdaysOccurring = getWeekdaysOcurring(course.section.finalExam.dayOfWeek);
+            return weekdaysOccurring.filter(Boolean).map((_day, index) => {
+                return {
+                    color: course.section.color,
+                    term: course.term,
+                    title: course.deptCode + ' ' + course.courseNumber,
+                    courseTitle: course.courseTitle,
+                    bldg: course.section.meetings[0].bldg[0],
+                    instructors: course.section.instructors,
+                    sectionCode: course.section.sectionCode,
+                    sectionType: 'Fin',
+                    start: new Date(2018, 0, index - 1, startHour, startMin),
+                    end: new Date(2018, 0, index - 1, endHour, endMin),
+                    finalExam: course.section.finalExam,
+                    isCustomEvent: false,
+                };
+            });
+        });
+}
         const finalExam = course.section.finalExam;
 
         if (finalExam.examStatus == 'SCHEDULED_FINAL') {
