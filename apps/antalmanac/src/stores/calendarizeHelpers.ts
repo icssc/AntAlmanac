@@ -3,7 +3,7 @@ import { HourMinute } from 'peterportal-api-next-types';
 import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 
-export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []) => {
+export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): CourseEvent[] => {
     const courseEventsInCalendar: CourseEvent[] = [];
 
     for (const course of currentCourses) {
@@ -49,7 +49,7 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []) =
     return courseEventsInCalendar;
 };
 
-export const calendarizeFinals = (currentCourses: ScheduleCourse[] = []) => {
+export const calendarizeFinals = (currentCourses: ScheduleCourse[] = []): CourseEvent[] => {
     const finalsEventsInCalendar: CourseEvent[] = [];
 
     for (const course of currentCourses) {
@@ -101,25 +101,28 @@ export const calendarizeFinals = (currentCourses: ScheduleCourse[] = []) => {
     return finalsEventsInCalendar;
 };
 
-export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []): CustomEvent[] {
-    return currentCustomEvents.flatMap((customEvent) => {
-        return customEvent.days.filter(Boolean).map((_day, index) => {
-            const startHour = parseInt(customEvent.start.slice(0, 2), 10);
-            const startMin = parseInt(customEvent.start.slice(3, 5), 10);
-            const endHour = parseInt(customEvent.end.slice(0, 2), 10);
-            const endMin = parseInt(customEvent.end.slice(3, 5), 10);
-
-            return {
-                customEventID: customEvent.customEventID,
-                color: customEvent.color ?? '#000000',
-                start: new Date(2018, 0, index, startHour, startMin),
-                isCustomEvent: true,
-                end: new Date(2018, 0, index, endHour, endMin),
-                title: customEvent.title,
-            };
-        });
-    });
-}
+export const calendarizeCustomEvents = (currentCustomEvents: RepeatingCustomEvent[] = []): CustomEvent[] => {
+    const customEventsInCalendar: CustomEvent[] = [];
+    for (const customEvent of currentCustomEvents) {
+        for (let dayIndex = 0; dayIndex < customEvent.days.length; dayIndex++) {
+            if (customEvent.days[dayIndex]) {
+                const startHour = parseInt(customEvent.start.slice(0, 2), 10);
+                const startMin = parseInt(customEvent.start.slice(3, 5), 10);
+                const endHour = parseInt(customEvent.end.slice(0, 2), 10);
+                const endMin = parseInt(customEvent.end.slice(3, 5), 10);
+                customEventsInCalendar.push({
+                    customEventID: customEvent.customEventID,
+                    color: customEvent.color ?? '#000000',
+                    start: new Date(2018, 0, dayIndex, startHour, startMin),
+                    isCustomEvent: true,
+                    end: new Date(2018, 0, dayIndex, endHour, endMin),
+                    title: customEvent.title,
+                });
+            }
+        }
+    }
+    return customEventsInCalendar;
+};
 
 export const SHORT_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
