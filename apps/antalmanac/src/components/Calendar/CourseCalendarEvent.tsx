@@ -91,17 +91,17 @@ export interface CourseEvent extends CommonCalendarEvent {
     finalExam: {
         examStatus: 'NO_FINAL' | 'TBA_FINAL' | 'SCHEDULED_FINAL';
         dayOfWeek: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | null;
-        month: number;
-        day: number;
+        month: number | null;
+        day: number | null;
         startTime: {
             hour: number;
             minute: number;
-        };
+        } | null;
         endTime: {
             hour: number;
             minute: number;
-        };
-        bldg: string[];
+        } | null;
+        bldg: string[] | null;
     };
     courseTitle: string;
     instructors: string[];
@@ -172,7 +172,8 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             const timeString = translate24To12HourTime(finalExam);
 
             // FORMAT: Fri Dec 15 1:30-3:30pm
-            finalExamString = `${finalExam.dayOfWeek} ${MONTHS[finalExam.month - 1]} ${finalExam.day} ${timeString}`;
+            // TO-DO: Correct `finalExam.month - 1` to just `finalExam.month` pending PP-API changes
+            finalExamString = `${finalExam.dayOfWeek} ${MONTHS[finalExam.month! - 1]} ${finalExam.day} ${timeString}`;
         }
 
         return (

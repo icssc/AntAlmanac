@@ -9,39 +9,43 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []) =
     for (const course of currentCourses) {
         for (const meeting of course.section.meetings) {
             if (!meeting.timeIsTBA) {
-                const startHour = meeting.startTime.hour;
-                const startMin = meeting.startTime.minute;
-                const endHour = meeting.endTime.hour;
-                const endMin = meeting.endTime.minute;
+                // Because these props are "technically" possibly null, it's checked here for TS warnings
+                // In reality, it will never be null since we're checking for "timeIsTBA" which guarantees non-null
+                if (meeting.startTime && meeting.endTime && meeting.days) {
+                    const startHour = meeting.startTime.hour;
+                    const startMin = meeting.startTime.minute;
+                    const endHour = meeting.endTime.hour;
+                    const endMin = meeting.endTime.minute;
 
-                const dates: boolean[] = [
-                    meeting.days.includes('Su'),
-                    meeting.days.includes('M'),
-                    meeting.days.includes('Tu'),
-                    meeting.days.includes('W'),
-                    meeting.days.includes('Th'),
-                    meeting.days.includes('F'),
-                    meeting.days.includes('Sa'),
-                ];
+                    const dates: boolean[] = [
+                        meeting.days.includes('Su'),
+                        meeting.days.includes('M'),
+                        meeting.days.includes('Tu'),
+                        meeting.days.includes('W'),
+                        meeting.days.includes('Th'),
+                        meeting.days.includes('F'),
+                        meeting.days.includes('Sa'),
+                    ];
 
-                dates.forEach((shouldBeInCal, index) => {
-                    if (shouldBeInCal) {
-                        courseEventsInCalendar.push({
-                            color: course.section.color,
-                            term: course.term,
-                            title: course.deptCode + ' ' + course.courseNumber,
-                            courseTitle: course.courseTitle,
-                            bldg: meeting.bldg[0],
-                            instructors: course.section.instructors,
-                            sectionCode: course.section.sectionCode,
-                            sectionType: course.section.sectionType,
-                            start: new Date(2018, 0, index, startHour, startMin),
-                            end: new Date(2018, 0, index, endHour, endMin),
-                            finalExam: course.section.finalExam,
-                            isCustomEvent: false as const,
-                        });
-                    }
-                });
+                    dates.forEach((shouldBeInCal, index) => {
+                        if (shouldBeInCal) {
+                            courseEventsInCalendar.push({
+                                color: course.section.color,
+                                term: course.term,
+                                title: course.deptCode + ' ' + course.courseNumber,
+                                courseTitle: course.courseTitle,
+                                bldg: meeting.bldg[0],
+                                instructors: course.section.instructors,
+                                sectionCode: course.section.sectionCode,
+                                sectionType: course.section.sectionType,
+                                start: new Date(2018, 0, index, startHour, startMin),
+                                end: new Date(2018, 0, index, endHour, endMin),
+                                finalExam: course.section.finalExam,
+                                isCustomEvent: false as const,
+                            });
+                        }
+                    });
+                }
             }
         }
     }
@@ -56,41 +60,44 @@ export const calendarizeFinals = (currentCourses: ScheduleCourse[] = []) => {
         const finalExam = course.section.finalExam;
 
         if (finalExam.examStatus == 'SCHEDULED_FINAL') {
-            const date = finalExam.dayOfWeek;
-
             // TODO: this block is almost the same as in calenarizeCourseEvents. we should refactor to remove the duplicate code.
-            const startHour = finalExam.startTime.hour;
-            const startMin = finalExam.startTime.minute;
-            const endHour = finalExam.endTime.hour;
-            const endMin = finalExam.endTime.minute;
 
-            const weekdayInclusion: boolean[] = [
-                (date as string).includes('Sat'), // Because date is "technically" possibly null, it's typecast here for TS warnings
-                (date as string).includes('Sun'), // In reality, it will never be null since we're checking for "SCHEDULED_FINAL" which guarantees non-null
-                (date as string).includes('Mon'),
-                (date as string).includes('Tue'),
-                (date as string).includes('Wed'),
-                (date as string).includes('Thu'),
-                (date as string).includes('Fri'),
-            ];
+            // Because these props are "technically" possibly null, it's checked here for TS warnings
+            // In reality, it will never be null since we're checking for "timeIsTBA" which guarantees non-null
+            if (finalExam.startTime && finalExam.endTime && finalExam.dayOfWeek) {
+                const startHour = finalExam.startTime.hour;
+                const startMin = finalExam.startTime.minute;
+                const endHour = finalExam.endTime.hour;
+                const endMin = finalExam.endTime.minute;
 
-            weekdayInclusion.forEach((shouldBeInCal, index) => {
-                if (shouldBeInCal)
-                    finalsEventsInCalendar.push({
-                        color: course.section.color,
-                        term: course.term,
-                        title: course.deptCode + ' ' + course.courseNumber,
-                        courseTitle: course.courseTitle,
-                        bldg: course.section.meetings[0].bldg[0],
-                        instructors: course.section.instructors,
-                        sectionCode: course.section.sectionCode,
-                        sectionType: 'Fin',
-                        start: new Date(2018, 0, index - 1, startHour, startMin),
-                        end: new Date(2018, 0, index - 1, endHour, endMin),
-                        finalExam: course.section.finalExam,
-                        isCustomEvent: false,
-                    });
-            });
+                const weekdayInclusion: boolean[] = [
+                    finalExam.dayOfWeek.includes('Sat'),
+                    finalExam.dayOfWeek.includes('Sun'),
+                    finalExam.dayOfWeek.includes('Mon'),
+                    finalExam.dayOfWeek.includes('Tue'),
+                    finalExam.dayOfWeek.includes('Wed'),
+                    finalExam.dayOfWeek.includes('Thu'),
+                    finalExam.dayOfWeek.includes('Fri'),
+                ];
+
+                weekdayInclusion.forEach((shouldBeInCal, index) => {
+                    if (shouldBeInCal)
+                        finalsEventsInCalendar.push({
+                            color: course.section.color,
+                            term: course.term,
+                            title: course.deptCode + ' ' + course.courseNumber,
+                            courseTitle: course.courseTitle,
+                            bldg: course.section.meetings[0].bldg[0],
+                            instructors: course.section.instructors,
+                            sectionCode: course.section.sectionCode,
+                            sectionType: 'Fin',
+                            start: new Date(2018, 0, index - 1, startHour, startMin),
+                            end: new Date(2018, 0, index - 1, endHour, endMin),
+                            finalExam: course.section.finalExam,
+                            isCustomEvent: false,
+                        });
+                });
+            }
         }
     }
 
@@ -136,7 +143,11 @@ export const SHORT_DAY_REGEX = new RegExp(`(${SHORT_DAYS.join('|')})`, 'g');
  * @example 'TuTh' -> [2, 4]
  * @example 'MWFTh' -> [1, 3, 5, 4]
  */
-export function parseDaysString(daysString: string): number[] {
+export function parseDaysString(daysString: string | null): number[] | null {
+    if (daysString == null) {
+        return null;
+    }
+
     const days: number[] = [];
 
     let match: RegExpExecArray | null;
