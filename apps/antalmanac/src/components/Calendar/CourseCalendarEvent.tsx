@@ -162,16 +162,21 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
 
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-        // prettier-ignore
-        const finalExamStartTime = `${finalExam.startTime.hour}:${finalExam.startTime.minute === 0 ? '00' : finalExam.startTime.minute}`;
-        // prettier-ignore
-        const finalExamEndTime = `${finalExam.endTime.hour}:${finalExam.endTime.minute === 0 ? '00' : finalExam.endTime.minute}`
+        let finalExamString = '';
+        if (finalExam.examStatus == 'NO_FINAL') {
+            finalExamString = 'No Final';
+        } else if (finalExam.examStatus == 'TBA_FINAL') {
+            finalExamString = 'Final TBA';
+        } else {
+            // prettier-ignore
+            const finalExamStartTime = `${finalExam.startTime?.hour}:${finalExam.startTime?.minute === 0 ? '00' : finalExam.startTime?.minute}`;
+            // prettier-ignore
+            const finalExamEndTime = `${finalExam.endTime?.hour}:${finalExam.endTime?.minute === 0 ? '00' : finalExam.endTime?.minute}`
 
-        // FORMAT: Fri Dec 15 1:30-3:30pm
-        const finalExamString =
-            finalExam.examStatus == 'SCHEDULED_FINAL'
-                ? `${finalExam.dayOfWeek} ${months[finalExam.month - 1]} ${finalExamStartTime} - ${finalExamEndTime}`
-                : ''; // Should this be something more verbose, like "No Final" ?
+            // FORMAT: Fri Dec 15 1:30-3:30pm
+            // prettier-ignore
+            finalExamString = `${finalExam.dayOfWeek} ${months[finalExam.month - 1]} ${finalExamStartTime} - ${finalExamEndTime}`
+        }
 
         return (
             <Paper className={classes.courseContainer} ref={paperRef}>
