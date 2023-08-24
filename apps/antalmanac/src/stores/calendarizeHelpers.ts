@@ -127,7 +127,25 @@ export const calendarizeCustomEvents = (currentCustomEvents: RepeatingCustomEven
         }
     }
 
-    return customEventsInCalendar;
+export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []): CustomEvent[] {
+    return currentCustomEvents.flatMap((customEvent) => {
+        return customEvent.days.filter(Boolean).map((_day, index) => {
+            const startHour = parseInt(customEvent.start.slice(0, 2), 10);
+            const startMin = parseInt(customEvent.start.slice(3, 5), 10);
+            const endHour = parseInt(customEvent.end.slice(0, 2), 10);
+            const endMin = parseInt(customEvent.end.slice(3, 5), 10);
+
+            return {
+                customEventID: customEvent.customEventID,
+                color: customEvent.color ?? '#000000',
+                start: new Date(2018, 0, index, startHour, startMin),
+                isCustomEvent: true,
+                end: new Date(2018, 0, index, endHour, endMin),
+                title: customEvent.title,
+            };
+        });
+    });
+}
 };
 
 export const SHORT_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
