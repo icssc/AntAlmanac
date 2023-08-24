@@ -7,39 +7,41 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []) =
 
     for (const course of currentCourses) {
         for (const meeting of course.section.meetings) {
-            const startHour = meeting.startTime.hour;
-            const startMin = meeting.startTime.minute;
-            const endHour = meeting.endTime.hour;
-            const endMin = meeting.endTime.minute;
+            if (!meeting.timeIsTBA) {
+                const startHour = meeting.startTime.hour;
+                const startMin = meeting.startTime.minute;
+                const endHour = meeting.endTime.hour;
+                const endMin = meeting.endTime.minute;
 
-            const dates: boolean[] = [
-                meeting.days.includes('Su'),
-                meeting.days.includes('M'),
-                meeting.days.includes('Tu'),
-                meeting.days.includes('W'),
-                meeting.days.includes('Th'),
-                meeting.days.includes('F'),
-                meeting.days.includes('Sa'),
-            ];
+                const dates: boolean[] = [
+                    meeting.days.includes('Su'),
+                    meeting.days.includes('M'),
+                    meeting.days.includes('Tu'),
+                    meeting.days.includes('W'),
+                    meeting.days.includes('Th'),
+                    meeting.days.includes('F'),
+                    meeting.days.includes('Sa'),
+                ];
 
-            dates.forEach((shouldBeInCal, index) => {
-                if (shouldBeInCal) {
-                    courseEventsInCalendar.push({
-                        color: course.section.color,
-                        term: course.term,
-                        title: course.deptCode + ' ' + course.courseNumber,
-                        courseTitle: course.courseTitle,
-                        bldg: meeting.bldg[0],
-                        instructors: course.section.instructors,
-                        sectionCode: course.section.sectionCode,
-                        sectionType: course.section.sectionType,
-                        start: new Date(2018, 0, index, startHour, startMin),
-                        end: new Date(2018, 0, index, endHour, endMin),
-                        finalExam: course.section.finalExam,
-                        isCustomEvent: false as const,
-                    });
-                }
-            });
+                dates.forEach((shouldBeInCal, index) => {
+                    if (shouldBeInCal) {
+                        courseEventsInCalendar.push({
+                            color: course.section.color,
+                            term: course.term,
+                            title: course.deptCode + ' ' + course.courseNumber,
+                            courseTitle: course.courseTitle,
+                            bldg: meeting.bldg[0],
+                            instructors: course.section.instructors,
+                            sectionCode: course.section.sectionCode,
+                            sectionType: course.section.sectionType,
+                            start: new Date(2018, 0, index, startHour, startMin),
+                            end: new Date(2018, 0, index, endHour, endMin),
+                            finalExam: course.section.finalExam,
+                            isCustomEvent: false as const,
+                        });
+                    }
+                });
+            }
         }
     }
 
