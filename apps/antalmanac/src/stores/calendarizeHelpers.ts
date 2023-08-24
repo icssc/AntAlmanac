@@ -186,21 +186,23 @@ export function normalizeTime(meeting: WebsocSectionMeeting): NormalizedWebSOCTi
     }
 }
 
-export function translate24To12HourTime(section: WebsocSectionMeeting | WebsocSectionFinalExam): string | undefined {
-    if (section.startTime && section.endTime) {
-        const timeSuffix = section.endTime.hour >= 12 ? 'PM' : 'AM';
-
-        const formattedStartHour12 = section.startTime.hour > 12 ? section.startTime.hour - 12 : section.startTime.hour;
-        const formattedEndHour12 = section.endTime.hour > 12 ? section.endTime.hour - 12 : section.endTime.hour;
-
-        // TO-DO: See if a leading zero can be added to minute
-        // prettier-ignore
-        const meetingStartTime = `${formattedStartHour12}:${section.startTime?.minute === 0 ? '00' : section.startTime?.minute}`;
-        // prettier-ignore
-        const meetingEndTime = `${formattedEndHour12}:${section.endTime?.minute === 0 ? '00' : section.endTime?.minute}`;
-
-        const timeString = `${meetingStartTime} - ${meetingEndTime} ${timeSuffix}`;
-
-        return timeString;
+export function translate24To12HourTime(startTime?: HourMinute, endTime?: HourMinute): string | undefined {
+    if (!startTime || !endTime) {
+        return;
     }
+    const postMeridian = endTime.hour >= 12;
+
+    const timeSuffix = postMeridian ? 'PM' : 'AM';
+
+    const formattedStartHour = `${startTime.hour - +(postMeridian && 12)}`
+
+    const formattedEndHour = `${endTime.hour - +(postMeridian && 12)}`
+
+    const meetingStartTime = `${formattedStartHour}:${formattedStartHour.padStart(2, '0')}`;
+
+    const meetingEndTime = `${formattedEndHour}:${formattedEndHour.padStart(2, '0')}`;
+
+    const timeString = `${meetingStartTime} - ${meetingEndTime} ${timeSuffix}`;
+
+    return timeString;
 }
