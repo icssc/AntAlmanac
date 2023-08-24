@@ -314,7 +314,7 @@ const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
                 }
 
                 if (meeting.startTime && meeting.endTime) {
-                    const timeString = translate24To12HourTime(meeting);
+                    const timeString = translate24To12HourTime(meeting.startTime, meeting.endTime);
 
                     return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>{`${meeting.days} ${timeString}`}</Box>;
                 }

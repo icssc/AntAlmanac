@@ -1,5 +1,5 @@
 import { ScheduleCourse } from '@packages/antalmanac-types';
-import { WebsocSectionFinalExam, WebsocSectionMeeting } from 'peterportal-api-next-types';
+import { HourMinute } from 'peterportal-api-next-types';
 import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 
@@ -53,9 +53,6 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []) =
     return courseEventsInCalendar;
 };
 
-export const calendarizeFinals = (currentCourses: ScheduleCourse[] = []) => {
-    const finalsEventsInCalendar: CourseEvent[] = [];
-
 const WEEK_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 /**
@@ -101,75 +98,6 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
             });
         });
 }
-        const finalExam = course.section.finalExam;
-
-        if (finalExam.examStatus == 'SCHEDULED_FINAL') {
-            // TODO: this block is almost the same as in calenarizeCourseEvents. we should refactor to remove the duplicate code.
-
-            // Because these props are "technically" possibly null, it's checked here for TS warnings
-            // In reality, it will never be null since we're checking for "timeIsTBA" which guarantees non-null
-            if (finalExam.startTime && finalExam.endTime && finalExam.dayOfWeek) {
-                const startHour = finalExam.startTime.hour;
-                const startMin = finalExam.startTime.minute;
-                const endHour = finalExam.endTime.hour;
-                const endMin = finalExam.endTime.minute;
-
-                const weekdayInclusion: boolean[] = [
-                    finalExam.dayOfWeek.includes('Sat'),
-                    finalExam.dayOfWeek.includes('Sun'),
-                    finalExam.dayOfWeek.includes('Mon'),
-                    finalExam.dayOfWeek.includes('Tue'),
-                    finalExam.dayOfWeek.includes('Wed'),
-                    finalExam.dayOfWeek.includes('Thu'),
-                    finalExam.dayOfWeek.includes('Fri'),
-                ];
-
-                weekdayInclusion.forEach((shouldBeInCal, index) => {
-                    if (shouldBeInCal)
-                        finalsEventsInCalendar.push({
-                            color: course.section.color,
-                            term: course.term,
-                            title: course.deptCode + ' ' + course.courseNumber,
-                            courseTitle: course.courseTitle,
-                            bldg: course.section.meetings[0].bldg[0],
-                            instructors: course.section.instructors,
-                            sectionCode: course.section.sectionCode,
-                            sectionType: 'Fin',
-                            start: new Date(2018, 0, index - 1, startHour, startMin),
-                            end: new Date(2018, 0, index - 1, endHour, endMin),
-                            finalExam: course.section.finalExam,
-                            isCustomEvent: false,
-                        });
-                });
-            }
-        }
-    }
-
-    return finalsEventsInCalendar;
-};
-
-export const calendarizeCustomEvents = (currentCustomEvents: RepeatingCustomEvent[] = []) => {
-    const customEventsInCalendar: CustomEvent[] = [];
-
-    for (const customEvent of currentCustomEvents) {
-        for (let dayIndex = 0; dayIndex < customEvent.days.length; dayIndex++) {
-            if (customEvent.days[dayIndex]) {
-                const startHour = parseInt(customEvent.start.slice(0, 2), 10);
-                const startMin = parseInt(customEvent.start.slice(3, 5), 10);
-                const endHour = parseInt(customEvent.end.slice(0, 2), 10);
-                const endMin = parseInt(customEvent.end.slice(3, 5), 10);
-
-                customEventsInCalendar.push({
-                    customEventID: customEvent.customEventID,
-                    color: customEvent.color ?? '#000000',
-                    start: new Date(2018, 0, dayIndex, startHour, startMin),
-                    isCustomEvent: true,
-                    end: new Date(2018, 0, dayIndex, endHour, endMin),
-                    title: customEvent.title,
-                });
-            }
-        }
-    }
 
 export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []): CustomEvent[] {
     return currentCustomEvents.flatMap((customEvent) => {
@@ -190,7 +118,6 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
         });
     });
 }
-};
 
 export const SHORT_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
@@ -232,13 +159,10 @@ interface NormalizedWebSOCTime {
  * @returns undefined if there is no WebSOC time (e.g. 'TBA', undefined)
  */
 interface NormalizeTimeOptions {
-  timeIsTBA?: boolean;
-  startTime?: HourMinute | null;
-  endTime?: HourMinute | null;
+    timeIsTBA?: boolean;
+    startTime?: HourMinute | null;
+    endTime?: HourMinute | null;
 }
-
-// This also works.
-type NormalizeTimeOptions = Pick<WebsocSectionMeeting, 'timeIsTBA' | 'startTime' | 'endTime'>
 
 /**
  * @param section
@@ -255,29 +179,30 @@ export function normalizeTime(options: NormalizeTimeOptions): NormalizedWebSOCTi
     }
 
     // Times are normalized to ##:## (10:00, 09:00 etc)
-    const startHour = `${options.startTime.hour}`.padStart(2, '0')
-    const endHour = `${options.endTime.hour}`.padStart(2, '0')
+    const startHour = `${options.startTime.hour}`.padStart(2, '0');
+    const endHour = `${options.endTime.hour}`.padStart(2, '0');
 
     const startTime = `${startHour}:${options.startTime.minute}`;
     const endTime = `${endHour}:${options.endTime.minute}`;
 
     return { startTime, endTime };
 }
+
 export function translate24To12HourTime(startTime?: HourMinute, endTime?: HourMinute): string | undefined {
     if (!startTime || !endTime) {
         return;
     }
-    const postMeridian = endTime.hour >= 12;
 
-    const timeSuffix = postMeridian ? 'PM' : 'AM';
+    const timeSuffix = endTime.hour >= 12 ? 'PM' : 'AM';
 
-    const formattedStartHour = `${startTime.hour - +(postMeridian && 12)}`
+    const formattedStartHour = `${startTime.hour > 12 ? startTime.hour - 12 : startTime.hour}`;
+    const formattedEndHour = `${endTime.hour > 12 ? endTime.hour - 12 : endTime.hour}`;
 
-    const formattedEndHour = `${endTime.hour - +(postMeridian && 12)}`
+    const formattedStartMinute = `${startTime.minute}`.padStart(2, '0');
+    const formattedEndMinute = `${endTime.minute}`.padStart(2, '0');
 
-    const meetingStartTime = `${formattedStartHour}:${formattedStartHour.padStart(2, '0')}`;
-
-    const meetingEndTime = `${formattedEndHour}:${formattedEndHour.padStart(2, '0')}`;
+    const meetingStartTime = `${formattedStartHour}:${formattedStartMinute}`;
+    const meetingEndTime = `${formattedEndHour}:${formattedEndMinute}`;
 
     const timeString = `${meetingStartTime} - ${meetingEndTime} ${timeSuffix}`;
 

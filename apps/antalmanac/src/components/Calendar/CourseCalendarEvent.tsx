@@ -169,11 +169,11 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         } else if (finalExam.examStatus == 'TBA_FINAL') {
             finalExamString = 'Final TBA';
         } else {
-            const timeString = translate24To12HourTime(finalExam);
+            if (finalExam.startTime && finalExam.endTime && finalExam.month) {
+                const timeString = translate24To12HourTime(finalExam.startTime, finalExam.endTime);
 
-            // FORMAT: Fri Dec 15 1:30-3:30pm
-            // TO-DO: Correct `finalExam.month - 1` to just `finalExam.month` pending PP-API changes
-            finalExamString = `${finalExam.dayOfWeek} ${MONTHS[finalExam.month! - 1]} ${finalExam.day} ${timeString}`;
+                finalExamString = `${finalExam.dayOfWeek} ${MONTHS[finalExam.month]} ${finalExam.day} ${timeString}`;
+            }
         }
 
         return (
