@@ -182,7 +182,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
 
             // FORMAT: Fri Dec 15 1:30-3:30pm
             // prettier-ignore
-            finalExamString = `${finalExam.dayOfWeek} ${months[finalExam.month - 1]} ${finalExamStartTime} - ${finalExamEndTime} ${timeSuffix}`
+            finalExamString = `${finalExam.dayOfWeek} ${months[finalExam.month - 1]} ${finalExam.day} ${finalExamStartTime} - ${finalExamEndTime} ${timeSuffix}`
         }
 
         return (
