@@ -1,4 +1,5 @@
 import { ScheduleCourse } from '@packages/antalmanac-types';
+import { WebsocSectionFinalExam, WebsocSectionMeeting } from 'peterportal-api-next-types';
 import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 
@@ -64,13 +65,13 @@ export const calendarizeFinals = (currentCourses: ScheduleCourse[] = []) => {
             const endMin = finalExam.endTime.minute;
 
             const weekdayInclusion: boolean[] = [
-                date.includes('Sat'),
-                date.includes('Sun'),
-                date.includes('Mon'),
-                date.includes('Tue'),
-                date.includes('Wed'),
-                date.includes('Thu'),
-                date.includes('Fri'),
+                (date as string).includes('Sat'), // Because date is "technically" possibly null, it's typecast here for TS warnings
+                (date as string).includes('Sun'), // In reality, it will never be null since we're checking for "SCHEDULED_FINAL" which guarantees non-null
+                (date as string).includes('Mon'),
+                (date as string).includes('Tue'),
+                (date as string).includes('Wed'),
+                (date as string).includes('Thu'),
+                (date as string).includes('Fri'),
             ];
 
             weekdayInclusion.forEach((shouldBeInCal, index) => {
@@ -182,4 +183,23 @@ export function parseDaysString(daysString: string): number[] {
     }
 
     return days;
+}
+
+export function translate24To12HourTime(section: WebsocSectionMeeting | WebsocSectionFinalExam): string | undefined {
+    if (section.startTime && section.endTime) {
+        const timeSuffix = section.endTime.hour >= 12 ? 'PM' : 'AM';
+
+        const formattedStartHour12 = section.startTime.hour > 12 ? section.startTime.hour - 12 : section.startTime.hour;
+        const formattedEndHour12 = section.endTime.hour > 12 ? section.endTime.hour - 12 : section.endTime.hour;
+
+        // TO-DO: See if a leading zero can be added to minute
+        // prettier-ignore
+        const meetingStartTime = `${formattedStartHour12}:${section.startTime?.minute === 0 ? '00' : section.startTime?.minute}`;
+        // prettier-ignore
+        const meetingEndTime = `${formattedEndHour12}:${section.endTime?.minute === 0 ? '00' : section.endTime?.minute}`;
+
+        const timeString = `${meetingStartTime} - ${meetingEndTime} ${timeSuffix}`;
+
+        return timeString;
+    }
 }

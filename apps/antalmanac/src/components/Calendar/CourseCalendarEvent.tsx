@@ -14,6 +14,7 @@ import { clickToCopy, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
 import { mobileContext } from '$components/MobileHome';
+import { translate24To12HourTime } from '$stores/calendarizeHelpers';
 
 const styles: Styles<Theme, object> = {
     courseContainer: {
@@ -88,8 +89,8 @@ interface CommonCalendarEvent extends Event {
 export interface CourseEvent extends CommonCalendarEvent {
     bldg: string; // E.g., ICS 174, which is actually building + room
     finalExam: {
-        examStatus: string;
-        dayOfWeek: string;
+        examStatus: 'NO_FINAL' | 'TBA_FINAL' | 'SCHEDULED_FINAL';
+        dayOfWeek: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | null;
         month: number;
         day: number;
         startTime: {
@@ -128,6 +129,8 @@ interface CourseCalendarEventProps {
     closePopover: () => void;
 }
 
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     const paperRef = useRef<HTMLInputElement>(null);
 
@@ -160,29 +163,16 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
 
         const buildingId = locationIds[buildingName] ?? 69420;
 
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
         let finalExamString = '';
         if (finalExam.examStatus == 'NO_FINAL') {
             finalExamString = 'No Final';
         } else if (finalExam.examStatus == 'TBA_FINAL') {
             finalExamString = 'Final TBA';
         } else {
-            const timeSuffix = finalExam.endTime.hour >= 12 ? 'PM' : 'AM';
-
-            const formattedStartHour12 =
-                finalExam.startTime.hour > 12 ? finalExam.startTime.hour - 12 : finalExam.startTime.hour;
-            const formattedEndHour12 =
-                finalExam.endTime.hour > 12 ? finalExam.endTime.hour - 12 : finalExam.endTime.hour;
-
-            // prettier-ignore
-            const finalExamStartTime = `${formattedStartHour12}:${finalExam.startTime?.minute === 0 ? '00' : finalExam.startTime?.minute}`;
-            // prettier-ignore
-            const finalExamEndTime = `${formattedEndHour12}:${finalExam.endTime?.minute === 0 ? '00' : finalExam.endTime?.minute}`
+            const timeString = translate24To12HourTime(finalExam);
 
             // FORMAT: Fri Dec 15 1:30-3:30pm
-            // prettier-ignore
-            finalExamString = `${finalExam.dayOfWeek} ${months[finalExam.month - 1]} ${finalExam.day} ${finalExamStartTime} - ${finalExamEndTime} ${timeSuffix}`
+            finalExamString = `${finalExam.dayOfWeek} ${MONTHS[finalExam.month - 1]} ${finalExam.day} ${timeString}`;
         }
 
         return (

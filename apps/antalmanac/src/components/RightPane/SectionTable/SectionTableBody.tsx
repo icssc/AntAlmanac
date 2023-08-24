@@ -19,7 +19,7 @@ import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
-import { translateWebSOCTimeTo24HourTime, parseDaysString } from '$stores/calendarizeHelpers';
+import { translateWebSOCTimeTo24HourTime, parseDaysString, translate24To12HourTime } from '$stores/calendarizeHelpers';
 
 const styles: Styles<Theme, object> = (theme) => ({
     popover: {
@@ -306,29 +306,15 @@ interface DayAndTimeCellProps {
 const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
     const { classes, meetings } = props;
 
-    console.log(meetings);
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
-                // TO-DO: Fix lack of leading zero when minute is 0. PP-API returns 0, but preferably it should be 00
                 if (meeting.timeIsTBA) {
                     return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>TBA</Box>;
                 }
 
                 if (meeting.startTime && meeting.endTime) {
-                    const timeSuffix = meeting.endTime.hour >= 12 ? 'PM' : 'AM';
-
-                    const formattedStartHour12 =
-                        meeting.startTime.hour > 12 ? meeting.startTime.hour - 12 : meeting.startTime.hour;
-                    const formattedEndHour12 =
-                        meeting.endTime.hour > 12 ? meeting.endTime.hour - 12 : meeting.endTime.hour;
-
-                    // prettier-ignore
-                    const meetingStartTime = `${formattedStartHour12}:${meeting.startTime?.minute === 0 ? '00' : meeting.startTime?.minute}`;
-                    // prettier-ignore
-                    const meetingEndTime = `${formattedEndHour12}:${meeting.endTime?.minute === 0 ? '00' : meeting.endTime?.minute}`;
-
-                    const timeString = `${meetingStartTime} - ${meetingEndTime} ${timeSuffix}`;
+                    const timeString = translate24To12HourTime(meeting);
 
                     return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>{`${meeting.days} ${timeString}`}</Box>;
                 }

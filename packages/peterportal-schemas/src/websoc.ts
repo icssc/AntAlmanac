@@ -21,8 +21,8 @@ export const WebsocSectionEnrollment = type({
 });
 
 export const WebSocSectionFinals = type({
-    examStatus: 'string',
-    dayOfWeek: 'string',
+    examStatus: "'NO_FINAL' | 'TBA_FINAL' | 'SCHEDULED_FINAL'",
+    dayOfWeek: "'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | null",
     month: 'number',
     day: 'number',
     startTime: WebsocSectionTimeFormat,
