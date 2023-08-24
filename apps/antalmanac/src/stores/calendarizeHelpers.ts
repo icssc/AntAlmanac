@@ -7,10 +7,10 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []) =
 
     for (const course of currentCourses) {
         for (const meeting of course.section.meetings) {
-            const startHour = parseInt(meeting.startTime.hour, 10);
-            const startMin = parseInt(meeting.startTime.minute, 10);
-            const endHour = parseInt(meeting.endTime.hour, 10);
-            const endMin = parseInt(meeting.endTime.minute, 10);
+            const startHour = meeting.startTime.hour;
+            const startMin = meeting.startTime.minute;
+            const endHour = meeting.endTime.hour;
+            const endMin = meeting.endTime.minute;
 
             const dates: boolean[] = [
                 meeting.days.includes('Su'),
@@ -56,10 +56,10 @@ export const calendarizeFinals = (currentCourses: ScheduleCourse[] = []) => {
             const date = finalExam.dayOfWeek;
 
             // TODO: this block is almost the same as in calenarizeCourseEvents. we should refactor to remove the duplicate code.
-            const startHour = parseInt(finalExam.startTime.hour, 10);
-            const startMin = parseInt(finalExam.startTime.minute, 10);
-            const endHour = parseInt(finalExam.endTime.hour, 10);
-            const endMin = parseInt(finalExam.endTime.minute, 10);
+            const startHour = finalExam.startTime.hour;
+            const startMin = finalExam.startTime.minute;
+            const endHour = finalExam.endTime.hour;
+            const endMin = finalExam.endTime.minute;
 
             const weekdayInclusion: boolean[] = [
                 date.includes('Sat'),

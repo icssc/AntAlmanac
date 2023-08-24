@@ -102,6 +102,7 @@ export interface CourseEvent extends CommonCalendarEvent {
         };
         bldg: string[];
     };
+    courseTitle: string;
     instructors: string[];
     isCustomEvent: false;
     sectionCode: string;
