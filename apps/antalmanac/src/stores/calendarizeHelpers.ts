@@ -11,7 +11,7 @@ const FINALS_WEEK_DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
     return currentCourses.flatMap((course) => {
         return course.section.meetings
-            .filter((meeting) => meeting.timeIsTBA && meeting.startTime && meeting.endTime && meeting.days)
+            .filter((meeting) => !meeting.timeIsTBA && meeting.startTime && meeting.endTime && meeting.days)
             .flatMap((meeting) => {
                 const startHour = meeting.startTime?.hour;
                 const startMin = meeting.startTime?.minute;
