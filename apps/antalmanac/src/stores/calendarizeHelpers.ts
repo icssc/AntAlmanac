@@ -195,12 +195,10 @@ export function translate24To12HourTime(startTime?: HourMinute, endTime?: HourMi
         return;
     }
 
-    const postMeridian = endTime.hour >= 12;
+    const timeSuffix = endTime.hour >= 12 ? 'PM' : 'AM';
 
-    const timeSuffix = postMeridian ? 'PM' : 'AM';
-
-    const formattedStartHour = `${startTime.hour - Number(postMeridian && 12)}`;
-    const formattedEndHour = `${endTime.hour - Number(postMeridian && 12)}`;
+    const formattedStartHour = `${startTime.hour > 12 ? startTime.hour - 12 : startTime.hour}`;
+    const formattedEndHour = `${endTime.hour > 12 ? endTime.hour - 12 : endTime.hour}`;
 
     const formattedStartMinute = `${startTime.minute}`;
     const formattedEndMinute = `${endTime.minute}`;
