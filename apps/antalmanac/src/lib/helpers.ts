@@ -259,7 +259,6 @@ export async function queryGrades(deptCode: string, courseNumber: string, instru
         // If cache is undefined, there's a request in progress
         while (gradesCache[cacheKey] === undefined) {
             await new Promise((resolve) => setTimeout(resolve, 350)); // Wait before checking cache again
-            console.log('Waiting for cache ', cacheKey);
         }
         return gradesCache[cacheKey] as Grades;
     }
