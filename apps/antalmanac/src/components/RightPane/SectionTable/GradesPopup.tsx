@@ -23,6 +23,10 @@ const styles: Styles<Theme, object> = {
     skeleton: {
         padding: '4px',
     },
+    graphAnchor: {
+        cursor: 'pointer',
+        overflow: 'hidden',
+    },
 };
 
 interface GradesPopupProps {
@@ -31,7 +35,6 @@ interface GradesPopupProps {
     instructor?: string;
     classes: ClassNameMap;
     isMobileScreen: boolean;
-    showLink?: boolean;
 }
 
 interface GradeData {
@@ -39,14 +42,7 @@ interface GradeData {
     all: number;
 }
 
-const GradesPopup = ({
-    deptCode,
-    courseNumber,
-    instructor = '',
-    classes,
-    isMobileScreen,
-    showLink = true,
-}: GradesPopupProps) => {
+const GradesPopup = ({ deptCode, courseNumber, instructor = '', classes, isMobileScreen }: GradesPopupProps) => {
     const [loading, setLoading] = useState(true);
     const [graphTitle, setGraphTitle] = useState<string | null>(null);
     const [gradeData, setGradeData] = useState<GradeData[] | null>(null);
@@ -98,27 +94,23 @@ const GradesPopup = ({
         return (
             <div style={{ marginTop: '5px' }}>
                 <div className={classes.gpaTitle}>{graphTitle}</div>
-                {gradeData && (
-                    <ResponsiveContainer width={width} height={height}>
-                        <BarChart data={gradeData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
-                            <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} />
-                            <Bar dataKey="all" fill="#5182ed" />
-                        </BarChart>
-                    </ResponsiveContainer>
-                )}
-                {showLink && (
-                    <div style={{ margin: '5px', textAlign: 'center' }}>
-                        <a
-                            href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            View on Zotistics
-                        </a>
-                    </div>
-                )}
+                <a
+                    href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    {' '}
+                    {gradeData && (
+                        <ResponsiveContainer width={width} height={height} className={classes.graphAnchor}>
+                            <BarChart data={gradeData}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
+                                <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} />
+                                <Bar dataKey="all" fill="#5182ed" />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    )}
+                </a>
             </div>
         );
     }
