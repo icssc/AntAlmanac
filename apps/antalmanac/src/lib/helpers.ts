@@ -104,6 +104,7 @@ const websocCache: { [key: string]: CacheEntry } = {};
 
 export function clearCache() {
     Object.keys(websocCache).forEach((key) => delete websocCache[key]); //https://stackoverflow.com/a/19316873/14587004
+    Object.keys(gradesCache).forEach((key) => delete gradesCache[key]); //https://stackoverflow.com/a/19316873/14587004
 }
 
 function cleanParams(record: Record<string, string>) {
