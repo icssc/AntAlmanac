@@ -13,6 +13,7 @@ import { ReactComponent as Logo } from './logo.svg';
 import { ReactComponent as MobileLogo } from './mobile-logo.svg';
 import News from './News';
 import SettingsMenu from './SettingsMenu';
+import Export from './Export';
 
 const styles = {
     appBar: {
@@ -40,6 +41,7 @@ interface CustomAppBarProps {
 const components = [
     <SettingsMenu key="settings" />,
     <ImportStudyList key="studylist" />,
+    <Export key="export" />,
     <Feedback key="feedback" />,
     <News key="news" />,
     <AboutPage key="about" />,

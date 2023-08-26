@@ -1,16 +1,14 @@
-import { Button, IconButton, Menu, Paper, Tooltip, useMediaQuery } from '@material-ui/core';
+import { Button, IconButton, Paper, Tooltip } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { Delete, MoreHoriz, Undo } from '@material-ui/icons';
+import { Delete, Undo } from '@material-ui/icons';
 import { useState } from 'react';
 
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import EditSchedule from './Toolbar/EditSchedule/EditSchedule';
 import ScheduleNameDialog from './Toolbar/EditSchedule/ScheduleNameDialog';
-import ExportCalendar from './Toolbar/ExportCalendar';
-import ScreenshotButton from './Toolbar/ScreenshotButton';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
 
@@ -60,7 +58,6 @@ const CalendarPaneToolbar = ({
     currentScheduleIndex,
     showFinalsSchedule,
     toggleDisplayFinalsSchedule,
-    onTakeScreenshot,
 }: CalendarPaneToolbarProps) => {
     const handleScheduleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
         logAnalytics({
@@ -70,18 +67,7 @@ const CalendarPaneToolbar = ({
         changeCurrentSchedule(event.target.value as number);
     };
 
-    const isMobileScreen = useMediaQuery('(max-width:630px)');
-
-    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
     const [openSchedules, setOpenSchedules] = useState<boolean>(false);
-
-    const handleMenuClick: React.MouseEventHandler<HTMLElement> = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose: React.MouseEventHandler<HTMLElement> = () => {
-        setAnchorEl(undefined);
-    };
 
     const handleScheduleClick = () => {
         setOpenSchedules((prev) => !prev);
@@ -161,33 +147,7 @@ const CalendarPaneToolbar = ({
                 </IconButton>
             </Tooltip>
 
-            {isMobileScreen ? (
-                <div>
-                    <IconButton onClick={handleMenuClick}>
-                        <MoreHoriz />
-                    </IconButton>
-
-                    <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                        <MenuItem onClick={handleMenuClose}>
-                            <ExportCalendar />
-                        </MenuItem>
-
-                        <MenuItem onClick={handleMenuClose}>
-                            <ScreenshotButton onTakeScreenshot={onTakeScreenshot} />
-                        </MenuItem>
-
-                        <MenuItem onClick={handleMenuClose}>
-                            <CustomEventDialog scheduleNames={scheduleNames} />
-                        </MenuItem>
-                    </Menu>
-                </div>
-            ) : (
-                <>
-                    <ExportCalendar key="export" />
-                    <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />
-                    <CustomEventDialog scheduleNames={scheduleNames} key="custom" />
-                </>
-            )}
+            <CustomEventDialog scheduleNames={scheduleNames} key="custom" />
         </Paper>
     );
 };
