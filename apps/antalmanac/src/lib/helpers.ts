@@ -230,7 +230,7 @@ export interface Grades {
     gradeNPCount: number;
 }
 
-const gradesCache: { [key: string]: Grades } = {};
+const gradesCache: { [key: string]: Grades | null } = {};
 
 /*
  * Query the PeterPortal GraphQL API for a course's grades with caching
@@ -241,15 +241,22 @@ const gradesCache: { [key: string]: Grades } = {};
  *
  * @returns Grades
  */
-export async function queryGrades(deptCode: string, courseNumber: string, instructor = '') {
+export async function queryGrades(deptCode: string, courseNumber: string, instructor = ''): Promise<Grades> {
     instructor = instructor.replace('STAFF', '').trim(); // Ignore STAFF
     const instructorFilter = instructor ? `instructor: "${instructor}"` : '';
 
     const cacheKey = deptCode + courseNumber + instructor;
 
     if (gradesCache[cacheKey]) {
-        return gradesCache[cacheKey];
+        // If cache is null, there's a request in progress
+        while (gradesCache[cacheKey] === null) {
+            await new Promise((resolve) => setTimeout(resolve, 200)); // Wait before checking cache again
+            console.log('Waiting for cache ', cacheKey);
+        }
+        return gradesCache[cacheKey] as Grades;
     }
+
+    gradesCache[cacheKey] = null; // Set cache to null to indicate request in progress
 
     const queryString = `{ 
         aggregateGrades(department: "${deptCode}", courseNumber: "${courseNumber}", ${instructorFilter}) {
