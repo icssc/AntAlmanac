@@ -17,6 +17,9 @@ import AppStore from '$stores/AppStore';
 const fieldsToReset = ['courseCode', 'courseNumber', 'deptLabel', 'deptValue', 'GE', 'term'];
 
 const styles = {
+    optionsCell: {
+        width: '8%',
+    },
     container: {
         display: 'flex',
         justifyContent: 'space-evenly',
@@ -35,7 +38,7 @@ export const ColorAndDelete = withStyles(styles)((props: ColorAndDeleteProps) =>
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
     return (
-        <TableCell padding="none">
+        <TableCell padding="none" className={classes.optionsCell}>
             <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
                 <IconButton
                     onClick={() => {
@@ -116,7 +119,7 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
     };
 
     return (
-        <TableCell padding="none">
+        <TableCell padding="none" className={classes.optionsCell}>
             <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
                 {scheduleConflict ? (
                     <Tooltip title="This course overlaps with another event in your calendar!" arrow>

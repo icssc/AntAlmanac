@@ -16,7 +16,7 @@ import ShowChartIcon from '@material-ui/icons/ShowChart';
 // import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back and restore the files (https://github.com/icssc/AntAlmanac/tree/5e89e035e66f00608042871d43730ba785f756b0/src/components/RightPane/SectionTable/EnrollmentGraph)
 import { useCallback, useEffect, useState } from 'react';
 import { MOBILE_BREAKPOINT } from '../../../globals';
-import RightPaneStore, { type SectionTableColumn } from '../RightPaneStore';
+import RightPaneStore, { SECTION_TABLE_COLUMNS, type SectionTableColumn } from '../RightPaneStore';
 import CourseInfoBar from './CourseInfoBar';
 import CourseInfoButton from './CourseInfoButton';
 import GradesPopup from './GradesPopup';
@@ -35,39 +35,7 @@ const styles = {
     cellPadding: {
         padding: '0px 0px 0px 0px',
     },
-    row: {
-        // TODO: Style this for mobile, possibly with minWidth pixels with side scrolling
-        '&:nth-child(1)': {
-            width: '8%',
-        },
-        '&:nth-child(2)': {
-            width: '8%',
-        },
-        '&:nth-child(3)': {
-            width: '8%',
-        },
-        '&:nth-child(4)': {
-            width: '13%',
-        },
-        '&:nth-child(5)': {
-            width: '5%',
-        },
-        '&:nth-child(6)': {
-            width: '15%',
-        },
-        '&:nth-child(7)': {
-            width: '8%',
-        },
-        '&:nth-child(8)': {
-            width: '10%',
-        },
-        '&:nth-child(9)': {
-            width: '8%',
-        },
-        '&:nth-child(10)': {
-            width: '8%',
-        },
-    },
+    row: {},
     container: {},
     titleRow: {},
     clearSchedule: {},
@@ -108,6 +76,10 @@ const SectionTable = (props: SectionTableProps) => {
             RightPaneStore.removeListener('columnChange', handleColumnChange);
         };
     }, [handleColumnChange]);
+
+    // Limit table width to force side scrolling
+    const tableMinWidth =
+        ((isMobileScreen ? 600 : 780) * RightPaneStore.getActiveColumns().length) / SECTION_TABLE_COLUMNS.length;
 
     return (
         <>
@@ -160,10 +132,10 @@ const SectionTable = (props: SectionTableProps) => {
             </div>
 
             <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
-                <Table className={classes?.table} size="small">
+                <Table className={classes?.table} size="small" style={{ minWidth: `${tableMinWidth}px` }}>
                     <TableHead>
-                        <TableRow>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} className={classes?.row} />
+                        <TableRow className={classes?.row}>
+                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} />
                             {Object.entries(tableHeaderColumns)
                                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
                                 .map(([column, label]) => {

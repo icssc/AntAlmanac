@@ -43,6 +43,7 @@ const styles: Styles<Theme, object> = (theme) => ({
             color: isDarkMode() ? 'gold' : 'blueviolet',
             cursor: 'pointer',
         },
+        alignSelf: 'center',
     },
     row: {
         '&:nth-of-type(odd)': {
@@ -58,9 +59,7 @@ const styles: Styles<Theme, object> = (theme) => ({
             opacity: isDarkMode() ? 0.6 : 1,
         },
     },
-    cell: {
-        fontSize: '0.85rem !important',
-    },
+    cell: {},
     link: {
         textDecoration: 'underline',
         color: isDarkMode() ? 'dodgerblue' : 'blue',
@@ -72,7 +71,6 @@ const styles: Styles<Theme, object> = (theme) => ({
         background: 'none !important',
         border: 'none',
         padding: '0 !important',
-        fontSize: '0.85rem', // Not sure why this is not inherited
     },
     paper: {
         padding: theme.spacing(),
@@ -103,6 +101,12 @@ const styles: Styles<Theme, object> = (theme) => ({
         color: isDarkMode() ? 'dodgerblue' : 'blue',
         cursor: 'pointer',
     },
+    codeCell: {
+        width: '8%',
+    },
+    // statusCell: {
+    //     width: '9%',
+    // },
 });
 
 const NoPaddingTableCell = withStyles({
@@ -118,7 +122,7 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
     const { classes, sectionCode } = props;
 
     return (
-        <NoPaddingTableCell className={classes.cell}>
+        <NoPaddingTableCell className={`${classes.cell} ${classes.codeCell}`}>
             <Tooltip title="Click to copy course code" placement="bottom" enterDelay={150}>
                 <Chip
                     onClick={(event) => {
@@ -422,7 +426,9 @@ const StatusCell = withStyles(styles)((props: StatusCellProps) => {
     //         </NoPaddingTableCell>
     //     )
     return (
-        <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>{status}</NoPaddingTableCell>
+        <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell} ${classes.statusCell}`}>
+            {status}
+        </NoPaddingTableCell>
     );
 });
 
