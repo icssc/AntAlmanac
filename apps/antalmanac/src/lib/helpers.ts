@@ -15,7 +15,7 @@ interface GradesGraphQLResponse {
     };
 }
 
-export async function queryGraphQL(queryString: string): Promise<GradesGraphQLResponse> {
+export async function queryGraphQL(queryString: string): Promise<GradesGraphQLResponse | null> {
     const query = JSON.stringify({
         query: queryString,
     });
@@ -28,7 +28,12 @@ export async function queryGraphQL(queryString: string): Promise<GradesGraphQLRe
         },
         body: query,
     });
-    return res.json() as Promise<GradesGraphQLResponse>;
+
+    const json = await res.json();
+
+    if (!res.ok || json.data === null) return null;
+
+    return json as Promise<GradesGraphQLResponse>;
 }
 export interface CourseDetails {
     deptCode: string;
@@ -230,7 +235,9 @@ export interface Grades {
     gradeNPCount: number;
 }
 
-const gradesCache: { [key: string]: Grades | null } = {};
+// null means that the request failed
+// undefined means that the request is in progress
+const gradesCache: { [key: string]: Grades | null | undefined } = {};
 
 /*
  * Query the PeterPortal GraphQL API for a course's grades with caching
@@ -241,22 +248,23 @@ const gradesCache: { [key: string]: Grades | null } = {};
  *
  * @returns Grades
  */
-export async function queryGrades(deptCode: string, courseNumber: string, instructor = ''): Promise<Grades> {
+export async function queryGrades(deptCode: string, courseNumber: string, instructor = ''): Promise<Grades | null> {
     instructor = instructor.replace('STAFF', '').trim(); // Ignore STAFF
     const instructorFilter = instructor ? `instructor: "${instructor}"` : '';
 
     const cacheKey = deptCode + courseNumber + instructor;
 
-    if (gradesCache[cacheKey]) {
-        // If cache is null, there's a request in progress
-        while (gradesCache[cacheKey] === null) {
-            await new Promise((resolve) => setTimeout(resolve, 200)); // Wait before checking cache again
+    // If cache is null, that request failed last time, and we try again
+    if (cacheKey in gradesCache && gradesCache[cacheKey] !== null) {
+        // If cache is undefined, there's a request in progress
+        while (gradesCache[cacheKey] === undefined) {
+            await new Promise((resolve) => setTimeout(resolve, 350)); // Wait before checking cache again
             console.log('Waiting for cache ', cacheKey);
         }
         return gradesCache[cacheKey] as Grades;
     }
 
-    gradesCache[cacheKey] = null; // Set cache to null to indicate request in progress
+    gradesCache[cacheKey] = undefined; // Set cache to undefined to indicate request in progress
 
     const queryString = `{ 
         aggregateGrades(department: "${deptCode}", courseNumber: "${courseNumber}", ${instructorFilter}) {
@@ -274,11 +282,9 @@ export async function queryGrades(deptCode: string, courseNumber: string, instru
     }`;
 
     const resp = await queryGraphQL(queryString);
-    const grades = resp.data.aggregateGrades.gradeDistribution;
+    gradesCache[cacheKey] = resp?.data?.aggregateGrades?.gradeDistribution;
 
-    gradesCache[cacheKey] = grades;
-
-    return grades;
+    return gradesCache[cacheKey] as Grades;
 }
 
 export function combineSOCObjects(SOCObjects: WebsocAPIResponse[]) {

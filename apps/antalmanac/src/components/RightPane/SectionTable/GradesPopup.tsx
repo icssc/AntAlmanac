@@ -54,6 +54,11 @@ const GradesPopup = ({ deptCode, courseNumber, instructor = '', classes, isMobil
 
         try {
             const courseGrades = await queryGrades(deptCode, courseNumber, instructor);
+            if (!courseGrades) {
+                setLoading(false);
+                setGraphTitle('Grades are not available for this class.');
+                return;
+            }
 
             const data = [];
             for (const [key, value] of Object.entries(courseGrades)) {

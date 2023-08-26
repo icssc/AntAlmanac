@@ -218,7 +218,7 @@ const GPACell = withStyles(styles)((props: GPACellProps) => {
             for (const instructor of instructors.filter((instructor) => instructor !== 'STAFF')) {
                 const grades = await queryGrades(deptCode, courseNumber, instructor);
 
-                if (grades.averageGPA) {
+                if (grades?.averageGPA) {
                     setGpa(grades.averageGPA.toFixed(2).toString());
                     setInstructor(instructor);
                     return;
