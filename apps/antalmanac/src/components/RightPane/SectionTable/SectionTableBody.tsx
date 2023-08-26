@@ -34,10 +34,8 @@ import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
 import { translateWebSOCTimeTo24HourTime, parseDaysString } from '$stores/calendarizeHelpers';
 
+// TODO: Style each component directly instead of using nth-child like some monkey
 const styles: Styles<Theme, object> = (theme) => ({
-    popover: {
-        pointerEvents: 'none',
-    },
     sectionCode: {
         display: 'inline-flex',
         cursor: 'pointer',
