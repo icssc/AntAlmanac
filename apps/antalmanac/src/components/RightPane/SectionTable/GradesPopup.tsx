@@ -103,6 +103,7 @@ const GradesPopup = ({ deptCode, courseNumber, instructor = '', classes, isMobil
                     href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className={classes.graphAnchor}
                 >
                     {' '}
                     {gradeData && (
