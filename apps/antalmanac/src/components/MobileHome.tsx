@@ -44,7 +44,7 @@ const MobileHome = () => {
                     }}
                 >
                     <Tab label={<div>Calendar</div>} />
-                    <Tab label={<div>Search</div>} />
+                    <Tab label={<div>Classes</div>} />
                 </Tabs>
             </Paper>
             <mobileContext.Provider value={{ setSelectedTab }}>{components[selectedTab]}</mobileContext.Provider>
