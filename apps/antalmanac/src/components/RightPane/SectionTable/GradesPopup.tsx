@@ -1,125 +1,132 @@
-import { Theme } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { Skeleton } from '@material-ui/lab';
-import { useState } from 'react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { useState, useEffect, useMemo } from 'react';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { Box, Link, Typography, Skeleton } from '@mui/material';
+import { Grades, isDarkMode, queryGrades } from '$lib/helpers';
 
-import { isDarkMode, queryGrades } from '$lib/helpers';
+export interface GradeData {
+    grades: {
+        name: string;
+        all: number;
+    }[];
+    courseGrades: Grades;
+}
 
-const styles: Styles<Theme, object> = {
-    button: {
-        backgroundColor: '#385EB1',
-        color: '#fff',
-    },
-    gpaTitle: {
-        marginTop: '.5rem',
-        textAlign: 'center',
-        fontWeight: 500,
-        fontSize: '1.2rem',
-        marginRight: '4rem',
-        marginLeft: '4rem',
-    },
-    skeleton: {
-        padding: '4px',
-    },
-    graphAnchor: {
-        cursor: 'pointer',
-        overflow: 'hidden',
-    },
-};
+async function getGradeData(
+    deptCode: string,
+    courseNumber: string,
+    instructor: string
+): Promise<GradeData | undefined> {
+    const courseGrades = await queryGrades(deptCode, courseNumber, instructor).catch((e) => {
+        console.log(e);
+        return undefined;
+    });
 
-interface GradesPopupProps {
+    if (!courseGrades) {
+        return undefined;
+    }
+
+    /**
+     * Format data for displayiing in chart.
+     *
+     * @example { sum_grade_a_count: 10, sum_grade_b_count: 20 }
+     */
+    const grades = Object.entries(courseGrades)
+        .filter(([key]) => key !== 'averageGPA')
+        .map(([key, value]: [string, number]) => {
+            return {
+                name: key.replace('grade', '').replace('Count', ''),
+                all: value,
+            };
+        });
+
+    return { grades, courseGrades };
+}
+
+export interface GradesPopupProps {
     deptCode: string;
     courseNumber: string;
     instructor?: string;
-    classes: ClassNameMap;
     isMobileScreen: boolean;
 }
 
-interface GradeData {
-    name: string;
-    all: number;
-}
+function GradesPopup(props: GradesPopupProps) {
+    const { deptCode, courseNumber, instructor = '', isMobileScreen } = props;
 
-const GradesPopup = ({ deptCode, courseNumber, instructor = '', classes, isMobileScreen }: GradesPopupProps) => {
     const [loading, setLoading] = useState(true);
-    const [graphTitle, setGraphTitle] = useState<string | null>(null);
-    const [gradeData, setGradeData] = useState<GradeData[] | null>(null);
+    const [gradeData, setGradeData] = useState<GradeData | null>(null);
 
-    const loadGrades = async () => {
+    const width = useMemo(() => (isMobileScreen ? 300 : 500), [isMobileScreen]);
+
+    const height = useMemo(() => (isMobileScreen ? 200 : 300), [isMobileScreen]);
+
+    const graphTitle = useMemo(() => {
+        return gradeData
+            ? `Grade Distribution | Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}`
+            : 'Grades are not available for this class.';
+    }, [gradeData]);
+
+    useEffect(() => {
         if (loading === false) {
             return;
         }
 
-        try {
-            const courseGrades = await queryGrades(deptCode, courseNumber, instructor);
-            if (!courseGrades) {
-                setLoading(false);
-                setGraphTitle('Grades are not available for this class.');
-                return;
+        getGradeData(deptCode, courseNumber, instructor).then((result) => {
+            if (result) {
+                setGradeData(result);
             }
-
-            const data = [];
-            for (const [key, value] of Object.entries(courseGrades)) {
-                // format data for display in chart
-                // key formatting: sum_grade_a_count -> A
-                if (key !== 'averageGPA') {
-                    data.push({ name: key.replace('grade', '').replace('Count', ''), all: value as number });
-                }
-            }
-
-            setGraphTitle(`Grade Distribution | Average GPA: ${courseGrades.averageGPA.toFixed(2)}`);
-            setGradeData(data);
             setLoading(false);
-        } catch (e) {
-            console.log(e);
-            setLoading(false);
-            setGraphTitle('Grades are not available for this class.');
-        }
-    };
-
-    const width = isMobileScreen ? 300 : 500;
-    const height = isMobileScreen ? 200 : 300;
-
-    void loadGrades();
+        });
+    }, [deptCode, courseNumber, instructor, loading, setGradeData, setLoading]);
 
     if (loading) {
         return (
-            <div className={classes.skeleton}>
-                <p>
-                    <Skeleton variant="text" animation="wave" height={height} width={width} />
-                </p>
-            </div>
-        );
-    } else {
-        const encodedDept = encodeURIComponent(deptCode);
-        const axisColor = isDarkMode() ? '#fff' : '#111';
-
-        return (
-            <div style={{ marginTop: '5px' }}>
-                <div className={classes.gpaTitle}>{graphTitle}</div>
-                <a
-                    href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={classes.graphAnchor}
-                >
-                    {' '}
-                    {gradeData && (
-                        <ResponsiveContainer width={width} height={height} className={classes.graphAnchor}>
-                            <BarChart data={gradeData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
-                                <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} />
-                                <Bar dataKey="all" fill="#5182ed" />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    )}
-                </a>
-            </div>
+            <Box padding={1}>
+                <Skeleton variant="text" animation="wave" height={height} width={width} />
+            </Box>
         );
     }
-};
 
-export default withStyles(styles)(GradesPopup);
+    if (!gradeData) {
+        return (
+            <Box padding={1}>
+                <Typography variant="body1" align="center">
+                    No data available.
+                </Typography>
+            </Box>
+        );
+    }
+
+    const encodedDept = encodeURIComponent(deptCode);
+    const axisColor = isDarkMode() ? '#fff' : '#111';
+
+    return (
+        <Box>
+            <Typography
+                sx={{
+                    marginTop: '.5rem',
+                    textAlign: 'center',
+                    fontWeight: 500,
+                    fontSize: '1.2rem',
+                    marginRight: '4rem',
+                    marginLeft: '4rem',
+                }}
+            >
+                {graphTitle}
+            </Typography>
+            <Link
+                href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                <BarChart data={gradeData.grades} width={width} height={height} style={{ cursor: 'pointer' }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
+                    <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} />
+                    <Bar dataKey="all" fill="#5182ed" />
+                </BarChart>
+            </Link>
+        </Box>
+    );
+}
+
+export default GradesPopup;
