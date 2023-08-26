@@ -1,4 +1,4 @@
-import { AppBar, Menu, Toolbar, useMediaQuery } from '@material-ui/core';
+import { AppBar, Box, Menu, Toolbar, useMediaQuery } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
@@ -31,6 +31,10 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    menuIconContainer: {
+        padding: '0.25rem',
+        display: 'flex',
     },
 };
 
@@ -70,14 +74,14 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
                 <LoadSaveScheduleFunctionality />
 
                 {isMobileScreen ? (
-                    <>
-                        <MenuIcon onClick={handleClick} />
+                    <Box className={classes.menuIconContainer}>
+                        <MenuIcon onClick={handleClick} className={classes.menuIcon} />
                         <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
                             {components.map((element, index) => (
                                 <MenuItem key={index}>{element}</MenuItem>
                             ))}
                         </Menu>
-                    </>
+                    </Box>
                 ) : (
                     components
                 )}
