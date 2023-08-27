@@ -77,7 +77,7 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
     const closeAndAddCourse = (scheduleIndex: number, specificSchedule?: boolean) => {
         popupState.close();
         for (const meeting of section.meetings) {
-            if (meeting.timeIsTBA) {
+            if (meeting.time === 'TBA') {
                 openSnackbar('success', 'Online/TBA class added');
                 // See Added Classes."
                 break;
