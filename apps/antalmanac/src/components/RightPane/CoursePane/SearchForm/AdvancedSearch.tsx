@@ -1,5 +1,6 @@
 import {
     Button,
+    Checkbox,
     Collapse,
     FormControl,
     FormControlLabel,
@@ -44,6 +45,7 @@ interface AdvancedSearchTextFieldsState {
     coursesFull: string;
     building: string;
     room: string;
+    division: string;
 }
 
 interface AdvancedSearchProps {
@@ -66,6 +68,7 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
         coursesFull: RightPaneStore.getFormData().coursesFull,
         building: RightPaneStore.getFormData().building,
         room: RightPaneStore.getFormData().room,
+        division: RightPaneStore.getFormData().division,
     };
 
     componentDidMount() {
@@ -85,6 +88,7 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
             coursesFull: RightPaneStore.getFormData().coursesFull,
             building: RightPaneStore.getFormData().building,
             room: RightPaneStore.getFormData().room,
+            division: RightPaneStore.getFormData().division,
         });
     };
 
@@ -156,6 +160,24 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
                         <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
                         <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
                         <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
+                    </Select>
+                </FormControl>
+
+                <FormControl>
+                    <InputLabel id="division-label" shrink>
+                        Course Level
+                    </InputLabel>
+                    <Select
+                        labelId="division-label"
+                        value={this.state.division}
+                        onChange={this.handleChange('division')}
+                        className={classes?.courseLevel}
+                        displayEmpty
+                    >
+                        <MenuItem value={''}>Any Course Division</MenuItem>
+                        <MenuItem value={'LowerDiv'}>Lower Division Only</MenuItem>
+                        <MenuItem value={'UpperDiv'}>Upper Division Only</MenuItem>
+                        <MenuItem value={'Graduate'}>Graduate/Professional Only</MenuItem>
                     </Select>
                 </FormControl>
 
