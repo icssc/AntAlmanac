@@ -173,10 +173,10 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
                         className={classes?.courseLevel}
                         displayEmpty
                     >
-                        <MenuItem value={''}>Any Course Division</MenuItem>
-                        <MenuItem value={'LowerDiv'}>Lower Division Only</MenuItem>
-                        <MenuItem value={'UpperDiv'}>Upper Division Only</MenuItem>
-                        <MenuItem value={'Graduate'}>Graduate/Professional Only</MenuItem>
+                        <MenuItem value={''}>Any Division</MenuItem>
+                        <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
+                        <MenuItem value={'UpperDiv'}>Upper Division</MenuItem>
+                        <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
                     </Select>
                 </FormControl>
 
