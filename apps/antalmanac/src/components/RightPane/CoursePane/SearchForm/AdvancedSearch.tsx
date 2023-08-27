@@ -1,4 +1,5 @@
 import {
+    Box,
     Button,
     Collapse,
     FormControl,
@@ -19,16 +20,24 @@ import { ChangeEvent, PureComponent } from 'react';
 import RightPaneStore from '../../RightPaneStore';
 
 const styles: Styles<Theme, object> = {
+    fieldContainer: {
+        display: 'flex',
+        gap: '1.5rem',
+        flexWrap: 'wrap',
+        paddingLeft: '8px',
+        paddingRight: '8px',
+        marginBottom: '1rem',
+    },
     units: {
         width: '80px',
     },
     timePicker: {
         width: '130px',
     },
-    smallTextFields: {
-        display: 'flex',
-        justifyContent: 'space-around',
-        flexWrap: 'wrap',
+    onlineSwitch: {
+        margin: 0,
+        justifyContent: 'flex-end',
+        left: 0,
     },
 };
 
@@ -132,7 +141,7 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
         const endsBeforeMenuItems = ['', ...menuItemTimes].map((time) => createdMenuItemTime(time));
 
         return (
-            <div className={classes?.smallTextFields}>
+            <Box className={classes?.fieldContainer}>
                 <TextField
                     label="Instructor"
                     type="search"
@@ -213,8 +222,9 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
                             checked={this.state.building === 'ON'}
                         />
                     }
-                    label="Online Classes Only"
+                    label="Online Only"
                     labelPlacement="top"
+                    className={classes?.onlineSwitch}
                 />
 
                 <TextField
@@ -232,7 +242,7 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
                     value={this.state.room}
                     onChange={this.handleChange('room')}
                 />
-            </div>
+            </Box>
         );
     }
 }
