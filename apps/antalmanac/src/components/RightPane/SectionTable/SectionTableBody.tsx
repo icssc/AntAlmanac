@@ -29,7 +29,6 @@ import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
 import { translateWebSOCTimeTo24HourTime, parseDaysString } from '$stores/calendarizeHelpers';
 
-
 type SectionType = 'Act' | 'Col' | 'Dis' | 'Fld' | 'Lab' | 'Lec' | 'Qiz' | 'Res' | 'Sem' | 'Stu' | 'Tap' | 'Tut';
 
 const SECTION_COLORS: Record<SectionType, string> = {
@@ -45,6 +44,17 @@ const SECTION_COLORS: Record<SectionType, string> = {
     Stu: '#179523',
     Tap: '#8d2df0',
     Tut: '#ffc705',
+};
+
+/**
+ * TODO: maybe use this union type after the types have been figured out.
+ */
+// type CourseStatus = 'open' | 'waitl' | 'full';
+
+const STATUS_COLORS: Record<string, string> = {
+    open: '#00c853',
+    waitl: '#1c44b2',
+    full: '#e53935',
 };
 
 interface CourseCodeCellProps {
@@ -191,9 +201,9 @@ function GPACell(props: GPACellProps) {
     return (
         <Box>
             <Button
-                sx={{ color: isDarkMode() ? 'dodgerblue' : 'blue', padding: 1, minWidth: 0 }}
+                sx={{ color: isDarkMode() ? 'dodgerblue' : 'blue', padding: 0, minWidth: 0 }}
                 onClick={handleClick}
-                size="small"
+                variant="text"
             >
                 {gpa}
             </Button>
@@ -353,7 +363,7 @@ function DayAndTimeCell(props: DayAndTimeCellProps) {
             {props.meetings.map((meeting) => {
                 const timeString = meeting.time.replace(/\s/g, '').split('-').join(' - ');
                 return (
-                    <Typography key={meeting.days + meeting.time + meeting.bldg}>
+                    <Typography key={meeting.days + meeting.time + meeting.bldg} variant="body2">
                         {`${meeting.days} ${timeString}`}
                     </Typography>
                 );
@@ -367,7 +377,7 @@ interface StatusCellProps extends OpenSpotAlertPopoverProps {
 }
 
 function StatusCell(props: StatusCellProps) {
-    return <TableCell>{props.status}</TableCell>;
+    return <TableCell sx={{ color: STATUS_COLORS[props.status.toLowerCase()] }}>{props.status}</TableCell>;
 }
 
 interface SectionTableBodyProps {

@@ -24,16 +24,48 @@ import analyticsEnum from '$lib/analytics';
 
 // import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back and restore the files (https://github.com/icssc/AntAlmanac/tree/5e89e035e66f00608042871d43730ba785f756b0/src/components/RightPane/SectionTable/EnrollmentGraph)
 
-const tableHeaderColumns: Record<SectionTableColumn, string> = {
-    sectionCode: 'Code',
-    sectionDetails: 'Type',
-    instructors: 'Instructors',
-    gpa: 'GPA',
-    dayAndTime: 'Times',
-    location: 'Places',
-    sectionEnrollment: 'Enrollment',
-    restrictions: 'Restr',
-    status: 'Status',
+interface TableHeaderColumnDetails {
+    label: string;
+    width: string;
+}
+
+const tableHeaderColumns: Record<SectionTableColumn, TableHeaderColumnDetails> = {
+    sectionCode: {
+        label: 'Code',
+        width: '8%',
+    },
+    sectionDetails: {
+        label: 'Type',
+        width: '8%',
+    },
+    instructors: {
+        label: 'Instructors',
+        width: '8%',
+    },
+    gpa: {
+        label: 'GPA',
+        width: '15%',
+    },
+    dayAndTime: {
+        label: 'Times',
+        width: '12%',
+    },
+    location: {
+        label: 'Places',
+        width: '10%',
+    },
+    sectionEnrollment: {
+        label: 'Enrollment',
+        width: '10%',
+    },
+    restrictions: {
+        label: 'Restr',
+        width: '8%',
+    },
+    status: {
+        label: 'Status',
+        width: '8%',
+    },
 };
 
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
@@ -88,7 +120,7 @@ function SectionTable(props: SectionTableProps) {
     const tableMinWidth = useMemo(() => {
         const width = isMobileScreen ? 600 : 780;
         const numColumns = RightPaneStore.getActiveColumns().length;
-        return width / numColumns / SECTION_TABLE_COLUMNS.length;
+        return (width * numColumns) / SECTION_TABLE_COLUMNS.length;
     }, [isMobileScreen]);
 
     const handleColumnChange = useCallback(
@@ -151,15 +183,15 @@ function SectionTable(props: SectionTableProps) {
                 />
             </Box>
 
-            <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
-                <Table size="small" style={{ minWidth: `${tableMinWidth}px` }}>
+            <TableContainer component={Paper} sx={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
+                <Table size="small" sx={{ minWidth: `${tableMinWidth}px` }}>
                     <TableHead>
                         <TableRow>
                             <TableCell padding="none" />
                             {tableHeaderColumnEntries
                                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
-                                .map(([column, label]) => (
-                                    <TableCell padding="none" key={column}>
+                                .map(([column, { label, width }]) => (
+                                    <TableCell key={column} padding="none" width={width} sx={{ paddingX: 0.5 }}>
                                         {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
                                     </TableCell>
                                 ))}

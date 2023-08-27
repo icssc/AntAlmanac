@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { Box, Link, Typography, Skeleton } from '@mui/material';
 import { Grades, isDarkMode, queryGrades } from '$lib/helpers';
 
@@ -117,13 +117,16 @@ function GradesPopup(props: GradesPopupProps) {
                 href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
                 target="_blank"
                 rel="noopener noreferrer"
+                sx={{ display: 'flex', height, width }}
             >
-                <BarChart data={gradeData.grades} width={width} height={height} style={{ cursor: 'pointer' }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
-                    <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} />
-                    <Bar dataKey="all" fill="#5182ed" />
-                </BarChart>
+                <ResponsiveContainer width="95%" height="95%">
+                    <BarChart data={gradeData.grades} style={{ cursor: 'pointer' }}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
+                        <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} />
+                        <Bar dataKey="all" fill="#5182ed" />
+                    </BarChart>
+                </ResponsiveContainer>
             </Link>
         </Box>
     );
