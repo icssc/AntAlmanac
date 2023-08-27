@@ -1,6 +1,5 @@
 import {
     Button,
-    Checkbox,
     Collapse,
     FormControl,
     FormControlLabel,
@@ -215,6 +214,7 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
                         />
                     }
                     label="Online Classes Only"
+                    labelPlacement="top"
                 />
 
                 <TextField
