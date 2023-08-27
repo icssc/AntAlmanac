@@ -116,11 +116,22 @@ const CalendarPaneToolbar = ({
                 classes={{ root: classes.rootScheduleSelector }}
                 className={classes.scheduleSelector}
                 value={currentScheduleIndex}
-                onChange={(e) => handleScheduleChange(e)}
+                onChange={handleScheduleChange}
                 renderValue={(currentScheduleIndex) => scheduleNames[currentScheduleIndex as number]} // Typecasting is done here to keep ts happy
                 open={openSchedules}
                 onOpen={handleScheduleOpen}
                 onClose={handleScheduleClose}
+                MenuProps={{
+                    anchorOrigin: {
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    },
+                    transformOrigin: {
+                        vertical: 'top',
+                        horizontal: 'left',
+                    },
+                    getContentAnchorEl: null,
+                }}
             >
                 {scheduleNames.map((name, index) => (
                     <MenuItem key={index} value={index} className={classes.menuItem}>
