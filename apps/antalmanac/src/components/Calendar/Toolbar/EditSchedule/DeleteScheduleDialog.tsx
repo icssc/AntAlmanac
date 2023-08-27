@@ -50,7 +50,7 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
             >
                 <Tooltip title="Delete Schedule">
                     <IconButton style={{ padding: '0.325rem' }}>
-                        <Clear style={{ color: '#ff1744' }} />
+                        <Clear />
                     </IconButton>
                 </Tooltip>
             </MenuItem>
