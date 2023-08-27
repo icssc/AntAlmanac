@@ -32,7 +32,7 @@ import { clickToCopy, CourseDetails, isDarkMode, queryGrades } from '$lib/helper
 import AppStore from '$stores/AppStore';
 import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
-import { normalizeTime, parseDaysString, translate24To12HourTime } from '$stores/calendarizeHelpers';
+import { translateWebSOCTimeTo24HourTime, parseDaysString } from '$stores/calendarizeHelpers';
 
 const styles: Styles<Theme, object> = (theme) => ({
     sectionCode: {
@@ -290,7 +290,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                 const [buildingName = ''] = meeting.bldg[0].split(' ');
                 const buildingId = locationIds[buildingName];
                 return meeting.bldg[0] !== 'TBA' ? (
-                    <Fragment key={meeting.timeIsTBA + meeting.bldg[0]}>
+                    <Fragment key={meeting.days + meeting.time + meeting.bldg}>
                         <Link
                             className={classes.clickableLocation}
                             to={`/map?location=${buildingId}`}
@@ -403,15 +403,8 @@ const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
-                if (meeting.timeIsTBA) {
-                    return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>TBA</Box>;
-                }
-
-                if (meeting.startTime && meeting.endTime) {
-                    const timeString = translate24To12HourTime(meeting.startTime, meeting.endTime);
-
-                    return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>{`${meeting.days} ${timeString}`}</Box>;
-                }
+                const timeString = meeting.time.replace(/\s/g, '').split('-').join(' - ');
+                return <Box key={meeting.days + meeting.time + meeting.bldg}>{`${meeting.days} ${timeString}`}</Box>;
             })}
         </NoPaddingTableCell>
     );
@@ -486,7 +479,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const sectionDetails = useMemo(() => {
         return {
             daysOccurring: parseDaysString(section.meetings[0].days),
-            ...normalizeTime(section.meetings[0]),
+            ...translateWebSOCTimeTo24HourTime(section.meetings[0].time),
         };
     }, [section.meetings[0]]);
 
