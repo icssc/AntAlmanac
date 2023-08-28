@@ -162,7 +162,21 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
 
                 <FormControl>
                     <InputLabel>Class Full Option</InputLabel>
-                    <Select value={this.state.coursesFull} onChange={this.handleChange('coursesFull')}>
+                    <Select
+                        value={this.state.coursesFull}
+                        onChange={this.handleChange('coursesFull')}
+                        MenuProps={{
+                            anchorOrigin: {
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            },
+                            transformOrigin: {
+                                vertical: 'top',
+                                horizontal: 'left',
+                            },
+                            getContentAnchorEl: null,
+                        }}
+                    >
                         <MenuItem value={'ANY'}>Include all classes</MenuItem>
                         <MenuItem value={'SkipFullWaitlist'}>Include full courses if space on waitlist</MenuItem>
                         <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
@@ -181,6 +195,17 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
                         onChange={this.handleChange('division')}
                         className={classes?.courseLevel}
                         displayEmpty
+                        MenuProps={{
+                            anchorOrigin: {
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            },
+                            transformOrigin: {
+                                vertical: 'top',
+                                horizontal: 'left',
+                            },
+                            getContentAnchorEl: null,
+                        }}
                     >
                         <MenuItem value={''}>Any Division</MenuItem>
                         <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
