@@ -133,6 +133,12 @@ function cleanParams(record: Record<string, string>) {
         }
     }
 
+    if ('division' in record) {
+        if (record['division'] === '') {
+            delete record['division'];
+        }
+    }
+
     return record;
 }
 

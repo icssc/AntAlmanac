@@ -227,6 +227,7 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
                 fullCourses: formData.coursesFull,
                 building: formData.building,
                 room: formData.room,
+                division: formData.division,
             };
 
             try {
