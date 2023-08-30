@@ -169,10 +169,12 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         } else if (finalExam.examStatus == 'TBA_FINAL') {
             finalExamString = 'Final TBA';
         } else {
-            if (finalExam.startTime && finalExam.endTime && finalExam.month) {
+            if (finalExam.startTime && finalExam.endTime && finalExam.month && finalExam.bldg) {
                 const timeString = translate24To12HourTime(finalExam.startTime, finalExam.endTime);
+                const locationString = `at ${finalExam.bldg.join(', ')}`;
 
-                finalExamString = `${finalExam.dayOfWeek} ${MONTHS[finalExam.month]} ${finalExam.day} ${timeString}`;
+                // prettier-ignore
+                finalExamString = `${finalExam.dayOfWeek} ${MONTHS[finalExam.month]} ${finalExam.day} ${timeString} ${locationString}`;
             }
         }
 
