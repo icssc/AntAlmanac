@@ -19,6 +19,7 @@ import { translate24To12HourTime } from '$stores/calendarizeHelpers';
 const styles: Styles<Theme, object> = {
     courseContainer: {
         padding: '0.5rem',
+        margin: '0 1rem',
         minWidth: '15rem',
     },
     customEventContainer: {
