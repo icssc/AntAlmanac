@@ -133,6 +133,12 @@ function cleanParams(record: Record<string, string>) {
         }
     }
 
+    if ('division' in record) {
+        if (record['division'] === '') {
+            delete record['division'];
+        }
+    }
+
     return record;
 }
 
@@ -330,9 +336,9 @@ export const warnMultipleTerms = (terms: Set<string>) => {
     );
 };
 
-export function clickToCopy(event: React.MouseEvent<HTMLElement, MouseEvent>, sectionCode: string) {
+export async function clickToCopy(event: React.MouseEvent<HTMLElement, MouseEvent>, sectionCode: string) {
     event.stopPropagation();
-    void navigator.clipboard.writeText(sectionCode);
+    await navigator.clipboard.writeText(sectionCode);
     openSnackbar('success', 'WebsocSection code copied to clipboard');
 }
 

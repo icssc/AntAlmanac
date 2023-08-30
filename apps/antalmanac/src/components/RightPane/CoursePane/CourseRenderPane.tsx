@@ -22,7 +22,12 @@ import analyticsEnum from '$lib/analytics';
 
 const styles: Styles<Theme, object> = (theme) => ({
     course: {
-        ...theme.mixins.gutters(),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        [theme.breakpoints.up('sm')]: {
+            paddingLeft: theme.spacing(3),
+            paddingRight: theme.spacing(3),
+        },
         paddingTop: theme.spacing(),
         paddingBottom: theme.spacing(),
         display: 'flex',
@@ -165,8 +170,7 @@ const SectionTableWrapped = (
             <GeDataFetchProvider
                 term={formData.term}
                 courseDetails={course}
-                colorAndDelete={false}
-                highlightAdded={true}
+                allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch.title}
             />
@@ -177,8 +181,7 @@ const SectionTableWrapped = (
             <SectionTableLazyWrapper
                 term={formData.term}
                 courseDetails={course}
-                colorAndDelete={false}
-                highlightAdded={true}
+                allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch.title}
             />
@@ -224,6 +227,7 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
                 fullCourses: formData.coursesFull,
                 building: formData.building,
                 room: formData.room,
+                division: formData.division,
             };
 
             try {

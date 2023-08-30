@@ -10,8 +10,7 @@ export interface SectionTableProps {
     classes?: ClassNameMap;
     courseDetails: AACourse;
     term: string;
-    colorAndDelete: boolean;
-    highlightAdded: boolean;
+    allowHighlight: boolean;
     scheduleNames: string[];
     analyticsCategory: string;
 }

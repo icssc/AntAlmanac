@@ -12,7 +12,6 @@ import AppStore from '$stores/AppStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
 
-
 interface CourseWithTerm extends AACourse {
     term: string;
 }
@@ -277,7 +276,7 @@ const AddedSectionsGrid = withStyles(styles)((props: { classes: ClassNameMap }) 
                             classes={props.classes}
                             courseDetails={course}
                             term={course.term}
-                            colorAndDelete={true}
+                            W
                             highlightAdded={false}
                             analyticsCategory={analyticsEnum.addedClasses.title}
                             scheduleNames={scheduleNames}

@@ -1,4 +1,5 @@
 function endpointTransform(path: string) {
+    // This function is left in for legacy reasons. It is not functionally used anymore. Please refer to getEndpoint() in apps/antalmanac/src/lib/api/trpc.ts
     if (import.meta.env.VITE_ENDPOINT) {
         return `https://${import.meta.env.VITE_ENDPOINT}.api.antalmanac.com${path}`;
     }

@@ -10,13 +10,15 @@
     "repository": "github:icssc/antalmanac",
     "scripts": {
         "start": "vite",
+        "start:local": "VITE_LOCAL_SERVER=true vite",
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
         "predeploy": "npm run build",
         "deploy": "gh-pages -d build",
         "format": "prettier --write src",
-        "lint": "eslint src"
+        "lint": "eslint src",
+        "test": "vitest"
     },
     "dependencies": {
         "@date-io/date-fns": "^2.16.0",
@@ -29,6 +31,7 @@
         "@mui/icons-material": "^5.11.0",
         "@mui/lab": "^5.0.0-alpha.118",
         "@mui/material": "^5.11.7",
+        "@packages/antalmanac-types": "*",
         "@react-leaflet/core": "^2.1.0",
         "@tanstack/react-query": "^4.24.4",
         "@trpc/client": "^10.30.0",
@@ -48,7 +51,6 @@
         "moment": "^2.29.4",
         "moment-timezone": "^0.5.43",
         "notistack": "^2.0.8",
-        "peterportal-api-next-types": "1.0.0-alpha.6",
         "react": "^18.2.0",
         "react-big-calendar": "^1.6.4",
         "react-chartjs-2": "^5.2.0",
@@ -82,6 +84,7 @@
         "@typescript-eslint/eslint-plugin": "^5.54.1",
         "@typescript-eslint/parser": "^5.54.1",
         "@vitejs/plugin-react": "^3.1.0",
+        "@vitest/coverage-v8": "^0.34.2",
         "eslint": "^8.36.0",
         "eslint-config-prettier": "^8.7.0",
         "eslint-plugin-import": "^2.27.5",
@@ -91,10 +94,12 @@
         "gh-pages": "^5.0.0",
         "husky": "^8.0.3",
         "lint-staged": "^13.1.1",
+        "peterportal-api-next-types": "1.0.0-beta.2",
         "prettier": "^2.8.4",
         "typescript": "^4.9.5",
         "vite": "^4.2.1",
-        "vite-plugin-svgr": "^2.4.0"
+        "vite-plugin-svgr": "^2.4.0",
+        "vitest": "^0.34.2"
     },
     "browserslist": {
         "production": [

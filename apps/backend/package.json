@@ -3,16 +3,16 @@
     "version": "0.0.1",
     "description": "Backend for AntAlmanac",
     "scripts": {
-        "dev": "esbuild --watch --bundle --sourcemap --outdir=dist --platform=node src/index.ts",
-        "build": "esbuild --bundle --minify --outdir=dist --platform=node src/lambda.ts",
-        "start": "concurrently 'npm run dev' 'nodemon dist'",
+        "dev": "tsx watch src/index.ts",
+        "build": "node scripts/build.mjs",
+        "start": "npm run dev",
         "format": "prettier --write src",
-        "lint": "eslint src"
+        "lint": "eslint --fix src"
     },
     "dependencies": {
+        "@packages/antalmanac-types": "*",
         "@trpc/server": "^10.23.0",
         "@vendia/serverless-express": "^4.10.1",
-        "@packages/antalmanac-types": "*",
         "arktype": "1.0.14-alpha",
         "aws-lambda": "^1.0.7",
         "cors": "^2.8.5",
@@ -41,6 +41,7 @@
         "lint-staged": "^13.1.2",
         "nodemon": "^2.0.22",
         "prettier": "^2.8.4",
+        "tsx": "^3.12.7",
         "typescript": "^4.9.5"
     },
     "lint-staged": {
