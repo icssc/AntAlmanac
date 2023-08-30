@@ -42,15 +42,12 @@ class GESelector extends PureComponent<GESelectorProps, GESelectorState> {
     }
 
     getGe() {
-        return RightPaneStore.getUrlGEValue().trim()
-          ? this.updateGEAndGetFormData()
-          : RightPaneStore.getFormData().ge
+        return RightPaneStore.getUrlGEValue().trim() ? this.updateGEAndGetFormData() : RightPaneStore.getFormData().ge;
     }
 
     state = {
         ge: this.getGe(),
     };
-
 
     handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
         this.setState({ ge: event.target.value as string });
@@ -86,7 +83,22 @@ class GESelector extends PureComponent<GESelectorProps, GESelectorState> {
         return (
             <FormControl className={classes.formControl}>
                 <InputLabel>General Education</InputLabel>
-                <Select value={this.state.ge} onChange={this.handleChange} fullWidth>
+                <Select
+                    value={this.state.ge}
+                    onChange={this.handleChange}
+                    fullWidth
+                    MenuProps={{
+                        anchorOrigin: {
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        },
+                        transformOrigin: {
+                            vertical: 'top',
+                            horizontal: 'left',
+                        },
+                        getContentAnchorEl: null,
+                    }}
+                >
                     {geList.map((category) => {
                         return (
                             <MenuItem key={category.value} value={category.value}>
