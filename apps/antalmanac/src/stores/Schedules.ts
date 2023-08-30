@@ -172,7 +172,7 @@ export class Schedules {
             scheduleIndex
         );
 
-        if (existsInSchedule) {
+        if (existsInSchedule && existingSection) {
             return existingSection; // If it's already present in a schedule, then no need to push it
         }
 

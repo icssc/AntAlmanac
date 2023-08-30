@@ -67,7 +67,7 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
     };
 
     handleOpen = () => {
-        this.setState({ open: true, scheduleIndices: [AppStore.schedules.getCurrentScheduleIndex()] });
+        this.setState({ open: true, scheduleIndices: [AppStore.schedule.getCurrentScheduleIndex()] });
 
         logAnalytics({
             category: analyticsEnum.calendar.title,
@@ -140,7 +140,7 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
                         onClick={() =>
                             this.setState({
                                 open: true,
-                                scheduleIndices: AppStore.schedules.getIndexesOfCustomEvent(
+                                scheduleIndices: AppStore.schedule.getIndexesOfCustomEvent(
                                     this.props.customEvent ? this.props.customEvent.customEventID : 0
                                 ),
                             })

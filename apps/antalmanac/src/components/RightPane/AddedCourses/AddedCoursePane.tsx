@@ -44,7 +44,7 @@ const styles = {
 };
 
 function getCourses() {
-    const currentCourses = AppStore.schedules.getCurrentCourses();
+    const currentCourses = AppStore.schedule.getCurrentCourses();
 
     const formattedCourses: CourseWithTerm[] = [];
 
@@ -135,7 +135,7 @@ function SkeletonSchedule() {
 
 const AddedSectionsGrid = withStyles(styles)((props: { classes: ClassNameMap }) => {
     const [courses, setCourses] = useState(getCourses());
-    const [customEvents, setCustomEvents] = useState(AppStore.schedules.getCurrentCustomEvents());
+    const [customEvents, setCustomEvents] = useState(AppStore.schedule.getCurrentCustomEvents());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleNote, setScheduleNote] = useState(AppStore.getCurrentScheduleNote());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
@@ -145,7 +145,7 @@ const AddedSectionsGrid = withStyles(styles)((props: { classes: ClassNameMap }) 
     }, [setCourses]);
 
     const handleCustomEventsChange = useCallback(() => {
-        setCustomEvents(AppStore.schedules.getCurrentCustomEvents());
+        setCustomEvents(AppStore.schedule.getCurrentCustomEvents());
     }, [setCustomEvents]);
 
     const handleScheduleNamesChange = useCallback(() => {
@@ -276,7 +276,6 @@ const AddedSectionsGrid = withStyles(styles)((props: { classes: ClassNameMap }) 
                             classes={props.classes}
                             courseDetails={course}
                             term={course.term}
-                            W
                             highlightAdded={false}
                             analyticsCategory={analyticsEnum.addedClasses.title}
                             scheduleNames={scheduleNames}

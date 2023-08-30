@@ -74,7 +74,7 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
                 window.localStorage.removeItem('userID');
             }
 
-            const scheduleSaveState = AppStore.schedules.getScheduleAsSaveState();
+            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
             try {
                 await trpc.users.saveUserData.mutate({ id: userID, userData: scheduleSaveState });

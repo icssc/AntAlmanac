@@ -36,14 +36,14 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
 
     return (
         <>
-            <MenuItem onClick={handleOpen} disabled={AppStore.schedules.getNumberOfSchedules() === 1}>
+            <MenuItem onClick={handleOpen} disabled={AppStore.schedule.getNumberOfSchedules() === 1}>
                 Delete Schedule
             </MenuItem>
             <Dialog open={isOpen} onClose={handleClose}>
                 <DialogTitle>Delete Schedule</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Are you sure you want to delete {`"${AppStore.schedules.getCurrentScheduleName()}"`}?
+                        Are you sure you want to delete {`"${AppStore.schedule.getCurrentScheduleName()}"`}?
                         <br />
                         <br />
                         You cannot undo this action.
