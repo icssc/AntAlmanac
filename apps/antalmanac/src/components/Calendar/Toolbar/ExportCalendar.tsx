@@ -14,10 +14,17 @@ const quarterStartDates = Object.fromEntries(
         .filter((term) => term.startDate !== undefined)
         .map((term) => [term.shortName, term.startDate as [number, number, number]])
 );
+
+const months: Record<string, number> = { Mar: 3, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Dec: 12 };
+
 const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
+
 const daysOffset: Record<string, number> = { SU: -1, MO: 0, TU: 1, WE: 2, TH: 3, FR: 4, SA: 5 };
+
 const fallDaysOffset: Record<string, number> = { TH: 0, FR: 1, SA: 2, SU: 3, MO: 4, TU: 5, WE: 6 };
+
 const translateDaysForIcs = { Su: 'SU', M: 'MO', Tu: 'TU', W: 'WE', Th: 'TH', F: 'FR', Sa: 'SA' };
+
 const vTimeZoneSection =
     'BEGIN:VTIMEZONE\n' +
     'TZID:America/Los_Angeles\n' +
@@ -39,29 +46,44 @@ const vTimeZoneSection =
     'END:VTIMEZONE\n' +
     'BEGIN:VEVENT';
 
-/** [YEAR, MONTH, DAY, HOUR, MINUTE]*/
+/**
+ * @example [YEAR, MONTH, DAY, HOUR, MINUTE]
+ */
 type DateTimeArray = [number, number, number, number, number];
-/** [YEAR, MONTH, DAY]*/
+
+/**
+ * @example [YEAR, MONTH, DAY]
+ */
 type YearMonthDay = [number, number, number];
-/** [HOUR, MINUTE]*/
+
+/**
+ * [HOUR, MINUTE]
+ */
 type HourMinute = [number, number];
 
-/** getByDays returns the days that a class occurs
-    Given a string of days, convert it to a list of days in ics format
-    Ex: ("TuThF") -> ["TU", "TH", "FR"] */
-const getByDays = (days: string) => {
+/**
+ * Get the days that a class occurs.
+ * Given a string of days, convert it to a list of days in ics format
+ *
+ * @example ("TuThF") -> ["TU", "TH", "FR"]
+ */
+function getByDays(days: string) {
     return daysOfWeek.filter((day) => days.includes(day)).map((day) => translateDaysForIcs[day]);
-};
+}
 
-/** getClassStartDate returns the start date of a class
-    Given the term and bydays, this computes the start date of the class
-    Ex: ("2021 Spring", 'Tu') -> [2021, 3, 30] */
-const getClassStartDate = (term: string, bydays: ReturnType<typeof getByDays>) => {
+/**
+ * Get the start date of a class
+ * Given the term and bydays, this computes the start date of the class.
+ *
+ * @example ("2021 Spring", 'Tu') -> [2021, 3, 30]
+ */
+function getClassStartDate(term: string, bydays: ReturnType<typeof getByDays>) {
     // Get the start date of the quarter (Monday)
     const quarterStartDate = new Date(...quarterStartDates[term]);
 
     // dayOffset represents the number of days since the start of the quarter
     let dayOffset;
+
     if (getQuarter(term) === 'Fall') {
         // Since Fall quarter starts on a Thursday the first byday and offset
         // will be different from other quarters
@@ -80,31 +102,38 @@ const getClassStartDate = (term: string, bydays: ReturnType<typeof getByDays>) =
 
     // Return [Year, Month, Date]
     return dateToIcs(quarterStartDate);
-};
+}
 
-/** dateToIcs takes a Date object and returns it in ics format [YYYY, MM, DD] */
-const dateToIcs = (date: Date) => {
+/**
+ * Convert a Date object to ics format, i.e. [YYYY, MM, DD]
+ */
+function dateToIcs(date: Date) {
     return [
         date.getFullYear(),
         date.getMonth() + 1, // Add 1 month since it is 0-indexed
         date.getDate(),
     ] as YearMonthDay;
-};
+}
 
-/** getFirstClass returns the start and end datetime of the first class
-    Ex: ([2021, 3, 30], " 4:00-4:50p") -> [[2021, 3, 30, 16, 0], [2021, 3, 30, 16, 50]] */
-const getFirstClass = (date: YearMonthDay, time: string): [DateTimeArray, DateTimeArray] => {
+/**
+ * Get the start and end datetime of the first class.
+ *
+ * @example ([2021, 3, 30], " 4:00-4:50p") -> [[2021, 3, 30, 16, 0], [2021, 3, 30, 16, 50]]
+ */
+function getFirstClass(date: YearMonthDay, time: string): [DateTimeArray, DateTimeArray] {
     const [classStartTime, classEndTime] = parseTimes(time);
     return [
         [...date, ...classStartTime],
         [...date, ...classEndTime],
     ];
-};
+}
 
-/** getExamTime returns the start and end datetime of an exam
-    Ex: ("Mon Jun 7 10:30-12:30pm", "2019") -> [[2019, 6, 7, 10, 30], [2019, 6, 7, 12, 30]] */
-const months: Record<string, number> = { Mar: 3, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Dec: 12 };
-const getExamTime = (exam: string, year: number) => {
+/**
+ * Get the start and end datetime of an exam
+ *
+ * @example ("Mon Jun 7 10:30-12:30pm", "2019") -> [[2019, 6, 7, 10, 30], [2019, 6, 7, 12, 30]]
+ */
+function getExamTime(exam: string, year: number) {
     const [, month, day, time] = exam.split(' ');
     const [examStartTime, examEndTime] = parseTimes(time);
 
@@ -112,12 +141,14 @@ const getExamTime = (exam: string, year: number) => {
         [year, months[month], parseInt(day), ...examStartTime],
         [year, months[month], parseInt(day), ...examEndTime],
     ];
-};
+}
 
-/** parseTimes converts a time string to a
-    This is a helper function used by getFirstClass
-    Ex: " 4:00-4:50p" -> [[16, 0], [16, 50]] */
-const parseTimes = (time: string) => {
+/**
+ * Helper to convert a time string to an array format.
+ *
+ * @example " 4:00-4:50p" -> [[16, 0], [16, 50]]
+ */
+function parseTimes(time: string) {
     // Determine whether the time is in the afternoon (PM)
     let pm = false;
     if (time.slice(-1) === 'p') {
@@ -154,29 +185,43 @@ const parseTimes = (time: string) => {
     }
 
     return [start, end] as const;
-};
+}
 
-/** getYear returns the year of a given term
-    Ex: "2019 Fall" -> "2019" */
-const getYear = (term: string) => {
+/**
+ * Get the year of a given term.
+ *
+ * @example "2019 Fall" -> "2019"
+ */
+function getYear(term: string) {
     return parseInt(term.split(' ')[0]);
-};
+}
 
-/** getQuarter returns the quarter of a given term
-    Ex: "2019 Fall" -> "Fall" */
-const getQuarter = (term: string) => {
+/**
+ * Get the quarter of a given term.
+ *
+ * @example "2019 Fall" -> "Fall"
+ */
+function getQuarter(term: string) {
     return term.split(' ')[1];
-};
+}
 
-// getTermLength returns the number of weeks in a given term,
-// which is 10 for quarters and Summer Session 10wk,
-// and 5 for Summer Sessions I and II
-const getTermLength = (quarter: string) => (quarter.startsWith('Summer') && quarter !== 'Summer10wk' ? 5 : 10);
+/**
+ * Get the number of weeks in a given term.
+ *
+ * i.e. 10 for quarters and Summer Session 10wk, 5 for Summer Sessions I and II.
+ */
+function getTermLength(quarter: string) {
+    return quarter.startsWith('Summer') && quarter !== 'Summer10wk' ? 5 : 10;
+}
 
-// getRRule returns a string representing the recurring rule for the VEvent
-//  Ex: ["TU", "TH"] -> "FREQ=WEEKLY;BYDAY=TU,TH;INTERVAL=1;COUNT=20"
-const getRRule = (bydays: ReturnType<typeof getByDays>, quarter: string) => {
+/**
+ * Get a string representing the recurring rule for the VEvent.
+ *
+ * @example ["TU", "TH"] -> "FREQ=WEEKLY;BYDAY=TU,TH;INTERVAL=1;COUNT=20"
+ */
+function getRRule(bydays: ReturnType<typeof getByDays>, quarter: string) {
     let count = getTermLength(quarter) * bydays.length; // Number of occurences in the quarter
+
     switch (quarter) {
         case 'Fall':
             for (const byday of bydays) {
@@ -201,9 +246,9 @@ const getRRule = (bydays: ReturnType<typeof getByDays>, quarter: string) => {
             break;
     }
     return `FREQ=WEEKLY;BYDAY=${bydays.toString()};INTERVAL=1;COUNT=${count}`;
-};
+}
 
-const exportCalendar = () => {
+function exportCalendar() {
     // Fetch courses for the current schedule
     const courses = AppStore.schedules.getCurrentCourses();
 
@@ -282,14 +327,16 @@ const exportCalendar = () => {
             console.log(err);
         }
     });
-};
+}
 
-const ExportCalendarButton = () => (
-    <Tooltip title="Download Calendar as an .ics file">
-        <Button onClick={exportCalendar} variant="outlined" size="small" startIcon={<Today fontSize="small" />}>
-            Download
-        </Button>
-    </Tooltip>
-);
+function ExportCalendarButton() {
+    return (
+        <Tooltip title="Download Calendar as an .ics file">
+            <Button onClick={exportCalendar} variant="outlined" size="small" startIcon={<Today fontSize="small" />}>
+                Download
+            </Button>
+        </Tooltip>
+    );
+}
 
 export default ExportCalendarButton;
