@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Button, IconButton, Paper, Tooltip } from '@material-ui/core';
+import { Chip, IconButton, Paper, Tooltip } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
@@ -40,6 +40,7 @@ const styles: Styles<Theme, object> = {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginBottom: '0.25rem',
     },
     table: {
         border: 'none',
@@ -204,18 +205,18 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             <td className={classes.alignToTop}>Section code</td>
                             <Tooltip title="Click to copy course code" placement="right">
                                 <td className={classes.rightCells}>
-                                    <Button
-                                        size="small"
-                                        onClick={(e) => {
+                                    <Chip
+                                        onClick={(event) => {
+                                            clickToCopy(event, sectionCode);
                                             logAnalytics({
-                                                category: analyticsEnum.calendar.title,
-                                                action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
+                                                category: analyticsEnum.classSearch.title,
+                                                action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
                                             });
-                                            clickToCopy(e, sectionCode);
                                         }}
-                                    >
-                                        <u>{sectionCode}</u>
-                                    </Button>
+                                        className={classes.sectionCode}
+                                        label={sectionCode}
+                                        size="small"
+                                    />
                                 </td>
                             </Tooltip>
                         </tr>

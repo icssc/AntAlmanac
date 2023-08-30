@@ -37,6 +37,7 @@ const defaultFormValues: Record<string, string> = {
     coursesFull: 'ANY',
     building: '',
     room: '',
+    division: '',
 };
 
 export interface BuildingFocusInfo {
