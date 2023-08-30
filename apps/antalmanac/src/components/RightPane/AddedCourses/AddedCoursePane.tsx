@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, Fragment } from 'react';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 
-import { withStyles } from '@material-ui/core/styles';
-import type { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { Button, Grid, Menu, MenuItem, Paper, TextField, Typography } from '@material-ui/core';
+import { Box, Button, Grid, Menu, MenuItem, Paper, TextField, Typography } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
@@ -17,31 +15,6 @@ interface CourseWithTerm extends AACourse {
 }
 
 const NOTE_MAX_LEN = 5000;
-
-const styles = {
-    container: {
-        height: '100%',
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    titleRow: {
-        display: 'flex',
-        width: '100%',
-        justifyContent: 'space-between',
-    },
-    clearSchedule: {
-        marginLeft: '4px',
-        marginRight: '4px',
-    },
-    scheduleNoteContainer: {
-        padding: '8px',
-        marginLeft: '4px',
-        marginRight: '4px',
-        width: '100%',
-    },
-};
 
 function getCourses() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
@@ -118,7 +91,7 @@ function SkeletonSchedule() {
                         <Fragment key={index}>
                             <Typography variant="h6">{term}</Typography>
                             <Paper key={term} elevation={1}>
-                                <Grid item md={12} xs={12} key={term} style={{ padding: '15px 0px 15px' }}>
+                                <Grid item md={12} xs={12} key={term}>
                                     <Typography variant="body1">Sections enrolled: {sections.join(', ')}</Typography>
                                 </Grid>
                             </Paper>
@@ -133,7 +106,7 @@ function SkeletonSchedule() {
     );
 }
 
-const AddedSectionsGrid = withStyles(styles)((props: { classes: ClassNameMap }) => {
+function AddedSectionsGrid() {
     const [courses, setCourses] = useState(getCourses());
     const [customEvents, setCustomEvents] = useState(AppStore.schedule.getCurrentCustomEvents());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
@@ -167,6 +140,26 @@ const AddedSectionsGrid = withStyles(styles)((props: { classes: ClassNameMap }) 
         },
         [setScheduleNote, scheduleIndex]
     );
+
+    const handleClear = useCallback(() => {
+        if (
+            window.confirm(
+                'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
+            )
+        ) {
+            clearSchedules();
+            logAnalytics({
+                category: analyticsEnum.addedClasses.title,
+                action: analyticsEnum.addedClasses.actions.CLEAR_SCHEDULE,
+            });
+        }
+    }, []);
+
+    const createCopyHandler = useCallback((index: number) => {
+        return () => {
+            copySchedule(index);
+        };
+    }, []);
 
     useEffect(() => {
         AppStore.on('addedCoursesChange', handleCoursesChange);
@@ -204,14 +197,14 @@ const AddedSectionsGrid = withStyles(styles)((props: { classes: ClassNameMap }) 
 
     const scheduleName = useMemo(() => {
         return scheduleNames[scheduleIndex];
-    }, [scheduleIndex, scheduleNames]);
+    }, [scheduleNames, scheduleIndex]);
 
     return (
-        <Grid container spacing={2}>
-            <div className={props.classes.titleRow}>
+        <Box>
+            <Box display="flex" width={1} justifyContent="space-between" marginY={2}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
 
-                <div>
+                <Box>
                     <PopupState variant="popover">
                         {(popupState) => (
                             <>
@@ -219,26 +212,16 @@ const AddedSectionsGrid = withStyles(styles)((props: { classes: ClassNameMap }) 
                                     Copy Schedule
                                 </Button>
                                 <Menu {...bindMenu(popupState)}>
-                                    {scheduleNames.map((name, index) => {
-                                        return (
-                                            <MenuItem
-                                                key={index}
-                                                disabled={AppStore.getCurrentScheduleIndex() === index}
-                                                onClick={() => {
-                                                    copySchedule(index);
-                                                    popupState.close();
-                                                }}
-                                            >
-                                                Copy to {name}
-                                            </MenuItem>
-                                        );
-                                    })}
-                                    <MenuItem
-                                        onClick={() => {
-                                            copySchedule(scheduleNames.length);
-                                            popupState.close();
-                                        }}
-                                    >
+                                    {scheduleNames.map((name, index) => (
+                                        <MenuItem
+                                            key={index}
+                                            disabled={AppStore.getCurrentScheduleIndex() === index}
+                                            onClick={createCopyHandler(index)}
+                                        >
+                                            Copy to {name}
+                                        </MenuItem>
+                                    ))}
+                                    <MenuItem onClick={createCopyHandler(scheduleNames.length)}>
                                         Copy to All Schedules
                                     </MenuItem>
                                 </Menu>
@@ -247,63 +230,53 @@ const AddedSectionsGrid = withStyles(styles)((props: { classes: ClassNameMap }) 
                     </PopupState>
 
                     <Button
-                        className={props.classes.clearSchedule}
+                        sx={{ marginLeft: '4px', marginRight: '4px' }}
                         variant="outlined"
                         color="secondary"
-                        onClick={() => {
-                            if (
-                                window.confirm(
-                                    'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
-                                )
-                            ) {
-                                clearSchedules();
-                                logAnalytics({
-                                    category: analyticsEnum.addedClasses.title,
-                                    action: analyticsEnum.addedClasses.actions.CLEAR_SCHEDULE,
-                                });
-                            }
-                        }}
+                        onClick={handleClear}
                     >
                         Clear Schedule
                     </Button>
-                </div>
-            </div>
+                </Box>
+            </Box>
 
-            {courses.map((course) => {
-                return (
-                    <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber}>
-                        <SectionTableLazyWrapper
-                            classes={props.classes}
-                            courseDetails={course}
-                            term={course.term}
-                            highlightAdded={false}
-                            analyticsCategory={analyticsEnum.addedClasses.title}
-                            scheduleNames={scheduleNames}
-                        />
-                    </Grid>
-                );
-            })}
+            <Grid container spacing={2} padding={0}>
+                {courses.map((course) => {
+                    return (
+                        <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber}>
+                            <SectionTableLazyWrapper
+                                courseDetails={course}
+                                term={course.term}
+                                highlightAdded={false}
+                                analyticsCategory={analyticsEnum.addedClasses.title}
+                                scheduleNames={scheduleNames}
+                            />
+                        </Grid>
+                    );
+                })}
 
-            {customEvents.length > 0 && <Typography variant="h6">Custom Events</Typography>}
+                {customEvents.length > 0 && <Typography variant="h6">Custom Events</Typography>}
 
-            {customEvents.map((customEvent) => {
-                return (
-                    <Grid item md={12} xs={12} key={customEvent.title}>
-                        <CustomEventDetailView
-                            customEvent={customEvent}
-                            currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
-                            scheduleNames={scheduleNames}
-                        />
-                    </Grid>
-                );
-            })}
+                {customEvents.map((customEvent) => {
+                    return (
+                        <Grid item md={12} xs={12} key={customEvent.title}>
+                            <CustomEventDetailView
+                                customEvent={customEvent}
+                                currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
+                                scheduleNames={scheduleNames}
+                            />
+                        </Grid>
+                    );
+                })}
+            </Grid>
 
-            <Typography variant="h6">Schedule Notes</Typography>
+            <Box>
+                <Typography variant="h6">Schedule Notes</Typography>
 
-            <Paper className={props.classes.scheduleNoteContainer}>
                 <TextField
                     type="text"
-                    placeholder="This schedule does not have any notes! Click here to start typing!"
+                    variant="filled"
+                    label="Click here to start typing!"
                     onChange={handleNoteChange}
                     value={scheduleNote}
                     inputProps={{ maxLength: NOTE_MAX_LEN }}
@@ -311,10 +284,10 @@ const AddedSectionsGrid = withStyles(styles)((props: { classes: ClassNameMap }) 
                     fullWidth
                     multiline
                 />
-            </Paper>
-        </Grid>
+            </Box>
+        </Box>
     );
-});
+}
 
 export default function AddedCoursePaneFunctionComponent() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
