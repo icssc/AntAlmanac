@@ -4,10 +4,19 @@ import { addSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 
-type ScheduleNameDialogProps = DialogProps
+type ScheduleNameDialogProps = DialogProps;
 
+/**
+ * Dialog with a text field to add a schedule.
+ *
+ * State like open/closed is managed by the parent component.
+ */
 function AddScheduleDialog(props: ScheduleNameDialogProps) {
-    const { onClose, onKeyDown, ...dialogProps } = props;
+    /**
+     * {@link props.onClose} also needs to be forwarded to the {@link Dialog} component.
+     * A custom {@link onKeyDown} handler is provided to handle the Enter and Escape keys.
+     */
+    const { onKeyDown, ...dialogProps } = props;
 
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
@@ -16,9 +25,9 @@ function AddScheduleDialog(props: ScheduleNameDialogProps) {
     const [name, setName] = useState(defaultScheduleName);
 
     const handleCancel = useCallback(() => {
-        onClose?.({}, 'escapeKeyDown');
+        props.onClose?.({}, 'escapeKeyDown');
         setName(defaultScheduleName);
-    }, [onClose, defaultScheduleName]);
+    }, [props.onClose, defaultScheduleName]);
 
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
@@ -26,8 +35,8 @@ function AddScheduleDialog(props: ScheduleNameDialogProps) {
 
     const submitName = useCallback(() => {
         addSchedule(name);
-        onClose?.({}, 'escapeKeyDown');
-    }, [onClose, name]);
+        props.onClose?.({}, 'escapeKeyDown');
+    }, [props.onClose, name]);
 
     const handleKeyDown = useCallback(
         (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -38,10 +47,10 @@ function AddScheduleDialog(props: ScheduleNameDialogProps) {
             }
 
             if (event.key === 'Escape') {
-                onClose?.({}, 'escapeKeyDown');
+                props.onClose?.({}, 'escapeKeyDown');
             }
         },
-        [onClose, submitName]
+        [props.onClose, submitName]
     );
 
     const handleScheduleNamesChange = useCallback(() => {

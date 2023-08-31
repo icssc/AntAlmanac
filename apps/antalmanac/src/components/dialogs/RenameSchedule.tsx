@@ -12,16 +12,20 @@ interface ScheduleNameDialogProps extends DialogProps {
 }
 
 function RenameScheduleDialog(props: ScheduleNameDialogProps) {
-    const { onClose, index, onKeyDown, ...dialogProps } = props;
+    /**
+     * {@link props.onClose} also needs to be forwarded to the {@link Dialog} component.
+     * A custom {@link onKeyDown} handler is provided to handle the Enter and Escape keys.
+     */
+    const { index, onKeyDown, ...dialogProps } = props;
 
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
     const [name, setName] = useState(scheduleNames[index]);
 
     const handleCancel = useCallback(() => {
-        onClose?.({}, 'escapeKeyDown');
+        props.onClose?.({}, 'escapeKeyDown');
         setName(scheduleNames[index]);
-    }, [onClose, scheduleNames, index]);
+    }, [props.onClose, scheduleNames, index]);
 
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
@@ -29,8 +33,8 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
 
     const submitName = useCallback(() => {
         renameSchedule(name, index as number);
-        onClose?.({}, 'escapeKeyDown');
-    }, [onClose, name, index]);
+        props.onClose?.({}, 'escapeKeyDown');
+    }, [props.onClose, name, index]);
 
     const handleKeyDown = useCallback(
         (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -41,10 +45,10 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
             }
 
             if (event.key === 'Escape') {
-                onClose?.({}, 'escapeKeyDown');
+                props.onClose?.({}, 'escapeKeyDown');
             }
         },
-        [onClose, submitName]
+        [props.onClose, submitName]
     );
 
     const handleScheduleNamesChange = useCallback(() => {
