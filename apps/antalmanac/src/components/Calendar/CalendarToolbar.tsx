@@ -90,7 +90,7 @@ const CalendarPaneToolbar = (props: CalendarPaneToolbarProps) => {
         <Paper
             elevation={0}
             variant="outlined"
-            sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', padding: 1 }}
+            sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', padding: 1 }}
         >
             <Box gap={1} display="flex" alignItems="center">
                 <EditSchedule scheduleNames={scheduleNames} scheduleIndex={currentScheduleIndex} />
@@ -118,44 +118,46 @@ const CalendarPaneToolbar = (props: CalendarPaneToolbarProps) => {
 
             <Box flexGrow={1} />
 
-            <Box display="flex" alignItems="center" gap={0.5}>
-                <Tooltip title="Undo last action">
-                    <IconButton onClick={handleUndo} size="small">
-                        <Undo fontSize="small" />
-                    </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Clear schedule">
-                    <IconButton onClick={handleClearSchedule} size="small">
-                        <Delete fontSize="small" />
-                    </IconButton>
-                </Tooltip>
-            </Box>
-
-            {isMobileScreen ? (
-                <Box>
-                    <IconButton onClick={handleMenuClick}>
-                        <MoreHoriz />
-                    </IconButton>
-                    <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                        <MenuItem onClick={handleMenuClose}>
-                            <ExportCalendar key="export" />
-                        </MenuItem>
-                        <MenuItem onClick={handleMenuClose}>
-                            <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />
-                        </MenuItem>
-                        <MenuItem onClick={handleMenuClose}>
-                            <CustomEventDialog scheduleNames={scheduleNames} key="custom" />
-                        </MenuItem>
-                    </Menu>
-                </Box>
-            ) : (
+            <Box display="flex" flexWrap="wrap" gap={0.5}>
                 <Box display="flex" alignItems="center" gap={0.5}>
-                    <ExportCalendar key="export" />
-                    <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />
-                    <CustomEventDialog scheduleNames={scheduleNames} key="custom" />
+                    <Tooltip title="Undo last action">
+                        <IconButton onClick={handleUndo} size="small">
+                            <Undo fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Clear schedule">
+                        <IconButton onClick={handleClearSchedule} size="small">
+                            <Delete fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
                 </Box>
-            )}
+
+                {isMobileScreen ? (
+                    <Box>
+                        <IconButton onClick={handleMenuClick}>
+                            <MoreHoriz />
+                        </IconButton>
+                        <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleMenuClose}>
+                            <MenuItem onClick={handleMenuClose}>
+                                <ExportCalendar key="export" />
+                            </MenuItem>
+                            <MenuItem onClick={handleMenuClose}>
+                                <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />
+                            </MenuItem>
+                            <MenuItem onClick={handleMenuClose}>
+                                <CustomEventDialog scheduleNames={scheduleNames} key="custom" />
+                            </MenuItem>
+                        </Menu>
+                    </Box>
+                ) : (
+                    <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
+                        <ExportCalendar key="export" />
+                        <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />
+                        <CustomEventDialog scheduleNames={scheduleNames} key="custom" />
+                    </Box>
+                )}
+            </Box>
         </Paper>
     );
 };
