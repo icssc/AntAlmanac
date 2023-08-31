@@ -8,8 +8,6 @@ type ScheduleNameDialogProps = DialogProps;
 
 /**
  * Dialog with a text field to add a schedule.
- *
- * State like open/closed is managed by the parent component.
  */
 function AddScheduleDialog(props: ScheduleNameDialogProps) {
     /**

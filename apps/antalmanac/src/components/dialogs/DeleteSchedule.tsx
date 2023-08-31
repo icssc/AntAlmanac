@@ -19,6 +19,9 @@ interface ScheduleNameDialogProps extends DialogProps {
     index: number;
 }
 
+/**
+ * Dialog with a prompt to delete the specified schedule.
+ */
 function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
     /**
      * {@link props.onClose} also needs to be forwarded to the {@link Dialog} component.

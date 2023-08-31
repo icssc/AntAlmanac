@@ -20,6 +20,9 @@ interface ScheduleNameDialogProps extends DialogProps {
     index: number;
 }
 
+/**
+ * Dialog with a form to rename a schedule.
+ */
 function RenameScheduleDialog(props: ScheduleNameDialogProps) {
     /**
      * {@link props.onClose} also needs to be forwarded to the {@link Dialog} component.
