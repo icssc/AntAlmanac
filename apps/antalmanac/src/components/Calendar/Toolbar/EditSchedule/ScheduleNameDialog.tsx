@@ -19,33 +19,35 @@ const styles = () => ({
 interface ScheduleNameDialogProps {
     classes: ClassNameMap;
     onOpen?: () => void;
-    onClose: () => void;
+    onClose?: () => void;
     scheduleNames: string[];
     scheduleRenameIndex?: number;
 }
 
 const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
     const { classes, onOpen, onClose, scheduleNames, scheduleRenameIndex } = props;
+
     const rename = scheduleRenameIndex !== undefined;
 
     const [isOpen, setIsOpen] = useState(false);
+
     const [scheduleName, setScheduleName] = useState(
         scheduleRenameIndex !== undefined ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`
     );
 
+    // We need to stop propagation so that the select menu won't close
     const handleOpen: React.MouseEventHandler<HTMLLIElement> = (event) => {
-        // We need to stop propagation so that the select menu won't close
         event.stopPropagation();
         setIsOpen(true);
-        if (onOpen) {
-            onOpen();
-        }
+        onOpen?.();
     };
 
+    /**
+     * If the user cancelled renaming the schedule, the schedule name is changed to its original value.
+     * If the user cancelled adding a new schedule, the schedule name is changed to the default schedule name.
+     */
     const handleCancel = () => {
         setIsOpen(false);
-        // If the user cancelled renaming the schedule, the schedule name is changed to its original value;
-        // if the user cancelled adding a new schedule, the schedule name is changed to the default schedule name
         setScheduleName(rename ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`);
     };
 
@@ -55,16 +57,19 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
         event.stopPropagation();
+
         if (event.key === 'Enter') {
             submitName();
         }
+
         if (event.key === 'Escape') {
             setIsOpen(false);
         }
     };
 
     const submitName = () => {
-        onClose();
+        onClose?.();
+
         if (rename) {
             renameSchedule(scheduleName, scheduleRenameIndex as number); // typecast works b/c this function only runs when `const rename = scheduleRenameIndex !== undefined` is true.
         } else {
@@ -94,6 +99,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
                 onClose={() => setIsOpen(false)}
             >
                 <DialogTitle>{rename ? 'Rename Schedule' : 'Add a New Schedule'}</DialogTitle>
+
                 <DialogContent>
                     <TextField
                         // We enable autofocus in order to be consistent with the Save, Load, and Import dialogs
@@ -107,6 +113,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
                         value={scheduleName}
                     />
                 </DialogContent>
+
                 <DialogActions>
                     <Button onClick={handleCancel} color={isDarkMode() ? 'secondary' : 'primary'}>
                         Cancel
