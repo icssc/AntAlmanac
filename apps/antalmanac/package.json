@@ -20,7 +20,6 @@
         "lint": "eslint src"
     },
     "dependencies": {
-        "@packages/antalmanac-types": "*",
         "@date-io/date-fns": "^2.16.0",
         "@emotion/react": "^11.10.5",
         "@emotion/styled": "^11.10.5",
@@ -28,9 +27,11 @@
         "@material-ui/icons": "^4.11.3",
         "@material-ui/lab": "^4.0.0-alpha.61",
         "@material-ui/pickers": "^3.3.10",
+        "@mui/base": "5.0.0-beta.13",
         "@mui/icons-material": "^5.11.0",
         "@mui/lab": "^5.0.0-alpha.118",
         "@mui/material": "^5.11.7",
+        "@packages/antalmanac-types": "*",
         "@react-leaflet/core": "^2.1.0",
         "@tanstack/react-query": "^4.24.4",
         "@trpc/client": "^10.30.0",

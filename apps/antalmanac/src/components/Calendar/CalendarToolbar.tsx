@@ -1,12 +1,19 @@
-import { Box, Button, IconButton, Menu, Paper, Tooltip, useMediaQuery } from '@material-ui/core';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { Theme, withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { Delete, MoreHoriz, Undo } from '@material-ui/icons';
-import React, { useState } from 'react';
+import { useState, useCallback } from 'react';
+import {
+    Box,
+    Button,
+    IconButton,
+    Menu,
+    MenuItem,
+    Paper,
+    Select,
+    Tooltip,
+    Typography,
+    useMediaQuery,
+    type SelectProps,
+} from '@mui/material';
+import { Delete, MoreHoriz, Undo } from '@mui/icons-material';
 
-import ConditionalWrapper from '../ConditionalWrapper';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import ScheduleNameDialog from './Toolbar/EditSchedule/ScheduleNameDialog';
 import DeleteScheduleDialog from './Toolbar/EditSchedule/DeleteScheduleDialog';
@@ -15,231 +22,156 @@ import ScreenshotButton from './Toolbar/ScreenshotButton';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
 
-const styles: Styles<Theme, object> = {
-    toolbar: {
-        display: 'flex',
-        overflow: 'hidden',
-        marginBottom: '4px',
-        alignItems: 'center',
-        height: '50px',
-
-        '& button': {
-            margin: '0 2px 0 2px',
-        },
-        '& #finalButton': {
-            marginLeft: '12px',
-        },
-        padding: '2px',
-    },
-    inline: {
-        display: 'inline',
-    },
-    spacer: {
-        flexGrow: 1,
-    },
-    scheduleSelector: {
-        marginLeft: '10px',
-        maxWidth: '9rem',
-    },
-    rootScheduleSelector: {
-        paddingLeft: '5px',
-    },
-    menuItem: {
-        gap: '1.5rem',
-        display: 'flex',
-        justifyContent: 'space-between',
-    },
-    dialogContainer: {
-        display: 'flex',
-        gap: '0.25rem',
-    },
+const handleScheduleChange: SelectProps['onChange'] = (event) => {
+    logAnalytics({
+        category: analyticsEnum.calendar.title,
+        action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
+    });
+    changeCurrentSchedule(Number(event.target.value));
 };
 
+function handleUndo() {
+    logAnalytics({
+        category: analyticsEnum.calendar.title,
+        action: analyticsEnum.calendar.actions.UNDO,
+    });
+    undoDelete(null);
+}
+
+function handleClearSchedule() {
+    if (window.confirm('Are you sure you want to clear this schedule?')) {
+        clearSchedules();
+        logAnalytics({
+            category: analyticsEnum.calendar.title,
+            action: analyticsEnum.calendar.actions.CLEAR_SCHEDULE,
+        });
+    }
+}
+
 interface CalendarPaneToolbarProps {
-    classes: ClassNameMap;
     scheduleNames: string[];
     currentScheduleIndex: number;
     showFinalsSchedule: boolean;
     toggleDisplayFinalsSchedule: () => void;
-    onTakeScreenshot: (html2CanvasScreenshot: () => void) => void; // the function in an ancestor component that wraps ScreenshotButton.handleClick to perform canvas transformations before and after downloading the screenshot.
+
+    /**
+     * The function in an ancestor component that wraps ScreenshotButton.handleClick
+     * to perform canvas transformations before and after downloading the screenshot.
+     *
+     * TODO, FIXME: don't prop drill, please.
+     */
+    onTakeScreenshot: (html2CanvasScreenshot: () => void) => void;
 }
 
-const CalendarPaneToolbar = ({
-    classes,
-    scheduleNames,
-    currentScheduleIndex,
-    showFinalsSchedule,
-    toggleDisplayFinalsSchedule,
-    onTakeScreenshot,
-}: CalendarPaneToolbarProps) => {
-    const handleScheduleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-        logAnalytics({
-            category: analyticsEnum.calendar.title,
-            action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
-        });
-        changeCurrentSchedule(event.target.value as number);
-    };
+const CalendarPaneToolbar = (props: CalendarPaneToolbarProps) => {
+    const { scheduleNames, currentScheduleIndex, showFinalsSchedule, toggleDisplayFinalsSchedule, onTakeScreenshot } =
+        props;
+
+    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
 
     const isMobileScreen = useMediaQuery('(max-width:630px)');
 
-    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
-    const [openSchedules, setOpenSchedules] = useState<boolean>(false);
-
-    const handleMenuClick: React.MouseEventHandler<HTMLElement> = (event) => {
+    const handleMenuClick = useCallback((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         setAnchorEl(event.currentTarget);
-    };
+    }, []);
 
-    const handleMenuClose: React.MouseEventHandler<HTMLElement> = () => {
+    const handleMenuClose = useCallback(() => {
         setAnchorEl(undefined);
-    };
+    }, []);
 
-    const handleScheduleOpen = () => {
-        setOpenSchedules(true);
-    };
-
-    const handleScheduleClose = () => {
-        setOpenSchedules(false);
-    };
-
-    const handleDialogButtonClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-        e.stopPropagation(); // Propagation must be stopped otherwise the closing schedule Select element will also close the Dialogs
-    };
-
-    const handleDialogClose = () => {
-        setAnchorEl(undefined);
-        setOpenSchedules(false);
-    };
+    const handleToggleFinals = useCallback(() => {
+        logAnalytics({
+            category: analyticsEnum.calendar.title,
+            action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
+        });
+        toggleDisplayFinalsSchedule();
+    }, [toggleDisplayFinalsSchedule]);
 
     return (
-        <Paper elevation={0} variant="outlined" square className={classes.toolbar}>
-            <Select
-                classes={{ root: classes.rootScheduleSelector }}
-                className={classes.scheduleSelector}
-                value={currentScheduleIndex}
-                onChange={handleScheduleChange}
-                renderValue={(currentScheduleIndex) => scheduleNames[currentScheduleIndex as number]} // Typecasting is done here to keep ts happy
-                open={openSchedules}
-                onOpen={handleScheduleOpen}
-                onClose={handleScheduleClose}
-                MenuProps={{
-                    anchorOrigin: {
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    },
-                    transformOrigin: {
-                        vertical: 'top',
-                        horizontal: 'left',
-                    },
-                    getContentAnchorEl: null,
-                }}
-            >
-                {scheduleNames.map((name, index) => (
-                    <MenuItem key={index} value={index} className={classes.menuItem}>
-                        {name}
-
-                        <Box className={classes.dialogContainer}>
-                            <Box onClick={(e) => handleDialogButtonClick(e)}>
-                                <ScheduleNameDialog
-                                    scheduleNames={scheduleNames}
-                                    scheduleRenameIndex={index}
-                                    onClose={handleDialogClose}
-                                />
+        <Paper
+            elevation={0}
+            variant="outlined"
+            sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', padding: 1 }}
+        >
+            <Box gap={1} display="flex" alignItems="center">
+                <Select
+                    value={currentScheduleIndex}
+                    onChange={handleScheduleChange}
+                    variant="standard"
+                    SelectDisplayProps={{}}
+                >
+                    {scheduleNames.map((name, index) => (
+                        <MenuItem key={index} value={index}>
+                            <Box display="flex" alignItems="center" width={1}>
+                                <Box width={1}>
+                                    <Typography>{name}</Typography>
+                                </Box>
+                                <Box display="flex" alignItems="center">
+                                    <ScheduleNameDialog scheduleNames={scheduleNames} scheduleRenameIndex={index} />
+                                    <DeleteScheduleDialog scheduleIndex={index} />
+                                </Box>
                             </Box>
-                            <Box onClick={(e) => handleDialogButtonClick(e)}>
-                                <DeleteScheduleDialog onClose={handleDialogClose} scheduleIndex={index} />
-                            </Box>
-                        </Box>
-                    </MenuItem>
-                ))}
-                <ScheduleNameDialog
-                    onOpen={() => setOpenSchedules(true)}
-                    onClose={() => setOpenSchedules(false)}
-                    scheduleNames={scheduleNames}
-                />
-            </Select>
+                        </MenuItem>
+                    ))}
+                    <ScheduleNameDialog scheduleNames={scheduleNames} />
+                </Select>
 
-            <Tooltip title="Toggle showing finals schedule">
-                <Button
-                    id="finalButton"
-                    variant={showFinalsSchedule ? 'contained' : 'outlined'}
-                    onClick={() => {
-                        logAnalytics({
-                            category: analyticsEnum.calendar.title,
-                            action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
-                        });
-                        toggleDisplayFinalsSchedule();
-                    }}
-                    size="small"
-                    color={showFinalsSchedule ? 'primary' : 'default'}
-                >
-                    Finals
-                </Button>
-            </Tooltip>
+                <Tooltip title="Toggle showing finals schedule">
+                    <Button
+                        onClick={handleToggleFinals}
+                        size="small"
+                        variant={showFinalsSchedule ? 'contained' : 'outlined'}
+                        color={showFinalsSchedule ? 'primary' : 'secondary'}
+                    >
+                        Finals
+                    </Button>
+                </Tooltip>
+            </Box>
 
-            <div className={classes.spacer} />
+            <Box flexGrow={1} />
 
-            <Tooltip title="Undo last action">
-                <IconButton
-                    onClick={() => {
-                        logAnalytics({
-                            category: analyticsEnum.calendar.title,
-                            action: analyticsEnum.calendar.actions.UNDO,
-                        });
-                        undoDelete(null);
-                    }}
-                >
-                    <Undo fontSize="small" />
-                </IconButton>
-            </Tooltip>
+            <Box display="flex" flexWrap="wrap" gap={0.5}>
+                <Box display="flex" alignItems="center" gap={0.5}>
+                    <Tooltip title="Undo last action">
+                        <IconButton onClick={handleUndo} size="small">
+                            <Undo fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
 
-            <Tooltip title="Clear schedule">
-                <IconButton
-                    onClick={() => {
-                        if (window.confirm('Are you sure you want to clear this schedule?')) {
-                            clearSchedules();
-                            logAnalytics({
-                                category: analyticsEnum.calendar.title,
-                                action: analyticsEnum.calendar.actions.CLEAR_SCHEDULE,
-                            });
-                        }
-                    }}
-                >
-                    <Delete fontSize="small" />
-                </IconButton>
-            </Tooltip>
+                    <Tooltip title="Clear schedule">
+                        <IconButton onClick={handleClearSchedule} size="small">
+                            <Delete fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                </Box>
 
-            <ConditionalWrapper
-                condition={isMobileScreen}
-                wrapper={(children) => (
-                    <div>
+                {isMobileScreen ? (
+                    <Box>
                         <IconButton onClick={handleMenuClick}>
                             <MoreHoriz />
                         </IconButton>
-
                         <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                            {children}
+                            <MenuItem onClick={handleMenuClose}>
+                                <ExportCalendar key="export" />
+                            </MenuItem>
+                            <MenuItem onClick={handleMenuClose}>
+                                <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />
+                            </MenuItem>
+                            <MenuItem onClick={handleMenuClose}>
+                                <CustomEventDialog scheduleNames={scheduleNames} key="custom" />
+                            </MenuItem>
                         </Menu>
-                    </div>
+                    </Box>
+                ) : (
+                    <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
+                        <ExportCalendar key="export" />
+                        <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />
+                        <CustomEventDialog scheduleNames={scheduleNames} key="custom" />
+                    </Box>
                 )}
-            >
-                <>
-                    {[
-                        <ExportCalendar key="export" />,
-                        <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />,
-                        <CustomEventDialog scheduleNames={scheduleNames} key="custom" />,
-                    ].map((element, index) => (
-                        <ConditionalWrapper
-                            key={index}
-                            condition={isMobileScreen}
-                            wrapper={(children) => <MenuItem onClick={handleMenuClose}>{children}</MenuItem>}
-                        >
-                            {element}
-                        </ConditionalWrapper>
-                    ))}
-                </>
-            </ConditionalWrapper>
+            </Box>
         </Paper>
     );
 };
 
-export default withStyles(styles)(CalendarPaneToolbar);
+export default CalendarPaneToolbar;
