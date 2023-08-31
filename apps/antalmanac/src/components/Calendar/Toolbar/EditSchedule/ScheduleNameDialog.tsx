@@ -1,8 +1,8 @@
+import { forwardRef, useCallback, useState, useMemo } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Add } from '@material-ui/icons';
-import React, { forwardRef, useState } from 'react';
 
 import { addSchedule, renameSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
@@ -27,47 +27,41 @@ interface ScheduleNameDialogProps {
 const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
     const { classes, onOpen, onClose, scheduleNames, scheduleRenameIndex } = props;
 
-    const rename = scheduleRenameIndex !== undefined;
-
     const [isOpen, setIsOpen] = useState(false);
 
     const [scheduleName, setScheduleName] = useState(
         scheduleRenameIndex !== undefined ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`
     );
 
+    const rename = useMemo(() => scheduleRenameIndex !== undefined, [scheduleRenameIndex]);
+
     // We need to stop propagation so that the select menu won't close
-    const handleOpen: React.MouseEventHandler<HTMLLIElement> = (event) => {
-        event.stopPropagation();
-        setIsOpen(true);
-        onOpen?.();
-    };
+    const handleOpen = useCallback(
+        (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+            event.stopPropagation();
+            setIsOpen(true);
+            onOpen?.();
+        },
+        [onOpen]
+    );
 
     /**
      * If the user cancelled renaming the schedule, the schedule name is changed to its original value.
      * If the user cancelled adding a new schedule, the schedule name is changed to the default schedule name.
      */
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         setIsOpen(false);
-        setScheduleName(rename ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`);
-    };
 
-    const handleNameChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        if (scheduleRenameIndex != null) {
+            setScheduleName(rename ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`);
+        }
+    }, [rename, scheduleNames, scheduleRenameIndex]);
+
+    const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setScheduleName(event.target.value);
-    };
+    }, []);
 
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        event.stopPropagation();
-
-        if (event.key === 'Enter') {
-            submitName();
-        }
-
-        if (event.key === 'Escape') {
-            setIsOpen(false);
-        }
-    };
-
-    const submitName = () => {
+    const submitName = useCallback(() => {
         onClose?.();
 
         if (rename) {
@@ -75,7 +69,24 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
         } else {
             addSchedule(scheduleName);
         }
-    };
+
+        setIsOpen(false);
+    }, [onClose, rename, scheduleName, scheduleRenameIndex]);
+
+    const handleKeyDown = useCallback(
+        (event: React.KeyboardEvent<HTMLDivElement>) => {
+            event.stopPropagation();
+
+            if (event.key === 'Enter') {
+                submitName();
+            }
+
+            if (event.key === 'Escape') {
+                setIsOpen(false);
+            }
+        },
+        [submitName]
+    );
 
     // For the dialog, we need to stop the propagation when a key is pressed because
     // MUI Select components support "select by typing", which can remove focus from the dialog.
