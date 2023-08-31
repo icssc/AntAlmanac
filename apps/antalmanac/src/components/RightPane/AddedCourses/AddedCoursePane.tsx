@@ -229,8 +229,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                                 classes={this.props.classes}
                                 courseDetails={course}
                                 term={course.term}
-                                colorAndDelete={true}
-                                highlightAdded={false}
+                                allowHighlight={false}
                                 analyticsCategory={analyticsEnum.addedClasses.title}
                                 scheduleNames={this.state.scheduleNames}
                             />

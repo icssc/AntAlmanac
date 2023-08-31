@@ -2,7 +2,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Te
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Add } from '@material-ui/icons';
-import React, { useState } from 'react';
+import React, { forwardRef, useState } from 'react';
 
 import { addSchedule, renameSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
@@ -24,7 +24,7 @@ interface ScheduleNameDialogProps {
     scheduleRenameIndex?: number;
 }
 
-const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
+const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
     const { classes, onOpen, onClose, scheduleNames, scheduleRenameIndex } = props;
 
     const rename = scheduleRenameIndex !== undefined;
@@ -92,6 +92,7 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
                 </MenuItem>
             )}
             <Dialog
+                ref={ref}
                 fullWidth
                 open={isOpen}
                 onKeyDown={handleKeyDown}
@@ -130,6 +131,8 @@ const ScheduleNameDialog = (props: ScheduleNameDialogProps) => {
             </Dialog>
         </>
     );
-};
+});
+
+ScheduleNameDialog.displayName = 'ScheduleNameDialog';
 
 export default withStyles(styles)(ScheduleNameDialog);

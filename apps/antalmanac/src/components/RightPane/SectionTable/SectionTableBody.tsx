@@ -1,24 +1,15 @@
+import { Box, Chip, Popover, TableCell, TableRow, Theme, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
 import { Link } from 'react-router-dom';
-import {
-    Box,
-    Button,
-    Popover,
-    TableCell,
-    TableRow,
-    Theme,
-    Tooltip,
-    Typography,
-    useMediaQuery,
-} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
-import { Fragment, useCallback, useContext, useEffect, useState } from 'react';
+import { Fragment, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { AASection } from '@packages/antalmanac-types';
 import { WebsocSectionEnrollment, WebsocSectionMeeting } from 'peterportal-api-next-types';
-import RightPaneStore from '../RightPaneStore';
+
+import RightPaneStore, { type SectionTableColumn } from '../RightPaneStore';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
@@ -28,14 +19,14 @@ import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
+import { translateWebSOCTimeTo24HourTime, parseDaysString } from '$stores/calendarizeHelpers';
 
 const styles: Styles<Theme, object> = (theme) => ({
     popover: {
         pointerEvents: 'none',
     },
     sectionCode: {
-        padding: 0,
-        display: 'inline-block',
+        display: 'inline-flex',
         cursor: 'pointer',
         '&:hover': {
             color: isDarkMode() ? 'gold' : 'blueviolet',
@@ -49,7 +40,11 @@ const styles: Styles<Theme, object> = (theme) => ({
     },
     tr: {
         '&.addedCourse': {
-            backgroundColor: isDarkMode() ? '#b0b04f' : '#fcfc97',
+            background: isDarkMode() ? '#b0b04f' : '#fcfc97',
+        },
+        '&.scheduleConflict': {
+            background: isDarkMode() ? '#121212' : '#a0a0a0',
+            opacity: isDarkMode() ? 0.6 : 1,
         },
     },
     cell: {
@@ -83,7 +78,7 @@ const styles: Styles<Theme, object> = (theme) => ({
     },
     Act: { color: '#c87137' },
     Col: { color: '#ff40b5' },
-    Dis: { color: '#8d63f0' },
+    Dis: { color: '#ff6e00' },
     Fld: { color: '#1ac805' },
     Lab: { color: '#1abbe9' },
     Lec: { color: '#d40000' },
@@ -109,9 +104,8 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
 
     return (
         <NoPaddingTableCell className={classes.cell}>
-            <Tooltip title="Click to copy course code" placement="bottom" enterDelay={300}>
-                <Button
-                    size="small"
+            <Tooltip title="Click to copy course code" placement="bottom" enterDelay={150}>
+                <Chip
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);
                         logAnalytics({
@@ -120,9 +114,9 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
                         });
                     }}
                     className={classes.sectionCode}
-                >
-                    {sectionCode}
-                </Button>
+                    label={sectionCode}
+                    size="small"
+                />
             </Tooltip>
         </NoPaddingTableCell>
     );
@@ -195,7 +189,7 @@ interface LocationsCellProps {
 }
 
 const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
-    const { classes, meetings, courseName } = props;
+    const { classes, meetings } = props;
     const { setSelectedTab } = useContext(mobileContext);
 
     const focusMap = useCallback(() => {
@@ -205,8 +199,8 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
-                const [buildingName = ''] = meeting.bldg;
-                const buildingId = locationIds[buildingName] ?? 69420;
+                const [buildingName = ''] = meeting.bldg[0].split(' ');
+                const buildingId = locationIds[buildingName];
                 return meeting.bldg[0] !== 'TBA' ? (
                     <Fragment key={meeting.days + meeting.time + meeting.bldg}>
                         <Link
@@ -230,9 +224,15 @@ interface SectionEnrollmentCellProps {
     classes: ClassNameMap;
     numCurrentlyEnrolled: WebsocSectionEnrollment;
     maxCapacity: number;
-    /** This is a string because sometimes it's "n/a" */
+
+    /**
+     * This is a string because sometimes it's "n/a"
+     */
     numOnWaitlist: string;
-    /** This is a string because numOnWaitlist is a string. I haven't seen this be "n/a" but it seems possible and I don't want it to break if that happens. */
+
+    /**
+     * This is a string because numOnWaitlist is a string. I haven't seen this be "n/a" but it seems possible and I don't want it to break if that happens.
+     */
     numNewOnlyReserved: string;
 }
 
@@ -352,36 +352,145 @@ interface SectionTableBodyProps {
     section: AASection;
     courseDetails: CourseDetails;
     term: string;
-    colorAndDelete: boolean;
-    highlightAdded: boolean;
+    allowHighlight: boolean;
     scheduleNames: string[];
 }
 
-//TODO: SectionNum name parity -> SectionNumber
+const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
+    sectionCode: CourseCodeCell,
+    sectionDetails: SectionDetailsCell,
+    instructors: InstructorsCell,
+    dayAndTime: DayAndTimeCell,
+    location: LocationsCell,
+    sectionEnrollment: SectionEnrollmentCell,
+    restrictions: RestrictionsCell,
+    status: StatusCell,
+};
+
+/**
+ * TODO: SectionNum name parity -> SectionNumber
+ */
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
-    const { classes, section, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames } = props;
-    const [addedCourse, setAddedCourse] = useState(colorAndDelete);
+    const { classes, section, courseDetails, term, allowHighlight, scheduleNames } = props;
+
+    const [activeColumns, setColumns] = useState(RightPaneStore.getActiveColumns());
+
+    const [addedCourse, setAddedCourse] = useState(
+        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
+    );
+
+    const [calendarEvents, setCalendarEvents] = useState(AppStore.getCourseEventsInCalendar());
+
+    /**
+     * Additional information about the current section being rendered.
+     * i.e. time information, which is compared with the calendar events to find conflicts.
+     */
+    const sectionDetails = useMemo(() => {
+        return {
+            daysOccurring: parseDaysString(section.meetings[0].days),
+            ...translateWebSOCTimeTo24HourTime(section.meetings[0].time),
+        };
+    }, [section.meetings[0]]);
+
+    // Stable references to event listeners will synchronize React state with the store.
+
+    const updateColumns = useCallback(
+        (newActiveColumns: SectionTableColumn[]) => {
+            setColumns(newActiveColumns);
+        },
+        [setColumns]
+    );
+
+    const updateHighlight = useCallback(() => {
+        setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
+    }, [setAddedCourse]);
+
+    const updateCalendarEvents = useCallback(() => {
+        setCalendarEvents(AppStore.getCourseEventsInCalendar());
+    }, [setCalendarEvents]);
+
+    // Attach event listeners to the store.
 
     useEffect(() => {
-        const toggleHighlight = () => {
-            const doAdd = AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`);
-            setAddedCourse(doAdd);
+        RightPaneStore.on('columnChange', updateColumns);
+        return () => {
+            RightPaneStore.removeListener('columnChange', updateColumns);
         };
+    }, [updateColumns]);
 
-        toggleHighlight();
-        AppStore.on('addedCoursesChange', toggleHighlight);
-        AppStore.on('currentScheduleIndexChange', toggleHighlight);
+    useEffect(() => {
+        AppStore.on('addedCoursesChange', updateHighlight);
+        AppStore.on('currentScheduleIndexChange', updateHighlight);
 
         return () => {
-            AppStore.removeListener('addedCoursesChange', toggleHighlight);
-            AppStore.removeListener('currentScheduleIndexChange', toggleHighlight);
+            AppStore.removeListener('addedCoursesChange', updateHighlight);
+            AppStore.removeListener('currentScheduleIndexChange', updateHighlight);
         };
-    }, [section.sectionCode, term]); //should only run once on first render since these shouldn't change.
+    }, [updateHighlight]);
+
+    useEffect(() => {
+        AppStore.on('addedCoursesChange', updateCalendarEvents);
+        AppStore.on('currentScheduleIndexChange', updateCalendarEvents);
+
+        return () => {
+            AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
+            AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
+        };
+    }, [updateCalendarEvents]);
+
+    /**
+     * Whether the current section conflicts with any of the calendar events.
+     */
+    const scheduleConflict = useMemo(() => {
+        // If there are currently no calendar events, there can't be any conflicts.
+        if (calendarEvents.length === 0) {
+            return false;
+        }
+
+        // If the section's time wasn't parseable, then don't consider conflicts.
+        if (sectionDetails.startTime == null || sectionDetails.endTime == null) {
+            return false;
+        }
+
+        const { startTime, endTime } = sectionDetails;
+
+        const conflictingEvent = calendarEvents.find((event) => {
+            // If it occurs on a different day, no conflict.
+            if (!sectionDetails?.daysOccurring?.includes(event.start.getDay())) {
+                return false;
+            }
+
+            /**
+             * A time normalized to ##:##
+             * @example '10:00'
+             */
+            const eventStartTime = event.start.toString().split(' ')[4].slice(0, -3);
+
+            /**
+             * Normalized to ##:##
+             * @example '10:00'
+             */
+            const eventEndTime = event.end.toString().split(' ')[4].slice(0, -3);
+
+            const happensBefore = startTime <= eventStartTime && endTime <= eventStartTime;
+
+            const happensAfter = startTime >= eventEndTime && endTime >= eventEndTime;
+
+            return !(happensBefore || happensAfter);
+        });
+
+        return Boolean(conflictingEvent);
+    }, [calendarEvents, sectionDetails]);
 
     return (
         <TableRow
             classes={{ root: classes.row }}
-            className={classNames(classes.tr, { addedCourse: addedCourse && highlightAdded })}
+            className={classNames(
+                classes.tr,
+                // If the course is added, then don't check for/apply scheduleConflict
+                // allowHighlight is ALWAYS false when in Added Course Pane and ALWAYS true when in CourseRenderPane
+                addedCourse ? { addedCourse: addedCourse && allowHighlight } : { scheduleConflict: scheduleConflict }
+            )}
         >
             {!addedCourse ? (
                 <ScheduleAddCell
@@ -389,36 +498,32 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                     courseDetails={courseDetails}
                     term={term}
                     scheduleNames={scheduleNames}
+                    scheduleConflict={scheduleConflict}
                 />
             ) : (
                 <ColorAndDelete color={section.color} sectionCode={section.sectionCode} term={term} />
             )}
-            <CourseCodeCell sectionCode={section.sectionCode} />
-            <SectionDetailsCell
-                sectionType={section.sectionType as SectionType}
-                sectionNum={section.sectionNum}
-                units={parseFloat(section.units)}
-            />
-            <InstructorsCell instructors={section.instructors} />
-            <DayAndTimeCell meetings={section.meetings} />
-            <LocationsCell
-                meetings={section.meetings}
-                courseName={courseDetails.deptCode + ' ' + courseDetails.courseNumber}
-            />
-            <SectionEnrollmentCell
-                numCurrentlyEnrolled={section.numCurrentlyEnrolled}
-                maxCapacity={parseInt(section.maxCapacity)}
-                numOnWaitlist={section.numOnWaitlist}
-                numNewOnlyReserved={section.numNewOnlyReserved}
-            />
-            <RestrictionsCell restrictions={section.restrictions} />
-            <StatusCell
-                term={term}
-                status={section.status}
-                sectionCode={section.sectionCode}
-                courseTitle={courseDetails.courseTitle}
-                courseNumber={courseDetails.courseNumber}
-            />
+
+            {Object.entries(tableBodyCells)
+                .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
+                .map(([column, Component]) => {
+                    return (
+                        // All of this is a little bulky, so if the props can be added specifically to activeTableBodyColumns, LMK!
+                        <Component
+                            key={column}
+                            section={section}
+                            courseDetails={courseDetails}
+                            term={term}
+                            scheduleNames={scheduleNames}
+                            {...section}
+                            sectionType={section.sectionType as SectionType}
+                            maxCapacity={parseInt(section.maxCapacity, 10)}
+                            units={parseFloat(section.units)}
+                            courseName={`${courseDetails.deptCode} ${courseDetails.courseNumber}`}
+                            {...courseDetails}
+                        />
+                    );
+                })}
         </TableRow>
     );
 });

@@ -1,4 +1,4 @@
-import { IconButton, Menu, MenuItem, TableCell, useMediaQuery } from '@material-ui/core';
+import { IconButton, Menu, MenuItem, TableCell, Tooltip, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Add, ArrowDropDown, Delete } from '@material-ui/icons';
@@ -66,10 +66,11 @@ interface ScheduleAddCellProps {
     courseDetails: CourseDetails;
     term: string;
     scheduleNames: string[];
+    scheduleConflict: boolean;
 }
 
 export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) => {
-    const { classes, section, courseDetails, term, scheduleNames } = props;
+    const { classes, section, courseDetails, term, scheduleNames, scheduleConflict } = props;
     const popupState = usePopupState({ popupId: 'SectionTableAddCellPopup', variant: 'popover' });
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
@@ -117,9 +118,17 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
     return (
         <TableCell padding="none">
             <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
-                <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
-                    <Add fontSize="small" />
-                </IconButton>
+                {scheduleConflict ? (
+                    <Tooltip title="This course overlaps with another event in your calendar!" arrow>
+                        <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
+                            <Add fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                ) : (
+                    <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
+                        <Add fontSize="small" />
+                    </IconButton>
+                )}
                 <IconButton {...bindTrigger(popupState)}>
                     <ArrowDropDown fontSize="small" />
                 </IconButton>
