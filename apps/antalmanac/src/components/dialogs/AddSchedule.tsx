@@ -18,6 +18,11 @@ function AddScheduleDialog(props: ScheduleNameDialogProps) {
      */
     const { onKeyDown, ...dialogProps } = props;
 
+    /**
+     * This is destructured separately for memoization.
+     */
+    const { onClose } = props;
+
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
     const defaultScheduleName = useMemo(() => `Schedule ${scheduleNames.length + 1}`, [scheduleNames]);
@@ -25,9 +30,9 @@ function AddScheduleDialog(props: ScheduleNameDialogProps) {
     const [name, setName] = useState(defaultScheduleName);
 
     const handleCancel = useCallback(() => {
-        props.onClose?.({}, 'escapeKeyDown');
+        onClose?.({}, 'escapeKeyDown');
         setName(defaultScheduleName);
-    }, [props.onClose, defaultScheduleName]);
+    }, [onClose, defaultScheduleName]);
 
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
@@ -35,14 +40,16 @@ function AddScheduleDialog(props: ScheduleNameDialogProps) {
 
     const submitName = useCallback(() => {
         addSchedule(name);
-        props.onClose?.({}, 'escapeKeyDown');
-    }, [props.onClose, name]);
+        onClose?.({}, 'escapeKeyDown');
+    }, [onClose, name]);
 
     const handleKeyDown = useCallback(
         (event: React.KeyboardEvent<HTMLDivElement>) => {
             onKeyDown?.(event);
 
             if (event.key === 'Enter') {
+                event.stopPropagation();
+                event.preventDefault();
                 submitName();
             }
 
@@ -50,7 +57,7 @@ function AddScheduleDialog(props: ScheduleNameDialogProps) {
                 props.onClose?.({}, 'escapeKeyDown');
             }
         },
-        [props.onClose, submitName]
+        [onClose, submitName, onKeyDown]
     );
 
     const handleScheduleNamesChange = useCallback(() => {

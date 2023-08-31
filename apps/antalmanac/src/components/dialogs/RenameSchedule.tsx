@@ -1,5 +1,14 @@
 import { useCallback, useState, useEffect } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, type DialogProps } from '@mui/material';
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    TextField,
+    type DialogProps,
+} from '@mui/material';
 import { renameSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
@@ -18,37 +27,44 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
      */
     const { index, onKeyDown, ...dialogProps } = props;
 
+    /**
+     * This is destructured separately for memoization.
+     */
+    const { onClose } = props;
+
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
     const [name, setName] = useState(scheduleNames[index]);
 
     const handleCancel = useCallback(() => {
-        props.onClose?.({}, 'escapeKeyDown');
+        onClose?.({}, 'escapeKeyDown');
         setName(scheduleNames[index]);
-    }, [props.onClose, scheduleNames, index]);
+    }, [onClose, scheduleNames, index]);
 
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
     }, []);
 
     const submitName = useCallback(() => {
-        renameSchedule(name, index as number);
-        props.onClose?.({}, 'escapeKeyDown');
-    }, [props.onClose, name, index]);
+        renameSchedule(name, index);
+        onClose?.({}, 'escapeKeyDown');
+    }, [onClose, name, index]);
 
     const handleKeyDown = useCallback(
         (event: React.KeyboardEvent<HTMLDivElement>) => {
             onKeyDown?.(event);
 
             if (event.key === 'Enter') {
+                event.preventDefault();
+                event.stopPropagation();
                 submitName();
             }
 
             if (event.key === 'Escape') {
-                props.onClose?.({}, 'escapeKeyDown');
+                onClose?.({}, 'escapeKeyDown');
             }
         },
-        [props.onClose, submitName]
+        [onClose, submitName, onKeyDown]
     );
 
     const handleScheduleNamesChange = useCallback(() => {
@@ -68,7 +84,9 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
             <DialogTitle>Rename Schedule</DialogTitle>
 
             <DialogContent>
-                <TextField fullWidth label="Name" onChange={handleNameChange} value={name} />
+                <Box padding={1}>
+                    <TextField fullWidth label="Name" onChange={handleNameChange} value={name} />
+                </Box>
             </DialogContent>
 
             <DialogActions>
