@@ -109,7 +109,7 @@ const CalendarPaneToolbar = (props: CalendarPaneToolbarProps) => {
                         onClick={handleToggleFinals}
                         size="small"
                         variant={showFinalsSchedule ? 'contained' : 'outlined'}
-                        color={showFinalsSchedule ? 'primary' : 'inherit'}
+                        color={showFinalsSchedule ? 'primary' : 'secondary'}
                     >
                         Finals
                     </Button>
