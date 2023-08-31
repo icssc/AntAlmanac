@@ -1,36 +1,33 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useMemo } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, type DialogProps } from '@mui/material';
-import { renameSchedule } from '$actions/AppStoreActions';
+import { addSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 
-interface ScheduleNameDialogProps extends DialogProps {
-    /**
-     * The index of the schedule to rename (i.e. in the schedules array).
-     */
-    index: number;
-}
+type ScheduleNameDialogProps = DialogProps
 
-function RenameScheduleDialog(props: ScheduleNameDialogProps) {
-    const { onClose, index, onKeyDown, ...dialogProps } = props;
+function AddScheduleDialog(props: ScheduleNameDialogProps) {
+    const { onClose, onKeyDown, ...dialogProps } = props;
 
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
-    const [name, setName] = useState(scheduleNames[index]);
+    const defaultScheduleName = useMemo(() => `Schedule ${scheduleNames.length + 1}`, [scheduleNames]);
+
+    const [name, setName] = useState(defaultScheduleName);
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
-        setName(scheduleNames[index]);
-    }, [onClose, scheduleNames, index]);
+        setName(defaultScheduleName);
+    }, [onClose, defaultScheduleName]);
 
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
     }, []);
 
     const submitName = useCallback(() => {
-        renameSchedule(name, index as number);
+        addSchedule(name);
         onClose?.({}, 'escapeKeyDown');
-    }, [onClose, name, index]);
+    }, [onClose, name]);
 
     const handleKeyDown = useCallback(
         (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -61,7 +58,7 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
 
     return (
         <Dialog onKeyDown={handleKeyDown} {...dialogProps}>
-            <DialogTitle>Rename Schedule</DialogTitle>
+            <DialogTitle>Add Schedule</DialogTitle>
 
             <DialogContent>
                 <TextField fullWidth label="Name" onChange={handleNameChange} value={name} />
@@ -72,11 +69,11 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
                     Cancel
                 </Button>
                 <Button onClick={submitName} variant="contained" color="primary" disabled={name.trim() === ''}>
-                    Rename Schedule
+                    Add Schedule
                 </Button>
             </DialogActions>
         </Dialog>
     );
 }
 
-export default RenameScheduleDialog;
+export default AddScheduleDialog;
