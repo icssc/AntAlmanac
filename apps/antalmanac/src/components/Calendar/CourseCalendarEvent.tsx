@@ -174,9 +174,9 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             if (finalExam.startTime && finalExam.endTime && finalExam.month && finalExam.bldg) {
                 const timeString = translate24To12HourTime(finalExam.startTime, finalExam.endTime);
                 const locationString = `at ${finalExam.bldg.join(', ')}`;
+                const finalExamMonth = MONTHS[finalExam.month];
 
-                // prettier-ignore
-                finalExamString = `${finalExam.dayOfWeek} ${MONTHS[finalExam.month]} ${finalExam.day} ${timeString} ${locationString}`;
+                finalExamString = `${finalExam.dayOfWeek} ${finalExamMonth} ${finalExam.day} ${timeString} ${locationString}`;
             }
         }
 
