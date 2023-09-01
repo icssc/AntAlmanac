@@ -224,8 +224,6 @@ class AppStore extends EventEmitter {
 
     async loadSchedule(savedSchedule: ScheduleSaveState) {
         try {
-            // This will not throw if the saved schedule is valid but PeterPortal can't be reached
-            // It will call loadSkeletonSchedule and return normally
             await this.schedule.fromScheduleSaveState(savedSchedule);
         } catch {
             return false;
