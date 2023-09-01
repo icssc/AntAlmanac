@@ -201,7 +201,13 @@ function GPACell(props: GPACellProps) {
     return (
         <Box>
             <Button
-                sx={{ color: isDarkMode() ? 'dodgerblue' : 'blue', padding: 0, minWidth: 0 }}
+                sx={{
+                    color: isDarkMode() ? 'dodgerblue' : 'blue',
+                    padding: 0,
+                    minWidth: 0,
+                    fontWeight: 400,
+                    fontSize: 16,
+                }}
                 onClick={handleClick}
                 variant="text"
             >

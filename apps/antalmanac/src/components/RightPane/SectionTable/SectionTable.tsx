@@ -22,11 +22,12 @@ import { SectionTableProps } from './SectionTable.types';
 import SectionTableBody from './SectionTableBody';
 import analyticsEnum from '$lib/analytics';
 
-// import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back and restore the files (https://github.com/icssc/AntAlmanac/tree/5e89e035e66f00608042871d43730ba785f756b0/src/components/RightPane/SectionTable/EnrollmentGraph)
+// uncomment when we get past enrollment data back and restore the files (https://github.com/icssc/AntAlmanac/tree/5e89e035e66f00608042871d43730ba785f756b0/src/components/RightPane/SectionTable/EnrollmentGraph)
+// import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph';
 
 interface TableHeaderColumnDetails {
     label: string;
-    width: string;
+    width?: string;
 }
 
 const tableHeaderColumns: Record<SectionTableColumn, TableHeaderColumnDetails> = {
@@ -36,35 +37,35 @@ const tableHeaderColumns: Record<SectionTableColumn, TableHeaderColumnDetails> =
     },
     sectionDetails: {
         label: 'Type',
-        width: '8%',
+        // width: '8%',
     },
     instructors: {
         label: 'Instructors',
-        width: '8%',
+        // width: '8%',
     },
     gpa: {
         label: 'GPA',
-        width: '15%',
+        // width: '15%',
     },
     dayAndTime: {
         label: 'Times',
-        width: '12%',
+        // width: '12%',
     },
     location: {
         label: 'Places',
-        width: '10%',
+        // width: '10%',
     },
     sectionEnrollment: {
         label: 'Enrollment',
-        width: '10%',
+        // width: '10%',
     },
     restrictions: {
         label: 'Restr',
-        width: '8%',
+        // width: '8%',
     },
     status: {
         label: 'Status',
-        width: '8%',
+        // width: '8%',
     },
 };
 
@@ -79,7 +80,7 @@ function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
 
     return (
         <Box display="flex">
-            <Typography>{props.label}</Typography>
+            {props.label}
             {!isMobileScreen && (
                 <Tooltip
                     title={
@@ -119,9 +120,9 @@ function SectionTable(props: SectionTableProps) {
      */
     const tableMinWidth = useMemo(() => {
         const width = isMobileScreen ? 600 : 780;
-        const numColumns = RightPaneStore.getActiveColumns().length;
+        const numColumns = activeColumns.length;
         return (width * numColumns) / SECTION_TABLE_COLUMNS.length;
-    }, [isMobileScreen]);
+    }, [isMobileScreen, activeColumns]);
 
     const handleColumnChange = useCallback(
         (newActiveColumns: SectionTableColumn[]) => {
