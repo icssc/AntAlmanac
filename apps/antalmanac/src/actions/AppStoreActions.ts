@@ -125,14 +125,18 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
                 } else if (await AppStore.loadSchedule(scheduleSaveState)) {
                     openSnackbar('success', `Schedule for username "${userId}" loaded.`);
                 } else {
+                    AppStore.loadSkeletonSchedule(scheduleSaveState);
                     openSnackbar(
                         'error',
-                        `Couldn't load schedules for username "${userId}". 
-                    If this continues happening please submit a feedback form.`
+                        `Network error loading course information for "${userId}". 
+                        If this continues to happen, please submit a feedback form.`
                     );
                 }
             } catch (e) {
-                openSnackbar('error', `Got a network error when trying to load schedules.`);
+                openSnackbar(
+                    'error',
+                    `Failed to load schedules. If this continues to happen, please submit a feedback form.`
+                );
             }
         }
     }
