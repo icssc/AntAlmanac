@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Paper, Tab, Tabs, Typography } from '@material-ui/core';
 import { FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
 import React, { Suspense } from 'react';
@@ -7,7 +7,7 @@ import AddedCoursePane from './AddedCourses/AddedCoursePane';
 import CoursePane from './CoursePane/CoursePaneRoot';
 import darkModeLoadingGif from './CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './CoursePane/SearchForm/Gifs/loading.gif';
-import RightPaneStore from './RightPaneStore';
+import { useTabStore} from './RightPaneStore';
 import { isDarkMode } from '$lib/helpers';
 
 const UCIMap = React.lazy(() => import('../Map'));
@@ -27,9 +27,7 @@ interface DesktopTabsProps {
 }
 
 export default function Desktop({ style }: DesktopTabsProps) {
-  const params = useParams()
-
-  const currentTabIndex = params.tab === 'added' ? 1 : params.tab === 'map' ? 2 : 0;
+  const { activeTab, setActiveTab } = useTabStore();
 
   const tabs = [
     {
@@ -63,7 +61,6 @@ export default function Desktop({ style }: DesktopTabsProps) {
     </Suspense>
   ]
 
-
   return (
     <div style={style}>
       <Paper
@@ -76,8 +73,8 @@ export default function Desktop({ style }: DesktopTabsProps) {
         }}
       >
         <Tabs
-          value={currentTabIndex}
-          onChange={RightPaneStore.handleTabChange}
+          value={activeTab}
+          onChange={(_event, value) => setActiveTab(value)}
           indicatorColor="primary"
           variant="fullWidth"
           centered
@@ -101,12 +98,12 @@ export default function Desktop({ style }: DesktopTabsProps) {
       </Paper>
       <div
         style={{
-          padding: RightPaneStore.getActiveTab() === 2 ? '0px' : '8px 8px 0 8px',
+          padding: activeTab === 2 ? '0px' : '8px 8px 0 8px',
           height: `calc(100% - 54px)`,
           overflowY: 'auto',
         }}
       >
-        {tabContents[currentTabIndex]}
+        {tabContents[activeTab]}
       </div>
     </div>
   );

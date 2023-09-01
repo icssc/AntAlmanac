@@ -6,7 +6,7 @@ import { Schedules } from './Schedules';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { useTabStore } from '$components/RightPane/RightPaneStore';
 
 function getCurrentTheme() {
     const theme = typeof Storage === 'undefined' ? 'auto' : window.localStorage.getItem('theme');
@@ -251,7 +251,7 @@ class AppStore extends EventEmitter {
         this.emit('skeletonModeChange');
 
         // Switch to added courses tab since PeterPortal can't be reached anyway
-        RightPaneStore.handleTabChange(null, 1);
+        useTabStore.getState().setActiveTab(1);
     }
 
     changeCurrentSchedule(newScheduleIndex: number) {
