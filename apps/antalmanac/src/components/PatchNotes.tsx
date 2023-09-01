@@ -13,7 +13,7 @@ const latestPatchNotesUpdate = '20230819';
  * Whether the user's last visited patch notes is outdated.
  */
 function isOutdated() {
-    return localStorage.getItem('latestVisit') == latestPatchNotesUpdate;
+    return localStorage.getItem('latestPatchSeen') != latestPatchNotesUpdate;
 }
 
 /**
@@ -29,6 +29,7 @@ function PatchNotes() {
         ((_event, reason) => {
             if (reason == 'backdropClick' || reason == 'escapeKeyDown') {
                 setOpen(false);
+                localStorage.setItem('latestPatchSeen', latestPatchNotesUpdate);
             }
         }) satisfies DialogProps['onClose'],
         [setOpen]
