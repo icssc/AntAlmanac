@@ -17,6 +17,7 @@ import restrictionsMapping from './static/restrictionsMapping.json';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
+import { useTabStore } from '$stores/TabStore';
 import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
 import { translateWebSOCTimeTo24HourTime, parseDaysString } from '$stores/calendarizeHelpers';
@@ -190,11 +191,12 @@ interface LocationsCellProps {
 
 const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
     const { classes, meetings } = props;
-    const { setSelectedTab } = useContext(mobileContext);
+
+    const { setActiveTab } = useTabStore();
 
     const focusMap = useCallback(() => {
-        setSelectedTab(1);
-    }, [setSelectedTab]);
+        setActiveTab(2);
+    }, [setActiveTab]);
 
     return (
         <NoPaddingTableCell className={classes.cell}>

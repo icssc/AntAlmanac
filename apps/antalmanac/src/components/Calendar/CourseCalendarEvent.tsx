@@ -14,6 +14,7 @@ import { clickToCopy, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
 import { mobileContext } from '$components/MobileHome';
+import { useTabStore } from '$stores/TabStore';
 
 const styles: Styles<Theme, object> = {
     courseContainer: {
@@ -132,11 +133,11 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         };
     }, []);
 
-    const { setSelectedTab } = useContext(mobileContext);
+    const { setActiveTab } = useTabStore();
 
     const focusMap = useCallback(() => {
-        setSelectedTab(1);
-    }, [setSelectedTab]);
+        setActiveTab(2);
+    }, [setActiveTab]);
 
     const { classes, courseInMoreInfo } = props;
     if (!courseInMoreInfo.isCustomEvent) {
