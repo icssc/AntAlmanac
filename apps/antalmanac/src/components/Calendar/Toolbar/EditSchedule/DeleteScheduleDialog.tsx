@@ -18,7 +18,7 @@ import { isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 
 interface DeleteScheduleDialogProps {
-    onClose: () => void;
+    onClose?: () => void;
     scheduleIndex: number;
 }
 
@@ -36,20 +36,16 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
     };
 
     const handleDelete = () => {
-        props.onClose();
+        props.onClose?.();
         deleteSchedule(scheduleIndex);
         setIsOpen(false);
     };
 
     return (
         <Box>
-            <MenuItem
-                onClick={handleOpen}
-                disabled={AppStore.schedule.getNumberOfSchedules() === 1}
-                style={{ padding: 'inherit', borderRadius: '50%' }}
-            >
+            <MenuItem onClick={handleOpen} disabled={AppStore.schedule.getNumberOfSchedules() === 1}>
                 <Tooltip title="Delete Schedule">
-                    <IconButton style={{ padding: '0.325rem' }}>
+                    <IconButton size="small">
                         <Clear />
                     </IconButton>
                 </Tooltip>
