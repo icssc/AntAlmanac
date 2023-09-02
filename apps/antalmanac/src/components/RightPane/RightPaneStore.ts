@@ -2,8 +2,6 @@ import { EventEmitter } from 'events';
 
 import { getDefaultTerm } from '$lib/termData';
 
-import { create } from 'zustand';
-
 /**
  * Search results are displayed in a tabular format.
  *
@@ -126,25 +124,3 @@ class RightPaneStore extends EventEmitter {
 
 const store = new RightPaneStore();
 export default store;
-
-// The entire store should be refactored to use Zustand, but I have neither the time nor motivation to do that right now
-// If you want to complain about the inconsistency, blame Brian.
-// "A foolish consistency is the hobgoblin of little minds"
-interface TabStore {
-    activeTab: number;
-    setActiveTab: (newTab: number) => void;
-}
-
-export const useTabStore = create<TabStore>((set) => {
-    const pathArray = window.location.pathname.split('/').slice(1);
-    const tabName = pathArray[0];
-    
-    return {
-        activeTab: tabName === 'added' ? 1 : tabName === 'map' ? 2 : 0,
-        setActiveTab: (newTab: number) => {
-            set(() => ({
-                activeTab: newTab,
-            }))
-        }
-    }
-});

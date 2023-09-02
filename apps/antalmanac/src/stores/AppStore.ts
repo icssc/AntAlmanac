@@ -6,7 +6,7 @@ import { Schedules } from './Schedules';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { useTabStore } from '$components/RightPane/RightPaneStore';
+import { useTabStore } from '$stores/TabStore';
 
 function getCurrentTheme() {
     const theme = typeof Storage === 'undefined' ? 'auto' : window.localStorage.getItem('theme');

@@ -7,7 +7,7 @@ import AddedCoursePane from './AddedCourses/AddedCoursePane';
 import CoursePane from './CoursePane/CoursePaneRoot';
 import darkModeLoadingGif from './CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './CoursePane/SearchForm/Gifs/loading.gif';
-import { useTabStore} from './RightPaneStore';
+import { useTabStore} from '$stores/TabStore';
 import { isDarkMode } from '$lib/helpers';
 
 const UCIMap = React.lazy(() => import('../Map'));
