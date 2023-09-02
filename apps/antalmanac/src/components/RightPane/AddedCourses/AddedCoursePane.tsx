@@ -1,10 +1,10 @@
-import { Box, Grid, Menu, MenuItem, Paper, TextField, Tooltip, Typography } from '@material-ui/core';
-import { IconButton } from '@mui/material';
+import { Box, Grid, Paper, TextField, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
-import { PureComponent } from 'react';
+import { PureComponent, useCallback, useEffect, useState } from 'react';
 
+import { IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
+import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 import { AACourse } from '@packages/antalmanac-types';
 import { ContentCopy, DeleteOutline } from '@mui/icons-material';
 import { ColumnToggleButton } from '../CoursePane/CoursePaneButtonRow';
@@ -58,6 +58,115 @@ interface AddedCoursePaneState {
     scheduleNote: string;
 }
 
+/**
+ * Copies (actually, it appends without deleting) one schedule to another (or all other schedules)
+ */
+export function CopyScheduleButton() {
+    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+
+    const handleScheduleNamesChange = useCallback(() => {
+        setScheduleNames(AppStore.getScheduleNames());
+    }, [setScheduleNames]);
+
+    useEffect(() => {
+        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
+
+        return () => {
+            AppStore.removeListener('scheduleNamesChange', handleScheduleNamesChange);
+        };
+    }, [handleScheduleNamesChange]);
+
+    return (
+        <PopupState variant="popover">
+            {(popupState) => (
+                <>
+                    <Tooltip title="Copy Schedule">
+                        <IconButton
+                            {...bindTrigger(popupState)}
+                            sx={{
+                                backgroundColor: 'rgba(236, 236, 236, 1)',
+                                marginRight: 1,
+                                padding: 1.5,
+                                boxShadow: '2',
+                                color: 'black',
+                                '&:hover': {
+                                    backgroundColor: 'grey',
+                                },
+                                pointerEvents: 'auto',
+                            }}
+                        >
+                            <ContentCopy />
+                        </IconButton>
+                    </Tooltip>
+                    <Menu {...bindMenu(popupState)}>
+                        {scheduleNames.map((name, index) => {
+                            return (
+                                <MenuItem
+                                    key={index}
+                                    disabled={AppStore.getCurrentScheduleIndex() === index}
+                                    onClick={() => {
+                                        copySchedule(index);
+                                        popupState.close();
+                                    }}
+                                >
+                                    Copy to {name}
+                                </MenuItem>
+                            );
+                        })}
+                        <MenuItem
+                            onClick={() => {
+                                copySchedule(scheduleNames.length);
+                                popupState.close();
+                            }}
+                        >
+                            Copy to All Schedules
+                        </MenuItem>
+                    </Menu>
+                </>
+            )}
+        </PopupState>
+    );
+}
+
+/**
+ * Deletes all events from a schedule
+ */
+export function ClearScheduleButton() {
+    return (
+        <Tooltip title="Clear Schedule">
+            <IconButton
+                sx={{
+                    backgroundColor: 'rgba(236, 236, 236, 1)',
+                    marginRight: 1,
+                    padding: 1.5,
+                    boxShadow: '2',
+                    color: 'black',
+                    '&:hover': {
+                        backgroundColor: 'grey',
+                    },
+                    pointerEvents: 'auto',
+                }}
+                onClick={() => {
+                    if (window.confirm('Are you sure you want to clear this schedule?')) {
+                        clearSchedules();
+                        logAnalytics({
+                            category: analyticsEnum.addedClasses.title,
+                            action: analyticsEnum.addedClasses.actions.CLEAR_SCHEDULE,
+                        });
+                    }
+                }}
+            >
+                <DeleteOutline />
+            </IconButton>
+        </Tooltip>
+    );
+}
+
+const components = [
+    <CopyScheduleButton key="copy" />,
+    <ClearScheduleButton key="clear" />,
+    <ColumnToggleButton key="column" />,
+];
 class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePaneState> {
     state: AddedCoursePaneState = {
         courses: [],
@@ -73,7 +182,6 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         AppStore.on('customEventsChange', this.loadCustomEvents);
         AppStore.on('currentScheduleIndexChange', this.loadCourses);
         AppStore.on('currentScheduleIndexChange', this.loadCustomEvents);
-        AppStore.on('scheduleNamesChange', this.loadScheduleNames);
         AppStore.on('scheduleNotesChange', this.loadScheduleNote);
         logAnalytics({
             category: analyticsEnum.addedClasses.title,
@@ -86,7 +194,6 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
         AppStore.removeListener('customEventsChange', this.loadCustomEvents);
         AppStore.removeListener('currentScheduleIndexChange', this.loadCourses);
         AppStore.removeListener('currentScheduleIndexChange', this.loadCustomEvents);
-        AppStore.removeListener('scheduleNamesChange', this.loadScheduleNames);
         AppStore.removeListener('scheduleNotesChange', this.loadScheduleNote);
     }
 
@@ -169,88 +276,8 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
 
         return (
             <>
-                <Box
-                    sx={{
-                        width: '100%',
-                        zIndex: 3,
-                        padding: 4,
-                    }}
-                >
-                    <PopupState variant="popover">
-                        {(popupState) => (
-                            <>
-                                <Tooltip title="Copy Schedule">
-                                    <IconButton
-                                        {...bindTrigger(popupState)}
-                                        sx={{
-                                            backgroundColor: 'rgba(236, 236, 236, 1)',
-                                            marginRight: 1,
-                                            padding: 1.5,
-                                            boxShadow: '2',
-                                            color: 'black',
-                                            '&:hover': {
-                                                backgroundColor: 'grey',
-                                            },
-                                            pointerEvents: 'auto',
-                                        }}
-                                    >
-                                        <ContentCopy />
-                                    </IconButton>
-                                </Tooltip>
-                                <Menu {...bindMenu(popupState)}>
-                                    {this.state.scheduleNames.map((name, index) => {
-                                        return (
-                                            <MenuItem
-                                                key={index}
-                                                disabled={AppStore.getCurrentScheduleIndex() === index}
-                                                onClick={() => {
-                                                    copySchedule(index);
-                                                    popupState.close();
-                                                }}
-                                            >
-                                                Copy to {name}
-                                            </MenuItem>
-                                        );
-                                    })}
-                                    <MenuItem
-                                        onClick={() => {
-                                            copySchedule(this.state.scheduleNames.length);
-                                            popupState.close();
-                                        }}
-                                    >
-                                        Copy to All Schedules
-                                    </MenuItem>
-                                </Menu>
-                            </>
-                        )}
-                    </PopupState>
-                    <Tooltip title="Clear Schedule">
-                        <IconButton
-                            sx={{
-                                backgroundColor: 'rgba(236, 236, 236, 1)',
-                                marginRight: 1,
-                                padding: 1.5,
-                                boxShadow: '2',
-                                color: 'black',
-                                '&:hover': {
-                                    backgroundColor: 'grey',
-                                },
-                                pointerEvents: 'auto',
-                            }}
-                            onClick={() => {
-                                if (window.confirm('Are you sure you want to clear this schedule?')) {
-                                    clearSchedules();
-                                    logAnalytics({
-                                        category: analyticsEnum.addedClasses.title,
-                                        action: analyticsEnum.addedClasses.actions.CLEAR_SCHEDULE,
-                                    });
-                                }
-                            }}
-                        >
-                            <DeleteOutline />
-                        </IconButton>
-                    </Tooltip>
-                    <ColumnToggleButton />
+                <Box width={1} zIndex={3} padding={1}>
+                    {components}
                 </Box>
                 <Typography variant="h6" className={this.props.classes.titleRow}>
                     {`${scheduleName} (${scheduleUnits} Units)`}{' '}
