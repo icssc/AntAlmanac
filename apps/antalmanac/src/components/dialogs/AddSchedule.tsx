@@ -1,5 +1,14 @@
 import { useCallback, useState, useEffect, useMemo } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, type DialogProps } from '@mui/material';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    TextField,
+    type DialogProps,
+    Box,
+} from '@mui/material';
 import { addSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
@@ -75,7 +84,9 @@ function AddScheduleDialog(props: ScheduleNameDialogProps) {
             <DialogTitle>Add Schedule</DialogTitle>
 
             <DialogContent>
-                <TextField fullWidth label="Name" onChange={handleNameChange} value={name} />
+                <Box padding={1}>
+                    <TextField fullWidth label="Name" onChange={handleNameChange} value={name} />
+                </Box>
             </DialogContent>
 
             <DialogActions>

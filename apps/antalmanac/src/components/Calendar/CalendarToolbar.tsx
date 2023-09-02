@@ -100,7 +100,7 @@ function DeleteScheduleButton(props: { index: number }) {
 
     return (
         <Box>
-            <IconButton onClick={handleOpen} size="small">
+            <IconButton onClick={handleOpen} size="small" disabled={AppStore.schedule.getNumberOfSchedules() === 1}>
                 <DeleteIcon />
             </IconButton>
             <DeleteScheduleDialog fullWidth open={open} index={props.index} onClose={handleClose} />
@@ -188,7 +188,7 @@ function SelectSchedulePopover(props: { scheduleNames: string[] }) {
         <Box>
             <Button
                 size="small"
-                color="inherit"
+                color="secondary"
                 variant="outlined"
                 onClick={handleClick}
                 sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
@@ -313,7 +313,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                 <SelectSchedulePopover scheduleNames={scheduleNames} />
                 <Tooltip title="Toggle showing finals schedule">
                     <Button
-                        color={showFinalsSchedule ? 'primary' : 'inherit'}
+                        color={showFinalsSchedule ? 'primary' : 'secondary'}
                         variant={showFinalsSchedule ? 'contained' : 'outlined'}
                         onClick={handleToggleFinals}
                         size="small"

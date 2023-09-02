@@ -43,6 +43,7 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
 
     const handleDelete = useCallback(() => {
         deleteSchedule(index);
+        onClose?.({}, 'escapeKeyDown');
     }, [index]);
 
     return (
