@@ -32,14 +32,11 @@ function AddScheduleDialog(props: ScheduleNameDialogProps) {
 
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
-    const defaultScheduleName = useMemo(() => `Schedule ${scheduleNames.length + 1}`, [scheduleNames]);
-
-    const [name, setName] = useState(defaultScheduleName);
+    const [name, setName] = useState(`Schedule ${scheduleNames.length + 1}`);
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
-        setName(defaultScheduleName);
-    }, [onClose, defaultScheduleName]);
+    }, [onClose]);
 
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
@@ -47,6 +44,7 @@ function AddScheduleDialog(props: ScheduleNameDialogProps) {
 
     const submitName = useCallback(() => {
         addSchedule(name);
+        setName(`Schedule ${AppStore.getScheduleNames().length + 1}`);
         onClose?.({}, 'escapeKeyDown');
     }, [onClose, name]);
 
