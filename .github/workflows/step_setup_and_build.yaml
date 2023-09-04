@@ -54,6 +54,13 @@ jobs:
             echo "apiSubDomain=dev" >> $GITHUB_ENV
           fi
 
+      - name: test project
+        env:
+          TURBO_API: ${{ vars.TURBO_API }}
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: "team_antalmanac"
+        run: npx turbo test
+
       - name: build project
         env:
           HUSKY: 0
