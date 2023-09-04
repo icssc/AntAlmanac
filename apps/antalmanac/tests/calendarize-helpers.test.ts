@@ -1,10 +1,10 @@
 import { describe, test, expect } from 'vitest';
-import type { ScheduleCourse } from '@packages/antalmanac-types';
+import type { Schedule } from '@packages/antalmanac-types';
 import type { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
 
 describe('calendarize-helpers', () => {
-    const courses: ScheduleCourse[] = [
+    const courses: Schedule['courses'] = [
         {
             courseComment: 'placeholderCourseComment',
             courseNumber: 'placeholderCourseNumber',
