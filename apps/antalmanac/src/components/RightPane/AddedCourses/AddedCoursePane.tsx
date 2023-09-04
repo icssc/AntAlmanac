@@ -11,7 +11,6 @@ import CustomEventDetailView from './CustomEventDetailView';
 import { clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';
-import { isDarkMode } from '$lib/helpers';
 
 const styles = {
     container: {
@@ -171,11 +170,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                         <PopupState variant="popover">
                             {(popupState) => (
                                 <>
-                                    <Button
-                                        variant="outlined"
-                                        color={isDarkMode() ? 'secondary' : 'inherit'}
-                                        {...bindTrigger(popupState)}
-                                    >
+                                    <Button variant="outlined" color="inherit" {...bindTrigger(popupState)}>
                                         Copy Schedule
                                     </Button>
                                     <Menu {...bindMenu(popupState)}>
@@ -208,7 +203,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                         <Button
                             className={this.props.classes.clearSchedule}
                             variant="outlined"
-                            color={isDarkMode() ? 'secondary' : 'inherit'}
+                            color="inherit"
                             onClick={() => {
                                 if (
                                     window.confirm(

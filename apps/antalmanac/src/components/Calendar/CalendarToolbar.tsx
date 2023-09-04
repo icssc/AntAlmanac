@@ -30,7 +30,6 @@ import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
 import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';
-import { isDarkMode } from '$lib/helpers';
 
 function handleScheduleChange(index: number) {
     logAnalytics({
@@ -189,7 +188,7 @@ function SelectSchedulePopover(props: { scheduleNames: string[] }) {
         <Box>
             <Button
                 size="small"
-                color={isDarkMode() ? 'secondary' : 'inherit'}
+                color="inherit"
                 variant="outlined"
                 onClick={handleClick}
                 sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
@@ -314,7 +313,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                 <SelectSchedulePopover scheduleNames={scheduleNames} />
                 <Tooltip title="Toggle showing finals schedule">
                     <Button
-                        color={showFinalsSchedule ? 'primary' : isDarkMode() ? 'secondary' : 'inherit'}
+                        color={showFinalsSchedule ? 'primary' : 'inherit'}
                         variant={showFinalsSchedule ? 'contained' : 'outlined'}
                         onClick={handleToggleFinals}
                         size="small"
