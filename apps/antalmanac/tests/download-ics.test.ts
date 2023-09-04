@@ -18,11 +18,11 @@ describe('download-ics', () => {
                     sectionType: 'placeholderSectionType',
                     sectionNum: 'placeholderSectionNum',
                     units: 'placeholderUnits',
-                    instructors: [],
+                    instructors: ['placeholderInstructor1, placeholderInstructor2'],
                     meetings: [
                         {
                             timeIsTBA: false,
-                            bldg: [],
+                            bldg: ['placeholderLocation'],
                             days: 'MWF',
                             startTime: {
                                 hour: 1,
@@ -62,7 +62,7 @@ describe('download-ics', () => {
                     status: 'OPEN',
                     sectionComment: 'placeholderSectionComment',
                 },
-                term: 'placeholderTerm',
+                term: '2023 Fall', // Cannot be a random placeholder; it has to be in `quarterStartDates` otherwise it'll be undefined
             },
         ];
 
@@ -71,10 +71,21 @@ describe('download-ics', () => {
                 productId: 'antalmanac/ics',
                 startOutputType: 'local',
                 endOutputType: 'local',
+                title: 'placeholderDeptCode placeholderCourseNumber placeholderSectionType',
+                description: 'placeholderCourseTitle\nTaught by placeholderInstructor1, placeholderInstructor2',
+                location: 'placeholderLocation',
+                start: [2023, 9, 29, 1, 2],
+                end: [2023, 9, 29, 3, 4],
+                recurrenceRule: 'FREQ=WEEKLY;BYDAY=FR,MO,WE;INTERVAL=1;COUNT=31',
+            },
+            {
+                productId: 'antalmanac/ics',
+                startOutputType: 'local',
+                endOutputType: 'local',
                 title: 'placeholderDeptCode placeholderCourseNumber Final Exam',
                 description: 'Final Exam for placeholderCourseTitle',
-                start: [NaN, 3, 3, 1, 2],
-                end: [NaN, 3, 3, 3, 4],
+                start: [2023, 3, 3, 1, 2],
+                end: [2023, 3, 3, 3, 4],
             },
         ];
 
