@@ -128,9 +128,32 @@ export function getFirstClass(
 /**
  * Get the start and end datetime of an exam
  *
- * @example ("Mon Jun 7 10:30-12:30pm", "2019") -> [[2019, 6, 7, 10, 30], [2019, 6, 7, 12, 30]]
+ * @example
+ *
+ * ```ts
+ * const exam = {
+ *   month: 6,
+ *   day: 7,
+ *   startTime: {
+ *      hour: 10,
+ *      minute: 30,
+ *   },
+ *   endTime: {
+ *     hour: 12,
+ *     minute: 30,
+ *   },
+ *   ...
+ * }
+ *
+ * const year = 2019
+ *
+ * const [examStart, examEnd] = getExamTime(exam, year)
+ *
+ * // examStart = [2019, 6, 7, 10, 30]
+ * // examEnd = [2019, 6, 7, 12, 30]
+ * ```
  */
-export function getExamTime(exam: WebsocSectionFinalExam, year: number) {
+export function getExamTime(exam: WebsocSectionFinalExam, year: number): [DateTimeArray, DateTimeArray] | [] {
     if (exam.month && exam.day && exam.startTime && exam.endTime) {
         const month = exam.month;
         const day = exam.day;
@@ -179,7 +202,7 @@ export function getQuarter(term: string) {
 /**
  * Get the number of weeks in a given term.
  *
- * i.e. 10 for quarters and Summer Session 10wk, 5 for Summer Sessions I and II.
+ * @example 10 for quarters and Summer Session 10wk, 5 for Summer Sessions I and II.
  */
 export function getTermLength(quarter: string) {
     return quarter.startsWith('Summer') && quarter !== 'Summer10wk' ? 5 : 10;
@@ -190,8 +213,11 @@ export function getTermLength(quarter: string) {
  *
  * @example ["TU", "TH"] -> "FREQ=WEEKLY;BYDAY=TU,TH;INTERVAL=1;COUNT=20"
  */
-export function getRRule(bydays: ReturnType<typeof getByDays>, quarter: string) {
-    let count = getTermLength(quarter) * bydays.length; // Number of occurences in the quarter
+export function getRRule(bydays: string[], quarter: string) {
+    /**
+     * Number of occurences in the quarter
+     */
+    let count = getTermLength(quarter) * bydays.length;
 
     switch (quarter) {
         case 'Fall':
@@ -256,8 +282,8 @@ export function getEventsFromCourses(courses = AppStore.schedule.getCurrentCours
                     title: `${deptCode} ${courseNumber} ${sectionType}`,
                     description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
                     location: `${meeting.bldg}`,
-                    start: firstClassStart as DateTimeArray,
-                    end: firstClassEnd as DateTimeArray,
+                    start: firstClassStart,
+                    end: firstClassEnd,
                     recurrenceRule: rrule,
                 };
             })
@@ -267,15 +293,17 @@ export function getEventsFromCourses(courses = AppStore.schedule.getCurrentCours
         if (finalExam.examStatus === 'SCHEDULED_FINAL') {
             const [examStart, examEnd] = getExamTime(finalExam, getYear(term));
 
-            courseEvents.push({
-                productId: 'antalmanac/ics',
-                startOutputType: 'local' as const,
-                endOutputType: 'local' as const,
-                title: `${deptCode} ${courseNumber} Final Exam`,
-                description: `Final Exam for ${courseTitle}`,
-                start: examStart as DateTimeArray,
-                end: examEnd as DateTimeArray,
-            });
+            if (examStart && examEnd) {
+                courseEvents.push({
+                    productId: 'antalmanac/ics',
+                    startOutputType: 'local' as const,
+                    endOutputType: 'local' as const,
+                    title: `${deptCode} ${courseNumber} Final Exam`,
+                    description: `Final Exam for ${courseTitle}`,
+                    start: examStart,
+                    end: examEnd,
+                });
+            }
         }
 
         return courseEvents;
