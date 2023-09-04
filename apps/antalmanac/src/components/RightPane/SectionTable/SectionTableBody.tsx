@@ -27,7 +27,7 @@ import { clickToCopy, CourseDetails, isDarkMode, queryGrades } from '$lib/helper
 import AppStore from '$stores/AppStore';
 import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
-import { translateWebSOCTimeTo24HourTime, parseDaysString } from '$stores/calendarizeHelpers';
+import { translate24To12HourTime, parseDaysString } from '$stores/calendarizeHelpers';
 
 type SectionType = 'Act' | 'Col' | 'Dis' | 'Fld' | 'Lab' | 'Lec' | 'Qiz' | 'Res' | 'Sem' | 'Stu' | 'Tap' | 'Tut';
 
@@ -256,13 +256,10 @@ function LocationsCell(props: LocationsCellProps) {
             {meetings.map((meeting) => {
                 const [buildingName = ''] = meeting.bldg;
                 const buildingId = locationIds[buildingName] ?? 0;
+                const key = `${meeting.days}${meeting.startTime}${meeting.bldg}`;
 
                 return meeting.bldg[0] !== 'TBA' ? (
-                    <Link
-                        key={meeting.days + meeting.time + meeting.bldg}
-                        to={`/map?location=${buildingId}`}
-                        onClick={focusMap}
-                    >
+                    <Link key={key} to={`/map?location=${buildingId}`} onClick={focusMap}>
                         {meeting.bldg}
                         <br />
                     </Link>
@@ -367,9 +364,9 @@ function DayAndTimeCell(props: DayAndTimeCellProps) {
     return (
         <Box>
             {props.meetings.map((meeting) => {
-                const timeString = meeting.time.replace(/\s/g, '').split('-').join(' - ');
+                const timeString = `${meeting.startTime?.hour}:${meeting.startTime?.minute} - ${meeting.endTime?.hour}:${meeting.endTime?.minute}`;
                 return (
-                    <Typography key={meeting.days + meeting.time + meeting.bldg} variant="body2">
+                    <Typography key={timeString} variant="body2">
                         {`${meeting.days} ${timeString}`}
                     </Typography>
                 );
@@ -431,7 +428,7 @@ function SectionTableBody(props: SectionTableBodyProps) {
     const sectionDetails = useMemo(() => {
         return {
             daysOccurring: parseDaysString(section.meetings[0].days),
-            ...translateWebSOCTimeTo24HourTime(section.meetings[0].time),
+            ...section.meetings[0],
         };
     }, [section.meetings[0]]);
 
@@ -497,6 +494,13 @@ function SectionTableBody(props: SectionTableBodyProps) {
 
         const { startTime, endTime } = sectionDetails;
 
+        const startTimeString = `${startTime.hour}:${startTime.minute}`;
+
+        const endTimeString = `${endTime.hour}:${endTime.minute}`;
+
+        /**
+         * TODO, FIXME: should we be comparing strings, or actual numbers, or Date objects, etc. ?
+         */
         const conflictingEvent = calendarEvents.find((event) => {
             // If it occurs on a different day, no conflict.
             if (!sectionDetails?.daysOccurring?.includes(event.start.getDay())) {
@@ -515,9 +519,9 @@ function SectionTableBody(props: SectionTableBodyProps) {
              */
             const eventEndTime = event.end.toString().split(' ')[4].slice(0, -3);
 
-            const happensBefore = startTime <= eventStartTime && endTime <= eventStartTime;
+            const happensBefore = startTimeString <= eventStartTime && endTimeString <= eventStartTime;
 
-            const happensAfter = startTime >= eventEndTime && endTime >= eventEndTime;
+            const happensAfter = startTimeString >= eventEndTime && endTimeString >= eventEndTime;
 
             return !(happensBefore || happensAfter);
         });

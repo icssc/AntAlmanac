@@ -86,8 +86,27 @@ interface CommonCalendarEvent extends Event {
 }
 
 export interface CourseEvent extends CommonCalendarEvent {
-    bldg: string; // E.g., ICS 174, which is actually building + room
-    finalExam: string;
+    /**
+     * @example 'ICS 174', which is actually building + room.
+     */
+    bldg: string;
+
+    finalExam: {
+        examStatus: 'NO_FINAL' | 'TBA_FINAL' | 'SCHEDULED_FINAL';
+        dayOfWeek: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | null;
+        month: number | null;
+        day: number | null;
+        startTime: {
+            hour: number;
+            minute: number;
+        } | null;
+        endTime: {
+            hour: number;
+            minute: number;
+        } | null;
+        bldg: string[] | null;
+    };
+    courseTitle: string;
     instructors: string[];
     isCustomEvent: false;
     sectionCode: string;
@@ -113,8 +132,16 @@ interface CourseCalendarEventProps {
     closePopover: () => void;
 }
 
-const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
+function CourseCalendarEvent(props: CourseCalendarEventProps) {
+    const { classes, courseInMoreInfo } = props;
+
+    const { setSelectedTab } = useContext(mobileContext);
+
     const paperRef = useRef<HTMLInputElement>(null);
+
+    const focusMap = useCallback(() => {
+        setSelectedTab(1);
+    }, [setSelectedTab]);
 
     useEffect(() => {
         const handleKeyDown = (event: { keyCode: number }) => {
@@ -131,13 +158,6 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         };
     }, []);
 
-    const { setSelectedTab } = useContext(mobileContext);
-
-    const focusMap = useCallback(() => {
-        setSelectedTab(1);
-    }, [setSelectedTab]);
-
-    const { classes, courseInMoreInfo } = props;
     if (!courseInMoreInfo.isCustomEvent) {
         const { term, instructors, sectionCode, title, finalExam, bldg, sectionType } = courseInMoreInfo;
 
@@ -207,7 +227,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         </tr>
                         <tr>
                             <td>Final</td>
-                            <td className={classes.rightCells}>{finalExam}</td>
+                            <td className={classes.rightCells}>{finalExam.day}</td>
                         </tr>
                         <tr>
                             <td>Color</td>
@@ -263,6 +283,6 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             </Paper>
         );
     }
-};
+}
 
 export default withStyles(styles)(CourseCalendarEvent);

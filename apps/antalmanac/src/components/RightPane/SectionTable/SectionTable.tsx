@@ -33,39 +33,39 @@ interface TableHeaderColumnDetails {
 const tableHeaderColumns: Record<SectionTableColumn, TableHeaderColumnDetails> = {
     sectionCode: {
         label: 'Code',
-        width: '8%',
+        width: '10%',
     },
     sectionDetails: {
         label: 'Type',
-        // width: '8%',
+        width: '10%',
     },
     instructors: {
         label: 'Instructors',
-        // width: '8%',
+        width: '15%',
     },
     gpa: {
         label: 'GPA',
-        // width: '15%',
+        width: '5%',
     },
     dayAndTime: {
         label: 'Times',
-        // width: '12%',
+        width: '15%',
     },
     location: {
         label: 'Places',
-        // width: '10%',
+        width: '10%',
     },
     sectionEnrollment: {
         label: 'Enrollment',
-        // width: '10%',
+        width: '10%',
     },
     restrictions: {
         label: 'Restr',
-        // width: '8%',
+        width: '10%',
     },
     status: {
         label: 'Status',
-        // width: '8%',
+        width: '10%',
     },
 };
 
@@ -189,6 +189,7 @@ function SectionTable(props: SectionTableProps) {
                     <TableHead>
                         <TableRow>
                             <TableCell padding="none" />
+
                             {tableHeaderColumnEntries
                                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
                                 .map(([column, { label, width }]) => (
