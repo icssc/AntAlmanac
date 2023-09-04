@@ -4,10 +4,12 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
-import { Fragment, useCallback, useContext, useEffect, useState } from 'react';
+import { Fragment, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { AASection } from '@packages/antalmanac-types';
 import { WebsocSectionEnrollment, WebsocSectionMeeting } from 'peterportal-api-next-types';
+
+import RightPaneStore, { type SectionTableColumn } from '../RightPaneStore';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
@@ -17,7 +19,7 @@ import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
-import { translateWebSOCTimeTo24HourTime } from '$stores/calendarizeHelpers';
+import { normalizeTime, parseDaysString, translate24To12HourTime } from '$stores/calendarizeHelpers';
 
 const styles: Styles<Theme, object> = (theme) => ({
     popover: {
@@ -41,8 +43,8 @@ const styles: Styles<Theme, object> = (theme) => ({
             background: isDarkMode() ? '#b0b04f' : '#fcfc97',
         },
         '&.scheduleConflict': {
-            background: isDarkMode() ? '#121212' : '#7c7c7c',
-            opacity: 0.6,
+            background: isDarkMode() ? '#121212' : '#a0a0a0',
+            opacity: isDarkMode() ? 0.6 : 1,
         },
     },
     cell: {
@@ -76,7 +78,7 @@ const styles: Styles<Theme, object> = (theme) => ({
     },
     Act: { color: '#c87137' },
     Col: { color: '#ff40b5' },
-    Dis: { color: '#8d63f0' },
+    Dis: { color: '#ff6e00' },
     Fld: { color: '#1ac805' },
     Lab: { color: '#1abbe9' },
     Lec: { color: '#d40000' },
@@ -197,10 +199,10 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
-                const [buildingName = ''] = meeting.bldg;
-                const buildingId = locationIds[buildingName] ?? 69420;
+                const [buildingName = ''] = meeting.bldg[0].split(' ');
+                const buildingId = locationIds[buildingName];
                 return meeting.bldg[0] !== 'TBA' ? (
-                    <Fragment key={meeting.days + meeting.time + meeting.bldg}>
+                    <Fragment key={meeting.timeIsTBA + meeting.bldg[0]}>
                         <Link
                             className={classes.clickableLocation}
                             to={`/map?location=${buildingId}`}
@@ -222,9 +224,15 @@ interface SectionEnrollmentCellProps {
     classes: ClassNameMap;
     numCurrentlyEnrolled: WebsocSectionEnrollment;
     maxCapacity: number;
-    /** This is a string because sometimes it's "n/a" */
+
+    /**
+     * This is a string because sometimes it's "n/a"
+     */
     numOnWaitlist: string;
-    /** This is a string because numOnWaitlist is a string. I haven't seen this be "n/a" but it seems possible and I don't want it to break if that happens. */
+
+    /**
+     * This is a string because numOnWaitlist is a string. I haven't seen this be "n/a" but it seems possible and I don't want it to break if that happens.
+     */
     numNewOnlyReserved: string;
 }
 
@@ -307,8 +315,15 @@ const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
-                const timeString = meeting.time.replace(/\s/g, '').split('-').join(' - ');
-                return <Box key={meeting.days + meeting.time + meeting.bldg}>{`${meeting.days} ${timeString}`}</Box>;
+                if (meeting.timeIsTBA) {
+                    return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>TBA</Box>;
+                }
+
+                if (meeting.startTime && meeting.endTime) {
+                    const timeString = translate24To12HourTime(meeting.startTime, meeting.endTime);
+
+                    return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>{`${meeting.days} ${timeString}`}</Box>;
+                }
             })}
         </NoPaddingTableCell>
     );
@@ -344,113 +359,144 @@ interface SectionTableBodyProps {
     section: AASection;
     courseDetails: CourseDetails;
     term: string;
-    colorAndDelete: boolean;
-    highlightAdded: boolean;
+    allowHighlight: boolean;
     scheduleNames: string[];
 }
 
-//TODO: SectionNum name parity -> SectionNumber
+const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
+    sectionCode: CourseCodeCell,
+    sectionDetails: SectionDetailsCell,
+    instructors: InstructorsCell,
+    dayAndTime: DayAndTimeCell,
+    location: LocationsCell,
+    sectionEnrollment: SectionEnrollmentCell,
+    restrictions: RestrictionsCell,
+    status: StatusCell,
+};
+
+/**
+ * TODO: SectionNum name parity -> SectionNumber
+ */
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
-    const { classes, section, courseDetails, term, colorAndDelete, highlightAdded, scheduleNames } = props;
-    const [addedCourse, setAddedCourse] = useState(colorAndDelete);
+    const { classes, section, courseDetails, term, allowHighlight, scheduleNames } = props;
 
-    const [scheduleConflict, setScheduleConflict] = useState(false);
+    const [activeColumns, setColumns] = useState(RightPaneStore.getActiveColumns());
 
-    const DAYS_TO_NUMS: { [key: string]: number } = {
-        Su: 0,
-        M: 1,
-        Tu: 2,
-        W: 3,
-        Th: 4,
-        F: 5,
-        Sa: 6,
-    };
+    const [addedCourse, setAddedCourse] = useState(
+        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
+    );
+
+    const [calendarEvents, setCalendarEvents] = useState(AppStore.getCourseEventsInCalendar());
+
+    /**
+     * Additional information about the current section being rendered.
+     * i.e. time information, which is compared with the calendar events to find conflicts.
+     */
+    const sectionDetails = useMemo(() => {
+        return {
+            daysOccurring: parseDaysString(section.meetings[0].days),
+            ...normalizeTime(section.meetings[0]),
+        };
+    }, [section.meetings[0]]);
+
+    // Stable references to event listeners will synchronize React state with the store.
+
+    const updateColumns = useCallback(
+        (newActiveColumns: SectionTableColumn[]) => {
+            setColumns(newActiveColumns);
+        },
+        [setColumns]
+    );
+
+    const updateHighlight = useCallback(() => {
+        setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
+    }, [setAddedCourse]);
+
+    const updateCalendarEvents = useCallback(() => {
+        setCalendarEvents(AppStore.getCourseEventsInCalendar());
+    }, [setCalendarEvents]);
+
+    // Attach event listeners to the store.
 
     useEffect(() => {
-        const updateHighlight = () => {
-            const doAdd = AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`);
-            setAddedCourse(doAdd);
+        RightPaneStore.on('columnChange', updateColumns);
+        return () => {
+            RightPaneStore.removeListener('columnChange', updateColumns);
         };
+    }, [updateColumns]);
 
-        const checkAndDisplayScheduleConflict = () => {
-            if (AppStore.getCourseEventsInCalendar().length < 1) {
-                setScheduleConflict(false);
-                return;
-            }
-
-            // An array of lists of time information on every added event
-            const calendarEventTimes = AppStore.getCourseEventsInCalendar().map((event) => {
-                const courseDay = event.start.getDay();
-
-                // courseStart/EndTime is normalized to ##:## (i.e. leading zero, no seconds)
-                const courseStartTime = event.start.toString().split(' ')[4].slice(0, -3);
-                const courseEndTime = event.end.toString().split(' ')[4].slice(0, -3);
-                return { day: courseDay, startTime: courseStartTime, endTime: courseEndTime };
-            });
-
-            const coursePaneEvent = {
-                // If there already exists a more well-written way to translate secton.meetings days (string) into a number, LMK
-                // Converts SuTuTh -> [Su, Tu, Th] -> [0, 2, 4]
-                day: section.meetings[0].days.match(/[A-Z][a-z]*/g)?.map((day: string) => DAYS_TO_NUMS[day]),
-                startTime: '',
-                endTime: '',
-            };
-
-            const translatedTimeString = translateWebSOCTimeTo24HourTime(section);
-            if (translatedTimeString) {
-                coursePaneEvent.startTime = translatedTimeString.startTime;
-                coursePaneEvent.endTime = translatedTimeString.endTime;
-            }
-
-            for (const calendarEvent of calendarEventTimes) {
-                // Check if there is day overlap
-                if (!coursePaneEvent?.day?.includes(calendarEvent?.day)) {
-                    continue;
-                }
-
-                // Then, IF the course doesn't ( start AND end BEFORE) AND doesn't ( start AND end AFTER), it does conflict!
-                const happensBefore =
-                    coursePaneEvent.startTime <= calendarEvent.startTime &&
-                    coursePaneEvent.endTime <= calendarEvent.startTime;
-                const happensAfter =
-                    coursePaneEvent.startTime >= calendarEvent.endTime &&
-                    coursePaneEvent.endTime >= calendarEvent.endTime;
-
-                // If neither happensBefore or happensAfter is true, set scheduleConflict to true
-                if (!happensBefore && !happensAfter) {
-                    setScheduleConflict(true);
-                    return;
-                }
-            }
-            setScheduleConflict(false);
-            return;
-        };
-
-        const updateCourseState = () => {
-            updateHighlight();
-            checkAndDisplayScheduleConflict();
-        };
-
-        updateCourseState();
-        AppStore.on('addedCoursesChange', updateCourseState);
-        AppStore.on('currentScheduleIndexChange', updateCourseState);
+    useEffect(() => {
+        AppStore.on('addedCoursesChange', updateHighlight);
+        AppStore.on('currentScheduleIndexChange', updateHighlight);
 
         return () => {
-            AppStore.removeListener('addedCoursesChange', updateCourseState);
-            AppStore.removeListener('currentScheduleIndexChange', updateCourseState);
+            AppStore.removeListener('addedCoursesChange', updateHighlight);
+            AppStore.removeListener('currentScheduleIndexChange', updateHighlight);
         };
-    }, [section.sectionCode, term]); //should only run once on first render since these shouldn't change.
+    }, [updateHighlight]);
+
+    useEffect(() => {
+        AppStore.on('addedCoursesChange', updateCalendarEvents);
+        AppStore.on('currentScheduleIndexChange', updateCalendarEvents);
+
+        return () => {
+            AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
+            AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
+        };
+    }, [updateCalendarEvents]);
+
+    /**
+     * Whether the current section conflicts with any of the calendar events.
+     */
+    const scheduleConflict = useMemo(() => {
+        // If there are currently no calendar events, there can't be any conflicts.
+        if (calendarEvents.length === 0) {
+            return false;
+        }
+
+        // If the section's time wasn't parseable, then don't consider conflicts.
+        if (sectionDetails.startTime == null || sectionDetails.endTime == null) {
+            return false;
+        }
+
+        const { startTime, endTime } = sectionDetails;
+
+        const conflictingEvent = calendarEvents.find((event) => {
+            // If it occurs on a different day, no conflict.
+            if (!sectionDetails?.daysOccurring?.includes(event.start.getDay())) {
+                return false;
+            }
+
+            /**
+             * A time normalized to ##:##
+             * @example '10:00'
+             */
+            const eventStartTime = event.start.toString().split(' ')[4].slice(0, -3);
+
+            /**
+             * Normalized to ##:##
+             * @example '10:00'
+             */
+            const eventEndTime = event.end.toString().split(' ')[4].slice(0, -3);
+
+            const happensBefore = startTime <= eventStartTime && endTime <= eventStartTime;
+
+            const happensAfter = startTime >= eventEndTime && endTime >= eventEndTime;
+
+            return !(happensBefore || happensAfter);
+        });
+
+        return Boolean(conflictingEvent);
+    }, [calendarEvents, sectionDetails]);
 
     return (
         <TableRow
             classes={{ root: classes.row }}
             className={classNames(
                 classes.tr,
-                // If the course is added, then don't apply scheduleConflict
-                // The ternary is needed since the added course conflicts with itself
-                addedCourse && highlightAdded
-                    ? { addedCourse: addedCourse && highlightAdded }
-                    : { scheduleConflict: scheduleConflict }
+                // If the course is added, then don't check for/apply scheduleConflict
+                // allowHighlight is ALWAYS false when in Added Course Pane and ALWAYS true when in CourseRenderPane
+                addedCourse ? { addedCourse: addedCourse && allowHighlight } : { scheduleConflict: scheduleConflict }
             )}
         >
             {!addedCourse ? (
@@ -464,32 +510,27 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             ) : (
                 <ColorAndDelete color={section.color} sectionCode={section.sectionCode} term={term} />
             )}
-            <CourseCodeCell sectionCode={section.sectionCode} />
-            <SectionDetailsCell
-                sectionType={section.sectionType as SectionType}
-                sectionNum={section.sectionNum}
-                units={parseFloat(section.units)}
-            />
-            <InstructorsCell instructors={section.instructors} />
-            <DayAndTimeCell meetings={section.meetings} />
-            <LocationsCell
-                meetings={section.meetings}
-                courseName={courseDetails.deptCode + ' ' + courseDetails.courseNumber}
-            />
-            <SectionEnrollmentCell
-                numCurrentlyEnrolled={section.numCurrentlyEnrolled}
-                maxCapacity={parseInt(section.maxCapacity)}
-                numOnWaitlist={section.numOnWaitlist}
-                numNewOnlyReserved={section.numNewOnlyReserved}
-            />
-            <RestrictionsCell restrictions={section.restrictions} />
-            <StatusCell
-                term={term}
-                status={section.status}
-                sectionCode={section.sectionCode}
-                courseTitle={courseDetails.courseTitle}
-                courseNumber={courseDetails.courseNumber}
-            />
+
+            {Object.entries(tableBodyCells)
+                .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
+                .map(([column, Component]) => {
+                    return (
+                        // All of this is a little bulky, so if the props can be added specifically to activeTableBodyColumns, LMK!
+                        <Component
+                            key={column}
+                            section={section}
+                            courseDetails={courseDetails}
+                            term={term}
+                            scheduleNames={scheduleNames}
+                            {...section}
+                            sectionType={section.sectionType as SectionType}
+                            maxCapacity={parseInt(section.maxCapacity, 10)}
+                            units={parseFloat(section.units)}
+                            courseName={`${courseDetails.deptCode} ${courseDetails.courseNumber}`}
+                            {...courseDetails}
+                        />
+                    );
+                })}
         </TableRow>
     );
 });

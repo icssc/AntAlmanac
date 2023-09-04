@@ -55,7 +55,7 @@ function handleUndo() {
     });
     undoDelete(null);
 }
-
+    
 function handleClearSchedule() {
     if (window.confirm('Are you sure you want to clear this schedule?')) {
         clearSchedules();
@@ -347,7 +347,6 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                         <IconButton onClick={handleMenuClick}>
                             <MoreHorizIcon />
                         </IconButton>
-
                         <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleMenuClose}>
                             <MenuItem onClick={handleMenuClose}>
                                 <ExportCalendar key="export" />

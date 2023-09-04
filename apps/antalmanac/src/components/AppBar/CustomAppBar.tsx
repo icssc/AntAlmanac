@@ -3,9 +3,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import MenuIcon from '@material-ui/icons/Menu';
-import React, { MouseEventHandler } from 'react';
+import { useState, type MouseEventHandler } from 'react';
 
-import ConditionalWrapper from '../ConditionalWrapper';
 import AboutPage from './AboutPage';
 import Feedback from './Feedback';
 import ImportStudyList from './ImportStudyList';
@@ -38,10 +37,18 @@ interface CustomAppBarProps {
     classes: ClassNameMap;
 }
 
+const components = [
+    <SettingsMenu key="settings" />,
+    <ImportStudyList key="studylist" />,
+    <Feedback key="feedback" />,
+    <News key="news" />,
+    <AboutPage key="about" />,
+];
+
 const CustomAppBar = ({ classes }: CustomAppBarProps) => {
     const isMobileScreen = useMediaQuery('(max-width:750px)');
 
-    const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
+    const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
     const handleClick: MouseEventHandler<SVGSVGElement> = (event) => {
         setAnchorEl(event.currentTarget);
@@ -60,36 +67,18 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
 
                 <LoadSaveScheduleFunctionality />
 
-                <ConditionalWrapper
-                    condition={isMobileScreen}
-                    wrapper={(children) => (
-                        <div>
-                            <MenuIcon onClick={handleClick} />
-                            <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
-                                {children}
-                            </Menu>
-                        </div>
-                    )}
-                >
+                {isMobileScreen ? (
                     <>
-                        {[
-                            // the keys here don't do anything they just make eslint happy.
-                            <SettingsMenu key="settings" />,
-                            <ImportStudyList key="studylist" />,
-                            <Feedback key="feedback" />,
-                            <News key="news" />,
-                            <AboutPage key="about" />,
-                        ].map((element, index) => (
-                            <ConditionalWrapper
-                                key={index}
-                                condition={isMobileScreen}
-                                wrapper={(children) => <MenuItem>{children}</MenuItem>}
-                            >
-                                {element}
-                            </ConditionalWrapper>
-                        ))}
+                        <MenuIcon onClick={handleClick} />
+                        <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
+                            {components.map((element, index) => (
+                                <MenuItem key={index}>{element}</MenuItem>
+                            ))}
+                        </Menu>
                     </>
-                </ConditionalWrapper>
+                ) : (
+                    components
+                )}
             </Toolbar>
         </AppBar>
     );

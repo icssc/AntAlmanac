@@ -170,8 +170,7 @@ const SectionTableWrapped = (
             <GeDataFetchProvider
                 term={formData.term}
                 courseDetails={course}
-                colorAndDelete={false}
-                highlightAdded={true}
+                allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch.title}
             />
@@ -182,8 +181,7 @@ const SectionTableWrapped = (
             <SectionTableLazyWrapper
                 term={formData.term}
                 courseDetails={course}
-                colorAndDelete={false}
-                highlightAdded={true}
+                allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch.title}
             />
@@ -229,6 +227,7 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
                 fullCourses: formData.coursesFull,
                 building: formData.building,
                 room: formData.room,
+                division: formData.division,
             };
 
             try {
