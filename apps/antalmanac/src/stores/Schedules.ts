@@ -45,6 +45,13 @@ export class Schedules {
     }
 
     /**
+     * @return a specific schedule name
+     */
+    getScheduleName(scheduleIndex: number) {
+        return this.schedules[scheduleIndex].scheduleName;
+    }
+
+    /**
      * @return a list of all schedule names
      */
     getScheduleNames() {
@@ -94,12 +101,12 @@ export class Schedules {
     }
 
     /**
-     * Deletes current schedule and adjusts schedule index to current
+     * Deletes specific schedule and adjusts schedule index to current
      */
-    deleteCurrentSchedule() {
+    deleteSchedule(scheduleIndex: number) {
         this.addUndoState();
-        this.schedules.splice(this.currentScheduleIndex, 1);
-        this.currentScheduleIndex = Math.min(this.currentScheduleIndex, this.getNumberOfSchedules() - 1);
+        this.schedules.splice(scheduleIndex, 1);
+        this.currentScheduleIndex = Math.min(scheduleIndex, this.getNumberOfSchedules() - 1);
     }
 
     /**
