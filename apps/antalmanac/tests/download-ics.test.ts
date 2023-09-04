@@ -18,7 +18,7 @@ describe('download-ics', () => {
                     sectionType: 'placeholderSectionType',
                     sectionNum: 'placeholderSectionNum',
                     units: 'placeholderUnits',
-                    instructors: ['placeholderInstructor1, placeholderInstructor2'],
+                    instructors: ['placeholderInstructor1', 'placeholderInstructor2'],
                     meetings: [
                         {
                             timeIsTBA: false,
@@ -72,7 +72,7 @@ describe('download-ics', () => {
                 startOutputType: 'local',
                 endOutputType: 'local',
                 title: 'placeholderDeptCode placeholderCourseNumber placeholderSectionType',
-                description: 'placeholderCourseTitle\nTaught by placeholderInstructor1, placeholderInstructor2',
+                description: 'placeholderCourseTitle\nTaught by placeholderInstructor1/placeholderInstructor2',
                 location: 'placeholderLocation',
                 start: [2023, 9, 29, 1, 2],
                 end: [2023, 9, 29, 3, 4],
