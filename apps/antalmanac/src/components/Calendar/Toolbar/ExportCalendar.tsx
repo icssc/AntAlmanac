@@ -117,6 +117,7 @@ const getExamTime = (exam: WebsocSectionFinalExam, year: number) => {
             [year, month + 1, day, ...examEndTime],
         ];
     } else {
+        // This should never happen, but we return an empty array for typescript purposes
         return [];
     }
 };
