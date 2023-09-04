@@ -259,39 +259,41 @@ export function getEventsFromCourses(courses = AppStore.schedule.getCurrentCours
         const courseEvents: EventAttributes[] = meetings
             .map((meeting) => {
                 if (meeting.timeIsTBA) {
-                    return null;
+                    return;
                 }
 
-                if (meeting.days && meeting.startTime && meeting.endTime) {
-                    const bydays = getByDays(meeting.days);
-
-                    const classStartDate = getClassStartDate(term, bydays);
-
-                    const [firstClassStart, firstClassEnd] = getFirstClass(
-                        classStartDate,
-                        meeting.startTime,
-                        meeting.endTime
-                    );
-
-                    const rrule = getRRule(bydays, getQuarter(term));
-
-                    // Add VEvent to events array
-                    return {
-                        productId: 'antalmanac/ics',
-                        startOutputType: 'local' as const,
-                        endOutputType: 'local' as const,
-                        title: `${deptCode} ${courseNumber} ${sectionType}`,
-                        description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
-                        location: `${meeting.bldg}`,
-                        start: firstClassStart,
-                        end: firstClassEnd,
-                        recurrenceRule: rrule,
-                    };
+                if (!(meeting.days && meeting.startTime && meeting.endTime)) {
+                    return;
                 }
+
+                const bydays = getByDays(meeting.days);
+
+                const classStartDate = getClassStartDate(term, bydays);
+
+                const [firstClassStart, firstClassEnd] = getFirstClass(
+                    classStartDate,
+                    meeting.startTime,
+                    meeting.endTime
+                );
+
+                const rrule = getRRule(bydays, getQuarter(term));
+
+                // Add VEvent to events array.
+                return {
+                    productId: 'antalmanac/ics',
+                    startOutputType: 'local' as const,
+                    endOutputType: 'local' as const,
+                    title: `${deptCode} ${courseNumber} ${sectionType}`,
+                    description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
+                    location: `${meeting.bldg}`,
+                    start: firstClassStart,
+                    end: firstClassEnd,
+                    recurrenceRule: rrule,
+                };
             })
             .filter(notNull);
 
-        // Add Final to events
+        // Add final to events.
         if (finalExam.examStatus === 'SCHEDULED_FINAL') {
             const [examStart, examEnd] = getExamTime(finalExam, getYear(term));
 
