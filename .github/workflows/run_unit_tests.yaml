@@ -1,0 +1,18 @@
+name: "Run Unit Tests"
+on:
+  pull_request_target:
+    types: [opened, ready_for_review, reopened]
+
+jobs:
+  assign_reviewer:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v3
+      - name: test project
+        env:
+          # for Turbo caching
+          TURBO_API: ${{ vars.TURBO_API }}
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: "team_antalmanac"
+        run: npx turbo test
