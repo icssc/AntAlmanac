@@ -258,34 +258,36 @@ export function getEventsFromCourses(courses = AppStore.schedule.getCurrentCours
 
         const courseEvents: EventAttributes[] = meetings
             .map((meeting) => {
-                if (!(meeting.timeIsTBA && meeting.days && meeting.startTime && meeting.endTime)) {
+                if (meeting.timeIsTBA) {
                     return null;
                 }
 
-                const bydays = getByDays(meeting.days);
+                if (meeting.days && meeting.startTime && meeting.endTime) {
+                    const bydays = getByDays(meeting.days);
 
-                const classStartDate = getClassStartDate(term, bydays);
+                    const classStartDate = getClassStartDate(term, bydays);
 
-                const [firstClassStart, firstClassEnd] = getFirstClass(
-                    classStartDate,
-                    meeting.startTime,
-                    meeting.endTime
-                );
+                    const [firstClassStart, firstClassEnd] = getFirstClass(
+                        classStartDate,
+                        meeting.startTime,
+                        meeting.endTime
+                    );
 
-                const rrule = getRRule(bydays, getQuarter(term));
+                    const rrule = getRRule(bydays, getQuarter(term));
 
-                // Add VEvent to events array
-                return {
-                    productId: 'antalmanac/ics',
-                    startOutputType: 'local' as const,
-                    endOutputType: 'local' as const,
-                    title: `${deptCode} ${courseNumber} ${sectionType}`,
-                    description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
-                    location: `${meeting.bldg}`,
-                    start: firstClassStart,
-                    end: firstClassEnd,
-                    recurrenceRule: rrule,
-                };
+                    // Add VEvent to events array
+                    return {
+                        productId: 'antalmanac/ics',
+                        startOutputType: 'local' as const,
+                        endOutputType: 'local' as const,
+                        title: `${deptCode} ${courseNumber} ${sectionType}`,
+                        description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
+                        location: `${meeting.bldg}`,
+                        start: firstClassStart,
+                        end: firstClassEnd,
+                        recurrenceRule: rrule,
+                    };
+                }
             })
             .filter(notNull);
 
