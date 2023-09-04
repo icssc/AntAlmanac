@@ -4,6 +4,7 @@ import Today from '@material-ui/icons/Today';
 import { saveAs } from 'file-saver';
 import { createEvents } from 'ics';
 
+import { HourMinute, WebsocSectionFinalExam } from 'peterportal-api-next-types';
 import { openSnackbar } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { termData } from '$lib/termData';
@@ -43,8 +44,6 @@ const vTimeZoneSection =
 type DateTimeArray = [number, number, number, number, number];
 /** [YEAR, MONTH, DAY]*/
 type YearMonthDay = [number, number, number];
-/** [HOUR, MINUTE]*/
-type HourMinute = [number, number];
 
 /** getByDays returns the days that a class occurs
     Given a string of days, convert it to a list of days in ics format
@@ -92,9 +91,13 @@ const dateToIcs = (date: Date) => {
 };
 
 /** getFirstClass returns the start and end datetime of the first class
-    Ex: ([2021, 3, 30], " 4:00-4:50p") -> [[2021, 3, 30, 16, 0], [2021, 3, 30, 16, 50]] */
-const getFirstClass = (date: YearMonthDay, time: string): [DateTimeArray, DateTimeArray] => {
-    const [classStartTime, classEndTime] = parseTimes(time);
+    Ex: ([2021, 3, 30], { hour: 16, minute: 0}) -> [[2021, 3, 30, 16, 0], [2021, 3, 30, 16, 50]] */
+const getFirstClass = (
+    date: YearMonthDay,
+    startTime: HourMinute,
+    endTime: HourMinute
+): [DateTimeArray, DateTimeArray] => {
+    const [classStartTime, classEndTime] = parseTimes(startTime, endTime);
     return [
         [...date, ...classStartTime],
         [...date, ...classEndTime],
@@ -102,58 +105,30 @@ const getFirstClass = (date: YearMonthDay, time: string): [DateTimeArray, DateTi
 };
 
 /** getExamTime returns the start and end datetime of an exam
-    Ex: ("Mon Jun 7 10:30-12:30pm", "2019") -> [[2019, 6, 7, 10, 30], [2019, 6, 7, 12, 30]] */
-const months: Record<string, number> = { Mar: 3, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Dec: 12 };
-const getExamTime = (exam: string, year: number) => {
-    const [, month, day, time] = exam.split(' ');
-    const [examStartTime, examEndTime] = parseTimes(time);
+    Ex: (WebsocSectionFinalExam, "2019") -> [[2019, 6, 7, 10, 30], [2019, 6, 7, 12, 30]] */
+const getExamTime = (exam: WebsocSectionFinalExam, year: number) => {
+    if (exam.month && exam.day && exam.startTime && exam.endTime) {
+        const month = exam.month;
+        const day = exam.day;
+        const [examStartTime, examEndTime] = parseTimes(exam.startTime, exam.endTime);
 
-    return [
-        [year, months[month], parseInt(day), ...examStartTime],
-        [year, months[month], parseInt(day), ...examEndTime],
-    ];
+        return [
+            [year, month + 1, day, ...examStartTime],
+            [year, month + 1, day, ...examEndTime],
+        ];
+    } else {
+        return [];
+    }
 };
 
-/** parseTimes converts a time string to a
-    This is a helper function used by getFirstClass
-    Ex: " 4:00-4:50p" -> [[16, 0], [16, 50]] */
-const parseTimes = (time: string) => {
-    // Determine whether the time is in the afternoon (PM)
-    let pm = false;
-    if (time.slice(-1) === 'p') {
-        // Course time strings would end with a 'p'
-        time = time.substring(0, time.length - 1); // Remove 'p' from the end
-        pm = true;
-    } else if (time.slice(-2) === 'pm') {
-        // Final Exam time strings would end with a 'pm'
-        time = time.substring(0, time.length - 2); // Remove 'pm' from the end
-        pm = true;
-    }
-
-    // Get the [start, end] times in [hour, minute] format
-    const [start, end] = time
-        .split('-') // Ex: [" 4:00", "4:50"]
-        .map(
-            (timeString) =>
-                timeString
-                    .split(':') // Ex: [[" 4", "00"], ["4", "50"]]
-                    .map((val) => parseInt(val)) as HourMinute // Ex: [[4, 0], [4, 50]]
-        );
-
-    // Add 12 hours if the time is PM
-    // However don't add 12 if it is noon
-    if (pm && end[0] !== 12) {
-        // Only add 12 to start if start is greater than end
-        // We don't want to add 12 if the start is in the AM
-        //  E.g. 11:00-12:00 => don't add 12 to start
-        //  E.g. 1:00-2:00 => add 12 to start
-        if (start[0] <= end[0]) {
-            start[0] += 12;
-        }
-        end[0] += 12;
-    }
-
-    return [start, end] as const;
+/** parseTimes converts startTime and endTime
+    This is a helper function used by getFirstClass and getExamTime
+    Ex: { hour: 16, minute: 0}, { hour: 16, minute: 50 } -> [[16, 0], [16, 50]] */
+const parseTimes = (startTime: HourMinute, endTime: HourMinute) => {
+    return [
+        [startTime.hour, startTime.minute],
+        [endTime.hour, endTime.minute],
+    ] as const;
 };
 
 /** getYear returns the year of a given term
@@ -220,31 +195,38 @@ const exportCalendar = () => {
 
         // Create a VEvent for each meeting
         for (const meeting of meetings) {
-            if (meeting.time === 'TBA') {
+            if (meeting.timeIsTBA) {
                 // Skip this meeting if there is no meeting time
                 continue;
             }
-            const bydays = getByDays(meeting.days);
-            const classStartDate = getClassStartDate(term, bydays);
-            const [firstClassStart, firstClassEnd] = getFirstClass(classStartDate, meeting.time);
-            const rrule = getRRule(bydays, getQuarter(term));
 
-            // Add VEvent to events array
-            events.push({
-                productId: 'antalmanac/ics',
-                startOutputType: 'local' as const,
-                endOutputType: 'local' as const,
-                title: `${deptCode} ${courseNumber} ${sectionType}`,
-                description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
-                location: `${meeting.bldg}`,
-                start: firstClassStart as DateTimeArray,
-                end: firstClassEnd as DateTimeArray,
-                recurrenceRule: rrule,
-            });
+            if (meeting.days && meeting.startTime && meeting.endTime) {
+                const bydays = getByDays(meeting.days);
+                const classStartDate = getClassStartDate(term, bydays);
+                const [firstClassStart, firstClassEnd] = getFirstClass(
+                    classStartDate,
+                    meeting.startTime,
+                    meeting.endTime
+                );
+                const rrule = getRRule(bydays, getQuarter(term));
+
+                // Add VEvent to events array
+                events.push({
+                    productId: 'antalmanac/ics',
+                    startOutputType: 'local' as const,
+                    endOutputType: 'local' as const,
+                    title: `${deptCode} ${courseNumber} ${sectionType}`,
+                    description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
+                    location: `${meeting.bldg}`,
+                    start: firstClassStart as DateTimeArray,
+                    end: firstClassEnd as DateTimeArray,
+                    recurrenceRule: rrule,
+                });
+            }
         }
 
         // Add Final to events
-        if (finalExam && finalExam !== 'TBA') {
+        if (finalExam && finalExam.examStatus == 'SCHEDULED_FINAL') {
             const [examStart, examEnd] = getExamTime(finalExam, getYear(term));
             events.push({
                 productId: 'antalmanac/ics',
