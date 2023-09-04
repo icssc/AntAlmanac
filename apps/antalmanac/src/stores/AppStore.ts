@@ -41,11 +41,13 @@ class AppStore extends EventEmitter {
             return theme === null ? 'auto' : theme;
         })();
 
-        window.addEventListener('beforeunload', (event) => {
-            if (this.unsavedChanges) {
-                event.returnValue = `Are you sure you want to leave? You have unsaved changes!`;
-            }
-        });
+        if (typeof window !== 'undefined') {
+            window.addEventListener('beforeunload', (event) => {
+                if (this.unsavedChanges) {
+                    event.returnValue = `Are you sure you want to leave? You have unsaved changes!`;
+                }
+            });
+        }
     }
 
     getCurrentScheduleIndex() {
