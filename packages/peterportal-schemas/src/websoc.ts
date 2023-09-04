@@ -1,16 +1,33 @@
-import { type Infer, arrayOf, type } from 'arktype';
+import { type Infer, arrayOf, type, union } from 'arktype';
 import { type Quarter, quarters } from 'peterportal-api-next-types';
 import enumerate from './enumerate';
 
+export const HourMinute = type({
+    hour: 'number',
+    minute: 'number',
+});
+
 export const WebsocSectionMeeting = type({
-    days: 'string',
-    time: 'string',
+    timeIsTBA: 'boolean',
     bldg: 'string[]',
+    days: 'string | null',
+    startTime: union(HourMinute, 'null'),
+    endTime: union(HourMinute, 'null'),
 });
 
 export const WebsocSectionEnrollment = type({
     totalEnrolled: 'string',
     sectionEnrolled: 'string',
+});
+
+export const WebSocSectionFinals = type({
+    examStatus: '"NO_FINAL" | "TBA_FINAL" | "SCHEDULED_FINAL"',
+    dayOfWeek: '"Sun" | "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | null',
+    month: 'number | null',
+    day: 'number | null',
+    startTime: union(HourMinute, 'null'),
+    endTime: union(HourMinute, 'null'),
+    bldg: 'string[] | null',
 });
 
 export const WebsocSection = type({
@@ -20,7 +37,7 @@ export const WebsocSection = type({
     units: 'string',
     instructors: 'string[]',
     meetings: arrayOf(WebsocSectionMeeting),
-    finalExam: 'string',
+    finalExam: WebSocSectionFinals,
     maxCapacity: 'string',
     numCurrentlyEnrolled: WebsocSectionEnrollment,
     numOnWaitlist: 'string',
