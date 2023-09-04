@@ -1,12 +1,12 @@
 name: "Run Unit Tests"
+
 on:
-  pull_request_target:
-    types: [opened, ready_for_review, reopened]
+  pull_request:
+    types: [ opened, synchronize, unlabeled ]
 
 jobs:
   assign_reviewer:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v3
       - name: test project
