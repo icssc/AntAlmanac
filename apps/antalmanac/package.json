@@ -18,7 +18,8 @@
         "deploy": "gh-pages -d build",
         "format": "prettier --write src",
         "lint": "eslint src",
-        "test": "vitest"
+        "test:watch": "vitest",
+        "test": "vitest run"
     },
     "dependencies": {
         "@date-io/date-fns": "^2.16.0",
