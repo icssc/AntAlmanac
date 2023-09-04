@@ -55,7 +55,7 @@ function handleUndo() {
     });
     undoDelete(null);
 }
-    
+
 function handleClearSchedule() {
     if (window.confirm('Are you sure you want to clear this schedule?')) {
         clearSchedules();
@@ -188,7 +188,7 @@ function SelectSchedulePopover(props: { scheduleNames: string[] }) {
         <Box>
             <Button
                 size="small"
-                color="secondary"
+                color="inherit"
                 variant="outlined"
                 onClick={handleClick}
                 sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
@@ -313,7 +313,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                 <SelectSchedulePopover scheduleNames={scheduleNames} />
                 <Tooltip title="Toggle showing finals schedule">
                     <Button
-                        color={showFinalsSchedule ? 'primary' : 'secondary'}
+                        color={showFinalsSchedule ? 'primary' : 'inherit'}
                         variant={showFinalsSchedule ? 'contained' : 'outlined'}
                         onClick={handleToggleFinals}
                         size="small"
