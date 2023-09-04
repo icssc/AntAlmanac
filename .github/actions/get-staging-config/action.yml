@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-action.json
+---
+name: Get staging config
+
+description: |
+    Intended to be used during staging deployments, i.e. preview deployments during pull requests.
+    This action returns information about how the staging deployment should be handled.
+
+    A frontend stack will always deployed, but a backend stack won't be deployed 
+    unless the backend project or CDK itself has changed during a staging deploy.
+
+    If a backend stack is deployed, the frontend stack needs to use 
+    an endpoint in the following format - "staging-{PR number}.api.antalmanac.com". 
+    Otherwise, the dedicated development endpoint is used - "dev.api.antalmanac.com".
+
+outputs:
+    backend-changed:
+        description: Whether the backend changed.
+        value: ${{ steps.changed.outputs.backend }}
+
+    cdk-changed:
+        description: Whether the CDK changed.
+        value: ${{ steps.changed.outputs.cdk }}
+
+    should-deploy-backend:
+        description: Whether a backend stack should be deployed.
+        value: ${{ steps.changed.outputs.backend }} == true ||  ${{ steps.changed.outputs.cdk }} == true
+
+    api-endpoint:
+        description: The API endpoint that the frontend should use.
+        value: |
+            (${{ steps.changed.outputs.backend }} == true ||  ${{ steps.changed.outputs.cdk }} == true) 
+            && https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
+            || https://dev.api.antalmanac.com
+
+runs:
+    using: composite
+
+    steps:
+        - name: Check for changes
+          id: changed
+          shell: bash
+          uses: dorny/paths-filter@v2
+          with:
+              filters: |
+                  backend:
+                    - 'apps/backend/**'
+                  cdk:
+                    - 'apps/cdk/**'

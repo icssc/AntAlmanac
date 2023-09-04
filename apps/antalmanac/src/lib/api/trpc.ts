@@ -1,24 +1,15 @@
+import transformer from 'superjson';
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
-import superjson from 'superjson';
 import type { AppRouter } from '../../../../backend/src/routers';
+import { ANTALMANAC_API_ENDPOINT } from './endpoints';
 
-function getEndpoint() {
-    if (import.meta.env.VITE_ENDPOINT) {
-        return `https://${import.meta.env.VITE_ENDPOINT}.api.antalmanac.com`;
-    }
-    if (import.meta.env.VITE_LOCAL_SERVER) {
-        return `http://localhost:3000`;
-    }
-    return import.meta.env.MODE === 'development' ? `https://dev.api.antalmanac.com` : `https://api.antalmanac.com`;
-}
-
-const trpc = createTRPCProxyClient<AppRouter>({
+export const trpc = createTRPCProxyClient<AppRouter>({
+    transformer,
     links: [
         httpBatchLink({
-            url: getEndpoint() + '/trpc',
+            url: `${ANTALMANAC_API_ENDPOINT}/trpc`,
         }),
     ],
-    transformer: superjson,
 });
 
 export default trpc;

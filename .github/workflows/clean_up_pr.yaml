@@ -1,40 +1,39 @@
-name: 'Pull Request Clean Up'
+name: Clean up pull request
 
 on:
-  pull_request:
-    types: [ closed ]
+    pull_request:
+        types: [closed]
 
 concurrency:
-  group: ${{ github.head_ref }}
-  cancel-in-progress: true
+    group: ${{ github.head_ref }}
+    cancel-in-progress: true
 
 permissions:
-  id-token: write
-  contents: read
-  pull-requests: write
-  deployments: write
-  repository-projects: write
+    id-token: write
+    contents: read
+    pull-requests: write
+    deployments: write
+    repository-projects: write
 
 jobs:
-  delete_frontend_stack:
-    uses: ./.github/workflows/step_delete_stack.yaml
-    secrets: inherit
-    with:
-      stack_name: antalmanac-frontend-staging-${{ github.event.pull_request.number }}
-
-  delete_backend_stack:
-    uses: ./.github/workflows/step_delete_stack.yaml
-    secrets: inherit
-    with:
-      stack_name: antalmanac-backend-staging-${{ github.event.pull_request.number }}
-
-
-  delete_staging_url:
-    runs-on: ubuntu-latest
-    needs: [ delete_frontend_stack, delete_backend_stack ]
-    steps:
-      - name: delete staging url
-        uses: marocchino/sticky-pull-request-comment@v2
+    delete_frontend_stack:
+        uses: ./.github/workflows/step_delete_stack.yaml
+        secrets: inherit
         with:
-          header: staging url
-          delete: true
+            stack_name: antalmanac-frontend-staging-${{ github.event.pull_request.number }}
+
+    delete_backend_stack:
+        uses: ./.github/workflows/step_delete_stack.yaml
+        secrets: inherit
+        with:
+            stack_name: antalmanac-backend-staging-${{ github.event.pull_request.number }}
+
+    delete_staging_url:
+        runs-on: ubuntu-latest
+        needs: [delete_frontend_stack, delete_backend_stack]
+        steps:
+            - name: delete staging url
+              uses: marocchino/sticky-pull-request-comment@v2
+              with:
+                  header: staging url
+                  delete: true

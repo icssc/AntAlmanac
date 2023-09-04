@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-action.json
+---
+name: Wait for CloudFormation stack idle
+
+description: Wait until the specified CloudFormation stack is idle.
+
+inputs:
+  stack_name:
+    description: The name of the CloudFormation stack to await.
+    required: true
+
+  aws_access_key_id:
+    description: The AWS Access Key ID.
+    required: true
+
+  aws_secret_access_key:
+    description: The AWS Secret Access Key.
+    required: true
+
+outputs:
+  stack-exists:
+    description: Whether the CloudFormation stack exists.
+    value: ${{ steps.check-stack-exists.outcome == 'success' && !steps.wait-for-stack-delete.outcome == 'success'}}
+
+runs:
+  using: composite
+
+  steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@master
+      with:
+        aws-access-key-id: ${{ inputs.aws_secret_access_key_id }}
+        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+        aws-region: us-east-1
+        role-duration-seconds: 2400
+
+    - name: Check if CloudFormation stack exists
+      id: check-stack-exists
+      continue-on-error: true
+      shell: bash
+      run: |
+        STACK_STATUS=$(aws cloudformation describe-stacks --stack-name ${{inputs.stack_name }} --query "Stacks[0].StackStatus" --output text)
+        echo "STACK_STATUS=$STACK_STATUS" >> $GITHUB_ENV
+
+    - name: Wait for CloudFormation stack to finish creating
+      if: steps.check-stack-exists.outcome == 'success' && env.STACK_STATUS == 'CREATE_IN_PROGRESS'
+      continue-on-error: true
+      shell: bash
+      run: aws cloudformation wait stack-create-complete --stack-name ${{ inputs.stack_name }}
+
+    - name: Wait for CloudFormation stack to finish updating
+      if: steps.check-stack-exists.outcome == 'success' && env.STACK_STATUS == 'UPDATE_IN_PROGRESS'
+      continue-on-error: true
+      shell: bash
+      run: aws cloudformation wait stack-update-complete --stack-name ${{ inputs.stack_name }}
+
+    - name: Wait for CloudFormation stack to finish deleting
+      id: wait-for-stack-delete
+      if: steps.check-stack-exists.outcome == 'success' && env.STACK_STATUS == 'DELETE_IN_PROGRESS'
+      continue-on-error: true
+      shell: bash
+      run: aws cloudformation wait stack-delete-complete --stack-name ${{ inputs.stack_name }}
