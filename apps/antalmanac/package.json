@@ -36,7 +36,7 @@
         "@react-leaflet/core": "^2.1.0",
         "@tanstack/react-query": "^4.24.4",
         "@trpc/client": "^10.30.0",
-        "@trpc/server": "^10.23.0",
+        "@trpc/server": "^10.30.0",
         "chart.js": "^4.2.1",
         "classnames": "^2.3.2",
         "date-fns": "^2.29.3",

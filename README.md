@@ -75,7 +75,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 #### Running Tests
 1. go into `apps/antalmanac`
-2. `pnpm run test`
+2. `pnpm test`
 
 ### Running the [Backend](https://github.com/icssc/antalmanac-backend)
 

@@ -11,7 +11,7 @@
     },
     "dependencies": {
         "@packages/antalmanac-types": "*",
-        "@trpc/server": "^10.23.0",
+        "@trpc/server": "^10.30.0",
         "@vendia/serverless-express": "^4.10.1",
         "arktype": "1.0.14-alpha",
         "aws-lambda": "^1.0.7",
