@@ -63,4 +63,4 @@ jobs:
               run: pnpm build
 
             - name: Test
-              run: echo "all tests passed!!" # pnpm test run
+              run: pnpm test run
