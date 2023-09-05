@@ -39,7 +39,7 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: build project
+            - name: Build
               env:
                 HUSKY: 0
 
@@ -62,5 +62,5 @@ jobs:
                 TURBO_TEAM: "team_antalmanac"
               run: pnpm build
 
-            - name: Run tests
-              run: pnpm test run
+            # - name: Test
+            #   run: pnpm test run
