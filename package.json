@@ -11,8 +11,7 @@
     "deploy:aa": "turbo deploy --filter=antalmanac",
     "deploy:cdk": "turbo deploy --filter=cdk",
     "deploy": "turbo deploy",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "vitest"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
