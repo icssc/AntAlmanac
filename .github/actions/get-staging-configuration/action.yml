@@ -11,10 +11,7 @@ outputs:
 
     api-endpoint:
         description: The API endpoint that the frontend should use.
-        value: |
-            (${{ steps.changed.outputs.backend }} == true ||  ${{ steps.changed.outputs.cdk }} == true) 
-            && https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
-            || https://dev.api.antalmanac.com
+        value: (${{ steps.changed.outputs.backend }} == true ||  ${{ steps.changed.outputs.cdk }} == true) && https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com || https://dev.api.antalmanac.com
 
 runs:
     using: composite
