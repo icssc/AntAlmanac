@@ -49,7 +49,7 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Build frontend
-              uses: pnpm --filter "antalmanac" build
+              run: pnpm --filter "antalmanac" build
               env:
                   VITE_ENDPOINT: ${{ needs.get_staging_configuration.outputs.api-endpoint }}
 
@@ -65,9 +65,9 @@ jobs:
             - name: Deactivate frontend staging environment
               uses: strumwolf/delete-deployment-environment@195215d2c5602aee6fb4b9cf0853970decca9e7a # v2.3.0
               with:
-                token: ${{ secrets.GITHUB_TOKEN }}
-                environment: staging-frontend-${{ github.event.pull_request.number }}
-                onlyDeactivateDeployments: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  environment: staging-frontend-${{ github.event.pull_request.number }}
+                  onlyDeactivateDeployments: true
 
     destroy_staging_backend:
         name: Destroy staging backend CloudFormation stack and environment
@@ -89,7 +89,7 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Build backend
-              uses: pnpm --filter "antalmanac-backend" build
+              run: pnpm --filter "antalmanac-backend" build
 
             - name: Destroy staging backend CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" staging-backend destroy
@@ -97,6 +97,6 @@ jobs:
             - name: Deactivate backend staging environment
               uses: strumwolf/delete-deployment-environment@195215d2c5602aee6fb4b9cf0853970decca9e7a # v2.3.0
               with:
-                token: ${{ secrets.GITHUB_TOKEN }}
-                environment: staging-backend-${{ github.event.pull_request.number }}
-                onlyDeactivateDeployments: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  environment: staging-backend-${{ github.event.pull_request.number }}
+                  onlyDeactivateDeployments: true

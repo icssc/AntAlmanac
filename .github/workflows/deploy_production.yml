@@ -57,7 +57,7 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Build frontend
-              uses: pnpm --filter "antalmanac" build
+              run: pnpm --filter "antalmanac" build
 
             - name: Upload frontend artifacts
               uses: actions/upload-pages-artifact@v2
@@ -84,7 +84,7 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Build backend
-              uses: pnpm --filter "antalmanac-backend" build
+              run: pnpm --filter "antalmanac-backend" build
 
             - name: Deploy production backend CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" production-backend deploy
@@ -110,7 +110,7 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Build backend
-              uses: pnpm --filter "antalmanac-backend" build
+              run: pnpm --filter "antalmanac-backend" build
 
             - name: Deploy production shadow backend CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" production-shadow-backend deploy
