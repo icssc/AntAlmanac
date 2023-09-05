@@ -4,7 +4,7 @@ name: Deploy CloudFormation stacks for staging environment
 
 on:
     push:
-        
+
     pull_request:
         types:
             - opened
@@ -50,9 +50,9 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v3
 
-            #     - name: Get staging configuration
-            #       id: config
-            #       uses: ./.github/actions/get-staging-configuration
+            - name: Get staging configuration
+              id: config
+              uses: ./.github/actions/get-staging-configuration
 
             # deploy_staging_frontend:
             #     name: Deploy staging frontend CloudFormation stack and environment
