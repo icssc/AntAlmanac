@@ -26,14 +26,12 @@ export class FrontendStack extends Stack {
             'PR_NUM?': 'string',
         }).assert({ ...process.env });
 
-        const prefix = env.PR_NUM ? `staging-${env.PR_NUM}.` : '';
-
         /**
          * The domain name that the static website will be hosted on.
          *
          * @example "antalmanac.com", "staging-123.antalmanac.com"
          */
-        const domainName = `${prefix}${zoneName}`;
+        const domainName = env.PR_NUM ? `staging-${env.PR_NUM}.${zoneName}` : zoneName;
 
         /**
          * Create an S3 bucket to hold the built static website's assets.
@@ -121,7 +119,7 @@ export class FrontendStack extends Stack {
 
         new route53.ARecord(this, `${id}-a-record`, {
             zone,
-            recordName: prefix,
+            recordName: env.PR_NUM ? `staging-${env.PR_NUM}` : '',
             target: route53.RecordTarget.fromAlias(target),
         });
     }
