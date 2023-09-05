@@ -38,16 +38,15 @@ jobs:
     get_staging_configuration:
         name: Get staging configuration
 
-        runs-on:
-            ubuntu-latest
+        runs-on: ubuntu-latest
 
-            # outputs:
-            #     should-deploy-backend: ${{ steps.config.outputs.should-deploy-backend }}
-            #     api-endpoint: ${{ steps.config.outputs.api-endpoint }}
+        outputs:
+            should-deploy-backend: ${{ steps.config.outputs.should-deploy-backend }}
+            api-endpoint: ${{ steps.config.outputs.api-endpoint }}
 
-            # steps:
-            #     - name: Checkout repository
-            #       uses: actions/checkout@v3
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
 
             #     - name: Get staging configuration
             #       id: config
