@@ -3,6 +3,8 @@
 name: Deploy CloudFormation stacks for staging environment
 
 on:
+    push:
+        
     pull_request:
         types:
             - opened
