@@ -13,12 +13,14 @@
         "directory": "apps/cdk"
     },
     "scripts": {
-        "deploy:staging-frontend": "cdk deploy --app 'npx tsx src/app/staging-frontend.ts' --require-approval never",
-        "deploy:staging-backend": "cdk deploy --app 'npx tsx src/app/staging-backend.ts' --require-approval never",
-        "deploy:production-backend": "cdk deploy --app 'npx tsx src/app/production-backend.ts' --require-approval never",
-        "deploy:production-shadow-backend": "cdk deploy --app 'npx tsx src/app/production-shadow-backend.ts' --require-approval never"
+        "staging-frontend": "cdk --app 'npx tsx src/app/staging-frontend.ts' --require-approval never",
+        "staging-backend": "cdk --app 'npx tsx src/app/staging-backend.ts' --require-approval never",
+        "production-backend": "cdk --app 'npx tsx src/app/production-backend.ts' --require-approval never",
+        "production-shadow-backend": "cdk --app 'npx tsx src/app/production-shadow-backend.ts' --require-approval never"
     },
     "dependencies": {
+        "@aws-sdk/client-cloudformation": "^3.405.0",
+        "@aws-sdk/util-waiter": "^3.374.0",
         "arktype": "1.0.14-alpha",
         "aws-cdk-lib": "^2.94.0",
         "constructs": "^10.2.70",

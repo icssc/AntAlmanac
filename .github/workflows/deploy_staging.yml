@@ -13,9 +13,16 @@ concurrency:
     group: ${{ github.ref }}
     cancel-in-progress: true
 
+permissions:
+    id-token: write
+    contents: read
+    pull-requests: write
+    deployments: write
+    repository-projects: write
+
 env:
     HUSKY: 0
-    NODE_ENV: production
+    NODE_ENV: staging
 
     # Backend environment variables.
     HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
@@ -27,20 +34,34 @@ env:
     TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
     TURBO_TEAM: team_antalmanac
 
-    # Workflow constants.
-    CDK_ARTIFACTS: ${{ github.sha }}-cdk
-    WEBSITE_ARTIFACTS: ${{ github.sha }}-website
-    PRODUCTION_BACKEND_STACK: prod-us-west-1-Backend
-    DEVELOPMENT_FRONTEND_STACK: dev-us-east-1-Frontend
-    DEVELOPMENT_BACKEND_STACK: dev-us-east-1-Backend
-
 jobs:
-    deploy_production_frontend:
-        name: Deploy production frontend to GitHub Pages
-
-        needs: setup_and_build
+    get_staging_configuration:
+        name: Get staging configuration
 
         runs-on: ubuntu-latest
+
+        outputs:
+            should-deploy-backend: ${{ steps.config.outputs.should-deploy-backend }}
+            api-endpoint: ${{ steps.config.outputs.api-endpoint }}
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Get staging configuration
+              id: config
+              uses: ./.github/actions/get-staging-configuration
+
+    deploy_staging_frontend:
+        name: Deploy staging frontend CloudFormation stack and environment
+
+        needs: get_staging_configuration
+
+        runs-on: ubuntu-latest
+
+        environment:
+            name: staging-frontend-${{ github.event.pull_request.number }}
+            url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
 
         steps:
             - name: Checkout repository
@@ -54,20 +75,39 @@ jobs:
 
             - name: Build frontend
               uses: pnpm --filter "antalmanac" build
+              env:
+                  VITE_ENDPOINT: ${{ needs.get_staging_configuration.outputs.api-endpoint }}
 
-            - name: Upload documentation artifacts
-              uses: actions/upload-pages-artifact@v2
+            - name: Deploy staging frontend CloudFormation stack
+              run: pnpm --filter "antalmanac-cdk" staging-frontend deploy
+
+            - name: Comment frontend staging URL
+              uses: marocchino/sticky-pull-request-comment@v2
               with:
-                  path: apps/antalmanac/build
+                  header: staging url
+                  recreate: true
+                  message: Deployed staging instance to https://staging-${{ github.event.pull_request.number }}.antalmanac.com
 
-    deploy_production_backend:
-        name: Deploy production backend CloudFormation stack and environment
+    deploy_staging_backend:
+        name: Deploy staging backend CloudFormation stack and environment
+
+        needs: get_staging_configuration
+
+        if: needs.get_staging_configuration.outputs.should-deploy-backend
 
         runs-on: ubuntu-latest
+
+        environment:
+            name: staging-backend-${{ github.event.pull_request.number }}
+            url: https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
 
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
+
+            - name: Get staging configuration
+              id: staging_config
+              uses: ./.github/actions/get-staging-config
 
             - name: Setup Node.js and pnpm
               uses: ./.github/actions/setup-node-and-pnpm
@@ -78,67 +118,5 @@ jobs:
             - name: Build backend
               uses: pnpm --filter "antalmanac-backend" build
 
-            - name: Wait for backend CloudFormation stack to stabilize
-              uses: ./.github/actions/wait-for-cloudformation-stack-idle
-              with:
-                  stack_name: ${{ env.PRODUCTION_BACKEND_STACK }}
-                  aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
-
-            - name: Deploy production backend CloudFormation stack
-              run: pnpm run deploy --filter "antalmanac-cdk" 
-
-    # This is a mirror of the production frontend, but hosted on AWS instead of GitHub Pages.
-    deploy_development_frontend:
-        name: Deploy development mirror backend CloudFormation stack and environment
-
-        runs-on: ubuntu-latest
-
-        env:
-            VITE_API_ENDPOINT: https://dev.api.antalmanac.com
-
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
-
-            - name: Setup Node.js and pnpm
-              uses: ./.github/actions/setup-node-and-pnpm
-
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile
-
-            - name: Build backend
-              uses: pnpm --filter "antalmanac" build
-
-            - name: Wait for backend CloudFormation stack to stabilize
-              uses: ./.github/actions/wait-for-cloudformation-stack-idle
-              with:
-                  stack_name: ${{ env.DEVELOPMENT_FRONTEND_STACK }}
-                  aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
-
-    # This is a mirror of the production backend.
-    deploy_development_backend:
-        name: Deploy development backend mirror CloudFormation stack and environment
-
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
-
-            - name: Setup Node.js and pnpm
-              uses: ./.github/actions/setup-node-and-pnpm
-
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile
-
-            - name: Build backend
-              uses: pnpm --filter "antalmanac-backend" build
-
-            - name: Wait for backend CloudFormation stack to stabilize
-              uses: ./.github/actions/wait-for-cloudformation-stack-idle
-              with:
-                  stack_name: ${{ env.DEVELOPMENT_BACKEND_STACK }}
-                  aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
+            - name: Deploy staging backend CloudFormation stack
+              run: pnpm --filter "antalmanac-cdk" staging-backend deploy

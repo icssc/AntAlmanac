@@ -1,6 +1,7 @@
 import { App } from 'aws-cdk-lib';
 
 import { BackendStack } from '../stacks/backend';
+import { waitForStackIdle } from '../wait-for-stack-idle';
 
 /**
  * When a new production backend is deployed, a "shadow" production backend is also deployed
@@ -12,9 +13,13 @@ import { BackendStack } from '../stacks/backend';
  *   A staging backend should only be deployed if the CDK or backend projects change in the pull request.
  */
 async function main() {
+    const stackName = 'antalmanac-shadow-backend';
+
+    await waitForStackIdle(stackName);
+
     const app = new App({ autoSynth: true });
 
-    new BackendStack(app, 'antalmanac-shadow-backend');
+    new BackendStack(app, stackName);
 }
 
 main();
