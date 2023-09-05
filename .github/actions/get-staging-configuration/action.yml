@@ -5,10 +5,8 @@ name: Get staging configuration
 description: |
     Intended to be used during staging deployments, i.e. preview deployments during pull requests.
     This action returns information about how the staging deployment should be handled.
-
     A frontend stack will always deployed, but a backend stack won't be deployed 
     unless the backend project or CDK itself has changed during a staging deploy.
-
     If a backend stack is deployed, the frontend stack needs to use 
     an endpoint in the following format - "staging-{PR number}.api.antalmanac.com". 
     Otherwise, the dedicated development endpoint is used - "dev.api.antalmanac.com".
