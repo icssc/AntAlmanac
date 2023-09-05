@@ -1,7 +1,37 @@
 {
     "name": "antalmanac-cdk",
     "version": "0.1.0",
-    "scripts": {},
-    "devDependencies": {},
-    "dependencies": {}
+    "private": true,
+    "homepage": "https://antalmanac.com",
+    "description": "CDK",
+    "bugs": {
+        "url": "https://antalmanac.com/feedback"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/icssc/AntAlmanac",
+        "directory": "apps/cdk"
+    },
+    "scripts": {
+        "deploy:staging-frontend": "cdk deploy --app 'npx tsx src/app/staging-frontend.ts' --require-approval never",
+        "deploy:staging-backend": "cdk deploy --app 'npx tsx src/app/staging-backend.ts' --require-approval never",
+        "deploy:production-backend": "cdk deploy --app 'npx tsx src/app/production-backend.ts' --require-approval never",
+        "deploy:production-shadow-backend": "cdk deploy --app 'npx tsx src/app/production-shadow-backend.ts' --require-approval never"
+    },
+    "dependencies": {
+        "arktype": "1.0.14-alpha",
+        "aws-cdk-lib": "^2.94.0",
+        "constructs": "^10.2.70",
+        "dotenv": "^16.0.3"
+    },
+    "devDependencies": {
+        "aws-cdk": "^2.94.0",
+        "tsx": "^3.12.7",
+        "typescript": "^5.1.0"
+    },
+    "packageManager": "pnpm@8.6.12",
+    "engines": {
+        "pnpm": "^8.0.0",
+        "node": ">=18"
+    }
 }
