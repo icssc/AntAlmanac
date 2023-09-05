@@ -55,7 +55,7 @@ function handleUndo() {
     });
     undoDelete(null);
 }
-
+    
 function handleClearSchedule() {
     if (window.confirm('Are you sure you want to clear this schedule?')) {
         clearSchedules();
