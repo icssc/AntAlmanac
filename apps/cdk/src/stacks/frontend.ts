@@ -119,7 +119,7 @@ export class FrontendStack extends Stack {
 
         new route53.ARecord(this, `${id}-a-record`, {
             zone,
-            recordName: env.PR_NUM ? `staging-${env.PR_NUM}` : '',
+            recordName: domainName,
             target: route53.RecordTarget.fromAlias(target),
         });
     }
