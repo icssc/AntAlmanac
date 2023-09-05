@@ -1,14 +1,36 @@
 {
     "name": "@packages/peterportal-schemas",
     "version": "0.0.1",
-    "description": "Internal PeterPortal API ArkType schemas for AntAlmanac",
+    "description": "internal PeterPortal-API ArkType schemas for AntAlmanac",
+    "private": true,
+    "license": "MIT",
+    "homepage": "https://antalmanac.com",
+    "funding": "https://github.com/icssc/AntAlmanac",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/icssc/AntAlmanac",
+        "directory": "packages/peterportal-schemas"
+    },
+    "bugs": {
+        "url": "https://antalmanac.com/feedback"
+    },
+    "keywords": [
+        "uci",
+        "icssc"
+    ],
+    "type": "module",
     "main": "./src/index.ts",
     "types": "./src/index.ts",
-    "type": "module",
-    "scripts": {},
     "dependencies": {
         "arktype": "1.0.14-alpha",
         "peterportal-api-next-types": "1.0.0-alpha.6"
     },
-    "devDependencies": {}
+    "devDependencies": {
+        "typescript": "^5.1.0"
+    },
+    "packageManager": "pnpm@8.6.12",
+    "engines": {
+        "pnpm": "^8.0.0",
+        "node": ">=18"
+    }
 }
