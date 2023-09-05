@@ -19,7 +19,6 @@ runs:
     steps:
         - name: Check for changes
           id: changed
-          shell: bash
           uses: dorny/paths-filter@v2
           with:
               filters: |
