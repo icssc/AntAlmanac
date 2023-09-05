@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
     Box,
     Button,
@@ -6,28 +6,47 @@ import {
     Menu,
     MenuItem,
     Paper,
-    Select,
+    Popover,
     Tooltip,
+    Typography,
     useMediaQuery,
-    type SelectProps,
+    useTheme,
 } from '@mui/material';
-import { Delete, MoreHoriz, Undo } from '@mui/icons-material';
+import {
+    Add as AddIcon,
+    ArrowDropDown as ArrowDropDownIcon,
+    Delete as DeleteIcon,
+    Edit as EditIcon,
+    MoreHoriz as MoreHorizIcon,
+    Undo as UndoIcon,
+} from '@mui/icons-material';
 
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
-import EditSchedule from './Toolbar/EditSchedule/EditSchedule';
-import ScheduleNameDialog from './Toolbar/EditSchedule/ScheduleNameDialog';
 import ExportCalendar from './Toolbar/ExportCalendar';
 import ScreenshotButton from './Toolbar/ScreenshotButton';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
+import AddScheduleDialog from '$components/dialogs/AddSchedule';
+import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
+import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import AppStore from '$stores/AppStore';
 
-const handleScheduleChange: SelectProps['onChange'] = (event) => {
+function handleScheduleChange(index: number) {
     logAnalytics({
         category: analyticsEnum.calendar.title,
         action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
     });
-    changeCurrentSchedule(Number(event.target.value));
-};
+    changeCurrentSchedule(index);
+}
+
+/**
+ * Creates an event handler callback that will change the current schedule to the one at a specified index.
+ */
+function createScheduleSelector(index: number) {
+    return () => {
+        handleScheduleChange(index);
+    };
+}
 
 function handleUndo() {
     logAnalytics({
@@ -47,7 +66,189 @@ function handleClearSchedule() {
     }
 }
 
-interface CalendarPaneToolbarProps {
+function EditScheduleButton(props: { index: number }) {
+    const [open, setOpen] = useState(false);
+
+    const handleOpen = useCallback(() => {
+        setOpen(true);
+    }, []);
+
+    const handleClose = useCallback(() => {
+        setOpen(false);
+    }, []);
+
+    return (
+        <Box>
+            <IconButton onClick={handleOpen} size="small">
+                <EditIcon />
+            </IconButton>
+            <RenameScheduleDialog fullWidth open={open} index={props.index} onClose={handleClose} />
+        </Box>
+    );
+}
+
+function DeleteScheduleButton(props: { index: number }) {
+    const [open, setOpen] = useState(false);
+
+    const handleOpen = useCallback(() => {
+        setOpen(true);
+    }, []);
+
+    const handleClose = useCallback(() => {
+        setOpen(false);
+    }, []);
+
+    return (
+        <Box>
+            <IconButton onClick={handleOpen} size="small" disabled={AppStore.schedule.getNumberOfSchedules() === 1}>
+                <DeleteIcon />
+            </IconButton>
+            <DeleteScheduleDialog fullWidth open={open} index={props.index} onClose={handleClose} />
+        </Box>
+    );
+}
+
+/**
+ * MenuItem nested in the select menu to add a new schedule through a dialog.
+ */
+function AddScheduleButton() {
+    const [open, setOpen] = useState(false);
+
+    const handleOpen = useCallback(() => {
+        setOpen(true);
+    }, []);
+
+    const handleClose = useCallback(() => {
+        setOpen(false);
+    }, []);
+
+    return (
+        <>
+            <Button color="inherit" onClick={handleOpen} sx={{ display: 'flex', gap: 1 }}>
+                <AddIcon />
+                <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
+                    Add Schedule
+                </Typography>
+            </Button>
+            <AddScheduleDialog fullWidth open={open} onClose={handleClose} />
+        </>
+    );
+}
+
+/**
+ * Simulates an HTML select element using a popover.
+ *
+ * Can select a schedule, and also control schedule settings with buttons.
+ */
+function SelectSchedulePopover(props: { scheduleNames: string[] }) {
+    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+
+    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
+
+    const theme = useTheme();
+
+    // TODO: maybe these widths should be dynamic based on i.e. the viewport width?
+
+    const minWidth = useMemo(() => 100, []);
+    const maxWidth = useMemo(() => 150, []);
+
+    const open = useMemo(() => Boolean(anchorEl), [anchorEl]);
+
+    const currentScheduleName = useMemo(() => {
+        return props.scheduleNames[currentScheduleIndex];
+    }, [props.scheduleNames, currentScheduleIndex]);
+
+    const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    }, []);
+
+    const handleClose = useCallback(() => {
+        setAnchorEl(undefined);
+    }, []);
+
+    const handleScheduleIndexChange = useCallback(() => {
+        setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
+    }, []);
+
+    useEffect(() => {
+        AppStore.on('addedCoursesChange', handleScheduleIndexChange);
+        AppStore.on('customEventsChange', handleScheduleIndexChange);
+        AppStore.on('colorChange', handleScheduleIndexChange);
+        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
+
+        return () => {
+            AppStore.off('addedCoursesChange', handleScheduleIndexChange);
+            AppStore.off('customEventsChange', handleScheduleIndexChange);
+            AppStore.off('colorChange', handleScheduleIndexChange);
+            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
+        };
+    }, [handleScheduleIndexChange]);
+
+    return (
+        <Box>
+            <Button
+                size="small"
+                color="secondary"
+                variant="outlined"
+                onClick={handleClick}
+                sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
+            >
+                <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
+                    {currentScheduleName}
+                </Typography>
+                <ArrowDropDownIcon />
+            </Button>
+
+            <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            >
+                <Box padding={1}>
+                    {props.scheduleNames.map((name, index) => (
+                        <Box key={index} display="flex" alignItems="center" gap={1}>
+                            <Box flexGrow={1}>
+                                <Button
+                                    color="inherit"
+                                    sx={{
+                                        minWidth,
+                                        maxWidth,
+                                        width: '100%',
+                                        display: 'flex',
+                                        justifyContent: 'flex-start',
+                                        background:
+                                            index === currentScheduleIndex ? theme.palette.action.selected : undefined,
+                                    }}
+                                    onClick={createScheduleSelector(index)}
+                                >
+                                    <Typography
+                                        overflow="hidden"
+                                        whiteSpace="nowrap"
+                                        textTransform="none"
+                                        textOverflow="ellipsis"
+                                    >
+                                        {name}
+                                    </Typography>
+                                </Button>
+                            </Box>
+                            <Box display="flex" alignItems="center" gap={0.5}>
+                                <EditScheduleButton index={index} />
+                                <DeleteScheduleButton index={index} />
+                            </Box>
+                        </Box>
+                    ))}
+
+                    <Box marginY={1} />
+
+                    <AddScheduleButton />
+                </Box>
+            </Popover>
+        </Box>
+    );
+}
+
+export interface CalendarPaneToolbarProps {
     scheduleNames: string[];
     currentScheduleIndex: number;
     showFinalsSchedule: boolean;
@@ -62,9 +263,13 @@ interface CalendarPaneToolbarProps {
     onTakeScreenshot: (html2CanvasScreenshot: () => void) => void;
 }
 
-const CalendarPaneToolbar = (props: CalendarPaneToolbarProps) => {
-    const { scheduleNames, currentScheduleIndex, showFinalsSchedule, toggleDisplayFinalsSchedule, onTakeScreenshot } =
-        props;
+/**
+ * The root toolbar will pass down the schedule names to its children.
+ */
+function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
+    const { showFinalsSchedule, toggleDisplayFinalsSchedule, onTakeScreenshot } = props;
+
+    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();
 
@@ -86,6 +291,18 @@ const CalendarPaneToolbar = (props: CalendarPaneToolbarProps) => {
         toggleDisplayFinalsSchedule();
     }, [toggleDisplayFinalsSchedule]);
 
+    const handleScheduleNamesChange = useCallback(() => {
+        setScheduleNames(AppStore.getScheduleNames());
+    }, []);
+
+    useEffect(() => {
+        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
+
+        return () => {
+            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
+        };
+    }, [handleScheduleNamesChange]);
+
     return (
         <Paper
             elevation={0}
@@ -93,23 +310,13 @@ const CalendarPaneToolbar = (props: CalendarPaneToolbarProps) => {
             sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', padding: 1 }}
         >
             <Box gap={1} display="flex" alignItems="center">
-                <EditSchedule scheduleNames={scheduleNames} scheduleIndex={currentScheduleIndex} />
-
-                <Select value={currentScheduleIndex} onChange={handleScheduleChange} variant="standard">
-                    {scheduleNames.map((name, index) => (
-                        <MenuItem key={index} value={index}>
-                            {name}
-                        </MenuItem>
-                    ))}
-                    <ScheduleNameDialog scheduleNames={scheduleNames} />
-                </Select>
-
+                <SelectSchedulePopover scheduleNames={scheduleNames} />
                 <Tooltip title="Toggle showing finals schedule">
                     <Button
+                        color={showFinalsSchedule ? 'primary' : 'secondary'}
+                        variant={showFinalsSchedule ? 'contained' : 'outlined'}
                         onClick={handleToggleFinals}
                         size="small"
-                        variant={showFinalsSchedule ? 'contained' : 'outlined'}
-                        color={showFinalsSchedule ? 'primary' : 'secondary'}
                     >
                         Finals
                     </Button>
@@ -122,21 +329,23 @@ const CalendarPaneToolbar = (props: CalendarPaneToolbarProps) => {
                 <Box display="flex" alignItems="center" gap={0.5}>
                     <Tooltip title="Undo last action">
                         <IconButton onClick={handleUndo} size="small">
-                            <Undo fontSize="small" />
+                            <UndoIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
 
                     <Tooltip title="Clear schedule">
                         <IconButton onClick={handleClearSchedule} size="small">
-                            <Delete fontSize="small" />
+                            <DeleteIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
                 </Box>
 
+                {/* On mobile devices, render the extra buttons in a menu. */}
+
                 {isMobileScreen ? (
                     <Box>
                         <IconButton onClick={handleMenuClick}>
-                            <MoreHoriz />
+                            <MoreHorizIcon />
                         </IconButton>
                         <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleMenuClose}>
                             <MenuItem onClick={handleMenuClose}>
@@ -160,6 +369,6 @@ const CalendarPaneToolbar = (props: CalendarPaneToolbarProps) => {
             </Box>
         </Paper>
     );
-};
+}
 
 export default CalendarPaneToolbar;
