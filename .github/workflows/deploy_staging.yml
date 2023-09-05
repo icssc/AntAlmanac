@@ -45,16 +45,25 @@ jobs:
         runs-on: ubuntu-latest
 
         outputs:
-            should-deploy-backend: ${{ steps.config.outputs.should-deploy-backend }}
-            api-endpoint: ${{ steps.config.outputs.api-endpoint }}
+            should-deploy-backend: ${{ steps.changed.outputs.backend }} == true ||  ${{ steps.changed.outputs.cdk }} == true
+            antalmanac-api-endpoint: |
+                (${{ steps.changed.outputs.backend }} == true ||  ${{ steps.changed.outputs.cdk }} == true) 
+                && https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
+                || https://dev.api.antalmanac.com
 
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
 
-            - name: Get staging configuration
-              id: config
-              uses: ./.github/actions/get-staging-configuration
+            - name: Check for changes
+              id: changed
+              uses: dorny/paths-filter@v2
+              with:
+                  filters: |
+                      backend:
+                        - 'apps/backend/**'
+                      cdk:
+                        - 'apps/cdk/**'
 
     deploy_staging_frontend:
         name: Deploy staging frontend CloudFormation stack and environment
@@ -80,7 +89,7 @@ jobs:
             - name: Build frontend
               run: pnpm --filter "antalmanac" build
               env:
-                  VITE_ENDPOINT: ${{ needs.get_staging_configuration.outputs.api-endpoint }}
+                  VITE_ANTALMANAC_API_ENDPOINT: ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
 
             - name: Deploy staging frontend CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" staging-frontend deploy

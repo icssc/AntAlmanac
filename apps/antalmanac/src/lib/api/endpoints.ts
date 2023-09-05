@@ -1,10 +1,11 @@
 export function getAntAlmanacApiEndpoint() {
     // Can manually set the VITE_API_ENDPOINT environment variable.
     // e.g. during staging deployments, it might be
-    // "VITE_API_ENDPOINT=https://staging-123.api.antalmanac.com" or
-    // "VITE_API_ENDPOINT=https://dev.api.antalmanac.com".
-    if (import.meta.env.VITE_API_ENDPOINT) {
-        return import.meta.env.VITE_API_ENDPOINT;
+    //
+    // "VITE_ANTALMANAC_API_ENDPOINT=https://staging-123.api.antalmanac.com" or
+    // "VITE_ANTALMANAC_API_ENDPOINT=https://dev.api.antalmanac.com".
+    if (import.meta.env.VITE_ANTALMANAC_API_ENDPOINT) {
+        return import.meta.env.VITE_ANTALMANAC_API_ENDPOINT;
     }
 
     // If using the local backend server, set the VITE_LOCAL_SERVER environment variable to a truthy value.
