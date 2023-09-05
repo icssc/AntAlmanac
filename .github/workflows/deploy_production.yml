@@ -114,6 +114,10 @@ jobs:
 
             - name: Build backend
               run: pnpm --filter "antalmanac-backend" build
+              env:
+                  NODE_ENV: development
 
             - name: Deploy production shadow backend CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" production-shadow-backend deploy
+              env:
+                  NODE_ENV: development

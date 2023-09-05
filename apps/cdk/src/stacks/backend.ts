@@ -31,7 +31,7 @@ export class BackendStack extends Stack {
          * @example "api", "staging-123.api"
          * @example complete domain name: "api.antalmanac.com", "staging-123.api.antalmanac.com"
          */
-        const domain = env.PR_NUM ? `staging-${env.PR_NUM}.api` : 'api';
+        const domain = env.PR_NUM ? `staging-${env.PR_NUM}.api` : env.NODE_ENV === 'production' ? 'api' : 'dev.api';
 
         const userDataDDB = new dynamnodb.Table(this, `${id}-userdata-ddb`, {
             partitionKey: {
