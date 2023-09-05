@@ -3,11 +3,11 @@
 name: Deploy CloudFormation stacks for staging environment
 
 on:
-    push:
-        branches:
-            - main
-
-    workflow_dispatch:
+  pull_request:
+    types: 
+        - opened
+        - synchronize 
+        - unlabeled
 
 concurrency:
     group: ${{ github.ref }}
