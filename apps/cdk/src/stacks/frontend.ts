@@ -26,16 +26,20 @@ export class FrontendStack extends Stack {
             'PR_NUM?': 'string',
         }).assert({ ...process.env });
 
+        const prefix = env.PR_NUM ? `staging-${env.PR_NUM}.` : '';
+
         /**
-         * The domain that the static website will be hosted on.
+         * The domain name that the static website will be hosted on.
+         *
+         * @example "antalmanac.com", "staging-123.antalmanac.com"
          */
-        const domain = env.PR_NUM ? `staging-${env.PR_NUM}.antalmanac` : 'antalmanac';
+        const domainName = `${prefix}${zoneName}`;
 
         /**
          * Create an S3 bucket to hold the built static website's assets.
          */
         const websiteBucket = new s3.Bucket(this, `${id}-bucket`, {
-            bucketName: domain,
+            bucketName: domainName,
             removalPolicy: RemovalPolicy.DESTROY,
             autoDeleteObjects: true,
         });
@@ -81,7 +85,7 @@ export class FrontendStack extends Stack {
         const distribution = new awsCloudfront.Distribution(this, `${id}-cloudfront-distribution`, {
             certificate: certificate,
             defaultRootObject: 'index.html',
-            domainNames: [domain],
+            domainNames: [domainName],
             errorResponses: [
                 {
                     httpStatus: 403,
@@ -116,8 +120,8 @@ export class FrontendStack extends Stack {
         const target = new targets.CloudFrontTarget(distribution);
 
         new route53.ARecord(this, `${id}-a-record`, {
-            zone: zone,
-            recordName: domain,
+            zone,
+            recordName: prefix,
             target: route53.RecordTarget.fromAlias(target),
         });
     }
