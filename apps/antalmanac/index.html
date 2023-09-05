@@ -1,19 +1,6 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
-        <style>
-            @media (min-resolution: 120dpi) {
-                html {
-                    font-size: 14px;
-                }
-            }
-            @media (min-resolution: 144dpi) {
-                html {
-                    font-size: 12px;
-                }
-            }
-        </style>
-
         <!-- HTML Meta Tags -->
         <meta charset="utf-8" />
         <meta
@@ -59,53 +46,48 @@
             href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css"
         />
 
-        <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
         <title>AntAlmanac</title>
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-
-        <!-- console.log for recruitment -->
-        <script>
-            console.log(
-                '%cInterested in improving AntAlmanac?\n - Checkout the project on GitHub: https://github.com/icssc/antalmanac\n - Join our Discord: https://discord.gg/GzF76D7UhY\n - Leave feedback: https://antalmanac.com/feedback',
-                'color: #305db7; font-size: 15px'
-            );
-        </script>
 
         <!-- Start Single Page Apps for GitHub Pages -->
         <script type="text/javascript">
-            // Single Page Apps for GitHub Pages
-            // MIT License
-            // https://github.com/rafgraph/spa-github-pages
-            // This script checks to see if a redirect is present in the query string,
-            // converts it back into the correct url and adds it to the
-            // browser's history using window.history.replaceState(...),
-            // which won't cause the browser to attempt to load the new url.
-            // When the single page app is loaded further down in this file,
-            // the correct url will be waiting in the browser's history for
-            // the single page app to route accordingly.
-            (function (l) {
-                if (l.search[1] === '/') {
-                    var decoded = l.search
-                        .slice(1)
-                        .split('&')
-                        .map(function (s) {
-                            return s.replace(/~and~/g, '&');
-                        })
-                        .join('?');
-                    window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+            /**
+             * Single Page Apps for GitHub Pages.
+             *
+             * MIT License
+             * @see https://github.com/rafgraph/spa-github-pages
+             *
+             * This script checks to see if a redirect is present in the query string,
+             * converts it back into the correct url and adds it to the
+             * browser's history using window.history.replaceState(...),
+             * which won't cause the browser to attempt to load the new url.
+             * When the single page app is loaded further down in this file,
+             * the correct url will be waiting in the browser's history for
+             * the single page app to route accordingly.
+             */
+            function main() {
+                if (typeof window === 'undefined') {
+                    return;
                 }
-            })(window.location);
+
+                const { location } = window;
+
+                if (location.search[1] !== '/') {
+                    return;
+                }
+
+                const decoded = location.search
+                    .slice(1)
+                    .split('&')
+                    .map((s) => s.replace(/~and~/g, '&'))
+                    .join('?');
+
+                window.history.replaceState(null, null, location.pathname.slice(0, -1) + decoded + location.hash);
+            }
+            main()
         </script>
         <!-- End Single Page Apps for GitHub Pages -->
     </head>
+
     <body style="overflow: hidden">
         <noscript> You need to enable JavaScript to run this app. </noscript>
         <div id="root" style="height: 100vh; position: fixed; top: 0; width: 100%"></div>

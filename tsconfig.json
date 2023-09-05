@@ -1,3 +1,16 @@
 {
-    // Empty tsconfig for VSCode users
+    "compilerOptions": {
+        "target": "ES2015",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "baseUrl": ".",
+        "resolveJsonModule": true,
+        "allowJs": true,
+        "checkJs": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "skipLibCheck": true
+    }
 }

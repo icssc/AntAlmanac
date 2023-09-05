@@ -1,13 +1,12 @@
-# dev environment 
-/node_modules/
-/.turbo/
-/dist/
-/static/
-/public/
+#####################################################################################
+# Generated
+#####################################################################################
 
-# private
-.env
+## Packages installed by NPM. https://docs.npmjs.com/about-packages-and-modules
+node_modules/
 
-# file system configs
-desktop.ini
-.DS_Store
+## Vitest coverage output. https://vitest.dev/guide/coverage.html
+coverage/
+
+## Turborepo output. https://turbo.build/repo/docs/getting-started/existing-monorepo#edit-gitignore
+.turbo/

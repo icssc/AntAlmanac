@@ -3,23 +3,26 @@
     "version": "1.0.0",
     "private": true,
     "homepage": "https://antalmanac.com",
-    "description": "A course exploration and scheduling tool for UCI Anteaters",
+    "description": "the  premiere course exploration and planning tool for UCI anteaters",
     "bugs": {
         "url": "https://antalmanac.com/feedback"
     },
-    "repository": "github:icssc/antalmanac",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/icssc/AntAlmanac",
+        "directory": "apps/antalmanac"
+    },
+    "keywords": [
+        "uci",
+        "icssc"
+    ],
     "scripts": {
-        "start": "vite",
-        "start:local": "VITE_LOCAL_SERVER=true vite",
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
-        "predeploy": "npm run build",
-        "deploy": "gh-pages -d build",
         "format": "prettier --write src",
-        "lint": "eslint src",
-        "test:watch": "vitest",
-        "test": "vitest run"
+        "lint": "eslint --fix src",
+        "test": "vitest"
     },
     "dependencies": {
         "@date-io/date-fns": "^2.16.0",
@@ -32,15 +35,12 @@
         "@mui/icons-material": "^5.11.0",
         "@mui/lab": "^5.0.0-alpha.118",
         "@mui/material": "^5.11.7",
-        "@packages/antalmanac-types": "*",
+        "@packages/antalmanac-types": "workspace:^",
         "@react-leaflet/core": "^2.1.0",
         "@tanstack/react-query": "^4.24.4",
         "@trpc/client": "^10.30.0",
-        "@trpc/server": "^10.23.0",
-        "chart.js": "^4.2.1",
+        "@trpc/server": "^10.30.0",
         "classnames": "^2.3.2",
-        "date-fns": "^2.29.3",
-        "dayjs": "^1.11.7",
         "events": "^3.3.0",
         "file-saver": "^2.0.5",
         "html2canvas": "^1.4.1",
@@ -54,7 +54,6 @@
         "notistack": "^2.0.8",
         "react": "^18.2.0",
         "react-big-calendar": "^1.6.4",
-        "react-chartjs-2": "^5.2.0",
         "react-color": "^2.19.3",
         "react-dom": "^18.2.0",
         "react-ga4": "^2.0.0",
@@ -74,43 +73,23 @@
         "@types/leaflet": "^1.9.0",
         "@types/leaflet-routing-machine": "^3.2.4",
         "@types/leaflet.locatecontrol": "^0.74.1",
-        "@types/node": "^18.13.0",
         "@types/react": "^18.0.27",
         "@types/react-big-calendar": "^1.6.0",
         "@types/react-color": "^3.0.6",
         "@types/react-dom": "^18.0.10",
         "@types/react-input-mask": "^3.0.2",
         "@types/react-lazyload": "^3.2.0",
-        "@typescript-eslint/eslint-plugin": "^5.54.1",
-        "@typescript-eslint/parser": "^5.54.1",
         "@vitejs/plugin-react": "^3.1.0",
-        "@vitest/coverage-v8": "^0.34.2",
-        "eslint": "^8.36.0",
-        "eslint-config-prettier": "^8.7.0",
-        "eslint-plugin-import": "^2.27.5",
         "eslint-plugin-jsx-a11y": "^6.7.1",
-        "eslint-plugin-react": "^7.32.2",
+        "eslint-plugin-react": "^7.33.2",
         "eslint-plugin-react-hooks": "^4.6.0",
-        "gh-pages": "^5.0.0",
-        "husky": "^8.0.3",
-        "lint-staged": "^13.1.1",
         "peterportal-api-next-types": "1.0.0-beta.2",
-        "prettier": "^2.8.4",
-        "typescript": "^4.9.5",
         "vite": "^4.2.1",
-        "vite-plugin-svgr": "^2.4.0",
-        "vitest": "^0.34.2"
+        "vite-plugin-svgr": "^2.4.0"
     },
-    "browserslist": {
-        "production": [
-            ">0.2%",
-            "not dead",
-            "not op_mini all"
-        ],
-        "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
-        ]
+    "packageManager": "pnpm@8.6.12",
+    "engines": {
+        "pnpm": "^8.0.0",
+        "node": ">=18"
     }
 }

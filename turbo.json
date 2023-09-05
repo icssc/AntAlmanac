@@ -1,30 +1,20 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
-    "start": {
-      "cache": false
-    },
-    "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        "build/**",
-        "dist/**",
-        "cdk.out/**"
-      ]
-    },
-    "deploy": {
-      "dependsOn": [
-        "build"
-      ],
-      "cache": false
-    },
-    "lint": {},
-    "format": {
-      "dependsOn": [
-        "lint"
-      ]
+    "$schema": "https://turbo.build/schema.json",
+    "pipeline": {
+        "start": {
+            "cache": false
+        },
+        "build": {
+            "dependsOn": ["^build"],
+            "outputs": ["build/**"]
+        },
+        "deploy": {
+            "dependsOn": ["build"],
+            "cache": false
+        },
+        "format": {},
+        "lint": {
+            "dependsOn": ["format"]
+        }
     }
-  }
 }
