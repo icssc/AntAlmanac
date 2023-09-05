@@ -20,9 +20,10 @@
     "scripts": {
         "preinstall": "npx only-allow pnpm",
         "prepare": "husky install",
-        "start": "cross-env VITE_LOCAL_SERVER=true turbo start",
-        "build": "turbo build",
+        "dev": "cross-env VITE_ANTALMANAC_API_ENDPOINT='http://localhost:3000' turbo dev",
         "test": "vitest",
+        "build": "turbo build",
+        "format": "turbo format",
         "lint": "turbo lint"
     },
     "devDependencies": {

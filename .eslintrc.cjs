@@ -40,7 +40,7 @@ const config = {
     },
     settings: {
         'import/resolver': {
-            typescript: true,
+            typescript: {}
         },
     },
     ignorePatterns: ['*.config.*', '*.cjs'],
