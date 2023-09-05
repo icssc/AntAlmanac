@@ -4,6 +4,7 @@
   "scripts": {
     "build": "tsc && cdk synth",
     "watch": "tsc -w",
+    "test": "jest",
     "cdk": "cdk",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write lib",
