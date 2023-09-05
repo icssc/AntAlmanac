@@ -6,18 +6,25 @@ import {
     DialogContentText,
     DialogTitle,
     MenuItem,
+    IconButton,
+    Box,
+    Tooltip,
 } from '@material-ui/core';
 import { useState } from 'react';
+import { Clear } from '@material-ui/icons';
 
 import { deleteSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 
 interface DeleteScheduleDialogProps {
-    onClose: () => void;
+    onClose?: () => void;
+    scheduleIndex: number;
 }
 
 const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
+    const { scheduleIndex } = props;
+
     const [isOpen, setIsOpen] = useState(false);
 
     const handleOpen = () => {
@@ -29,24 +36,25 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
     };
 
     const handleDelete = () => {
-        props.onClose();
-        deleteSchedule();
+        props.onClose?.();
+        deleteSchedule(scheduleIndex);
         setIsOpen(false);
     };
 
     return (
-        <>
+        <Box>
             <MenuItem onClick={handleOpen} disabled={AppStore.schedule.getNumberOfSchedules() === 1}>
-                Delete Schedule
+                <Tooltip title="Delete Schedule">
+                    <IconButton size="small">
+                        <Clear />
+                    </IconButton>
+                </Tooltip>
             </MenuItem>
             <Dialog open={isOpen} onClose={handleClose}>
                 <DialogTitle>Delete Schedule</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Are you sure you want to delete {`"${AppStore.schedule.getCurrentScheduleName()}"`}?
-                        <br />
-                        <br />
-                        You cannot undo this action.
+                        Are you sure you want to delete {`"${AppStore.schedule.getScheduleName(scheduleIndex)}"`}?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -58,7 +66,7 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </>
+        </Box>
     );
 };
 

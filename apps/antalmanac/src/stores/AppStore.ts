@@ -41,11 +41,13 @@ class AppStore extends EventEmitter {
             return theme === null ? 'auto' : theme;
         })();
 
-        window.addEventListener('beforeunload', (event) => {
-            if (this.unsavedChanges) {
-                event.returnValue = `Are you sure you want to leave? You have unsaved changes!`;
-            }
-        });
+        if (typeof window !== 'undefined') {
+            window.addEventListener('beforeunload', (event) => {
+                if (this.unsavedChanges) {
+                    event.returnValue = `Are you sure you want to leave? You have unsaved changes!`;
+                }
+            });
+        }
     }
 
     getCurrentScheduleIndex() {
@@ -238,8 +240,8 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    deleteSchedule() {
-        this.schedule.deleteCurrentSchedule();
+    deleteSchedule(scheduleIndex: number) {
+        this.schedule.deleteSchedule(scheduleIndex);
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('addedCoursesChange');

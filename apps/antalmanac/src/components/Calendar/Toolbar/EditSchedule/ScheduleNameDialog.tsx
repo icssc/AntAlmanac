@@ -1,8 +1,18 @@
 import { forwardRef, useCallback, useState, useMemo } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, TextField } from '@material-ui/core';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+    MenuItem,
+    TextField,
+    Tooltip,
+} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { Add } from '@material-ui/icons';
+import { Add, Edit } from '@material-ui/icons';
 
 import { addSchedule, renameSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
@@ -37,7 +47,7 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
 
     // We need to stop propagation so that the select menu won't close
     const handleOpen = useCallback(
-        (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+        (event: React.MouseEvent) => {
             event.stopPropagation();
             setIsOpen(true);
             onOpen?.();
@@ -95,7 +105,13 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
     return (
         <>
             {rename ? (
-                <MenuItem onClick={handleOpen}>Rename Schedule</MenuItem>
+                <MenuItem onClick={handleOpen}>
+                    <Tooltip title="Rename Schedule">
+                        <IconButton size="small">
+                            <Edit />
+                        </IconButton>
+                    </Tooltip>
+                </MenuItem>
             ) : (
                 <MenuItem onClick={handleOpen}>
                     <Add className={classes.addButton} />
