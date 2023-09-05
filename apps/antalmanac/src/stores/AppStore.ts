@@ -267,8 +267,8 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    deleteSchedule() {
-        this.schedule.deleteCurrentSchedule();
+    deleteSchedule(scheduleIndex: number) {
+        this.schedule.deleteSchedule(scheduleIndex);
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('addedCoursesChange');

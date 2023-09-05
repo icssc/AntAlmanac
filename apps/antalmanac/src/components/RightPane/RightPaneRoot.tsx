@@ -31,12 +31,12 @@ export default function Desktop({ style }: DesktopTabsProps) {
 
   const tabs = [
     {
-      label: 'Class Search',
+      label: 'Search',
       href: '/',
       icon: Search,
     },
     {
-      label: 'Added Courses',
+      label: 'Added',
       href: '/added',
       icon: FormatListBulleted,
     },

@@ -4,7 +4,7 @@ import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
 import { Event } from 'react-big-calendar';
-import { useEffect, useRef, useContext, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
@@ -13,12 +13,13 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
-import { mobileContext } from '$components/MobileHome';
 import { useTabStore } from '$stores/TabStore';
+import { translate24To12HourTime } from '$stores/calendarizeHelpers';
 
 const styles: Styles<Theme, object> = {
     courseContainer: {
         padding: '0.5rem',
+        margin: '0 1rem',
         minWidth: '15rem',
     },
     customEventContainer: {
@@ -89,7 +90,22 @@ interface CommonCalendarEvent extends Event {
 
 export interface CourseEvent extends CommonCalendarEvent {
     bldg: string; // E.g., ICS 174, which is actually building + room
-    finalExam: string;
+    finalExam: {
+        examStatus: 'NO_FINAL' | 'TBA_FINAL' | 'SCHEDULED_FINAL';
+        dayOfWeek: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | null;
+        month: number | null;
+        day: number | null;
+        startTime: {
+            hour: number;
+            minute: number;
+        } | null;
+        endTime: {
+            hour: number;
+            minute: number;
+        } | null;
+        bldg: string[] | null;
+    };
+    courseTitle: string;
     instructors: string[];
     isCustomEvent: false;
     sectionCode: string;
@@ -114,6 +130,8 @@ interface CourseCalendarEventProps {
     scheduleNames: string[];
     closePopover: () => void;
 }
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     const paperRef = useRef<HTMLInputElement>(null);
@@ -146,6 +164,21 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         const [buildingName = ''] = bldg.split(' ');
 
         const buildingId = locationIds[buildingName] ?? 69420;
+
+        let finalExamString = '';
+        if (finalExam.examStatus == 'NO_FINAL') {
+            finalExamString = 'No Final';
+        } else if (finalExam.examStatus == 'TBA_FINAL') {
+            finalExamString = 'Final TBA';
+        } else {
+            if (finalExam.startTime && finalExam.endTime && finalExam.month && finalExam.bldg) {
+                const timeString = translate24To12HourTime(finalExam.startTime, finalExam.endTime);
+                const locationString = `at ${finalExam.bldg.join(', ')}`;
+                const finalExamMonth = MONTHS[finalExam.month];
+
+                finalExamString = `${finalExam.dayOfWeek} ${finalExamMonth} ${finalExam.day} ${timeString} ${locationString}`;
+            }
+        }
 
         return (
             <Paper className={classes.courseContainer} ref={paperRef}>
@@ -209,7 +242,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         </tr>
                         <tr>
                             <td>Final</td>
-                            <td className={classes.rightCells}>{finalExam}</td>
+                            <td className={classes.rightCells}>{finalExamString}</td>
                         </tr>
                         <tr>
                             <td>Color</td>

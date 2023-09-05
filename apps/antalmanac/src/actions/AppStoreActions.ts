@@ -206,8 +206,8 @@ export const renameSchedule = (scheduleName: string, scheduleIndex: number) => {
     AppStore.renameSchedule(scheduleName, scheduleIndex);
 };
 
-export const deleteSchedule = () => {
-    AppStore.deleteSchedule();
+export const deleteSchedule = (scheduleIndex: number) => {
+    AppStore.deleteSchedule(scheduleIndex);
 };
 
 export const updateScheduleNote = (newScheduleNote: string, scheduleIndex: number) => {
