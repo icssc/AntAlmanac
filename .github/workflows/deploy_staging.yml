@@ -9,30 +9,30 @@ on:
             - synchronize
             - unlabeled
 
-        # concurrency:
-        #     group: ${{ github.ref }}
-        #     cancel-in-progress: true
-        #
-        # permissions:
-        #     id-token: write
-        #     contents: read
-        #     pull-requests: write
-        #     deployments: write
-        #     repository-projects: write
-        #
-        # env:
-        #     HUSKY: 0
-        #     NODE_ENV: staging
-        #
-        #     # Backend environment variables.
-        #     HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
-        #     CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
-        #     MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
-        #
-        #     # Turborepo credentials.
-        #     TURBO_API: ${{ vars.TURBO_API }}
-        #     TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-        #     TURBO_TEAM: team_antalmanac
+concurrency:
+    group: ${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    id-token: write
+    contents: read
+    pull-requests: write
+    deployments: write
+    repository-projects: write
+
+env:
+    HUSKY: 0
+    NODE_ENV: staging
+
+    # Backend environment variables.
+    HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
+    CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+    MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
+
+    # Turborepo credentials.
+    TURBO_API: ${{ vars.TURBO_API }}
+    TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+    TURBO_TEAM: team_antalmanac
 
 jobs:
     get_staging_configuration:
