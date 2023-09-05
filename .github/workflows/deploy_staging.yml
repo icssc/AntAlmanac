@@ -72,23 +72,23 @@ jobs:
             - name: Setup Node.js and pnpm
               uses: ./.github/actions/setup-node-and-pnpm
 
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+                  # - name: Install dependencies
+                  #   run: pnpm install --frozen-lockfile
 
-            - name: Build frontend
-              uses: pnpm --filter "antalmanac" build
-              env:
-                  VITE_ENDPOINT: ${{ needs.get_staging_configuration.outputs.api-endpoint }}
+                  # - name: Build frontend
+                  #   uses: pnpm --filter "antalmanac" build
+                  #   env:
+                  #       VITE_ENDPOINT: ${{ needs.get_staging_configuration.outputs.api-endpoint }}
 
-            - name: Deploy staging frontend CloudFormation stack
-              run: pnpm --filter "antalmanac-cdk" staging-frontend deploy
+                  # - name: Deploy staging frontend CloudFormation stack
+                  #   run: pnpm --filter "antalmanac-cdk" staging-frontend deploy
 
-            - name: Comment frontend staging URL
-              uses: marocchino/sticky-pull-request-comment@v2
-              with:
-                  header: staging url
-                  recreate: true
-                  message: Deployed staging instance to https://staging-${{ github.event.pull_request.number }}.antalmanac.com
+                  # - name: Comment frontend staging URL
+                  #   uses: marocchino/sticky-pull-request-comment@v2
+                  #   with:
+                  #       header: staging url
+                  #       recreate: true
+                  #       message: Deployed staging instance to https://staging-${{ github.event.pull_request.number }}.antalmanac.com
 
             # deploy_staging_backend:
             #     name: Deploy staging backend CloudFormation stack and environment
