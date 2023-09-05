@@ -114,7 +114,7 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Build backend
-              uses: pnpm --filter "antalmanac-backend" build
+              run: pnpm --filter "antalmanac-backend" build
 
             - name: Deploy staging backend CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" staging-backend deploy
