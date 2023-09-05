@@ -1,5 +1,5 @@
 import { router, procedure } from '../trpc';
-import NewsModel, { News } from '$models/News';
+import NewsModel, { News } from '../models/News';
 
 const newsRouter = router({
     /**

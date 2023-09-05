@@ -1,7 +1,7 @@
 import serverlessExpress from '@vendia/serverless-express';
 import type { Context, Handler } from 'aws-lambda';
 import { start } from '.';
-import connectToMongoDB from '$db/mongodb';
+import connectToMongoDB from './db/mongodb';
 import env from './env';
 
 let cachedHandler: Handler;

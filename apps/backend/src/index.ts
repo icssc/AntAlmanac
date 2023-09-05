@@ -4,7 +4,7 @@ import type { CorsOptions } from 'cors';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import AppRouter from './routers';
 import createContext from './context';
-import connectToMongoDB from '$db/mongodb';
+import connectToMongoDB from './db/mongodb';
 import env from './env';
 
 const corsOptions: CorsOptions = {
