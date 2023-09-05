@@ -62,5 +62,5 @@ jobs:
                 TURBO_TEAM: "team_antalmanac"
               run: pnpm build
 
-            # - name: Test
-            #   run: pnpm test run
+            - name: Test
+              run: pnpm test run
