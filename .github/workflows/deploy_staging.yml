@@ -1,0 +1,144 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json
+---
+name: Deploy CloudFormation stacks for staging environment
+
+on:
+    push:
+        branches:
+            - main
+
+    workflow_dispatch:
+
+concurrency:
+    group: ${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    HUSKY: 0
+    NODE_ENV: production
+
+    # Backend environment variables.
+    HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
+    CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+    MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
+
+    # Turborepo credentials.
+    TURBO_API: ${{ vars.TURBO_API }}
+    TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+    TURBO_TEAM: team_antalmanac
+
+    # Workflow constants.
+    CDK_ARTIFACTS: ${{ github.sha }}-cdk
+    WEBSITE_ARTIFACTS: ${{ github.sha }}-website
+    PRODUCTION_BACKEND_STACK: prod-us-west-1-Backend
+    DEVELOPMENT_FRONTEND_STACK: dev-us-east-1-Frontend
+    DEVELOPMENT_BACKEND_STACK: dev-us-east-1-Backend
+
+jobs:
+    deploy_production_frontend:
+        name: Deploy production frontend to GitHub Pages
+
+        needs: setup_and_build
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build frontend
+              uses: pnpm --filter "antalmanac" build
+
+            - name: Upload documentation artifacts
+              uses: actions/upload-pages-artifact@v2
+              with:
+                  path: apps/antalmanac/build
+
+    deploy_production_backend:
+        name: Deploy production backend CloudFormation stack and environment
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build backend
+              uses: pnpm --filter "antalmanac-backend" build
+
+            - name: Wait for backend CloudFormation stack to stabilize
+              uses: ./.github/actions/wait-for-cloudformation-stack-idle
+              with:
+                  stack_name: ${{ env.PRODUCTION_BACKEND_STACK }}
+                  aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
+
+            - name: Deploy production backend CloudFormation stack
+              run: pnpm run deploy --filter "antalmanac-cdk" 
+
+    # This is a mirror of the production frontend, but hosted on AWS instead of GitHub Pages.
+    deploy_development_frontend:
+        name: Deploy development mirror backend CloudFormation stack and environment
+
+        runs-on: ubuntu-latest
+
+        env:
+            VITE_API_ENDPOINT: https://dev.api.antalmanac.com
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build backend
+              uses: pnpm --filter "antalmanac" build
+
+            - name: Wait for backend CloudFormation stack to stabilize
+              uses: ./.github/actions/wait-for-cloudformation-stack-idle
+              with:
+                  stack_name: ${{ env.DEVELOPMENT_FRONTEND_STACK }}
+                  aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
+
+    # This is a mirror of the production backend.
+    deploy_development_backend:
+        name: Deploy development backend mirror CloudFormation stack and environment
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build backend
+              uses: pnpm --filter "antalmanac-backend" build
+
+            - name: Wait for backend CloudFormation stack to stabilize
+              uses: ./.github/actions/wait-for-cloudformation-stack-idle
+              with:
+                  stack_name: ${{ env.DEVELOPMENT_BACKEND_STACK }}
+                  aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}

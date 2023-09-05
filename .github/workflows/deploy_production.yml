@@ -55,7 +55,7 @@ jobs:
             - name: Build frontend
               uses: pnpm --filter "antalmanac" build
 
-            - name: Upload documentation artifacts
+            - name: Upload frontend artifacts
               uses: actions/upload-pages-artifact@v2
               with:
                   path: apps/antalmanac/build
@@ -78,7 +78,7 @@ jobs:
             - name: Build backend
               uses: pnpm --filter "antalmanac-backend" build
 
-            - name: Wait for backend CloudFormation stack to stabilize
+            - name: Wait for production backend CloudFormation stack to stabilize
               uses: ./.github/actions/wait-for-cloudformation-stack-idle
               with:
                   stack_name: ${{ env.PRODUCTION_BACKEND_STACK }}
@@ -86,39 +86,10 @@ jobs:
                   aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
 
             - name: Deploy production backend CloudFormation stack
-              run: pnpm run deploy --filter "antalmanac-cdk" 
+              run: pnpm --filter "antalmanac-cdk" deploy:production-backend
 
-    # This is a mirror of the production frontend, but hosted on AWS instead of GitHub Pages.
-    deploy_development_frontend:
-        name: Deploy development mirror backend CloudFormation stack and environment
-
-        runs-on: ubuntu-latest
-
-        env:
-            VITE_API_ENDPOINT: https://dev.api.antalmanac.com
-
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
-
-            - name: Setup Node.js and pnpm
-              uses: ./.github/actions/setup-node-and-pnpm
-
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile
-
-            - name: Build backend
-              uses: pnpm --filter "antalmanac" build
-
-            - name: Wait for backend CloudFormation stack to stabilize
-              uses: ./.github/actions/wait-for-cloudformation-stack-idle
-              with:
-                  stack_name: ${{ env.DEVELOPMENT_FRONTEND_STACK }}
-                  aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
-
-    # This is a mirror of the production backend.
-    deploy_development_backend:
+    # A shadow/mirror of the production backend used for development.
+    deploy_production_shadow_backend:
         name: Deploy development backend mirror CloudFormation stack and environment
 
         runs-on: ubuntu-latest
@@ -136,9 +107,12 @@ jobs:
             - name: Build backend
               uses: pnpm --filter "antalmanac-backend" build
 
-            - name: Wait for backend CloudFormation stack to stabilize
+            - name: Wait for production shadow backend CloudFormation stack to stabilize
               uses: ./.github/actions/wait-for-cloudformation-stack-idle
               with:
                   stack_name: ${{ env.DEVELOPMENT_BACKEND_STACK }}
                   aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   aws_secret_access_key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
+
+            - name: Deploy production shadow backend CloudFormation stack
+              run: pnpm --filter "antalmanac-cdk" deploy:production-shadow-backend
