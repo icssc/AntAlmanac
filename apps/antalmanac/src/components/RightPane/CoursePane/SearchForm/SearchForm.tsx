@@ -82,7 +82,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                             changeState={(field: string, value: string) => RightPaneStore.updateFormValue(field, value)}
                             fieldName={'term'}
                         />
-                        <Tooltip title="Manual Search">
+                        <Tooltip title="Toggle Manual Search">
                             <IconButton onClick={toggleShowLegacySearch}>
                                 <Tune />
                             </IconButton>
