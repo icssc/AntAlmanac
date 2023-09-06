@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useMemo, useState, Fragment } from 'react';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 
-import { Box, Button, Grid, Menu, MenuItem, Paper, TextField, Typography } from '@mui/material';
+import { Box, Button, Chip, Grid, Menu, MenuItem, Paper, TextField, Tooltip, Typography } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 
+import { float } from 'html2canvas/dist/types/css/property-descriptors/float';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
 import AppStore from '$stores/AppStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
+import { clickToCopy } from '$lib/helpers';
 
 interface CourseWithTerm extends AACourse {
     term: string;
@@ -72,7 +74,7 @@ function SkeletonSchedule() {
         };
     }, []);
 
-    const sectionsByTerm = useMemo(() => {
+    const sectionsByTerm: [string, string[]][] = useMemo(() => {
         const result = skeletonSchedule.courses.reduce((accumulated, course) => {
             accumulated[course.term] ??= [];
             accumulated[course.term].push(course.sectionCode);
@@ -86,18 +88,30 @@ function SkeletonSchedule() {
         <>
             {
                 // Sections organized under terms, in case the schedule contains multiple terms
-                sectionsByTerm.map(([term, sections], index) => {
-                    return (
-                        <Fragment key={index}>
-                            <Typography variant="h6">{term}</Typography>
-                            <Paper key={term} elevation={1}>
-                                <Grid item md={12} xs={12} key={term}>
-                                    <Typography variant="body1">Sections enrolled: {sections.join(', ')}</Typography>
-                                </Grid>
-                            </Paper>
-                        </Fragment>
-                    );
-                })
+                sectionsByTerm.map(([term, sections], index) => (
+                    <div key={term}>
+                        <Typography variant="h6">{term}</Typography>
+                        <Paper key={term} elevation={1}>
+                            {sections.map((section, index) => (
+                                <Tooltip title="Click to copy course code" placement="right" key={index}>
+                                    <Chip
+                                        onClick={(event) => {
+                                            clickToCopy(event, section);
+                                            logAnalytics({
+                                                category: analyticsEnum.classSearch.title,
+                                                action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
+                                            });
+                                        }}
+                                        label={section}
+                                        size="small"
+                                        style={{ margin: '10px 10px 10px 10px' }}
+                                        key={index}
+                                    />
+                                </Tooltip>
+                            ))}
+                        </Paper>
+                    </div>
+                ))
             }
             <Typography variant="body1">
                 PeterPortal or WebSoc is currently unreachable. This is the information that we can currently retrieve.
