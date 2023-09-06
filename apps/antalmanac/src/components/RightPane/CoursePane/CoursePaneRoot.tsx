@@ -71,7 +71,7 @@ class RightPane extends PureComponent {
 
     render() {
         return (
-            <>
+            <div style={{ padding: 8 }}>
                 <CoursePaneButtonRow
                     showSearch={!RightPaneStore.getDoDisplaySearch()}
                     onDismissSearchResults={this.toggleSearch}
@@ -82,7 +82,7 @@ class RightPane extends PureComponent {
                 ) : (
                     <CourseRenderPane key={this.state.refresh} />
                 )}
-            </>
+            </div>
         );
     }
 }
