@@ -106,11 +106,12 @@ function SkeletonSchedule() {
     }, [skeletonSchedule.courses]);
 
     return (
-        <>
+        <Box>
+            <Typography>{skeletonSchedule.scheduleName}</Typography>
             {
                 // Sections organized under terms, in case the schedule contains multiple terms
-                sectionsByTerm.map(([term, sections], index) => (
-                    <div key={term}>
+                sectionsByTerm.map(([term, sections]) => (
+                    <Box key={term}>
                         <Typography variant="h6">{term}</Typography>
                         <Paper key={term} elevation={1}>
                             {sections.map((section, index) => (
@@ -131,13 +132,13 @@ function SkeletonSchedule() {
                                 </Tooltip>
                             ))}
                         </Paper>
-                    </div>
+                    </Box>
                 ))
             }
             <Typography variant="body1">
                 PeterPortal or WebSoc is currently unreachable. This is the information that we can currently retrieve.
             </Typography>
-        </>
+        </Box>
     );
 }
 
@@ -215,7 +216,7 @@ function AddedSectionsGrid() {
     }, [scheduleNames, scheduleIndex]);
 
     return (
-        <Box padding={1} display="flex" flexDirection="column" gap={2}>
+        <Box display="flex" flexDirection="column" gap={2}>
             <Box display="flex" width={1} justifyContent="space-between">
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
 
@@ -262,7 +263,7 @@ function AddedSectionsGrid() {
                             <SectionTableLazyWrapper
                                 courseDetails={course}
                                 term={course.term}
-                                highlightAdded={false}
+                                allowHighlight={false}
                                 analyticsCategory={analyticsEnum.addedClasses.title}
                                 scheduleNames={scheduleNames}
                             />
@@ -324,5 +325,5 @@ export default function AddedCoursePaneFunctionComponent() {
         };
     }, []);
 
-    return skeletonMode ? <SkeletonSchedule /> : <AddedSectionsGrid />;
+    return <Box padding={1}>{skeletonMode ? <SkeletonSchedule /> : <AddedSectionsGrid />}</Box>;
 }
