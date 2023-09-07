@@ -35,11 +35,11 @@ interface TableHeaderColumnDetails {
 const tableHeaderColumns: Record<SectionTableColumn, TableHeaderColumnDetails> = {
     sectionCode: {
         label: 'Code',
-        width: '10%',
+        width: '8%',
     },
     sectionDetails: {
         label: 'Type',
-        width: '10%',
+        width: '8%',
     },
     instructors: {
         label: 'Instructors',
@@ -47,7 +47,7 @@ const tableHeaderColumns: Record<SectionTableColumn, TableHeaderColumnDetails> =
     },
     gpa: {
         label: 'GPA',
-        width: '5%',
+        width: '7%',
     },
     dayAndTime: {
         label: 'Times',
@@ -59,18 +59,17 @@ const tableHeaderColumns: Record<SectionTableColumn, TableHeaderColumnDetails> =
     },
     sectionEnrollment: {
         label: 'Enrollment',
-        width: '10%',
+        width: '9%',
     },
     restrictions: {
         label: 'Restr',
-        width: '10%',
+        width: '8%',
     },
     status: {
         label: 'Status',
-        width: '10%',
+        width: '8%',
     },
 };
-
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
 interface EnrollmentColumnHeaderProps {
@@ -183,8 +182,8 @@ function SectionTable(props: SectionTableProps) {
                 />
             </Box>
 
-            <TableContainer component={Paper} sx={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
-                <Table size="small" sx={{ minWidth: `${tableMinWidth}px` }}>
+            <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
+                <Table size="small" style={{ minWidth: `${tableMinWidth}px` }}>
                     <TableHead>
                         <TableRow>
                             <TableCell padding="none" />
