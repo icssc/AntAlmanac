@@ -82,10 +82,6 @@ class RightPaneStore extends EventEmitter {
         return this.formData;
     };
 
-    getActiveTab = () => {
-        return this.activeTab;
-    };
-
     getDoDisplaySearch = () => {
         return this.doDisplaySearch;
     };
@@ -110,11 +106,6 @@ class RightPaneStore extends EventEmitter {
     resetFormValues = () => {
         this.formData = structuredClone(defaultFormValues);
         this.emit('formReset');
-    };
-
-    handleTabChange = (_event: unknown, value: number) => {
-        this.activeTab = value;
-        this.emit('tabChange', value);
     };
 
     toggleSearch = () => {

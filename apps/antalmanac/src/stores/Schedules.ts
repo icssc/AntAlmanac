@@ -14,6 +14,7 @@ export class Schedules {
     private schedules: Schedule[];
     private currentScheduleIndex: number;
     private previousStates: ScheduleUndoState[];
+    private skeletonSchedules: ShortCourseSchedule[];
 
     // We do not want schedule notes to be undone; to avoid this,
     // we keep track of every schedule note in an object where each key
@@ -28,6 +29,7 @@ export class Schedules {
         this.currentScheduleIndex = 0;
         this.previousStates = [];
         this.scheduleNoteMap = { [scheduleNoteId]: '' };
+        this.skeletonSchedules = [];
     }
 
     // --- Schedule index methods ---
@@ -177,7 +179,7 @@ export class Schedules {
             scheduleIndex
         );
 
-        if (existsInSchedule) {
+        if (existsInSchedule && existingSection) {
             return existingSection; // If it's already present in a schedule, then no need to push it
         }
 
@@ -525,5 +527,13 @@ export class Schedules {
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
         const scheduleNoteId = this.schedules[scheduleIndex].scheduleNoteId;
         this.scheduleNoteMap[scheduleNoteId] = newScheduleNote;
+    }
+
+    getSkeletonSchedule(): ShortCourseSchedule {
+        return this.skeletonSchedules[this.currentScheduleIndex];
+    }
+
+    setSkeletonSchedules(skeletonSchedules: ShortCourseSchedule[]) {
+        this.skeletonSchedules = skeletonSchedules;
     }
 }
