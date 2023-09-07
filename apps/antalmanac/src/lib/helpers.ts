@@ -15,7 +15,7 @@ interface GradesGraphQLResponse {
     };
 }
 
-export async function queryGraphQL(queryString: string): Promise<GradesGraphQLResponse | null> {
+export async function queryGraphQL<PromiseReturnType>(queryString: string): Promise<PromiseReturnType | null> {
     const query = JSON.stringify({
         query: queryString,
     });
@@ -33,7 +33,7 @@ export async function queryGraphQL(queryString: string): Promise<GradesGraphQLRe
 
     if (!res.ok || json.data === null) return null;
 
-    return json as Promise<GradesGraphQLResponse>;
+    return json as Promise<PromiseReturnType>;
 }
 export interface CourseDetails {
     deptCode: string;
@@ -290,7 +290,7 @@ export async function queryGrades(deptCode: string, courseNumber: string, instru
         },
     }`;
 
-    const resp = await queryGraphQL(queryString);
+    const resp = await queryGraphQL<GradesGraphQLResponse>(queryString);
     gradesCache[cacheKey] = resp?.data?.aggregateGrades?.gradeDistribution;
 
     return gradesCache[cacheKey] as Grades;
