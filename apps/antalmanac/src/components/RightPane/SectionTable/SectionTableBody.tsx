@@ -29,7 +29,7 @@ import restrictionsMapping from './static/restrictionsMapping.json';
 import GradesPopup from './GradesPopup';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
-import Grades from '$lib/Grades';
+import Grades from '$lib/grades';
 import AppStore from '$stores/AppStore';
 import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
