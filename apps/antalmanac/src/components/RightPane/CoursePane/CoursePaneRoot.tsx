@@ -71,7 +71,7 @@ class RightPane extends PureComponent {
 
     render() {
         return (
-            <div style={{ padding: 8 }}>
+            <div style={{ height: '100%', padding: 8 }}>
                 <CoursePaneButtonRow
                     showSearch={!RightPaneStore.getDoDisplaySearch()}
                     onDismissSearchResults={this.toggleSearch}
