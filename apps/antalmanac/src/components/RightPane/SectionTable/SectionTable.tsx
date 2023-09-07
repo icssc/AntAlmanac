@@ -22,6 +22,8 @@ import { SectionTableProps } from './SectionTable.types';
 import SectionTableBody from './SectionTableBody';
 import analyticsEnum from '$lib/analytics';
 
+const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
+
 // uncomment when we get past enrollment data back and restore the files (https://github.com/icssc/AntAlmanac/tree/5e89e035e66f00608042871d43730ba785f756b0/src/components/RightPane/SectionTable/EnrollmentGraph)
 // import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph';
 
@@ -120,24 +122,21 @@ function SectionTable(props: SectionTableProps) {
      */
     const tableMinWidth = useMemo(() => {
         const width = isMobileScreen ? 600 : 780;
-        const numColumns = activeColumns.length;
-        return (width * numColumns) / SECTION_TABLE_COLUMNS.length;
+        const numActiveColumns = activeColumns.length;
+        return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
     }, [isMobileScreen, activeColumns]);
 
-    const handleColumnChange = useCallback(
-        (newActiveColumns: SectionTableColumn[]) => {
-            setActiveColumns(newActiveColumns);
-        },
-        [setActiveColumns]
-    );
-
     useEffect(() => {
+        const handleColumnChange = (newActiveColumns: SectionTableColumn[]) => {
+            setActiveColumns(newActiveColumns);
+        };
+
         RightPaneStore.on('columnChange', handleColumnChange);
 
         return () => {
             RightPaneStore.removeListener('columnChange', handleColumnChange);
         };
-    }, [handleColumnChange]);
+    }, []);
 
     return (
         <>
