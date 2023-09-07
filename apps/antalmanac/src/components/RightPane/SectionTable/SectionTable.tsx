@@ -1,4 +1,6 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+    Box,
     Paper,
     Table,
     TableBody,
@@ -9,12 +11,8 @@ import {
     Tooltip,
     Typography,
     useMediaQuery,
-} from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { Assessment, Help, RateReview } from '@material-ui/icons';
-import ShowChartIcon from '@material-ui/icons/ShowChart';
-// import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph'; uncomment when we get past enrollment data back and restore the files (https://github.com/icssc/AntAlmanac/tree/5e89e035e66f00608042871d43730ba785f756b0/src/components/RightPane/SectionTable/EnrollmentGraph)
-import { useCallback, useEffect, useState } from 'react';
+} from '@mui/material';
+import { Assessment, Help, RateReview, ShowChart as ShowChartIcon } from '@mui/icons-material';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import RightPaneStore, { SECTION_TABLE_COLUMNS, type SectionTableColumn } from '../RightPaneStore';
 import CourseInfoBar from './CourseInfoBar';
@@ -24,43 +22,107 @@ import { SectionTableProps } from './SectionTable.types';
 import SectionTableBody from './SectionTableBody';
 import analyticsEnum from '$lib/analytics';
 
-const styles = {
-    flex: {
-        display: 'flex',
-        alignItems: 'center',
+// uncomment when we get past enrollment data back and restore the files (https://github.com/icssc/AntAlmanac/tree/5e89e035e66f00608042871d43730ba785f756b0/src/components/RightPane/SectionTable/EnrollmentGraph)
+// import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph';
+
+interface TableHeaderColumnDetails {
+    label: string;
+    width?: string;
+}
+
+const tableHeaderColumns: Record<SectionTableColumn, TableHeaderColumnDetails> = {
+    sectionCode: {
+        label: 'Code',
+        width: '10%',
     },
-    iconMargin: {
-        marginRight: '4px',
+    sectionDetails: {
+        label: 'Type',
+        width: '10%',
     },
-    cellPadding: {
-        padding: '0px 0px 0px 0px',
+    instructors: {
+        label: 'Instructors',
+        width: '15%',
     },
-    row: {},
-    container: {},
-    titleRow: {},
-    clearSchedule: {},
-    scheduleNoteContainer: {},
+    gpa: {
+        label: 'GPA',
+        width: '5%',
+    },
+    dayAndTime: {
+        label: 'Times',
+        width: '15%',
+    },
+    location: {
+        label: 'Places',
+        width: '10%',
+    },
+    sectionEnrollment: {
+        label: 'Enrollment',
+        width: '10%',
+    },
+    restrictions: {
+        label: 'Restr',
+        width: '10%',
+    },
+    status: {
+        label: 'Status',
+        width: '10%',
+    },
 };
 
-const tableHeaderColumns: Record<SectionTableColumn, string> = {
-    sectionCode: 'Code',
-    sectionDetails: 'Type',
-    instructors: 'Instructors',
-    gpa: 'GPA',
-    dayAndTime: 'Times',
-    location: 'Places',
-    sectionEnrollment: 'Enrollment',
-    restrictions: 'Restr',
-    status: 'Status',
-};
+const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
-const SectionTable = (props: SectionTableProps) => {
-    const { classes, courseDetails, term, allowHighlight, scheduleNames, analyticsCategory } = props;
-    const courseId = courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
-    const encodedDept = encodeURIComponent(courseDetails.deptCode);
+interface EnrollmentColumnHeaderProps {
+    label: string;
+}
+
+function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
+    return (
+        <Box display="flex">
+            {props.label}
+            {!isMobileScreen && (
+                <Tooltip
+                    title={
+                        <Typography>
+                            Enrolled/Capacity
+                            <br />
+                            Waitlist
+                            <br />
+                            New-Only Reserved
+                        </Typography>
+                    }
+                >
+                    <Help fontSize="small" />
+                </Tooltip>
+            )}
+        </Box>
+    );
+}
+
+function SectionTable(props: SectionTableProps) {
+    const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory } = props;
+
     const [activeColumns, setActiveColumns] = useState(RightPaneStore.getActiveColumns());
+
+    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
+
+    const courseId = useMemo(() => {
+        return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
+    }, [courseDetails.deptCode, courseDetails.courseNumber]);
+
+    const encodedDept = useMemo(() => {
+        return encodeURIComponent(courseDetails.deptCode);
+    }, [courseDetails.deptCode]);
+
+    /**
+     * Limit table width to force side scrolling.
+     */
+    const tableMinWidth = useMemo(() => {
+        const width = isMobileScreen ? 600 : 780;
+        const numColumns = activeColumns.length;
+        return (width * numColumns) / SECTION_TABLE_COLUMNS.length;
+    }, [isMobileScreen, activeColumns]);
 
     const handleColumnChange = useCallback(
         (newActiveColumns: SectionTableColumn[]) => {
@@ -77,19 +139,9 @@ const SectionTable = (props: SectionTableProps) => {
         };
     }, [handleColumnChange]);
 
-    // Limit table width to force side scrolling
-    const tableMinWidth =
-        ((isMobileScreen ? 600 : 780) * RightPaneStore.getActiveColumns().length) / SECTION_TABLE_COLUMNS.length;
-
     return (
         <>
-            <div
-                style={{
-                    display: 'inline-flex',
-                    gap: '4px',
-                    marginTop: '4px',
-                }}
-            >
+            <Box display="inline-flex" gap={0.5} marginTop={0.5}>
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
@@ -108,6 +160,7 @@ const SectionTable = (props: SectionTableProps) => {
                     icon={<RateReview />}
                     redirectLink={`https://peterportal.org/course/${courseId}`}
                 />
+
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
                     analyticsAction={analyticsEnum.classSearch.actions.CLICK_ZOTISTICS}
@@ -129,49 +182,24 @@ const SectionTable = (props: SectionTableProps) => {
                     icon={<ShowChartIcon />}
                     redirectLink={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${courseDetails.courseNumber}&courseType=all`}
                 />
-            </div>
+            </Box>
 
-            <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
-                <Table className={classes?.table} size="small" style={{ minWidth: `${tableMinWidth}px` }}>
+            <TableContainer component={Paper} sx={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
+                <Table size="small" sx={{ minWidth: `${tableMinWidth}px` }}>
                     <TableHead>
-                        <TableRow className={classes?.row}>
-                            <TableCell classes={{ sizeSmall: classes?.cellPadding }} />
-                            {Object.entries(tableHeaderColumns)
+                        <TableRow>
+                            <TableCell padding="none" />
+
+                            {tableHeaderColumnEntries
                                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
-                                .map(([column, label]) => {
-                                    return (
-                                        <TableCell
-                                            classes={{ sizeSmall: classes?.cellPadding }}
-                                            className={classes?.row}
-                                            key={column}
-                                        >
-                                            {label !== 'Enrollment' ? (
-                                                label
-                                            ) : (
-                                                <div className={classes?.flex}>
-                                                    <span className={classes?.iconMargin}>{label}</span>
-                                                    {!isMobileScreen && (
-                                                        <Tooltip
-                                                            title={
-                                                                <Typography>
-                                                                    Enrolled/Capacity
-                                                                    <br />
-                                                                    Waitlist
-                                                                    <br />
-                                                                    New-Only Reserved
-                                                                </Typography>
-                                                            }
-                                                        >
-                                                            <Help fontSize="small" />
-                                                        </Tooltip>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </TableCell>
-                                    );
-                                })}
+                                .map(([column, { label, width }]) => (
+                                    <TableCell key={column} padding="none" width={width} sx={{ paddingX: 0.5 }}>
+                                        {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
+                                    </TableCell>
+                                ))}
                         </TableRow>
                     </TableHead>
+
                     <TableBody>
                         {courseDetails.sections.map((section) => {
                             return (
@@ -190,6 +218,6 @@ const SectionTable = (props: SectionTableProps) => {
             </TableContainer>
         </>
     );
-};
+}
 
-export default withStyles(styles)(SectionTable);
+export default SectionTable;
