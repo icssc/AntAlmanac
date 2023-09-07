@@ -96,7 +96,16 @@ class _Grades {
         // Populate cache
         for (const course of groupedGrades) {
             const cacheKey = `${course.department}${course.courseNumber}${course.instructor}`;
-            this.gradesCache[cacheKey] = course as Grades;
+            this.gradesCache[cacheKey] = {
+                averageGPA: course.averageGPA,
+                gradeACount: course.gradeACount,
+                gradeBCount: course.gradeBCount,
+                gradeCCount: course.gradeCCount,
+                gradeDCount: course.gradeDCount,
+                gradeFCount: course.gradeFCount,
+                gradeNPCount: course.gradeNPCount,
+                gradePCount: course.gradePCount,
+            };
         }
 
         this.cachedQueries.add(queryKey);
