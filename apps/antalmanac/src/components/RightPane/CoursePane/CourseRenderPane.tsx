@@ -214,7 +214,7 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
         this.setState({ loading: true }, async () => {
             const formData = RightPaneStore.getFormData();
 
-            const params = {
+            const websocQueryParams = {
                 department: formData.deptValue,
                 term: formData.term,
                 ge: formData.ge,
@@ -231,16 +231,16 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
             };
 
             try {
-                let jsonResp;
-                if (params.units.includes(',')) {
-                    jsonResp = await queryWebsocMultiple(params, 'units');
+                let websocJsonResp: WebsocAPIResponse;
+                if (websocQueryParams.units.includes(',')) {
+                    websocJsonResp = await queryWebsocMultiple(websocQueryParams, 'units');
                 } else {
-                    jsonResp = await queryWebsoc(params);
+                    websocJsonResp = await queryWebsoc(websocQueryParams);
                 }
                 this.setState({
                     loading: false,
                     error: false,
-                    courseData: flattenSOCObject(jsonResp),
+                    courseData: flattenSOCObject(websocJsonResp),
                 });
             } catch (error) {
                 this.setState({
