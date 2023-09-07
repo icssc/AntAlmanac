@@ -13,6 +13,9 @@ const styles: Styles<Theme, object> = {
         backgroundColor: '#385EB1',
         color: '#fff',
     },
+    gradesPopupOuterDiv: {
+        overflow: 'hidden',
+    },
     gpaTitle: {
         marginTop: '.5rem',
         textAlign: 'center',
@@ -20,13 +23,11 @@ const styles: Styles<Theme, object> = {
         fontSize: '1.2rem',
         marginRight: '4rem',
         marginLeft: '4rem',
+        color: 'inherit',
+        textDecoration: 'none',
     },
     skeleton: {
         padding: '4px',
-    },
-    graphAnchor: {
-        cursor: 'pointer',
-        overflow: 'hidden',
     },
 };
 
@@ -98,26 +99,25 @@ const GradesPopup = ({ deptCode, courseNumber, instructor = '', classes, isMobil
         const axisColor = isDarkMode() ? '#fff' : '#111';
 
         return (
-            <div style={{ marginTop: '5px' }}>
-                <div className={classes.gpaTitle}>{graphTitle}</div>
+            <div style={{ marginTop: '5px' }} className={classes.gradesPopupOuterDiv}>
                 <a
+                    className={classes.gpaTitle}
                     href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={classes.graphAnchor}
                 >
-                    {' '}
-                    {gradeData && (
-                        <ResponsiveContainer width={width} height={height} className={classes.graphAnchor}>
-                            <BarChart data={gradeData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
-                                <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} />
-                                <Bar dataKey="all" fill="#5182ed" />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    )}
-                </a>
+                    {graphTitle}
+                </a>{' '}
+                {gradeData && (
+                    <ResponsiveContainer width={width} height={height}>
+                        <BarChart data={gradeData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
+                            <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} />
+                            <Bar dataKey="all" fill="#5182ed" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                )}
             </div>
         );
     }
