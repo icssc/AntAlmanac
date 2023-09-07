@@ -259,7 +259,7 @@ function GPACell(props: GPACellProps) {
                     padding: 0,
                     minWidth: 0,
                     fontWeight: 400,
-                    fontSize: 16,
+                    fontSize: '1rem',
                 }}
                 onClick={handleClick}
                 variant="text"
