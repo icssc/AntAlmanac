@@ -70,14 +70,14 @@ jobs:
                         - 'apps/cdk/**'
 
     deploy_staging_frontend:
-        name: Deploy staging frontend CloudFormation stack and environment
+        name: Deploy frontend staging CloudFormation stack and environment
 
         needs: get_staging_configuration
 
         runs-on: ubuntu-latest
 
         environment:
-            name: staging-frontend-${{ github.event.pull_request.number }}
+            name: frontend-staging-${{ github.event.pull_request.number }}
             url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
 
         steps:
@@ -95,8 +95,8 @@ jobs:
               env:
                   VITE_ANTALMANAC_API_ENDPOINT: ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
 
-            - name: Deploy staging frontend CloudFormation stack
-              run: pnpm --filter "antalmanac-cdk" staging-frontend deploy
+            - name: Deploy frontend staging CloudFormation stack
+              run: pnpm --filter "antalmanac-cdk" frontend-staging deploy
 
             - name: Comment frontend staging URL
               uses: marocchino/sticky-pull-request-comment@v2
@@ -106,7 +106,7 @@ jobs:
                   message: Deployed staging instance to https://staging-${{ github.event.pull_request.number }}.antalmanac.com
 
     deploy_staging_backend:
-        name: Deploy staging backend CloudFormation stack and environment
+        name: Deploy backend staging CloudFormation stack and environment
 
         needs: get_staging_configuration
 
@@ -115,7 +115,7 @@ jobs:
         runs-on: ubuntu-latest
 
         environment:
-            name: staging-backend-${{ github.event.pull_request.number }}
+            name: backend-staging-${{ github.event.pull_request.number }}
             url: https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
 
         steps:
@@ -131,5 +131,5 @@ jobs:
             - name: Build backend
               run: pnpm --filter "antalmanac-backend" build
 
-            - name: Deploy staging backend CloudFormation stack
-              run: pnpm --filter "antalmanac-cdk" staging-backend deploy
+            - name: Deploy backend staging CloudFormation stack
+              run: pnpm --filter "antalmanac-cdk" backend-staging deploy

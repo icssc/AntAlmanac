@@ -38,7 +38,7 @@ env:
 
 jobs:
     destroy_staging_frontend:
-        name: Destroy staging frontend CloudFormation stack and environment
+        name: Destroy frontend staging CloudFormation stack and environment
 
         runs-on: ubuntu-latest
 
@@ -57,10 +57,10 @@ jobs:
               env:
                   VITE_ENDPOINT: ${{ needs.get_staging_configuration.outputs.api-endpoint }}
 
-            - name: Destroy staging frontend CloudFormation stack
-              run: pnpm --filter "antalmanac-cdk" staging-frontend destroy
+            - name: Destroy frontend staging CloudFormation stack
+              run: pnpm --filter "antalmanac-cdk" frontend-staging destroy
 
-            - name: Delete frontend staging URL
+            - name: Delete staging frontend URL
               uses: marocchino/sticky-pull-request-comment@v2
               with:
                   header: staging url
@@ -70,11 +70,11 @@ jobs:
               uses: strumwolf/delete-deployment-environment@195215d2c5602aee6fb4b9cf0853970decca9e7a # v2.3.0
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
-                  environment: staging-frontend-${{ github.event.pull_request.number }}
+                  environment: frontend-staging-${{ github.event.pull_request.number }}
                   onlyDeactivateDeployments: true
 
     destroy_staging_backend:
-        name: Destroy staging backend CloudFormation stack and environment
+        name: Destroy backend staging CloudFormation stack and environment
 
         runs-on: ubuntu-latest
 
@@ -95,12 +95,12 @@ jobs:
             - name: Build backend
               run: pnpm --filter "antalmanac-backend" build
 
-            - name: Destroy staging backend CloudFormation stack
-              run: pnpm --filter "antalmanac-cdk" staging-backend destroy
+            - name: Destroy backend staging CloudFormation stack
+              run: pnpm --filter "antalmanac-cdk" backend-staging destroy
 
             - name: Deactivate backend staging environment
               uses: strumwolf/delete-deployment-environment@195215d2c5602aee6fb4b9cf0853970decca9e7a # v2.3.0
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
-                  environment: staging-backend-${{ github.event.pull_request.number }}
+                  environment: backend-staging-${{ github.event.pull_request.number }}
                   onlyDeactivateDeployments: true

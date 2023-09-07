@@ -46,7 +46,7 @@ jobs:
         runs-on: ubuntu-latest
 
         environment:
-            name: production-frontend
+            name: frontend-production
             url: https://antalmanac.com
 
         steps:
@@ -73,7 +73,7 @@ jobs:
         runs-on: ubuntu-latest
 
         environment:
-            name: production-backend
+            name: backend-production
             url: https://api.antalmanac.com
 
         steps:
@@ -89,17 +89,17 @@ jobs:
             - name: Build backend
               run: pnpm --filter "antalmanac-backend" build
 
-            - name: Deploy production backend CloudFormation stack
-              run: pnpm --filter "antalmanac-cdk" production-backend deploy
+            - name: Deploy backend production CloudFormation stack
+              run: pnpm --filter "antalmanac-cdk" backend-production deploy
 
-    # A shadow/mirror of the production backend used for development.
-    deploy_dev_backend:
+    # A shadow/mirror of the production backend used as the default API endpoint during development and staging.
+    deploy_development_backend:
         name: Deploy development backend CloudFormation stack and environment
 
         runs-on: ubuntu-latest
 
         environment:
-            name: production-shadow-backend
+            name: backend-development
             url: https://dev.api.antalmanac.com
 
         steps:
@@ -117,8 +117,8 @@ jobs:
               env:
                   NODE_ENV: development
 
-            - name: Deploy production shadow backend CloudFormation stack
-              run: pnpm --filter "antalmanac-cdk" production-shadow-backend deploy
+            - name: Deploy backend development CloudFormation stack
+              run: pnpm --filter "antalmanac-cdk" backend-development deploy
               env:
                   NODE_ENV: development
                   AWS_DEFAULT_REGION: us-west-1

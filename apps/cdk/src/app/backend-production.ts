@@ -7,7 +7,7 @@ import { waitForStackIdle } from '../wait-for-stack-idle';
  * Deploy the production backend.
  */
 async function main() {
-    const stackName = 'antalmanac-backend';
+    const stackName = 'antalmanac-backend-production';
 
     await waitForStackIdle(stackName);
 

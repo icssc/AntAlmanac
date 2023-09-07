@@ -33,7 +33,7 @@ export class BackendStack extends Stack {
          */
         const domain = env.PR_NUM ? `staging-${env.PR_NUM}.api` : env.NODE_ENV === 'production' ? 'api' : 'dev.api';
 
-        const userDataDDB = new dynamnodb.Table(this, `${id}-userdata-ddb`, {
+        const userDataDDB = new dynamnodb.Table(this, `${id}-user-data-ddb`, {
             partitionKey: {
                 name: 'id',
                 type: dynamnodb.AttributeType.STRING,
