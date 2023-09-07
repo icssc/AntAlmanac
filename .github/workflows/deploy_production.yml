@@ -35,7 +35,7 @@ env:
     # AWS credentials.
     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    AWS_DEFAULT_REGION: us-east-1
+    AWS_DEFAULT_REGION: us-west-1
 
 jobs:
     deploy_production_frontend:
@@ -93,8 +93,8 @@ jobs:
               run: pnpm --filter "antalmanac-cdk" production-backend deploy
 
     # A shadow/mirror of the production backend used for development.
-    deploy_production_shadow_backend:
-        name: Deploy development backend mirror CloudFormation stack and environment
+    deploy_dev_backend:
+        name: Deploy development backend CloudFormation stack and environment
 
         runs-on: ubuntu-latest
 
@@ -121,3 +121,4 @@ jobs:
               run: pnpm --filter "antalmanac-cdk" production-shadow-backend deploy
               env:
                   NODE_ENV: development
+                  AWS_DEFAULT_REGION: us-west-1
