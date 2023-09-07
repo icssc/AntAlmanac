@@ -11,8 +11,8 @@ import {
     Tooltip,
     Typography,
     useMediaQuery,
-} from '@mui/material';
-import { Assessment, Help, RateReview, ShowChart as ShowChartIcon } from '@mui/icons-material';
+} from '@material-ui/core';
+import { Assessment, Help, RateReview, ShowChart as ShowChartIcon } from '@material-ui/icons';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import RightPaneStore, { SECTION_TABLE_COLUMNS, type SectionTableColumn } from '../RightPaneStore';
 import CourseInfoBar from './CourseInfoBar';
@@ -140,7 +140,7 @@ function SectionTable(props: SectionTableProps) {
 
     return (
         <>
-            <Box display="inline-flex" gap={0.5} marginTop={0.5}>
+            <Box style={{ display: 'flex', gap: 4, marginTop: 4, marginBottom: 8 }}>
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}

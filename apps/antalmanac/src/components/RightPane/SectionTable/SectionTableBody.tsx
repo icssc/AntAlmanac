@@ -252,7 +252,7 @@ function GPACell(props: GPACellProps) {
     }, [deptCode, courseNumber, instructors]);
 
     return (
-        <Box>
+        <NoPaddingTableCell>
             <Button
                 style={{
                     color: isDarkMode() ? 'dodgerblue' : 'blue',
@@ -285,7 +285,7 @@ function GPACell(props: GPACellProps) {
                     isMobileScreen={useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`)}
                 />
             </Popover>
-        </Box>
+        </NoPaddingTableCell>
     );
 }
 
