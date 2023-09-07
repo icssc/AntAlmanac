@@ -1,277 +1,328 @@
-import { Button, Grid, Menu, MenuItem, Paper, TextField, Typography } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
-import { PureComponent } from 'react';
 
+import { Box, Button, Chip, Grid, Menu, MenuItem, Paper, TextField, Tooltip, Typography } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
-import { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
-import { clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';
-
-const styles = {
-    container: {
-        height: '100%',
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    titleRow: {
-        display: 'flex',
-        width: '100%',
-        justifyContent: 'space-between',
-    },
-    clearSchedule: {
-        marginLeft: '4px',
-        marginRight: '4px',
-    },
-    scheduleNoteContainer: {
-        padding: '8px',
-        marginLeft: '4px',
-        marginRight: '4px',
-        width: '100%',
-    },
-};
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
+import { clickToCopy } from '$lib/helpers';
 
 interface CourseWithTerm extends AACourse {
     term: string;
 }
 
-interface AddedCoursePaneProps {
-    classes: ClassNameMap;
-}
+const NOTE_MAX_LEN = 5000;
 
-interface AddedCoursePaneState {
-    courses: CourseWithTerm[];
-    customEvents: RepeatingCustomEvent[];
-    scheduleNames: string[];
-    scheduleNote: string;
-}
+function getCourses() {
+    const currentCourses = AppStore.schedule.getCurrentCourses();
 
-class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePaneState> {
-    state: AddedCoursePaneState = {
-        courses: [],
-        customEvents: [],
-        scheduleNames: AppStore.getScheduleNames(),
-        scheduleNote: AppStore.getCurrentScheduleNote(),
-    };
+    const formattedCourses: CourseWithTerm[] = [];
 
-    componentDidMount = () => {
-        this.loadCourses();
-        this.loadCustomEvents();
-        AppStore.on('addedCoursesChange', this.loadCourses);
-        AppStore.on('customEventsChange', this.loadCustomEvents);
-        AppStore.on('currentScheduleIndexChange', this.loadCourses);
-        AppStore.on('currentScheduleIndexChange', this.loadCustomEvents);
-        AppStore.on('scheduleNamesChange', this.loadScheduleNames);
-        AppStore.on('scheduleNotesChange', this.loadScheduleNote);
-        logAnalytics({
-            category: analyticsEnum.addedClasses.title,
-            action: analyticsEnum.addedClasses.actions.OPEN,
-        });
-    };
+    for (const course of currentCourses) {
+        let formattedCourse = formattedCourses.find(
+            (needleCourse) =>
+                needleCourse.courseNumber === course.courseNumber && needleCourse.deptCode === course.deptCode
+        );
 
-    componentWillUnmount() {
-        AppStore.removeListener('addedCoursesChange', this.loadCourses);
-        AppStore.removeListener('customEventsChange', this.loadCustomEvents);
-        AppStore.removeListener('currentScheduleIndexChange', this.loadCourses);
-        AppStore.removeListener('currentScheduleIndexChange', this.loadCustomEvents);
-        AppStore.removeListener('scheduleNamesChange', this.loadScheduleNames);
-        AppStore.removeListener('scheduleNotesChange', this.loadScheduleNote);
+        if (formattedCourse) {
+            formattedCourse.sections.push({
+                ...course.section,
+            });
+        } else {
+            formattedCourse = {
+                term: course.term,
+                deptCode: course.deptCode,
+                courseComment: course.courseComment,
+                prerequisiteLink: course.prerequisiteLink,
+                courseNumber: course.courseNumber,
+                courseTitle: course.courseTitle,
+                sections: [
+                    {
+                        ...course.section,
+                    },
+                ],
+            };
+            formattedCourses.push(formattedCourse);
+        }
     }
 
-    loadCourses = () => {
-        const currentCourses = AppStore.schedule.getCurrentCourses();
-        const formattedCourses: CourseWithTerm[] = [];
-
-        for (const course of currentCourses) {
-            let formattedCourse: CourseWithTerm | undefined = formattedCourses.find(
-                (needleCourse) =>
-                    needleCourse.courseNumber === course.courseNumber && needleCourse.deptCode === course.deptCode
-            );
-
-            if (formattedCourse) {
-                formattedCourse.sections.push({
-                    ...course.section,
-                });
-            } else {
-                formattedCourse = {
-                    term: course.term,
-                    deptCode: course.deptCode,
-                    courseComment: course.courseComment,
-                    prerequisiteLink: course.prerequisiteLink,
-                    courseNumber: course.courseNumber,
-                    courseTitle: course.courseTitle,
-                    sections: [
-                        {
-                            ...course.section,
-                        },
-                    ],
-                };
-                formattedCourses.push(formattedCourse);
-            }
-        }
-        formattedCourses.forEach(function (course) {
-            course.sections.sort(function (a, b) {
-                return parseInt(a.sectionCode) - parseInt(b.sectionCode);
-            });
+    formattedCourses.forEach(function (course) {
+        course.sections.sort(function (a, b) {
+            return parseInt(a.sectionCode, 10) - parseInt(b.sectionCode, 10);
         });
-        this.setState({ courses: formattedCourses });
+    });
+
+    return formattedCourses;
+}
+
+function handleClear() {
+    if (
+        window.confirm(
+            'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
+        )
+    ) {
+        clearSchedules();
+        logAnalytics({
+            category: analyticsEnum.addedClasses.title,
+            action: analyticsEnum.addedClasses.actions.CLEAR_SCHEDULE,
+        });
+    }
+}
+
+function createCopyHandler(index: number) {
+    return () => {
+        copySchedule(index);
     };
+}
 
-    loadCustomEvents = () => {
-        this.setState({ customEvents: AppStore.schedule.getCurrentCustomEvents() });
-        // Force update required because the state has a reference to custom events, so it doesn't see differences all the time
-        this.forceUpdate();
-    };
+function SkeletonSchedule() {
+    const [skeletonSchedule, setSkeletonSchedule] = useState(AppStore.getSkeletonSchedule());
 
-    loadScheduleNames = () => {
-        this.setState({ scheduleNames: AppStore.getScheduleNames() });
-    };
+    useEffect(() => {
+        const updateSkeletonSchedule = () => {
+            setSkeletonSchedule(AppStore.getSkeletonSchedule());
+        };
 
-    loadScheduleNote = () => {
-        this.setState({ scheduleNote: AppStore.getCurrentScheduleNote() });
-    };
+        AppStore.on('skeletonScheduleChange', updateSkeletonSchedule);
 
-    handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        this.setState({ scheduleNote: event.target.value });
-        updateScheduleNote(event.target.value, AppStore.getCurrentScheduleIndex());
-    };
+        return () => {
+            AppStore.off('skeletonScheduleChange', updateSkeletonSchedule);
+        };
+    }, []);
 
-    getTotalUnits = () => {
-        let totalUnits = 0;
+    const sectionsByTerm: [string, string[]][] = useMemo(() => {
+        const result = skeletonSchedule.courses.reduce((accumulated, course) => {
+            accumulated[course.term] ??= [];
+            accumulated[course.term].push(course.sectionCode);
+            return accumulated;
+        }, {} as Record<string, string[]>);
 
-        for (const course of this.state.courses) {
+        return Object.entries(result);
+    }, [skeletonSchedule.courses]);
+
+    return (
+        <Box>
+            <Typography>{skeletonSchedule.scheduleName}</Typography>
+            {
+                // Sections organized under terms, in case the schedule contains multiple terms
+                sectionsByTerm.map(([term, sections]) => (
+                    <Box key={term}>
+                        <Typography variant="h6">{term}</Typography>
+                        <Paper key={term} elevation={1}>
+                            {sections.map((section, index) => (
+                                <Tooltip title="Click to copy course code" placement="right" key={index}>
+                                    <Chip
+                                        onClick={(event) => {
+                                            clickToCopy(event, section);
+                                            logAnalytics({
+                                                category: analyticsEnum.classSearch.title,
+                                                action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
+                                            });
+                                        }}
+                                        label={section}
+                                        size="small"
+                                        style={{ margin: '10px 10px 10px 10px' }}
+                                        key={index}
+                                    />
+                                </Tooltip>
+                            ))}
+                        </Paper>
+                    </Box>
+                ))
+            }
+            <Typography variant="body1">
+                PeterPortal or WebSoc is currently unreachable. This is the information that we can currently retrieve.
+            </Typography>
+        </Box>
+    );
+}
+
+function AddedSectionsGrid() {
+    const [courses, setCourses] = useState(getCourses());
+    const [customEvents, setCustomEvents] = useState(AppStore.schedule.getCurrentCustomEvents());
+    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+    const [scheduleNote, setScheduleNote] = useState(AppStore.getCurrentScheduleNote());
+    const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+
+    const handleNoteChange = useCallback(
+        (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+            setScheduleNote(event.target.value);
+            updateScheduleNote(event.target.value, scheduleIndex);
+        },
+        [scheduleIndex]
+    );
+
+    useEffect(() => {
+        const handleCoursesChange = () => {
+            setCourses(getCourses());
+        };
+
+        const handleCustomEventsChange = () => {
+            setCustomEvents([...AppStore.schedule.getCurrentCustomEvents()]);
+        };
+
+        const handleScheduleNamesChange = () => {
+            setScheduleNames([...AppStore.getScheduleNames()]);
+        };
+
+        const handleScheduleNoteChange = () => {
+            setScheduleNote(AppStore.getCurrentScheduleNote());
+        };
+
+        const handleScheduleIndexChange = () => {
+            setScheduleIndex(AppStore.getCurrentScheduleIndex());
+        };
+
+        AppStore.on('addedCoursesChange', handleCoursesChange);
+        AppStore.on('customEventsChange', handleCustomEventsChange);
+        AppStore.on('currentScheduleIndexChange', handleCoursesChange);
+        AppStore.on('currentScheduleIndexChange', handleCustomEventsChange);
+        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
+        AppStore.on('scheduleNotesChange', handleScheduleNoteChange);
+        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
+
+        return () => {
+            AppStore.off('addedCoursesChange', handleCoursesChange);
+            AppStore.off('customEventsChange', handleCustomEventsChange);
+            AppStore.off('currentScheduleIndexChange', handleCoursesChange);
+            AppStore.off('currentScheduleIndexChange', handleCustomEventsChange);
+            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
+            AppStore.off('scheduleNotesChange', handleScheduleNoteChange);
+            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
+        };
+    }, []);
+
+    const scheduleUnits = useMemo(() => {
+        let result = 0;
+
+        for (const course of courses) {
             for (const section of course.sections) {
                 if (!isNaN(Number(section.units))) {
-                    totalUnits += Number(section.units);
+                    result += Number(section.units);
                 }
             }
         }
 
-        return totalUnits;
-    };
+        return result;
+    }, [courses]);
 
-    getGrid = () => {
-        const scheduleName = this.state.scheduleNames[AppStore.getCurrentScheduleIndex()];
-        const scheduleUnits = this.getTotalUnits();
-        const NOTE_MAX_LEN = 5000;
+    const scheduleName = useMemo(() => {
+        return scheduleNames[scheduleIndex];
+    }, [scheduleNames, scheduleIndex]);
 
-        return (
-            <>
-                <div className={this.props.classes.titleRow}>
-                    <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
+    return (
+        <Box display="flex" flexDirection="column" gap={2}>
+            <Box display="flex" width={1} justifyContent="space-between">
+                <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
 
-                    <div>
-                        <PopupState variant="popover">
-                            {(popupState) => (
-                                <>
-                                    <Button variant="outlined" color="inherit" {...bindTrigger(popupState)}>
-                                        Copy Schedule
-                                    </Button>
-                                    <Menu {...bindMenu(popupState)}>
-                                        {this.state.scheduleNames.map((name, index) => {
-                                            return (
-                                                <MenuItem
-                                                    key={index}
-                                                    disabled={AppStore.getCurrentScheduleIndex() === index}
-                                                    onClick={() => {
-                                                        copySchedule(index);
-                                                        popupState.close();
-                                                    }}
-                                                >
-                                                    Copy to {name}
-                                                </MenuItem>
-                                            );
-                                        })}
+                <Box>
+                    <PopupState variant="popover">
+                        {(popupState) => (
+                            <>
+                                <Button variant="outlined" color="inherit" {...bindTrigger(popupState)}>
+                                    Copy Schedule
+                                </Button>
+                                <Menu {...bindMenu(popupState)}>
+                                    {scheduleNames.map((name, index) => (
                                         <MenuItem
-                                            onClick={() => {
-                                                copySchedule(this.state.scheduleNames.length);
-                                                popupState.close();
-                                            }}
+                                            key={index}
+                                            disabled={AppStore.getCurrentScheduleIndex() === index}
+                                            onClick={createCopyHandler(index)}
                                         >
-                                            Copy to All Schedules
+                                            Copy to {name}
                                         </MenuItem>
-                                    </Menu>
-                                </>
-                            )}
-                        </PopupState>
-                        <Button
-                            className={this.props.classes.clearSchedule}
-                            variant="outlined"
-                            color="inherit"
-                            onClick={() => {
-                                if (
-                                    window.confirm(
-                                        'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
-                                    )
-                                ) {
-                                    clearSchedules();
-                                    logAnalytics({
-                                        category: analyticsEnum.addedClasses.title,
-                                        action: analyticsEnum.addedClasses.actions.CLEAR_SCHEDULE,
-                                    });
-                                }
-                            }}
-                        >
-                            Clear Schedule
-                        </Button>
-                    </div>
-                </div>
-                {this.state.courses.map((course) => {
+                                    ))}
+                                    <MenuItem onClick={createCopyHandler(scheduleNames.length)}>
+                                        Copy to All Schedules
+                                    </MenuItem>
+                                </Menu>
+                            </>
+                        )}
+                    </PopupState>
+
+                    <Button
+                        sx={{ marginLeft: '4px', marginRight: '4px' }}
+                        variant="outlined"
+                        color="inherit"
+                        onClick={handleClear}
+                    >
+                        Clear Schedule
+                    </Button>
+                </Box>
+            </Box>
+
+            <Grid container spacing={2} padding={0}>
+                {courses.map((course) => {
                     return (
                         <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber}>
                             <SectionTableLazyWrapper
-                                classes={this.props.classes}
                                 courseDetails={course}
                                 term={course.term}
                                 allowHighlight={false}
                                 analyticsCategory={analyticsEnum.addedClasses.title}
-                                scheduleNames={this.state.scheduleNames}
+                                scheduleNames={scheduleNames}
                             />
                         </Grid>
                     );
                 })}
-                {this.state.customEvents.length > 0 && <Typography variant="h6">Custom Events</Typography>}
-                {this.state.customEvents.map((customEvent) => {
-                    return (
-                        <Grid item md={12} xs={12} key={customEvent.title}>
-                            <CustomEventDetailView
-                                customEvent={customEvent}
-                                currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
-                                scheduleNames={this.state.scheduleNames}
-                            />
-                        </Grid>
-                    );
-                })}
-                <Typography variant="h6">Schedule Notes</Typography>
-                <Paper className={this.props.classes.scheduleNoteContainer}>
-                    <TextField
-                        type="text"
-                        placeholder="This schedule does not have any notes! Click here to start typing!"
-                        onChange={this.handleNoteChange}
-                        value={this.state.scheduleNote}
-                        inputProps={{ maxLength: NOTE_MAX_LEN }}
-                        InputProps={{ disableUnderline: true }}
-                        fullWidth
-                        multiline
-                    />
-                </Paper>
-            </>
-        );
-    };
-
-    render() {
-        return (
-            <Grid container spacing={2}>
-                {this.getGrid()}
             </Grid>
-        );
-    }
+
+            {customEvents.length > 0 && (
+                <Box>
+                    <Typography variant="h6">Custom Events</Typography>
+                    <Grid container spacing={2} padding={0}>
+                        {customEvents.map((customEvent) => {
+                            return (
+                                <Grid item md={12} xs={12} key={customEvent.title}>
+                                    <CustomEventDetailView
+                                        customEvent={customEvent}
+                                        currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
+                                        scheduleNames={scheduleNames}
+                                    />
+                                </Grid>
+                            );
+                        })}
+                    </Grid>
+                </Box>
+            )}
+
+            <Box>
+                <Typography variant="h6">Schedule Notes</Typography>
+
+                <TextField
+                    type="text"
+                    variant="filled"
+                    label="Click here to start typing!"
+                    onChange={handleNoteChange}
+                    value={scheduleNote}
+                    inputProps={{ maxLength: NOTE_MAX_LEN }}
+                    InputProps={{ disableUnderline: true }}
+                    fullWidth
+                    multiline
+                />
+            </Box>
+        </Box>
+    );
 }
 
-export default withStyles(styles)(AddedCoursePane);
+export default function AddedCoursePaneFunctionComponent() {
+    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+
+    useEffect(() => {
+        const handleSkeletonModeChange = () => {
+            setSkeletonMode(AppStore.getSkeletonMode());
+        };
+
+        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+
+        return () => {
+            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+        };
+    }, []);
+
+    return <Box padding={1}>{skeletonMode ? <SkeletonSchedule /> : <AddedSectionsGrid />}</Box>;
+}

@@ -4,7 +4,7 @@ import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
 import { Event } from 'react-big-calendar';
-import { useEffect, useRef, useContext, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
@@ -13,7 +13,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
-import { mobileContext } from '$components/MobileHome';
+import { useTabStore } from '$stores/TabStore';
 import { translate24To12HourTime } from '$stores/calendarizeHelpers';
 
 const styles: Styles<Theme, object> = {
@@ -151,11 +151,11 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         };
     }, []);
 
-    const { setSelectedTab } = useContext(mobileContext);
+    const { setActiveTab } = useTabStore();
 
     const focusMap = useCallback(() => {
-        setSelectedTab(1);
-    }, [setSelectedTab]);
+        setActiveTab(2);
+    }, [setActiveTab]);
 
     const { classes, courseInMoreInfo } = props;
     if (!courseInMoreInfo.isCustomEvent) {
