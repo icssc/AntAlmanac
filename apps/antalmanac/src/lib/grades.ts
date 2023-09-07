@@ -54,7 +54,7 @@ class _Grades {
     }
 
     /*
-     * Query the PeterPortal GraphQL API (aggregrateGroupedGrades) for the grades of all course-instructor.
+     * Query the PeterPortal GraphQL API (aggregrateGroupedGrades) for the grades of all course-instructor if not already cached.
      * This should be done before queryGrades to avoid DoS'ing the server
      *
      * Either department or ge must be provided
@@ -69,7 +69,7 @@ class _Grades {
         const queryKey = `${department ?? ''}${ge ?? ''}`;
 
         // If the whole query has already been cached, return
-        if (queryKey in this.cachedQueries) return;
+        if (this.cachedQueries.has(queryKey)) return;
 
         const filter = `${ge ? `ge: ${ge} ` : ''}${department ? `department: "${department}" ` : ''}`;
 
