@@ -1,29 +1,14 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import {
-    Box,
-    Button,
-    IconButton,
-    Menu,
-    MenuItem,
-    Paper,
-    Popover,
-    Tooltip,
-    Typography,
-    useMediaQuery,
-    useTheme,
-} from '@mui/material';
+import { Box, Button, IconButton, Paper, Popover, Tooltip, Typography, useTheme } from '@mui/material';
 import {
     Add as AddIcon,
     ArrowDropDown as ArrowDropDownIcon,
     Delete as DeleteIcon,
     Edit as EditIcon,
-    MoreHoriz as MoreHorizIcon,
     Undo as UndoIcon,
 } from '@mui/icons-material';
 
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
-import ExportCalendar from './Toolbar/ExportCalendar';
-import ScreenshotButton from './Toolbar/ScreenshotButton';
 import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
 import AddScheduleDialog from '$components/dialogs/AddSchedule';
 import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
@@ -267,21 +252,9 @@ export interface CalendarPaneToolbarProps {
  * The root toolbar will pass down the schedule names to its children.
  */
 function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
-    const { showFinalsSchedule, toggleDisplayFinalsSchedule, onTakeScreenshot } = props;
+    const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
 
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
-
-    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
-
-    const isMobileScreen = useMediaQuery('(max-width:630px)');
-
-    const handleMenuClick = useCallback((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        setAnchorEl(event.currentTarget);
-    }, []);
-
-    const handleMenuClose = useCallback(() => {
-        setAnchorEl(undefined);
-    }, []);
 
     const handleToggleFinals = useCallback(() => {
         logAnalytics({
@@ -340,32 +313,9 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                     </Tooltip>
                 </Box>
 
-                {/* On mobile devices, render the extra buttons in a menu. */}
-
-                {isMobileScreen ? (
-                    <Box>
-                        <IconButton onClick={handleMenuClick}>
-                            <MoreHorizIcon />
-                        </IconButton>
-                        <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                            <MenuItem onClick={handleMenuClose}>
-                                <ExportCalendar key="export" />
-                            </MenuItem>
-                            <MenuItem onClick={handleMenuClose}>
-                                <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />
-                            </MenuItem>
-                            <MenuItem onClick={handleMenuClose}>
-                                <CustomEventDialog scheduleNames={scheduleNames} key="custom" />
-                            </MenuItem>
-                        </Menu>
-                    </Box>
-                ) : (
-                    <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
-                        <ExportCalendar key="export" />
-                        <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />
-                        <CustomEventDialog scheduleNames={scheduleNames} key="custom" />
-                    </Box>
-                )}
+                <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
+                    <CustomEventDialog scheduleNames={scheduleNames} key="custom" />
+                </Box>
             </Box>
         </Paper>
     );
