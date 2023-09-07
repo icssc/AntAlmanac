@@ -6,6 +6,7 @@ import {
     Delete as DeleteIcon,
     Edit as EditIcon,
     Undo as UndoIcon,
+    Clear as ClearIcon,
 } from '@mui/icons-material';
 
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
@@ -86,7 +87,7 @@ function DeleteScheduleButton(props: { index: number }) {
     return (
         <Box>
             <IconButton onClick={handleOpen} size="small" disabled={AppStore.schedule.getNumberOfSchedules() === 1}>
-                <DeleteIcon />
+                <ClearIcon />
             </IconButton>
             <DeleteScheduleDialog fullWidth open={open} index={props.index} onClose={handleClose} />
         </Box>
