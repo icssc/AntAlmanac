@@ -118,6 +118,7 @@ class _Grades {
      * @param deptCode The department code of the course.
      * @param courseNumber The course number of the course.
      * @param instructor The instructor's name (optional)
+     * @param cacheOnly Whether to only use the cache. If true, will return null if the query is not cached
      *
      * @returns Grades
      */
