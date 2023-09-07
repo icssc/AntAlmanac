@@ -2,7 +2,6 @@ import {
     Box,
     Button,
     Chip,
-    ClickAwayListener,
     Popover,
     TableCell,
     TableRow,
@@ -201,60 +200,79 @@ const InstructorsCell = withStyles(styles)((props: InstructorsCellProps) => {
     return <NoPaddingTableCell className={classes.cell}>{getLinks(instructors)}</NoPaddingTableCell>;
 });
 
+async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
+    const namedInstructors = instructors.filter((instructor) => instructor !== 'STAFF');
+
+    // Get the GPA of the first instructor of this section where data exists
+    for (const instructor of namedInstructors) {
+        const grades = await Grades.queryGrades(deptCode, courseNumber, instructor);
+        if (grades?.averageGPA) {
+            return {
+                gpa: grades.averageGPA.toFixed(2).toString(),
+                instructor: instructor,
+            };
+        }
+    }
+
+    return undefined;
+}
+
 interface GPACellProps {
-    classes: ClassNameMap;
     deptCode: string;
     courseNumber: string;
     instructors: string[];
 }
 
-const GPACell = withStyles(styles)((props: GPACellProps) => {
-    const { classes, deptCode, courseNumber, instructors } = props;
+function GPACell(props: GPACellProps) {
+    const { deptCode, courseNumber, instructors } = props;
 
-    const [gpa, setGpa] = useState<string>('');
-    const [instructor, setInstructor] = useState<string>('');
+    const [gpa, setGpa] = useState('');
+
+    const [instructor, setInstructor] = useState('');
+
+    const [anchorEl, setAnchorEl] = useState<Element>();
+
+    const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl((currentAnchorEl) => (currentAnchorEl ? undefined : event.currentTarget));
+    }, []);
+
+    const hideDistribution = useCallback(() => {
+        setAnchorEl(undefined);
+    }, []);
 
     useEffect(() => {
-        const loadGpa = async (deptCode: string, courseNumber: string, instructors: string[]) => {
-            // Get the GPA of the first instructor of this section where data exists
-            for (const instructor of instructors.filter((instructor) => instructor !== 'STAFF')) {
-                const grades = await Grades.queryGrades(deptCode, courseNumber, instructor);
-
-                if (grades?.averageGPA) {
-                    setGpa(grades.averageGPA.toFixed(2).toString());
-                    setInstructor(instructor);
-                    return;
+        getGpaData(deptCode, courseNumber, instructors)
+            .then((data) => {
+                if (data) {
+                    setGpa(data.gpa);
+                    setInstructor(data.instructor);
                 }
-            }
-        };
-
-        loadGpa(deptCode, courseNumber, instructors).catch(console.log);
+            })
+            .catch(console.log);
     }, [deptCode, courseNumber, instructors]);
 
-    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(anchorEl ? null : event.currentTarget);
-    };
-
-    const hideDistribution = () => {
-        setAnchorEl(null);
-    };
-
     return (
-        // I don't know why the popover doesn't close on clickaway without the listener, but this does seem to be the usual recommendation
-        <NoPaddingTableCell className={classes.cell}>
-            <Box className={classes.cell}>
-                <ClickAwayListener onClickAway={hideDistribution}>
-                    <Typography className={classes.popoverText} onClick={handleClick} onScroll={hideDistribution}>
-                        {gpa}
-                    </Typography>
-                </ClickAwayListener>
-            </Box>
+        <Box>
+            <Button
+                style={{
+                    color: isDarkMode() ? 'dodgerblue' : 'blue',
+                    padding: 0,
+                    minWidth: 0,
+                    fontWeight: 400,
+                    fontSize: 16,
+                }}
+                onClick={handleClick}
+                variant="text"
+            >
+                {gpa}
+            </Button>
             <Popover
                 open={Boolean(anchorEl)}
+                style={{
+                    color: isDarkMode() ? 'dodgerblue' : 'blue',
+                    cursor: 'pointer',
+                }}
                 onClose={hideDistribution}
-                className={classes.popover}
                 anchorEl={anchorEl}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'left' }}
@@ -267,9 +285,9 @@ const GPACell = withStyles(styles)((props: GPACellProps) => {
                     isMobileScreen={useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`)}
                 />
             </Popover>
-        </NoPaddingTableCell>
+        </Box>
     );
-});
+}
 
 interface LocationsCellProps {
     classes: ClassNameMap;
