@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useMemo, useState, Fragment } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 
 import { Box, Button, Chip, Grid, Menu, MenuItem, Paper, TextField, Tooltip, Typography } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 
-import { float } from 'html2canvas/dist/types/css/property-descriptors/float';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
 import AppStore from '$stores/AppStore';
