@@ -82,20 +82,23 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                             changeState={(field: string, value: string) => RightPaneStore.updateFormValue(field, value)}
                             fieldName={'term'}
                         />
+                        <Tooltip title="Toggle Manual Search">
+                            <IconButton onClick={toggleShowLegacySearch}>
+                                <Tune />
+                            </IconButton>
+                        </Tooltip>
                     </div>
 
-                    <div className={classes.container}>
-                        <div className={classes.searchBar}>
-                            <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleShowLegacySearch} />
-                            <Tooltip title="Manual Search">
-                                <IconButton onClick={toggleShowLegacySearch}>
-                                    <Tune />
-                                </IconButton>
-                            </Tooltip>
+                    {!showLegacySearch ? (
+                        <div className={classes.container}>
+                            <div className={classes.searchBar}>
+                                <FuzzySearch
+                                    toggleSearch={toggleSearch}
+                                    toggleShowLegacySearch={toggleShowLegacySearch}
+                                />
+                            </div>
                         </div>
-                    </div>
-
-                    {showLegacySearch && (
+                    ) : (
                         <LegacySearch
                             onSubmit={() => {
                                 logAnalytics({
