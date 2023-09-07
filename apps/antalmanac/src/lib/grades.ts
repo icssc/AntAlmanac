@@ -36,14 +36,17 @@ export interface GroupedGradesGraphQLResponse {
  * Class to handle querying and caching of grades.
  * Retrieves grades from the PeterPortal GraphQL API.
  */
-export class _Grades {
-    // null means that the request failed
-    // undefined means that the request is in progress
-    gradesCache: { [key: string]: Grades | null | undefined } = {};
+class _Grades {
+    gradesCache: Record<string, Grades>;
 
     // Grades queries that have been cached
     // We need this because gradesCache destructures the data and doesn't retain whether we looked at one course or a whole department/GE
-    cachedQueries = new Set<string>();
+    cachedQueries: Set<string>;
+
+    constructor() {
+        this.gradesCache = {};
+        this.cachedQueries = new Set<string>();
+    }
 
     clearCache() {
         Object.keys(this.gradesCache).forEach((key) => delete this.gradesCache[key]); //https://stackoverflow.com/a/19316873/14587004
@@ -109,22 +112,20 @@ export class _Grades {
      *
      * @returns Grades
      */
-    queryGrades = async (deptCode: string, courseNumber: string, instructor = ''): Promise<Grades | null> => {
+    queryGrades = async (
+        deptCode: string,
+        courseNumber: string,
+        instructor = '',
+        cacheOnly = true
+    ): Promise<Grades | null> => {
         instructor = instructor.replace('STAFF', '').trim(); // Ignore STAFF
         const instructorFilter = instructor ? `instructor: "${instructor}"` : '';
 
         const cacheKey = deptCode + courseNumber + instructor;
 
-        // If cache is null, that request failed last time, and we try again
-        if (cacheKey in this.gradesCache && this.gradesCache[cacheKey] !== null) {
-            // If cache is undefined, there's a request in progress
-            while (this.gradesCache[cacheKey] === undefined) {
-                await new Promise((resolve) => setTimeout(resolve, 350)); // Wait before checking cache again
-            }
-            return this.gradesCache[cacheKey] as Grades;
-        }
+        if (cacheKey in this.gradesCache) return this.gradesCache[cacheKey];
 
-        this.gradesCache[cacheKey] = undefined; // Set cache to undefined to indicate request in progress
+        if (cacheOnly) return null;
 
         const queryString = `{ 
             aggregateGrades(department: "${deptCode}", courseNumber: "${courseNumber}", ${instructorFilter}) {
@@ -141,11 +142,14 @@ export class _Grades {
             },
         }`;
 
-        const resp = await queryGraphQL<GradesGraphQLResponse>(queryString);
-        this.gradesCache[cacheKey] = resp?.data?.aggregateGrades?.gradeDistribution;
+        const resp =
+            (await queryGraphQL<GradesGraphQLResponse>(queryString))?.data?.aggregateGrades?.gradeDistribution ?? null;
 
-        return this.gradesCache[cacheKey] as Grades;
+        if (resp) this.gradesCache[cacheKey] = resp;
+
+        return resp;
     };
 }
 
-export default new _Grades();
+const grades = new _Grades();
+export default grades;

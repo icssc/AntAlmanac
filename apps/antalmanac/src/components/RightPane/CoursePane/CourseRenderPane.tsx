@@ -18,6 +18,7 @@ import darkNoNothing from './static/dark-no_results.png';
 import noNothing from './static/no_results.png';
 import AppStore from '$stores/AppStore';
 import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '$lib/helpers';
+import Grades from '$lib/grades';
 import analyticsEnum from '$lib/analytics';
 
 const styles: Styles<Theme, object> = (theme) => ({
@@ -230,13 +231,20 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
                 division: formData.division,
             };
 
+            const gradesQueryParams = {
+                department: formData.deptValue,
+                courseNumber: formData.courseNumber,
+            };
+
             try {
-                let websocJsonResp: WebsocAPIResponse;
-                if (websocQueryParams.units.includes(',')) {
-                    websocJsonResp = await queryWebsocMultiple(websocQueryParams, 'units');
-                } else {
-                    websocJsonResp = await queryWebsoc(websocQueryParams);
-                }
+                // Query websoc for course information and populate gradescache
+                const [websocJsonResp, _] = await Promise.all([
+                    websocQueryParams.units.includes(',')
+                        ? queryWebsocMultiple(websocQueryParams, 'units')
+                        : queryWebsoc(websocQueryParams),
+                    Grades.populateGradesCache(gradesQueryParams),
+                ]);
+
                 this.setState({
                     loading: false,
                     error: false,
