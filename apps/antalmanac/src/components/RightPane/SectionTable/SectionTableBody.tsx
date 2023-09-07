@@ -28,7 +28,8 @@ import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import restrictionsMapping from './static/restrictionsMapping.json';
 import GradesPopup from './GradesPopup';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { clickToCopy, CourseDetails, isDarkMode, queryGrades } from '$lib/helpers';
+import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
+import Grades from '$lib/Grades';
 import AppStore from '$stores/AppStore';
 import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
@@ -217,7 +218,7 @@ const GPACell = withStyles(styles)((props: GPACellProps) => {
         const loadGpa = async (deptCode: string, courseNumber: string, instructors: string[]) => {
             // Get the GPA of the first instructor of this section where data exists
             for (const instructor of instructors.filter((instructor) => instructor !== 'STAFF')) {
-                const grades = await queryGrades(deptCode, courseNumber, instructor);
+                const grades = await Grades.queryGrades(deptCode, courseNumber, instructor);
 
                 if (grades?.averageGPA) {
                     setGpa(grades.averageGPA.toFixed(2).toString());

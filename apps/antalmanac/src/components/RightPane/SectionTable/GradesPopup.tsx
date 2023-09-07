@@ -5,7 +5,8 @@ import { Skeleton } from '@material-ui/lab';
 import { useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
-import { isDarkMode, queryGrades } from '$lib/helpers';
+import { isDarkMode } from '$lib/helpers';
+import Grades from '$lib/grades';
 
 const styles: Styles<Theme, object> = {
     button: {
@@ -53,7 +54,7 @@ const GradesPopup = ({ deptCode, courseNumber, instructor = '', classes, isMobil
         }
 
         try {
-            const courseGrades = await queryGrades(deptCode, courseNumber, instructor);
+            const courseGrades = await Grades.queryGrades(deptCode, courseNumber, instructor);
             if (!courseGrades) {
                 setLoading(false);
                 setGraphTitle('Grades are not available for this class.');

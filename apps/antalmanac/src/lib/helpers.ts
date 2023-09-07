@@ -2,24 +2,11 @@ import React from 'react';
 
 import { WebsocSectionMeeting, WebsocSection, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
 import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT } from './api/endpoints';
+import Grades from './grades';
 import { addCourse, openSnackbar } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import trpc from '$lib/api/trpc';
-
-interface GradesGraphQLResponse {
-    data: {
-        aggregateGrades: {
-            gradeDistribution: Grades;
-        };
-    };
-}
-
-export interface GroupedGradesGraphQLResponse {
-    data: {
-        aggregateGroupedGrades: Array<CourseInstructorGrades>;
-    };
-}
 
 export async function queryGraphQL<PromiseReturnType>(queryString: string): Promise<PromiseReturnType | null> {
     const query = JSON.stringify({
@@ -115,8 +102,7 @@ const websocCache: { [key: string]: CacheEntry } = {};
 
 export function clearCache() {
     Object.keys(websocCache).forEach((key) => delete websocCache[key]); //https://stackoverflow.com/a/19316873/14587004
-    Object.keys(gradesCache).forEach((key) => delete gradesCache[key]);
-    cachedGradeQueries.clear();
+    Grades.clearCache();
 }
 
 function cleanParams(record: Record<string, string>) {
@@ -239,133 +225,6 @@ function removeDuplicateMeetings(websocResp: WebsocAPIResponse): WebsocAPIRespon
         });
     });
     return websocResp;
-}
-
-export interface Grades {
-    averageGPA: number;
-    gradeACount: number;
-    gradeBCount: number;
-    gradeCCount: number;
-    gradeDCount: number;
-    gradeFCount: number;
-    gradePCount: number;
-    gradeNPCount: number;
-}
-
-export interface CourseInstructorGrades extends Grades {
-    department: string;
-    courseNumber: string;
-    instructor: string;
-}
-
-// null means that the request failed
-// undefined means that the request is in progress
-const gradesCache: { [key: string]: Grades | null | undefined } = {};
-
-// Grades queries that have been cached
-// We need this because gradesCache destructures the data and doesn't retain whether we looked at one course or a whole department/GE
-const cachedGradeQueries = new Set<string>();
-
-export interface PopulateGradesCacheParams {
-    department?: string;
-    ge?: GE;
-}
-
-/*
- * Query the PeterPortal GraphQL API (aggregrateGroupedGrades) for the grades of all course-instructor.
- * This should be done before queryGrades to avoid DoS'ing the server
- *
- * Either department or ge must be provided
- *
- * @param department The department code of the course.
- * @param courseNumber The course number of the course.
- * @param ge The GE filter
- */
-export async function populateGradesCache({ department, ge }: PopulateGradesCacheParams): Promise<void> {
-    if (!department && !ge) throw new Error('populategradesCache: Must provide either department or ge');
-
-    const queryKey = `${department ?? ''}${ge ?? ''}`;
-
-    // If the whole query has already been cached, return
-    if (queryKey in cachedGradeQueries) return;
-
-    const filter = `${ge ? `ge: ${ge} ` : ''}${department ? `department: "${department}" ` : ''}`;
-
-    const response = await queryGraphQL<GroupedGradesGraphQLResponse>(`{
-        aggregateGroupedGrades(${filter}) {
-            department
-            courseNumber
-            instructor
-            averageGPA
-            gradeACount
-            gradeBCount
-            gradeCCount
-            gradeDCount
-            gradeFCount
-            gradeNPCount
-            gradePCount
-        }
-    }`);
-
-    const groupedGrades = response?.data?.aggregateGroupedGrades;
-
-    if (!groupedGrades) throw new Error('populateGradesCache: Failed to query GraphQL');
-
-    // Populate cache
-    for (const course of groupedGrades) {
-        const cacheKey = `${course.department}${course.courseNumber}${course.instructor}`;
-        gradesCache[cacheKey] = course as Grades;
-    }
-
-    cachedGradeQueries.add(queryKey);
-}
-
-/*
- * Query the PeterPortal GraphQL API for a course's grades with caching
- * This should NOT be done individually and independantly to fetch large amounts of data. Use populateGradesCache first to avoid DoS'ing the server
- *
- * @param deptCode The department code of the course.
- * @param courseNumber The course number of the course.
- * @param instructor The instructor's name (optional)
- *
- * @returns Grades
- */
-export async function queryGrades(deptCode: string, courseNumber: string, instructor = ''): Promise<Grades | null> {
-    instructor = instructor.replace('STAFF', '').trim(); // Ignore STAFF
-    const instructorFilter = instructor ? `instructor: "${instructor}"` : '';
-
-    const cacheKey = deptCode + courseNumber + instructor;
-
-    // If cache is null, that request failed last time, and we try again
-    if (cacheKey in gradesCache && gradesCache[cacheKey] !== null) {
-        // If cache is undefined, there's a request in progress
-        while (gradesCache[cacheKey] === undefined) {
-            await new Promise((resolve) => setTimeout(resolve, 350)); // Wait before checking cache again
-        }
-        return gradesCache[cacheKey] as Grades;
-    }
-
-    gradesCache[cacheKey] = undefined; // Set cache to undefined to indicate request in progress
-
-    const queryString = `{ 
-        aggregateGrades(department: "${deptCode}", courseNumber: "${courseNumber}", ${instructorFilter}) {
-            gradeDistribution {
-                gradeACount
-                gradeBCount
-                gradeCCount
-                gradeDCount
-                gradeFCount
-                gradePCount
-                gradeNPCount
-                averageGPA
-            }
-        },
-    }`;
-
-    const resp = await queryGraphQL<GradesGraphQLResponse>(queryString);
-    gradesCache[cacheKey] = resp?.data?.aggregateGrades?.gradeDistribution;
-
-    return gradesCache[cacheKey] as Grades;
 }
 
 export function combineSOCObjects(SOCObjects: WebsocAPIResponse[]) {
