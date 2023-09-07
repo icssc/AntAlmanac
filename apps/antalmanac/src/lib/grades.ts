@@ -1,4 +1,4 @@
-import { GE } from 'peterportal-api-next-types';
+import { GE, geCodes } from 'peterportal-api-next-types';
 import { queryGraphQL } from './helpers';
 
 export interface Grades {
@@ -64,6 +64,8 @@ class _Grades {
      * @param ge The GE filter
      */
     populateGradesCache = async ({ department, ge }: { department?: string; ge?: GE }): Promise<void> => {
+        department = department != 'ALL' ? department : undefined;
+
         if (!department && !ge) throw new Error('populategradesCache: Must provide either department or ge');
 
         const queryKey = `${department ?? ''}${ge ?? ''}`;
@@ -71,7 +73,7 @@ class _Grades {
         // If the whole query has already been cached, return
         if (this.cachedQueries.has(queryKey)) return;
 
-        const filter = `${ge ? `ge: ${ge} ` : ''}${department ? `department: "${department}" ` : ''}`;
+        const filter = `${ge ? `ge: ${ge.replace('-', '_')} ` : ''}${department ? `department: "${department}" ` : ''}`;
 
         const response = await queryGraphQL<GroupedGradesGraphQLResponse>(`{
             aggregateGroupedGrades(${filter}) {

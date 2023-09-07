@@ -7,7 +7,7 @@ import LazyLoad from 'react-lazyload';
 
 import { Alert } from '@mui/material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
-import { WebsocDepartment, WebsocSchool, WebsocAPIResponse } from 'peterportal-api-next-types';
+import { WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
 import RightPaneStore from '../RightPaneStore';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
@@ -233,7 +233,7 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
 
             const gradesQueryParams = {
                 department: formData.deptValue,
-                courseNumber: formData.courseNumber,
+                ge: formData.ge as GE,
             };
 
             try {
