@@ -17,8 +17,8 @@ async function getGradeData(
     courseNumber: string,
     instructor: string
 ): Promise<GradeData | undefined> {
-    const courseGrades = await GradesHelper.queryGrades(deptCode, courseNumber, instructor).catch((e) => {
-        console.log(e);
+    const courseGrades = await GradesHelper.queryGrades(deptCode, courseNumber, instructor, false).catch((e) => {
+        console.error(e);
         return undefined;
     });
 
