@@ -1,8 +1,9 @@
 import {
+    Box,
     Paper,
     Table,
-    TableBody,
     TableCell,
+    TableBody,
     TableContainer,
     TableHead,
     TableRow,
@@ -42,17 +43,79 @@ const styles = {
     scheduleNoteContainer: {},
 };
 
-const tableHeaderColumns: Record<SectionTableColumn, string> = {
-    sectionCode: 'Code',
-    sectionDetails: 'Type',
-    instructors: 'Instructors',
-    gpa: 'GPA',
-    dayAndTime: 'Times',
-    location: 'Places',
-    sectionEnrollment: 'Enrollment',
-    restrictions: 'Restr',
-    status: 'Status',
+interface TableHeaderColumnDetails {
+    label: string;
+    width?: string;
+}
+
+const tableHeaderColumns: Record<SectionTableColumn, TableHeaderColumnDetails> = {
+    sectionCode: {
+        label: 'Code',
+        width: '8%',
+    },
+    sectionDetails: {
+        label: 'Type',
+        width: '8%',
+    },
+    instructors: {
+        label: 'Instructors',
+        width: '15%',
+    },
+    gpa: {
+        label: 'GPA',
+        width: '7%',
+    },
+    dayAndTime: {
+        label: 'Times',
+        width: '10%',
+    },
+    location: {
+        label: 'Places',
+        width: '10%',
+    },
+    sectionEnrollment: {
+        label: 'Enrollment',
+        width: '9%',
+    },
+    restrictions: {
+        label: 'Restr',
+        width: '10%',
+    },
+    status: {
+        label: 'Status',
+        width: '8%',
+    },
 };
+
+interface EnrollmentColumnHeaderProps {
+    label: string;
+    width?: string;
+}
+
+function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
+    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
+
+    return (
+        <Box display="flex" width={props.width} paddingRight="5px">
+            {props.label}
+            {!isMobileScreen && (
+                <Tooltip
+                    title={
+                        <Typography>
+                            Enrolled/Capacity
+                            <br />
+                            Waitlist
+                            <br />
+                            New-Only Reserved
+                        </Typography>
+                    }
+                >
+                    <Help fontSize="inherit" />
+                </Tooltip>
+            )}
+        </Box>
+    );
+}
 
 const SectionTable = (props: SectionTableProps) => {
     const { classes, courseDetails, term, allowHighlight, scheduleNames, analyticsCategory } = props;
@@ -138,38 +201,11 @@ const SectionTable = (props: SectionTableProps) => {
                             <TableCell classes={{ sizeSmall: classes?.cellPadding }} />
                             {Object.entries(tableHeaderColumns)
                                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
-                                .map(([column, label]) => {
-                                    return (
-                                        <TableCell
-                                            classes={{ sizeSmall: classes?.cellPadding }}
-                                            className={classes?.row}
-                                            key={column}
-                                        >
-                                            {label !== 'Enrollment' ? (
-                                                label
-                                            ) : (
-                                                <div className={classes?.flex}>
-                                                    <span className={classes?.iconMargin}>{label}</span>
-                                                    {!isMobileScreen && (
-                                                        <Tooltip
-                                                            title={
-                                                                <Typography>
-                                                                    Enrolled/Capacity
-                                                                    <br />
-                                                                    Waitlist
-                                                                    <br />
-                                                                    New-Only Reserved
-                                                                </Typography>
-                                                            }
-                                                        >
-                                                            <Help fontSize="small" />
-                                                        </Tooltip>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </TableCell>
-                                    );
-                                })}
+                                .map(([column, { label, width }]) => (
+                                    <TableCell key={column} padding="none" width={width}>
+                                        {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
+                                    </TableCell>
+                                ))}
                         </TableRow>
                     </TableHead>
                     <TableBody>
