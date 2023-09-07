@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { WebsocSectionMeeting, WebsocSection, WebsocAPIResponse } from 'peterportal-api-next-types';
+import { WebsocSectionMeeting, WebsocSection, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
 import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT } from './api/endpoints';
 import { addCourse, openSnackbar } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
@@ -12,6 +12,12 @@ interface GradesGraphQLResponse {
         aggregateGrades: {
             gradeDistribution: Grades;
         };
+    };
+}
+
+export interface GroupedGradesGraphQLResponse {
+    data: {
+        aggregateGroupedGrades: Array<CourseInstructorGrades>;
     };
 }
 
@@ -109,7 +115,8 @@ const websocCache: { [key: string]: CacheEntry } = {};
 
 export function clearCache() {
     Object.keys(websocCache).forEach((key) => delete websocCache[key]); //https://stackoverflow.com/a/19316873/14587004
-    Object.keys(gradesCache).forEach((key) => delete gradesCache[key]); //https://stackoverflow.com/a/19316873/14587004
+    Object.keys(gradesCache).forEach((key) => delete gradesCache[key]);
+    cachedGradeQueries.clear();
 }
 
 function cleanParams(record: Record<string, string>) {
@@ -245,12 +252,77 @@ export interface Grades {
     gradeNPCount: number;
 }
 
+export interface CourseInstructorGrades extends Grades {
+    department: string;
+    courseNumber: string;
+    instructor: string;
+}
+
 // null means that the request failed
 // undefined means that the request is in progress
 const gradesCache: { [key: string]: Grades | null | undefined } = {};
 
+// Grades queries that have been cached
+// We need this because gradesCache destructures the data and doesn't retain whether we looked at one course or a whole department/GE
+const cachedGradeQueries = new Set<string>();
+
+export interface PopulateGradesCacheParams {
+    department?: string;
+    ge?: GE;
+}
+
+/*
+ * Query the PeterPortal GraphQL API (aggregrateGroupedGrades) for the grades of all course-instructor.
+ * This should be done before queryGrades to avoid DoS'ing the server
+ *
+ * Either department or ge must be provided
+ *
+ * @param department The department code of the course.
+ * @param courseNumber The course number of the course.
+ * @param ge The GE filter
+ */
+export async function populateGradesCache({ department, ge }: PopulateGradesCacheParams): Promise<void> {
+    if (!department && !ge) throw new Error('populategradesCache: Must provide either department or ge');
+
+    const queryKey = `${department ?? ''}${ge ?? ''}`;
+
+    // If the whole query has already been cached, return
+    if (queryKey in cachedGradeQueries) return;
+
+    const filter = `${ge ? `ge: ${ge} ` : ''}${department ? `department: "${department}" ` : ''}`;
+
+    const response = await queryGraphQL<GroupedGradesGraphQLResponse>(`{
+        aggregateGroupedGrades(${filter}) {
+            department
+            courseNumber
+            instructor
+            averageGPA
+            gradeACount
+            gradeBCount
+            gradeCCount
+            gradeDCount
+            gradeFCount
+            gradeNPCount
+            gradePCount
+        }
+    }`);
+
+    const groupedGrades = response?.data?.aggregateGroupedGrades;
+
+    if (!groupedGrades) throw new Error('populateGradesCache: Failed to query GraphQL');
+
+    // Populate cache
+    for (const course of groupedGrades) {
+        const cacheKey = `${course.department}${course.courseNumber}${course.instructor}`;
+        gradesCache[cacheKey] = course as Grades;
+    }
+
+    cachedGradeQueries.add(queryKey);
+}
+
 /*
  * Query the PeterPortal GraphQL API for a course's grades with caching
+ * This should NOT be done individually and independantly to fetch large amounts of data. Use populateGradesCache first to avoid DoS'ing the server
  *
  * @param deptCode The department code of the course.
  * @param courseNumber The course number of the course.
