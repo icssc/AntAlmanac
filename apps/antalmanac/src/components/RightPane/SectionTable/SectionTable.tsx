@@ -191,7 +191,12 @@ function SectionTable(props: SectionTableProps) {
                             {tableHeaderColumnEntries
                                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
                                 .map(([column, { label, width }]) => (
-                                    <TableCell key={column} padding="none" width={width} sx={{ paddingX: 0.5 }}>
+                                    <TableCell
+                                        key={column}
+                                        padding="none"
+                                        width={width}
+                                        style={{ paddingRight: 0.5, paddingLeft: 0.5 }}
+                                    >
                                         {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
                                     </TableCell>
                                 ))}
