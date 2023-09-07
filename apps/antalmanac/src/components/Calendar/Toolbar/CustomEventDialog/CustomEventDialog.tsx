@@ -150,9 +150,15 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
                     </IconButton>
                 ) : (
                     <Tooltip title="Add custom events">
-                        <IconButton onClick={this.handleOpen}>
-                            <Add fontSize="small" />
-                        </IconButton>
+                        <Button
+                            disableRipple={true}
+                            onClick={this.handleOpen}
+                            variant="outlined"
+                            size="small"
+                            startIcon={<Add fontSize="small" />}
+                        >
+                            Custom
+                        </Button>
                     </Tooltip>
                 )}
                 <Dialog open={this.state.open} onClose={this.handleClose} maxWidth={'lg'}>

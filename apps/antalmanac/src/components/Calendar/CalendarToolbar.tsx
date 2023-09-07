@@ -301,13 +301,13 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
             <Box display="flex" flexWrap="wrap" gap={0.5}>
                 <Box display="flex" alignItems="center" gap={0.5}>
                     <Tooltip title="Undo last action">
-                        <IconButton onClick={handleUndo} size="small">
+                        <IconButton onClick={handleUndo} size="medium">
                             <UndoIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
 
                     <Tooltip title="Clear schedule">
-                        <IconButton onClick={handleClearSchedule} size="small">
+                        <IconButton onClick={handleClearSchedule} size="medium">
                             <DeleteIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
