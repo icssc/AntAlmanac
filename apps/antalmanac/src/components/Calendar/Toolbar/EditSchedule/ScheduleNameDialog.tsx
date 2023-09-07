@@ -1,8 +1,18 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, TextField } from '@material-ui/core';
+import { forwardRef, useCallback, useState, useMemo } from 'react';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+    MenuItem,
+    TextField,
+    Tooltip,
+} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { Add } from '@material-ui/icons';
-import React, { forwardRef, useState } from 'react';
+import { Add, Edit } from '@material-ui/icons';
 
 import { addSchedule, renameSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
@@ -19,58 +29,74 @@ const styles = () => ({
 interface ScheduleNameDialogProps {
     classes: ClassNameMap;
     onOpen?: () => void;
-    onClose: () => void;
+    onClose?: () => void;
     scheduleNames: string[];
     scheduleRenameIndex?: number;
 }
 
 const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
     const { classes, onOpen, onClose, scheduleNames, scheduleRenameIndex } = props;
-    const rename = scheduleRenameIndex !== undefined;
 
     const [isOpen, setIsOpen] = useState(false);
+
     const [scheduleName, setScheduleName] = useState(
         scheduleRenameIndex !== undefined ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`
     );
 
-    const handleOpen: React.MouseEventHandler<HTMLLIElement> = (event) => {
-        // We need to stop propagation so that the select menu won't close
-        event.stopPropagation();
-        setIsOpen(true);
-        if (onOpen) {
-            onOpen();
-        }
-    };
+    const rename = useMemo(() => scheduleRenameIndex !== undefined, [scheduleRenameIndex]);
 
-    const handleCancel = () => {
+    // We need to stop propagation so that the select menu won't close
+    const handleOpen = useCallback(
+        (event: React.MouseEvent) => {
+            event.stopPropagation();
+            setIsOpen(true);
+            onOpen?.();
+        },
+        [onOpen]
+    );
+
+    /**
+     * If the user cancelled renaming the schedule, the schedule name is changed to its original value.
+     * If the user cancelled adding a new schedule, the schedule name is changed to the default schedule name.
+     */
+    const handleCancel = useCallback(() => {
         setIsOpen(false);
-        // If the user cancelled renaming the schedule, the schedule name is changed to its original value;
-        // if the user cancelled adding a new schedule, the schedule name is changed to the default schedule name
-        setScheduleName(rename ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`);
-    };
 
-    const handleNameChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        if (scheduleRenameIndex != null) {
+            setScheduleName(rename ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`);
+        }
+    }, [rename, scheduleNames, scheduleRenameIndex]);
+
+    const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setScheduleName(event.target.value);
-    };
+    }, []);
 
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        event.stopPropagation();
-        if (event.key === 'Enter') {
-            submitName();
-        }
-        if (event.key === 'Escape') {
-            setIsOpen(false);
-        }
-    };
+    const submitName = useCallback(() => {
+        onClose?.();
 
-    const submitName = () => {
-        onClose();
         if (rename) {
             renameSchedule(scheduleName, scheduleRenameIndex as number); // typecast works b/c this function only runs when `const rename = scheduleRenameIndex !== undefined` is true.
         } else {
             addSchedule(scheduleName);
         }
-    };
+
+        setIsOpen(false);
+    }, [onClose, rename, scheduleName, scheduleRenameIndex]);
+
+    const handleKeyDown = useCallback(
+        (event: React.KeyboardEvent<HTMLDivElement>) => {
+            event.stopPropagation();
+
+            if (event.key === 'Enter') {
+                submitName();
+            }
+
+            if (event.key === 'Escape') {
+                setIsOpen(false);
+            }
+        },
+        [submitName]
+    );
 
     // For the dialog, we need to stop the propagation when a key is pressed because
     // MUI Select components support "select by typing", which can remove focus from the dialog.
@@ -79,7 +105,13 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
     return (
         <>
             {rename ? (
-                <MenuItem onClick={handleOpen}>Rename Schedule</MenuItem>
+                <MenuItem onClick={handleOpen}>
+                    <Tooltip title="Rename Schedule">
+                        <IconButton size="small">
+                            <Edit />
+                        </IconButton>
+                    </Tooltip>
+                </MenuItem>
             ) : (
                 <MenuItem onClick={handleOpen}>
                     <Add className={classes.addButton} />
@@ -95,6 +127,7 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
                 onClose={() => setIsOpen(false)}
             >
                 <DialogTitle>{rename ? 'Rename Schedule' : 'Add a New Schedule'}</DialogTitle>
+
                 <DialogContent>
                     <TextField
                         // We enable autofocus in order to be consistent with the Save, Load, and Import dialogs
@@ -108,6 +141,7 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
                         value={scheduleName}
                     />
                 </DialogContent>
+
                 <DialogActions>
                     <Button onClick={handleCancel} color={isDarkMode() ? 'secondary' : 'primary'}>
                         Cancel

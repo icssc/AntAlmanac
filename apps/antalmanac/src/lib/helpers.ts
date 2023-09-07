@@ -133,6 +133,12 @@ function cleanParams(record: Record<string, string>) {
         }
     }
 
+    if ('division' in record) {
+        if (record['division'] === '') {
+            delete record['division'];
+        }
+    }
+
     return record;
 }
 
@@ -184,7 +190,9 @@ function removeDuplicateMeetings(websocResp: WebsocAPIResponse): WebsocAPIRespon
 
                         for (let i = 0; i < existingMeetings.length; i++) {
                             const sameDayAndTime =
-                                meeting.days === existingMeetings[i].days && meeting.time === existingMeetings[i].time;
+                                meeting.days === existingMeetings[i].days &&
+                                meeting.startTime === existingMeetings[i].startTime &&
+                                meeting.endTime === existingMeetings[i].endTime;
                             const sameBuilding = meeting.bldg === existingMeetings[i].bldg;
 
                             //This shouldn't be possible because there shouldn't be duplicate locations in a section
@@ -196,8 +204,10 @@ function removeDuplicateMeetings(websocResp: WebsocAPIResponse): WebsocAPIRespon
                             // Add the building to existing meeting instead of creating a new one
                             if (sameDayAndTime && !sameBuilding) {
                                 existingMeetings[i] = {
+                                    timeIsTBA: existingMeetings[i].timeIsTBA,
                                     days: existingMeetings[i].days,
-                                    time: existingMeetings[i].time,
+                                    startTime: existingMeetings[i].startTime,
+                                    endTime: existingMeetings[i].endTime,
                                     bldg: [existingMeetings[i].bldg + ' & ' + meeting.bldg],
                                 };
                                 isNewMeeting = false;
@@ -330,9 +340,9 @@ export const warnMultipleTerms = (terms: Set<string>) => {
     );
 };
 
-export function clickToCopy(event: React.MouseEvent<HTMLElement, MouseEvent>, sectionCode: string) {
+export async function clickToCopy(event: React.MouseEvent<HTMLElement, MouseEvent>, sectionCode: string) {
     event.stopPropagation();
-    void navigator.clipboard.writeText(sectionCode);
+    await navigator.clipboard.writeText(sectionCode);
     openSnackbar('success', 'WebsocSection code copied to clipboard');
 }
 

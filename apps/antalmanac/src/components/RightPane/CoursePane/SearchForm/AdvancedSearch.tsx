@@ -1,4 +1,5 @@
 import {
+    Box,
     Button,
     Collapse,
     FormControl,
@@ -19,16 +20,24 @@ import { ChangeEvent, PureComponent } from 'react';
 import RightPaneStore from '../../RightPaneStore';
 
 const styles: Styles<Theme, object> = {
+    fieldContainer: {
+        display: 'flex',
+        gap: '1.5rem',
+        flexWrap: 'wrap',
+        paddingLeft: '8px',
+        paddingRight: '8px',
+        marginBottom: '1rem',
+    },
     units: {
         width: '80px',
     },
     timePicker: {
         width: '130px',
     },
-    smallTextFields: {
-        display: 'flex',
-        justifyContent: 'space-around',
-        flexWrap: 'wrap',
+    onlineSwitch: {
+        margin: 0,
+        justifyContent: 'flex-end',
+        left: 0,
     },
 };
 
@@ -44,6 +53,7 @@ interface AdvancedSearchTextFieldsState {
     coursesFull: string;
     building: string;
     room: string;
+    division: string;
 }
 
 interface AdvancedSearchProps {
@@ -66,6 +76,7 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
         coursesFull: RightPaneStore.getFormData().coursesFull,
         building: RightPaneStore.getFormData().building,
         room: RightPaneStore.getFormData().room,
+        division: RightPaneStore.getFormData().division,
     };
 
     componentDidMount() {
@@ -85,6 +96,7 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
             coursesFull: RightPaneStore.getFormData().coursesFull,
             building: RightPaneStore.getFormData().building,
             room: RightPaneStore.getFormData().room,
+            division: RightPaneStore.getFormData().division,
         });
     };
 
@@ -129,7 +141,7 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
         const endsBeforeMenuItems = ['', ...menuItemTimes].map((time) => createdMenuItemTime(time));
 
         return (
-            <div className={classes?.smallTextFields}>
+            <Box className={classes?.fieldContainer}>
                 <TextField
                     label="Instructor"
                     type="search"
@@ -150,12 +162,55 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
 
                 <FormControl>
                     <InputLabel>Class Full Option</InputLabel>
-                    <Select value={this.state.coursesFull} onChange={this.handleChange('coursesFull')}>
+                    <Select
+                        value={this.state.coursesFull}
+                        onChange={this.handleChange('coursesFull')}
+                        MenuProps={{
+                            anchorOrigin: {
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            },
+                            transformOrigin: {
+                                vertical: 'top',
+                                horizontal: 'left',
+                            },
+                            getContentAnchorEl: null,
+                        }}
+                    >
                         <MenuItem value={'ANY'}>Include all classes</MenuItem>
                         <MenuItem value={'SkipFullWaitlist'}>Include full courses if space on waitlist</MenuItem>
                         <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
                         <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
                         <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
+                    </Select>
+                </FormControl>
+
+                <FormControl>
+                    <InputLabel id="division-label" shrink>
+                        Course Level
+                    </InputLabel>
+                    <Select
+                        labelId="division-label"
+                        value={this.state.division}
+                        onChange={this.handleChange('division')}
+                        className={classes?.courseLevel}
+                        displayEmpty
+                        MenuProps={{
+                            anchorOrigin: {
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            },
+                            transformOrigin: {
+                                vertical: 'top',
+                                horizontal: 'left',
+                            },
+                            getContentAnchorEl: null,
+                        }}
+                    >
+                        <MenuItem value={''}>Any Division</MenuItem>
+                        <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
+                        <MenuItem value={'UpperDiv'}>Upper Division</MenuItem>
+                        <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
                     </Select>
                 </FormControl>
 
@@ -192,7 +247,9 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
                             checked={this.state.building === 'ON'}
                         />
                     }
-                    label="Online Classes Only"
+                    label="Online Only"
+                    labelPlacement="top"
+                    className={classes?.onlineSwitch}
                 />
 
                 <TextField
@@ -210,7 +267,7 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
                     value={this.state.room}
                     onChange={this.handleChange('room')}
                 />
-            </div>
+            </Box>
         );
     }
 }

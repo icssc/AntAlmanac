@@ -170,7 +170,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                         <PopupState variant="popover">
                             {(popupState) => (
                                 <>
-                                    <Button variant="outlined" {...bindTrigger(popupState)}>
+                                    <Button variant="outlined" color="inherit" {...bindTrigger(popupState)}>
                                         Copy Schedule
                                     </Button>
                                     <Menu {...bindMenu(popupState)}>
@@ -203,7 +203,7 @@ class AddedCoursePane extends PureComponent<AddedCoursePaneProps, AddedCoursePan
                         <Button
                             className={this.props.classes.clearSchedule}
                             variant="outlined"
-                            color="secondary"
+                            color="inherit"
                             onClick={() => {
                                 if (
                                     window.confirm(
