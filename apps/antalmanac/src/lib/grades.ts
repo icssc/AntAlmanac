@@ -65,6 +65,7 @@ class _Grades {
      */
     populateGradesCache = async ({ department, ge }: { department?: string; ge?: GE }): Promise<void> => {
         department = department != 'ALL' ? department : undefined;
+        ge = ge != 'ANY' ? ge : undefined;
 
         if (!department && !ge) throw new Error('populategradesCache: Must provide either department or ge');
 
