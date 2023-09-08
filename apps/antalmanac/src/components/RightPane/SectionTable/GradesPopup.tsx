@@ -29,7 +29,7 @@ async function getGradeData(
     /**
      * Format data for displayiing in chart.
      *
-     * @example { sum_grade_a_count: 10, sum_grade_b_count: 20 }
+     * @example { gradeACount: 10, gradeBCount: 20 }
      */
     const grades = Object.entries(courseGrades)
         .filter(([key]) => key !== 'averageGPA')
