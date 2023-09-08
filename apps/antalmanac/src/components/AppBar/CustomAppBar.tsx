@@ -9,11 +9,11 @@ import AboutPage from './AboutPage';
 import Feedback from './Feedback';
 import ImportStudyList from './ImportStudyList';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
-import { ReactComponent as Logo } from './logo.svg';
-import { ReactComponent as MobileLogo } from './mobile-logo.svg';
 import News from './News';
 import SettingsMenu from './SettingsMenu';
-import Export from './Export';
+import Export from './Exports/Export';
+import { ReactComponent as Logo } from './logo.svg';
+import { ReactComponent as MobileLogo } from './mobile-logo.svg';
 
 const styles = {
     appBar: {

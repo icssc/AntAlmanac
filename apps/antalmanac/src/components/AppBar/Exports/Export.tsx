@@ -5,8 +5,8 @@ import { IosShare } from '@mui/icons-material';
 import { PureComponent } from 'react';
 
 import AppStore from '$stores/AppStore';
-import ExportCalendar from '$components/Calendar/Toolbar/ExportCalendar';
-import ScreenshotButton from '$components/Calendar/Toolbar/ScreenshotButton';
+import ExportCalendar from '$components/AppBar/Exports/ExportCalendar';
+import ScreenshotButton from '$components/AppBar/Exports/ScreenshotButton';
 
 const styles: Styles<Theme, object> = {
     container: {
