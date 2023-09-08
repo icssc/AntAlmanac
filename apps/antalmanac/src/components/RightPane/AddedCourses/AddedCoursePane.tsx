@@ -217,8 +217,6 @@ function AddedSectionsGrid() {
     return (
         <Box display="flex" flexDirection="column" gap={2}>
             <Box display="flex" width={1} justifyContent="space-between">
-                <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-
                 <Box>
                     <PopupState variant="popover">
                         {(popupState) => (
@@ -255,21 +253,24 @@ function AddedSectionsGrid() {
                 </Box>
             </Box>
 
-            <Grid container spacing={2} padding={0}>
-                {courses.map((course) => {
-                    return (
-                        <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber}>
-                            <SectionTableLazyWrapper
-                                courseDetails={course}
-                                term={course.term}
-                                allowHighlight={false}
-                                analyticsCategory={analyticsEnum.addedClasses.title}
-                                scheduleNames={scheduleNames}
-                            />
-                        </Grid>
-                    );
-                })}
-            </Grid>
+            <Box>
+                <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
+                <Grid container spacing={2} padding={0}>
+                    {courses.map((course) => {
+                        return (
+                            <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber}>
+                                <SectionTableLazyWrapper
+                                    courseDetails={course}
+                                    term={course.term}
+                                    allowHighlight={false}
+                                    analyticsCategory={analyticsEnum.addedClasses.title}
+                                    scheduleNames={scheduleNames}
+                                />
+                            </Grid>
+                        );
+                    })}
+                </Grid>
+            </Box>
 
             {customEvents.length > 0 && (
                 <Box>
