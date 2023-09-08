@@ -1,68 +1,57 @@
-import { Button, Paper, Popover, Theme } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { Button, Paper, Popover, Tooltip } from '@mui/material';
 import { IosShare } from '@mui/icons-material';
-import { PureComponent } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import ExportCalendar from '$components/AppBar/Exports/ExportCalendar';
 import ScreenshotButton from '$components/AppBar/Exports/ScreenshotButton';
 
-const styles: Styles<Theme, object> = {
-    container: {
-        padding: '0.75rem',
-        minWidth: '12.25rem',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.5rem',
-    },
-};
+function Export() {
+    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
 
-interface ExportsState {
-    anchorEl?: HTMLElement;
-}
+    const open = useMemo(() => Boolean(anchorEl), [anchorEl]);
 
-class ExportsMenu extends PureComponent<{ classes: ClassNameMap }, ExportsState> {
-    state: ExportsState = {
-        anchorEl: undefined,
-    };
+    const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    }, []);
 
-    render() {
-        const { classes } = this.props;
+    const handleClose = useCallback(() => {
+        setAnchorEl(undefined);
+    }, []);
 
-        return (
-            <>
-                <Button
-                    onClick={(event) => {
-                        this.setState({ anchorEl: event.currentTarget });
-                    }}
-                    color="inherit"
-                    startIcon={<IosShare />}
-                >
+    return (
+        <>
+            <Tooltip title="Export your calendar">
+                <Button onClick={handleClick} color="inherit" startIcon={<IosShare />}>
                     Export
                 </Button>
-                <Popover
-                    open={Boolean(this.state.anchorEl)}
-                    anchorEl={this.state.anchorEl}
-                    onClose={() => {
-                        this.setState({ anchorEl: undefined });
-                    }}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'center',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'center',
+            </Tooltip>
+            <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+            >
+                <Paper
+                    sx={{
+                        padding: '0.75rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.5rem',
                     }}
                 >
-                    <Paper className={classes.container}>
-                        <ExportCalendar />
-                        <ScreenshotButton />
-                    </Paper>
-                </Popover>
-            </>
-        );
-    }
+                    <ExportCalendar />
+                    <ScreenshotButton />
+                </Paper>
+            </Popover>
+        </>
+    );
 }
 
-export default withStyles(styles)(ExportsMenu);
+export default Export;
