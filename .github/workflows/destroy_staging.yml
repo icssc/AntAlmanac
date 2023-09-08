@@ -8,7 +8,7 @@ on:
             - closed
 
 concurrency:
-    group: ${{ github.ref }}
+    group: ${{ github.ref }}-destroy-staging
     cancel-in-progress: true
 
 permissions:

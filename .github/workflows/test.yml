@@ -10,7 +10,7 @@ on:
             - unlabeled
 
 concurrency:
-    group: ${{ github.head_ref }}
+    group: ${{ github.head_ref }}-test
     cancel-in-progress: true
 
 permissions:
