@@ -108,7 +108,7 @@ export function ColumnToggleButton() {
                     onChange={handleChange}
                     onClose={handleClose}
                     renderValue={renderEmptySelectValue}
-                    sx={{ visibility: 'hidden' }}
+                    sx={{ visibility: 'hidden', position: 'absolute' }}
                 >
                     {Object.entries(columnLabels).map(([column, label]) => (
                         <MenuItem key={column} value={column}>

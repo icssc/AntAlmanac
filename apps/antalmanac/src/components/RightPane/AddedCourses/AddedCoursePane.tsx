@@ -17,6 +17,7 @@ import {
 import { ContentCopy, DeleteOutline } from '@mui/icons-material';
 import { AACourse } from '@packages/antalmanac-types';
 
+import { ColumnToggleButton } from '../CoursePane/CoursePaneButtonRow';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
 import AppStore from '$stores/AppStore';
@@ -295,6 +296,7 @@ function AddedSectionsGrid() {
             <Box display="flex" width={1}>
                 <CopyScheduleButton />
                 <ClearScheduleButton />
+                <ColumnToggleButton />
             </Box>
 
             <Box>
