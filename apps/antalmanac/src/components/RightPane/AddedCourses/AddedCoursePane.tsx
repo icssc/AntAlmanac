@@ -3,7 +3,6 @@ import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 
 import {
     Box,
-    Button,
     Chip,
     Grid,
     IconButton,
@@ -112,6 +111,48 @@ function createCopyHandler(index: number) {
     return () => {
         copySchedule(index);
     };
+}
+
+function CopyScheduleButton() {
+    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+
+    useEffect(() => {
+        const handleScheduleNamesChange = () => {
+            setScheduleNames([...AppStore.getScheduleNames()]);
+        };
+
+        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
+
+        return () => {
+            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
+        };
+    }, []);
+
+    return (
+        <PopupState variant="popover">
+            {(popupState) => (
+                <>
+                    <Tooltip title="Copy Schedule">
+                        <IconButton {...bindTrigger(popupState)} sx={buttonSx} size="medium">
+                            <ContentCopy />
+                        </IconButton>
+                    </Tooltip>
+                    <Menu {...bindMenu(popupState)}>
+                        {scheduleNames.map((name, index) => (
+                            <MenuItem
+                                key={index}
+                                disabled={AppStore.getCurrentScheduleIndex() === index}
+                                onClick={createCopyHandler(index)}
+                            >
+                                Copy to {name}
+                            </MenuItem>
+                        ))}
+                        <MenuItem onClick={createCopyHandler(scheduleNames.length)}>Copy to All Schedules</MenuItem>
+                    </Menu>
+                </>
+            )}
+        </PopupState>
+    );
 }
 
 function SkeletonSchedule() {
@@ -250,34 +291,9 @@ function AddedSectionsGrid() {
     }, [scheduleNames, scheduleIndex]);
 
     return (
-        <Box display="flex" flexDirection="column" gap={2}>
+        <Box display="flex" flexDirection="column" gap={1}>
             <Box display="flex" width={1}>
-                <PopupState variant="popover">
-                    {(popupState) => (
-                        <>
-                            <Tooltip title="Copy Schedule">
-                                <IconButton {...bindTrigger(popupState)} sx={buttonSx} size="medium">
-                                    <ContentCopy />
-                                </IconButton>
-                            </Tooltip>
-                            <Menu {...bindMenu(popupState)}>
-                                {scheduleNames.map((name, index) => (
-                                    <MenuItem
-                                        key={index}
-                                        disabled={AppStore.getCurrentScheduleIndex() === index}
-                                        onClick={createCopyHandler(index)}
-                                    >
-                                        Copy to {name}
-                                    </MenuItem>
-                                ))}
-                                <MenuItem onClick={createCopyHandler(scheduleNames.length)}>
-                                    Copy to All Schedules
-                                </MenuItem>
-                            </Menu>
-                        </>
-                    )}
-                </PopupState>
-
+                <CopyScheduleButton />
                 <ClearScheduleButton />
             </Box>
 
