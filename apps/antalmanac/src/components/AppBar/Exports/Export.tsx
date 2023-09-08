@@ -4,7 +4,6 @@ import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { IosShare } from '@mui/icons-material';
 import { PureComponent } from 'react';
 
-import AppStore from '$stores/AppStore';
 import ExportCalendar from '$components/AppBar/Exports/ExportCalendar';
 import ScreenshotButton from '$components/AppBar/Exports/ScreenshotButton';
 
@@ -16,41 +15,19 @@ const styles: Styles<Theme, object> = {
         flexDirection: 'column',
         gap: '0.5rem',
     },
-    betaBadge: { transform: 'scale(1) translate(95%, -50%)' },
 };
 
-interface SettingsState {
+interface ExportsState {
     anchorEl?: HTMLElement;
-    theme: string;
-    screenshotting: boolean;
 }
 
-class SettingsMenu extends PureComponent<{ classes: ClassNameMap }, SettingsState> {
-    state: SettingsState = {
+class ExportsMenu extends PureComponent<{ classes: ClassNameMap }, ExportsState> {
+    state: ExportsState = {
         anchorEl: undefined,
-        theme: AppStore.getTheme(),
-        screenshotting: false,
-    };
-
-    componentDidMount = () => {
-        AppStore.on('themeToggle', () => {
-            this.setState({ theme: AppStore.getTheme() });
-        });
     };
 
     render() {
         const { classes } = this.props;
-
-        const onTakeScreenshot = (html2CanvasScreenshot: () => void) => {
-            // This function takes a screenshot of the user's schedule
-
-            this.setState({ screenshotting: true }, () => {
-                // Take the picture
-                html2CanvasScreenshot();
-
-                this.setState({ screenshotting: false });
-            });
-        };
 
         return (
             <>
@@ -79,8 +56,8 @@ class SettingsMenu extends PureComponent<{ classes: ClassNameMap }, SettingsStat
                     }}
                 >
                     <Paper className={classes.container}>
-                        <ExportCalendar key="export" />
-                        <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />
+                        <ExportCalendar />
+                        <ScreenshotButton />
                     </Paper>
                 </Popover>
             </>
@@ -88,4 +65,4 @@ class SettingsMenu extends PureComponent<{ classes: ClassNameMap }, SettingsStat
     }
 }
 
-export default withStyles(styles)(SettingsMenu);
+export default withStyles(styles)(ExportsMenu);
