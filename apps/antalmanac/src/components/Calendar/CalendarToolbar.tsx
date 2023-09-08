@@ -239,14 +239,6 @@ export interface CalendarPaneToolbarProps {
     currentScheduleIndex: number;
     showFinalsSchedule: boolean;
     toggleDisplayFinalsSchedule: () => void;
-
-    /**
-     * The function in an ancestor component that wraps ScreenshotButton.handleClick
-     * to perform canvas transformations before and after downloading the screenshot.
-     *
-     * TODO, FIXME: don't prop drill, please.
-     */
-    onTakeScreenshot: (html2CanvasScreenshot: () => void) => void;
 }
 
 /**
