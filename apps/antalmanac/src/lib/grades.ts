@@ -28,7 +28,7 @@ export interface GradesGraphQLResponse {
 
 export interface GroupedGradesGraphQLResponse {
     data: {
-        aggregateGroupedGrades: Array<CourseInstructorGrades>;
+        aggregateByOffering: Array<CourseInstructorGrades>;
     };
 }
 
@@ -77,7 +77,7 @@ class _Grades {
         const filter = `${ge ? `ge: ${ge.replace('-', '_')} ` : ''}${department ? `department: "${department}" ` : ''}`;
 
         const response = await queryGraphQL<GroupedGradesGraphQLResponse>(`{
-            aggregateGroupedGrades(${filter}) {
+            aggregateByOffering(${filter}) {
                 department
                 courseNumber
                 instructor
@@ -92,7 +92,7 @@ class _Grades {
             }
         }`);
 
-        const groupedGrades = response?.data?.aggregateGroupedGrades;
+        const groupedGrades = response?.data?.aggregateByOffering;
 
         if (!groupedGrades) throw new Error('populateGradesCache: Failed to query GraphQL');
 
