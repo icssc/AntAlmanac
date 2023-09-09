@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, type DialogProps, Typography } from '@mui/material';
 
 /**
@@ -29,7 +29,6 @@ function PatchNotes() {
         ((_event, reason) => {
             if (reason == 'backdropClick' || reason == 'escapeKeyDown') {
                 setOpen(false);
-                localStorage.setItem('latestPatchSeen', latestPatchNotesUpdate);
             }
         }) satisfies DialogProps['onClose'],
         [setOpen]
@@ -38,6 +37,14 @@ function PatchNotes() {
     const handleClick = useCallback(() => {
         setOpen(false);
     }, [setOpen]);
+
+    useEffect(() => {
+        if (!isOutdated()) {
+            setOpen(false);
+        } else {
+            localStorage.setItem('latestPatchSeen', latestPatchNotesUpdate);
+        }
+    }, []);
 
     return (
         <Dialog fullWidth={true} onClose={handleClose} open={open}>
