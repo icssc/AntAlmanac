@@ -20,7 +20,6 @@ import { Fragment, useCallback, useContext, useEffect, useMemo, useState } from 
 import { AASection } from '@packages/antalmanac-types';
 import { WebsocSectionEnrollment, WebsocSectionMeeting } from 'peterportal-api-next-types';
 
-import RightPaneStore, { type SectionTableColumn } from '../RightPaneStore';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
@@ -31,9 +30,9 @@ import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
 import Grades from '$lib/grades';
 import AppStore from '$stores/AppStore';
 import { useTabStore } from '$stores/TabStore';
-import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
 import { normalizeTime, parseDaysString, translate24To12HourTime } from '$stores/calendarizeHelpers';
+import useColumnStore, { type SectionTableColumn } from '$stores/ColumnStore';
 
 const styles: Styles<Theme, object> = (theme) => ({
     sectionCode: {
@@ -497,7 +496,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, allowHighlight, scheduleNames } = props;
 
-    const [activeColumns, setColumns] = useState<SectionTableColumn[]>(RightPaneStore.getActiveColumns());
+    const { activeColumns } = useColumnStore();
 
     const [addedCourse, setAddedCourse] = useState(
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
@@ -518,13 +517,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
 
     // Stable references to event listeners will synchronize React state with the store.
 
-    const updateColumns = useCallback(
-        (newActiveColumns: SectionTableColumn[]) => {
-            setColumns(newActiveColumns);
-        },
-        [setColumns]
-    );
-
     const updateHighlight = useCallback(() => {
         setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
     }, [setAddedCourse]);
@@ -534,13 +526,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     }, [setCalendarEvents]);
 
     // Attach event listeners to the store.
-
-    useEffect(() => {
-        RightPaneStore.on('columnChange', updateColumns);
-        return () => {
-            RightPaneStore.removeListener('columnChange', updateColumns);
-        };
-    }, [updateColumns]);
 
     useEffect(() => {
         AppStore.on('addedCoursesChange', updateHighlight);

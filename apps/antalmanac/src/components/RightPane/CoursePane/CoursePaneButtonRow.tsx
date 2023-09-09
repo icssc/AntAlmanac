@@ -12,7 +12,8 @@ import {
     type SxProps,
 } from '@mui/material';
 import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
-import RightPaneStore, { type SectionTableColumn } from '../RightPaneStore';
+import RightPaneStore from '../RightPaneStore';
+import useColumnStore, { type SectionTableColumn } from '$stores/ColumnStore';
 
 /**
  * All the interactive buttons have the same styles.
@@ -59,7 +60,7 @@ function renderEmptySelectValue() {
  * e.g. show/hide the section code, instructors, etc.
  */
 export function ColumnToggleButton() {
-    const [activeColumns, setActiveColumns] = useState(RightPaneStore.getActiveColumns());
+    const { activeColumns, setActiveColumns } = useColumnStore();
     const [open, setOpen] = useState(false);
 
     const handleColumnChange = useCallback(
@@ -69,14 +70,11 @@ export function ColumnToggleButton() {
         [setActiveColumns]
     );
 
-    const handleChange = useCallback(
-        (e: SelectChangeEvent<SectionTableColumn[]>) => {
-            if (typeof e.target.value !== 'string') {
-                RightPaneStore.setActiveColumns(e.target.value);
-            }
-        },
-        [RightPaneStore.setActiveColumns]
-    );
+    const handleChange = (e: SelectChangeEvent<SectionTableColumn[]>) => {
+        if (typeof e.target.value !== 'string') {
+            setActiveColumns(e.target.value);
+        }
+    };
 
     const handleOpen = useCallback(() => {
         setOpen(true);
@@ -85,14 +83,6 @@ export function ColumnToggleButton() {
     const handleClose = useCallback(() => {
         setOpen(false);
     }, [setOpen]);
-
-    useEffect(() => {
-        RightPaneStore.on('columnChange', handleColumnChange);
-
-        return () => {
-            RightPaneStore.removeListener('columnChange', handleColumnChange);
-        };
-    }, [handleColumnChange]);
 
     return (
         <>

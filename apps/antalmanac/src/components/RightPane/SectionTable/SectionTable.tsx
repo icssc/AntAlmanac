@@ -14,12 +14,12 @@ import {
 } from '@material-ui/core';
 import { Assessment, Help, RateReview, ShowChart as ShowChartIcon } from '@material-ui/icons';
 import { MOBILE_BREAKPOINT } from '../../../globals';
-import RightPaneStore, { SECTION_TABLE_COLUMNS, type SectionTableColumn } from '../RightPaneStore';
 import CourseInfoBar from './CourseInfoBar';
 import CourseInfoButton from './CourseInfoButton';
 import GradesPopup from './GradesPopup';
 import { SectionTableProps } from './SectionTable.types';
 import SectionTableBody from './SectionTableBody';
+import useColumnStore, { SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import analyticsEnum from '$lib/analytics';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
@@ -104,7 +104,7 @@ function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
 function SectionTable(props: SectionTableProps) {
     const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory } = props;
 
-    const [activeColumns, setActiveColumns] = useState(RightPaneStore.getActiveColumns());
+    const { activeColumns } = useColumnStore();
 
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
@@ -124,18 +124,6 @@ function SectionTable(props: SectionTableProps) {
         const numActiveColumns = activeColumns.length;
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
     }, [isMobileScreen, activeColumns]);
-
-    useEffect(() => {
-        const handleColumnChange = (newActiveColumns: SectionTableColumn[]) => {
-            setActiveColumns(newActiveColumns);
-        };
-
-        RightPaneStore.on('columnChange', handleColumnChange);
-
-        return () => {
-            RightPaneStore.removeListener('columnChange', handleColumnChange);
-        };
-    }, []);
 
     return (
         <>
