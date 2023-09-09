@@ -496,7 +496,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, allowHighlight, scheduleNames } = props;
 
-    const { activeColumns } = useColumnStore();
+    const { getActiveColumns } = useColumnStore();
 
     const [addedCourse, setAddedCourse] = useState(
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
@@ -614,7 +614,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             )}
 
             {Object.entries(tableBodyCells)
-                .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
+                .filter(([column]) => getActiveColumns().includes(column as SectionTableColumn))
                 .map(([column, Component]) => {
                     return (
                         // All of this is a little bulky, so if the props can be added specifically to activeTableBodyColumns, LMK!

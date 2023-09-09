@@ -104,7 +104,7 @@ function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
 function SectionTable(props: SectionTableProps) {
     const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory } = props;
 
-    const { activeColumns } = useColumnStore();
+    const { selectedColumns, getActiveColumns } = useColumnStore();
 
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
@@ -121,9 +121,9 @@ function SectionTable(props: SectionTableProps) {
      */
     const tableMinWidth = useMemo(() => {
         const width = isMobileScreen ? 600 : 780;
-        const numActiveColumns = activeColumns.length;
+        const numActiveColumns = getActiveColumns().length;
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
-    }, [isMobileScreen, activeColumns]);
+    }, [isMobileScreen, selectedColumns]);
 
     return (
         <>
@@ -177,7 +177,7 @@ function SectionTable(props: SectionTableProps) {
                             <TableCell padding="none" />
 
                             {tableHeaderColumnEntries
-                                .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
+                                .filter(([column]) => getActiveColumns().includes(column as SectionTableColumn))
                                 .map(([column, { label, width }]) => (
                                     <TableCell
                                         key={column}

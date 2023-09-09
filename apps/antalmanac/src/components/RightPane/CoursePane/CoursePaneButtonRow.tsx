@@ -60,12 +60,12 @@ function renderEmptySelectValue() {
  * e.g. show/hide the section code, instructors, etc.
  */
 export function ColumnToggleButton() {
-    const { activeColumns, setActiveColumns } = useColumnStore();
+    const { getActiveColumns, setSelectedColumns } = useColumnStore();
     const [open, setOpen] = useState(false);
 
     const handleChange = (e: SelectChangeEvent<SectionTableColumn[]>) => {
         if (typeof e.target.value !== 'string') {
-            setActiveColumns(e.target.value);
+            setSelectedColumns(e.target.value);
         }
     };
 
@@ -87,7 +87,7 @@ export function ColumnToggleButton() {
             <FormControl>
                 <Select
                     multiple
-                    value={activeColumns}
+                    value={getActiveColumns()}
                     open={open}
                     onChange={handleChange}
                     onClose={handleClose}
@@ -97,7 +97,7 @@ export function ColumnToggleButton() {
                     {Object.entries(columnLabels).map(([column, label]) => (
                         <MenuItem key={column} value={column}>
                             <Checkbox
-                                checked={activeColumns.indexOf(column as SectionTableColumn) > -1}
+                                checked={getActiveColumns().indexOf(column as SectionTableColumn) > -1}
                                 color="default"
                             />
                             <ListItemText primary={label} />
