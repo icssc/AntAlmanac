@@ -118,6 +118,9 @@ function CopyScheduleButton() {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
     useEffect(() => {
+        /**
+         * A shallow copy needs to be made so the array reference is different and the component re-renders.
+         */
         const handleScheduleNamesChange = () => {
             setScheduleNames([...AppStore.getScheduleNames()]);
         };
