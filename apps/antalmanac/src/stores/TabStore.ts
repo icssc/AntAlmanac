@@ -18,3 +18,5 @@ export const useTabStore = create<TabStore>((set) => {
         },
     };
 });
+
+export default useTabStore;
