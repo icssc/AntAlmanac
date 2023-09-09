@@ -112,7 +112,7 @@ export class Schedules {
     }
 
     /**
-     * Adds all events from current schedule to another (doesn't wipe schedules that are being copied into)
+     * Adds all courses from current schedule to another (doesn't wipe schedules that are being copied into)
      * More like append than copy
      * @param to If equal to number of schedules will copy to all schedules
      */
@@ -123,16 +123,6 @@ export class Schedules {
                 this.addCourseToAllSchedules(course);
             } else {
                 this.addCourse(course, to, false);
-            }
-        }
-        for (const event of this.getCurrentCustomEvents()) {
-            if (to === this.getNumberOfSchedules()) {
-                this.addCustomEvent(
-                    event,
-                    [...Array(to).keys()] // Creates an array of indices from 0 to 'to'; https://stackoverflow.com/questions/3746725/how-to-create-an-array-containing-1-n
-                );
-            } else {
-                this.addCustomEvent(event, [to]);
             }
         }
     }
