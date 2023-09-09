@@ -98,6 +98,12 @@ function handleClear() {
     }
 }
 
+function createCopyHandler(index: number) {
+    return () => {
+        copySchedule(index);
+    };
+}
+
 function ClearScheduleButton() {
     return (
         <Tooltip title="Clear Schedule">
@@ -106,12 +112,6 @@ function ClearScheduleButton() {
             </IconButton>
         </Tooltip>
     );
-}
-
-function createCopyHandler(index: number) {
-    return () => {
-        copySchedule(index);
-    };
 }
 
 function CopyScheduleButton() {
