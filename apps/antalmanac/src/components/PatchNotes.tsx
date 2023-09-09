@@ -39,9 +39,7 @@ function PatchNotes() {
     }, [setOpen]);
 
     useEffect(() => {
-        if (!isOutdated()) {
-            setOpen(false);
-        } else {
+        if (isOutdated()) {
             localStorage.setItem('latestPatchSeen', latestPatchNotesUpdate);
         }
     }, []);
