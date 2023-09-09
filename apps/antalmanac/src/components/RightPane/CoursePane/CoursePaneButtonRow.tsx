@@ -63,13 +63,6 @@ export function ColumnToggleButton() {
     const { activeColumns, setActiveColumns } = useColumnStore();
     const [open, setOpen] = useState(false);
 
-    const handleColumnChange = useCallback(
-        (newActiveColumns: SectionTableColumn[]) => {
-            setActiveColumns(newActiveColumns);
-        },
-        [setActiveColumns]
-    );
-
     const handleChange = (e: SelectChangeEvent<SectionTableColumn[]>) => {
         if (typeof e.target.value !== 'string') {
             setActiveColumns(e.target.value);
