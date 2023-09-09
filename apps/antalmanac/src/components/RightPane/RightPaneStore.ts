@@ -48,7 +48,6 @@ export interface BuildingFocusInfo {
 
 class RightPaneStore extends EventEmitter {
     private formData: Record<string, string>;
-    private activeTab: number;
     private doDisplaySearch: boolean;
     private openSpotAlertPopoverActive: boolean;
     private urlCourseCodeValue: string;
@@ -67,7 +66,6 @@ class RightPaneStore extends EventEmitter {
         super();
         this.setMaxListeners(15);
         this.formData = structuredClone(defaultFormValues);
-        this.activeTab = 0;
         this.doDisplaySearch = true;
         this.openSpotAlertPopoverActive = false;
         const search = new URLSearchParams(window.location.search);
