@@ -35,6 +35,8 @@ export interface GroupedGradesGraphQLResponse {
 /**
  * Class to handle querying and caching of grades.
  * Retrieves grades from the PeterPortal GraphQL API.
+ *
+ * Note: Be careful with sending too many queries to the GraphQL API. It's not very fast and can be DoS'd easily.
  */
 class _Grades {
     gradesCache: Record<string, Grades>;

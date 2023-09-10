@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     Box,
     Checkbox,
@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
 import RightPaneStore from '../RightPaneStore';
-import useColumnStore, { type SectionTableColumn } from '$stores/ColumnStore';
+import useColumnStore, { SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 
 /**
  * All the interactive buttons have the same styles.
@@ -60,7 +60,7 @@ function renderEmptySelectValue() {
  * e.g. show/hide the section code, instructors, etc.
  */
 export function ColumnToggleButton() {
-    const { getActiveColumns, setSelectedColumns } = useColumnStore();
+    const { selectedColumns, setSelectedColumns } = useColumnStore();
     const [open, setOpen] = useState(false);
 
     const handleChange = (e: SelectChangeEvent<SectionTableColumn[]>) => {
@@ -77,6 +77,11 @@ export function ColumnToggleButton() {
         setOpen(false);
     }, [setOpen]);
 
+    const selectedColumnNames = useMemo(
+        () => SECTION_TABLE_COLUMNS.filter((_, idx) => selectedColumns[idx]),
+        [selectedColumns]
+    );
+
     return (
         <>
             <Tooltip title="Show/Hide Columns" sx={buttonSx}>
@@ -87,19 +92,16 @@ export function ColumnToggleButton() {
             <FormControl>
                 <Select
                     multiple
-                    value={getActiveColumns()}
+                    value={selectedColumnNames}
                     open={open}
                     onChange={handleChange}
                     onClose={handleClose}
                     renderValue={renderEmptySelectValue}
                     sx={{ visibility: 'hidden' }}
                 >
-                    {Object.entries(columnLabels).map(([column, label]) => (
+                    {Object.entries(columnLabels).map(([column, label], idx) => (
                         <MenuItem key={column} value={column}>
-                            <Checkbox
-                                checked={getActiveColumns().indexOf(column as SectionTableColumn) > -1}
-                                color="default"
-                            />
+                            <Checkbox checked={selectedColumns[idx]} color="default" />
                             <ListItemText primary={label} />
                         </MenuItem>
                     ))}

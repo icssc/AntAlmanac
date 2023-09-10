@@ -69,10 +69,8 @@ export const useColumnStore = create<ColumnStore>((set, get) => {
         },
         setColumnEnabled: (column: SectionTableColumn, state: boolean) => {
             set((prevState) => {
-                const enabledColumns = prevState.enabledColumns.filter((current, index) =>
-                    SECTION_TABLE_COLUMNS[index] === column ? state : current
-                );
-                return { enabledColumns: enabledColumns };
+                prevState.enabledColumns[SECTION_TABLE_COLUMNS.indexOf(column)] = state;
+                return { enabledColumns: prevState.enabledColumns };
             });
         },
     };
