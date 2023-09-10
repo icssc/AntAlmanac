@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, type DialogProps, Typography } from '@mui/material';
+import { useCallback, useState } from 'react';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
 /**
  * Show modal only if the current patch notes haven't been shown.
@@ -22,27 +22,10 @@ function isOutdated() {
 function PatchNotes() {
     const [open, setOpen] = useState(isOutdated());
 
-    /**
-     * Allow the user to exit the modal using their keyboard or by clicking outside the dialog.
-     */
-    const handleClose = useCallback(
-        ((_event, reason) => {
-            if (reason == 'backdropClick' || reason == 'escapeKeyDown') {
-                setOpen(false);
-            }
-        }) satisfies DialogProps['onClose'],
-        [setOpen]
-    );
-
-    const handleClick = useCallback(() => {
+    const handleClose = useCallback(() => {
+        localStorage.setItem('latestPatchSeen', latestPatchNotesUpdate);
         setOpen(false);
     }, [setOpen]);
-
-    useEffect(() => {
-        if (isOutdated()) {
-            localStorage.setItem('latestPatchSeen', latestPatchNotesUpdate);
-        }
-    }, []);
 
     return (
         <Dialog fullWidth={true} onClose={handleClose} open={open}>
@@ -70,7 +53,7 @@ function PatchNotes() {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleClick} color="primary">
+                <Button onClick={handleClose} color="primary">
                     Close
                 </Button>
             </DialogActions>
