@@ -9,9 +9,14 @@ import PatchNotes, {
 } from '$components/PatchNotes';
 
 describe('patch notes', () => {
+    /**
+     * A date that's guaranteed to be outdated.
+     */
+    const outdatedPatchNotes = '00000000';
+
     describe('patch notes displays appropriately', () => {
         test('displays when latest patch notes is outdated ', () => {
-            localStorage.setItem(patchNotesKey, '00000000');
+            localStorage.setItem(patchNotesKey, outdatedPatchNotes);
 
             render(<PatchNotes />);
 
@@ -29,7 +34,7 @@ describe('patch notes', () => {
 
     describe('close patch notes with button', () => {
         test('clicking the button closes the dialog', () => {
-            localStorage.setItem(patchNotesKey, '00000000');
+            localStorage.setItem(patchNotesKey, outdatedPatchNotes);
 
             render(<PatchNotes />);
 
@@ -41,7 +46,7 @@ describe('patch notes', () => {
         });
 
         test('the latest patch notes is saved to local storage', () => {
-            localStorage.setItem(patchNotesKey, '00000000');
+            localStorage.setItem(patchNotesKey, outdatedPatchNotes);
 
             render(<PatchNotes />);
 
@@ -55,7 +60,7 @@ describe('patch notes', () => {
 
     describe('closing the dialog by clicking the backdrop ', () => {
         test('clicking the backdrop closes the dialog', () => {
-            localStorage.setItem(patchNotesKey, '00000000');
+            localStorage.setItem(patchNotesKey, outdatedPatchNotes);
 
             render(<PatchNotes />);
 
@@ -69,7 +74,7 @@ describe('patch notes', () => {
         });
 
         test('the latest patch notes is saved to local storage', () => {
-            localStorage.setItem(patchNotesKey, '00000000');
+            localStorage.setItem(patchNotesKey, outdatedPatchNotes);
 
             render(<PatchNotes />);
 
