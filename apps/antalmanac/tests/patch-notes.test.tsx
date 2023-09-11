@@ -2,10 +2,6 @@ import { describe, expect, test } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import PatchNotes, { latestPatchNotesUpdate } from '$components/PatchNotes';
 
-const setLocalStorage = (key: string, value: string) => {
-    window.localStorage.setItem(key, value);
-};
-
 describe('patch notes', () => {
     describe('when latestPatchSeen is not equal to latestPatchNotesUpdate', () => {
         test('should show the dialog', () => {
@@ -45,7 +41,7 @@ describe('patch notes', () => {
         });
 
         test('should save latestPatchNotesUpdate to localStorage as latestPatchSeen', () => {
-            setLocalStorage('latestPatchSeen', latestPatchNotesUpdate);
+            localStorage.setItem('latestPatchSeen', latestPatchNotesUpdate);
             expect(localStorage.getItem('latestPatchSeen')).toEqual(latestPatchNotesUpdate);
         });
     });
@@ -61,7 +57,7 @@ describe('patch notes', () => {
         });
 
         test('should save latestPatchNotesUpdate to localStorage as latestPatchSeen', () => {
-            setLocalStorage('latestPatchSeen', latestPatchNotesUpdate);
+            localStorage.setItem('latestPatchSeen', latestPatchNotesUpdate);
             expect(localStorage.getItem('latestPatchSeen')).toEqual(latestPatchNotesUpdate);
         });
     });
