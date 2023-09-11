@@ -25,7 +25,7 @@ function PatchNotes() {
     const handleClose = useCallback(() => {
         localStorage.setItem('latestPatchSeen', latestPatchNotesUpdate);
         setOpen(false);
-    }, [setOpen]);
+    }, []);
 
     return (
         <Dialog fullWidth={true} onClose={handleClose} open={open} data-testid="dialog">
