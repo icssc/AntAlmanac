@@ -1,64 +1,83 @@
 import { describe, expect, test } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import PatchNotes, { latestPatchNotesUpdate } from '$components/PatchNotes';
+import { render, screen, act } from '@testing-library/react';
+import PatchNotes, {
+    latestPatchNotesUpdate,
+    patchNotesKey,
+    closeButtonTestId,
+    dialogTestId,
+    backdropTestId,
+} from '$components/PatchNotes';
 
 describe('patch notes', () => {
-    describe('when latestPatchSeen is not equal to latestPatchNotesUpdate', () => {
-        test('should show the dialog', () => {
-            localStorage.setItem('latestPatchSeen', '00000000');
+    describe('patch notes displays appropriately', () => {
+        test('displays when latest patch notes is outdated ', () => {
+            localStorage.setItem(patchNotesKey, '00000000');
 
             render(<PatchNotes />);
 
-            const dialog = screen.queryByTestId('dialog');
+            expect(screen.queryByTestId(dialogTestId)).toBeTruthy();
+        });
 
-            expect(dialog).toBeTruthy();
+        test('no display when latest patch notes is up to date', () => {
+            localStorage.setItem(patchNotesKey, latestPatchNotesUpdate);
+
+            render(<PatchNotes />);
+
+            expect(screen.queryByTestId(dialogTestId)).toBeFalsy();
         });
     });
 
-    describe('when latestPatchSeen equals latestPatchNotesUpdate', () => {
-        test('should not show the dialog', () => {
-            localStorage.setItem('latestPatchSeen', latestPatchNotesUpdate);
+    describe('close patch notes with button', () => {
+        test('clicking the button closes the dialog', () => {
+            localStorage.setItem(patchNotesKey, '00000000');
 
             render(<PatchNotes />);
 
-            const dialog = screen.queryByTestId('dialog');
+            act(() => {
+                screen.getByTestId(closeButtonTestId).click();
+            });
 
-            expect(dialog).toBeFalsy();
+            expect(screen.queryByTitle(dialogTestId)).toBeFalsy();
+        });
+
+        test('the latest patch notes is saved to local storage', () => {
+            localStorage.setItem(patchNotesKey, '00000000');
+
+            render(<PatchNotes />);
+
+            act(() => {
+                screen.getByTestId(closeButtonTestId).click();
+            });
+
+            expect(localStorage.getItem(patchNotesKey)).toEqual(latestPatchNotesUpdate);
         });
     });
 
-    describe('when the close button is clicked', () => {
-        test('should close the dialog', () => {
+    describe('closing the dialog by clicking the backdrop ', () => {
+        test('clicking the backdrop closes the dialog', () => {
+            localStorage.setItem(patchNotesKey, '00000000');
+
             render(<PatchNotes />);
 
-            const closeButton = screen.queryByTestId('close button');
-            if (closeButton) {
-                fireEvent.click(closeButton);
-            }
+            act(() => {
+                screen.getByTestId(backdropTestId).click();
+            });
 
-            const dialog = screen.queryByTitle('dialog');
-            expect(dialog).toBeFalsy();
-        });
-
-        test('should save latestPatchNotesUpdate to localStorage as latestPatchSeen', () => {
-            localStorage.setItem('latestPatchSeen', latestPatchNotesUpdate);
-            expect(localStorage.getItem('latestPatchSeen')).toEqual(latestPatchNotesUpdate);
-        });
-    });
-
-    describe('when the backdrop is clicked', () => {
-        test('should close the dialog', () => {
-            render(<PatchNotes />);
-
-            fireEvent.click(document.body);
-            const dialog = screen.queryByTitle('dialog');
+            const dialog = screen.queryByTitle(dialogTestId);
 
             expect(dialog).toBeFalsy();
         });
 
-        test('should save latestPatchNotesUpdate to localStorage as latestPatchSeen', () => {
-            localStorage.setItem('latestPatchSeen', latestPatchNotesUpdate);
-            expect(localStorage.getItem('latestPatchSeen')).toEqual(latestPatchNotesUpdate);
+        test('the latest patch notes is saved to local storage', () => {
+            localStorage.setItem(patchNotesKey, '00000000');
+
+            render(<PatchNotes />);
+
+            act(() => {
+                screen.getByTestId(backdropTestId).click();
+            });
+
+            expect(localStorage.getItem(patchNotesKey)).toEqual(latestPatchNotesUpdate);
         });
     });
 });

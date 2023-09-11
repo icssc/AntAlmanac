@@ -1,5 +1,14 @@
 import { useCallback, useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+import {
+    Backdrop,
+    type BackdropProps,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Typography,
+} from '@mui/material';
 
 /**
  * Show modal only if the current patch notes haven't been shown.
@@ -13,7 +22,14 @@ export const latestPatchNotesUpdate = '20230819';
  * Whether the user's last visited patch notes is outdated.
  */
 function isOutdated() {
-    return localStorage.getItem('latestPatchSeen') != latestPatchNotesUpdate;
+    return localStorage.getItem(patchNotesKey) != latestPatchNotesUpdate;
+}
+
+/**
+ * Custom backdrop that can be tested via a test ID.
+ */
+function PatchNotesBackdrop(props: BackdropProps) {
+    return <Backdrop {...props} data-testid={backdropTestId} />;
 }
 
 /**
@@ -23,12 +39,18 @@ function PatchNotes() {
     const [open, setOpen] = useState(isOutdated());
 
     const handleClose = useCallback(() => {
-        localStorage.setItem('latestPatchSeen', latestPatchNotesUpdate);
+        localStorage.setItem(patchNotesKey, latestPatchNotesUpdate);
         setOpen(false);
     }, []);
 
     return (
-        <Dialog fullWidth={true} onClose={handleClose} open={open} data-testid="dialog">
+        <Dialog
+            fullWidth={true}
+            onClose={handleClose}
+            open={open}
+            data-testid={dialogTestId}
+            slots={{ backdrop: PatchNotesBackdrop }}
+        >
             <DialogTitle>{"What's New - August 2023"}</DialogTitle>
 
             <DialogContent>
@@ -53,7 +75,7 @@ function PatchNotes() {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleClose} color="primary" data-testid="close button">
+                <Button onClick={handleClose} color="primary" data-testid={closeButtonTestId}>
                     Close
                 </Button>
             </DialogActions>
@@ -62,3 +84,13 @@ function PatchNotes() {
 }
 
 export default PatchNotes;
+
+// Test
+
+export const patchNotesKey = 'latestPatchSeen';
+
+export const dialogTestId = 'patch-notes-dialog';
+
+export const backdropTestId = 'patch-notes-backdrop';
+
+export const closeButtonTestId = 'patch-notes-close';

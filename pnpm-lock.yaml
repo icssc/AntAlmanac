@@ -14,6 +14,9 @@ importers:
       husky:
         specifier: ^8.0.3
         version: 8.0.3
+      jsdom:
+        specifier: ^22.1.0
+        version: 22.1.0
       lint-staged:
         specifier: ^13.1.1
         version: 13.1.2
@@ -25,7 +28,7 @@ importers:
         version: 1.10.13
       vitest:
         specifier: ^0.34.4
-        version: 0.34.4
+        version: 0.34.4(jsdom@22.1.0)
 
   apps/antalmanac:
     dependencies:
@@ -240,9 +243,6 @@ importers:
       husky:
         specifier: ^8.0.3
         version: 8.0.3
-      jsdom:
-        specifier: ^22.1.0
-        version: 22.1.0
       lint-staged:
         specifier: ^13.1.1
         version: 13.1.2
@@ -8648,7 +8648,7 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vitest@0.34.4:
+  /vitest@0.34.4(jsdom@22.1.0):
     resolution: {integrity: sha512-SE/laOsB6995QlbSE6BtkpXDeVNLJc1u2LHRG/OpnN4RsRzM3GQm4nm3PQCK5OBtrsUqnhzLdnT7se3aeNGdlw==}
     engines: {node: '>=v14.18.0'}
     hasBin: true
@@ -8692,6 +8692,7 @@ packages:
       cac: 6.7.14
       chai: 4.3.7
       debug: 4.3.4
+      jsdom: 22.1.0
       local-pkg: 0.4.3
       magic-string: 0.30.2
       pathe: 1.1.1
