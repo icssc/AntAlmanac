@@ -7,7 +7,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography }
  *
  * @example '20230819'
  */
-const latestPatchNotesUpdate = '20230819';
+export const latestPatchNotesUpdate = '20230819';
 
 /**
  * Whether the user's last visited patch notes is outdated.
@@ -28,7 +28,7 @@ function PatchNotes() {
     }, [setOpen]);
 
     return (
-        <Dialog fullWidth={true} onClose={handleClose} open={open}>
+        <Dialog fullWidth={true} onClose={handleClose} open={open} data-testid="dialog">
             <DialogTitle>{"What's New - August 2023"}</DialogTitle>
 
             <DialogContent>
@@ -53,7 +53,7 @@ function PatchNotes() {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleClose} color="primary">
+                <Button onClick={handleClose} color="primary" data-testid="close button">
                     Close
                 </Button>
             </DialogActions>

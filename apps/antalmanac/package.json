@@ -69,8 +69,9 @@
         "zustand": "^4.3.2"
     },
     "devDependencies": {
-        "@packages/antalmanac-types": "workspace:^",
         "@babel/core": "^7.20.12",
+        "@packages/antalmanac-types": "workspace:^",
+        "@testing-library/react": "^14.0.0",
         "@types/file-saver": "^2.0.5",
         "@types/leaflet": "^1.9.0",
         "@types/leaflet-routing-machine": "^3.2.4",
@@ -94,6 +95,7 @@
         "eslint-plugin-react-hooks": "^4.6.0",
         "gh-pages": "^5.0.0",
         "husky": "^8.0.3",
+        "jsdom": "^22.1.0",
         "lint-staged": "^13.1.1",
         "peterportal-api-next-types": "1.0.0-rc.2.68.0",
         "prettier": "^2.8.4",

@@ -13,4 +13,8 @@ export default defineConfig({
             $stores: resolve(__dirname, './src/stores'),
         },
     },
+    test: {
+        environment: 'jsdom',
+        // setupFiles: './tests/setup.ts',
+    },
 });
