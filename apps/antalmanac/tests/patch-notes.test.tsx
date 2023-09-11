@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import PatchNotes from '$components/PatchNotes';
+import PatchNotes, { latestPatchNotesUpdate } from '$components/PatchNotes';
 
 const setLocalStorage = (key: string, value: string) => {
     window.localStorage.setItem(key, value);
@@ -9,12 +9,9 @@ const setLocalStorage = (key: string, value: string) => {
 describe('patch notes', () => {
     describe('when latestPatchSeen is not equal to latestPatchNotesUpdate', () => {
         test('should show the dialog', () => {
-            setLocalStorage('latestPatchSeen', '20230513');
+            localStorage.setItem('latestPatchSeen', '00000000');
 
-            const mockLatestPatchNotesUpdate = '20230819';
-            if (mockLatestPatchNotesUpdate != localStorage.getItem('latestPatchSeen')) {
-                render(<PatchNotes />);
-            }
+            render(<PatchNotes />);
 
             const dialog = screen.queryByTestId('dialog');
 
@@ -24,13 +21,9 @@ describe('patch notes', () => {
 
     describe('when latestPatchSeen equals latestPatchNotesUpdate', () => {
         test('should not show the dialog', () => {
-            setLocalStorage('latestPatchSeen', '20230819');
+            localStorage.setItem('latestPatchSeen', latestPatchNotesUpdate);
 
-            const mockLatestPatchNotesUpdate = '20230819';
-
-            if (mockLatestPatchNotesUpdate != localStorage.getItem('latestPatchSeen')) {
-                render(<PatchNotes />);
-            }
+            render(<PatchNotes />);
 
             const dialog = screen.queryByTestId('dialog');
 
@@ -41,8 +34,8 @@ describe('patch notes', () => {
     describe('when the close button is clicked', () => {
         test('should close the dialog', () => {
             render(<PatchNotes />);
-            const closeButton = screen.queryByTestId('close button');
 
+            const closeButton = screen.queryByTestId('close button');
             if (closeButton) {
                 fireEvent.click(closeButton);
             }
@@ -52,10 +45,8 @@ describe('patch notes', () => {
         });
 
         test('should save latestPatchNotesUpdate to localStorage as latestPatchSeen', () => {
-            const mockLatestPatchNotesUpdate = '20230819';
-            setLocalStorage('latestPatchSeen', mockLatestPatchNotesUpdate);
-
-            expect(localStorage.getItem('latestPatchSeen')).toEqual(mockLatestPatchNotesUpdate);
+            setLocalStorage('latestPatchSeen', latestPatchNotesUpdate);
+            expect(localStorage.getItem('latestPatchSeen')).toEqual(latestPatchNotesUpdate);
         });
     });
 
@@ -64,16 +55,14 @@ describe('patch notes', () => {
             render(<PatchNotes />);
 
             fireEvent.click(document.body);
-
             const dialog = screen.queryByTitle('dialog');
+
             expect(dialog).toBeFalsy();
         });
 
         test('should save latestPatchNotesUpdate to localStorage as latestPatchSeen', () => {
-            const mockLatestPatchNotesUpdate = '20230819';
-            setLocalStorage('latestPatchSeen', mockLatestPatchNotesUpdate);
-
-            expect(localStorage.getItem('latestPatchSeen')).toEqual(mockLatestPatchNotesUpdate);
+            setLocalStorage('latestPatchSeen', latestPatchNotesUpdate);
+            expect(localStorage.getItem('latestPatchSeen')).toEqual(latestPatchNotesUpdate);
         });
     });
 });
