@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import PatchNotes from '$components/PatchNotes';
 
@@ -6,9 +6,9 @@ const setLocalStorage = (key: string, value: string) => {
     window.localStorage.setItem(key, value);
 };
 
-describe('PatchNotes Component', () => {
+describe('patch notes', () => {
     describe('when latestPatchSeen is not equal to latestPatchNotesUpdate', () => {
-        it('should show the dialog', () => {
+        test('should show the dialog', () => {
             setLocalStorage('latestPatchSeen', '20230513');
 
             const mockLatestPatchNotesUpdate = '20230819';
@@ -23,7 +23,7 @@ describe('PatchNotes Component', () => {
     });
 
     describe('when latestPatchSeen equals latestPatchNotesUpdate', () => {
-        it('should not show the dialog', () => {
+        test('should not show the dialog', () => {
             setLocalStorage('latestPatchSeen', '20230819');
 
             const mockLatestPatchNotesUpdate = '20230819';
@@ -39,7 +39,7 @@ describe('PatchNotes Component', () => {
     });
 
     describe('when the close button is clicked', () => {
-        it('should close the dialog', () => {
+        test('should close the dialog', () => {
             render(<PatchNotes />);
             const closeButton = screen.queryByTestId('close button');
 
@@ -51,7 +51,7 @@ describe('PatchNotes Component', () => {
             expect(dialog).toBeFalsy();
         });
 
-        it('should save latestPatchNotesUpdate to localStorage as latestPatchSeen', () => {
+        test('should save latestPatchNotesUpdate to localStorage as latestPatchSeen', () => {
             const mockLatestPatchNotesUpdate = '20230819';
             setLocalStorage('latestPatchSeen', mockLatestPatchNotesUpdate);
 
@@ -60,7 +60,7 @@ describe('PatchNotes Component', () => {
     });
 
     describe('when the backdrop is clicked', () => {
-        it('should close the dialog', () => {
+        test('should close the dialog', () => {
             render(<PatchNotes />);
 
             fireEvent.click(document.body);
@@ -69,7 +69,7 @@ describe('PatchNotes Component', () => {
             expect(dialog).toBeFalsy();
         });
 
-        it('should save latestPatchNotesUpdate to localStorage as latestPatchSeen', () => {
+        test('should save latestPatchNotesUpdate to localStorage as latestPatchSeen', () => {
             const mockLatestPatchNotesUpdate = '20230819';
             setLocalStorage('latestPatchSeen', mockLatestPatchNotesUpdate);
 
