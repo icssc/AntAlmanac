@@ -5,9 +5,9 @@ import RightPaneStore from '../RightPaneStore';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
 import CourseRenderPane from './CourseRenderPane';
 import SearchForm from './SearchForm/SearchForm';
-import { clearCache } from '$lib/helpers';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { openSnackbar } from '$actions/AppStoreActions';
+import { clearCache } from '$lib/course-helpers';
 
 const styles = {
     container: {
