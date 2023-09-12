@@ -16,10 +16,11 @@
   "devDependencies": {
     "cross-env": "^7.0.3",
     "husky": "^8.0.3",
+    "jsdom": "^22.1.0",
     "lint-staged": "^13.1.1",
     "prettier": "^2.8.4",
     "turbo": "latest",
-    "vitest": "^0.34.2"
+    "vitest": "^0.34.4"
   },
   "packageManager": "pnpm@8.6.0",
   "engines": {

@@ -1,5 +1,14 @@
 import { useCallback, useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, type DialogProps, Typography } from '@mui/material';
+import {
+    Backdrop,
+    type BackdropProps,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Typography,
+} from '@mui/material';
 
 /**
  * Show modal only if the current patch notes haven't been shown.
@@ -7,13 +16,20 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, type DialogP
  *
  * @example '20230819'
  */
-const latestPatchNotesUpdate = '20230819';
+export const latestPatchNotesUpdate = '20230819';
 
 /**
  * Whether the user's last visited patch notes is outdated.
  */
 function isOutdated() {
-    return localStorage.getItem('latestPatchSeen') != latestPatchNotesUpdate;
+    return localStorage.getItem(patchNotesKey) != latestPatchNotesUpdate;
+}
+
+/**
+ * Custom backdrop that can be tested via a test ID.
+ */
+function PatchNotesBackdrop(props: BackdropProps) {
+    return <Backdrop {...props} data-testid={backdropTestId} />;
 }
 
 /**
@@ -22,25 +38,19 @@ function isOutdated() {
 function PatchNotes() {
     const [open, setOpen] = useState(isOutdated());
 
-    /**
-     * Allow the user to exit the modal using their keyboard or by clicking outside the dialog.
-     */
-    const handleClose = useCallback(
-        ((_event, reason) => {
-            if (reason == 'backdropClick' || reason == 'escapeKeyDown') {
-                setOpen(false);
-                localStorage.setItem('latestPatchSeen', latestPatchNotesUpdate);
-            }
-        }) satisfies DialogProps['onClose'],
-        [setOpen]
-    );
-
-    const handleClick = useCallback(() => {
+    const handleClose = useCallback(() => {
+        localStorage.setItem(patchNotesKey, latestPatchNotesUpdate);
         setOpen(false);
-    }, [setOpen]);
+    }, []);
 
     return (
-        <Dialog fullWidth={true} onClose={handleClose} open={open}>
+        <Dialog
+            fullWidth={true}
+            onClose={handleClose}
+            open={open}
+            data-testid={dialogTestId}
+            slots={{ backdrop: PatchNotesBackdrop }}
+        >
             <DialogTitle>{"What's New - August 2023"}</DialogTitle>
 
             <DialogContent>
@@ -65,7 +75,7 @@ function PatchNotes() {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleClick} color="primary">
+                <Button onClick={handleClose} color="primary" data-testid={closeButtonTestId}>
                     Close
                 </Button>
             </DialogActions>
@@ -74,3 +84,13 @@ function PatchNotes() {
 }
 
 export default PatchNotes;
+
+// Test
+
+export const patchNotesKey = 'latestPatchSeen';
+
+export const dialogTestId = 'patch-notes-dialog';
+
+export const backdropTestId = 'patch-notes-backdrop';
+
+export const closeButtonTestId = 'patch-notes-close';
