@@ -68,7 +68,7 @@ describe('calendarize-helpers', () => {
     // 3 of the same event
     const calendarizedCourses = [
         {
-            bldg: undefined,
+            bldg: [],
             color: 'placeholderColor',
             term: 'placeholderTerm',
             title: 'placeholderDeptCode placeholderCourseNumber',
@@ -96,7 +96,7 @@ describe('calendarize-helpers', () => {
             isCustomEvent: false,
         },
         {
-            bldg: undefined,
+            bldg: [],
             color: 'placeholderColor',
             term: 'placeholderTerm',
             title: 'placeholderDeptCode placeholderCourseNumber',
@@ -124,7 +124,7 @@ describe('calendarize-helpers', () => {
             isCustomEvent: false,
         },
         {
-            bldg: undefined,
+            bldg: [],
             color: 'placeholderColor',
             term: 'placeholderTerm',
             title: 'placeholderDeptCode placeholderCourseNumber',
@@ -155,7 +155,7 @@ describe('calendarize-helpers', () => {
 
     const calendarizedCourseFinals = [
         {
-            bldg: undefined,
+            bldg: [],
             color: 'placeholderColor',
             term: 'placeholderTerm',
             title: 'placeholderDeptCode placeholderCourseNumber',
