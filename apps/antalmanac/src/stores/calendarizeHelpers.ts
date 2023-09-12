@@ -1,12 +1,17 @@
 import { ScheduleCourse } from '@packages/antalmanac-types';
 import { HourMinute } from 'peterportal-api-next-types';
-import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { notNull, getReferencesOccurring } from '$lib/utils';
 
 const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
 const FINALS_WEEK_DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+
+export function getBuilding(bldg: string): Location {
+    const [building = '', room = ''] = bldg.split(' ');
+    return { building, room };
+}
 
 export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
     return currentCourses.flatMap((course) => {
@@ -40,7 +45,7 @@ export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): 
                         term: course.term,
                         title: `${course.deptCode} ${course.courseNumber}`,
                         courseTitle: course.courseTitle,
-                        bldg: meeting.bldg[0],
+                        bldg: meeting.bldg.map(getBuilding),
                         instructors: course.section.instructors,
                         sectionCode: course.section.sectionCode,
                         sectionType: course.section.sectionType,
@@ -90,7 +95,7 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                     term: course.term,
                     title: `${course.deptCode} ${course.courseNumber}`,
                     courseTitle: course.courseTitle,
-                    bldg: course.section.meetings[0].bldg[0],
+                    bldg: course.section.meetings[0].bldg.map(getBuilding),
                     instructors: course.section.instructors,
                     sectionCode: course.section.sectionCode,
                     sectionType: 'Fin',
