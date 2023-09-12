@@ -43,7 +43,7 @@ export function getCoursesPerBuilding() {
 
     const allBuildingCodes = courseEvents
         .map((event) => event.bldg.map((location) => location.building))
-        .reduce((prev, cur) => prev.concat(cur), []);
+        courseEvents.flatMap(event => event.bldg.map(location => location.building))
 
     const uniqueBuildingCodes = new Set(allBuildingCodes);
 
