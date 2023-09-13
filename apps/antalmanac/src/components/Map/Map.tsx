@@ -49,9 +49,6 @@ export function getCoursesPerBuilding() {
         (buildingCode) => buildingCatalogue[locationIds[buildingCode]] != null
     );
 
-    console.log(validBuildingCodes);
-    console.log(courseEvents);
-
     const coursesPerBuilding: Record<string, (CourseEvent & Building & MarkerContent)[]> = {};
 
     validBuildingCodes.forEach((buildingCode) => {

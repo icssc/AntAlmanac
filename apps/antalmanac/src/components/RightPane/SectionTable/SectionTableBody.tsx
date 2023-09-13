@@ -201,7 +201,6 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
-                console.log(meeting);
                 return meeting.bldg[0] !== 'TBA' ? (
                     meeting.bldg.map((bldg) => {
                         const [buildingName = ''] = bldg.split(' ');
