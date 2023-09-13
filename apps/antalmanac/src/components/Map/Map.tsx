@@ -73,7 +73,6 @@ export function getCoursesPerBuilding() {
                 return markerData;
             });
     });
-    console.log(coursesPerBuilding);
 
     return coursesPerBuilding;
 }

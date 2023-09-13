@@ -178,7 +178,6 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     const { classes, courseInMoreInfo } = props;
 
     if (!courseInMoreInfo.isCustomEvent) {
-        console.log(courseInMoreInfo);
         const { term, instructors, sectionCode, title, finalExam, locations, sectionType } = courseInMoreInfo;
 
         let finalExamString = '';
