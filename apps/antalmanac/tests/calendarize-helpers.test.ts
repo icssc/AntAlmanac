@@ -21,7 +21,7 @@ describe('calendarize-helpers', () => {
                 meetings: [
                     {
                         timeIsTBA: false,
-                        bldg: [],
+                        locations: [],
                         days: 'MWF',
                         startTime: {
                             hour: 1,
@@ -46,7 +46,7 @@ describe('calendarize-helpers', () => {
                         hour: 3,
                         minute: 4,
                     },
-                    bldg: [],
+                    locations: [],
                 },
                 maxCapacity: 'placeholderMaxCapacity',
                 numCurrentlyEnrolled: {
@@ -68,7 +68,7 @@ describe('calendarize-helpers', () => {
     // 3 of the same event
     const calendarizedCourses = [
         {
-            bldg: [],
+            locations: [],
             color: 'placeholderColor',
             term: 'placeholderTerm',
             title: 'placeholderDeptCode placeholderCourseNumber',
@@ -91,12 +91,12 @@ describe('calendarize-helpers', () => {
                     hour: 3,
                     minute: 4,
                 },
-                bldg: [],
+                locations: [],
             },
             isCustomEvent: false,
         },
         {
-            bldg: [],
+            locations: [],
             color: 'placeholderColor',
             term: 'placeholderTerm',
             title: 'placeholderDeptCode placeholderCourseNumber',
@@ -119,12 +119,12 @@ describe('calendarize-helpers', () => {
                     hour: 3,
                     minute: 4,
                 },
-                bldg: [],
+                locations: [],
             },
             isCustomEvent: false,
         },
         {
-            bldg: [],
+            locations: [],
             color: 'placeholderColor',
             term: 'placeholderTerm',
             title: 'placeholderDeptCode placeholderCourseNumber',
@@ -147,7 +147,7 @@ describe('calendarize-helpers', () => {
                     hour: 3,
                     minute: 4,
                 },
-                bldg: [],
+                locations: [],
             },
             isCustomEvent: false,
         },
@@ -155,7 +155,7 @@ describe('calendarize-helpers', () => {
 
     const calendarizedCourseFinals = [
         {
-            bldg: [],
+            locations: [],
             color: 'placeholderColor',
             term: 'placeholderTerm',
             title: 'placeholderDeptCode placeholderCourseNumber',
@@ -178,7 +178,7 @@ describe('calendarize-helpers', () => {
                     hour: 3,
                     minute: 4,
                 },
-                bldg: [],
+                locations: [],
             },
             isCustomEvent: false,
         },

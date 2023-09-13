@@ -106,7 +106,8 @@ export interface Location {
 }
 
 export interface CourseEvent extends CommonCalendarEvent {
-    bldg: Location[];
+    locations: Location[];
+    showLocationInfo: boolean;
     finalExam: {
         examStatus: 'NO_FINAL' | 'TBA_FINAL' | 'SCHEDULED_FINAL';
         dayOfWeek: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | null;
@@ -120,7 +121,7 @@ export interface CourseEvent extends CommonCalendarEvent {
             hour: number;
             minute: number;
         } | null;
-        bldg: string[] | null;
+        locations: Location[] | null;
     };
     courseTitle: string;
     instructors: string[];
@@ -177,7 +178,8 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     const { classes, courseInMoreInfo } = props;
 
     if (!courseInMoreInfo.isCustomEvent) {
-        const { term, instructors, sectionCode, title, finalExam, bldg, sectionType } = courseInMoreInfo;
+        console.log(courseInMoreInfo);
+        const { term, instructors, sectionCode, title, finalExam, locations, sectionType } = courseInMoreInfo;
 
         let finalExamString = '';
 
@@ -186,9 +188,11 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         } else if (finalExam.examStatus == 'TBA_FINAL') {
             finalExamString = 'Final TBA';
         } else {
-            if (finalExam.startTime && finalExam.endTime && finalExam.month && finalExam.bldg) {
+            if (finalExam.startTime && finalExam.endTime && finalExam.month && finalExam.locations) {
                 const timeString = translate24To12HourTime(finalExam.startTime, finalExam.endTime);
-                const locationString = `at ${finalExam.bldg.join(', ')}`;
+                const locationString = `at ${finalExam.locations
+                    .map((location) => `${location.building} ${location.room}`)
+                    .join(', ')}`;
                 const finalExamMonth = MONTHS[finalExam.month];
 
                 finalExamString = `${finalExam.dayOfWeek} ${finalExamMonth} ${finalExam.day} ${timeString} ${locationString}`;
@@ -244,9 +248,9 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             <td className={`${classes.multiline} ${classes.rightCells}`}>{instructors.join('\n')}</td>
                         </tr>
                         <tr>
-                            <td className={classes.alignToTop}>Location{bldg.length > 1 && 's'}</td>
+                            <td className={classes.alignToTop}>Location{locations.length > 1 && 's'}</td>
                             <td className={`${classes.multiline} ${classes.rightCells}`}>
-                                {bldg.map((location) => (
+                                {locations.map((location) => (
                                     <div key={`${sectionCode} @ ${location.building} ${location.room}`}>
                                         <Link
                                             className={classes.clickableLocation}

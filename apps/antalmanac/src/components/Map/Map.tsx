@@ -41,9 +41,7 @@ interface MarkerContent {
 export function getCoursesPerBuilding() {
     const courseEvents = AppStore.getCourseEventsInCalendar();
 
-    const allBuildingCodes = courseEvents
-        .map((event) => event.bldg.map((location) => location.building))
-        courseEvents.flatMap(event => event.bldg.map(location => location.building))
+    const allBuildingCodes = courseEvents.flatMap((event) => event.locations.map((location) => location.building));
 
     const uniqueBuildingCodes = new Set(allBuildingCodes);
 
@@ -51,14 +49,17 @@ export function getCoursesPerBuilding() {
         (buildingCode) => buildingCatalogue[locationIds[buildingCode]] != null
     );
 
+    console.log(validBuildingCodes);
+    console.log(courseEvents);
+
     const coursesPerBuilding: Record<string, (CourseEvent & Building & MarkerContent)[]> = {};
 
     validBuildingCodes.forEach((buildingCode) => {
         coursesPerBuilding[buildingCode] = courseEvents
-            .filter((event) => event.bldg.map((bldg) => bldg.building).includes(buildingCode))
+            .filter((event) => event.locations.map((location) => location.building).includes(buildingCode))
             .map((event) => {
                 const locationData = buildingCatalogue[locationIds[buildingCode]];
-                const key = `${event.title} ${event.sectionType} @ ${event.bldg}`;
+                const key = `${event.title} ${event.sectionType} @ ${event.locations[0]}`;
                 const acronym = locationData.name.substring(
                     locationData.name.indexOf('(') + 1,
                     locationData.name.indexOf(')')
@@ -75,6 +76,8 @@ export function getCoursesPerBuilding() {
                 return markerData;
             });
     });
+    console.log(coursesPerBuilding);
+
     return coursesPerBuilding;
 }
 
@@ -254,10 +257,12 @@ export default function CourseMap() {
                     // TODO Handle multiple buildings between class comparisons on markers.
                     const coursesSameBuildingPrior = markersToDisplay
                         .slice(0, index)
-                        .filter((m) => m.bldg.map((location) => location.building).includes(marker.bldg[0].building));
+                        .filter((m) =>
+                            m.locations.map((location) => location.building).includes(marker.locations[0].building)
+                        );
 
-                    const allRoomsInBuilding = marker.bldg
-                        .filter((location) => location.building == marker.bldg[0].building)
+                    const allRoomsInBuilding = marker.locations
+                        .filter((location) => location.building == marker.locations[0].building)
                         .reduce((roomList, location) => [...roomList, location.room], [] as string[]);
 
                     return (
@@ -272,7 +277,7 @@ export default function CourseMap() {
                                         Class: {marker.title} {marker.sectionType}
                                     </Typography>
                                     <Typography variant="body2">
-                                        Room{allRoomsInBuilding.length > 1 && 's'}: {marker.bldg[0].building}{' '}
+                                        Room{allRoomsInBuilding.length > 1 && 's'}: {marker.locations[0].building}{' '}
                                         {allRoomsInBuilding.join('/')}
                                     </Typography>
                                 </Box>
