@@ -1,236 +1,320 @@
-import { IconButton, ListSubheader, Menu, Paper, Tooltip } from '@material-ui/core';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { Theme, withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { Delete, MoreHoriz, Undo } from '@material-ui/icons';
-import React, { useEffect, useRef, useState } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { Box, Button, IconButton, Paper, Popover, Tooltip, Typography, useTheme } from '@mui/material';
+import {
+    Add as AddIcon,
+    ArrowDropDown as ArrowDropDownIcon,
+    Delete as DeleteIcon,
+    Edit as EditIcon,
+    Undo as UndoIcon,
+    Clear as ClearIcon,
+} from '@mui/icons-material';
 
-import ConditionalWrapper from '../ConditionalWrapper';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
-import EditSchedule from './Toolbar/EditSchedule/EditSchedule';
-import ScheduleNameDialog from './Toolbar/EditSchedule/ScheduleNameDialog';
-import ExportCalendar from './Toolbar/ExportCalendar';
-import ScreenshotButton from './Toolbar/ScreenshotButton';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
+import AddScheduleDialog from '$components/dialogs/AddSchedule';
+import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
+import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import AppStore from '$stores/AppStore';
 import TermViewer from '$components/Calendar/TermViewer';
-import FinalsButton from '$components/Calendar/Toolbar/FinalsButton';
 
-const styles: Styles<Theme, object> = {
-    toolbar: {
-        display: 'flex',
-        overflow: 'hidden',
-        marginBottom: '4px',
-        alignItems: 'center',
-        height: '50px',
+function handleScheduleChange(index: number) {
+    logAnalytics({
+        category: analyticsEnum.calendar.title,
+        action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
+    });
+    changeCurrentSchedule(index);
+}
 
-        '& button': {
-            margin: '0 2px 0 2px',
-        },
-        '& #finalButton': {
-            marginLeft: '12px',
-        },
-        padding: '2px',
-    },
-    inline: {
-        display: 'inline',
-    },
-    spacer: {
-        flexGrow: 1,
-    },
-    scheduleSelector: {
-        paddingLeft: '1em',
-        width: '10rem',
-    },
-    termSelector: {
-        flexGrow: 1,
-        flexShrink: 1,
-        display: 'flex',
-        overflow: 'hidden',
-        paddingLeft: '1rem',
-        paddingRight: '1rem',
-        alignItems: 'center',
-        maxWidth: '16rem',
-        justifyContent: 'center',
-        margin: '0 auto',
-    },
-    rootTermSelector: {
-        maxWidth: '15rem',
-        overflow: 'hidden',
-        textAlign: 'center',
-    },
-    rootScheduleSelector: {
-        overflow: 'hidden',
-        maxWidth: '10rem',
-    },
-};
+/**
+ * Creates an event handler callback that will change the current schedule to the one at a specified index.
+ */
+function createScheduleSelector(index: number) {
+    return () => {
+        handleScheduleChange(index);
+    };
+}
 
-interface CalendarPaneToolbarProps {
-    classes: ClassNameMap;
-    scheduleMap: Map<string, [number, string][]>;
+function handleUndo() {
+    logAnalytics({
+        category: analyticsEnum.calendar.title,
+        action: analyticsEnum.calendar.actions.UNDO,
+    });
+    undoDelete(null);
+}
+
+function handleClearSchedule() {
+    if (window.confirm('Are you sure you want to clear this schedule?')) {
+        clearSchedules();
+        logAnalytics({
+            category: analyticsEnum.calendar.title,
+            action: analyticsEnum.calendar.actions.CLEAR_SCHEDULE,
+        });
+    }
+}
+
+function EditScheduleButton(props: { index: number }) {
+    const [open, setOpen] = useState(false);
+
+    const handleOpen = useCallback(() => {
+        setOpen(true);
+    }, []);
+
+    const handleClose = useCallback(() => {
+        setOpen(false);
+    }, []);
+
+    return (
+        <Box>
+            <IconButton onClick={handleOpen} size="small">
+                <EditIcon />
+            </IconButton>
+            <RenameScheduleDialog fullWidth open={open} index={props.index} onClose={handleClose} />
+        </Box>
+    );
+}
+
+function DeleteScheduleButton(props: { index: number }) {
+    const [open, setOpen] = useState(false);
+
+    const handleOpen = useCallback(() => {
+        setOpen(true);
+    }, []);
+
+    const handleClose = useCallback(() => {
+        setOpen(false);
+    }, []);
+
+    return (
+        <Box>
+            <IconButton onClick={handleOpen} size="small" disabled={AppStore.schedule.getNumberOfSchedules() === 1}>
+                <ClearIcon />
+            </IconButton>
+            <DeleteScheduleDialog fullWidth open={open} index={props.index} onClose={handleClose} />
+        </Box>
+    );
+}
+
+/**
+ * MenuItem nested in the select menu to add a new schedule through a dialog.
+ */
+function AddScheduleButton() {
+    const [open, setOpen] = useState(false);
+
+    const handleOpen = useCallback(() => {
+        setOpen(true);
+    }, []);
+
+    const handleClose = useCallback(() => {
+        setOpen(false);
+    }, []);
+
+    return (
+        <>
+            <Button color="inherit" onClick={handleOpen} sx={{ display: 'flex', gap: 1 }}>
+                <AddIcon />
+                <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
+                    Add Schedule
+                </Typography>
+            </Button>
+            <AddScheduleDialog fullWidth open={open} onClose={handleClose} />
+        </>
+    );
+}
+
+/**
+ * Simulates an HTML select element using a popover.
+ *
+ * Can select a schedule, and also control schedule settings with buttons.
+ */
+function SelectSchedulePopover(props: { scheduleNames: string[] }) {
+    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+
+    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
+
+    const theme = useTheme();
+
+    // TODO: maybe these widths should be dynamic based on i.e. the viewport width?
+
+    const minWidth = useMemo(() => 100, []);
+    const maxWidth = useMemo(() => 150, []);
+
+    const open = useMemo(() => Boolean(anchorEl), [anchorEl]);
+
+    const currentScheduleName = useMemo(() => {
+        return props.scheduleNames[currentScheduleIndex];
+    }, [props.scheduleNames, currentScheduleIndex]);
+
+    const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    }, []);
+
+    const handleClose = useCallback(() => {
+        setAnchorEl(undefined);
+    }, []);
+
+    const handleScheduleIndexChange = useCallback(() => {
+        setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
+    }, []);
+
+    useEffect(() => {
+        AppStore.on('addedCoursesChange', handleScheduleIndexChange);
+        AppStore.on('customEventsChange', handleScheduleIndexChange);
+        AppStore.on('colorChange', handleScheduleIndexChange);
+        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
+
+        return () => {
+            AppStore.off('addedCoursesChange', handleScheduleIndexChange);
+            AppStore.off('customEventsChange', handleScheduleIndexChange);
+            AppStore.off('colorChange', handleScheduleIndexChange);
+            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
+        };
+    }, [handleScheduleIndexChange]);
+
+    return (
+        <Box>
+            <Button
+                size="small"
+                color="inherit"
+                variant="outlined"
+                onClick={handleClick}
+                sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
+            >
+                <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
+                    {currentScheduleName}
+                </Typography>
+                <ArrowDropDownIcon />
+            </Button>
+
+            <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            >
+                <Box padding={1}>
+                    {props.scheduleNames.map((name, index) => (
+                        <Box key={index} display="flex" alignItems="center" gap={1}>
+                            <Box flexGrow={1}>
+                                <Button
+                                    color="inherit"
+                                    sx={{
+                                        minWidth,
+                                        maxWidth,
+                                        width: '100%',
+                                        display: 'flex',
+                                        justifyContent: 'flex-start',
+                                        background:
+                                            index === currentScheduleIndex ? theme.palette.action.selected : undefined,
+                                    }}
+                                    onClick={createScheduleSelector(index)}
+                                >
+                                    <Typography
+                                        overflow="hidden"
+                                        whiteSpace="nowrap"
+                                        textTransform="none"
+                                        textOverflow="ellipsis"
+                                    >
+                                        {name}
+                                    </Typography>
+                                </Button>
+                            </Box>
+                            <Box display="flex" alignItems="center" gap={0.5}>
+                                <EditScheduleButton index={index} />
+                                <DeleteScheduleButton index={index} />
+                            </Box>
+                        </Box>
+                    ))}
+
+                    <Box marginY={1} />
+
+                    <AddScheduleButton />
+                </Box>
+            </Popover>
+        </Box>
+    );
+}
+
+export interface CalendarPaneToolbarProps {
+    scheduleNames: string[];
     currentScheduleIndex: number;
     showFinalsSchedule: boolean;
     toggleDisplayFinalsSchedule: () => void;
-    onTakeScreenshot: (html2CanvasScreenshot: () => void) => void; // the function in an ancestor component that wraps ScreenshotButton.handleClick to perform canvas transformations before and after downloading the screenshot.
 }
 
-const CalendarPaneToolbar = ({
-    classes,
-    scheduleMap,
-    currentScheduleIndex,
-    showFinalsSchedule,
-    toggleDisplayFinalsSchedule,
-    onTakeScreenshot,
-}: CalendarPaneToolbarProps) => {
-    const handleScheduleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+/**
+ * The root toolbar will pass down the schedule names to its children.
+ */
+function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
+    const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
+
+    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+
+    const handleToggleFinals = useCallback(() => {
         logAnalytics({
             category: analyticsEnum.calendar.title,
-            action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
+            action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
         });
-        changeCurrentSchedule(event.target.value as number);
-    };
+        toggleDisplayFinalsSchedule();
+    }, [toggleDisplayFinalsSchedule]);
 
-    const paperRef = useRef<HTMLDivElement>();
-    const [isWideEnough, setIsWideEnough] = useState(false);
-
-    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
-    const [openSchedules, setOpenSchedules] = useState<boolean>(false);
-
-    const handleMenuClick: React.MouseEventHandler<HTMLElement> = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose: React.MouseEventHandler<HTMLElement> = () => {
-        setAnchorEl(undefined);
-    };
-
-    const handleScheduleClick = () => {
-        setOpenSchedules((prev) => !prev);
-    };
+    const handleScheduleNamesChange = useCallback(() => {
+        setScheduleNames(AppStore.getScheduleNames());
+    }, []);
 
     useEffect(() => {
-        const handleResize = () => {
-            if (paperRef.current) {
-                const fontSize = parseFloat(getComputedStyle(paperRef.current).fontSize);
-                const widthInEm = paperRef.current.clientWidth / fontSize;
-                setIsWideEnough(widthInEm > 60);
-            }
-        };
-        handleResize();
-
-        const resizeObserver = new ResizeObserver(handleResize);
-        if (paperRef.current) {
-            resizeObserver.observe(paperRef.current);
-        }
+        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
 
         return () => {
-            window.removeEventListener('resize', handleResize);
+            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
         };
-    }, [paperRef]);
+    }, [handleScheduleNamesChange]);
 
     return (
-        <Paper elevation={0} variant="outlined" square className={classes.toolbar} ref={paperRef}>
-            <EditSchedule />
-
-            <div className={classes.scheduleSelector}>
-                <Select
-                    classes={{ root: classes.rootScheduleSelector }}
-                    value={currentScheduleIndex.toString()}
-                    onChange={handleScheduleChange}
-                    open={openSchedules}
-                    onClick={handleScheduleClick}
-                >
-                    {Array.from(scheduleMap.entries()).flatMap(([term, schedules]) => {
-                        return [
-                            <ListSubheader
-                                key={term}
-                                onClick={(event) => event.preventDefault()}
-                                style={{ pointerEvents: 'none' }}
-                            >
-                                {term}
-                            </ListSubheader>,
-                            ...schedules.map(([scheduleIndex, scheduleName]) => (
-                                <MenuItem key={scheduleIndex} value={scheduleIndex}>
-                                    {scheduleName}
-                                </MenuItem>
-                            )),
-                        ];
-                    })}
-
-                    <ScheduleNameDialog onOpen={() => setOpenSchedules(true)} onClose={() => setOpenSchedules(false)} />
-                </Select>
-            </div>
-
-            <div className={classes.termSelector}>
-                <TermViewer />
-            </div>
-
-            <Tooltip title="Undo last action">
-                <IconButton
-                    onClick={() => {
-                        logAnalytics({
-                            category: analyticsEnum.calendar.title,
-                            action: analyticsEnum.calendar.actions.UNDO,
-                        });
-                        undoDelete(null);
-                    }}
-                >
-                    <Undo fontSize="small" />
-                </IconButton>
-            </Tooltip>
-
-            <Tooltip title="Clear schedule">
-                <IconButton
-                    onClick={() => {
-                        if (window.confirm('Are you sure you want to clear this schedule?')) {
-                            clearSchedules();
-                            logAnalytics({
-                                category: analyticsEnum.calendar.title,
-                                action: analyticsEnum.calendar.actions.CLEAR_SCHEDULE,
-                            });
-                        }
-                    }}
-                >
-                    <Delete fontSize="small" />
-                </IconButton>
-            </Tooltip>
-
-            <ConditionalWrapper
-                condition={!isWideEnough}
-                wrapper={(children) => (
-                    <div>
-                        <IconButton onClick={handleMenuClick}>
-                            <MoreHoriz />
-                        </IconButton>
-
-                        <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                            {children}
-                        </Menu>
-                    </div>
-                )}
-            >
-                {[
-                    <ScreenshotButton onTakeScreenshot={onTakeScreenshot} key="screenshot" />,
-                    <ExportCalendar key="export" />,
-                    <CustomEventDialog key="custom" />,
-                    <FinalsButton
-                        key="finals"
-                        showFinalsSchedule={showFinalsSchedule}
-                        toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
-                    />,
-                ].map((element, index) => (
-                    <ConditionalWrapper
-                        key={index}
-                        condition={!isWideEnough}
-                        wrapper={(children) => <MenuItem onClick={handleMenuClose}>{children}</MenuItem>}
+        <Paper
+            elevation={0}
+            variant="outlined"
+            sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', padding: 1 }}
+        >
+            <Box gap={1} display="flex" alignItems="center">
+                <SelectSchedulePopover scheduleNames={scheduleNames} />
+                <Tooltip title="Toggle showing finals schedule">
+                    <Button
+                        color={showFinalsSchedule ? 'primary' : 'inherit'}
+                        variant={showFinalsSchedule ? 'contained' : 'outlined'}
+                        onClick={handleToggleFinals}
+                        size="small"
                     >
-                        {element}
-                    </ConditionalWrapper>
-                ))}
-            </ConditionalWrapper>
+                        Finals
+                    </Button>
+                </Tooltip>
+            </Box>
+
+            <Box flexGrow={1} sx={{overflow: 'hidden', px: 5}}>
+                <TermViewer />
+            </Box>
+
+            <Box display="flex" flexWrap="wrap" gap={0.5}>
+                <Box display="flex" alignItems="center" gap={0.5}>
+                    <Tooltip title="Undo last action">
+                        <IconButton onClick={handleUndo} size="medium">
+                            <UndoIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Clear schedule">
+                        <IconButton onClick={handleClearSchedule} size="medium">
+                            <DeleteIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                </Box>
+
+                <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
+                    <CustomEventDialog key="custom" />
+                </Box>
+            </Box>
         </Paper>
     );
-};
+}
 
-export default withStyles(styles)(CalendarPaneToolbar);
+export default CalendarPaneToolbar;

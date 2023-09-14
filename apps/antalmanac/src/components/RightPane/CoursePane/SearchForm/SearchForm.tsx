@@ -1,4 +1,4 @@
-import { FormControl, IconButton, Theme, Tooltip } from '@material-ui/core';
+import { IconButton, Theme, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Tune } from '@material-ui/icons';
@@ -81,20 +81,23 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                         <TermSelector
                             changeState={(field: string, value: string) => RightPaneStore.updateFormValue(field, value)}
                         />
+                        <Tooltip title="Toggle Manual Search">
+                            <IconButton onClick={toggleShowLegacySearch}>
+                                <Tune />
+                            </IconButton>
+                        </Tooltip>
                     </div>
 
-                    <div className={classes.container}>
-                        <div className={classes.searchBar}>
-                            <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleShowLegacySearch} />
-                            <Tooltip title="Manual Search">
-                                <IconButton onClick={toggleShowLegacySearch}>
-                                    <Tune />
-                                </IconButton>
-                            </Tooltip>
+                    {!showLegacySearch ? (
+                        <div className={classes.container}>
+                            <div className={classes.searchBar}>
+                                <FuzzySearch
+                                    toggleSearch={toggleSearch}
+                                    toggleShowLegacySearch={toggleShowLegacySearch}
+                                />
+                            </div>
                         </div>
-                    </div>
-
-                    {showLegacySearch && (
+                    ) : (
                         <LegacySearch
                             onSubmit={() => {
                                 logAnalytics({

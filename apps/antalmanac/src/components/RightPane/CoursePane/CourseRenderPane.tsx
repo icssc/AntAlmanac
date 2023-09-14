@@ -17,8 +17,9 @@ import loadingGif from './SearchForm/Gifs/loading.gif';
 import darkNoNothing from './static/dark-no_results.png';
 import noNothing from './static/no_results.png';
 import AppStore from '$stores/AppStore';
-import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '$lib/helpers';
+import { isDarkMode, queryWebsocMultiple } from '$lib/helpers';
 import analyticsEnum from '$lib/analytics';
+import { queryWebsoc } from '$lib/course-helpers';
 
 const styles: Styles<Theme, object> = (theme) => ({
     course: {
@@ -170,8 +171,7 @@ const SectionTableWrapped = (
             <GeDataFetchProvider
                 term={formData.term}
                 courseDetails={course}
-                colorAndDelete={false}
-                highlightAdded={true}
+                allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch.title}
             />
@@ -182,8 +182,7 @@ const SectionTableWrapped = (
             <SectionTableLazyWrapper
                 term={formData.term}
                 courseDetails={course}
-                colorAndDelete={false}
-                highlightAdded={true}
+                allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch.title}
             />
@@ -229,6 +228,7 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
                 fullCourses: formData.coursesFull,
                 building: formData.building,
                 room: formData.room,
+                division: formData.division,
             };
 
             try {

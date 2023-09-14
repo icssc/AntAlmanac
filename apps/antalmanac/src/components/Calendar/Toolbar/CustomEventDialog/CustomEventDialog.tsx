@@ -156,7 +156,7 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
                             size="small"
                             startIcon={<Add fontSize="small" />}
                         >
-                            Add Custom
+                            Custom
                         </Button>
                     </Tooltip>
                 )}

@@ -20,7 +20,6 @@
         "lint": "eslint src"
     },
     "dependencies": {
-        "@packages/antalmanac-types": "*",
         "@date-io/date-fns": "^2.16.0",
         "@emotion/react": "^11.10.5",
         "@emotion/styled": "^11.10.5",
@@ -28,9 +27,11 @@
         "@material-ui/icons": "^4.11.3",
         "@material-ui/lab": "^4.0.0-alpha.61",
         "@material-ui/pickers": "^3.3.10",
+        "@mui/base": "5.0.0-beta.13",
         "@mui/icons-material": "^5.11.0",
         "@mui/lab": "^5.0.0-alpha.118",
         "@mui/material": "^5.11.7",
+        "@packages/antalmanac-types": "*",
         "@react-leaflet/core": "^2.1.0",
         "@tanstack/react-query": "^4.24.4",
         "@trpc/client": "^10.37.1",
@@ -69,6 +70,8 @@
     },
     "devDependencies": {
         "@babel/core": "^7.20.12",
+        "@packages/antalmanac-types": "workspace:^",
+        "@testing-library/react": "^14.0.0",
         "@types/file-saver": "^2.0.5",
         "@types/leaflet": "^1.9.0",
         "@types/leaflet-routing-machine": "^3.2.4",
@@ -82,7 +85,7 @@
         "@types/react-lazyload": "^3.2.0",
         "@typescript-eslint/eslint-plugin": "^5.54.1",
         "@typescript-eslint/parser": "^5.54.1",
-        "@vitejs/plugin-react": "^3.1.0",
+        "@vitejs/plugin-react": "^4.0.4",
         "eslint": "^8.36.0",
         "eslint-config-prettier": "^8.7.0",
         "eslint-plugin-import": "^2.27.5",
@@ -92,10 +95,10 @@
         "gh-pages": "^5.0.0",
         "husky": "^8.0.3",
         "lint-staged": "^13.1.1",
-        "peterportal-api-next-types": "1.0.0-beta.2",
+        "peterportal-api-next-types": "1.0.0-rc.2.68.0",
         "prettier": "^2.8.4",
         "typescript": "^4.9.5",
-        "vite": "^4.2.1",
+        "vite": "^4.4.9",
         "vite-plugin-svgr": "^2.4.0"
     },
     "browserslist": {

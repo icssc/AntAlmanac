@@ -73,6 +73,9 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
    and the backend server at http://localhost:8080 (if started).
    As you make changes to the React application in `src`, those changes will be automatically reflected on the website locally.
 
+#### Running Tests
+1. Run `pnpm test` in the root directory
+
 ### Running the [Backend](https://github.com/icssc/antalmanac-backend)
 
 The backend server __isn't necessary for frontend development__. 

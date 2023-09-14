@@ -1,0 +1,66 @@
+name: Test
+
+on:
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - unlabeled
+
+permissions:
+    id-token: write
+    contents: read
+    deployments: write
+    pull-requests: write
+
+concurrency:
+    group: ${{ github.head_ref }}-test
+    cancel-in-progress: true
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Install pnpm
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 8.6.0
+
+            - name: Setup Node.js with pnpm cache
+              uses: actions/setup-node@v3
+              with:
+                  node-version: lts/hydrogen
+                  cache: pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build
+              env:
+                HUSKY: 0
+
+                # Frontend environment variables.
+                VITE_ENDPOINT: ${{ env.apiSubDomain }}
+                NODE_ENV: ${{ env.nodeEnv }}
+
+                # Backend environment variables.
+                HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
+                CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+                MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
+                PR_NUM: ${{ github.event.pull_request.number }}
+
+                # CDK environment variables.
+                API_SUB_DOMAIN: ${{ env.apiSubDomain }}
+
+                # Turborepo credentials.
+                TURBO_API: ${{ vars.TURBO_API }}
+                TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+                TURBO_TEAM: "team_antalmanac"
+              run: pnpm build
+
+            - name: Test
+              run: pnpm test run

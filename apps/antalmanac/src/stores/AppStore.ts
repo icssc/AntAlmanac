@@ -6,6 +6,12 @@ import { Schedules } from './Schedules';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { useTabStore } from '$stores/TabStore';
+
+function getCurrentTheme() {
+    const theme = typeof Storage === 'undefined' ? 'auto' : window.localStorage.getItem('theme');
+    return theme === null ? 'auto' : theme;
+}
 
 export interface User {
     name: string;
@@ -17,7 +23,7 @@ class AppStore extends EventEmitter {
     schedule: Schedules;
     user?: User;
     customEvents: RepeatingCustomEvent[];
-    colorPickers: { [key: string]: EventEmitter };
+    colorPickers: Record<string, EventEmitter>;
     snackbarMessage: string;
     snackbarVariant: VariantType;
     snackbarDuration: number;
@@ -27,6 +33,7 @@ class AppStore extends EventEmitter {
     eventsInCalendar: CalendarEvent[];
     finalsEventsInCalendar: CourseEvent[];
     unsavedChanges: boolean;
+    skeletonMode: boolean;
 
     constructor() {
         super();
@@ -42,17 +49,16 @@ class AppStore extends EventEmitter {
         this.eventsInCalendar = [];
         this.finalsEventsInCalendar = [];
         this.unsavedChanges = false;
-        this.theme = (() => {
-            // either 'light', 'dark', or 'auto'
-            const theme = typeof Storage === 'undefined' ? 'auto' : window.localStorage.getItem('theme');
-            return theme === null ? 'auto' : theme;
-        })();
+        this.skeletonMode = false;
+        this.theme = getCurrentTheme();
 
-        window.addEventListener('beforeunload', (event) => {
-            if (this.unsavedChanges) {
-                event.returnValue = `Are you sure you want to leave? You have unsaved changes!`;
-            }
-        });
+        if (typeof window !== 'undefined') {
+            window.addEventListener('beforeunload', (event) => {
+                if (this.unsavedChanges) {
+                    event.returnValue = `Are you sure you want to leave? You have unsaved changes!`;
+                }
+            });
+        }
     }
 
     getCurrentScheduleIndex() {
@@ -79,7 +85,11 @@ class AppStore extends EventEmitter {
         return this.schedule.getAllCustomEvents();
     }
 
-    addCourse(newCourse: ScheduleCourse, scheduleIndex: number) {
+    getSkeletonSchedule() {
+        return this.schedule.getSkeletonSchedule();
+    }
+
+    addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
         let addedCourse: ScheduleCourse;
         if (scheduleIndex === this.schedule.getNumberOfSchedules()) {
             addedCourse = this.schedule.addCourseToAllSchedules(newCourse);
@@ -133,6 +143,10 @@ class AppStore extends EventEmitter {
 
     getCurrentScheduleNote() {
         return this.schedule.getCurrentScheduleNote();
+    }
+
+    getSkeletonMode() {
+        return this.skeletonMode;
     }
 
     hasUnsavedChanges() {
@@ -238,6 +252,7 @@ class AppStore extends EventEmitter {
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
         this.emit('userAuthChange');
+
         return true;
     }
 
@@ -256,7 +271,24 @@ class AppStore extends EventEmitter {
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
         this.emit('userAuthChange');
+
         return true;
+    }
+
+    loadSkeletonSchedule(savedSchedule: ScheduleSaveState) {
+        this.schedule.setSkeletonSchedules(savedSchedule.schedules);
+        this.skeletonMode = true;
+
+        this.emit('addedCoursesChange');
+        this.emit('customEventsChange');
+        this.emit('scheduleNamesChange');
+        this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
+
+        this.emit('skeletonModeChange');
+
+        // Switch to added courses tab since PeterPortal can't be reached anyway
+        useTabStore.getState().setActiveTab(1);
     }
 
     changeCurrentSchedule(newScheduleIndex: number) {
@@ -272,8 +304,8 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    deleteSchedule() {
-        this.schedule.deleteCurrentSchedule();
+    deleteSchedule(scheduleIndex: number) {
+        this.schedule.deleteSchedule(scheduleIndex);
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('addedCoursesChange');
@@ -293,7 +325,7 @@ class AppStore extends EventEmitter {
         message: string,
         duration?: number,
         position?: SnackbarPosition,
-        style?: { [cssPropertyName: string]: string }
+        style?: Record<string, string>
     ) {
         this.snackbarVariant = variant;
         this.snackbarMessage = message;

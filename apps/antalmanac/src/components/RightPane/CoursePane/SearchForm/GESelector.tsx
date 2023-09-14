@@ -83,7 +83,22 @@ class GESelector extends PureComponent<GESelectorProps, GESelectorState> {
         return (
             <FormControl className={classes.formControl}>
                 <InputLabel>General Education</InputLabel>
-                <Select value={this.state.ge} onChange={this.handleChange} fullWidth>
+                <Select
+                    value={this.state.ge}
+                    onChange={this.handleChange}
+                    fullWidth
+                    MenuProps={{
+                        anchorOrigin: {
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        },
+                        transformOrigin: {
+                            vertical: 'top',
+                            horizontal: 'left',
+                        },
+                        getContentAnchorEl: null,
+                    }}
+                >
                     {geList.map((category) => {
                         return (
                             <MenuItem key={category.value} value={category.value}>

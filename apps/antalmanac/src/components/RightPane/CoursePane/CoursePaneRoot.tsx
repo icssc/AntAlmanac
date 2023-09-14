@@ -5,9 +5,9 @@ import RightPaneStore from '../RightPaneStore';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
 import CourseRenderPane from './CourseRenderPane';
 import SearchForm from './SearchForm/SearchForm';
-import { clearCache } from '$lib/helpers';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { openSnackbar } from '$actions/AppStoreActions';
+import { clearCache } from '$lib/course-helpers';
 
 const styles = {
     container: {
@@ -71,7 +71,7 @@ class RightPane extends PureComponent {
 
     render() {
         return (
-            <>
+            <div style={{ height: '100%', padding: 8 }}>
                 <CoursePaneButtonRow
                     showSearch={!RightPaneStore.getDoDisplaySearch()}
                     onDismissSearchResults={this.toggleSearch}
@@ -82,7 +82,7 @@ class RightPane extends PureComponent {
                 ) : (
                     <CourseRenderPane key={this.state.refresh} />
                 )}
-            </>
+            </div>
         );
     }
 }

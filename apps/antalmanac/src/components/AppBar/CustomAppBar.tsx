@@ -1,18 +1,18 @@
-import { AppBar, Menu, Toolbar, useMediaQuery } from '@material-ui/core';
+import { AppBar, Box, Menu, Toolbar, useMediaQuery } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import MenuIcon from '@material-ui/icons/Menu';
-import React, { MouseEventHandler } from 'react';
+import { useState, type MouseEventHandler } from 'react';
 
-import ConditionalWrapper from '../ConditionalWrapper';
 import AboutPage from './AboutPage';
 import Feedback from './Feedback';
 import ImportStudyList from './ImportStudyList';
-import { ReactComponent as Logo } from './logo.svg';
-import { ReactComponent as MobileLogo } from './mobile-logo.svg';
 import News from './News';
 import SettingsMenu from './SettingsMenu';
+import Export from './Exports/Export';
+import { ReactComponent as Logo } from './logo.svg';
+import { ReactComponent as MobileLogo } from './mobile-logo.svg';
 import LoginButton from './LoginButton';
 import LoadSaveButtons from './LoadSaveButtons/LoadSaveButtons';
 
@@ -33,16 +33,30 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'center',
     },
+    menuIconContainer: {
+        padding: '0.25rem',
+        display: 'flex',
+    },
 };
 
 interface CustomAppBarProps {
     classes: ClassNameMap;
 }
 
+const components = [
+    <SettingsMenu key="settings" />,
+    <ImportStudyList key="studylist" />,
+    <Export key="export" />,
+    <Feedback key="feedback" />,
+    <News key="news" />,
+    <AboutPage key="about" />,
+    <LoginButton key={'login'} />,
+];
+
 const CustomAppBar = ({ classes }: CustomAppBarProps) => {
     const isMobileScreen = useMediaQuery('(max-width:750px)');
 
-    const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
+    const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
     const handleClick: MouseEventHandler<SVGSVGElement> = (event) => {
         setAnchorEl(event.currentTarget);
@@ -61,37 +75,18 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
 
                 <LoadSaveButtons />
 
-                <ConditionalWrapper
-                    condition={isMobileScreen}
-                    wrapper={(children) => (
-                        <div>
-                            <MenuIcon onClick={handleClick} />
-                            <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
-                                {children}
-                            </Menu>
-                        </div>
-                    )}
-                >
-                    <>
-                        {[
-                            // the keys here don't do anything they just make eslint happy.
-                            <SettingsMenu key="settings" />,
-                            <ImportStudyList key="studylist" />,
-                            <Feedback key="feedback" />,
-                            <News key="news" />,
-                            <AboutPage key="about" />,
-                            <LoginButton key={'login'} />,
-                        ].map((element, index) => (
-                            <ConditionalWrapper
-                                key={index}
-                                condition={isMobileScreen}
-                                wrapper={(children) => <MenuItem>{children}</MenuItem>}
-                            >
-                                {element}
-                            </ConditionalWrapper>
-                        ))}
-                    </>
-                </ConditionalWrapper>
+                {isMobileScreen ? (
+                    <Box className={classes.menuIconContainer}>
+                        <MenuIcon onClick={handleClick} className={classes.menuIcon} />
+                        <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
+                            {components.map((element, index) => (
+                                <MenuItem key={index}>{element}</MenuItem>
+                            ))}
+                        </Menu>
+                    </Box>
+                ) : (
+                    components
+                )}
             </Toolbar>
         </AppBar>
     );

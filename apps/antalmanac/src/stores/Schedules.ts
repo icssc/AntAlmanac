@@ -7,14 +7,17 @@ import {
 } from '@packages/antalmanac-types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { CourseInfo, getCourseInfo, queryWebsoc, warnMultipleTerms } from '$lib/helpers';
+import type { CourseInfo } from '$lib/helpers';
+import { warnMultipleTerms } from '$lib/helpers';
 import { getColorForNewSection, getScheduleTerm } from '$stores/scheduleHelpers';
 import { getDefaultTerm } from '$lib/termData';
+import { getCourseInfo, queryWebsoc } from '$lib/course-helpers';
 
 export class Schedules {
     private schedules: Schedule[];
     private currentScheduleIndex: number;
     private previousStates: ScheduleUndoState[];
+    private skeletonSchedules: ShortCourseSchedule[];
 
     // We do not want schedule notes to be undone; to avoid this,
     // we keep track of every schedule note in an object where each key
@@ -35,6 +38,7 @@ export class Schedules {
         this.currentScheduleIndex = 0;
         this.previousStates = [];
         this.scheduleNoteMap = { [scheduleNoteId]: '' };
+        this.skeletonSchedules = [];
     }
 
     // --- Schedule index methods ---
@@ -63,6 +67,13 @@ export class Schedules {
         return this.schedules[scheduleIndex]?.term ?? 'NONE';
     }
 
+
+    /**
+     * @return a specific schedule name
+     */
+    getScheduleName(scheduleIndex: number) {
+        return this.schedules[scheduleIndex]?.scheduleName;
+    }
     /**
      * @return a list of all schedule names
      */
@@ -156,12 +167,12 @@ export class Schedules {
     }
 
     /**
-     * Deletes current schedule and adjusts schedule index to current
+     * Deletes specific schedule and adjusts schedule index to current
      */
-    deleteCurrentSchedule() {
+    deleteSchedule(scheduleIndex: number) {
         this.addUndoState();
-        this.schedules.splice(this.currentScheduleIndex, 1);
-        this.currentScheduleIndex = Math.min(this.currentScheduleIndex, this.getNumberOfSchedules() - 1);
+        this.schedules.splice(scheduleIndex, 1);
+        this.currentScheduleIndex = Math.min(scheduleIndex, this.getNumberOfSchedules() - 1);
     }
 
     /**
@@ -366,6 +377,7 @@ export class Schedules {
 
     /**
      * Deletes custom event from the given indices.
+     * @param customEventId ID of custom event to delete.
      * @param scheduleIndices Defaults to current schedule.
      */
     deleteCustomEvent(customEventId: number, scheduleIndices: number[] = [this.getCurrentScheduleIndex()]) {
@@ -591,6 +603,13 @@ export class Schedules {
         }
     }
 
+    appendSchedule(other: Schedules) {
+        this.addUndoState();
+        this.schedules.push(...other.schedules);
+        this.previousStates.push(...other.previousStates);
+        this.scheduleNoteMap = { ...this.scheduleNoteMap, ...other.scheduleNoteMap };
+    }
+
     getCurrentScheduleNote() {
         const scheduleNoteId = this.schedules[this.currentScheduleIndex]?.scheduleNoteId;
         if (scheduleNoteId === undefined) {
@@ -603,11 +622,11 @@ export class Schedules {
         const scheduleNoteId = this.schedules[scheduleIndex].scheduleNoteId;
         this.scheduleNoteMap[scheduleNoteId] = newScheduleNote;
     }
+    getSkeletonSchedule(): ShortCourseSchedule {
+        return this.skeletonSchedules[this.currentScheduleIndex];
+    }
 
-    appendSchedule(other: Schedules) {
-        this.addUndoState();
-        this.schedules.push(...other.schedules);
-        this.previousStates.push(...other.previousStates);
-        this.scheduleNoteMap = { ...this.scheduleNoteMap, ...other.scheduleNoteMap };
+    setSkeletonSchedules(skeletonSchedules: ShortCourseSchedule[]) {
+        this.skeletonSchedules = skeletonSchedules;
     }
 }
