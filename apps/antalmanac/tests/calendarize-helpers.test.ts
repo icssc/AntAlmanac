@@ -2,6 +2,7 @@ import { describe, test, expect } from 'vitest';
 import type { Schedule } from '@packages/antalmanac-types';
 import type { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
+import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 
 describe('calendarize-helpers', () => {
     const courses: Schedule['courses'] = [
@@ -21,7 +22,7 @@ describe('calendarize-helpers', () => {
                 meetings: [
                     {
                         timeIsTBA: false,
-                        locations: [],
+                        bldg: [],
                         days: 'MWF',
                         startTime: {
                             hour: 1,
@@ -46,7 +47,7 @@ describe('calendarize-helpers', () => {
                         hour: 3,
                         minute: 4,
                     },
-                    locations: [],
+                    bldg: [],
                 },
                 maxCapacity: 'placeholderMaxCapacity',
                 numCurrentlyEnrolled: {
@@ -66,7 +67,7 @@ describe('calendarize-helpers', () => {
     ];
 
     // 3 of the same event
-    const calendarizedCourses = [
+    const calendarizedCourses: CourseEvent[] = [
         {
             locations: [],
             color: 'placeholderColor',
@@ -93,6 +94,7 @@ describe('calendarize-helpers', () => {
                 },
                 locations: [],
             },
+            showLocationInfo: false,
             isCustomEvent: false,
         },
         {
@@ -121,6 +123,7 @@ describe('calendarize-helpers', () => {
                 },
                 locations: [],
             },
+            showLocationInfo: false,
             isCustomEvent: false,
         },
         {
@@ -149,11 +152,12 @@ describe('calendarize-helpers', () => {
                 },
                 locations: [],
             },
+            showLocationInfo: false,
             isCustomEvent: false,
         },
     ];
 
-    const calendarizedCourseFinals = [
+    const calendarizedCourseFinals: CourseEvent[] = [
         {
             locations: [],
             color: 'placeholderColor',
@@ -180,6 +184,7 @@ describe('calendarize-helpers', () => {
                 },
                 locations: [],
             },
+            showLocationInfo: true,
             isCustomEvent: false,
         },
     ];
@@ -195,7 +200,7 @@ describe('calendarize-helpers', () => {
         },
     ];
 
-    const calendarizedCustomEvents = [
+    const calendarizedCustomEvents: CustomEvent[] = [
         {
             isCustomEvent: true,
             customEventID: 0,

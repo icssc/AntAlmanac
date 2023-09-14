@@ -41,7 +41,6 @@ export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): 
 
                 // Intermediate formatting to subtract `bldg` attribute in favor of `locations`
                 const { bldg: _, ...finalExam } = course.section.finalExam;
-                finalExam.locations = course.section.finalExam.bldg?.map(getLocation);
 
                 return dayIndicesOccurring.map((dayIndex) => {
                     return {
@@ -56,7 +55,10 @@ export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): 
                         sectionType: course.section.sectionType,
                         start: new Date(2018, 0, dayIndex, startHour, startMin),
                         end: new Date(2018, 0, dayIndex, endHour, endMin),
-                        finalExam,
+                        finalExam: {
+                            ...finalExam,
+                            locations: course.section.finalExam.bldg?.map(getLocation) ?? [],
+                        },
                         isCustomEvent: false,
                     };
                 });
@@ -74,7 +76,8 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                 course.section.finalExam.dayOfWeek
         )
         .flatMap((course) => {
-            const finalExam = course.section.finalExam;
+            const { bldg, ...finalExam } = course.section.finalExam;
+
             const startHour = finalExam.startTime?.hour;
             const startMin = finalExam.startTime?.minute;
             const endHour = finalExam.endTime?.hour;
@@ -99,16 +102,17 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                 term: course.term,
                 title: `${course.deptCode} ${course.courseNumber}`,
                 courseTitle: course.courseTitle,
-                locations: finalExam.bldg
-                    ? finalExam.bldg.map(getLocation)
-                    : course.section.meetings[0].bldg.map(getLocation),
+                locations: bldg ? bldg.map(getLocation) : course.section.meetings[0].bldg.map(getLocation),
                 showLocationInfo: true,
                 instructors: course.section.instructors,
                 sectionCode: course.section.sectionCode,
                 sectionType: 'Fin',
                 start: new Date(2018, 0, dayIndex - 1, startHour, startMin),
                 end: new Date(2018, 0, dayIndex - 1, endHour, endMin),
-                finalExam: course.section.finalExam,
+                finalExam: {
+                    ...finalExam,
+                    locations: bldg?.map(getLocation) ?? [],
+                },
                 isCustomEvent: false,
             }));
         });
