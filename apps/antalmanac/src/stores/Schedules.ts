@@ -4,6 +4,7 @@ import {
     ScheduleSaveState,
     ScheduleUndoState,
     ShortCourseSchedule,
+    TermNames,
 } from '@packages/antalmanac-types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
@@ -64,9 +65,8 @@ export class Schedules {
     }
 
     getScheduleTerm(scheduleIndex: number) {
-        return this.schedules[scheduleIndex]?.term ?? 'NONE';
+        return this.schedules[scheduleIndex]?.term ?? 'Any Term';
     }
-
 
     /**
      * @return a specific schedule name
@@ -90,19 +90,16 @@ export class Schedules {
                 map.set(schedule.term, [[scheduleIndex, schedule.scheduleName]]);
             }
             return map;
-        }, new Map<string, [number, string][]>()); // Explicitly type the initial value
+        }, new Map<TermNames, [number, string][]>()); // Explicitly type the initial value
     }
 
     setCurrentScheduleTerm() {
         const currentCourses = this.getCurrentCourses();
         const currentSchedule = this.schedules[this.getCurrentScheduleIndex()];
 
-        // If no courses in the current schedule and there never was a term, set to most recent term
+        // If no courses in the current schedule and there never was a term, set to any term
         if (currentCourses.length === 0) {
-            if (currentSchedule.term !== undefined) {
-                return;
-            }
-            currentSchedule.term = getDefaultTerm();
+            currentSchedule.term = 'Any Term';
             return;
         }
 
@@ -232,10 +229,10 @@ export class Schedules {
      */
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number, addUndoState = true) {
         const currentTerm = this.schedules[scheduleIndex].term;
-        if (!currentTerm || currentTerm === 'NONE') {
+        if (!currentTerm || currentTerm === 'Any Term') {
             // If schedule has no term, set it
             this.schedules[scheduleIndex].term = newCourse.term;
-        } else if (currentTerm != 'NONE' && currentTerm !== newCourse.term) {
+        } else if (currentTerm !== newCourse.term) {
             warnMultipleTerms(currentTerm, newCourse.term);
             throw new Error('Cannot add course from different term');
         }

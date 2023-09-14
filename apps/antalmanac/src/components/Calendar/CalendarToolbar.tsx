@@ -9,6 +9,7 @@ import {
     Clear as ClearIcon,
 } from '@mui/icons-material';
 
+import { Schedule, TermNames } from '@packages/antalmanac-types';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
 import AddScheduleDialog from '$components/dialogs/AddSchedule';
@@ -236,10 +237,10 @@ function SelectSchedulePopover(props: { scheduleNames: string[] }) {
 }
 
 export interface CalendarPaneToolbarProps {
-    scheduleNames: string[];
     currentScheduleIndex: number;
     showFinalsSchedule: boolean;
     toggleDisplayFinalsSchedule: () => void;
+    scheduleMap: Map<TermNames, [number, string][]>; // TODO: reimplement usage
 }
 
 /**
@@ -290,7 +291,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                 </Tooltip>
             </Box>
 
-            <Box flexGrow={1} sx={{overflow: 'hidden', px: 5}}>
+            <Box flexGrow={1} sx={{ overflow: 'hidden', px: 5 }}>
                 <TermViewer />
             </Box>
 

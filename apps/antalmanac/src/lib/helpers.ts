@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { WebsocSection, WebsocAPIResponse } from 'peterportal-api-next-types';
+import { TermNames } from '@packages/antalmanac-types';
 import { PETERPORTAL_GRAPHQL_ENDPOINT } from './api/endpoints';
 import { queryWebsoc } from './course-helpers';
 import { addCourse, openSnackbar } from '$actions/AppStoreActions';
@@ -162,11 +163,11 @@ export async function queryWebsocMultiple(params: { [key: string]: string }, fie
 
 export const addCoursesMultiple = (
     courseInfo: { [sectionCode: string]: CourseInfo },
-    term: string,
+    term: TermNames,
     scheduleIndex: number
 ) => {
     for (const section of Object.values(courseInfo)) {
-        addCourse(section.section, section.courseDetails, term, scheduleIndex, true);
+        addCourse(section.section, section.courseDetails, term, scheduleIndex);
     }
     // const terms = termsInSchedule(term);
     // if (terms.size > 1) warnMultipleTerms(terms);

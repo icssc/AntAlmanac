@@ -1,7 +1,7 @@
 import { VariantType } from 'notistack';
 
 import { WebsocSection } from 'peterportal-api-next-types';
-import { ScheduleCourse } from '@packages/antalmanac-types';
+import { ScheduleCourse, TermNames } from '@packages/antalmanac-types';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
@@ -13,7 +13,7 @@ import AppStore from '$stores/AppStore';
 export const addCourse = (
     section: WebsocSection,
     courseDetails: CourseDetails,
-    term: string,
+    term: TermNames,
     scheduleIndex: number
 ) => {
     logAnalytics({

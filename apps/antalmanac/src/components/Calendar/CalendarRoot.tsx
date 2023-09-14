@@ -8,6 +8,7 @@ import moment from 'moment';
 import { PureComponent, SyntheticEvent } from 'react';
 import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
 
+import { TermNames } from '@packages/antalmanac-types';
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
@@ -105,7 +106,7 @@ interface ScheduleCalendarState {
     eventsInCalendar: CalendarEvent[];
     finalsEventsInCalendar: CalendarEvent[];
     currentScheduleIndex: number;
-    scheduleMap: Map<string, [number, string][]>;
+    scheduleMap: Map<TermNames, [number, string][]>;
 }
 class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCalendarState> {
     state: ScheduleCalendarState = {
@@ -262,7 +263,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         return (
             <div className={classes.container} style={isMobile ? { height: 'calc(100% - 50px)' } : undefined}>
                 <CalendarToolbar
-                    onTakeScreenshot={this.handleTakeScreenshot}
                     currentScheduleIndex={this.state.currentScheduleIndex}
                     toggleDisplayFinalsSchedule={this.toggleDisplayFinalsSchedule}
                     showFinalsSchedule={this.state.showFinalsSchedule}

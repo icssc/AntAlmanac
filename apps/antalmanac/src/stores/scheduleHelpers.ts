@@ -1,5 +1,5 @@
 import { amber, blue, deepOrange, deepPurple, green, pink, purple } from '@material-ui/core/colors';
-import { ScheduleCourse, ShortCourseSchedule } from '@packages/antalmanac-types';
+import { ScheduleCourse, ShortCourseSchedule, TermNames } from '@packages/antalmanac-types';
 import { getDefaultTerm } from '$lib/termData';
 
 export interface HSLColor {
@@ -183,7 +183,7 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
     );
 }
 
-export function getScheduleTerm(schedule: ShortCourseSchedule): string {
+export function getScheduleTerm(schedule: ShortCourseSchedule): TermNames {
     if (schedule.term) return schedule.term;
     if (schedule.courses.length === 0) return getDefaultTerm();
     const term = schedule.courses[0].term;

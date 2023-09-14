@@ -1,6 +1,7 @@
 import { type, arrayOf } from 'arktype';
 import { RepeatingCustomEventSchema } from './customevent';
 import { AASectionSchema } from './websoc';
+import { TermNamesSchema } from './terms';
 
 export const ScheduleCourseSchema = type({
     courseComment: 'string',
@@ -9,13 +10,13 @@ export const ScheduleCourseSchema = type({
     deptCode: 'string',
     prerequisiteLink: 'string',
     section: AASectionSchema,
-    term: 'string',
+    term: TermNamesSchema,
 });
 export type ScheduleCourse = typeof ScheduleCourseSchema.infer;
 
 export const ScheduleSchema = type({
     scheduleName: 'string',
-    term: 'string', // term or "NONE"
+    term: TermNamesSchema,
     courses: arrayOf(ScheduleCourseSchema),
     customEvents: arrayOf(RepeatingCustomEventSchema),
     scheduleNoteId: 'number',
@@ -24,7 +25,7 @@ export type Schedule = typeof ScheduleSchema.infer;
 
 export const ShortCourseSchema = type({
     color: 'string',
-    term: 'string',
+    term: TermNamesSchema,
     sectionCode: 'string',
 });
 export type ShortCourse = typeof ShortCourseSchema.infer;
@@ -32,7 +33,7 @@ export type ShortCourse = typeof ShortCourseSchema.infer;
 export const ShortCourseScheduleSchema = type([
     {
         scheduleName: 'string',
-        'term?': 'string', // term or "NONE"
+        'term?': TermNamesSchema,
         courses: arrayOf(ShortCourseSchema),
         customEvents: arrayOf(RepeatingCustomEventSchema),
         'scheduleNote?': 'string',
