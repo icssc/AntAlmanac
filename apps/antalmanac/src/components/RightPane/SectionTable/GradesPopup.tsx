@@ -63,9 +63,14 @@ function GradesPopup(props: GradesPopupProps) {
 
     const graphTitle = useMemo(() => {
         return gradeData
-            ? `Grade Distribution | Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}`
+            ? `${deptCode} ${courseNumber}${instructor ? ` — ${instructor}` : "" } | Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}`
             : 'Grades are not available for this class.';
-    }, [gradeData]);
+    }, [deptCode, instructor, gradeData]);
+
+    const gpaString = useMemo(
+        () => (gradeData ? `Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}` : ""), 
+        [gradeData]
+    )
 
     useEffect(() => {
         if (loading === false) {
