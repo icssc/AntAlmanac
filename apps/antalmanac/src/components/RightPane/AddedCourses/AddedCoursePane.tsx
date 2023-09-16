@@ -1,15 +1,44 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 
-import { Box, Button, Chip, Grid, Menu, MenuItem, Paper, TextField, Tooltip, Typography } from '@mui/material';
+import {
+    Box,
+    Chip,
+    Grid,
+    IconButton,
+    Menu,
+    MenuItem,
+    Paper,
+    SxProps,
+    TextField,
+    Tooltip,
+    Typography,
+} from '@mui/material';
+import { ContentCopy, DeleteOutline } from '@mui/icons-material';
 import { AACourse } from '@packages/antalmanac-types';
 
+import { ColumnToggleButton } from '../CoursePane/CoursePaneButtonRow';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
 import AppStore from '$stores/AppStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
 import { clickToCopy } from '$lib/helpers';
+
+/**
+ * All the interactive buttons have the same styles.
+ */
+const buttonSx: SxProps = {
+    backgroundColor: 'rgba(236, 236, 236, 1)',
+    marginRight: 1,
+    padding: 1.5,
+    boxShadow: '2',
+    color: 'black',
+    '&:hover': {
+        backgroundColor: 'grey',
+    },
+    pointerEvents: 'auto',
+};
 
 interface CourseWithTerm extends AACourse {
     term: string;
@@ -60,11 +89,7 @@ function getCourses() {
 }
 
 function handleClear() {
-    if (
-        window.confirm(
-            'Are you sure you want to clear this schedule? You cannot undo this action, but you can load your schedule again.'
-        )
-    ) {
+    if (window.confirm('Are you sure you want to clear this schedule?')) {
         clearSchedules();
         logAnalytics({
             category: analyticsEnum.addedClasses.title,
@@ -77,6 +102,61 @@ function createCopyHandler(index: number) {
     return () => {
         copySchedule(index);
     };
+}
+
+function ClearScheduleButton() {
+    return (
+        <Tooltip title="Clear Schedule">
+            <IconButton sx={buttonSx} onClick={handleClear}>
+                <DeleteOutline />
+            </IconButton>
+        </Tooltip>
+    );
+}
+
+function CopyScheduleButton() {
+    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+
+    useEffect(() => {
+        /**
+         * A shallow copy needs to be made so the array reference is different and the component re-renders.
+         */
+        const handleScheduleNamesChange = () => {
+            setScheduleNames([...AppStore.getScheduleNames()]);
+        };
+
+        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
+
+        return () => {
+            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
+        };
+    }, []);
+
+    return (
+        <PopupState variant="popover">
+            {(popupState) => (
+                <>
+                    <Tooltip title="Copy Schedule">
+                        <IconButton {...bindTrigger(popupState)} sx={buttonSx} size="medium">
+                            <ContentCopy />
+                        </IconButton>
+                    </Tooltip>
+                    <Menu {...bindMenu(popupState)}>
+                        {scheduleNames.map((name, index) => (
+                            <MenuItem
+                                key={index}
+                                disabled={AppStore.getCurrentScheduleIndex() === index}
+                                onClick={createCopyHandler(index)}
+                            >
+                                Copy to {name}
+                            </MenuItem>
+                        ))}
+                        <MenuItem onClick={createCopyHandler(scheduleNames.length)}>Copy to All Schedules</MenuItem>
+                    </Menu>
+                </>
+            )}
+        </PopupState>
+    );
 }
 
 function SkeletonSchedule() {
@@ -215,61 +295,31 @@ function AddedSectionsGrid() {
     }, [scheduleNames, scheduleIndex]);
 
     return (
-        <Box display="flex" flexDirection="column" gap={2}>
-            <Box display="flex" width={1} justifyContent="space-between">
-                <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-
-                <Box>
-                    <PopupState variant="popover">
-                        {(popupState) => (
-                            <>
-                                <Button variant="outlined" color="inherit" {...bindTrigger(popupState)}>
-                                    Copy Schedule
-                                </Button>
-                                <Menu {...bindMenu(popupState)}>
-                                    {scheduleNames.map((name, index) => (
-                                        <MenuItem
-                                            key={index}
-                                            disabled={AppStore.getCurrentScheduleIndex() === index}
-                                            onClick={createCopyHandler(index)}
-                                        >
-                                            Copy to {name}
-                                        </MenuItem>
-                                    ))}
-                                    <MenuItem onClick={createCopyHandler(scheduleNames.length)}>
-                                        Copy to All Schedules
-                                    </MenuItem>
-                                </Menu>
-                            </>
-                        )}
-                    </PopupState>
-
-                    <Button
-                        sx={{ marginLeft: '4px', marginRight: '4px' }}
-                        variant="outlined"
-                        color="inherit"
-                        onClick={handleClear}
-                    >
-                        Clear Schedule
-                    </Button>
-                </Box>
+        <Box display="flex" flexDirection="column" gap={1}>
+            <Box display="flex" width={1}>
+                <CopyScheduleButton />
+                <ClearScheduleButton />
+                <ColumnToggleButton />
             </Box>
 
-            <Grid container spacing={2} padding={0}>
-                {courses.map((course) => {
-                    return (
-                        <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber}>
-                            <SectionTableLazyWrapper
-                                courseDetails={course}
-                                term={course.term}
-                                allowHighlight={false}
-                                analyticsCategory={analyticsEnum.addedClasses.title}
-                                scheduleNames={scheduleNames}
-                            />
-                        </Grid>
-                    );
-                })}
-            </Grid>
+            <Box>
+                <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
+                <Grid container spacing={2} padding={0}>
+                    {courses.map((course) => {
+                        return (
+                            <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber}>
+                                <SectionTableLazyWrapper
+                                    courseDetails={course}
+                                    term={course.term}
+                                    allowHighlight={false}
+                                    analyticsCategory={analyticsEnum.addedClasses.title}
+                                    scheduleNames={scheduleNames}
+                                />
+                            </Grid>
+                        );
+                    })}
+                </Grid>
+            </Box>
 
             {customEvents.length > 0 && (
                 <Box>

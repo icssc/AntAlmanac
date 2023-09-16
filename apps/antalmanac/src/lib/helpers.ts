@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { WebsocSectionMeeting, WebsocSection, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
+import { WebsocSectionMeeting, WebsocSection, WebsocAPIResponse } from 'peterportal-api-next-types';
 import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT } from './api/endpoints';
 import Grades from './grades';
 import { addCourse, openSnackbar } from '$actions/AppStoreActions';
@@ -39,29 +39,6 @@ export interface CourseDetails {
 export interface CourseInfo {
     courseDetails: CourseDetails;
     section: WebsocSection;
-}
-
-export function getCourseInfo(SOCObject: WebsocAPIResponse) {
-    const courseInfo: { [sectionCode: string]: CourseInfo } = {};
-    for (const school of SOCObject.schools) {
-        for (const department of school.departments) {
-            for (const course of department.courses) {
-                for (const section of course.sections) {
-                    courseInfo[section.sectionCode] = {
-                        courseDetails: {
-                            deptCode: department.deptCode,
-                            courseNumber: course.courseNumber,
-                            courseTitle: course.courseTitle,
-                            courseComment: course.courseComment,
-                            prerequisiteLink: course.prerequisiteLink,
-                        },
-                        section: section,
-                    };
-                }
-            }
-        }
-    }
-    return courseInfo;
 }
 
 export interface ZotCourseResponse {
@@ -316,10 +293,10 @@ export function isDarkMode() {
 }
 
 /**
- * @param {string} courseNumber A string that represents the course number of a course (eg. '122A', '121')
- * @returns {int | number} This function returns an int or number with a decimal representation of the passed in string (eg. courseNumAsDecimal('122A') returns 122.1, courseNumAsDecimal('121') returns 121)
+ * @param courseNumber A string that represents the course number of a course (eg. '122A', '121')
+ * @returns This function returns an int or number with a decimal representation of the passed in string (eg. courseNumAsDecimal('122A') returns 122.1, courseNumAsDecimal('121') returns 121)
  */
-export function courseNumAsDecimal(courseNumber: string) {
+export function courseNumAsDecimal(courseNumber: string): number {
     // I wanted to split the course detail number into letters and digits
     const courseNumArr = courseNumber.split(/(\d+)/);
     // Gets rid of empty strings in courseNumArr

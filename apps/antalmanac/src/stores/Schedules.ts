@@ -7,8 +7,9 @@ import {
 } from '@packages/antalmanac-types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { CourseInfo, getCourseInfo, queryWebsoc } from '$lib/helpers';
+import type { CourseInfo } from '$lib/helpers';
 import { getColorForNewSection } from '$stores/scheduleHelpers';
+import { getCourseInfo, queryWebsoc } from '$lib/course-helpers';
 
 export class Schedules {
     private schedules: Schedule[];
@@ -50,7 +51,7 @@ export class Schedules {
      * @return a specific schedule name
      */
     getScheduleName(scheduleIndex: number) {
-        return this.schedules[scheduleIndex].scheduleName;
+        return this.schedules[scheduleIndex]?.scheduleName;
     }
 
     /**

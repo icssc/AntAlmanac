@@ -74,8 +74,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
    As you make changes to the React application in `src`, those changes will be automatically reflected on the website locally.
 
 #### Running Tests
-1. go into `apps/antalmanac`
-2. `pnpm test`
+1. Run `pnpm test` in the root directory
 
 ### Running the [Backend](https://github.com/icssc/antalmanac-backend)
 

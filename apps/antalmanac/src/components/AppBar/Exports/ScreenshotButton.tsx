@@ -8,11 +8,7 @@ import { PureComponent } from 'react';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { isDarkMode } from '$lib/helpers';
 
-interface ScreenshotButtonProps {
-    onTakeScreenshot: (html2CanvasScreenshot: () => void) => void; // the function in an ancestor component that wraps ScreenshotButton.handleClick to perform canvas transformations before and after downloading the screenshot.
-}
-
-class ScreenshotButton extends PureComponent<ScreenshotButtonProps> {
+class ScreenshotButton extends PureComponent {
     handleClick = () => {
         logAnalytics({
             category: analyticsEnum.calendar.title,
@@ -31,7 +27,7 @@ class ScreenshotButton extends PureComponent<ScreenshotButtonProps> {
         return (
             <Tooltip title="Get a screenshot of your schedule">
                 <Button
-                    onClick={() => this.props.onTakeScreenshot(this.handleClick)}
+                    onClick={this.handleClick}
                     variant="outlined"
                     size="small"
                     startIcon={<Panorama fontSize="small" />}

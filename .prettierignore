@@ -11,3 +11,6 @@
 # file system configs
 desktop.ini
 .DS_Store
+
+# misc
+README.md

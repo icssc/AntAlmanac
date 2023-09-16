@@ -89,8 +89,8 @@ export function ColumnToggleButton() {
 
     return (
         <>
-            <Tooltip title="Show/Hide Columns" sx={buttonSx}>
-                <IconButton onClick={handleOpen}>
+            <Tooltip title="Show/Hide Columns">
+                <IconButton onClick={handleOpen} sx={buttonSx}>
                     <Visibility />
                 </IconButton>
             </Tooltip>
@@ -144,14 +144,14 @@ export function CoursePaneButtonRow(props: CoursePaneButtonRowProps) {
                 position: 'absolute',
             }}
         >
-            <Tooltip title="Back" sx={buttonSx}>
-                <IconButton onClick={props.onDismissSearchResults}>
+            <Tooltip title="Back">
+                <IconButton onClick={props.onDismissSearchResults} sx={buttonSx}>
                     <ArrowBack />
                 </IconButton>
             </Tooltip>
 
-            <Tooltip title="Refresh Search Results" sx={buttonSx}>
-                <IconButton onClick={props.onRefreshSearch}>
+            <Tooltip title="Refresh Search Results">
+                <IconButton onClick={props.onRefreshSearch} sx={buttonSx}>
                     <Refresh />
                 </IconButton>
             </Tooltip>
