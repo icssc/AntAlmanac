@@ -43,11 +43,11 @@ const tableHeaderColumns: Record<SectionTableColumn, TableHeaderColumnDetails> =
     },
     instructors: {
         label: 'Instructors',
-        width: '15%',
+        width: '13%',
     },
     gpa: {
         label: 'GPA',
-        width: '7%',
+        width: '6%',
     },
     dayAndTime: {
         label: 'Times',
@@ -55,7 +55,7 @@ const tableHeaderColumns: Record<SectionTableColumn, TableHeaderColumnDetails> =
     },
     location: {
         label: 'Places',
-        width: '10%',
+        width: '8%',
     },
     sectionEnrollment: {
         label: 'Enrollment',
