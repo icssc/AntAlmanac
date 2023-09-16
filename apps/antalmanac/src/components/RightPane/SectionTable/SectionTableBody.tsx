@@ -18,7 +18,6 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import { useTabStore } from '$stores/TabStore';
-import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
 import { normalizeTime, parseDaysString, translate24To12HourTime } from '$stores/calendarizeHelpers';
 
