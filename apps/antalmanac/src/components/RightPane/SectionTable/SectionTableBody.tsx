@@ -18,7 +18,6 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import { useTabStore } from '$stores/TabStore';
-import { mobileContext } from '$components/MobileHome';
 import locationIds from '$lib/location_ids';
 import { normalizeTime, parseDaysString, translate24To12HourTime } from '$stores/calendarizeHelpers';
 
@@ -63,6 +62,7 @@ const styles: Styles<Theme, object> = (theme) => ({
         border: 'none',
         padding: '0 !important',
         fontSize: '0.85rem', // Not sure why this is not inherited
+        textDecoration: 'none',
     },
     paper: {
         padding: theme.spacing(),
@@ -208,7 +208,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                         return (
                             <Fragment key={meeting.timeIsTBA + bldg}>
                                 <Link
-                                    className={classes.clickableLocation}
+                                    className={classes.mapLink}
                                     to={`/map?location=${buildingId}`}
                                     onClick={focusMap}
                                 >
