@@ -2,6 +2,7 @@ import { describe, test, expect } from 'vitest';
 import type { Schedule } from '@packages/antalmanac-types';
 import type { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
+import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 
 describe('calendarize-helpers', () => {
     const courses: Schedule['courses'] = [
@@ -66,9 +67,9 @@ describe('calendarize-helpers', () => {
     ];
 
     // 3 of the same event
-    const calendarizedCourses = [
+    const calendarizedCourses: CourseEvent[] = [
         {
-            bldg: undefined,
+            locations: [],
             color: 'placeholderColor',
             term: 'placeholderTerm',
             title: 'placeholderDeptCode placeholderCourseNumber',
@@ -91,12 +92,13 @@ describe('calendarize-helpers', () => {
                     hour: 3,
                     minute: 4,
                 },
-                bldg: [],
+                locations: [],
             },
+            showLocationInfo: false,
             isCustomEvent: false,
         },
         {
-            bldg: undefined,
+            locations: [],
             color: 'placeholderColor',
             term: 'placeholderTerm',
             title: 'placeholderDeptCode placeholderCourseNumber',
@@ -119,12 +121,13 @@ describe('calendarize-helpers', () => {
                     hour: 3,
                     minute: 4,
                 },
-                bldg: [],
+                locations: [],
             },
+            showLocationInfo: false,
             isCustomEvent: false,
         },
         {
-            bldg: undefined,
+            locations: [],
             color: 'placeholderColor',
             term: 'placeholderTerm',
             title: 'placeholderDeptCode placeholderCourseNumber',
@@ -147,15 +150,16 @@ describe('calendarize-helpers', () => {
                     hour: 3,
                     minute: 4,
                 },
-                bldg: [],
+                locations: [],
             },
+            showLocationInfo: false,
             isCustomEvent: false,
         },
     ];
 
-    const calendarizedCourseFinals = [
+    const calendarizedCourseFinals: CourseEvent[] = [
         {
-            bldg: undefined,
+            locations: [],
             color: 'placeholderColor',
             term: 'placeholderTerm',
             title: 'placeholderDeptCode placeholderCourseNumber',
@@ -178,8 +182,9 @@ describe('calendarize-helpers', () => {
                     hour: 3,
                     minute: 4,
                 },
-                bldg: [],
+                locations: [],
             },
+            showLocationInfo: true,
             isCustomEvent: false,
         },
     ];
@@ -195,7 +200,7 @@ describe('calendarize-helpers', () => {
         },
     ];
 
-    const calendarizedCustomEvents = [
+    const calendarizedCustomEvents: CustomEvent[] = [
         {
             isCustomEvent: true,
             customEventID: 0,

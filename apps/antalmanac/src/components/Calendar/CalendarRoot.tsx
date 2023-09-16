@@ -69,26 +69,28 @@ const AntAlmanacEvent =
     ({ classes }: { classes: ClassNameMap }) =>
     // eslint-disable-next-line react/display-name
     ({ event }: { event: CalendarEvent }) => {
-        if (!event.isCustomEvent)
-            return (
-                <div>
-                    <div className={classes.firstLineContainer}>
-                        <div> {event.title}</div>
-                        <div className={classes.sectionType}> {event.sectionType}</div>
-                    </div>
-                    <div className={classes.secondLineContainer}>
-                        <div>{event.bldg}</div>
-                        <div>{event.sectionCode}</div>
-                    </div>
+        return event.isCustomEvent ? (
+            <div className={classes.customEventContainer}>
+                <div className={classes.customEventTitle}>{event.title}</div>
+            </div>
+        ) : (
+            <div>
+                <div className={classes.firstLineContainer}>
+                    <div> {event.title}</div>
+                    <div className={classes.sectionType}> {event.sectionType}</div>
                 </div>
-            );
-        else {
-            return (
-                <div className={classes.customEventContainer}>
-                    <div className={classes.customEventTitle}>{event.title}</div>
+                <div className={classes.secondLineContainer}>
+                    <div>
+                        {event.showLocationInfo
+                            ? event.locations.map((location) => `${location.building} ${location.room}`).join(', ')
+                            : event.locations.length > 1
+                            ? `${event.locations.length} Locations`
+                            : `${event.locations[0].building} ${event.locations[0].room}`}
+                    </div>
+                    <div>{event.sectionCode}</div>
                 </div>
-            );
-        }
+            </div>
+        );
     };
 interface ScheduleCalendarProps {
     classes: ClassNameMap;
