@@ -273,10 +273,6 @@ function GPACell(props: GPACellProps) {
             </Button>
             <Popover
                 open={Boolean(anchorEl)}
-                style={{
-                    color: isDarkMode() ? 'dodgerblue' : 'blue',
-                    cursor: 'pointer',
-                }}
                 onClose={hideDistribution}
                 anchorEl={anchorEl}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
