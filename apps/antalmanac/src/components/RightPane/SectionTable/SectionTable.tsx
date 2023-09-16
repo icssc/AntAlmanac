@@ -106,7 +106,7 @@ function SectionTable(props: SectionTableProps) {
 
     const { selectedColumns, getActiveColumns } = useColumnStore();
 
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
+    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
