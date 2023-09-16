@@ -70,6 +70,8 @@ const styles: Styles<Theme, object> = (theme) => ({
         background: 'none !important',
         border: 'none',
         padding: '0 !important',
+        fontSize: '0.85rem', // Not sure why this is not inherited
+        textDecoration: 'none',
     },
     paper: {
         padding: theme.spacing(),
@@ -315,7 +317,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                         return (
                             <Fragment key={meeting.timeIsTBA + bldg}>
                                 <Link
-                                    className={classes.clickableLocation}
+                                    className={classes.mapLink}
                                     to={`/map?location=${buildingId}`}
                                     onClick={focusMap}
                                 >
