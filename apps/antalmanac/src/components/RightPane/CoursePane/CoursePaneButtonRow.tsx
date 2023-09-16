@@ -12,8 +12,7 @@ import {
     type SxProps,
 } from '@mui/material';
 import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
-import RightPaneStore from '../RightPaneStore';
-import useColumnStore, { SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
+import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 
 /**
  * All the interactive buttons have the same styles.
@@ -60,7 +59,7 @@ function renderEmptySelectValue() {
  * e.g. show/hide the section code, instructors, etc.
  */
 export function ColumnToggleButton() {
-    const { selectedColumns, setSelectedColumns } = useColumnStore();
+    const [ selectedColumns, setSelectedColumns ] = useColumnStore(store => [store.selectedColumns, store.setSelectedColumns]);
     const [open, setOpen] = useState(false);
 
     const handleChange = (e: SelectChangeEvent<SectionTableColumn[]>) => {
@@ -75,12 +74,18 @@ export function ColumnToggleButton() {
 
     const handleClose = useCallback(() => {
         setOpen(false);
-    }, [setOpen]);
+    }, []);
 
     const selectedColumnNames = useMemo(
-        () => SECTION_TABLE_COLUMNS.filter((_, idx) => selectedColumns[idx]),
+        () => SECTION_TABLE_COLUMNS.filter((_, index) => selectedColumns[index]),
         [selectedColumns]
     );
+
+    const columnLabelEntries = useMemo(
+        () => Object.entries(columnLabels),
+        []
+    );
+
 
     return (
         <>
@@ -97,9 +102,9 @@ export function ColumnToggleButton() {
                     onChange={handleChange}
                     onClose={handleClose}
                     renderValue={renderEmptySelectValue}
-                    sx={{ visibility: 'hidden' }}
+                    sx={{ visibility: 'hidden', position: 'absolute' }}
                 >
-                    {Object.entries(columnLabels).map(([column, label], idx) => (
+                    {columnLabelEntries.map(([column, label], idx) => (
                         <MenuItem key={column} value={column}>
                             <Checkbox checked={selectedColumns[idx]} color="default" />
                             <ListItemText primary={label} />

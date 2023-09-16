@@ -77,7 +77,7 @@ interface EnrollmentColumnHeaderProps {
 }
 
 function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
+    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
 
     return (
         <Box display="flex">

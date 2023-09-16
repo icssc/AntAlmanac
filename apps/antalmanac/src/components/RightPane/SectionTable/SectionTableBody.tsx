@@ -496,7 +496,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, allowHighlight, scheduleNames } = props;
 
-    const { getActiveColumns } = useColumnStore();
+    const getActiveColumns = useColumnStore(store => store.getActiveColumns);
 
     const [addedCourse, setAddedCourse] = useState(
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
@@ -519,7 +519,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
 
     const updateHighlight = useCallback(() => {
         setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
-    }, [setAddedCourse]);
+    }, []);
 
     const updateCalendarEvents = useCallback(() => {
         setCalendarEvents(AppStore.getCourseEventsInCalendar());

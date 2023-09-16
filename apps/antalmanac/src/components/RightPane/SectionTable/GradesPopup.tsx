@@ -27,7 +27,7 @@ async function getGradeData(
     }
 
     /**
-     * Format data for displayiing in chart.
+     * Format data for displaying in chart.
      *
      * @example { gradeACount: 10, gradeBCount: 20 }
      */
