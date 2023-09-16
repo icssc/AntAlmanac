@@ -285,7 +285,7 @@ export function getEventsFromCourses(courses = AppStore.schedule.getCurrentCours
                     endOutputType: 'local' as const,
                     title: `${deptCode} ${courseNumber} ${sectionType}`,
                     description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
-                    location: `${meeting.bldg}`,
+                    location: meeting.bldg.join(', '),
                     start: firstClassStart,
                     end: firstClassEnd,
                     recurrenceRule: rrule,

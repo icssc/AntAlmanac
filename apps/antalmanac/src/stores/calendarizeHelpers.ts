@@ -1,12 +1,17 @@
 import { ScheduleCourse } from '@packages/antalmanac-types';
 import { HourMinute } from 'peterportal-api-next-types';
-import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { notNull, getReferencesOccurring } from '$lib/utils';
 
 const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
 const FINALS_WEEK_DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+
+export function getLocation(location: string): Location {
+    const [building = '', room = ''] = location.split(' ');
+    return { building, room };
+}
 
 export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
     return currentCourses.flatMap((course) => {
@@ -34,19 +39,26 @@ export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): 
                     .map((day, index) => (day ? index : undefined))
                     .filter(notNull);
 
+                // Intermediate formatting to subtract `bldg` attribute in favor of `locations`
+                const { bldg: _, ...finalExam } = course.section.finalExam;
+
                 return dayIndicesOccurring.map((dayIndex) => {
                     return {
                         color: course.section.color,
                         term: course.term,
                         title: `${course.deptCode} ${course.courseNumber}`,
                         courseTitle: course.courseTitle,
-                        bldg: meeting.bldg[0],
+                        locations: meeting.bldg.map(getLocation),
+                        showLocationInfo: false,
                         instructors: course.section.instructors,
                         sectionCode: course.section.sectionCode,
                         sectionType: course.section.sectionType,
                         start: new Date(2018, 0, dayIndex, startHour, startMin),
                         end: new Date(2018, 0, dayIndex, endHour, endMin),
-                        finalExam: course.section.finalExam,
+                        finalExam: {
+                            ...finalExam,
+                            locations: course.section.finalExam.bldg?.map(getLocation) ?? [],
+                        },
                         isCustomEvent: false,
                     };
                 });
@@ -64,7 +76,8 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                 course.section.finalExam.dayOfWeek
         )
         .flatMap((course) => {
-            const finalExam = course.section.finalExam;
+            const { bldg, ...finalExam } = course.section.finalExam;
+
             const startHour = finalExam.startTime?.hour;
             const startMin = finalExam.startTime?.minute;
             const endHour = finalExam.endTime?.hour;
@@ -84,22 +97,24 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
              */
             const dayIndicesOcurring = weekdaysOccurring.map((day, index) => (day ? index : undefined)).filter(notNull);
 
-            return dayIndicesOcurring.map((dayIndex) => {
-                return {
-                    color: course.section.color,
-                    term: course.term,
-                    title: `${course.deptCode} ${course.courseNumber}`,
-                    courseTitle: course.courseTitle,
-                    bldg: course.section.meetings[0].bldg[0],
-                    instructors: course.section.instructors,
-                    sectionCode: course.section.sectionCode,
-                    sectionType: 'Fin',
-                    start: new Date(2018, 0, dayIndex - 1, startHour, startMin),
-                    end: new Date(2018, 0, dayIndex - 1, endHour, endMin),
-                    finalExam: course.section.finalExam,
-                    isCustomEvent: false,
-                };
-            });
+            return dayIndicesOcurring.map((dayIndex) => ({
+                color: course.section.color,
+                term: course.term,
+                title: `${course.deptCode} ${course.courseNumber}`,
+                courseTitle: course.courseTitle,
+                locations: bldg ? bldg.map(getLocation) : course.section.meetings[0].bldg.map(getLocation),
+                showLocationInfo: true,
+                instructors: course.section.instructors,
+                sectionCode: course.section.sectionCode,
+                sectionType: 'Fin',
+                start: new Date(2018, 0, dayIndex - 1, startHour, startMin),
+                end: new Date(2018, 0, dayIndex - 1, endHour, endMin),
+                finalExam: {
+                    ...finalExam,
+                    locations: bldg?.map(getLocation) ?? [],
+                },
+                isCustomEvent: false,
+            }));
         });
 }
 

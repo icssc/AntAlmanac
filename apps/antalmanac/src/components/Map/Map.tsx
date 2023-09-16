@@ -41,7 +41,7 @@ interface MarkerContent {
 export function getCoursesPerBuilding() {
     const courseEvents = AppStore.getCourseEventsInCalendar();
 
-    const allBuildingCodes = courseEvents.map((event) => event.bldg.split(' ').slice(0, -1).join(' '));
+    const allBuildingCodes = courseEvents.flatMap((event) => event.locations.map((location) => location.building));
 
     const uniqueBuildingCodes = new Set(allBuildingCodes);
 
@@ -53,10 +53,10 @@ export function getCoursesPerBuilding() {
 
     validBuildingCodes.forEach((buildingCode) => {
         coursesPerBuilding[buildingCode] = courseEvents
-            .filter((event) => event.bldg.split(' ').slice(0, -1).join(' ') === buildingCode)
+            .filter((event) => event.locations.map((location) => location.building).includes(buildingCode))
             .map((event) => {
                 const locationData = buildingCatalogue[locationIds[buildingCode]];
-                const key = `${event.title} ${event.sectionType} @ ${event.bldg}`;
+                const key = `${event.title} ${event.sectionType} @ ${event.locations[0]}`;
                 const acronym = locationData.name.substring(
                     locationData.name.indexOf('(') + 1,
                     locationData.name.indexOf(')')
@@ -73,6 +73,7 @@ export function getCoursesPerBuilding() {
                 return markerData;
             });
     });
+
     return coursesPerBuilding;
 }
 
@@ -97,15 +98,11 @@ export default function CourseMap() {
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
     const [calendarEvents, setCalendarEvents] = useState(AppStore.getCourseEventsInCalendar());
 
-    const updateMarkers = useCallback(() => {
-        setMarkers(getCoursesPerBuilding());
-    }, [setMarkers, getCoursesPerBuilding]);
-
-    const updateCalendarEvents = useCallback(() => {
-        setCalendarEvents(AppStore.getCourseEventsInCalendar());
-    }, [setCalendarEvents]);
-
     useEffect(() => {
+        const updateMarkers = () => {
+            setMarkers(getCoursesPerBuilding());
+        };
+
         AppStore.on('addedCoursesChange', updateMarkers);
         AppStore.on('currentScheduleIndexChange', updateMarkers);
 
@@ -113,9 +110,13 @@ export default function CourseMap() {
             AppStore.removeListener('addedCoursesChange', updateMarkers);
             AppStore.removeListener('currentScheduleIndexChange', updateMarkers);
         };
-    }, [updateMarkers]);
+    }, []);
 
     useEffect(() => {
+        const updateCalendarEvents = () => {
+            setCalendarEvents(AppStore.getCourseEventsInCalendar());
+        };
+
         AppStore.on('addedCoursesChange', updateCalendarEvents);
         AppStore.on('currentScheduleIndexChange', updateCalendarEvents);
 
@@ -123,7 +124,7 @@ export default function CourseMap() {
             AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
             AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
         };
-    }, [updateCalendarEvents]);
+    }, []);
 
     useEffect(() => {
         const locationID = Number(searchParams.get('location') ?? 0);
@@ -215,7 +216,7 @@ export default function CourseMap() {
     return (
         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}>
             <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
-                {/** Menu floats above the map. */}
+                {/* Menu floats above the map. */}
                 <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.942, marginX: '15%', marginY: 8 }}>
                     <Tabs value={selectedDayIndex} onChange={handleChange} variant="fullWidth" sx={{ minHeight: 0 }}>
                         {days.map((day) => (
@@ -249,9 +250,16 @@ export default function CourseMap() {
                 {/* Draw a marker for each class that occurs today. */}
                 {markersToDisplay.map((marker, index) => {
                     // Find all courses that occur in the same building prior to this one to stack them properly.
+                    // TODO Handle multiple buildings between class comparisons on markers.
                     const coursesSameBuildingPrior = markersToDisplay
                         .slice(0, index)
-                        .filter((m) => m.bldg.split(' ')[0] === marker.bldg.split(' ')[0]);
+                        .filter((m) =>
+                            m.locations.map((location) => location.building).includes(marker.locations[0].building)
+                        );
+
+                    const allRoomsInBuilding = marker.locations
+                        .filter((location) => location.building == marker.locations[0].building)
+                        .reduce((roomList, location) => [...roomList, location.room], [] as string[]);
 
                     return (
                         <Fragment key={Object.values(marker).join('')}>
@@ -264,7 +272,10 @@ export default function CourseMap() {
                                     <Typography variant="body2">
                                         Class: {marker.title} {marker.sectionType}
                                     </Typography>
-                                    <Typography variant="body2">Room: {marker.bldg.split(' ').slice(-1)}</Typography>
+                                    <Typography variant="body2">
+                                        Room{allRoomsInBuilding.length > 1 && 's'}: {marker.locations[0].building}{' '}
+                                        {allRoomsInBuilding.join('/')}
+                                    </Typography>
                                 </Box>
                             </LocationMarker>
                         </Fragment>
