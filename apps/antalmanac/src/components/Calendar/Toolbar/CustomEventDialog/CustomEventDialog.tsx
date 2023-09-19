@@ -156,6 +156,7 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
                             variant="outlined"
                             size="small"
                             startIcon={<Add fontSize="small" />}
+                            disabled={AppStore.getSkeletonMode()}
                         >
                             Custom
                         </Button>
