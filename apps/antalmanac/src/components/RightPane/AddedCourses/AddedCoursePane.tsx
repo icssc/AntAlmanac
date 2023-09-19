@@ -185,8 +185,8 @@ function SkeletonSchedule() {
     }, [skeletonSchedule.courses]);
 
     return (
-        <Box>
-            <Typography>{skeletonSchedule.scheduleName}</Typography>
+        <Box display="flex" flexDirection="column" gap={1}>
+            <Typography variant="h6">{skeletonSchedule.scheduleName}</Typography>
             {
                 // Sections organized under terms, in case the schedule contains multiple terms
                 sectionsByTerm.map(([term, sections]) => (
@@ -214,6 +214,26 @@ function SkeletonSchedule() {
                     </Box>
                 ))
             }
+
+            {skeletonSchedule.customEvents.length > 0 && (
+                <Box>
+                    <Typography variant="h6">Custom Events</Typography>
+                    <Grid container spacing={2} padding={0}>
+                        {skeletonSchedule.customEvents.map((customEvent) => {
+                            return (
+                                <Grid item md={12} xs={12} key={customEvent.title}>
+                                    <CustomEventDetailView
+                                        customEvent={customEvent}
+                                        currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
+                                        // scheduleNames={scheduleNames}
+                                    />
+                                </Grid>
+                            );
+                        })}
+                    </Grid>
+                </Box>
+            )}
+
             <Typography variant="body1">
                 PeterPortal or WebSoc is currently unreachable. This is the information that we can currently retrieve.
             </Typography>
