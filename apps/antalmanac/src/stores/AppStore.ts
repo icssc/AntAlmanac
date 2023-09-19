@@ -74,10 +74,6 @@ class AppStore extends EventEmitter {
         return this.schedule.getSkeletonSchedule();
     }
 
-    getSkeletonNote() {
-        return this.schedule.getSkeletonNote();
-    }
-
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
         let addedCourse: ScheduleCourse;
         if (scheduleIndex === this.schedule.getNumberOfSchedules()) {

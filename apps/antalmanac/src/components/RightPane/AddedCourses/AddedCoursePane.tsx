@@ -161,15 +161,15 @@ function CopyScheduleButton() {
 }
 
 interface CustomEventsBoxProps {
-    customEventsFromProps: RepeatingCustomEvent[];
+    customEvents: RepeatingCustomEvent[];
     isSkeletonMode: boolean;
     scheduleNames: string[];
 }
 
 function CustomEventsBox(props: CustomEventsBoxProps) {
-    const { customEventsFromProps, scheduleNames, isSkeletonMode } = props;
+    const { scheduleNames, isSkeletonMode } = props;
 
-    const [customEvents, setCustomEvents] = useState(customEventsFromProps);
+    const [customEvents, setCustomEvents] = useState(props.customEvents);
 
     useEffect(() => {
         const handleCustomEventsChange = () => {
@@ -322,13 +322,9 @@ function SkeletonSchedule() {
                 ))
             }
 
-            <CustomEventsBox
-                customEventsFromProps={skeletonSchedule.customEvents}
-                scheduleNames={[]}
-                isSkeletonMode={true}
-            />
+            <CustomEventsBox customEvents={skeletonSchedule.customEvents} scheduleNames={[]} isSkeletonMode={true} />
 
-            <ScheduleNoteBox scheduleNote={AppStore.getSkeletonNote()} isSkeletonMode={true} />
+            <ScheduleNoteBox scheduleNote={skeletonSchedule.scheduleNote} isSkeletonMode={true} />
 
             <Typography variant="body1">
                 PeterPortal or WebSoc is currently unreachable. This is the information that we can currently retrieve.
@@ -414,7 +410,7 @@ function AddedSectionsGrid() {
             </Box>
 
             <CustomEventsBox
-                customEventsFromProps={AppStore.schedule.getCurrentCustomEvents()}
+                customEvents={AppStore.schedule.getCurrentCustomEvents()}
                 scheduleNames={scheduleNames}
                 isSkeletonMode={false}
             />
