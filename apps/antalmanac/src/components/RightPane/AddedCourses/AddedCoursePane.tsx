@@ -391,7 +391,7 @@ function AddedSectionsGrid() {
 
             <Box>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-                <Grid container spacing={2} padding={0}>
+                <Box marginBottom={-1}>
                     {courses.map((course) => {
                         return (
                             <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber}>
@@ -405,7 +405,7 @@ function AddedSectionsGrid() {
                             </Grid>
                         );
                     })}
-                </Grid>
+                </Box>
             </Box>
 
             <CustomEventsBox
