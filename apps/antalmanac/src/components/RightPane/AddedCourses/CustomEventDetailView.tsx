@@ -41,7 +41,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                 subheader={readableDateAndTimeFormat(customEvent.start, customEvent.end, customEvent.days)}
                 style={{ padding: 8 }}
             />
-            {!isSkeletonMode ? (
+            {!isSkeletonMode && (
                 <CardActions disableSpacing={true} style={{ padding: 0, marginTop: -8 }}>
                     <div>
                         <ColorPicker
@@ -61,8 +61,6 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                     </IconButton>
                     <CustomEventDialog customEvent={customEvent} scheduleNames={scheduleNames} />
                 </CardActions>
-            ) : (
-                <></>
             )}
         </Card>
     );
