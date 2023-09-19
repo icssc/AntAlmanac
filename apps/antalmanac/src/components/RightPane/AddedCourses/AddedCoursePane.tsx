@@ -225,7 +225,8 @@ function SkeletonSchedule() {
                                     <CustomEventDetailView
                                         customEvent={customEvent}
                                         currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
-                                        // scheduleNames={scheduleNames}
+                                        scheduleNames={[]} // skeletonSchedule does not store scheduleNames, so an empty array is passed instead
+                                        isSkeletonSchedule={true}
                                     />
                                 </Grid>
                             );
@@ -352,6 +353,7 @@ function AddedSectionsGrid() {
                                         customEvent={customEvent}
                                         currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
                                         scheduleNames={scheduleNames}
+                                        isSkeletonSchedule={false}
                                     />
                                 </Grid>
                             );

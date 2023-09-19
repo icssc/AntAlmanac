@@ -1,7 +1,5 @@
-import { Card, CardActions, CardHeader, IconButton } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { Delete } from '@material-ui/icons';
+import { Card, CardActions, CardHeader, IconButton } from '@mui/material';
+import { Delete } from '@mui/icons-material';
 import moment from 'moment';
 
 import CustomEventDialog, { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
@@ -9,30 +7,15 @@ import ColorPicker from '../../ColorPicker';
 import { deleteCustomEvent } from '$actions/AppStoreActions';
 import analyticsEnum from '$lib/analytics';
 
-const styles = {
-    root: {
-        padding: '4px 4px 0px 8px',
-    },
-    colorPicker: {
-        cursor: 'pointer',
-        '& > div': {
-            margin: '0px 8px 0px 4px',
-            height: '20px',
-            width: '20px',
-            borderRadius: '50%',
-        },
-    },
-};
-
 interface CustomEventDetailViewProps {
-    classes: ClassNameMap;
     customEvent: RepeatingCustomEvent;
     currentScheduleIndex: number;
     scheduleNames: string[];
+    isSkeletonSchedule: boolean;
 }
 
 const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
-    const { classes, customEvent } = props;
+    const { customEvent, isSkeletonSchedule } = props;
 
     const readableDateAndTimeFormat = (start: string, end: string, days: boolean[]) => {
         const startTime = moment({
@@ -55,30 +38,35 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
         <Card>
             <CardHeader
                 titleTypographyProps={{ variant: 'subtitle1' }}
-                className={classes.root}
                 title={customEvent.title}
                 subheader={readableDateAndTimeFormat(customEvent.start, customEvent.end, customEvent.days)}
+                style={{ padding: 8 }}
             />
-            <CardActions disableSpacing={true}>
-                <div className={classes.colorPicker}>
-                    <ColorPicker
-                        color={customEvent.color as string}
-                        isCustomEvent={true}
-                        customEventID={customEvent.customEventID}
-                        analyticsCategory={analyticsEnum.addedClasses.title}
-                    />
-                </div>
-                <IconButton
-                    onClick={() => {
-                        deleteCustomEvent(customEvent.customEventID);
-                    }}
-                >
-                    <Delete fontSize="small" />
-                </IconButton>
-                <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
-            </CardActions>
+            {!isSkeletonSchedule ? (
+                <CardActions disableSpacing={true} style={{ padding: 0 }}>
+                    <div>
+                        <ColorPicker
+                            color={customEvent.color as string}
+                            isCustomEvent={true}
+                            customEventID={customEvent.customEventID}
+                            analyticsCategory={analyticsEnum.addedClasses.title}
+                        />
+                    </div>
+                    <IconButton
+                        onClick={() => {
+                            deleteCustomEvent(customEvent.customEventID);
+                        }}
+                        size="large"
+                    >
+                        <Delete fontSize="small" />
+                    </IconButton>
+                    <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
+                </CardActions>
+            ) : (
+                <></>
+            )}
         </Card>
     );
 };
 
-export default withStyles(styles)(CustomEventDetailView);
+export default CustomEventDetailView;
