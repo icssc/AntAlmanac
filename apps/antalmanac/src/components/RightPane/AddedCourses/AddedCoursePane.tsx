@@ -210,13 +210,14 @@ function CustomEventsBox(props: CustomEventsBoxProps) {
 }
 
 interface ScheduleNoteBoxProps {
+    scheduleNote: string;
     isSkeletonMode: boolean;
 }
 
 function ScheduleNoteBox(props: ScheduleNoteBoxProps) {
     const { isSkeletonMode } = props;
 
-    const [scheduleNote, setScheduleNote] = useState(AppStore.getSkeletonNote());
+    const [scheduleNote, setScheduleNote] = useState(props.scheduleNote);
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
 
     const handleNoteChange = useCallback(
@@ -327,7 +328,7 @@ function SkeletonSchedule() {
                 isSkeletonMode={true}
             />
 
-            <ScheduleNoteBox isSkeletonMode={true} />
+            <ScheduleNoteBox scheduleNote={AppStore.getSkeletonNote()} isSkeletonMode={true} />
 
             <Typography variant="body1">
                 PeterPortal or WebSoc is currently unreachable. This is the information that we can currently retrieve.
@@ -418,7 +419,7 @@ function AddedSectionsGrid() {
                 isSkeletonMode={false}
             />
 
-            <ScheduleNoteBox isSkeletonMode={false} />
+            <ScheduleNoteBox scheduleNote={AppStore.getCurrentScheduleNote()} isSkeletonMode={false} />
         </Box>
     );
 }
