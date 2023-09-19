@@ -159,6 +159,62 @@ function CopyScheduleButton() {
     );
 }
 
+interface ScheduleNoteBoxProps {
+    isSkeletonMode: boolean;
+}
+
+function ScheduleNoteBox(props: ScheduleNoteBoxProps) {
+    const { isSkeletonMode } = props;
+
+    const [scheduleNote, setScheduleNote] = useState(AppStore.getSkeletonNote());
+    const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+
+    const handleNoteChange = useCallback(
+        (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+            setScheduleNote(event.target.value);
+            updateScheduleNote(event.target.value, scheduleIndex);
+        },
+        [scheduleIndex]
+    );
+
+    useEffect(() => {
+        const handleScheduleNoteChange = () => {
+            setScheduleNote(AppStore.getCurrentScheduleNote());
+        };
+
+        const handleScheduleIndexChange = () => {
+            setScheduleIndex(AppStore.getCurrentScheduleIndex());
+        };
+
+        AppStore.on('scheduleNotesChange', handleScheduleNoteChange);
+        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
+
+        return () => {
+            AppStore.off('scheduleNotesChange', handleScheduleNoteChange);
+            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
+        };
+    }, []);
+
+    return (
+        <Box>
+            <Typography variant="h6">Schedule Notes</Typography>
+
+            <TextField
+                type="text"
+                variant="filled"
+                label="Click here to start typing!"
+                onChange={handleNoteChange}
+                value={scheduleNote}
+                inputProps={{ maxLength: NOTE_MAX_LEN }}
+                InputProps={{ disableUnderline: true }}
+                fullWidth
+                multiline
+                disabled={isSkeletonMode}
+            />
+        </Box>
+    );
+}
+
 function SkeletonSchedule() {
     const [skeletonSchedule, setSkeletonSchedule] = useState(AppStore.getSkeletonSchedule());
 
@@ -235,6 +291,8 @@ function SkeletonSchedule() {
                 </Box>
             )}
 
+            <ScheduleNoteBox isSkeletonMode={true} />
+
             <Typography variant="body1">
                 PeterPortal or WebSoc is currently unreachable. This is the information that we can currently retrieve.
             </Typography>
@@ -246,16 +304,7 @@ function AddedSectionsGrid() {
     const [courses, setCourses] = useState(getCourses());
     const [customEvents, setCustomEvents] = useState(AppStore.schedule.getCurrentCustomEvents());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
-    const [scheduleNote, setScheduleNote] = useState(AppStore.getCurrentScheduleNote());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
-
-    const handleNoteChange = useCallback(
-        (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-            setScheduleNote(event.target.value);
-            updateScheduleNote(event.target.value, scheduleIndex);
-        },
-        [scheduleIndex]
-    );
 
     useEffect(() => {
         const handleCoursesChange = () => {
@@ -270,10 +319,6 @@ function AddedSectionsGrid() {
             setScheduleNames([...AppStore.getScheduleNames()]);
         };
 
-        const handleScheduleNoteChange = () => {
-            setScheduleNote(AppStore.getCurrentScheduleNote());
-        };
-
         const handleScheduleIndexChange = () => {
             setScheduleIndex(AppStore.getCurrentScheduleIndex());
         };
@@ -283,7 +328,6 @@ function AddedSectionsGrid() {
         AppStore.on('currentScheduleIndexChange', handleCoursesChange);
         AppStore.on('currentScheduleIndexChange', handleCustomEventsChange);
         AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-        AppStore.on('scheduleNotesChange', handleScheduleNoteChange);
         AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
 
         return () => {
@@ -292,7 +336,6 @@ function AddedSectionsGrid() {
             AppStore.off('currentScheduleIndexChange', handleCoursesChange);
             AppStore.off('currentScheduleIndexChange', handleCustomEventsChange);
             AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-            AppStore.off('scheduleNotesChange', handleScheduleNoteChange);
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
         };
     }, []);
@@ -362,21 +405,7 @@ function AddedSectionsGrid() {
                 </Box>
             )}
 
-            <Box>
-                <Typography variant="h6">Schedule Notes</Typography>
-
-                <TextField
-                    type="text"
-                    variant="filled"
-                    label="Click here to start typing!"
-                    onChange={handleNoteChange}
-                    value={scheduleNote}
-                    inputProps={{ maxLength: NOTE_MAX_LEN }}
-                    InputProps={{ disableUnderline: true }}
-                    fullWidth
-                    multiline
-                />
-            </Box>
+            <ScheduleNoteBox isSkeletonMode={false} />
         </Box>
     );
 }

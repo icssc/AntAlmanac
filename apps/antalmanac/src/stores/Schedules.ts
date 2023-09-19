@@ -534,6 +534,11 @@ export class Schedules {
         return this.skeletonSchedules[this.currentScheduleIndex];
     }
 
+    getSkeletonNote(): string {
+        const scheduleNote = this.skeletonSchedules[this.currentScheduleIndex]?.scheduleNote;
+        return scheduleNote ? scheduleNote : '';
+    }
+
     setSkeletonSchedules(skeletonSchedules: ShortCourseSchedule[]) {
         this.skeletonSchedules = skeletonSchedules;
     }
