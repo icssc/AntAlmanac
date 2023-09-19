@@ -185,24 +185,28 @@ function CustomEventsBox(props: CustomEventsBoxProps) {
         };
     }, []);
 
-    return customEvents.length > 0 ? (
-        <Box>
-            <Typography variant="h6">Custom Events</Typography>
-            <Grid container spacing={1} padding={0}>
-                {customEvents.map((customEvent) => {
-                    return (
-                        <Grid item md={12} xs={12} key={customEvent.title}>
-                            <CustomEventDetailView
-                                customEvent={customEvent}
-                                scheduleNames={scheduleNames}
-                                isSkeletonMode={isSkeletonMode}
-                            />
-                        </Grid>
-                    );
-                })}
-            </Grid>
-        </Box>
-    ) : null;
+    return (
+        <>
+            {customEvents.length > 0 && (
+                <Box>
+                    <Typography variant="h6">Custom Events</Typography>
+                    <Grid container spacing={1} padding={0}>
+                        {customEvents.map((customEvent) => {
+                            return (
+                                <Grid item md={12} xs={12} key={customEvent.title}>
+                                    <CustomEventDetailView
+                                        customEvent={customEvent}
+                                        scheduleNames={scheduleNames}
+                                        isSkeletonMode={isSkeletonMode}
+                                    />
+                                </Grid>
+                            );
+                        })}
+                    </Grid>
+                </Box>
+            )}
+        </>
+    );
 }
 
 interface ScheduleNoteBoxProps {
