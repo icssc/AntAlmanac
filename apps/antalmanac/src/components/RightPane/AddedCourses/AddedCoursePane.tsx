@@ -24,6 +24,7 @@ import AppStore from '$stores/AppStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
 import { clickToCopy } from '$lib/helpers';
+import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 
 /**
  * All the interactive buttons have the same styles.
@@ -159,6 +160,51 @@ function CopyScheduleButton() {
     );
 }
 
+interface CustomEventsBoxProps {
+    customEventsFromProps: RepeatingCustomEvent[];
+    isSkeletonMode: boolean;
+    scheduleNames: string[];
+}
+
+function CustomEventsBox(props: CustomEventsBoxProps) {
+    const { customEventsFromProps, scheduleNames, isSkeletonMode } = props;
+
+    const [customEvents, setCustomEvents] = useState(customEventsFromProps);
+
+    useEffect(() => {
+        const handleCustomEventsChange = () => {
+            setCustomEvents([...AppStore.schedule.getCurrentCustomEvents()]);
+        };
+
+        AppStore.on('customEventsChange', handleCustomEventsChange);
+        AppStore.on('currentScheduleIndexChange', handleCustomEventsChange);
+
+        return () => {
+            AppStore.off('customEventsChange', handleCustomEventsChange);
+            AppStore.off('currentScheduleIndexChange', handleCustomEventsChange);
+        };
+    }, []);
+
+    return customEvents.length > 0 ? (
+        <Box>
+            <Typography variant="h6">Custom Events</Typography>
+            <Grid container spacing={1} padding={0}>
+                {customEvents.map((customEvent) => {
+                    return (
+                        <Grid item md={12} xs={12} key={customEvent.title}>
+                            <CustomEventDetailView
+                                customEvent={customEvent}
+                                scheduleNames={scheduleNames}
+                                isSkeletonMode={isSkeletonMode}
+                            />
+                        </Grid>
+                    );
+                })}
+            </Grid>
+        </Box>
+    ) : null;
+}
+
 interface ScheduleNoteBoxProps {
     isSkeletonMode: boolean;
 }
@@ -271,25 +317,11 @@ function SkeletonSchedule() {
                 ))
             }
 
-            {skeletonSchedule.customEvents.length > 0 && (
-                <Box>
-                    <Typography variant="h6">Custom Events</Typography>
-                    <Grid container spacing={2} padding={0}>
-                        {skeletonSchedule.customEvents.map((customEvent) => {
-                            return (
-                                <Grid item md={12} xs={12} key={customEvent.title}>
-                                    <CustomEventDetailView
-                                        customEvent={customEvent}
-                                        currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
-                                        scheduleNames={[]} // skeletonSchedule does not store scheduleNames, so an empty array is passed instead
-                                        isSkeletonSchedule={true}
-                                    />
-                                </Grid>
-                            );
-                        })}
-                    </Grid>
-                </Box>
-            )}
+            <CustomEventsBox
+                customEventsFromProps={skeletonSchedule.customEvents}
+                scheduleNames={[]}
+                isSkeletonMode={true}
+            />
 
             <ScheduleNoteBox isSkeletonMode={true} />
 
@@ -302,17 +334,12 @@ function SkeletonSchedule() {
 
 function AddedSectionsGrid() {
     const [courses, setCourses] = useState(getCourses());
-    const [customEvents, setCustomEvents] = useState(AppStore.schedule.getCurrentCustomEvents());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
 
     useEffect(() => {
         const handleCoursesChange = () => {
             setCourses(getCourses());
-        };
-
-        const handleCustomEventsChange = () => {
-            setCustomEvents([...AppStore.schedule.getCurrentCustomEvents()]);
         };
 
         const handleScheduleNamesChange = () => {
@@ -324,17 +351,13 @@ function AddedSectionsGrid() {
         };
 
         AppStore.on('addedCoursesChange', handleCoursesChange);
-        AppStore.on('customEventsChange', handleCustomEventsChange);
         AppStore.on('currentScheduleIndexChange', handleCoursesChange);
-        AppStore.on('currentScheduleIndexChange', handleCustomEventsChange);
         AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
         AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
 
         return () => {
             AppStore.off('addedCoursesChange', handleCoursesChange);
-            AppStore.off('customEventsChange', handleCustomEventsChange);
             AppStore.off('currentScheduleIndexChange', handleCoursesChange);
-            AppStore.off('currentScheduleIndexChange', handleCustomEventsChange);
             AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
         };
@@ -385,25 +408,11 @@ function AddedSectionsGrid() {
                 </Grid>
             </Box>
 
-            {customEvents.length > 0 && (
-                <Box>
-                    <Typography variant="h6">Custom Events</Typography>
-                    <Grid container spacing={2} padding={0}>
-                        {customEvents.map((customEvent) => {
-                            return (
-                                <Grid item md={12} xs={12} key={customEvent.title}>
-                                    <CustomEventDetailView
-                                        customEvent={customEvent}
-                                        currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
-                                        scheduleNames={scheduleNames}
-                                        isSkeletonSchedule={false}
-                                    />
-                                </Grid>
-                            );
-                        })}
-                    </Grid>
-                </Box>
-            )}
+            <CustomEventsBox
+                customEventsFromProps={AppStore.schedule.getCurrentCustomEvents()}
+                scheduleNames={scheduleNames}
+                isSkeletonMode={false}
+            />
 
             <ScheduleNoteBox isSkeletonMode={false} />
         </Box>

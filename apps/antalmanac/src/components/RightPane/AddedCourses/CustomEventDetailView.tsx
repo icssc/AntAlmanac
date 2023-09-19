@@ -9,13 +9,12 @@ import analyticsEnum from '$lib/analytics';
 
 interface CustomEventDetailViewProps {
     customEvent: RepeatingCustomEvent;
-    currentScheduleIndex: number;
     scheduleNames: string[];
-    isSkeletonSchedule: boolean;
+    isSkeletonMode: boolean;
 }
 
 const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
-    const { customEvent, isSkeletonSchedule } = props;
+    const { customEvent, scheduleNames, isSkeletonMode } = props;
 
     const readableDateAndTimeFormat = (start: string, end: string, days: boolean[]) => {
         const startTime = moment({
@@ -42,8 +41,8 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                 subheader={readableDateAndTimeFormat(customEvent.start, customEvent.end, customEvent.days)}
                 style={{ padding: 8 }}
             />
-            {!isSkeletonSchedule ? (
-                <CardActions disableSpacing={true} style={{ padding: 0 }}>
+            {!isSkeletonMode ? (
+                <CardActions disableSpacing={true} style={{ padding: 0, marginTop: -8 }}>
                     <div>
                         <ColorPicker
                             color={customEvent.color as string}
@@ -60,7 +59,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                     >
                         <Delete fontSize="small" />
                     </IconButton>
-                    <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
+                    <CustomEventDialog customEvent={customEvent} scheduleNames={scheduleNames} />
                 </CardActions>
             ) : (
                 <></>
