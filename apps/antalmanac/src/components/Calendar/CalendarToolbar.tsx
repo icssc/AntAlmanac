@@ -178,6 +178,7 @@ function SelectSchedulePopover(props: { scheduleNames: string[] }) {
                 variant="outlined"
                 onClick={handleClick}
                 sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
+                disabled={AppStore.getSkeletonMode()}
             >
                 <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
                     {currentScheduleName}
