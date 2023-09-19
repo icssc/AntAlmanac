@@ -322,6 +322,7 @@ function SkeletonSchedule() {
                 ))
             }
 
+            {/* scheduleNames passes an empty array because skeletonSchedule doesn't have a scheduleName prop */}
             <CustomEventsBox customEvents={skeletonSchedule.customEvents} scheduleNames={[]} isSkeletonMode={true} />
 
             <ScheduleNoteBox scheduleNote={skeletonSchedule.scheduleNote} isSkeletonMode={true} />
