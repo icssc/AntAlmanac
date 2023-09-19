@@ -296,13 +296,12 @@ function AddedSectionsGrid() {
 
     return (
         <Box display="flex" flexDirection="column" gap={1}>
-            <Box display="flex" width={1}>
+            <Box display="flex" width={1} position="absolute" zIndex="2">
                 <CopyScheduleButton />
                 <ClearScheduleButton />
                 <ColumnToggleButton />
             </Box>
-
-            <Box>
+            <Box style={{ marginTop: 50 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
                 <Grid container spacing={2} padding={0}>
                     {courses.map((course) => {
