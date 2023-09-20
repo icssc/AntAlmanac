@@ -10,8 +10,7 @@ import {
     TextField,
     Tooltip,
 } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { Add, Edit } from '@material-ui/icons';
+import { Add, Edit } from '@mui/icons-material';
 import React, { useCallback, useState } from 'react';
 
 import DaySelector from './DaySelector';
@@ -20,12 +19,6 @@ import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
-
-const styles = {
-    textField: {
-        minWidth: 120,
-    },
-};
 
 /**
  * There is another CustomEvent interface in CourseCalendarEvent and they are slightly different. This one encapsulates the occurences of an event on multiple days, like Monday Tuesday Wednesday all in the same object as specified by the days array. The other one, `CustomEventDialog`'s CustomEvent, represents only one day, like the event on Monday, and needs to be duplicated to be repeated across multiple days.
@@ -225,21 +218,13 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                     <Button onClick={() => handleClose()} color={isDarkMode() ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>
-                    <Tooltip title="Schedule and day must be checked" disableHoverListener={disabled}>
-                        <span>
-                            <Button
-                                onClick={() => handleSubmit()}
-                                variant="contained"
-                                color="primary"
-                                disabled={disabled}
-                            >
-                                {props.customEvent ? 'Save Changes' : 'Add Event'}
-                            </Button>
-                        </span>
-                    </Tooltip>
+                    <Button onClick={() => handleSubmit()} variant="contained" color="primary" disabled={disabled}>
+                        {disabled && 'Schedule and day must be checked'}
+                        {!disabled && (props.customEvent ? 'Save Changes' : 'Add Event')}
+                    </Button>
                 </DialogActions>
             </Dialog>
         </>
     );
 }
-export default withStyles(styles)(CustomEventDialogs);
+export default CustomEventDialogs;
