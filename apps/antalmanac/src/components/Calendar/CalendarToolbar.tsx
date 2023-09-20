@@ -128,6 +128,7 @@ function AddScheduleButton() {
  */
 function SelectSchedulePopover(props: { scheduleNames: string[] }) {
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();
 
@@ -156,17 +157,23 @@ function SelectSchedulePopover(props: { scheduleNames: string[] }) {
         setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
     }, []);
 
+    const handleSkeletonModeChange = () => {
+        setSkeletonMode(AppStore.getSkeletonMode());
+    };
+
     useEffect(() => {
         AppStore.on('addedCoursesChange', handleScheduleIndexChange);
         AppStore.on('customEventsChange', handleScheduleIndexChange);
         AppStore.on('colorChange', handleScheduleIndexChange);
         AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
+        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
 
         return () => {
             AppStore.off('addedCoursesChange', handleScheduleIndexChange);
             AppStore.off('customEventsChange', handleScheduleIndexChange);
             AppStore.off('colorChange', handleScheduleIndexChange);
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
+            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
     }, [handleScheduleIndexChange]);
 
@@ -178,7 +185,7 @@ function SelectSchedulePopover(props: { scheduleNames: string[] }) {
                 variant="outlined"
                 onClick={handleClick}
                 sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
-                disabled={AppStore.getSkeletonMode()}
+                disabled={skeletonMode}
             >
                 <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
                     {currentScheduleName}
