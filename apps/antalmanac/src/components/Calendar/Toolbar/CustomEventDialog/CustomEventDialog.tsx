@@ -101,7 +101,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
     };
 
     const handleAddToCalendar = () => {
-        if (!days.some((day) => day) || scheduleIndices.length === 0) return;
+        if (disabled) return;
 
         const newCustomEvent = {
             color: props.customEvent ? props.customEvent.color : '#551a8b',
@@ -151,7 +151,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
         [setScheduleIndices]
     );
 
-    const disabled = !(scheduleIndices.length && days.some(Boolean));
+    const disabled = !(scheduleIndices.length && days.includes(true));
 
     return (
         <>
