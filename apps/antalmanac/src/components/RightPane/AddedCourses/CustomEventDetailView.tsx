@@ -39,10 +39,10 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                 titleTypographyProps={{ variant: 'subtitle1' }}
                 title={customEvent.title}
                 subheader={readableDateAndTimeFormat(customEvent.start, customEvent.end, customEvent.days)}
-                style={{ padding: 8, paddingBottom: 0 }}
+                style={{ padding: 8 }}
             />
             {!isSkeletonMode && (
-                <CardActions disableSpacing={true} style={{ padding: 0 }}>
+                <CardActions disableSpacing={true} style={{ padding: 0, marginTop: -8 }}>
                     <ColorPicker
                         color={customEvent.color as string}
                         isCustomEvent={true}
