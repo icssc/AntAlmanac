@@ -43,14 +43,13 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
             />
             {!isSkeletonMode && (
                 <CardActions disableSpacing={true} style={{ padding: 0, marginTop: -8 }}>
-                    <div>
-                        <ColorPicker
-                            color={customEvent.color as string}
-                            isCustomEvent={true}
-                            customEventID={customEvent.customEventID}
-                            analyticsCategory={analyticsEnum.addedClasses.title}
-                        />
-                    </div>
+                    <ColorPicker
+                        color={customEvent.color as string}
+                        isCustomEvent={true}
+                        customEventID={customEvent.customEventID}
+                        analyticsCategory={analyticsEnum.addedClasses.title}
+                    />
+                    <CustomEventDialog customEvent={customEvent} scheduleNames={scheduleNames} />
                     <IconButton
                         onClick={() => {
                             deleteCustomEvent(customEvent.customEventID);
@@ -59,7 +58,6 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                     >
                         <Delete fontSize="small" />
                     </IconButton>
-                    <CustomEventDialog customEvent={customEvent} scheduleNames={scheduleNames} />
                 </CardActions>
             )}
         </Card>
