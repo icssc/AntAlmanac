@@ -11,7 +11,7 @@ import {
     Tooltip,
 } from '@material-ui/core';
 import { Add, Edit } from '@mui/icons-material';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import DaySelector from './DaySelector';
 import ScheduleSelector from './ScheduleSelector';
@@ -48,12 +48,26 @@ const defaultCustomEventValues: RepeatingCustomEvent = {
 };
 
 function CustomEventDialogs(props: CustomEventDialogProps) {
+    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+
     const [open, setOpen] = useState(false);
     const [scheduleIndices, setScheduleIndices] = useState<number[]>([]);
     const [start, setStart] = useState('10:30');
     const [end, setEnd] = useState('15:30');
     const [title, setTitle] = useState('');
     const [days, setDays] = useState([false, false, false, false, false, false, false]);
+
+    useEffect(() => {
+        const handleSkeletonModeChange = () => {
+            setSkeletonMode(AppStore.getSkeletonMode());
+        };
+
+        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+
+        return () => {
+            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+        };
+    }, []);
 
     const handleOpen = useCallback(() => {
         setOpen(true);
@@ -165,7 +179,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                         variant="outlined"
                         size="small"
                         startIcon={<Add fontSize="small" />}
-                        disabled={AppStore.getSkeletonMode()}
+                        disabled={skeletonMode}
                     >
                         Custom
                     </Button>
