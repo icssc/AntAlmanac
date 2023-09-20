@@ -52,10 +52,10 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
 
     const [open, setOpen] = useState(false);
     const [scheduleIndices, setScheduleIndices] = useState<number[]>([]);
-    const [start, setStart] = useState('10:30');
-    const [end, setEnd] = useState('15:30');
-    const [title, setTitle] = useState('');
-    const [days, setDays] = useState([false, false, false, false, false, false, false]);
+    const [start, setStart] = useState(defaultCustomEventValues.start);
+    const [end, setEnd] = useState(defaultCustomEventValues.end);
+    const [title, setTitle] = useState(defaultCustomEventValues.title);
+    const [days, setDays] = useState(defaultCustomEventValues.days);
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {
