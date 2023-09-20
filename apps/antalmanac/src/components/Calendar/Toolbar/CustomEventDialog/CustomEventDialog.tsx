@@ -233,8 +233,11 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                         Cancel
                     </Button>
                     <Button onClick={() => handleSubmit()} variant="contained" color="primary" disabled={disabled}>
-                        {disabled && 'Schedule and day must be checked'}
-                        {!disabled && (props.customEvent ? 'Save Changes' : 'Add Event')}
+                        {disabled
+                            ? 'Schedule and day must be checked'
+                            : props.customEvent
+                            ? 'Save Changes'
+                            : 'Add Event'}
                     </Button>
                 </DialogActions>
             </Dialog>
