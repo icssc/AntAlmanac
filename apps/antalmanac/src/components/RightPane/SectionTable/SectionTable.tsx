@@ -154,7 +154,7 @@ const SectionTable = (props: SectionTableProps) => {
                 />
             </div>
 
-            <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
+            <TableContainer component={Paper} style={{ marginTop: 8 }} elevation={0} variant="outlined">
                 <Table className={classes?.table} size="small">
                     <TableHead>
                         <TableRow>

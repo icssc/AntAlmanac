@@ -193,13 +193,13 @@ function CustomEventsBox() {
     }, []);
 
     if (customEvents.length <= 0) {
-        return <Box />;
+        return null;
     }
 
     return (
         <Box>
             <Typography variant="h6">Custom Events</Typography>
-            <Grid container spacing={1} padding={0}>
+            <Box display="flex" flexDirection="column" gap={1}>
                 {customEvents.map((customEvent) => {
                     return (
                         <Grid item md={12} xs={12} key={customEvent.title}>
@@ -211,7 +211,7 @@ function CustomEventsBox() {
                         </Grid>
                     );
                 })}
-            </Grid>
+            </Box>
         </Box>
     );
 }
@@ -407,7 +407,7 @@ function AddedSectionsGrid() {
 
             <Box>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-                <Box marginBottom={-1}>
+                <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
                         return (
                             <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber}>
