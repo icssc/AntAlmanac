@@ -140,9 +140,12 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
         [setEnd]
     );
 
-    const handleDayChange = (days: boolean[]) => {
-        setDays(days);
-    };
+    const handleDayChange = useCallback(
+        (days: boolean[]) => {
+            setDays(days);
+        },
+        [setDays]
+    );
 
     const handleSelectScheduleIndices = useCallback(
         (scheduleIndices: number[]) => {
