@@ -24,7 +24,6 @@ import AppStore from '$stores/AppStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
 import { clickToCopy } from '$lib/helpers';
-import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 
 /**
  * All the interactive buttons have the same styles.
@@ -160,16 +159,24 @@ function CopyScheduleButton() {
     );
 }
 
-interface CustomEventsBoxProps {
-    customEvents: RepeatingCustomEvent[];
-    isSkeletonMode: boolean;
-    scheduleNames: string[];
-}
+function CustomEventsBox() {
+    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-function CustomEventsBox(props: CustomEventsBoxProps) {
-    const { scheduleNames, isSkeletonMode } = props;
+    const [customEvents, setCustomEvents] = useState(
+        skeletonMode ? AppStore.getSkeletonSchedule().customEvents : AppStore.schedule.getCurrentCustomEvents()
+    );
 
-    const [customEvents, setCustomEvents] = useState(props.customEvents);
+    useEffect(() => {
+        const handleSkeletonModeChange = () => {
+            setSkeletonMode(AppStore.getSkeletonMode());
+        };
+
+        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+
+        return () => {
+            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+        };
+    }, []);
 
     useEffect(() => {
         const handleCustomEventsChange = () => {
@@ -198,8 +205,8 @@ function CustomEventsBox(props: CustomEventsBoxProps) {
                         <Grid item md={12} xs={12} key={customEvent.title}>
                             <CustomEventDetailView
                                 customEvent={customEvent}
-                                scheduleNames={scheduleNames}
-                                isSkeletonMode={isSkeletonMode}
+                                scheduleNames={AppStore.getScheduleNames()}
+                                isSkeletonMode={skeletonMode}
                             />
                         </Grid>
                     );
@@ -209,15 +216,11 @@ function CustomEventsBox(props: CustomEventsBoxProps) {
     );
 }
 
-interface ScheduleNoteBoxProps {
-    scheduleNote: string;
-    isSkeletonMode: boolean;
-}
-
-function ScheduleNoteBox(props: ScheduleNoteBoxProps) {
-    const { isSkeletonMode } = props;
-
-    const [scheduleNote, setScheduleNote] = useState(props.scheduleNote);
+function ScheduleNoteBox() {
+    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const [scheduleNote, setScheduleNote] = useState(
+        skeletonMode ? AppStore.getSkeletonSchedule().scheduleNote : AppStore.getCurrentScheduleNote()
+    );
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
 
     const handleNoteChange = useCallback(
@@ -227,6 +230,18 @@ function ScheduleNoteBox(props: ScheduleNoteBoxProps) {
         },
         [scheduleIndex]
     );
+
+    useEffect(() => {
+        const handleSkeletonModeChange = () => {
+            setSkeletonMode(AppStore.getSkeletonMode());
+        };
+
+        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+
+        return () => {
+            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+        };
+    }, []);
 
     useEffect(() => {
         const handleScheduleNoteChange = () => {
@@ -260,7 +275,7 @@ function ScheduleNoteBox(props: ScheduleNoteBoxProps) {
                 InputProps={{ disableUnderline: true }}
                 fullWidth
                 multiline
-                disabled={isSkeletonMode}
+                disabled={skeletonMode}
             />
         </Box>
     );
@@ -322,10 +337,9 @@ function SkeletonSchedule() {
                 ))
             }
 
-            {/* scheduleNames passes an empty array because skeletonSchedule doesn't have a scheduleName prop */}
-            <CustomEventsBox customEvents={skeletonSchedule.customEvents} scheduleNames={[]} isSkeletonMode={true} />
+            <CustomEventsBox />
 
-            <ScheduleNoteBox scheduleNote={skeletonSchedule.scheduleNote} isSkeletonMode={true} />
+            <ScheduleNoteBox />
 
             <Typography variant="body1">
                 PeterPortal or WebSoc is currently unreachable. This is the information that we can currently retrieve.
@@ -410,13 +424,9 @@ function AddedSectionsGrid() {
                 </Box>
             </Box>
 
-            <CustomEventsBox
-                customEvents={AppStore.schedule.getCurrentCustomEvents()}
-                scheduleNames={scheduleNames}
-                isSkeletonMode={false}
-            />
+            <CustomEventsBox />
 
-            <ScheduleNoteBox scheduleNote={AppStore.getCurrentScheduleNote()} isSkeletonMode={false} />
+            <ScheduleNoteBox />
         </Box>
     );
 }
