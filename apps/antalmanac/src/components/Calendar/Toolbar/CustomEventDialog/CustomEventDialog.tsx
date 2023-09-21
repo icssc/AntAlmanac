@@ -36,7 +36,6 @@ export interface RepeatingCustomEvent {
 interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
     onDialogClose?: () => void;
-    scheduleNames: string[];
 }
 
 const defaultCustomEventValues: RepeatingCustomEvent = {
@@ -227,7 +226,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                         scheduleIndices={scheduleIndices}
                         onSelectScheduleIndices={handleSelectScheduleIndices}
                         customEvent={props.customEvent}
-                        scheduleNames={props.scheduleNames}
+                        scheduleNames={AppStore.getScheduleNames()}
                     />
                 </DialogContent>
 

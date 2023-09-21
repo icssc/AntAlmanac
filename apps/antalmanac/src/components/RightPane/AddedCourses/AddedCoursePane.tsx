@@ -203,11 +203,7 @@ function CustomEventsBox() {
                 {customEvents.map((customEvent) => {
                     return (
                         <Grid item md={12} xs={12} key={customEvent.title}>
-                            <CustomEventDetailView
-                                customEvent={customEvent}
-                                scheduleNames={AppStore.getScheduleNames()}
-                                isSkeletonMode={skeletonMode}
-                            />
+                            <CustomEventDetailView customEvent={customEvent} />
                         </Grid>
                     );
                 })}
