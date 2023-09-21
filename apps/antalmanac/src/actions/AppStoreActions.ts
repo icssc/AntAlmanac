@@ -9,6 +9,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { CourseDetails, courseNumAsDecimal, termsInSchedule, warnMultipleTerms } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import trpc from '$lib/api/trpc';
+import { pingWebsoc } from '$lib/course-helpers';
 
 export const addCourse = (
     section: WebsocSection,
@@ -108,7 +109,6 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
             window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
     ) {
         userId = userId.replace(/\s+/g, '');
-
         if (userId.length > 0) {
             if (rememberMe) {
                 window.localStorage.setItem('userID', userId);
@@ -122,15 +122,16 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
 
                 if (scheduleSaveState === undefined) {
                     openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
-                } else if (await AppStore.loadSchedule(scheduleSaveState)) {
-                    openSnackbar('success', `Schedule for username "${userId}" loaded.`);
-                } else {
+                } else if (!(await pingWebsoc())) {
                     AppStore.loadSkeletonSchedule(scheduleSaveState);
                     openSnackbar(
                         'error',
                         `Network error loading course information for "${userId}". 
                         If this continues to happen, please submit a feedback form.`
                     );
+                } else {
+                    await AppStore.loadSchedule(scheduleSaveState);
+                    openSnackbar('success', `Schedule for username "${userId}" loaded.`);
                 }
             } catch (e) {
                 openSnackbar(

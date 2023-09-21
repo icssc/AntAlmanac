@@ -1,5 +1,5 @@
 import type { WebsocAPIResponse, WebsocSectionMeeting } from 'peterportal-api-next-types';
-import { PETERPORTAL_WEBSOC_ENDPOINT } from './api/endpoints';
+import { PETERPORTAL_WEBSOC_ENDPOINT, PING_PETERPORTAL_WEBSOC_URL } from './api/endpoints';
 import type { CourseInfo } from './helpers';
 
 interface CacheEntry extends WebsocAPIResponse {
@@ -33,6 +33,23 @@ export function getCourseInfo(SOCObject: WebsocAPIResponse) {
         }
     }
     return courseInfo;
+}
+
+export async function pingWebsoc() {
+    try {
+        const response: WebsocAPIResponse = await fetch(PING_PETERPORTAL_WEBSOC_URL, {
+            headers: {
+                Referer: 'https://antalmanac.com/',
+            },
+        })
+            .then((r) => r.json())
+            .then((r) => r.payload);
+
+        // If the ping returns an empty payload, something is wrong
+        return response.schools.length > 0 ? true : false;
+    } catch (error) {
+        return false;
+    }
 }
 
 // Construct a request to PeterPortal with the params as a query string
@@ -118,7 +135,6 @@ function removeDuplicateMeetings(websocResp: WebsocAPIResponse): WebsocAPIRespon
             });
         });
     });
-    console.log(websocResp);
     return websocResp;
 }
 
