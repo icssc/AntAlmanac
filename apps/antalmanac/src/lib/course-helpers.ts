@@ -118,6 +118,7 @@ function removeDuplicateMeetings(websocResp: WebsocAPIResponse): WebsocAPIRespon
             });
         });
     });
+    console.log(websocResp);
     return websocResp;
 }
 

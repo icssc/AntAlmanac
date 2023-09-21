@@ -254,8 +254,8 @@ export interface CalendarPaneToolbarProps {
  */
 function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
-
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const handleToggleFinals = useCallback(() => {
         logAnalytics({
@@ -267,6 +267,18 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
 
     const handleScheduleNamesChange = useCallback(() => {
         setScheduleNames(AppStore.getScheduleNames());
+    }, []);
+
+    useEffect(() => {
+        const handleSkeletonModeChange = () => {
+            setSkeletonMode(AppStore.getSkeletonMode());
+        };
+
+        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+
+        return () => {
+            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+        };
     }, []);
 
     useEffect(() => {
@@ -291,6 +303,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                         variant={showFinalsSchedule ? 'contained' : 'outlined'}
                         onClick={handleToggleFinals}
                         size="small"
+                        disabled={skeletonMode}
                     >
                         Finals
                     </Button>
@@ -302,13 +315,13 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
             <Box display="flex" flexWrap="wrap" gap={0.5}>
                 <Box display="flex" alignItems="center" gap={0.5}>
                     <Tooltip title="Undo last action">
-                        <IconButton onClick={handleUndo} size="medium">
+                        <IconButton onClick={handleUndo} size="medium" disabled={skeletonMode}>
                             <UndoIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
 
                     <Tooltip title="Clear schedule">
-                        <IconButton onClick={handleClearSchedule} size="medium">
+                        <IconButton onClick={handleClearSchedule} size="medium" disabled={skeletonMode}>
                             <DeleteIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
