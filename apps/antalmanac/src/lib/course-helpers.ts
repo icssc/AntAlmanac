@@ -50,6 +50,7 @@ export async function pingWebsoc() {
             .then((r) => r.payload);
 
         // If the ping returns an empty payload, something is wrong
+        // If there's an error, there will not be a payload, triggering the catch statement
         return response.schools.length > 0 ? true : false;
     } catch (error) {
         return false;
