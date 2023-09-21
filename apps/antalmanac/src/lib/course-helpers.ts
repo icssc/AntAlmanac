@@ -1,5 +1,5 @@
 import type { WebsocAPIResponse, WebsocSectionMeeting } from 'peterportal-api-next-types';
-import { PETERPORTAL_WEBSOC_ENDPOINT, PING_PETERPORTAL_WEBSOC_URL } from './api/endpoints';
+import { PETERPORTAL_WEBSOC_ENDPOINT } from './api/endpoints';
 import type { CourseInfo } from './helpers';
 
 interface CacheEntry extends WebsocAPIResponse {
@@ -36,6 +36,10 @@ export function getCourseInfo(SOCObject: WebsocAPIResponse) {
 }
 
 export async function pingWebsoc() {
+    // An arbitrary URL used to check if Peterportal and/or Websoc are live
+    const PING_PETERPORTAL_WEBSOC_URL =
+        'https://api-next.peterportal.org/v1/rest/websoc?year=2023&quarter=Spring&sectionCodes=34271';
+
     try {
         const response: WebsocAPIResponse = await fetch(PING_PETERPORTAL_WEBSOC_URL, {
             headers: {
