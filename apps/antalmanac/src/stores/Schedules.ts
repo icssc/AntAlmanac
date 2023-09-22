@@ -11,7 +11,6 @@ import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDi
 import type { CourseInfo } from '$lib/helpers';
 import { warnMultipleTerms } from '$lib/helpers';
 import { getColorForNewSection, getScheduleTerm } from '$stores/scheduleHelpers';
-import { getDefaultTerm } from '$lib/termData';
 import { getCourseInfo, queryWebsoc } from '$lib/course-helpers';
 
 export class Schedules {

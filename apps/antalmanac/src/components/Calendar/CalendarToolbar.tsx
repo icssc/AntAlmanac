@@ -152,7 +152,7 @@ function SelectSchedulePopover() {
             }
         }
         return 'N/A'; // should never happen so this just keeps the type as string
-    }, [currentScheduleIndex]);
+    }, [scheduleMap, currentScheduleIndex]);
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -164,27 +164,28 @@ function SelectSchedulePopover() {
 
     const handleScheduleIndexChange = useCallback(() => {
         setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
-    }, []);
+    }, [AppStore.getCurrentScheduleIndex()]);
 
     const handleScheduleNamesChange = useCallback(() => {
         setScheduleMap(AppStore.getTermToScheduleMap());
+    }, [AppStore.getTermToScheduleMap()]);
+
+    const handleScheduleChanges = useCallback(() => {
+        handleScheduleIndexChange();
+        handleScheduleNamesChange();
     }, []);
 
     useEffect(() => {
-        AppStore.on('addedCoursesChange', handleScheduleIndexChange);
-        AppStore.on('customEventsChange', handleScheduleIndexChange);
-        AppStore.on('colorChange', handleScheduleIndexChange);
-        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
+        AppStore.on('addedCoursesChange', handleScheduleChanges);
+        AppStore.on('currentScheduleIndexChange', handleScheduleChanges);
+        AppStore.on('scheduleNamesChange', handleScheduleChanges);
 
         return () => {
-            AppStore.off('addedCoursesChange', handleScheduleIndexChange);
-            AppStore.off('customEventsChange', handleScheduleIndexChange);
-            AppStore.off('colorChange', handleScheduleIndexChange);
-            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
+            AppStore.off('addedCoursesChange', handleScheduleChanges);
+            AppStore.off('currentScheduleIndexChange', handleScheduleChanges);
+            AppStore.off('scheduleNamesChange', handleScheduleChanges);
         };
-    }, [handleScheduleIndexChange, handleScheduleNamesChange]);
+    }, [handleScheduleChanges]);
 
     return (
         <Box>
