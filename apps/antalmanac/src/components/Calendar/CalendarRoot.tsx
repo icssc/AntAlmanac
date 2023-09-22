@@ -106,7 +106,6 @@ interface ScheduleCalendarState {
     eventsInCalendar: CalendarEvent[];
     finalsEventsInCalendar: CalendarEvent[];
     currentScheduleIndex: number;
-    scheduleMap: Map<TermNames, [number, string][]>;
 }
 class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCalendarState> {
     state: ScheduleCalendarState = {
@@ -119,7 +118,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         eventsInCalendar: AppStore.getEventsInCalendar(),
         finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
         currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
-        scheduleMap: AppStore.getTermToScheduleMap(),
     };
 
     static eventStyleGetter = (event: CalendarEvent) => {
@@ -172,26 +170,11 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         if (close) this.handleClosePopover();
     };
 
-    updateScheduleTermMap = () => {
-        this.setState({
-            scheduleMap: AppStore.getTermToScheduleMap(),
-        });
-    };
-
-    updateScheduleNames = () => {
-        this.setState({
-            scheduleMap: AppStore.getTermToScheduleMap(),
-        });
-    };
-
     componentDidMount = () => {
         AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.on('customEventsChange', this.updateEventsInCalendar);
         AppStore.on('colorChange', this.updateEventsInCalendar);
         AppStore.on('currentScheduleIndexChange', this.updateEventsInCalendar);
-        AppStore.on('scheduleNamesChange', this.updateScheduleNames);
-
-        AppStore.on('addedCoursesChange', this.updateScheduleTermMap);
     };
 
     componentWillUnmount = () => {
@@ -199,9 +182,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         AppStore.removeListener('customEventsChange', this.updateEventsInCalendar);
         AppStore.removeListener('colorChange', this.updateEventsInCalendar);
         AppStore.removeListener('currentScheduleIndexChange', this.updateEventsInCalendar);
-        AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
-
-        AppStore.on('addedCoursesChange', this.updateScheduleTermMap);
     };
 
     handleTakeScreenshot = (html2CanvasScreenshot: () => void) => {
@@ -266,7 +246,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                     currentScheduleIndex={this.state.currentScheduleIndex}
                     toggleDisplayFinalsSchedule={this.toggleDisplayFinalsSchedule}
                     showFinalsSchedule={this.state.showFinalsSchedule}
-                    scheduleMap={this.state.scheduleMap}
                 />
                 <div
                     id="screenshot"
