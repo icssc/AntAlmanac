@@ -56,30 +56,6 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
     const [title, setTitle] = useState(defaultCustomEventValues.title);
     const [days, setDays] = useState(defaultCustomEventValues.days);
 
-    const handleOpen = useCallback(() => {
-        setOpen(true);
-        setScheduleIndices([AppStore.schedule.getCurrentScheduleIndex()]);
-
-        logAnalytics({
-            category: analyticsEnum.calendar.title,
-            action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
-        });
-    }, []);
-
-    const handleClose = useCallback(() => {
-        setOpen(false);
-    }, []);
-
-    const handleSubmit = () => {
-        handleClose();
-        handleAddToCalendar();
-
-        logAnalytics({
-            category: analyticsEnum.calendar.title,
-            action: analyticsEnum.calendar.actions.ADD_CUSTOM_EVENT,
-        });
-    };
-
     const resetForm = () => {
         setStart(defaultCustomEventValues.start);
         setEnd(defaultCustomEventValues.end);
@@ -107,6 +83,30 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
             ? editCustomEvent(newCustomEvent, scheduleIndices)
             : addCustomEvent(newCustomEvent, scheduleIndices);
     };
+
+    const handleSubmit = () => {
+        handleClose();
+        handleAddToCalendar();
+
+        logAnalytics({
+            category: analyticsEnum.calendar.title,
+            action: analyticsEnum.calendar.actions.ADD_CUSTOM_EVENT,
+        });
+    };
+
+    const handleOpen = useCallback(() => {
+        setOpen(true);
+        setScheduleIndices([AppStore.schedule.getCurrentScheduleIndex()]);
+
+        logAnalytics({
+            category: analyticsEnum.calendar.title,
+            action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
+        });
+    }, []);
+
+    const handleClose = useCallback(() => {
+        setOpen(false);
+    }, []);
 
     const handleEventNameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(event.target.value);
