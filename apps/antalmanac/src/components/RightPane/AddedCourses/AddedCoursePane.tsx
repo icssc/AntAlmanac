@@ -1,19 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 
-import {
-    Box,
-    Chip,
-    Grid,
-    IconButton,
-    Menu,
-    MenuItem,
-    Paper,
-    SxProps,
-    TextField,
-    Tooltip,
-    Typography,
-} from '@mui/material';
+import { Box, Chip, IconButton, Menu, MenuItem, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
 import { ContentCopy, DeleteOutline } from '@mui/icons-material';
 import { AACourse } from '@packages/antalmanac-types';
 
@@ -202,9 +190,9 @@ function CustomEventsBox() {
             <Box display="flex" flexDirection="column" gap={1}>
                 {customEvents.map((customEvent) => {
                     return (
-                        <Grid item md={12} xs={12} key={customEvent.title}>
+                        <Box key={customEvent.title}>
                             <CustomEventDetailView customEvent={customEvent} />
-                        </Grid>
+                        </Box>
                     );
                 })}
             </Box>
@@ -406,7 +394,7 @@ function AddedSectionsGrid() {
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
                         return (
-                            <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber}>
+                            <Box key={course.deptCode + course.courseNumber}>
                                 <SectionTableLazyWrapper
                                     courseDetails={course}
                                     term={course.term}
@@ -414,7 +402,7 @@ function AddedSectionsGrid() {
                                     analyticsCategory={analyticsEnum.addedClasses.title}
                                     scheduleNames={scheduleNames}
                                 />
-                            </Grid>
+                            </Box>
                         );
                     })}
                 </Box>
