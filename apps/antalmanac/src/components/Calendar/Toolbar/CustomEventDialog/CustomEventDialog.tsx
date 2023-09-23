@@ -193,7 +193,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                         <InputLabel htmlFor="EventNameInput">Event Name</InputLabel>
                         <Input required={true} value={title} onChange={handleEventNameChange} />
                     </FormControl>
-                    <form noValidate>
+                    <form noValidate style={{ display: 'flex', gap: 5, marginTop: 5 }}>
                         <TextField
                             onChange={handleStartTimeChange}
                             label="Start Time"
@@ -205,7 +205,6 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                             inputProps={{
                                 step: 300,
                             }}
-                            style={{ marginRight: 5, marginTop: 5 }}
                         />
                         <TextField
                             onChange={handleEndTimeChange}
@@ -218,7 +217,6 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                             inputProps={{
                                 step: 300,
                             }}
-                            style={{ marginRight: 5, marginTop: 5 }}
                         />
                     </form>
                     <DaySelector onSelectDay={handleDayChange} days={props.customEvent?.days || days} />
