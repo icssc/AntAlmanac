@@ -64,11 +64,11 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
             category: analyticsEnum.calendar.title,
             action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
         });
-    }, [setOpen]);
+    }, []);
 
     const handleClose = useCallback(() => {
         setOpen(false);
-    }, [setOpen]);
+    }, []);
 
     const handleSubmit = () => {
         handleClose();
@@ -108,40 +108,25 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
             : addCustomEvent(newCustomEvent, scheduleIndices);
     };
 
-    const handleEventNameChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback(
-        (event) => {
-            setTitle(event.target.value);
-        },
-        [setTitle]
-    );
+    const handleEventNameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setTitle(event.target.value);
+    }, []);
 
-    const handleStartTimeChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback(
-        (event) => {
-            setStart(event.target.value);
-        },
-        [setStart]
-    );
+    const handleStartTimeChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setStart(event.target.value);
+    }, []);
 
-    const handleEndTimeChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback(
-        (event) => {
-            setEnd(event.target.value);
-        },
-        [setEnd]
-    );
+    const handleEndTimeChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setEnd(event.target.value);
+    }, []);
 
-    const handleDayChange = useCallback(
-        (days: boolean[]) => {
-            setDays(days);
-        },
-        [setDays]
-    );
+    const handleDayChange = useCallback((days: boolean[]) => {
+        setDays(days);
+    }, []);
 
-    const handleSelectScheduleIndices = useCallback(
-        (scheduleIndices: number[]) => {
-            setScheduleIndices(scheduleIndices);
-        },
-        [setScheduleIndices]
-    );
+    const handleSelectScheduleIndices = useCallback((scheduleIndices: number[]) => {
+        setScheduleIndices(scheduleIndices);
+    }, []);
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {
