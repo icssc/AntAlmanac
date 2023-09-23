@@ -35,26 +35,24 @@ export function getCourseInfo(SOCObject: WebsocAPIResponse) {
     return courseInfo;
 }
 
-export async function pingWebsoc() {
-    // An arbitrary URL used to check if Peterportal and/or Websoc are live
-    const PING_PETERPORTAL_WEBSOC_URL =
-        'https://api-next.peterportal.org/v1/rest/websoc?year=2023&quarter=Spring&sectionCodes=34271';
+// An arbitrary URL used to check if Peterportal and/or Websoc are live
+const PING_PETERPORTAL_WEBSOC_URL =
+    'https://api-next.peterportal.org/v1/rest/websoc?year=2023&quarter=Spring&sectionCodes=34271';
 
-    try {
-        const response: WebsocAPIResponse = await fetch(PING_PETERPORTAL_WEBSOC_URL, {
-            headers: {
-                Referer: 'https://antalmanac.com/',
-            },
-        })
-            .then((r) => r.json())
-            .then((r) => r.payload);
+export async function isWebsocWorking() {
+    const isWebsocAlive = await fetch(PING_PETERPORTAL_WEBSOC_URL, {
+        headers: {
+            Referer: 'https://antalmanac.com/',
+        },
+    })
+        .then((response) => response.json())
+        .then((data) => data.payload.schools.length > 0)
+        .catch((error) => {
+            // console.log(error)
+            return false;
+        });
 
-        // If the ping returns an empty payload, something is wrong
-        // If there's an error, there will not be a payload, triggering the catch statement
-        return response.schools.length > 0 ? true : false;
-    } catch (error) {
-        return false;
-    }
+    return isWebsocAlive;
 }
 
 // Construct a request to PeterPortal with the params as a query string

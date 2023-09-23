@@ -56,18 +56,6 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
     const [title, setTitle] = useState(defaultCustomEventValues.title);
     const [days, setDays] = useState(defaultCustomEventValues.days);
 
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
-
     const handleOpen = useCallback(() => {
         setOpen(true);
         setScheduleIndices([AppStore.schedule.getCurrentScheduleIndex()]);
@@ -98,6 +86,8 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
         setTitle(defaultCustomEventValues.title);
         setDays(defaultCustomEventValues.days);
     };
+
+    const disabled = !(scheduleIndices.length && days.includes(true));
 
     const handleAddToCalendar = () => {
         if (disabled) return;
@@ -153,7 +143,17 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
         [setScheduleIndices]
     );
 
-    const disabled = !(scheduleIndices.length && days.includes(true));
+    useEffect(() => {
+        const handleSkeletonModeChange = () => {
+            setSkeletonMode(AppStore.getSkeletonMode());
+        };
+
+        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+
+        return () => {
+            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+        };
+    }, []);
 
     return (
         <>

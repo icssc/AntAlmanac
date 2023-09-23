@@ -9,7 +9,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { CourseDetails, courseNumAsDecimal, termsInSchedule, warnMultipleTerms } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import trpc from '$lib/api/trpc';
-import { pingWebsoc } from '$lib/course-helpers';
+import { isWebsocWorking } from '$lib/course-helpers';
 
 export const addCourse = (
     section: WebsocSection,
@@ -120,16 +120,23 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
                 const res = await trpc.users.getUserData.query({ userId });
                 const scheduleSaveState = res?.userData;
 
-                if (scheduleSaveState === undefined) {
+                if (scheduleSaveState == null) {
                     openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
-                } else if (!(await pingWebsoc())) {
+                    return;
+                }
+
+                const isWebsocAlive = await isWebsocWorking();
+
+                if (!isWebsocAlive) {
                     AppStore.loadSkeletonSchedule(scheduleSaveState);
                     openSnackbar(
                         'error',
                         `Network error loading course information for "${userId}". 
                         If this continues to happen, please submit a feedback form.`
                     );
-                } else {
+                }
+
+                if (isWebsocAlive) {
                     await AppStore.loadSchedule(scheduleSaveState);
                     openSnackbar('success', `Schedule for username "${userId}" loaded.`);
                 }
