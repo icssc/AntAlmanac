@@ -4,6 +4,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Theme, withStyles } from '@material-ui/core/styles';
+import { TermNames } from '@packages/antalmanac-types';
 import { termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 
@@ -23,11 +24,11 @@ const TermViewer = ({ classes }: TermViewerProps) => {
     };
 
     const [term, setTerm] = useState(getTerm());
-    const [termToScheduleMap, setTermToScheduleMap] = useState(AppStore.getTermToScheduleMap());
+    const [termToScheduleMap, setTermToScheduleMap] = useState(AppStore.getTermToScheduleIndicesMap());
 
     useEffect(() => {
         const handleTermChange = () => {
-            setTermToScheduleMap(AppStore.getTermToScheduleMap());
+            setTermToScheduleMap(AppStore.getTermToScheduleIndicesMap());
             setTerm(getTerm());
         };
 
@@ -41,15 +42,19 @@ const TermViewer = ({ classes }: TermViewerProps) => {
     }, []);
 
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        const selectedTerm = event.target.value as string;
+        const selectedTerm = event.target.value as TermNames;
         setTerm(selectedTerm);
 
-        const termToScheduleMap = AppStore.getTermToScheduleMap();
+        const termToScheduleMap = AppStore.getTermToScheduleIndicesMap();
         const schedulePairs = termToScheduleMap.get(selectedTerm);
 
         if (schedulePairs && schedulePairs.length > 0) {
-            const scheduleIndex = schedulePairs[0][0];
-            AppStore.changeCurrentSchedule(scheduleIndex);
+            for (const [scheduleIndex, termName, favorite] of schedulePairs) {
+                if (favorite) {
+                    AppStore.changeCurrentSchedule(scheduleIndex);
+                    return;
+                }
+            }
         }
     };
 

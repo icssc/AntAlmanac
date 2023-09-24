@@ -62,7 +62,6 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
     });
 
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
-
     if (AppStore.isAuthedUser()) {
         await saveAuthenticatedUserSchedule(userID, scheduleSaveState);
     } else if (userID) {

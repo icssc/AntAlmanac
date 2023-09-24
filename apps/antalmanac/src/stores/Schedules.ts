@@ -33,6 +33,7 @@ export class Schedules {
                 term: 'Any Term',
                 customEvents: [],
                 scheduleNoteId: scheduleNoteId,
+                favorite: true,
             },
         ];
         this.currentScheduleIndex = 0;
@@ -73,6 +74,7 @@ export class Schedules {
     getScheduleName(scheduleIndex: number) {
         return this.schedules[scheduleIndex]?.scheduleName;
     }
+
     /**
      * @return a list of all schedule names
      */
@@ -80,16 +82,44 @@ export class Schedules {
         return this.schedules.map((schedule) => schedule.scheduleName);
     }
 
-    getTermToScheduleMap() {
-        return this.schedules.reduce((map, schedule, scheduleIndex) => {
-            const schedulePairs = map.get(schedule.term);
-            if (schedulePairs) {
-                schedulePairs.push([scheduleIndex, schedule.scheduleName]);
-            } else {
-                map.set(schedule.term, [[scheduleIndex, schedule.scheduleName]]);
+    /**
+     * @return a map from each term to a list of [scheduleIndex, scheduleName, isFavorite] pairs
+     * Also ensures that there are only one favorite per term
+     * The reason why the functionality is incorporated instead of being put in a separate function
+     * is because the only time the one favorite constraint matters is when getting this map
+     */
+    getTermToScheduleIndicesMap() {
+        const termToFavoriteMap = new Map<TermNames, number>();
+
+        // First, go through the schedules and ensure only one favorite per term.
+        this.schedules.forEach((schedule, scheduleIndex) => {
+            const term = schedule.term;
+            if (termToFavoriteMap.has(term)) {
+                // If there is already a favorite for this term, unset favorite for the current schedule.
+                schedule.favorite = false;
+            } else if (schedule.favorite) {
+                // If this schedule is marked as favorite and there is no favorite for this term, keep it as favorite.
+                termToFavoriteMap.set(term, scheduleIndex);
             }
+        });
+
+        // Second, go through the terms without a favorite and set the first schedule of those terms as favorite.
+        this.schedules.forEach((schedule, scheduleIndex) => {
+            const term = schedule.term;
+            if (!termToFavoriteMap.has(term)) {
+                schedule.favorite = true;
+                termToFavoriteMap.set(term, scheduleIndex);
+                return;
+            }
+        });
+
+        // Finally, create the term to schedule map.
+        return this.schedules.reduce((map, schedule, scheduleIndex) => {
+            const schedulePairs = map.get(schedule.term) || [];
+            schedulePairs.push([scheduleIndex, schedule.scheduleName, schedule.favorite ?? false]);
+            map.set(schedule.term, schedulePairs);
             return map;
-        }, new Map<TermNames, [number, string][]>()); // Explicitly type the initial value
+        }, new Map<TermNames, [number, string, boolean][]>());
     }
 
     setCurrentScheduleTerm() {
@@ -120,6 +150,21 @@ export class Schedules {
     }
 
     /**
+     * Sets the favorite schedule to the one at the given index
+     * Also ensures all other schedules are not favorited
+     */
+
+    setFavoriteSchedule(scheduleIndex: number) {
+        const term = this.schedules[scheduleIndex].term;
+        for (const schedule of this.schedules) {
+            if (schedule.term === term) {
+                schedule.favorite = false;
+            }
+        }
+        this.schedules[scheduleIndex].favorite = true;
+    }
+
+    /**
      * Changes schedule to one at new index
      */
     setCurrentScheduleIndex(newScheduleIndex: number) {
@@ -139,6 +184,7 @@ export class Schedules {
             courses: [],
             customEvents: [],
             scheduleNoteId: scheduleNoteId,
+            favorite: false,
         });
         // Setting schedule index manually otherwise 2 undo states are added
         this.currentScheduleIndex = this.getNumberOfSchedules() - 1;
@@ -510,6 +556,7 @@ export class Schedules {
                         sectionCode: course.section.sectionCode,
                     };
                 }),
+                favorite: schedule.favorite,
                 scheduleNote: this.scheduleNoteMap[schedule.scheduleNoteId],
             };
         });
@@ -588,6 +635,7 @@ export class Schedules {
                     courses: courses,
                     customEvents: shortCourseSchedule.customEvents,
                     scheduleNoteId: scheduleNoteId,
+                    favorite: shortCourseSchedule.favorite,
                 });
 
                 this.schedules = newSchedules;
@@ -618,6 +666,7 @@ export class Schedules {
         const scheduleNoteId = this.schedules[scheduleIndex].scheduleNoteId;
         this.scheduleNoteMap[scheduleNoteId] = newScheduleNote;
     }
+
     getSkeletonSchedule(): ShortCourseSchedule {
         return this.skeletonSchedules[this.currentScheduleIndex];
     }

@@ -66,15 +66,20 @@ class AppStore extends EventEmitter {
     }
 
     getCurrentSchedule() {
-        return this.schedule.getCurrentSchedule()
+        return this.schedule.getCurrentSchedule();
     }
 
     getScheduleNames() {
         return this.schedule.getScheduleNames();
     }
 
-    getTermToScheduleMap() {
-        return this.schedule.getTermToScheduleMap();
+    getTermToScheduleIndicesMap() {
+        return this.schedule.getTermToScheduleIndicesMap();
+    }
+
+    setFavoriteSchedule(scheduleIndex: number) {
+        this.schedule.setFavoriteSchedule(scheduleIndex);
+        this.emit('scheduleNamesChange');
     }
 
     getAddedCourses() {

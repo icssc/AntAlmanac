@@ -20,6 +20,7 @@ export const ScheduleSchema = type({
     courses: arrayOf(ScheduleCourseSchema),
     customEvents: arrayOf(RepeatingCustomEventSchema),
     scheduleNoteId: 'number',
+    favorite: 'boolean',
 });
 export type Schedule = typeof ScheduleSchema.infer;
 
@@ -37,9 +38,10 @@ export const ShortCourseScheduleSchema = type([
         courses: arrayOf(ShortCourseSchema),
         customEvents: arrayOf(RepeatingCustomEventSchema),
         'scheduleNote?': 'string',
+        'favorite?': 'boolean',
     },
     '|>',
-    (s) => ({ scheduleNote: '', ...s }),
+    (s) => ({ scheduleNote: '', favorite: false, ...s }),
 ]);
 export type ShortCourseSchedule = typeof ShortCourseScheduleSchema.infer;
 

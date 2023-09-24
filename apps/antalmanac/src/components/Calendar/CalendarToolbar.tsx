@@ -7,6 +7,8 @@ import {
     Edit as EditIcon,
     Undo as UndoIcon,
     Clear as ClearIcon,
+    Star as StarIcon,
+    StarBorder as StarBorderIcon,
 } from '@mui/icons-material';
 
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
@@ -95,6 +97,20 @@ function DeleteScheduleButton(props: { index: number }) {
     );
 }
 
+function FavoriteScheduleButton(props: { index: number; favorite: boolean }) {
+    const setAsFavorite = useCallback(() => {
+        AppStore.setFavoriteSchedule(props.index);
+    }, []);
+
+    return (
+        <Box>
+            <IconButton size="small" onClick={setAsFavorite}>
+                {props.favorite ? <StarIcon /> : <StarBorderIcon />}
+            </IconButton>
+        </Box>
+    );
+}
+
 /**
  * MenuItem nested in the select menu to add a new schedule through a dialog.
  */
@@ -141,7 +157,7 @@ function SelectSchedulePopover() {
 
     const open = useMemo(() => Boolean(anchorEl), [anchorEl]);
 
-    const [scheduleMap, setScheduleMap] = useState(AppStore.getTermToScheduleMap());
+    const [scheduleMap, setScheduleMap] = useState(AppStore.getTermToScheduleIndicesMap());
 
     const currentScheduleName = useMemo(() => {
         for (const schedulePairs of scheduleMap.values()) {
@@ -167,8 +183,8 @@ function SelectSchedulePopover() {
     }, [AppStore.getCurrentScheduleIndex()]);
 
     const handleScheduleNamesChange = useCallback(() => {
-        setScheduleMap(AppStore.getTermToScheduleMap());
-    }, [AppStore.getTermToScheduleMap()]);
+        setScheduleMap(AppStore.getTermToScheduleIndicesMap());
+    }, [AppStore.getTermToScheduleIndicesMap()]);
 
     const handleScheduleChanges = useCallback(() => {
         handleScheduleIndexChange();
@@ -177,12 +193,12 @@ function SelectSchedulePopover() {
 
     useEffect(() => {
         AppStore.on('addedCoursesChange', handleScheduleChanges);
-        AppStore.on('currentScheduleIndexChange', handleScheduleChanges);
+        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
         AppStore.on('scheduleNamesChange', handleScheduleChanges);
 
         return () => {
             AppStore.off('addedCoursesChange', handleScheduleChanges);
-            AppStore.off('currentScheduleIndexChange', handleScheduleChanges);
+            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
             AppStore.off('scheduleNamesChange', handleScheduleChanges);
         };
     }, [handleScheduleChanges]);
@@ -209,12 +225,14 @@ function SelectSchedulePopover() {
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >
                 <Box padding={1}>
-                    {Array.from(scheduleMap.entries()).map(([termName, scheduleNames], outerIndex) => (
-                        <>
+                    {Array.from(scheduleMap.entries()).map(([termName, scheduleIndicesList], outerIndex) => (
+                        <Box key={outerIndex}>
                             <Typography variant="h6">{termName}</Typography>
-
-                            {scheduleNames.map(([scheduleIndex, scheduleName]) => (
+                            {scheduleIndicesList.map(([scheduleIndex, scheduleName, isFavorite]) => (
                                 <Box key={scheduleIndex} display="flex" alignItems="center" gap={1}>
+                                    <Box display="flex" alignItems="center" gap={0.5}>
+                                        <FavoriteScheduleButton index={scheduleIndex} favorite={isFavorite} />
+                                    </Box>
                                     <Box flexGrow={1}>
                                         <Button
                                             color="inherit"
@@ -247,7 +265,7 @@ function SelectSchedulePopover() {
                                     </Box>
                                 </Box>
                             ))}
-                        </>
+                        </Box>
                     ))}
 
                     <Box marginY={1} />
@@ -285,7 +303,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
             variant="outlined"
             sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', padding: 1 }}
         >
-            <Box gap={1} display="flex" alignItems="center">
+            <Box gap={1} display="flex" flexWrap="wrap" alignItems="center">
                 <SelectSchedulePopover />
                 <Tooltip title="Toggle showing finals schedule">
                     <Button
