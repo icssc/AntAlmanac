@@ -104,8 +104,12 @@ function FavoriteScheduleButton(props: { index: number; favorite: boolean }) {
 
     return (
         <Box>
-            <IconButton size="small" onClick={setAsFavorite}>
-                {props.favorite ? <StarIcon /> : <StarBorderIcon />}
+            <IconButton size="small" onClick={setAsFavorite} sx={{ padding: '0px' }}>
+                {props.favorite ? (
+                    <StarIcon style={{ fontSize: '1rem' }} />
+                ) : (
+                    <StarBorderIcon style={{ fontSize: '1rem' }} />
+                )}
             </IconButton>
         </Box>
     );
@@ -229,11 +233,11 @@ function SelectSchedulePopover() {
                         <Box key={outerIndex}>
                             <Typography variant="h6">{termName}</Typography>
                             {scheduleIndicesList.map(([scheduleIndex, scheduleName, isFavorite]) => (
-                                <Box key={scheduleIndex} display="flex" alignItems="center" gap={1}>
-                                    <Box display="flex" alignItems="center" gap={0.5}>
+                                <Box key={scheduleIndex} display="flex" alignItems="center">
+                                    <Box display="flex" alignItems="center">
                                         <FavoriteScheduleButton index={scheduleIndex} favorite={isFavorite} />
                                     </Box>
-                                    <Box flexGrow={1}>
+                                    <Box flexGrow={1} mr={1}>
                                         <Button
                                             color="inherit"
                                             sx={{
@@ -241,6 +245,7 @@ function SelectSchedulePopover() {
                                                 maxWidth,
                                                 width: '100%',
                                                 display: 'flex',
+                                                align: 'left',
                                                 justifyContent: 'flex-start',
                                                 background:
                                                     scheduleIndex === currentScheduleIndex
