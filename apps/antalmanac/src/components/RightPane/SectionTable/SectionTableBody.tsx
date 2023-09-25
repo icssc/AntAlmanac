@@ -19,7 +19,7 @@ import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import { useTabStore } from '$stores/TabStore';
 import locationIds from '$lib/location_ids';
-import { normalizeTime, parseDaysString, translate24To12HourTime } from '$stores/calendarizeHelpers';
+import { keep24HourTime, normalizeTime, parseDaysString, translate24To12HourTime } from '$stores/calendarizeHelpers';
 
 const styles: Styles<Theme, object> = (theme) => ({
     popover: {
@@ -207,11 +207,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                         const buildingId = locationIds[buildingName];
                         return (
                             <Fragment key={meeting.timeIsTBA + bldg}>
-                                <Link
-                                    className={classes.mapLink}
-                                    to={`/map?location=${buildingId}`}
-                                    onClick={focusMap}
-                                >
+                                <Link className={classes.mapLink} to={`/map?location=${buildingId}`} onClick={focusMap}>
                                     {bldg}
                                 </Link>
                                 <br />
@@ -313,10 +309,11 @@ const RestrictionsCell = withStyles(styles)((props: RestrictionsCellProps) => {
 interface DayAndTimeCellProps {
     classes: ClassNameMap;
     meetings: WebsocSectionMeeting[];
+    show24HourTime: boolean;
 }
 
 const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
-    const { classes, meetings } = props;
+    const { classes, meetings, show24HourTime } = props;
 
     return (
         <NoPaddingTableCell className={classes.cell}>
@@ -326,7 +323,9 @@ const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
                 }
 
                 if (meeting.startTime && meeting.endTime) {
-                    const timeString = translate24To12HourTime(meeting.startTime, meeting.endTime);
+                    const timeString = show24HourTime
+                        ? keep24HourTime(meeting.startTime, meeting.endTime)
+                        : translate24To12HourTime(meeting.startTime, meeting.endTime);
 
                     return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>{`${meeting.days} ${timeString}`}</Box>;
                 }
@@ -386,6 +385,8 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, allowHighlight, scheduleNames } = props;
 
+    const [show24HourTime, setShow24HourTime] = useState(AppStore.getShow24HourTime());
+
     const [activeColumns, setColumns] = useState(RightPaneStore.getActiveColumns());
 
     const [addedCourse, setAddedCourse] = useState(
@@ -422,6 +423,10 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         setCalendarEvents(AppStore.getCourseEventsInCalendar());
     }, [setCalendarEvents]);
 
+    const updateShow24HourTime = useCallback(() => {
+        setShow24HourTime(AppStore.getShow24HourTime());
+    }, [setShow24HourTime]);
+
     // Attach event listeners to the store.
 
     useEffect(() => {
@@ -450,6 +455,10 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
         };
     }, [updateCalendarEvents]);
+
+    useEffect(() => {
+        AppStore.on('show24HourToggle', updateShow24HourTime);
+    });
 
     /**
      * Whether the current section conflicts with any of the calendar events.
@@ -529,6 +538,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                             term={term}
                             scheduleNames={scheduleNames}
                             {...section}
+                            show24HourTime={AppStore.getShow24HourTime()}
                             sectionType={section.sectionType as SectionType}
                             maxCapacity={parseInt(section.maxCapacity, 10)}
                             units={parseFloat(section.units)}

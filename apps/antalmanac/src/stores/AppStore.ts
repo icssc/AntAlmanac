@@ -27,6 +27,7 @@ class AppStore extends EventEmitter {
     finalsEventsInCalendar: CourseEvent[];
     unsavedChanges: boolean;
     skeletonMode: boolean;
+    show24HourTime: boolean;
 
     constructor() {
         super();
@@ -44,6 +45,11 @@ class AppStore extends EventEmitter {
         this.unsavedChanges = false;
         this.skeletonMode = false;
         this.theme = getCurrentTheme();
+        this.show24HourTime = (() => {
+            const show24HourTime =
+                typeof Storage === 'undefined' ? false : window.localStorage.getItem('show24HourTime') === 'true';
+            return show24HourTime === null ? false : show24HourTime;
+        })();
 
         if (typeof window !== 'undefined') {
             window.addEventListener('beforeunload', (event) => {
@@ -120,6 +126,10 @@ class AppStore extends EventEmitter {
 
     getTheme() {
         return this.theme;
+    }
+
+    getShow24HourTime() {
+        return this.show24HourTime;
     }
 
     getAddedSectionCodes() {
@@ -304,6 +314,12 @@ class AppStore extends EventEmitter {
         this.theme = theme;
         this.emit('themeToggle');
         window.localStorage.setItem('theme', theme);
+    }
+
+    toggleShow24HourTime(show24HourTime: boolean) {
+        this.show24HourTime = show24HourTime;
+        this.emit('show24HourToggle');
+        window.localStorage.setItem('show24HourTime', show24HourTime.toString());
     }
 
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {

@@ -223,3 +223,20 @@ export function translate24To12HourTime(startTime?: HourMinute, endTime?: HourMi
 
     return `${meetingStartTime} - ${meetingEndTime} ${timeSuffix}`;
 }
+
+export function keep24HourTime(startTime?: HourMinute, endTime?: HourMinute): string | undefined {
+    if (!startTime || !endTime) {
+        return;
+    }
+
+    const formattedStartHour = `${startTime.hour}`;
+    const formattedEndHour = `${endTime.hour}`;
+
+    const formattedStartMinute = `${startTime.minute}`;
+    const formattedEndMinute = `${endTime.minute}`;
+
+    const meetingStartTime = `${formattedStartHour}:${formattedStartMinute.padStart(2, '0')}`;
+    const meetingEndTime = `${formattedEndHour}:${formattedEndMinute.padStart(2, '0')}`;
+
+    return `${meetingStartTime} - ${meetingEndTime}`;
+}

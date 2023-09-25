@@ -6,7 +6,7 @@ import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import moment from 'moment';
 import { PureComponent, SyntheticEvent } from 'react';
-import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
+import { Calendar, DateLocalizer, DateRange, momentLocalizer, Views } from 'react-big-calendar';
 
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
@@ -108,6 +108,7 @@ interface ScheduleCalendarState {
     finalsEventsInCalendar: CalendarEvent[];
     currentScheduleIndex: number;
     scheduleNames: string[];
+    show24HourTime: boolean;
 }
 class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCalendarState> {
     state: ScheduleCalendarState = {
@@ -121,6 +122,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
         currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
         scheduleNames: AppStore.getScheduleNames(),
+        show24HourTime: AppStore.getShow24HourTime(),
     };
 
     static eventStyleGetter = (event: CalendarEvent) => {
@@ -179,12 +181,19 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         });
     };
 
+    updateShow24HourTime = () => {
+        this.setState({
+            show24HourTime: AppStore.getShow24HourTime(),
+        });
+    };
+
     componentDidMount = () => {
         AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.on('customEventsChange', this.updateEventsInCalendar);
         AppStore.on('colorChange', this.updateEventsInCalendar);
         AppStore.on('currentScheduleIndexChange', this.updateEventsInCalendar);
         AppStore.on('scheduleNamesChange', this.updateScheduleNames);
+        AppStore.on('show24HourToggle', this.updateShow24HourTime);
     };
 
     componentWillUnmount = () => {
@@ -193,6 +202,7 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         AppStore.removeListener('colorChange', this.updateEventsInCalendar);
         AppStore.removeListener('currentScheduleIndexChange', this.updateEventsInCalendar);
         AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
+        AppStore.removeListener('show24HourToggle', this.updateShow24HourTime);
     };
 
     handleTakeScreenshot = (html2CanvasScreenshot: () => void) => {
@@ -305,8 +315,23 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                         toolbar={false}
                         formats={{
                             timeGutterFormat: (date: Date, culture?: string, localizer?: DateLocalizer) =>
-                                date.getMinutes() > 0 || !localizer ? '' : localizer.format(date, 'h A', culture),
+                                date.getMinutes() > 0 || !localizer
+                                    ? ''
+                                    : localizer.format(date, this.state.show24HourTime ? 'HH:mm' : 'h A', culture),
                             dayFormat: 'ddd',
+                            eventTimeRangeFormat: (range: DateRange, culture?: string, localizer?: DateLocalizer) => {
+                                const startFormat: string = localizer
+                                    ? localizer.format(
+                                          range.start,
+                                          this.state.show24HourTime ? 'HH:mm' : 'h A',
+                                          culture
+                                      )
+                                    : '';
+                                const endFormat: string = localizer
+                                    ? localizer.format(range.end, this.state.show24HourTime ? 'HH:mm' : 'h A', culture)
+                                    : '';
+                                return `${startFormat} – ${endFormat}`;
+                            },
                         }}
                         views={[Views.WEEK, Views.WORK_WEEK]}
                         defaultView={Views.WORK_WEEK}

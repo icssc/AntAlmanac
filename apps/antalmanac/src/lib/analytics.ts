@@ -28,6 +28,7 @@ const analyticsEnum = {
             CLICK_NOTIFICATIONS: 'Click Notifications',
             CLICK_ABOUT: 'Click About Page',
             CHANGE_THEME: 'Change Theme', // Label is the theme changed to
+            CHANGE_TIME_FORMAT: 'Change Time Format', // label is whether or not to show 24 Hour time (true for 24-hour time, false for 12-hour time)
             IMPORT_STUDY_LIST: 'Import Study List', // Value is the percentage of courses successfully imported (decimal value)
             LOAD_SCHEDULE: 'Load Schedule', // Value is 1 if the user checked "remember me", 0 otherwise
             SAVE_SCHEDULE: 'Save Schedule', // Value is 1 if the user checked "remember me", 0 otherwise

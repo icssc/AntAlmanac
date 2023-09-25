@@ -14,6 +14,7 @@ import SettingsMenu from './SettingsMenu';
 import Export from './Exports/Export';
 import { ReactComponent as Logo } from './logo.svg';
 import { ReactComponent as MobileLogo } from './mobile-logo.svg';
+import TimeFormatMenu from './TimeFormatMenu';
 
 const styles = {
     appBar: {
@@ -44,6 +45,7 @@ interface CustomAppBarProps {
 
 const components = [
     <SettingsMenu key="settings" />,
+    <TimeFormatMenu key="timeformat" />,
     <ImportStudyList key="studylist" />,
     <Export key="export" />,
     <Feedback key="feedback" />,

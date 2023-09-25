@@ -198,6 +198,15 @@ export const toggleTheme = (radioGroupEvent: React.ChangeEvent<HTMLInputElement>
     });
 };
 
+export const toggleShow24HourTime = (radioGroupEvent: React.ChangeEvent<HTMLInputElement>) => {
+    AppStore.toggleShow24HourTime(radioGroupEvent.target.value === 'true');
+    logAnalytics({
+        category: analyticsEnum.nav.title,
+        action: analyticsEnum.nav.actions.CHANGE_TIME_FORMAT,
+        label: radioGroupEvent.target.value,
+    });
+};
+
 export const addSchedule = (scheduleName: string) => {
     AppStore.addSchedule(scheduleName);
 };

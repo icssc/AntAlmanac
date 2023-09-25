@@ -203,6 +203,10 @@ export function isDarkMode() {
     }
 }
 
+export function is24HourTime() {
+    return AppStore.getShow24HourTime();
+}
+
 /**
  * @param courseNumber A string that represents the course number of a course (eg. '122A', '121')
  * @returns This function returns an int or number with a decimal representation of the passed in string (eg. courseNumAsDecimal('122A') returns 122.1, courseNumAsDecimal('121') returns 121)

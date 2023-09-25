@@ -12,6 +12,7 @@ import AppThemev5Provider from './providers/Themev5';
 
 import Home from './routes/Home';
 import Feedback from './routes/Feedback';
+import Show24HourTimeProvider from '$providers/Show24HourTime';
 
 const BrowserRouter = createBrowserRouter([
     {
@@ -45,9 +46,11 @@ export default function App() {
         <AppQueryProvider>
             <AppThemeProvider>
                 <AppThemev5Provider>
-                    <SnackbarProvider>
-                        <RouterProvider router={BrowserRouter} />
-                    </SnackbarProvider>
+                    <Show24HourTimeProvider>
+                        <SnackbarProvider>
+                            <RouterProvider router={BrowserRouter} />
+                        </SnackbarProvider>
+                    </Show24HourTimeProvider>
                 </AppThemev5Provider>
             </AppThemeProvider>
         </AppQueryProvider>
