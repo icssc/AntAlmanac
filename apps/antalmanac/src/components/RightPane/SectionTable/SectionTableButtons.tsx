@@ -4,7 +4,7 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Add, ArrowDropDown, Delete } from '@material-ui/icons';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 
-import { AASection } from '@packages/antalmanac-types';
+import { AASection, TermNames } from '@packages/antalmanac-types';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
@@ -64,7 +64,7 @@ interface ScheduleAddCellProps {
     classes: ClassNameMap;
     section: AASection;
     courseDetails: CourseDetails;
-    term: string;
+    term: TermNames;
     scheduleNames: string[];
     scheduleConflict: boolean;
 }
@@ -91,7 +91,9 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
             });
         }
         const newCourse = addCourse(section, courseDetails, term, scheduleIndex);
-        section.color = newCourse.section.color;
+        if (newCourse !== undefined) {
+            section.color = newCourse.section.color;
+        }
     };
 
     const addCourseHandler = () => {

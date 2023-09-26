@@ -45,10 +45,6 @@ interface NewsItem {
     _id: string; // mongoose object id
 }
 
-interface NewsResponse {
-    news: Array<NewsItem>;
-}
-
 interface NewsProps {
     classes: ClassNameMap<string>;
 }

@@ -8,6 +8,7 @@ import moment from 'moment';
 import { PureComponent, SyntheticEvent } from 'react';
 import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
 
+import { TermNames } from '@packages/antalmanac-types';
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
@@ -16,7 +17,7 @@ const localizer = momentLocalizer(moment);
 
 /*
 This is the composition structure of everything in components/Calendar, updated as of PR #411
-I did the file restructure for the folder based on this tree, so thought I 
+I did the file restructure for the folder based on this tree, so thought I
 might as well include it since I made it. The file structure is close but doesn't
 match exactly.
 
@@ -107,7 +108,6 @@ interface ScheduleCalendarState {
     eventsInCalendar: CalendarEvent[];
     finalsEventsInCalendar: CalendarEvent[];
     currentScheduleIndex: number;
-    scheduleNames: string[];
 }
 class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCalendarState> {
     state: ScheduleCalendarState = {
@@ -120,7 +120,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         eventsInCalendar: AppStore.getEventsInCalendar(),
         finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
         currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
-        scheduleNames: AppStore.getScheduleNames(),
     };
 
     static eventStyleGetter = (event: CalendarEvent) => {
@@ -173,18 +172,11 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         if (close) this.handleClosePopover();
     };
 
-    updateScheduleNames = () => {
-        this.setState({
-            scheduleNames: AppStore.getScheduleNames(),
-        });
-    };
-
     componentDidMount = () => {
         AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
         AppStore.on('customEventsChange', this.updateEventsInCalendar);
         AppStore.on('colorChange', this.updateEventsInCalendar);
         AppStore.on('currentScheduleIndexChange', this.updateEventsInCalendar);
-        AppStore.on('scheduleNamesChange', this.updateScheduleNames);
     };
 
     componentWillUnmount = () => {
@@ -192,7 +184,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         AppStore.removeListener('customEventsChange', this.updateEventsInCalendar);
         AppStore.removeListener('colorChange', this.updateEventsInCalendar);
         AppStore.removeListener('currentScheduleIndexChange', this.updateEventsInCalendar);
-        AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
     };
 
     handleTakeScreenshot = (html2CanvasScreenshot: () => void) => {
@@ -254,11 +245,9 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         return (
             <div className={classes.container} style={isMobile ? { height: 'calc(100% - 50px)' } : undefined}>
                 <CalendarToolbar
-                    onTakeScreenshot={this.handleTakeScreenshot}
                     currentScheduleIndex={this.state.currentScheduleIndex}
                     toggleDisplayFinalsSchedule={this.toggleDisplayFinalsSchedule}
                     showFinalsSchedule={this.state.showFinalsSchedule}
-                    scheduleNames={this.state.scheduleNames}
                 />
                 <div
                     id="screenshot"
@@ -295,7 +284,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
                                     key={this.state.calendarEventKey}
                                     closePopover={this.handleClosePopover}
                                     courseInMoreInfo={this.state.courseInMoreInfo as CalendarEvent}
-                                    scheduleNames={this.state.scheduleNames}
                                 />
                             </Box>
                         </ClickAwayListener>

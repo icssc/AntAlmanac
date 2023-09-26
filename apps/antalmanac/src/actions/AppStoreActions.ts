@@ -1,21 +1,20 @@
 import { VariantType } from 'notistack';
 
-import { TRPCError } from '@trpc/server';
 import { WebsocSection } from 'peterportal-api-next-types';
-import { ScheduleCourse } from '@packages/antalmanac-types';
+import { ScheduleCourse, TermNames } from '@packages/antalmanac-types';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { CourseDetails, courseNumAsDecimal, termsInSchedule, warnMultipleTerms } from '$lib/helpers';
-import AppStore from '$stores/AppStore';
+import { CourseDetails, courseNumAsDecimal } from '$lib/helpers';
 import trpc from '$lib/api/trpc';
+import { saveAuthenticatedUserSchedule, saveCodeUserSchedule } from '$actions/helpers';
+import AppStore from '$stores/AppStore';
 
 export const addCourse = (
     section: WebsocSection,
     courseDetails: CourseDetails,
-    term: string,
-    scheduleIndex: number,
-    quiet?: boolean
+    term: TermNames,
+    scheduleIndex: number
 ) => {
     logAnalytics({
         category: analyticsEnum.classSearch.title,
@@ -23,9 +22,6 @@ export const addCourse = (
         label: courseDetails.deptCode,
         value: courseNumAsDecimal(courseDetails.courseNumber),
     });
-    const terms = termsInSchedule(term);
-
-    if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 
     // The color will be set properly in Schedules
     const newCourse: ScheduleCourse = {
@@ -64,7 +60,11 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
         label: userID,
         value: rememberMe ? 1 : 0,
     });
-    if (userID != null) {
+
+    const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+    if (AppStore.isAuthedUser()) {
+        await saveAuthenticatedUserSchedule(userID, scheduleSaveState);
+    } else if (userID) {
         userID = userID.replace(/\s+/g, '');
 
         if (userID.length > 0) {
@@ -73,29 +73,88 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
             } else {
                 window.localStorage.removeItem('userID');
             }
-
-            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
-
-            try {
-                await trpc.users.saveUserData.mutate({ id: userID, userData: scheduleSaveState });
-
-                openSnackbar(
-                    'success',
-                    `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
-                );
-                AppStore.saveSchedule();
-            } catch (e) {
-                if (e instanceof TRPCError) {
-                    openSnackbar('error', `Schedule could not be saved under username "${userID}`);
-                } else {
-                    openSnackbar('error', 'Network error or server is down.');
-                }
-            }
+            await saveCodeUserSchedule(userID, scheduleSaveState);
         }
     }
 };
 
-export const loadSchedule = async (userId: string, rememberMe: boolean) => {
+const loadAuthUser = async () => {
+    try {
+        const tempUserData = window.localStorage.getItem('tempUserData');
+        if (tempUserData) {
+            const scheduleSaveState = JSON.parse(tempUserData);
+            if (await AppStore.loadSchedule(scheduleSaveState)) {
+                openSnackbar('success', `Your previous schedule has been imported.`);
+            } else {
+                openSnackbar('error', `Couldn't import your schedule.`);
+            }
+            window.localStorage.removeItem('tempUserData');
+        }
+
+        const authUser = await trpc.authusers.getUserData.query();
+        if (authUser) {
+            AppStore.user = {
+                name: authUser.name,
+                email: authUser.email,
+                picture: authUser.picture,
+            };
+
+            // Append auth schedule if a schedule is imported else load auth schedule
+            if (
+                (tempUserData && (await AppStore.appendSchedule(authUser.userData))) ||
+                (await AppStore.loadSchedule(authUser.userData))
+            ) {
+                openSnackbar('success', `Your schedule has been loaded.`);
+            } else {
+                openSnackbar('error', `Couldn't load your schedule.`);
+            }
+            return true;
+        }
+    } catch {
+        // Do nothing
+    }
+    return false;
+};
+
+const loadCodeUser = async (userId?: string, rememberMe?: boolean) => {
+    if (userId === undefined) {
+        return;
+    }
+
+    userId = userId.replace(/\s+/g, '');
+
+    if (userId.length > 0) {
+        if (rememberMe) {
+            window.localStorage.setItem('userID', userId);
+        } else {
+            window.localStorage.removeItem('userID');
+        }
+
+        try {
+            const scheduleSaveState = await trpc.users.getUserData.query({ userId });
+
+            if (scheduleSaveState === undefined) {
+                openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
+            } else if (await AppStore.loadSchedule(scheduleSaveState)) {
+                openSnackbar('success', `Schedule for username "${userId}" loaded.`);
+            } else {
+                AppStore.loadSkeletonSchedule(scheduleSaveState);
+                openSnackbar(
+                    'error',
+                    `Network error loading course information for "${userId}". 
+                        If this continues to happen, please submit a feedback form.`
+                );
+            }
+        } catch (e) {
+            openSnackbar(
+                'error',
+                `Failed to load schedules. If this continues to happen, please submit a feedback form.`
+            );
+        }
+    }
+};
+
+export const loadSchedule = async (userId?: string, rememberMe?: boolean) => {
     logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
@@ -103,42 +162,52 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
         value: rememberMe ? 1 : 0,
     });
     if (
-        userId != null &&
-        (!AppStore.hasUnsavedChanges() ||
-            window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
+        AppStore.hasUnsavedChanges() &&
+        !window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`)
     ) {
-        userId = userId.replace(/\s+/g, '');
+        return;
+    }
 
-        if (userId.length > 0) {
-            if (rememberMe) {
-                window.localStorage.setItem('userID', userId);
-            } else {
-                window.localStorage.removeItem('userID');
-            }
+    if (!(await loadAuthUser())) {
+        await loadCodeUser(userId, rememberMe);
+    }
+};
 
-            try {
-                const res = await trpc.users.getUserData.query({ userId });
-                const scheduleSaveState = res?.userData;
+export const appendSchedule = async (userId: string, rememberMe: boolean) => {
+    logAnalytics({
+        category: analyticsEnum.nav.title,
+        action: analyticsEnum.nav.actions.APPEND_SCHEDULE,
+        label: userId,
+        value: rememberMe ? 1 : 0,
+    });
 
-                if (scheduleSaveState === undefined) {
-                    openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
-                } else if (await AppStore.loadSchedule(scheduleSaveState)) {
-                    openSnackbar('success', `Schedule for username "${userId}" loaded.`);
-                } else {
-                    AppStore.loadSkeletonSchedule(scheduleSaveState);
-                    openSnackbar(
-                        'error',
-                        `Network error loading course information for "${userId}". 
-                        If this continues to happen, please submit a feedback form.`
-                    );
-                }
-            } catch (e) {
-                openSnackbar(
-                    'error',
-                    `Failed to load schedules. If this continues to happen, please submit a feedback form.`
-                );
-            }
+    userId = userId.replace(/\s+/g, '');
+
+    if (userId.length <= 0) {
+        return;
+    }
+    if (rememberMe) {
+        window.localStorage.setItem('userID', userId);
+    } else {
+        window.localStorage.removeItem('userID');
+    }
+
+    try {
+        const scheduleSaveState = await trpc.users.getUserData.query({ userId });
+
+        if (scheduleSaveState === undefined) {
+            openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
+        } else if (await AppStore.appendSchedule(scheduleSaveState)) {
+            openSnackbar('success', `Schedule for username "${userId}" loaded.`);
+        } else {
+            openSnackbar(
+                'error',
+                `Couldn't load schedules for username "${userId}". 
+                If this continues happening please submit a feedback form.`
+            );
         }
+    } catch (e) {
+        openSnackbar('error', `Got a network error when trying to load schedules.`);
     }
 };
 

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { WebsocSection, WebsocAPIResponse } from 'peterportal-api-next-types';
+import { TermNames } from '@packages/antalmanac-types';
 import { PETERPORTAL_GRAPHQL_ENDPOINT } from './api/endpoints';
 import { queryWebsoc } from './course-helpers';
 import { addCourse, openSnackbar } from '$actions/AppStoreActions';
@@ -162,24 +163,24 @@ export async function queryWebsocMultiple(params: { [key: string]: string }, fie
 
 export const addCoursesMultiple = (
     courseInfo: { [sectionCode: string]: CourseInfo },
-    term: string,
+    term: TermNames,
     scheduleIndex: number
 ) => {
     for (const section of Object.values(courseInfo)) {
-        addCourse(section.section, section.courseDetails, term, scheduleIndex, true);
+        addCourse(section.section, section.courseDetails, term, scheduleIndex);
     }
-    const terms = termsInSchedule(term);
-    if (terms.size > 1) warnMultipleTerms(terms);
+    // const terms = termsInSchedule(term);
+    // if (terms.size > 1) warnMultipleTerms(terms);
     return Object.values(courseInfo).length;
 };
 
 export const termsInSchedule = (term: string) =>
     new Set([term, ...AppStore.schedule.getCurrentCourses().map((course) => course.term)]);
 
-export const warnMultipleTerms = (terms: Set<string>) => {
+export const warnMultipleTerms = (scheduleTerm: string, addedTerm: string) => {
     openSnackbar(
         'warning',
-        `Course added from different term.\nSchedule now contains courses from ${[...terms].sort().join(', ')}.`,
+        `Course from ${addedTerm} was not added.\nSchedule can contain courses from ${scheduleTerm} only.`,
         undefined,
         undefined,
         { whiteSpace: 'pre-line' }

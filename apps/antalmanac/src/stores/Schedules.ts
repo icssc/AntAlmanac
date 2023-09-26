@@ -4,11 +4,12 @@ import {
     ScheduleSaveState,
     ScheduleUndoState,
     ShortCourseSchedule,
+    TermNames,
 } from '@packages/antalmanac-types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import type { CourseInfo } from '$lib/helpers';
-import { getColorForNewSection } from '$stores/scheduleHelpers';
+import { getColorForNewSection, getScheduleTerm } from '$stores/scheduleHelpers';
 import { getCourseInfo, queryWebsoc } from '$lib/course-helpers';
 
 export class Schedules {
@@ -25,7 +26,14 @@ export class Schedules {
     constructor() {
         const scheduleNoteId = Math.random();
         this.schedules = [
-            { scheduleName: 'Schedule 1', courses: [], customEvents: [], scheduleNoteId: scheduleNoteId },
+            {
+                scheduleName: 'Schedule 1',
+                courses: [],
+                term: 'Any Term',
+                customEvents: [],
+                scheduleNoteId: scheduleNoteId,
+                favorite: true,
+            },
         ];
         this.currentScheduleIndex = 0;
         this.previousStates = [];
@@ -43,8 +51,20 @@ export class Schedules {
         return this.schedules.length;
     }
 
+    getCurrentSchedule() {
+        return this.schedules[this.currentScheduleIndex];
+    }
+
     getCurrentScheduleName() {
         return this.schedules[this.currentScheduleIndex].scheduleName;
+    }
+
+    getCurrentScheduleTerm() {
+        return this.getScheduleTerm(this.currentScheduleIndex);
+    }
+
+    getScheduleTerm(scheduleIndex: number) {
+        return this.schedules[scheduleIndex]?.term ?? 'Any Term';
     }
 
     /**
@@ -59,6 +79,88 @@ export class Schedules {
      */
     getScheduleNames() {
         return this.schedules.map((schedule) => schedule.scheduleName);
+    }
+
+    /**
+     * @return a map from each term to a list of [scheduleIndex, scheduleName, isFavorite] pairs
+     * Also ensures that there are only one favorite per term
+     * The reason why the functionality is incorporated instead of being put in a separate function
+     * is because the only time the one favorite constraint matters is when getting this map
+     */
+    getTermToScheduleIndicesMap() {
+        const termToFavoriteMap = new Map<TermNames, number>();
+
+        // First, go through the schedules and ensure only one favorite per term.
+        this.schedules.forEach((schedule, scheduleIndex) => {
+            const term = schedule.term;
+            if (termToFavoriteMap.has(term)) {
+                // If there is already a favorite for this term, unset favorite for the current schedule.
+                schedule.favorite = false;
+            } else if (schedule.favorite) {
+                // If this schedule is marked as favorite and there is no favorite for this term, keep it as favorite.
+                termToFavoriteMap.set(term, scheduleIndex);
+            }
+        });
+
+        // Second, go through the terms without a favorite and set the first schedule of those terms as favorite.
+        this.schedules.forEach((schedule, scheduleIndex) => {
+            const term = schedule.term;
+            if (!termToFavoriteMap.has(term)) {
+                schedule.favorite = true;
+                termToFavoriteMap.set(term, scheduleIndex);
+                return;
+            }
+        });
+
+        // Finally, create the term to schedule map.
+        return this.schedules.reduce((map, schedule, scheduleIndex) => {
+            const schedulePairs = map.get(schedule.term) || [];
+            schedulePairs.push([scheduleIndex, schedule.scheduleName, schedule.favorite ?? false]);
+            map.set(schedule.term, schedulePairs);
+            return map;
+        }, new Map<TermNames, [number, string, boolean][]>());
+    }
+
+    setCurrentScheduleTerm() {
+        const currentCourses = this.getCurrentCourses();
+        const currentSchedule = this.schedules[this.getCurrentScheduleIndex()];
+
+        // If no courses in the current schedule and there never was a term, set to any term
+        if (currentCourses.length === 0) {
+            currentSchedule.term = 'Any Term';
+            return;
+        }
+
+        // Initialize firstTerm with the term of the first course
+        const firstTerm = currentCourses[0].term;
+        let multipleTerms = false;
+
+        // Iterate through the current courses, starting from the second course
+        for (let i = 1; i < currentCourses.length; i++) {
+            if (currentCourses[i].term !== firstTerm) {
+                // If a different term is found, set multipleTerms to true and break the loop
+                multipleTerms = true;
+                break;
+            }
+        }
+
+        // If there are multiple terms, set to 'MULTIPLE TERMS'; otherwise, set to the single term
+        currentSchedule.term = multipleTerms ? 'Multiple Terms' : firstTerm;
+    }
+
+    /**
+     * Sets the favorite schedule to the one at the given index
+     * Also ensures all other schedules are not favorited
+     */
+
+    setFavoriteSchedule(scheduleIndex: number) {
+        const term = this.schedules[scheduleIndex].term;
+        for (const schedule of this.schedules) {
+            if (schedule.term === term) {
+                schedule.favorite = false;
+            }
+        }
+        this.schedules[scheduleIndex].favorite = true;
     }
 
     /**
@@ -77,9 +179,11 @@ export class Schedules {
         const scheduleNoteId = Math.random();
         this.schedules.push({
             scheduleName: newScheduleName,
+            term: 'Any Term',
             courses: [],
             customEvents: [],
             scheduleNoteId: scheduleNoteId,
+            favorite: false,
         });
         // Setting schedule index manually otherwise 2 undo states are added
         this.currentScheduleIndex = this.getNumberOfSchedules() - 1;
@@ -165,9 +269,17 @@ export class Schedules {
      * @param newCourse The course to add
      * @param scheduleIndex Defaults to current schedule
      * @param addUndoState Defaults to true
-     * @returns The course object that was added.
+     * @returns The course object that was added or undefined if it wasn't added
      */
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number, addUndoState = true) {
+        const currentTerm = this.schedules[scheduleIndex].term;
+        if (!currentTerm || currentTerm === 'Any Term') {
+            // If schedule has no term, set it
+            this.schedules[scheduleIndex].term = newCourse.term;
+        } else if (currentTerm !== newCourse.term) {
+            return undefined;
+        }
+
         if (addUndoState) {
             this.addUndoState();
         }
@@ -180,11 +292,11 @@ export class Schedules {
             scheduleIndex
         );
 
-        if (existsInSchedule && existingSection) {
-            return existingSection; // If it's already present in a schedule, then no need to push it
-        }
-
         if (existingSection) {
+            if (existsInSchedule) {
+                return existingSection; // If it's already present in a schedule, then no need to push it
+            }
+
             this.schedules[scheduleIndex].courses.push(existingSection); // existingSection is pushed so methods (e.g. @changeCourseColor) have the appropriate (i.e. same) course reference across all schedules
             return existingSection;
         }
@@ -212,7 +324,9 @@ export class Schedules {
     addCourseToAllSchedules(newCourse: ScheduleCourse) {
         this.addUndoState();
         for (let i = 0; i < this.getNumberOfSchedules(); i++) {
-            this.addCourse(newCourse, i, false);
+            if (this.getScheduleTerm(i) === newCourse.term) {
+                this.addCourse(newCourse, i, false);
+            }
         }
         return newCourse;
     }
@@ -236,6 +350,7 @@ export class Schedules {
         this.schedules[this.currentScheduleIndex].courses = this.getCurrentCourses().filter((course) => {
             return !(course.section.sectionCode === sectionCode && course.term === term);
         });
+        this.setCurrentScheduleTerm();
     }
 
     /**
@@ -302,6 +417,7 @@ export class Schedules {
 
     /**
      * Deletes custom event from the given indices.
+     * @param customEventId ID of custom event to delete.
      * @param scheduleIndices Defaults to current schedule.
      */
     deleteCustomEvent(customEventId: number, scheduleIndices: number[] = [this.getCurrentScheduleIndex()]) {
@@ -416,6 +532,13 @@ export class Schedules {
         }
     }
 
+    /**
+     * Check if the schedule was changed (i.e. if there are any undo states)
+     */
+    wasScheduleChanged() {
+        return this.previousStates.length > 0;
+    }
+
     /*
      * Convert schedule to shortened schedule (no course info) for saving.
      */
@@ -431,6 +554,7 @@ export class Schedules {
                         sectionCode: course.section.sectionCode,
                     };
                 }),
+                favorite: schedule.favorite,
                 scheduleNote: this.scheduleNoteMap[schedule.scheduleNoteId],
             };
         });
@@ -444,8 +568,7 @@ export class Schedules {
     async fromScheduleSaveState(saveState: ScheduleSaveState) {
         this.addUndoState();
         try {
-            this.schedules.length = 0;
-            this.currentScheduleIndex = saveState.scheduleIndex;
+            const newSchedules = [];
 
             // Get a dictionary of all unique courses
             const courseDict: { [key: string]: Set<string> } = {};
@@ -504,17 +627,29 @@ export class Schedules {
                     this.scheduleNoteMap[scheduleNoteId] = '';
                 }
 
-                this.schedules.push({
+                newSchedules.push({
                     scheduleName: shortCourseSchedule.scheduleName,
+                    term: getScheduleTerm(shortCourseSchedule),
                     courses: courses,
                     customEvents: shortCourseSchedule.customEvents,
                     scheduleNoteId: scheduleNoteId,
+                    favorite: shortCourseSchedule.favorite,
                 });
+
+                this.schedules = newSchedules;
+                this.currentScheduleIndex = saveState.scheduleIndex;
             }
         } catch (e) {
             this.revertState();
             throw new Error('Unable to load schedule');
         }
+    }
+
+    appendSchedule(other: Schedules) {
+        this.addUndoState();
+        this.schedules.push(...other.schedules);
+        this.previousStates.push(...other.previousStates);
+        this.scheduleNoteMap = { ...this.scheduleNoteMap, ...other.scheduleNoteMap };
     }
 
     getCurrentScheduleNote() {

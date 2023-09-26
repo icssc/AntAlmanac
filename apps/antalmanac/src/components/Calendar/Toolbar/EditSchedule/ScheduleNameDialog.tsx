@@ -16,6 +16,7 @@ import { Add, Edit } from '@material-ui/icons';
 
 import { addSchedule, renameSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
+import AppStore from '$stores/AppStore';
 
 const styles = () => ({
     addButton: {
@@ -29,18 +30,19 @@ const styles = () => ({
 interface ScheduleNameDialogProps {
     classes: ClassNameMap;
     onOpen?: () => void;
-    onClose?: () => void;
-    scheduleNames: string[];
+    onClose: () => void;
     scheduleRenameIndex?: number;
 }
 
 const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
-    const { classes, onOpen, onClose, scheduleNames, scheduleRenameIndex } = props;
+    const { classes, onOpen, onClose, scheduleRenameIndex } = props;
+    const currentScheduleName = AppStore.schedule.getCurrentScheduleName();
+    const numSchedules = AppStore.schedule.getNumberOfSchedules();
 
     const [isOpen, setIsOpen] = useState(false);
 
     const [scheduleName, setScheduleName] = useState(
-        scheduleRenameIndex !== undefined ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`
+        scheduleRenameIndex !== undefined ? currentScheduleName : `Schedule ${numSchedules + 1}`
     );
 
     const rename = useMemo(() => scheduleRenameIndex !== undefined, [scheduleRenameIndex]);
@@ -61,11 +63,10 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
      */
     const handleCancel = useCallback(() => {
         setIsOpen(false);
-
-        if (scheduleRenameIndex != null) {
-            setScheduleName(rename ? scheduleNames[scheduleRenameIndex] : `Schedule ${scheduleNames.length + 1}`);
-        }
-    }, [rename, scheduleNames, scheduleRenameIndex]);
+        // If the user cancelled renaming the schedule, the schedule name is changed to its original value;
+        // if the user cancelled adding a new schedule, the schedule name is changed to the default schedule name
+        setScheduleName(rename ? currentScheduleName : `Schedule ${numSchedules + 1}`);
+    }, [rename, currentScheduleName, numSchedules]);
 
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setScheduleName(event.target.value);
@@ -136,7 +137,7 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
                         fullWidth
                         className={classes.textField}
                         label="Name"
-                        placeholder={`Schedule ${scheduleNames.length + 1}`}
+                        placeholder={`Schedule ${numSchedules + 1}`}
                         onChange={handleNameChange}
                         value={scheduleName}
                     />

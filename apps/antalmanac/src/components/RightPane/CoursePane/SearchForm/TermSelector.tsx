@@ -1,64 +1,78 @@
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
+import { useEffect, useState } from 'react';
 import Select from '@material-ui/core/Select';
-import { ChangeEvent, PureComponent } from 'react';
+import MenuItem from '@material-ui/core/MenuItem';
+import { FormControl, Tooltip } from '@material-ui/core';
+import WarningIcon from '@material-ui/icons/Warning';
 
-import RightPaneStore from '../../RightPaneStore';
+import InputLabel from '@material-ui/core/InputLabel';
 import { termData } from '$lib/termData';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
+import AppStore from '$stores/AppStore';
 
 interface TermSelectorProps {
     changeState: (field: string, value: string) => void;
-    fieldName: string;
+    fieldName?: string;
 }
 
-class TermSelector extends PureComponent<TermSelectorProps> {
-    updateTermAndGetFormData() {
-        RightPaneStore.updateFormValue('term', RightPaneStore.getUrlTermValue());
+const TermSelector = ({ changeState, fieldName = 'term' }: TermSelectorProps) => {
+    const getTerm = () => {
+        const term = RightPaneStore.getUrlTermValue() || RightPaneStore.getFormData().term;
+        updateTermAndGetFormData(term);
+        return term;
+    };
+
+    const updateTermAndGetFormData = (term: string) => {
+        RightPaneStore.updateFormValue(fieldName, term);
         return RightPaneStore.getFormData().term;
-    }
-
-    getTerm() {
-      return RightPaneStore.getUrlTermValue() 
-        ? this.updateTermAndGetFormData()
-        : RightPaneStore.getFormData().term
-    }
-
-    state = {
-        term: this.getTerm(),
     };
 
-    resetField = () => {
-        this.setState({ term: RightPaneStore.getFormData().term });
+    const [term, setTerm] = useState(getTerm);
+    const [showWarning, setShowWarning] = useState(false);
+
+    const handleWarning = () => {
+        const currentTerm = AppStore.schedule.getCurrentScheduleTerm();
+        setShowWarning(currentTerm !== 'Any Term' && term !== currentTerm);
     };
 
-    componentDidMount = () => {
-        RightPaneStore.on('formReset', this.resetField);
+    const resetField = () => {
+        setTerm(RightPaneStore.getFormData().term);
     };
 
-    componentWillUnmount() {
-        RightPaneStore.removeListener('formReset', this.resetField);
-    }
+    useEffect(() => {
+        handleWarning();
 
-    handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
-        this.setState({ term: event.target.value });
-        this.props.changeState(this.props.fieldName, event.target.value as string);
+        RightPaneStore.on('formReset', resetField);
+        AppStore.on('addedCoursesChange', handleWarning);
+        AppStore.on('currentScheduleIndexChange', handleWarning);
+        RightPaneStore.on('formDataChange', handleWarning);
 
-        const stateObj = { url: 'url' };
+        return () => {
+            RightPaneStore.removeListener('formReset', resetField);
+            AppStore.removeListener('addedCoursesChange', handleWarning);
+            AppStore.removeListener('currentScheduleIndexChange', handleWarning);
+            RightPaneStore.removeListener('formDataChange', handleWarning);
+        };
+    }, [getTerm, handleWarning]);
+
+    const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        const selectedTerm = event.target.value as string;
+        setTerm(selectedTerm);
+        changeState('term', selectedTerm);
+
         const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
         urlParam.delete('term');
-        urlParam.append('term', event.target.value as string);
+        urlParam.append('term', selectedTerm);
         const param = urlParam.toString();
         const new_url = `${param && param !== 'null' ? '?' : ''}${param}`;
-        history.replaceState(stateObj, 'url', '/' + new_url);
+        history.replaceState({ url: 'url' }, 'url', '/' + new_url);
     };
 
-    render() {
-        return (
+    return (
+        <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
             <FormControl fullWidth>
                 <InputLabel>Term</InputLabel>
-                <Select value={this.state.term} onChange={this.handleChange}>
+                <Select value={term} onChange={handleChange} fullWidth={true}>
                     {termData.map((term, index) => (
                         <MenuItem key={index} value={term.shortName}>
                             {term.longName}
@@ -66,8 +80,18 @@ class TermSelector extends PureComponent<TermSelectorProps> {
                     ))}
                 </Select>
             </FormControl>
-        );
-    }
-}
+            {showWarning && (
+                <Tooltip
+                    title="Classes will not add because the term selected and the schedule term are different!"
+                    placement="right"
+                >
+                    <div style={{ marginLeft: '8px' }}>
+                        <WarningIcon style={{ color: 'yellow' }} />
+                    </div>
+                </Tooltip>
+            )}
+        </div>
+    );
+};
 
 export default TermSelector;

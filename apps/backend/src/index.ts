@@ -1,11 +1,19 @@
+/**
+ * Why isn't the global crypto defined???
+ */
+import crypto from 'crypto';
+(global as any).crypto = crypto;
+
 import express from 'express';
-import cors from 'cors';
-import type { CorsOptions } from 'cors';
+import cookieParser from 'cookie-parser';
+import cors, { type CorsOptions } from 'cors';
+import { createAuthMiddleware } from '@aponia/express';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import AppRouter from './routers';
-import createContext from './context';
-import connectToMongoDB from '$db/mongodb';
+import { createContext } from './context';
+import { auth } from './auth';
 import env from './env';
+import connectToMongoDB from '$db/mongodb';
 
 const corsOptions: CorsOptions = {
     origin: ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac'],
@@ -17,8 +25,20 @@ export async function start(corsEnabled = false) {
     await connectToMongoDB();
 
     const app = express();
-    app.use(cors(corsEnabled ? corsOptions : undefined));
+
+    const corsSettings = corsEnabled ? corsOptions : {origin: true};
+
+    app.use(cors({...corsSettings, credentials: true }));
+
     app.use(express.json());
+
+    app.use(cookieParser());
+
+    app.use(createAuthMiddleware(auth));
+
+    app.use(async (req, _res, next) => {
+        next();
+    });
 
     app.use(
         '/trpc',

@@ -9,7 +9,9 @@ const app = new App({ autoSynth: true })
 if (
     !process.env.CERTIFICATE_ARN ||
     !process.env.HOSTED_ZONE_ID ||
-    !process.env.MONGODB_URI_PROD
+    !process.env.MONGODB_URI_PROD ||
+    !process.env.GOOGLE_CLIENT_ID ||
+    !process.env.GOOGLE_CLIENT_SECRET
 ) {
     throw new Error('Missing environmental variables')
 }

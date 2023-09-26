@@ -8,12 +8,13 @@ import { useState, type MouseEventHandler } from 'react';
 import AboutPage from './AboutPage';
 import Feedback from './Feedback';
 import ImportStudyList from './ImportStudyList';
-import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import News from './News';
 import SettingsMenu from './SettingsMenu';
 import Export from './Exports/Export';
 import { ReactComponent as Logo } from './logo.svg';
 import { ReactComponent as MobileLogo } from './mobile-logo.svg';
+import LoginButton from './LoginButton';
+import LoadSaveButtons from './LoadSaveButtons/LoadSaveButtons';
 
 const styles = {
     appBar: {
@@ -49,6 +50,7 @@ const components = [
     <Feedback key="feedback" />,
     <News key="news" />,
     <AboutPage key="about" />,
+    <LoginButton key={'login'} />,
 ];
 
 const CustomAppBar = ({ classes }: CustomAppBarProps) => {
@@ -71,7 +73,7 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
 
                 <div style={{ flexGrow: '1' }} />
 
-                <LoadSaveScheduleFunctionality />
+                <LoadSaveButtons />
 
                 {isMobileScreen ? (
                     <Box className={classes.menuIconContainer}>

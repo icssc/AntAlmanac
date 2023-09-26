@@ -16,9 +16,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { PostAdd } from '@material-ui/icons';
-import { PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 
-import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
+import TermSelector from "../RightPane/CoursePane/SearchForm/TermSelector";
 import RightPaneStore from '../RightPane/RightPaneStore';
 import { addCustomEvent, openSnackbar } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';

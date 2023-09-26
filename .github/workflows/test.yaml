@@ -41,25 +41,27 @@ jobs:
 
             - name: Build
               env:
-                HUSKY: 0
+                  HUSKY: 0
 
-                # Frontend environment variables.
-                VITE_ENDPOINT: ${{ env.apiSubDomain }}
-                NODE_ENV: ${{ env.nodeEnv }}
+                  # Frontend environment variables.
+                  VITE_ENDPOINT: ${{ env.apiSubDomain }}
+                  NODE_ENV: ${{ env.nodeEnv }}
 
-                # Backend environment variables.
-                HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
-                CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
-                MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
-                PR_NUM: ${{ github.event.pull_request.number }}
+                  # Backend environment variables.
+                  HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
+                  CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+                  MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
+                  PR_NUM: ${{ github.event.pull_request.number }}
+                  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+                  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
 
-                # CDK environment variables.
-                API_SUB_DOMAIN: ${{ env.apiSubDomain }}
+                  # CDK environment variables.
+                  API_SUB_DOMAIN: ${{ env.apiSubDomain }}
 
-                # Turborepo credentials.
-                TURBO_API: ${{ vars.TURBO_API }}
-                TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-                TURBO_TEAM: "team_antalmanac"
+                  # Turborepo credentials.
+                  TURBO_API: ${{ vars.TURBO_API }}
+                  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+                  TURBO_TEAM: 'team_antalmanac'
               run: pnpm build
 
             - name: Test

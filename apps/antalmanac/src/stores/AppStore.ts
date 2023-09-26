@@ -7,14 +7,22 @@ import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { useTabStore } from '$stores/TabStore';
+import { warnMultipleTerms } from '$lib/helpers';
 
 function getCurrentTheme() {
     const theme = typeof Storage === 'undefined' ? 'auto' : window.localStorage.getItem('theme');
     return theme === null ? 'auto' : theme;
 }
 
+export interface User {
+    name: string;
+    email: string;
+    picture: string;
+}
+
 class AppStore extends EventEmitter {
     schedule: Schedules;
+    user?: User;
     customEvents: RepeatingCustomEvent[];
     colorPickers: Record<string, EventEmitter>;
     snackbarMessage: string;
@@ -58,8 +66,21 @@ class AppStore extends EventEmitter {
         return this.schedule.getCurrentScheduleIndex();
     }
 
+    getCurrentSchedule() {
+        return this.schedule.getCurrentSchedule();
+    }
+
     getScheduleNames() {
         return this.schedule.getScheduleNames();
+    }
+
+    getTermToScheduleIndicesMap() {
+        return this.schedule.getTermToScheduleIndicesMap();
+    }
+
+    setFavoriteSchedule(scheduleIndex: number) {
+        this.schedule.setFavoriteSchedule(scheduleIndex);
+        this.emit('scheduleNamesChange');
     }
 
     getAddedCourses() {
@@ -75,11 +96,14 @@ class AppStore extends EventEmitter {
     }
 
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
-        let addedCourse: ScheduleCourse;
+        let addedCourse: ScheduleCourse | undefined;
         if (scheduleIndex === this.schedule.getNumberOfSchedules()) {
             addedCourse = this.schedule.addCourseToAllSchedules(newCourse);
         } else {
             addedCourse = this.schedule.addCourse(newCourse, scheduleIndex);
+        }
+        if (addedCourse === undefined) {
+            warnMultipleTerms(this.schedule.getCurrentScheduleTerm(), newCourse.term);
         }
         this.unsavedChanges = true;
         this.emit('addedCoursesChange');
@@ -236,6 +260,26 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
+        this.emit('userAuthChange');
+
+        return true;
+    }
+
+    async appendSchedule(savedSchedule: ScheduleSaveState) {
+        const newSchedule = new Schedules();
+        try {
+            await newSchedule.fromScheduleSaveState(savedSchedule);
+            this.schedule.appendSchedule(newSchedule);
+        } catch {
+            return false;
+        }
+        this.unsavedChanges = false;
+        this.emit('addedCoursesChange');
+        this.emit('customEventsChange');
+        this.emit('scheduleNamesChange');
+        this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
+        this.emit('userAuthChange');
 
         return true;
     }
@@ -309,6 +353,10 @@ class AppStore extends EventEmitter {
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
         this.schedule.updateScheduleNote(newScheduleNote, scheduleIndex);
         this.emit('scheduleNotesChange');
+    }
+
+    isAuthedUser() {
+        return this.user !== undefined;
     }
 }
 

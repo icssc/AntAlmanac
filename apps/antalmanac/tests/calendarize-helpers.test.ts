@@ -62,7 +62,7 @@ describe('calendarize-helpers', () => {
                 status: 'OPEN',
                 sectionComment: 'placeholderSectionComment',
             },
-            term: 'placeholderTerm',
+            term: 'Any Term',
         },
     ];
 

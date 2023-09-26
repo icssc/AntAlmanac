@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { Schedules } from '../src/stores/Schedules';
+import { Schedules } from '$stores/Schedules';
 
 describe('schedule logic', () => {
     const scheduleStore = new Schedules();

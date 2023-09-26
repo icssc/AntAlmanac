@@ -7,6 +7,8 @@ import {
     Edit as EditIcon,
     Undo as UndoIcon,
     Clear as ClearIcon,
+    Star as StarIcon,
+    StarBorder as StarBorderIcon,
 } from '@mui/icons-material';
 
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
@@ -16,6 +18,7 @@ import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
 import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';
+import TermViewer from '$components/Calendar/TermViewer';
 
 function handleScheduleChange(index: number) {
     logAnalytics({
@@ -94,6 +97,24 @@ function DeleteScheduleButton(props: { index: number }) {
     );
 }
 
+function FavoriteScheduleButton(props: { index: number; favorite: boolean }) {
+    const setAsFavorite = useCallback(() => {
+        AppStore.setFavoriteSchedule(props.index);
+    }, []);
+
+    return (
+        <Box>
+            <IconButton size="small" onClick={setAsFavorite} sx={{ padding: '0px' }}>
+                {props.favorite ? (
+                    <StarIcon style={{ fontSize: '1rem' }} />
+                ) : (
+                    <StarBorderIcon style={{ fontSize: '1rem' }} />
+                )}
+            </IconButton>
+        </Box>
+    );
+}
+
 /**
  * MenuItem nested in the select menu to add a new schedule through a dialog.
  */
@@ -126,7 +147,7 @@ function AddScheduleButton() {
  *
  * Can select a schedule, and also control schedule settings with buttons.
  */
-function SelectSchedulePopover(props: { scheduleNames: string[] }) {
+function SelectSchedulePopover() {
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();
@@ -140,9 +161,18 @@ function SelectSchedulePopover(props: { scheduleNames: string[] }) {
 
     const open = useMemo(() => Boolean(anchorEl), [anchorEl]);
 
+    const [scheduleMap, setScheduleMap] = useState(AppStore.getTermToScheduleIndicesMap());
+
     const currentScheduleName = useMemo(() => {
-        return props.scheduleNames[currentScheduleIndex];
-    }, [props.scheduleNames, currentScheduleIndex]);
+        for (const schedulePairs of scheduleMap.values()) {
+            for (const [index, scheduleName] of schedulePairs) {
+                if (index === currentScheduleIndex) {
+                    return scheduleName;
+                }
+            }
+        }
+        return 'N/A'; // should never happen so this just keeps the type as string
+    }, [scheduleMap, currentScheduleIndex]);
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -154,21 +184,28 @@ function SelectSchedulePopover(props: { scheduleNames: string[] }) {
 
     const handleScheduleIndexChange = useCallback(() => {
         setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
+    }, [AppStore.getCurrentScheduleIndex()]);
+
+    const handleScheduleNamesChange = useCallback(() => {
+        setScheduleMap(AppStore.getTermToScheduleIndicesMap());
+    }, [AppStore.getTermToScheduleIndicesMap()]);
+
+    const handleScheduleChanges = useCallback(() => {
+        handleScheduleIndexChange();
+        handleScheduleNamesChange();
     }, []);
 
     useEffect(() => {
-        AppStore.on('addedCoursesChange', handleScheduleIndexChange);
-        AppStore.on('customEventsChange', handleScheduleIndexChange);
-        AppStore.on('colorChange', handleScheduleIndexChange);
+        AppStore.on('addedCoursesChange', handleScheduleChanges);
         AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
+        AppStore.on('scheduleNamesChange', handleScheduleChanges);
 
         return () => {
-            AppStore.off('addedCoursesChange', handleScheduleIndexChange);
-            AppStore.off('customEventsChange', handleScheduleIndexChange);
-            AppStore.off('colorChange', handleScheduleIndexChange);
+            AppStore.off('addedCoursesChange', handleScheduleChanges);
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
+            AppStore.off('scheduleNamesChange', handleScheduleChanges);
         };
-    }, [handleScheduleIndexChange]);
+    }, [handleScheduleChanges]);
 
     return (
         <Box>
@@ -192,36 +229,47 @@ function SelectSchedulePopover(props: { scheduleNames: string[] }) {
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >
                 <Box padding={1}>
-                    {props.scheduleNames.map((name, index) => (
-                        <Box key={index} display="flex" alignItems="center" gap={1}>
-                            <Box flexGrow={1}>
-                                <Button
-                                    color="inherit"
-                                    sx={{
-                                        minWidth,
-                                        maxWidth,
-                                        width: '100%',
-                                        display: 'flex',
-                                        justifyContent: 'flex-start',
-                                        background:
-                                            index === currentScheduleIndex ? theme.palette.action.selected : undefined,
-                                    }}
-                                    onClick={createScheduleSelector(index)}
-                                >
-                                    <Typography
-                                        overflow="hidden"
-                                        whiteSpace="nowrap"
-                                        textTransform="none"
-                                        textOverflow="ellipsis"
-                                    >
-                                        {name}
-                                    </Typography>
-                                </Button>
-                            </Box>
-                            <Box display="flex" alignItems="center" gap={0.5}>
-                                <EditScheduleButton index={index} />
-                                <DeleteScheduleButton index={index} />
-                            </Box>
+                    {Array.from(scheduleMap.entries()).map(([termName, scheduleIndicesList], outerIndex) => (
+                        <Box key={outerIndex}>
+                            <Typography variant="h6">{termName}</Typography>
+                            {scheduleIndicesList.map(([scheduleIndex, scheduleName, isFavorite]) => (
+                                <Box key={scheduleIndex} display="flex" alignItems="center">
+                                    <Box display="flex" alignItems="center">
+                                        <FavoriteScheduleButton index={scheduleIndex} favorite={isFavorite} />
+                                    </Box>
+                                    <Box flexGrow={1} mr={1}>
+                                        <Button
+                                            color="inherit"
+                                            sx={{
+                                                minWidth,
+                                                maxWidth,
+                                                width: '100%',
+                                                display: 'flex',
+                                                align: 'left',
+                                                justifyContent: 'flex-start',
+                                                background:
+                                                    scheduleIndex === currentScheduleIndex
+                                                        ? theme.palette.action.selected
+                                                        : undefined,
+                                            }}
+                                            onClick={createScheduleSelector(scheduleIndex)}
+                                        >
+                                            <Typography
+                                                overflow="hidden"
+                                                whiteSpace="nowrap"
+                                                textTransform="none"
+                                                textOverflow="ellipsis"
+                                            >
+                                                {scheduleName} {/* Changed {name} to {scheduleName} */}
+                                            </Typography>
+                                        </Button>
+                                    </Box>
+                                    <Box display="flex" alignItems="center" gap={0.5}>
+                                        <EditScheduleButton index={scheduleIndex} />
+                                        <DeleteScheduleButton index={scheduleIndex} />
+                                    </Box>
+                                </Box>
+                            ))}
                         </Box>
                     ))}
 
@@ -235,7 +283,6 @@ function SelectSchedulePopover(props: { scheduleNames: string[] }) {
 }
 
 export interface CalendarPaneToolbarProps {
-    scheduleNames: string[];
     currentScheduleIndex: number;
     showFinalsSchedule: boolean;
     toggleDisplayFinalsSchedule: () => void;
@@ -247,8 +294,6 @@ export interface CalendarPaneToolbarProps {
 function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
 
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
-
     const handleToggleFinals = useCallback(() => {
         logAnalytics({
             category: analyticsEnum.calendar.title,
@@ -257,26 +302,14 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
         toggleDisplayFinalsSchedule();
     }, [toggleDisplayFinalsSchedule]);
 
-    const handleScheduleNamesChange = useCallback(() => {
-        setScheduleNames(AppStore.getScheduleNames());
-    }, []);
-
-    useEffect(() => {
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-
-        return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-        };
-    }, [handleScheduleNamesChange]);
-
     return (
         <Paper
             elevation={0}
             variant="outlined"
             sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', padding: 1 }}
         >
-            <Box gap={1} display="flex" alignItems="center">
-                <SelectSchedulePopover scheduleNames={scheduleNames} />
+            <Box gap={1} display="flex" flexWrap="wrap" alignItems="center">
+                <SelectSchedulePopover />
                 <Tooltip title="Toggle showing finals schedule">
                     <Button
                         color={showFinalsSchedule ? 'primary' : 'inherit'}
@@ -289,7 +322,9 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                 </Tooltip>
             </Box>
 
-            <Box flexGrow={1} />
+            <Box flexGrow={1} sx={{ overflow: 'hidden', px: 5 }}>
+                <TermViewer />
+            </Box>
 
             <Box display="flex" flexWrap="wrap" gap={0.5}>
                 <Box display="flex" alignItems="center" gap={0.5}>
@@ -307,7 +342,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                 </Box>
 
                 <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
-                    <CustomEventDialog scheduleNames={scheduleNames} key="custom" />
+                    <CustomEventDialog key="custom" />
                 </Box>
             </Box>
         </Paper>

@@ -1,5 +1,6 @@
 import { amber, blue, deepOrange, deepPurple, green, pink, purple } from '@material-ui/core/colors';
-import { ScheduleCourse } from '@packages/antalmanac-types';
+import { ScheduleCourse, ShortCourseSchedule, TermNames } from '@packages/antalmanac-types';
+import { getDefaultTerm } from '$lib/termData';
 
 export interface HSLColor {
     h: number;
@@ -118,7 +119,7 @@ function colorIsContained(color: HSLColor, usedColors: Iterable<HSLColor>, delta
 
 /**
  * Takes in a hex color and returns a hex color that is close to the original but not already used.
- * Takes changes the lightness of the color by a small amount until a color that is not already used is found.
+ * Changes the lightness of the color by a small amount until a color that is not already used is found.
  *
  * @param originalColor string: Hex color ("#RRGGBB") as a basis.
  * @param usedColors Set<string>: A set of hex colors that are already used.
@@ -180,4 +181,18 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
         defaultColors.find((materialColor) => !usedColors.has(materialColor)) ||
         defaultColors[Math.floor(Math.random() * defaultColors.length)]
     );
+}
+
+export function getScheduleTerm(schedule: ShortCourseSchedule): TermNames {
+    if (schedule.term) return schedule.term;
+    if (schedule.courses.length === 0) return getDefaultTerm();
+    const term = schedule.courses[0].term;
+
+    for (const course of schedule.courses) {
+        if (course.term !== term) {
+            return 'Multiple Terms';
+        }
+    }
+
+    return term;
 }
