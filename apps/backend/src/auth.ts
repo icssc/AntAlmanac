@@ -31,7 +31,7 @@ const google = Google({
             await AuthUserClient.insertItem({
                 id: user.sub,
                 userData: {
-                    schedules: [{ scheduleName: 'Schedule 1', courses: [], customEvents: [], scheduleNote: ''}],
+                    schedules: [{ scheduleName: 'Schedule 1', courses: [], customEvents: [], scheduleNote: '', favorite: false}],
                     scheduleIndex: 0,
                 },
                 name: user.name,

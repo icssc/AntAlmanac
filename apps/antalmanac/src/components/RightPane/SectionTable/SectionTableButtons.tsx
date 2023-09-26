@@ -91,7 +91,9 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
             });
         }
         const newCourse = addCourse(section, courseDetails, term, scheduleIndex);
-        section.color = newCourse.section.color;
+        if (newCourse !== undefined) {
+            section.color = newCourse.section.color;
+        }
     };
 
     const addCourseHandler = () => {

@@ -7,6 +7,7 @@ import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { useTabStore } from '$stores/TabStore';
+import { warnMultipleTerms } from '$lib/helpers';
 
 function getCurrentTheme() {
     const theme = typeof Storage === 'undefined' ? 'auto' : window.localStorage.getItem('theme');
@@ -95,11 +96,14 @@ class AppStore extends EventEmitter {
     }
 
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
-        let addedCourse: ScheduleCourse;
+        let addedCourse: ScheduleCourse | undefined;
         if (scheduleIndex === this.schedule.getNumberOfSchedules()) {
             addedCourse = this.schedule.addCourseToAllSchedules(newCourse);
         } else {
             addedCourse = this.schedule.addCourse(newCourse, scheduleIndex);
+        }
+        if (addedCourse === undefined) {
+            warnMultipleTerms(this.schedule.getCurrentScheduleTerm(), newCourse.term);
         }
         this.unsavedChanges = true;
         this.emit('addedCoursesChange');

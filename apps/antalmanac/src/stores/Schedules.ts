@@ -9,7 +9,6 @@ import {
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import type { CourseInfo } from '$lib/helpers';
-import { warnMultipleTerms } from '$lib/helpers';
 import { getColorForNewSection, getScheduleTerm } from '$stores/scheduleHelpers';
 import { getCourseInfo, queryWebsoc } from '$lib/course-helpers';
 
@@ -270,7 +269,7 @@ export class Schedules {
      * @param newCourse The course to add
      * @param scheduleIndex Defaults to current schedule
      * @param addUndoState Defaults to true
-     * @returns The course object that was added.
+     * @returns The course object that was added or undefined if it wasn't added
      */
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number, addUndoState = true) {
         const currentTerm = this.schedules[scheduleIndex].term;
@@ -278,8 +277,7 @@ export class Schedules {
             // If schedule has no term, set it
             this.schedules[scheduleIndex].term = newCourse.term;
         } else if (currentTerm !== newCourse.term) {
-            warnMultipleTerms(currentTerm, newCourse.term);
-            throw new Error('Cannot add course from different term');
+            return undefined;
         }
 
         if (addUndoState) {
