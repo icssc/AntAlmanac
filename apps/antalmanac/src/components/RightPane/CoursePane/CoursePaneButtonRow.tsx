@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
 import RightPaneStore, { type SectionTableColumn } from '../RightPaneStore';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 /**
  * All the interactive buttons have the same styles.
@@ -63,6 +64,11 @@ export function ColumnToggleButton() {
 
     const handleColumnChange = useCallback(
         (newActiveColumns: SectionTableColumn[]) => {
+            logAnalytics({
+                category: analyticsEnum.classSearch.title,
+                action: analyticsEnum.classSearch.actions.TOGGLE_COLUMNS,
+            });
+
             setActiveColumns(newActiveColumns);
         },
         [setActiveColumns]
