@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useMemo } from 'react';
 import {
     Box,
     Button,
@@ -38,6 +38,10 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
     const [name, setName] = useState(scheduleNames[index]);
+
+    const disabled = useMemo(() => {
+        return name?.trim() === '';
+    }, [name]);
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
@@ -96,7 +100,7 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
                 <Button onClick={handleCancel} color={isDarkMode() ? 'secondary' : 'primary'}>
                     Cancel
                 </Button>
-                <Button onClick={submitName} variant="contained" color="primary" disabled={name?.trim() === ''}>
+                <Button onClick={submitName} variant="contained" color="primary" disabled={disabled}>
                     Rename Schedule
                 </Button>
             </DialogActions>
