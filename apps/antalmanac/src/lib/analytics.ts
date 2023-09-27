@@ -49,6 +49,7 @@ const analyticsEnum = {
             ADD_SPECIFIC: 'Add Course to Specific Schedule',
             COPY_COURSE_CODE: 'Copy Course Code',
             REFRESH: 'Refresh Results',
+            TOGGLE_COLUMNS: 'Toggle Columns',
         },
     },
     addedClasses: {
