@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import { Schedules } from '../src/stores/Schedules';
+import { Schedules } from '$stores/Schedules';
 import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
 
 describe('schedule logic', () => {
