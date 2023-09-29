@@ -11,6 +11,6 @@ describe('schedule logic', () => {
     });
 
     test('does not error if schedule name is undefined', () => {
-        expect(() => render(<RenameScheduleDialog index={100} open={true} />)).not.toThrowError();
+        expect(() => render(<RenameScheduleDialog index={100} open />)).not.toThrowError();
     });
 });
