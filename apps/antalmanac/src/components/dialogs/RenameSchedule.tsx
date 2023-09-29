@@ -97,7 +97,7 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleCancel} color={isDarkMode() ? 'secondary' : 'primary'}>
+                <Button onClick={handleCancel} color={'inherit'}>
                     Cancel
                 </Button>
                 <Button onClick={submitName} variant="contained" color="primary" disabled={disabled}>
