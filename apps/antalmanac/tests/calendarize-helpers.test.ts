@@ -70,7 +70,7 @@ describe('calendarize-helpers', () => {
         {
             bldg: undefined,
             color: 'placeholderColor',
-            term: 'placeholderTerm',
+            term: 'Any Term',
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseTitle: 'placeholderCourseTitle',
             instructors: [],
@@ -98,7 +98,7 @@ describe('calendarize-helpers', () => {
         {
             bldg: undefined,
             color: 'placeholderColor',
-            term: 'placeholderTerm',
+            term: 'Any Term',
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseTitle: 'placeholderCourseTitle',
             instructors: [],
@@ -126,7 +126,7 @@ describe('calendarize-helpers', () => {
         {
             bldg: undefined,
             color: 'placeholderColor',
-            term: 'placeholderTerm',
+            term: 'Any Term',
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseTitle: 'placeholderCourseTitle',
             instructors: [],
@@ -157,7 +157,7 @@ describe('calendarize-helpers', () => {
         {
             bldg: undefined,
             color: 'placeholderColor',
-            term: 'placeholderTerm',
+            term: 'Any Term',
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseTitle: 'placeholderCourseTitle',
             instructors: [],
