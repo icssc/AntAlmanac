@@ -54,7 +54,9 @@ function getCourses() {
     for (const course of currentCourses) {
         let formattedCourse = formattedCourses.find(
             (needleCourse) =>
-                needleCourse.courseNumber === course.courseNumber && needleCourse.deptCode === course.deptCode
+                needleCourse.courseNumber === course.courseNumber &&
+                needleCourse.deptCode === course.deptCode &&
+                needleCourse.courseTitle === course.courseTitle
         );
 
         if (formattedCourse) {
@@ -306,7 +308,7 @@ function AddedSectionsGrid() {
                 <Grid container spacing={2} padding={0}>
                     {courses.map((course) => {
                         return (
-                            <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber}>
+                            <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber + course.courseTitle}>
                                 <SectionTableLazyWrapper
                                     courseDetails={course}
                                     term={course.term}
