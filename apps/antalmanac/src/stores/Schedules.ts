@@ -477,7 +477,6 @@ export class Schedules {
 
             // Map course info to courses and transform shortened schedule to normal schedule
             for (const shortCourseSchedule of saveState.schedules) {
-                console.log(shortCourseSchedule);
                 const courses: ScheduleCourse[] = [];
                 for (const shortCourse of shortCourseSchedule.courses) {
                     const courseInfoMap = courseInfoDict.get(shortCourse.term);
