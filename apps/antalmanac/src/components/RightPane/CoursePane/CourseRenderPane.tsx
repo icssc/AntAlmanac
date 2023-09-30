@@ -1,6 +1,6 @@
 import { IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
 import { Alert } from '@mui/material';
@@ -24,7 +24,6 @@ function flattenSOCObject(SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
         accumulator[section.sectionCode] = section.color;
         return accumulator;
     }, {} as { [key: string]: string });
-
     return SOCObject.schools.reduce((accumulator: (WebsocSchool | WebsocDepartment | AACourse)[], school) => {
         accumulator.push(school);
 
@@ -42,9 +41,8 @@ function flattenSOCObject(SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
         return accumulator;
     }, []);
 }
-
 function RecruitmentBanner() {
-    const [bannerVisibility, setBannerVisibility] = useState(true);
+    const [bannerVisibility, setBannerVisibility] = React.useState<boolean>(true);
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
     const recruitmentDismissalTime = window.localStorage.getItem('recruitmentDismissalTime');
@@ -91,11 +89,9 @@ function RecruitmentBanner() {
     );
 }
 
-/*
- * TODO: all this typecasting in the conditionals is pretty messy,
- * but type guards don't really work in this context
- * for reasons that are currently beyond me (probably something in the transpiling process that JS doesn't like).
- * If you can find a way to make this cleaner, do it.
+/* TODO: all this typecasting in the conditionals is pretty messy, but type guards don't really work in this context
+ *  for reasons that are currently beyond me (probably something in the transpiling process that JS doesn't like).
+ *  If you can find a way to make this cleaner, do it.
  */
 const SectionTableWrapped = (
     index: number,
