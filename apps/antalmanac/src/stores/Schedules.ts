@@ -463,13 +463,8 @@ export class Schedules {
             const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
 
             const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
-                const sectionCodes = Array.from(courseSet);
-                const courseInfo = getCourseInfo(
-                    await queryWebsoc({
-                        term: term,
-                        sectionCodes: sectionCodes.join(','),
-                    })
-                );
+                const sectionCodes = Array.from(courseSet).join(',');
+                const courseInfo = getCourseInfo(await queryWebsoc({ term, sectionCodes }));
                 courseInfoDict.set(term, courseInfo);
             });
 
