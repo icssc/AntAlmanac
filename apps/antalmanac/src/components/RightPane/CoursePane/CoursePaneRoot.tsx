@@ -12,8 +12,6 @@ function RightPane() {
     // A key that's used to re-render the search results.
     const [count, setCount] = useState(0);
 
-    // const [searchParams, setSearchParams] = useSearchParams()
-
     const toggleSearch = useCallback(() => {
         if (
             RightPaneStore.getFormData().ge !== 'ANY' ||
