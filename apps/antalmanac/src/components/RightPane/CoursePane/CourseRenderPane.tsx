@@ -41,7 +41,7 @@ function flattenSOCObject(SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
         return accumulator;
     }, []);
 }
-function RecruitmentBanner() {
+const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = React.useState<boolean>(true);
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
@@ -87,7 +87,7 @@ function RecruitmentBanner() {
             ) : null}{' '}
         </div>
     );
-}
+};
 
 /* TODO: all this typecasting in the conditionals is pretty messy, but type guards don't really work in this context
  *  for reasons that are currently beyond me (probably something in the transpiling process that JS doesn't like).
