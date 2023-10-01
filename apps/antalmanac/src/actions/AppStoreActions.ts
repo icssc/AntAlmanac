@@ -134,9 +134,7 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
                         `Network error loading course information for "${userId}". 
                         If this continues to happen, please submit a feedback form.`
                     );
-                }
-
-                if (isWebsocAlive) {
+                } else {
                     await AppStore.loadSchedule(scheduleSaveState);
                     openSnackbar('success', `Schedule for username "${userId}" loaded.`);
                 }

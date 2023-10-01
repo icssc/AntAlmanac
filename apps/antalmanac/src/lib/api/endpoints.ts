@@ -18,4 +18,8 @@ export const REGISTER_NOTIFICATIONS_ENDPOINT = endpointTransform('/api/notificat
 export const PETERPORTAL_GRAPHQL_ENDPOINT = 'https://api-next.peterportal.org/v1/graphql';
 export const PETERPORTAL_REST_ENDPOINT = 'https://api-next.peterportal.org/v1/rest';
 
+// An arbitrary URL used to check if Peterportal and/or Websoc are live
+export const PING_PETERPORTAL_WEBSOC_URL =
+    'https://api-next.peterportal.org/v1/rest/websoc?year=2023&quarter=Spring&sectionCodes=34271';
+
 export const PETERPORTAL_WEBSOC_ENDPOINT = `${PETERPORTAL_REST_ENDPOINT}/websoc`;

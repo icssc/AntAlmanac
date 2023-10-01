@@ -328,7 +328,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                 </Box>
 
                 <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
-                    <CustomEventDialog scheduleNames={scheduleNames} key="custom" />
+                    <CustomEventDialog key="custom" />
                 </Box>
             </Box>
         </Paper>
