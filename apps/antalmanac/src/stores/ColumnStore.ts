@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 /**
  * Search results are displayed in a tabular format.
@@ -65,6 +66,10 @@ export const useColumnStore = create<ColumnStore>((set, get) => {
             set(() => {
                 const selectedColumns = SECTION_TABLE_COLUMNS.map((column) => columns.includes(column));
                 return { selectedColumns: selectedColumns };
+            });
+            logAnalytics({
+                category: analyticsEnum.classSearch.title,
+                action: analyticsEnum.classSearch.actions.TOGGLE_COLUMNS,
             });
         },
         setColumnEnabled: (column: SectionTableColumn, state: boolean) => {
