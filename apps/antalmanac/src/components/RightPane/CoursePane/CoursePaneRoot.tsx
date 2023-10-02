@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 
 import RightPaneStore from '../RightPaneStore';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
@@ -9,8 +9,7 @@ import { openSnackbar } from '$actions/AppStoreActions';
 import { clearCache } from '$lib/course-helpers';
 
 function RightPane() {
-    // A key that's used to re-render the search results.
-    const [count, setCount] = useState(0);
+    const [key, forceUpdate] = useReducer((currentCount) => currentCount + 1, 0);
 
     const toggleSearch = useCallback(() => {
         if (
@@ -20,8 +19,7 @@ function RightPane() {
             RightPaneStore.getFormData().instructor !== ''
         ) {
             RightPaneStore.toggleSearch();
-
-            setCount((currentCount) => currentCount + 1);
+            forceUpdate();
         } else {
             openSnackbar(
                 'error',
@@ -36,7 +34,7 @@ function RightPane() {
             action: analyticsEnum.classSearch.actions.REFRESH,
         });
         clearCache();
-        setCount((currentCount) => currentCount + 1);
+        forceUpdate();
     }, []);
 
     useEffect(() => {
@@ -47,7 +45,7 @@ function RightPane() {
             ) {
                 event.preventDefault();
                 RightPaneStore.toggleSearch();
-                setCount((currentCount) => currentCount + 1);
+                forceUpdate();
             }
         };
 
@@ -68,7 +66,7 @@ function RightPane() {
             {RightPaneStore.getDoDisplaySearch() ? (
                 <SearchForm toggleSearch={toggleSearch} />
             ) : (
-                <CourseRenderPane key={count} />
+                <CourseRenderPane key={key} />
             )}
         </div>
     );
