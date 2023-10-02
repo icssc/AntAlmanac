@@ -42,7 +42,9 @@ function getCourses() {
     for (const course of currentCourses) {
         let formattedCourse = formattedCourses.find(
             (needleCourse) =>
-                needleCourse.courseNumber === course.courseNumber && needleCourse.deptCode === course.deptCode
+                needleCourse.courseNumber === course.courseNumber &&
+                needleCourse.deptCode === course.deptCode &&
+                needleCourse.courseTitle === course.courseTitle
         );
 
         if (formattedCourse) {
@@ -383,18 +385,17 @@ function AddedSectionsGrid() {
 
     return (
         <Box display="flex" flexDirection="column" gap={1}>
-            <Box display="flex" width={1}>
+            <Box display="flex" width={1} position="absolute" zIndex="2">
                 <CopyScheduleButton />
                 <ClearScheduleButton />
                 <ColumnToggleButton />
             </Box>
-
-            <Box>
+            <Box style={{ marginTop: 50 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
                         return (
-                            <Box key={course.deptCode + course.courseNumber}>
+                            <Box key={course.deptCode + course.courseNumber + course.courseTitle}>
                                 <SectionTableLazyWrapper
                                     courseDetails={course}
                                     term={course.term}
