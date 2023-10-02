@@ -121,11 +121,6 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
 
                 if (scheduleSaveState == null) {
                     openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
-                    return;
-                }
-
-                if (scheduleSaveState == null) {
-                    openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
                 } else if (await AppStore.loadSchedule(scheduleSaveState)) {
                     openSnackbar('success', `Schedule for username "${userId}" loaded.`);
                 } else {
