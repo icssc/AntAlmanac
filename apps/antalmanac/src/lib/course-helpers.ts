@@ -1,5 +1,5 @@
 import type { WebsocAPIResponse, WebsocSectionMeeting } from 'peterportal-api-next-types';
-import { PETERPORTAL_WEBSOC_ENDPOINT, PING_PETERPORTAL_WEBSOC_URL } from './api/endpoints';
+import { PETERPORTAL_WEBSOC_ENDPOINT } from './api/endpoints';
 import type { CourseInfo } from './helpers';
 
 interface CacheEntry extends WebsocAPIResponse {
@@ -33,22 +33,6 @@ export function getCourseInfo(SOCObject: WebsocAPIResponse) {
         }
     }
     return courseInfo;
-}
-
-export async function isWebsocWorking() {
-    const isWebsocAlive = await fetch(PING_PETERPORTAL_WEBSOC_URL, {
-        headers: {
-            Referer: 'https://antalmanac.com/',
-        },
-    })
-        .then((response) => response.json())
-        .then((data) => data.payload.schools.length > 0)
-        .catch((error) => {
-            // console.log(error)
-            return false;
-        });
-
-    return isWebsocAlive;
 }
 
 // Construct a request to PeterPortal with the params as a query string
