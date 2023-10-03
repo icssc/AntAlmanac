@@ -151,7 +151,7 @@ export class Schedules {
      * @return Reference of a course that matches the params
      */
     getExistingCourse(sectionCode: string, term: string) {
-        for (const course of this.getAllCourses()) {
+        for (const course of this.getCurrentCourses()) {
             if (course.section.sectionCode === sectionCode && term === course.term) {
                 return course;
             }
@@ -235,8 +235,13 @@ export class Schedules {
      */
     changeCourseColor(sectionCode: string, term: string, newColor: string) {
         this.addUndoState();
-        const courses = this.getExistingCourses(sectionCode, term);
-        for (const course of courses) {
+        // const courses = this.getExistingCourses(sectionCode, term);
+        // for (const course of courses) {
+        //     course.section.color = newColor;
+        // }
+
+        const course = this.getExistingCourse(sectionCode, term);
+        if (course) {
             course.section.color = newColor;
         }
     }
