@@ -148,7 +148,7 @@ export class Schedules {
     }
 
     /**
-     * @return Reference of the course that matches the params
+     * @return Reference of a course that matches the params
      */
     getExistingCourse(sectionCode: string, term: string) {
         for (const course of this.getAllCourses()) {
@@ -157,6 +157,19 @@ export class Schedules {
             }
         }
         return undefined;
+    }
+
+    /**
+     * @return An array of references to courses that matches the params
+     */
+    getExistingCourses(sectionCode: string, term: string) {
+        const courses: ScheduleCourse[] = [];
+        for (const course of this.getAllCourses()) {
+            if (course.section.sectionCode === sectionCode && term === course.term) {
+                courses.push(course);
+            }
+        }
+        return courses ?? undefined;
     }
 
     /**
@@ -222,8 +235,8 @@ export class Schedules {
      */
     changeCourseColor(sectionCode: string, term: string, newColor: string) {
         this.addUndoState();
-        const course = this.getExistingCourse(sectionCode, term);
-        if (course) {
+        const courses = this.getExistingCourses(sectionCode, term);
+        for (const course of courses) {
             course.section.color = newColor;
         }
     }
