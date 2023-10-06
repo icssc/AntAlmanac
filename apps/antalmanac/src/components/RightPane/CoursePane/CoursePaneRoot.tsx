@@ -1,5 +1,4 @@
-import { withStyles } from '@material-ui/core/styles';
-import { PureComponent } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 
 import RightPaneStore from '../RightPaneStore';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
@@ -9,50 +8,10 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { openSnackbar } from '$actions/AppStoreActions';
 import { clearCache } from '$lib/course-helpers';
 
-const styles = {
-    container: {
-        height: '100%',
-    },
-};
+function RightPane() {
+    const [key, forceUpdate] = useReducer((currentCount) => currentCount + 1, 0);
 
-class RightPane extends PureComponent {
-    // When a user clicks the refresh button in CoursePaneButtonRow,
-    // we increment the refresh state by 1.
-    // Since it's the key for CourseRenderPane, it triggers a rerender
-    // and reloads the latest course data
-    state = {
-        refresh: 0,
-    };
-
-    returnToSearchBarEvent = (event: KeyboardEvent) => {
-        if (
-            !(RightPaneStore.getDoDisplaySearch() || RightPaneStore.getOpenSpotAlertPopoverActive()) &&
-            (event.key === 'Backspace' || event.key === 'Escape')
-        ) {
-            event.preventDefault();
-            RightPaneStore.toggleSearch();
-            this.forceUpdate();
-        }
-    };
-
-    componentDidMount() {
-        document.addEventListener('keydown', this.returnToSearchBarEvent, false);
-    }
-
-    componentWillUnmount() {
-        document.removeEventListener('keydown', this.returnToSearchBarEvent, false);
-    }
-
-    refreshSearch = () => {
-        logAnalytics({
-            category: analyticsEnum.classSearch.title,
-            action: analyticsEnum.classSearch.actions.REFRESH,
-        });
-        clearCache();
-        this.setState({ refresh: this.state.refresh + 1 });
-    };
-
-    toggleSearch = () => {
+    const toggleSearch = useCallback(() => {
         if (
             RightPaneStore.getFormData().ge !== 'ANY' ||
             RightPaneStore.getFormData().deptValue !== 'ALL' ||
@@ -60,31 +19,57 @@ class RightPane extends PureComponent {
             RightPaneStore.getFormData().instructor !== ''
         ) {
             RightPaneStore.toggleSearch();
-            this.forceUpdate();
+            forceUpdate();
         } else {
             openSnackbar(
                 'error',
                 `Please provide one of the following: Department, GE, Course Code/Range, or Instructor`
             );
         }
-    };
+    }, []);
 
-    render() {
-        return (
-            <div style={{ height: '100%', padding: 8 }}>
-                <CoursePaneButtonRow
-                    showSearch={!RightPaneStore.getDoDisplaySearch()}
-                    onDismissSearchResults={this.toggleSearch}
-                    onRefreshSearch={this.refreshSearch}
-                />
-                {RightPaneStore.getDoDisplaySearch() ? (
-                    <SearchForm toggleSearch={this.toggleSearch} />
-                ) : (
-                    <CourseRenderPane key={this.state.refresh} />
-                )}
-            </div>
-        );
-    }
+    const refreshSearch = useCallback(() => {
+        logAnalytics({
+            category: analyticsEnum.classSearch.title,
+            action: analyticsEnum.classSearch.actions.REFRESH,
+        });
+        clearCache();
+        forceUpdate();
+    }, []);
+
+    useEffect(() => {
+        const handleReturnToSearch = (event: KeyboardEvent) => {
+            if (
+                !(RightPaneStore.getDoDisplaySearch() || RightPaneStore.getOpenSpotAlertPopoverActive()) &&
+                (event.key === 'Backspace' || event.key === 'Escape')
+            ) {
+                event.preventDefault();
+                RightPaneStore.toggleSearch();
+                forceUpdate();
+            }
+        };
+
+        document.addEventListener('keydown', handleReturnToSearch, false);
+
+        return () => {
+            document.removeEventListener('keydown', handleReturnToSearch, false);
+        };
+    }, []);
+
+    return (
+        <div style={{ height: '100%', padding: 8 }}>
+            <CoursePaneButtonRow
+                showSearch={!RightPaneStore.getDoDisplaySearch()}
+                onDismissSearchResults={toggleSearch}
+                onRefreshSearch={refreshSearch}
+            />
+            {RightPaneStore.getDoDisplaySearch() ? (
+                <SearchForm toggleSearch={toggleSearch} />
+            ) : (
+                <CourseRenderPane key={key} />
+            )}
+        </div>
+    );
 }
 
-export default withStyles(styles)(RightPane);
+export default RightPane;
