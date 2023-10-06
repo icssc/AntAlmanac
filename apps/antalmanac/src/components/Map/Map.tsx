@@ -217,7 +217,7 @@ export default function CourseMap() {
         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}>
             <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
                 {/* Menu floats above the map. */}
-                <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: '15%' }}>
+                <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 'auto', width: '70%' }}>
                     <Tabs value={selectedDayIndex} onChange={handleChange} variant="fullWidth" sx={{ minHeight: 0 }}>
                         {days.map((day) => (
                             <Tab key={day} label={day} sx={{ padding: 1, minHeight: 'auto', minWidth: '10%' }} />
