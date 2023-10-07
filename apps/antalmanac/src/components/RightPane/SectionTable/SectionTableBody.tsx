@@ -207,11 +207,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                         const buildingId = locationIds[buildingName];
                         return (
                             <Fragment key={meeting.timeIsTBA + bldg}>
-                                <Link
-                                    className={classes.mapLink}
-                                    to={`/map?location=${buildingId}`}
-                                    onClick={focusMap}
-                                >
+                                <Link className={classes.mapLink} to={`/map?location=${buildingId}`} onClick={focusMap}>
                                     {bldg}
                                 </Link>
                                 <br />

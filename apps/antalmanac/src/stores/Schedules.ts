@@ -148,10 +148,10 @@ export class Schedules {
     }
 
     /**
-     * @return Reference of a course that matches the params
+     * @return A course that matches the params across all schedules
      */
     getExistingCourse(sectionCode: string, term: string) {
-        for (const course of this.getCurrentCourses()) {
+        for (const course of this.getAllCourses()) {
             if (course.section.sectionCode === sectionCode && term === course.term) {
                 return course;
             }
@@ -160,16 +160,15 @@ export class Schedules {
     }
 
     /**
-     * @return An array of references to courses that matches the params
+     * @return A course that matches the params in the current schedule
      */
-    getExistingCourses(sectionCode: string, term: string) {
-        const courses: ScheduleCourse[] = [];
-        for (const course of this.getAllCourses()) {
+    getExistingCourseInSchedule(sectionCode: string, term: string) {
+        for (const course of this.getCurrentCourses()) {
             if (course.section.sectionCode === sectionCode && term === course.term) {
-                courses.push(course);
+                return course;
             }
         }
-        return courses ?? undefined;
+        return undefined;
     }
 
     /**
@@ -185,7 +184,7 @@ export class Schedules {
             this.addUndoState();
         }
 
-        const existingSection = this.getExistingCourse(newCourse.section.sectionCode, newCourse.term);
+        const existingSection = this.getExistingCourseInSchedule(newCourse.section.sectionCode, newCourse.term);
 
         const existsInSchedule = this.doesCourseExistInSchedule(
             newCourse.section.sectionCode,
@@ -235,12 +234,8 @@ export class Schedules {
      */
     changeCourseColor(sectionCode: string, term: string, newColor: string) {
         this.addUndoState();
-        // const courses = this.getExistingCourses(sectionCode, term);
-        // for (const course of courses) {
-        //     course.section.color = newColor;
-        // }
 
-        const course = this.getExistingCourse(sectionCode, term);
+        const course = this.getExistingCourseInSchedule(sectionCode, term);
         if (course) {
             course.section.color = newColor;
         }
