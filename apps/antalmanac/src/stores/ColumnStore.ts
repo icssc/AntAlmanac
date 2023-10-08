@@ -57,7 +57,7 @@ interface ColumnStore {
  */
 export const useColumnStore = create<ColumnStore>((set, get) => {
     return {
-        activeColumns: [...SECTION_TABLE_COLUMNS],
+        activeColumns: Array.from(SECTION_TABLE_COLUMNS),
         enabledColumns: SECTION_TABLE_COLUMNS.map(() => true),
         selectedColumns: SECTION_TABLE_COLUMNS.map(() => true),
         getActiveColumns: () =>

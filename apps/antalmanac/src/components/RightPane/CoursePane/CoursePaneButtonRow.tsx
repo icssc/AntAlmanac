@@ -53,20 +53,25 @@ function renderEmptySelectValue() {
     return '';
 }
 
+const COLUMN_LABEL_ENTRIES = Object.entries(columnLabels);
+
 /**
  * Toggles certain columns on/off.
  *
  * e.g. show/hide the section code, instructors, etc.
  */
 export function ColumnToggleButton() {
-    const [ selectedColumns, setSelectedColumns ] = useColumnStore(store => [store.selectedColumns, store.setSelectedColumns]);
+    const [selectedColumns, setSelectedColumns] = useColumnStore((store) => [
+        store.selectedColumns,
+        store.setSelectedColumns,
+    ]);
     const [open, setOpen] = useState(false);
 
-    const handleChange = (e: SelectChangeEvent<SectionTableColumn[]>) => {
+    const handleChange = useCallback((e: SelectChangeEvent<SectionTableColumn[]>) => {
         if (typeof e.target.value !== 'string') {
             setSelectedColumns(e.target.value);
         }
-    };
+    }, []);
 
     const handleOpen = useCallback(() => {
         setOpen(true);
@@ -80,12 +85,6 @@ export function ColumnToggleButton() {
         () => SECTION_TABLE_COLUMNS.filter((_, index) => selectedColumns[index]),
         [selectedColumns]
     );
-
-    const columnLabelEntries = useMemo(
-        () => Object.entries(columnLabels),
-        []
-    );
-
 
     return (
         <>
@@ -104,9 +103,9 @@ export function ColumnToggleButton() {
                     renderValue={renderEmptySelectValue}
                     sx={{ visibility: 'hidden', position: 'absolute' }}
                 >
-                    {columnLabelEntries.map(([column, label], idx) => (
+                    {COLUMN_LABEL_ENTRIES.map(([column, label], index) => (
                         <MenuItem key={column} value={column}>
-                            <Checkbox checked={selectedColumns[idx]} color="default" />
+                            <Checkbox checked={selectedColumns[index]} color="default" />
                             <ListItemText primary={label} />
                         </MenuItem>
                     ))}
