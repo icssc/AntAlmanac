@@ -30,11 +30,9 @@ interface ColumnStore {
     // Columns that are selected in the dropdown
     selectedColumns: boolean[];
 
-    /**
-     *
-     * @returns The columns that should be displayed in the section table. They need to be both selected and enabled.
-     */
-    getActiveColumns: () => SectionTableColumn[];
+    // Columns that should be displayed in the section table. They need to be both selected and enabled.
+    // This is updated whenever enabledColumns or selectedColumns are updated.
+    activeColumns: SectionTableColumn[];
 
     /**
      * Used by the Select menu in CoursePaneButtonRow to toggle columns on/off.
@@ -57,15 +55,16 @@ interface ColumnStore {
  */
 export const useColumnStore = create<ColumnStore>((set, get) => {
     return {
-        activeColumns: Array.from(SECTION_TABLE_COLUMNS),
         enabledColumns: SECTION_TABLE_COLUMNS.map(() => true),
         selectedColumns: SECTION_TABLE_COLUMNS.map(() => true),
-        getActiveColumns: () =>
-            SECTION_TABLE_COLUMNS.filter((_, index) => get().enabledColumns[index] && get().selectedColumns[index]),
+        activeColumns: Array.from(SECTION_TABLE_COLUMNS),
         setSelectedColumns: (columns: SectionTableColumn[]) => {
             set(() => {
                 const selectedColumns = SECTION_TABLE_COLUMNS.map((column) => columns.includes(column));
-                return { selectedColumns: selectedColumns };
+                const activeColumns = SECTION_TABLE_COLUMNS.filter(
+                    (_, index) => get().enabledColumns[index] && get().selectedColumns[index]
+                );
+                return { selectedColumns: selectedColumns, activeColumns: activeColumns };
             });
             logAnalytics({
                 category: analyticsEnum.classSearch.title,
@@ -75,7 +74,10 @@ export const useColumnStore = create<ColumnStore>((set, get) => {
         setColumnEnabled: (column: SectionTableColumn, state: boolean) => {
             set((prevState) => {
                 prevState.enabledColumns[SECTION_TABLE_COLUMNS.indexOf(column)] = state;
-                return { enabledColumns: prevState.enabledColumns };
+                const activeColumns = SECTION_TABLE_COLUMNS.filter(
+                    (_, index) => prevState.enabledColumns[index] && prevState.selectedColumns[index]
+                );
+                return { enabledColumns: prevState.enabledColumns, activeColumns: activeColumns };
             });
         },
     };

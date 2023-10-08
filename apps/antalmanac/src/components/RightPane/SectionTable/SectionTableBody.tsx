@@ -316,11 +316,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                         const buildingId = locationIds[buildingName];
                         return (
                             <Fragment key={meeting.timeIsTBA + bldg}>
-                                <Link
-                                    className={classes.mapLink}
-                                    to={`/map?location=${buildingId}`}
-                                    onClick={focusMap}
-                                >
+                                <Link className={classes.mapLink} to={`/map?location=${buildingId}`} onClick={focusMap}>
                                     {bldg}
                                 </Link>
                                 <br />
@@ -498,7 +494,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, allowHighlight, scheduleNames } = props;
 
-    const getActiveColumns = useColumnStore(store => store.getActiveColumns);
+    const activeColumns = useColumnStore((store) => store.activeColumns);
 
     const [addedCourse, setAddedCourse] = useState(
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
@@ -616,7 +612,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             )}
 
             {Object.entries(tableBodyCells)
-                .filter(([column]) => getActiveColumns().includes(column as SectionTableColumn))
+                .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
                 .map(([column, Component]) => {
                     return (
                         // All of this is a little bulky, so if the props can be added specifically to activeTableBodyColumns, LMK!
