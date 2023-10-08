@@ -34,8 +34,24 @@ function CourseInfoButton({
 }: CourseInfoButtonProps) {
     const [popupAnchor, setPopupAnchor] = useState<HTMLElement | null>(null);
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
+
+    const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
+        // If there is popup content, allow the content to be shown when the button is hovered
+        if (popupContent) {
+            console.log('MOUSE ENTERED');
+            setPopupAnchor(event.currentTarget);
+        }
+    };
+
+    const handleMouseLeave = () => {
+        if (popupContent) {
+            console.log('MOUSE LEFT');
+            setPopupAnchor(null);
+        }
+    };
+
     return (
-        <>
+        <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <Button
                 className={classes.button}
                 startIcon={!isMobileScreen && icon}
@@ -72,11 +88,15 @@ function CourseInfoButton({
                         vertical: 'top',
                         horizontal: 'center',
                     }}
+                    // This styling is needed in order for the popover to actually close
+                    // when the mouse leaves this CourseInfoButton
+                    style={{ pointerEvents: 'none' }}
                 >
-                    {popupContent}
+                    {/* Bring back pointer-events so that the popup can have clickable links */}
+                    <div style={{ pointerEvents: 'auto' }}>{popupContent}</div>
                 </Popover>
             )}
-        </>
+        </div>
     );
 }
 
