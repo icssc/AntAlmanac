@@ -1,3 +1,4 @@
+import React, { PureComponent } from 'react';
 import {
     Button,
     Dialog,
@@ -12,7 +13,7 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { Add, Edit } from '@material-ui/icons';
-import React, { PureComponent } from 'react';
+import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 
 import DaySelector from './DaySelector';
 import ScheduleSelector from './ScheduleSelector';
@@ -20,25 +21,15 @@ import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
+import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
+
+export { RepeatingCustomEvent };
 
 const styles = {
     textField: {
         minWidth: 120,
     },
 };
-
-/**
- * There is another CustomEvent interface in CourseCalendarEvent and they are slightly different. This one encapsulates the occurences of an event on multiple days, like Monday Tuesday Wednesday all in the same object as specified by the days array. The other one, `CustomEventDialog`'s CustomEvent, represents only one day, like the event on Monday, and needs to be duplicated to be repeated across multiple days.
- * https://github.com/icssc/AntAlmanac/wiki/The-Great-AntAlmanac-TypeScript-Rewritening%E2%84%A2#duplicate-interface-names-%EF%B8%8F
- */
-export interface RepeatingCustomEvent {
-    title: string;
-    start: string;
-    end: string;
-    days: boolean[];
-    customEventID: number;
-    color?: string;
-}
 
 interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
@@ -57,6 +48,7 @@ const defaultCustomEvent: RepeatingCustomEvent = {
     title: '',
     days: [false, false, false, false, false, false, false],
     customEventID: 0,
+    building: undefined,
 };
 
 class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEventDialogState> {
@@ -107,16 +99,21 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
         this.setState({ days: days });
     };
 
+    handleBuildingChange = (building?: ExtendedBuilding | null) => {
+        this.setState({ building: building?.id });
+    };
+
     handleAddToCalendar = () => {
         if (!this.state.days.some((day) => day) || this.state.scheduleIndices.length === 0) return;
 
-        const newCustomEvent = {
+        const newCustomEvent: RepeatingCustomEvent = {
             color: this.props.customEvent ? this.props.customEvent.color : '#551a8b',
             title: this.state.title,
             days: this.state.days,
             start: this.state.start,
             end: this.state.end,
             customEventID: this.props.customEvent ? this.props.customEvent.customEventID : Date.now(),
+            building: this.state.building,
         };
 
         if (this.props.customEvent) editCustomEvent(newCustomEvent, this.state.scheduleIndices);
@@ -202,6 +199,7 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
                             customEvent={this.props.customEvent}
                             scheduleNames={this.props.scheduleNames}
                         />
+                        <BuildingSelect value={this.state.building} onChange={this.handleBuildingChange} />
                     </DialogContent>
 
                     <DialogActions>

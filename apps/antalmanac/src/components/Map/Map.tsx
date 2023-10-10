@@ -5,15 +5,16 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import L, { type Map, type LatLngTuple } from 'leaflet';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet-routing-machine';
-import { Autocomplete, Box, Paper, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
 import ClassRoutes from './Routes';
 import LocationMarker from './Marker';
 import UserLocator from './UserLocator';
 import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
-import buildingCatalogue from '$lib/buildingCatalogue';
-import type { Building } from '$lib/buildingCatalogue';
+import buildingCatalogue, { Building } from '$lib/buildingCatalogue';
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
+import { notNull } from '$lib/utils';
 
 const ACCESS_TOKEN = 'pk.eyJ1IjoicGVkcmljIiwiYSI6ImNsZzE0bjk2ajB0NHEzanExZGFlbGpwazIifQ.l14rgv5vmu5wIMgOUUhUXw';
 
@@ -40,8 +41,14 @@ interface MarkerContent {
  */
 export function getCoursesPerBuilding() {
     const courseEvents = AppStore.getCourseEventsInCalendar();
+    const customEvents = AppStore.getCustomEvents();
 
-    const allBuildingCodes = courseEvents.flatMap((event) => event.locations.map((location) => location.building));
+    const courseBuildings = courseEvents.flatMap((event) => event.locations.map((location) => location.building));
+    const customEventBuildings = customEvents.map((e) => e.building).filter(notNull);
+
+    const allBuildingCodes = [...courseBuildings, ...customEventBuildings];
+
+    console.log({ allBuildingCodes });
 
     const uniqueBuildingCodes = new Set(allBuildingCodes);
 
@@ -76,15 +83,6 @@ export function getCoursesPerBuilding() {
 
     return coursesPerBuilding;
 }
-
-/**
- * Get unique building names for the MUI Autocomplete.
- * A building with a duplicate name will have a higher index then a `findIndex` for another building with the same name.
- */
-const buildings = Object.entries(buildingCatalogue).filter(
-    ([_, building], index, array) =>
-        array.findIndex(([_, otherBuilding]) => otherBuilding.name === building.name) === index
-);
 
 /**
  * Map of all course locations on UCI campus.
@@ -147,9 +145,9 @@ export default function CourseMap() {
         [setSelectedDay]
     );
 
-    const handleSearch = useCallback(
-        (_event: React.SyntheticEvent, value: [string, Building] | null) => {
-            navigate(`/map?location=${value?.[0]}`);
+    const onBuildingChange = useCallback(
+        (building?: ExtendedBuilding | null) => {
+            navigate(`/map?location=${building?.id}`);
         },
         [navigate]
     );
@@ -223,12 +221,7 @@ export default function CourseMap() {
                             <Tab key={day} label={day} sx={{ padding: 1, minHeight: 'auto', minWidth: '10%' }} />
                         ))}
                     </Tabs>
-                    <Autocomplete
-                        options={buildings}
-                        getOptionLabel={(option) => option[1].name ?? ''}
-                        onChange={handleSearch}
-                        renderInput={(params) => <TextField {...params} label="Search for a place" variant="filled" />}
-                    />
+                    <BuildingSelect onChange={onBuildingChange} />
                 </Paper>
 
                 <TileLayer attribution={ATTRIBUTION_MARKUP} url={url} tileSize={512} maxZoom={21} zoomOffset={-1} />
