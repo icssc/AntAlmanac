@@ -1,8 +1,6 @@
-import { IconButton, Theme } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { PureComponent } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
 import { Alert } from '@mui/material';
@@ -21,62 +19,7 @@ import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '$lib/helpers';
 import Grades from '$lib/grades';
 import analyticsEnum from '$lib/analytics';
 
-const styles: Styles<Theme, object> = (theme) => ({
-    course: {
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2),
-        [theme.breakpoints.up('sm')]: {
-            paddingLeft: theme.spacing(3),
-            paddingRight: theme.spacing(3),
-        },
-        paddingTop: theme.spacing(),
-        paddingBottom: theme.spacing(),
-        display: 'flex',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        minHeight: theme.spacing(6),
-        cursor: 'pointer',
-    },
-    text: {
-        flexGrow: 1,
-        display: 'inline',
-        width: '100%',
-    },
-    ad: {
-        flexGrow: 1,
-        display: 'inline',
-        width: '100%',
-    },
-    icon: {
-        cursor: 'pointer',
-        marginLeft: theme.spacing(),
-    },
-    root: {
-        height: '100%',
-        overflowY: 'scroll',
-        position: 'relative',
-    },
-    noResultsDiv: {
-        height: '100%',
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    loadingGifStyle: {
-        height: '100%',
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    spacing: {
-        height: '50px',
-        marginBottom: '5px',
-    },
-});
-
-const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocDepartment | AACourse)[] => {
+function flattenSOCObject(SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocDepartment | AACourse)[] {
     const courseColors = AppStore.getAddedCourses().reduce((accumulator, { section }) => {
         accumulator[section.sectionCode] = section.color;
         return accumulator;
@@ -192,28 +135,32 @@ const SectionTableWrapped = (
     return <div>{component}</div>;
 };
 
-interface CourseRenderPaneProps {
-    classes: ClassNameMap;
-}
+export function CourseRenderPane() {
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+    const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
 
-interface CourseRenderPaneState {
-    courseData: (WebsocSchool | WebsocDepartment | AACourse)[];
-    loading: boolean;
-    error: boolean;
-    scheduleNames: string[];
-}
+    const loadCourses = useCallback(async () => {
+        setLoading(true);
 
-class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRenderPaneState> {
-    state: CourseRenderPaneState = {
-        courseData: [],
-        loading: true,
-        error: false,
-        scheduleNames: AppStore.getScheduleNames(),
-    };
+        const formData = RightPaneStore.getFormData();
 
-    loadCourses = () => {
-        this.setState({ loading: true }, async () => {
-            const formData = RightPaneStore.getFormData();
+        const params = {
+            department: formData.deptValue,
+            term: formData.term,
+            ge: formData.ge,
+            courseNumber: formData.courseNumber,
+            sectionCodes: formData.sectionCode,
+            instructorName: formData.instructor,
+            units: formData.units,
+            endTime: formData.endTime,
+            startTime: formData.startTime,
+            fullCourses: formData.coursesFull,
+            building: formData.building,
+            room: formData.room,
+            division: formData.division,
+        };
 
             const websocQueryParams = {
                 department: formData.deptValue,
@@ -245,89 +192,104 @@ class CourseRenderPane extends PureComponent<CourseRenderPaneProps, CourseRender
                     Grades.populateGradesCache(gradesQueryParams),
                 ]);
 
-                this.setState({
-                    loading: false,
-                    error: false,
-                    courseData: flattenSOCObject(websocJsonResp),
-                });
+                setError(false);
+                setCourseData(flattenSOCObject(websocJsonResp));
             } catch (error) {
-                this.setState({
-                    loading: false,
-                    error: true,
-                });
+                setError(true);
+            } finally {
+                setLoading(false);
             }
-        });
-    };
+        }, []);
 
-    componentDidMount() {
-        this.loadCourses();
-        AppStore.on('scheduleNamesChange', this.updateScheduleNames);
+    useEffect(() => {
+        loadCourses();
+    }, []);
+
+    useEffect(() => {
+        const updateScheduleNames = () => {
+            setScheduleNames(AppStore.getScheduleNames());
+        };
+
+        AppStore.on('scheduleNamesChange', updateScheduleNames);
+
+        return () => {
+            AppStore.off('scheduleNamesChange', updateScheduleNames);
+        };
+    }, []);
+
+    if (loading) {
+        return (
+            <div
+                style={{
+                    height: '100%',
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
+                <img src={isDarkMode() ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
+            </div>
+        );
     }
 
-    componentWillUnmount() {
-        AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
-    }
-
-    updateScheduleNames = () => {
-        this.setState({ scheduleNames: AppStore.getScheduleNames() });
-    };
-
-    render() {
-        const { classes } = this.props;
-        let currentView;
-
-        if (this.state.loading) {
-            currentView = (
-                <div className={classes.loadingGifStyle}>
-                    <img src={isDarkMode() ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
+    if (error) {
+        return (
+            <div
+                style={{
+                    height: '100%',
+                    overflowY: 'scroll',
+                    position: 'relative',
+                }}
+            >
+                <div
+                    style={{
+                        height: '100%',
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    <img src={isDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
                 </div>
-            );
-        } else if (!this.state.error) {
-            const renderData = {
-                courseData: this.state.courseData,
-                scheduleNames: this.state.scheduleNames,
-            };
+            </div>
+        );
+    }
 
-            currentView = (
-                <>
-                    <RecruitmentBanner />
-                    <div className={classes.root} style={{ position: 'relative' }}>
-                        <div className={classes.spacing} />
-                        {this.state.courseData.length === 0 ? (
-                            <div className={classes.noResultsDiv}>
-                                <img src={isDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
-                            </div>
-                        ) : (
-                            this.state.courseData.map(
-                                (_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
-                                    let heightEstimate = 200;
-                                    if ((this.state.courseData[index] as AACourse).sections !== undefined)
-                                        heightEstimate =
-                                            (this.state.courseData[index] as AACourse).sections.length * 60 + 20 + 40;
-
-                                    return (
-                                        <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
-                                            {SectionTableWrapped(index, renderData)}
-                                        </LazyLoad>
-                                    );
-                                }
-                            )
-                        )}
-                    </div>
-                </>
-            );
-        } else {
-            currentView = (
-                <div className={classes.root}>
-                    <div className={classes.noResultsDiv}>
+    return (
+        <>
+            <RecruitmentBanner />
+            <div style={{ height: '100%', overflowY: 'scroll', position: 'relative' }}>
+                <div style={{ height: '50px', marginBottom: '5px' }} />
+                {courseData.length === 0 ? (
+                    <div
+                        style={{
+                            height: '100%',
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
                         <img src={isDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
                     </div>
-                </div>
-            );
-        }
+                ) : (
+                    courseData.map((_, index: number) => {
+                        let heightEstimate = 200;
+                        if ((courseData[index] as AACourse).sections !== undefined)
+                            heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
 
-        return currentView;
-    }
+                        return (
+                            <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
+                                {SectionTableWrapped(index, { courseData, scheduleNames })}
+                            </LazyLoad>
+                        );
+                    })
+                )}
+            </div>
+        </>
+    );
 }
 
-export default withStyles(styles)(CourseRenderPane);
+export default CourseRenderPane;
