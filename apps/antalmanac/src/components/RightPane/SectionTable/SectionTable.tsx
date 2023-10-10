@@ -123,7 +123,7 @@ function SectionTable(props: SectionTableProps) {
         const width = isMobileScreen ? 600 : 780;
         const numActiveColumns = activeColumns.length;
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
-    }, [isMobileScreen, selectedColumns]);
+    }, [isMobileScreen, activeColumns]);
 
     return (
         <>
