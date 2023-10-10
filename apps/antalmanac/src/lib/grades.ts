@@ -143,7 +143,7 @@ class _Grades {
         if (cacheOnly) return null;
 
         const queryString = `{ 
-            aggregateByOffering(department: "${deptCode}", courseNumber: "${courseNumber}", ${instructorFilter}) {
+            aggregateGrades(department: "${deptCode}", courseNumber: "${courseNumber}", ${instructorFilter}) {
                 gradeDistribution {
                     gradeACount
                     gradeBCount
