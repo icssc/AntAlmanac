@@ -162,44 +162,44 @@ export function CourseRenderPane() {
             division: formData.division,
         };
 
-            const websocQueryParams = {
-                department: formData.deptValue,
-                term: formData.term,
-                ge: formData.ge,
-                courseNumber: formData.courseNumber,
-                sectionCodes: formData.sectionCode,
-                instructorName: formData.instructor,
-                units: formData.units,
-                endTime: formData.endTime,
-                startTime: formData.startTime,
-                fullCourses: formData.coursesFull,
-                building: formData.building,
-                room: formData.room,
-                division: formData.division,
-            };
+        const websocQueryParams = {
+            department: formData.deptValue,
+            term: formData.term,
+            ge: formData.ge,
+            courseNumber: formData.courseNumber,
+            sectionCodes: formData.sectionCode,
+            instructorName: formData.instructor,
+            units: formData.units,
+            endTime: formData.endTime,
+            startTime: formData.startTime,
+            fullCourses: formData.coursesFull,
+            building: formData.building,
+            room: formData.room,
+            division: formData.division,
+        };
 
-            const gradesQueryParams = {
-                department: formData.deptValue,
-                ge: formData.ge as GE,
-            };
+        const gradesQueryParams = {
+            department: formData.deptValue,
+            ge: formData.ge as GE,
+        };
 
-            try {
-                // Query websoc for course information and populate gradescache
-                const [websocJsonResp, _] = await Promise.all([
-                    websocQueryParams.units.includes(',')
-                        ? queryWebsocMultiple(websocQueryParams, 'units')
-                        : queryWebsoc(websocQueryParams),
-                    Grades.populateGradesCache(gradesQueryParams),
-                ]);
+        try {
+            // Query websoc for course information and populate gradescache
+            const [websocJsonResp, _] = await Promise.all([
+                websocQueryParams.units.includes(',')
+                    ? queryWebsocMultiple(websocQueryParams, 'units')
+                    : queryWebsoc(websocQueryParams),
+                Grades.populateGradesCache(gradesQueryParams),
+            ]);
 
-                setError(false);
-                setCourseData(flattenSOCObject(websocJsonResp));
-            } catch (error) {
-                setError(true);
-            } finally {
-                setLoading(false);
-            }
-        }, []);
+            setError(false);
+            setCourseData(flattenSOCObject(websocJsonResp));
+        } catch (error) {
+            setError(true);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
         loadCourses();
