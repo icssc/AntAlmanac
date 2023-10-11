@@ -1,4 +1,4 @@
-import { Button, Popover, Paper, Popper, useMediaQuery, Box } from '@material-ui/core';
+import { Button, Paper, Popper, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import React, { useState } from 'react';
