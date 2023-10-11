@@ -16,9 +16,8 @@ const styles: Styles<Theme, object> = {
         marginTop: '.5rem',
         textAlign: 'center',
         fontWeight: 500,
-        fontSize: '1.2rem',
-        marginRight: '4rem',
-        marginLeft: '4rem',
+        marginRight: '2rem',
+        marginLeft: '2rem',
         marginBottom: '.5rem',
     },
     skeleton: {

@@ -37,7 +37,14 @@ function CourseInfoButton({
 
     const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
         // If there is popup content, allow the content to be shown when the button is hovered
+        // Note that on mobile devices, hovering is not possible, so the popup still needs to be able
+        // to appear when the button is clicked
         if (popupContent) {
+            logAnalytics({
+                category: analyticsCategory,
+                action: analyticsAction,
+            });
+
             setPopupAnchor(event.currentTarget);
         }
     };
@@ -74,26 +81,6 @@ function CourseInfoButton({
             </Button>
 
             {popupContent && (
-                // <Popover
-                //     anchorEl={popupAnchor}
-                //     open={Boolean(popupAnchor)}
-                //     onClose={() => setPopupAnchor(null)}
-                //     anchorOrigin={{
-                //         vertical: 'bottom',
-                //         horizontal: 'center',
-                //     }}
-                //     transformOrigin={{
-                //         vertical: 'top',
-                //         horizontal: 'center',
-                //     }}
-                //     // This styling is needed in order for the popover to actually close
-                //     // when the mouse leaves the CourseInfoButton.
-                //     // For reference: https://github.com/mui/material-ui/issues/7212
-                //     style={{ pointerEvents: 'none' }}
-                // >
-                //     {/* Bring back pointer-events so that the popup can have clickable links */}
-                //     <div style={{ pointerEvents: 'auto' }}>{popupContent}</div>
-                // </Popover>
                 <Popper anchorEl={popupAnchor} open={Boolean(popupAnchor)} placement="bottom">
                     <Paper>{popupContent}</Paper>
                 </Popper>
