@@ -193,13 +193,13 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
                             />
                         </form>
                         <DaySelector onSelectDay={this.handleDayChange} days={this.props.customEvent?.days} />
+                        <BuildingSelect value={this.state.building} onChange={this.handleBuildingChange} />
                         <ScheduleSelector
                             scheduleIndices={this.state.scheduleIndices}
                             onSelectScheduleIndices={this.handleSelectScheduleIndices}
                             customEvent={this.props.customEvent}
                             scheduleNames={this.props.scheduleNames}
                         />
-                        <BuildingSelect value={this.state.building} onChange={this.handleBuildingChange} />
                     </DialogContent>
 
                     <DialogActions>
