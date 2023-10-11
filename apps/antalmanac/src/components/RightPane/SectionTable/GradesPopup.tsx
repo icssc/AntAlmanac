@@ -19,8 +19,15 @@ const styles: Styles<Theme, object> = {
         fontSize: '1.2rem',
         marginRight: '4rem',
         marginLeft: '4rem',
+        marginBottom: '.5rem',
     },
     skeleton: {
+        padding: '4px',
+    },
+    gradesContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
         padding: '4px',
     },
 };
@@ -69,8 +76,8 @@ const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }: Grades
         }
     };
 
-    const width = isMobileScreen ? 300 : 500;
-    const height = isMobileScreen ? 200 : 300;
+    const width = isMobileScreen ? 250 : 400;
+    const height = isMobileScreen ? 150 : 200;
 
     void loadGrades();
 
@@ -87,10 +94,10 @@ const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }: Grades
         const axisColor = isDarkMode() ? '#fff' : '#111';
 
         return (
-            <div style={{ marginTop: '5px' }}>
+            <div className={classes.gradesContainer} style={{ width: width }}>
                 <div className={classes.gpaTitle}>{graphTitle}</div>
                 {gradeData && (
-                    <ResponsiveContainer width={width} height={height}>
+                    <ResponsiveContainer width="95%" height={height}>
                         <BarChart data={gradeData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
