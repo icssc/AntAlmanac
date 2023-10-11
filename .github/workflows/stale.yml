@@ -22,3 +22,5 @@ jobs:
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         days-before-close: -1
+        days-before-issue-stale: 90
+        days-before-pr-stale: 30
