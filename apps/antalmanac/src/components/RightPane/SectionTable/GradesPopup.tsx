@@ -24,9 +24,6 @@ const styles: Styles<Theme, object> = {
         padding: '4px',
     },
     gradesContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
         padding: '4px',
     },
 };
