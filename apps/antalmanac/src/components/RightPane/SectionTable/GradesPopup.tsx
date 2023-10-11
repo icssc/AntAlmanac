@@ -93,10 +93,10 @@ const GradesPopup = ({ deptCode, courseNumber, classes, isMobileScreen }: Grades
         const axisColor = isDarkMode() ? '#fff' : '#111';
 
         return (
-            <div className={classes.gradesContainer} style={{ width: width }}>
+            <div className={classes.gradesContainer}>
                 <div className={classes.gpaTitle}>{graphTitle}</div>
                 {gradeData && (
-                    <ResponsiveContainer width="95%" height={height}>
+                    <ResponsiveContainer width={width} height={height}>
                         <BarChart data={gradeData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
