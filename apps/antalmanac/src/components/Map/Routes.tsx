@@ -5,7 +5,7 @@ import 'leaflet-routing-machine';
 import { createElementHook, createElementObject, useLeafletContext } from '@react-leaflet/core';
 import type { LeafletContextInterface } from '@react-leaflet/core';
 
-const ACCESS_TOKEN = 'pk.eyJ1IjoicGVkcmljIiwiYSI6ImNsZzE0bjk2ajB0NHEzanExZGFlbGpwazIifQ.l14rgv5vmu5wIMgOUUhUXw';
+// const ACCESS_TOKEN = 'pk.eyJ1IjoicGVkcmljIiwiYSI6ImNsZzE0bjk2ajB0NHEzanExZGFlbGpwazIifQ.l14rgv5vmu5wIMgOUUhUXw';
 
 interface ClassRoutesProps {
     /**
@@ -40,12 +40,14 @@ function createRouter(props: ClassRoutesProps, context: LeafletContextInterface)
     const waypoints = latLngTuples.map((latLngTuple) => L.latLng(latLngTuple));
 
     const routerControl = L.Routing.control({
-        router: L.Routing.mapbox(ACCESS_TOKEN, {
+        router: L.Routing.mapbox('', {
             /**
              * Default is mapbox/driving. More options:
              * @see {@link https://docs.mapbox.com/api/navigation/directions/#routing-profiles}
              */
             profile: 'mapbox/walking',
+
+            serviceUrl: 'http://localhost:3000/mapbox/directions',
         }),
 
         /**
