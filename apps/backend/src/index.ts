@@ -33,7 +33,6 @@ export async function start(corsEnabled = false) {
     });
 
     app.use('/mapbox/tiles/*', async (req, res) => {
-        console.log(req.params[0])
         const searchParams = new URLSearchParams(req.query as any);
         searchParams.set('access_token', MAPBOX_ACCESS_TOKEN);
         const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${req.params[0]}?${searchParams.toString()}`;
