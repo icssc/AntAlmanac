@@ -14,13 +14,12 @@ import locationIds from '$lib/location_ids';
 import buildingCatalogue from '$lib/buildingCatalogue';
 import type { Building } from '$lib/buildingCatalogue';
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-
-const ACCESS_TOKEN = 'pk.eyJ1IjoicGVkcmljIiwiYSI6ImNsZzE0bjk2ajB0NHEzanExZGFlbGpwazIifQ.l14rgv5vmu5wIMgOUUhUXw';
+import { MAPBOX_PROXY_TILES_ENDPOINT } from '$lib/api/endpoints';
 
 const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
 
-const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`;
+const url = `${MAPBOX_PROXY_TILES_ENDPOINT}/{z}/{x}/{y}`;
 
 const WORK_WEEK = ['All', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const FULL_WEEK = ['All', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];

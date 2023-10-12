@@ -4,8 +4,7 @@ import type { LatLngTuple } from 'leaflet';
 import 'leaflet-routing-machine';
 import { createElementHook, createElementObject, useLeafletContext } from '@react-leaflet/core';
 import type { LeafletContextInterface } from '@react-leaflet/core';
-
-// const ACCESS_TOKEN = 'pk.eyJ1IjoicGVkcmljIiwiYSI6ImNsZzE0bjk2ajB0NHEzanExZGFlbGpwazIifQ.l14rgv5vmu5wIMgOUUhUXw';
+import { MAPBOX_PROXY_DIRECTIONS_ENDPOINT } from '$lib/api/endpoints';
 
 interface ClassRoutesProps {
     /**
@@ -47,7 +46,7 @@ function createRouter(props: ClassRoutesProps, context: LeafletContextInterface)
              */
             profile: 'mapbox/walking',
 
-            serviceUrl: 'http://localhost:3000/mapbox/directions',
+            serviceUrl: MAPBOX_PROXY_DIRECTIONS_ENDPOINT,
         }),
 
         /**

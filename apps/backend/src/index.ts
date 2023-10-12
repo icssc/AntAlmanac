@@ -4,8 +4,8 @@ import type { CorsOptions } from 'cors';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import AppRouter from './routers';
 import createContext from './context';
-import connectToMongoDB from '$db/mongodb';
 import env from './env';
+import connectToMongoDB from '$db/mongodb';
 
 const corsOptions: CorsOptions = {
     origin: ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac'],
@@ -24,12 +24,24 @@ export async function start(corsEnabled = false) {
     app.use(cors(corsEnabled ? corsOptions : undefined));
     app.use(express.json());
 
-    app.use('/mapbox/directions/*', async (req, res, next) => {
+    app.use('/mapbox/directions/*', async (req, res) => {
         const searchParams = new URLSearchParams(req.query as any);
         searchParams.set('access_token', MAPBOX_ACCESS_TOKEN);
         const url = `${MAPBOX_API_URL}/directions/v5/${req.params[0]}?${searchParams.toString()}`;
         const result = await fetch(url).then((res) => res.text());
         res.send(result);
+    });
+
+    app.use('/mapbox/tiles/*', async (req, res) => {
+        console.log(req.params[0])
+        const searchParams = new URLSearchParams(req.query as any);
+        searchParams.set('access_token', MAPBOX_ACCESS_TOKEN);
+        const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${req.params[0]}?${searchParams.toString()}`;
+        const result = await fetch(url).then((res) => res.blob());
+        res.type(result.type)
+        result.arrayBuffer().then((buf) => {
+            res.send(Buffer.from(buf))
+        });
     });
 
     app.use(
