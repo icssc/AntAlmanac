@@ -49,6 +49,7 @@ else {
             certificateArn: process.env.CERTIFICATE_ARN,
             hostedZoneId: process.env.HOSTED_ZONE_ID,
             mongoDbUriProd: process.env.MONGODB_URI_PROD,
+            mapboxAccessToken: process.env.MAPBOX_ACCESS_TOKEN,
         })
         // prod frontend is deployed on GitHub Pages
         if (stage !== 'prod') {
