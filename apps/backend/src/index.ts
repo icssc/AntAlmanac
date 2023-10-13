@@ -20,7 +20,16 @@ export async function start(corsEnabled = false) {
 
     const app = express();
     app.use(cors(corsEnabled ? corsOptions : undefined));
-    
+    app.use(express.json());
+
+    app.use('/mapbox/directions/*', async (req, res) => {
+        const searchParams = new URLSearchParams(req.query as any);
+        searchParams.set('access_token', env.MAPBOX_ACCESS_TOKEN);
+        const url = `${MAPBOX_API_URL}/directions/v5/${req.params[0]}?${searchParams.toString()}`;
+        const result = await fetch(url).then((res) => res.text());
+        res.send(result);
+    });
+
     app.use('/mapbox/tiles/*', async (req, res) => {
         const searchParams = new URLSearchParams(req.query as any);
         searchParams.set('access_token', env.MAPBOX_ACCESS_TOKEN);
@@ -37,16 +46,6 @@ export async function start(corsEnabled = false) {
         // res.send(result)
     });
     
-    app.use(express.json());
-
-    app.use('/mapbox/directions/*', async (req, res) => {
-        const searchParams = new URLSearchParams(req.query as any);
-        searchParams.set('access_token', env.MAPBOX_ACCESS_TOKEN);
-        const url = `${MAPBOX_API_URL}/directions/v5/${req.params[0]}?${searchParams.toString()}`;
-        const result = await fetch(url).then((res) => res.text());
-        res.send(result);
-    });
-
     app.use(
         '/trpc',
         createExpressMiddleware({
