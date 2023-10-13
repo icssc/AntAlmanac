@@ -37,7 +37,7 @@ export async function start(corsEnabled = false) {
         const buffer = await fetch(url).then((res) => res.arrayBuffer());
         console.log(`Buffer length: ${buffer.byteLength}`)
         res.type('png')
-        res.send(Buffer.from(buffer))
+        res.send(Buffer.from(buffer,0,buffer.byteLength))
         // // res.header('Content-Security-Policy', "img-src 'self'"); // https://stackoverflow.com/questions/56386307/loading-of-a-resource-blocked-by-content-security-policy
         // // res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
         // res.type('image/png')
