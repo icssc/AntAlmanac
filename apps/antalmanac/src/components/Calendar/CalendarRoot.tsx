@@ -11,6 +11,7 @@ import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calen
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
+import buildingCatalogue from '$lib/buildingCatalogue';
 
 const localizer = momentLocalizer(moment);
 
@@ -72,6 +73,9 @@ const AntAlmanacEvent =
         return event.isCustomEvent ? (
             <div className={classes.customEventContainer}>
                 <div className={classes.customEventTitle}>{event.title}</div>
+                <div className={classes.secondLineContainer}>
+                    {event.building ? buildingCatalogue[+event.building].name : ''}
+                </div>
             </div>
         ) : (
             <div>
