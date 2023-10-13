@@ -20,6 +20,23 @@ export async function start(corsEnabled = false) {
 
     const app = express();
     app.use(cors(corsEnabled ? corsOptions : undefined));
+    
+    app.use('/mapbox/tiles/*', async (req, res) => {
+        const searchParams = new URLSearchParams(req.query as any);
+        searchParams.set('access_token', env.MAPBOX_ACCESS_TOKEN);
+        const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${req.params[0]}?${searchParams.toString()}`;
+        const buffer = await fetch(url).then((res) => res.arrayBuffer());
+        console.log(`Buffer length: ${buffer.byteLength}`)
+        res.type('png')
+        const newBuffer = Buffer.from(buffer,0,buffer.byteLength);
+        console.log(`Second buffer length: ${newBuffer.byteLength}`)
+        res.send(newBuffer)
+        // // res.header('Content-Security-Policy', "img-src 'self'"); // https://stackoverflow.com/questions/56386307/loading-of-a-resource-blocked-by-content-security-policy
+        // // res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        // res.type('image/png')
+        // res.send(result)
+    });
+    
     app.use(express.json());
 
     app.use('/mapbox/directions/*', async (req, res) => {
@@ -28,20 +45,6 @@ export async function start(corsEnabled = false) {
         const url = `${MAPBOX_API_URL}/directions/v5/${req.params[0]}?${searchParams.toString()}`;
         const result = await fetch(url).then((res) => res.text());
         res.send(result);
-    });
-
-    app.use('/mapbox/tiles/*', async (req, res) => {
-        const searchParams = new URLSearchParams(req.query as any);
-        searchParams.set('access_token', env.MAPBOX_ACCESS_TOKEN);
-        const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${req.params[0]}?${searchParams.toString()}`;
-        const buffer = await fetch(url).then((res) => res.arrayBuffer());
-        console.log(`Buffer length: ${buffer.byteLength}`)
-        res.type('png')
-        res.send(Buffer.from(buffer,0,buffer.byteLength))
-        // // res.header('Content-Security-Policy', "img-src 'self'"); // https://stackoverflow.com/questions/56386307/loading-of-a-resource-blocked-by-content-security-policy
-        // // res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-        // res.type('image/png')
-        // res.send(result)
     });
 
     app.use(
