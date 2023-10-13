@@ -5,7 +5,7 @@ import LazyLoad from 'react-lazyload';
 
 import { Alert } from '@mui/material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
-import { WebsocDepartment, WebsocSchool, WebsocAPIResponse } from 'peterportal-api-next-types';
+import { WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
 import RightPaneStore from '../RightPaneStore';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
@@ -15,9 +15,9 @@ import loadingGif from './SearchForm/Gifs/loading.gif';
 import darkNoNothing from './static/dark-no_results.png';
 import noNothing from './static/no_results.png';
 import AppStore from '$stores/AppStore';
-import { isDarkMode, queryWebsocMultiple } from '$lib/helpers';
+import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '$lib/helpers';
+import Grades from '$lib/grades';
 import analyticsEnum from '$lib/analytics';
-import { queryWebsoc } from '$lib/course-helpers';
 
 function flattenSOCObject(SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocDepartment | AACourse)[] {
     const courseColors = AppStore.getAddedCourses().reduce((accumulator, { section }) => {
@@ -162,14 +162,38 @@ export function CourseRenderPane() {
             division: formData.division,
         };
 
+        const websocQueryParams = {
+            department: formData.deptValue,
+            term: formData.term,
+            ge: formData.ge,
+            courseNumber: formData.courseNumber,
+            sectionCodes: formData.sectionCode,
+            instructorName: formData.instructor,
+            units: formData.units,
+            endTime: formData.endTime,
+            startTime: formData.startTime,
+            fullCourses: formData.coursesFull,
+            building: formData.building,
+            room: formData.room,
+            division: formData.division,
+        };
+
+        const gradesQueryParams = {
+            department: formData.deptValue,
+            ge: formData.ge as GE,
+        };
+
         try {
-            // If params has a comma, it means that we are searching for multiple units.
-            const socObject = params.units.includes(',')
-                ? await queryWebsocMultiple(params, 'units')
-                : await queryWebsoc(params);
+            // Query websoc for course information and populate gradescache
+            const [websocJsonResp, _] = await Promise.all([
+                websocQueryParams.units.includes(',')
+                    ? queryWebsocMultiple(websocQueryParams, 'units')
+                    : queryWebsoc(websocQueryParams),
+                Grades.populateGradesCache(gradesQueryParams),
+            ]);
 
             setError(false);
-            setCourseData(flattenSOCObject(socObject));
+            setCourseData(flattenSOCObject(websocJsonResp));
         } catch (error) {
             setError(true);
         } finally {
