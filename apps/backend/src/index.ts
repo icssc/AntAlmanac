@@ -35,11 +35,8 @@ export async function start(corsEnabled = false) {
         searchParams.set('access_token', env.MAPBOX_ACCESS_TOKEN);
         const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${req.params[0]}?${searchParams.toString()}`;
         const buffer = await fetch(url).then((res) => res.arrayBuffer());
-        console.log(`Buffer length: ${buffer.byteLength}`)
-        res.type('png')
-        const newBuffer = Buffer.from(buffer,0,buffer.byteLength);
-        console.log(`Second buffer length: ${newBuffer.byteLength}`)
-        res.send(newBuffer)
+        res.type('image/png')
+        res.send(Buffer.from(buffer))
         // // res.header('Content-Security-Policy', "img-src 'self'"); // https://stackoverflow.com/questions/56386307/loading-of-a-resource-blocked-by-content-security-policy
         // // res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
         // res.type('image/png')
