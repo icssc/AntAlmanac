@@ -36,6 +36,7 @@ export async function start(corsEnabled = false) {
         const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${req.params[0]}?${searchParams.toString()}`;
         const result = await fetch(url).then((res) => res.blob());
         res.header('Content-Security-Policy', "img-src 'self'"); // https://stackoverflow.com/questions/56386307/loading-of-a-resource-blocked-by-content-security-policy
+        res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
         res.type(result.type)
         result.arrayBuffer().then((buf) => {
             res.send(Buffer.from(buf))
