@@ -75,7 +75,12 @@ export default class BackendStack extends Stack {
                 },
                 binaryMediaTypes: ['image/png'],
                 integrationOptions: {
-                    contentHandling: apigateway.ContentHandling.CONVERT_TO_BINARY,
+                    integrationResponses: [
+                        {
+                            statusCode: '200',
+                            contentHandling: apigateway.ContentHandling.CONVERT_TO_BINARY,
+                        },
+                    ],
                 },
             },
         )
