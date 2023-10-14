@@ -19,8 +19,6 @@ import { MAPBOX_PROXY_TILES_ENDPOINT } from '$lib/api/endpoints';
 const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
 
-const url = `${MAPBOX_PROXY_TILES_ENDPOINT}/{z}/{x}/{y}`;
-
 const WORK_WEEK = ['All', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const FULL_WEEK = ['All', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const weekendIndices = [0, 6];
@@ -230,7 +228,13 @@ export default function CourseMap() {
                     />
                 </Paper>
 
-                <TileLayer attribution={ATTRIBUTION_MARKUP} url={url} tileSize={512} maxZoom={21} zoomOffset={-1} />
+                <TileLayer
+                    attribution={ATTRIBUTION_MARKUP}
+                    url={`${MAPBOX_PROXY_TILES_ENDPOINT}/{z}/{x}/{y}`}
+                    tileSize={512}
+                    maxZoom={21}
+                    zoomOffset={-1}
+                />
 
                 <UserLocator />
 
