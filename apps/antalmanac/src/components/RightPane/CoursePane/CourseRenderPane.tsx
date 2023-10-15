@@ -18,11 +18,18 @@ import { isDarkMode, queryWebsocMultiple } from '$lib/helpers';
 import analyticsEnum from '$lib/analytics';
 import { queryWebsoc } from '$lib/course-helpers';
 
-const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocDepartment | AACourse)[] => {
+function getColors() {
     const courseColors = AppStore.schedule.getCurrentCourses().reduce((accumulator, { section }) => {
         accumulator[section.sectionCode] = section.color;
         return accumulator;
     }, {} as { [key: string]: string });
+
+    return courseColors;
+}
+
+const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocDepartment | AACourse)[] => {
+    const courseColors = getColors();
+
     return SOCObject.schools.reduce((accumulator: (WebsocSchool | WebsocDepartment | AACourse)[], school) => {
         accumulator.push(school);
 
@@ -147,6 +154,7 @@ const ErrorMessage = () => {
 };
 
 export default function CourseRenderPane() {
+    const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
     const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -182,6 +190,7 @@ export default function CourseRenderPane() {
             }
             setLoading(false);
             setError(false);
+            setWebsocResp(jsonResp);
             setCourseData(flattenSOCObject(jsonResp));
         } catch (error) {
             setLoading(false);
@@ -189,20 +198,33 @@ export default function CourseRenderPane() {
         }
     };
 
-    const updateScheduleNames = useCallback(() => {
+    const updateScheduleNames = () => {
         setScheduleNames(AppStore.getScheduleNames());
-    }, [setScheduleNames]);
+    };
+
+    useEffect(() => {
+        const changeColors = () => {
+            if (websocResp == null) {
+                return;
+            }
+            setCourseData(flattenSOCObject(websocResp));
+        };
+
+        AppStore.on('currentScheduleIndexChange', changeColors);
+
+        return () => {
+            AppStore.off('currentScheduleIndexChange', changeColors);
+        };
+    }, [websocResp]);
 
     useEffect(() => {
         loadCourses();
         AppStore.on('scheduleNamesChange', updateScheduleNames);
-        AppStore.on('currentScheduleIndexChange', loadCourses);
 
         return () => {
             AppStore.off('scheduleNamesChange', updateScheduleNames);
-            AppStore.off('currentScheduleIndexChange', loadCourses);
         };
-    }, [updateScheduleNames]);
+    }, []);
 
     return (
         <>
