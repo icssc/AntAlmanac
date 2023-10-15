@@ -474,17 +474,14 @@ export class Schedules {
 
             // Get the course info for each course
             const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
-            for (const [term, courseSet] of Object.entries(courseDict)) {
-                const sectionCodes = Array.from(courseSet);
-                // Code from ImportStudyList
-                const courseInfo = getCourseInfo(
-                    await queryWebsoc({
-                        term: term,
-                        sectionCodes: sectionCodes.join(','),
-                    })
-                );
+
+            const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
+                const sectionCodes = Array.from(courseSet).join(',');
+                const courseInfo = getCourseInfo(await queryWebsoc({ term, sectionCodes }));
                 courseInfoDict.set(term, courseInfo);
-            }
+            });
+
+            await Promise.all(websocRequests);
 
             // Map course info to courses and transform shortened schedule to normal schedule
             for (const shortCourseSchedule of saveState.schedules) {

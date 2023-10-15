@@ -4,7 +4,7 @@ import LazyLoad from 'react-lazyload';
 import { Alert, Box, IconButton } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
-import { WebsocDepartment, WebsocSchool, WebsocAPIResponse } from 'peterportal-api-next-types';
+import { WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
 import RightPaneStore from '../RightPaneStore';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
@@ -14,9 +14,9 @@ import loadingGif from './SearchForm/Gifs/loading.gif';
 import darkNoNothing from './static/dark-no_results.png';
 import noNothing from './static/no_results.png';
 import AppStore from '$stores/AppStore';
-import { isDarkMode, queryWebsocMultiple } from '$lib/helpers';
+import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '$lib/helpers';
+import Grades from '$lib/grades';
 import analyticsEnum from '$lib/analytics';
-import { queryWebsoc } from '$lib/course-helpers';
 
 function getColors() {
     const courseColors = AppStore.schedule.getCurrentCourses().reduce((accumulator, { section }) => {
