@@ -1,4 +1,5 @@
 ![AntAlmanac](apps/antalmanac/public/banner.png)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ficssc%2FAntAlmanac.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Ficssc%2FAntAlmanac?ref=badge_shield)
 
 ## About
 
@@ -122,3 +123,7 @@ The easier way to resolve this is to run the command with admin privileges.
 An example `.env.sample` is provided and can be used by renaming it to `.env`
 If you need real credentials to access the database or private resources,
 please contact a project lead.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ficssc%2FAntAlmanac.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Ficssc%2FAntAlmanac?ref=badge_large)
