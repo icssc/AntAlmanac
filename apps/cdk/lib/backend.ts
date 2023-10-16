@@ -74,14 +74,6 @@ export default class BackendStack extends Stack {
                     endpointType: apigateway.EndpointType.EDGE,
                 },
                 binaryMediaTypes: ['image/*'],
-                integrationOptions: {
-                    integrationResponses: [
-                        {
-                            statusCode: '200',
-                            contentHandling: apigateway.ContentHandling.CONVERT_TO_BINARY,
-                        },
-                    ],
-                },
             },
         )
 
