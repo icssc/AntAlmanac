@@ -34,6 +34,7 @@ function CourseInfoButton({
 }: CourseInfoButtonProps) {
     const [popupAnchor, setPopupAnchor] = useState<HTMLElement | null>(null);
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
+    const [isClicked, setIsClicked] = useState(false);
 
     const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
         // If there is popup content, allow the content to be shown when the button is hovered
@@ -51,6 +52,7 @@ function CourseInfoButton({
 
     const handleMouseLeave = () => {
         if (popupContent) {
+            setIsClicked(false);
             setPopupAnchor(null);
         }
     };
@@ -73,7 +75,12 @@ function CourseInfoButton({
                     }
 
                     if (popupContent) {
-                        setPopupAnchor(event.currentTarget);
+                        // This is mostly used for devices that don't support hovering
+                        // and thus only support clicking to open/close the popup
+                        // If isClicked is true, then the popup is currently visible; otherwise, if
+                        // isClicked is false, then the popup is currently hidden
+                        setPopupAnchor(isClicked ? null : event.currentTarget);
+                        setIsClicked((prev) => !prev);
                     }
                 }}
             >
