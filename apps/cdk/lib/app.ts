@@ -6,41 +6,30 @@ import FrontendStack from './frontend'
 const app = new App({ autoSynth: true })
 
 // Check environmental variables
-if (
-    !process.env.CERTIFICATE_ARN ||
-    !process.env.HOSTED_ZONE_ID ||
-    !process.env.MONGODB_URI_PROD
-) {
+if (!process.env.CERTIFICATE_ARN || !process.env.HOSTED_ZONE_ID || !process.env.MONGODB_URI_PROD) {
     throw new Error('Missing environmental variables')
 }
 
 // Deploy staging
 if (process.env.PR_NUM) {
     const env: Environment = { region: 'us-east-1' }
-    new FrontendStack(
-        app,
-        `antalmanac-frontend-staging-${process.env.PR_NUM}`,
-        {
+    new FrontendStack(app, `antalmanac-frontend-staging-${process.env.PR_NUM}`, {
+        env,
+        stage: 'staging',
+        certificateArn: process.env.CERTIFICATE_ARN,
+        hostedZoneId: process.env.HOSTED_ZONE_ID,
+        prNum: process.env.PR_NUM,
+    })
+    if (process.env.apiSubDomain !== 'dev') {
+        new BackendStack(app, `antalmanac-backend-staging-${process.env.PR_NUM}`, {
             env,
             stage: 'staging',
             certificateArn: process.env.CERTIFICATE_ARN,
             hostedZoneId: process.env.HOSTED_ZONE_ID,
+            mongoDbUriProd: process.env.MONGODB_URI_PROD,
+            mapboxAccessToken: process.env.MAPBOX_ACCESS_TOKEN,
             prNum: process.env.PR_NUM,
-        },
-    )
-    if (process.env.apiSubDomain !== 'dev') {
-        new BackendStack(
-            app,
-            `antalmanac-backend-staging-${process.env.PR_NUM}`,
-            {
-                env,
-                stage: 'staging',
-                certificateArn: process.env.CERTIFICATE_ARN,
-                hostedZoneId: process.env.HOSTED_ZONE_ID,
-                mongoDbUriProd: process.env.MONGODB_URI_PROD,
-                prNum: process.env.PR_NUM,
-            },
-        )
+        })
     }
 }
 
@@ -60,6 +49,7 @@ else {
             certificateArn: process.env.CERTIFICATE_ARN,
             hostedZoneId: process.env.HOSTED_ZONE_ID,
             mongoDbUriProd: process.env.MONGODB_URI_PROD,
+            mapboxAccessToken: process.env.MAPBOX_ACCESS_TOKEN,
         })
         // prod frontend is deployed on GitHub Pages
         if (stage !== 'prod') {

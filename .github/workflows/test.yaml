@@ -51,6 +51,7 @@ jobs:
                 HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
                 CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
                 MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
+                MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
                 PR_NUM: ${{ github.event.pull_request.number }}
 
                 # CDK environment variables.
