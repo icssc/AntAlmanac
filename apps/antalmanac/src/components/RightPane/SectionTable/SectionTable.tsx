@@ -21,6 +21,7 @@ import { SectionTableProps } from './SectionTable.types';
 import SectionTableBody from './SectionTableBody';
 import useColumnStore, { SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import analyticsEnum from '$lib/analytics';
+import { GlobalStyles } from '@mui/material';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -127,6 +128,7 @@ function SectionTable(props: SectionTableProps) {
 
     return (
         <>
+            <GlobalStyles styles={{'*::-webkit-scrollbar': {height: '8px'}}}/>
             <Box style={{ display: 'flex', gap: 4, marginTop: 4, marginBottom: 8 }}>
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
