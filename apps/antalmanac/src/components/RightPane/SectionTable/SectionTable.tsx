@@ -104,7 +104,7 @@ function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
 function SectionTable(props: SectionTableProps) {
     const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory } = props;
 
-    const [selectedColumns, activeColumns] = useColumnStore((store) => [store.selectedColumns, store.activeColumns]);
+    const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
 
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
 
