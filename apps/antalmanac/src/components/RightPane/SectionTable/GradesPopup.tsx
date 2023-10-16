@@ -109,7 +109,7 @@ function GradesPopup(props: GradesPopupProps) {
     const axisColor = isDarkMode() ? '#fff' : '#111';
 
     return (
-        <Box>
+        <Box sx={{ padding: '4px' }}>
             <Typography
                 sx={{
                     marginTop: '.5rem',
