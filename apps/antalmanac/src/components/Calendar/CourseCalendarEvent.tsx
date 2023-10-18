@@ -102,7 +102,7 @@ export interface Location {
     /**
      * If the location only applies on specific days, this is non-null.
      */
-    days?: string[];
+    days: string | null;
 }
 
 export interface CourseEvent extends CommonCalendarEvent {
@@ -138,6 +138,7 @@ export interface CourseEvent extends CommonCalendarEvent {
 export interface CustomEvent extends CommonCalendarEvent {
     customEventID: number;
     isCustomEvent: true;
+    days: string[];
 }
 
 export type CalendarEvent = CourseEvent | CustomEvent;

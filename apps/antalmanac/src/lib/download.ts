@@ -1,10 +1,12 @@
-import type { HourMinute, WebsocSectionFinalExam } from 'peterportal-api-next-types';
+import { title } from 'node:process';
+import type { Course, HourMinute, WebsocSectionFinalExam } from 'peterportal-api-next-types';
 import { saveAs } from 'file-saver';
 import { createEvents, type EventAttributes } from 'ics';
 import { notNull } from './utils';
 import { openSnackbar } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { termData } from '$lib/termData';
+import { getDefaultTerm, termData } from '$lib/termData';
+import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
 
 export const quarterStartDates = Object.fromEntries(
@@ -108,6 +110,16 @@ export function dateToIcs(date: Date) {
     ] as YearMonthDay;
 }
 
+export function dateToDateTimeArray(date: Date) {
+    return [
+        date.getFullYear(),
+        date.getMonth() + 1, // Add 1 month since it is 0-indexed
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes(),
+    ] as DateTimeArray;
+}
+
 /**
  * Get the start and end datetime of the first class.
  *
@@ -153,7 +165,7 @@ export function getFirstClass(
  * // examEnd = [2019, 6, 7, 12, 30]
  * ```
  */
-export function getExamTime(exam: WebsocSectionFinalExam, year: number): [DateTimeArray, DateTimeArray] | [] {
+export function getExamTime(exam: CourseEvent['finalExam'], year: number): [DateTimeArray, DateTimeArray] | [] {
     if (exam.month && exam.day && exam.startTime && exam.endTime) {
         const month = exam.month;
         const day = exam.day;
@@ -246,74 +258,84 @@ export function getRRule(bydays: string[], quarter: string) {
     return `FREQ=WEEKLY;BYDAY=${bydays.toString()};INTERVAL=1;COUNT=${count}`;
 }
 
-export function getEventsFromCourses(courses = AppStore.schedule.getCurrentCourses()): EventAttributes[] {
-    const events = courses.flatMap((course) => {
-        const {
-            term,
-            deptCode,
-            courseNumber,
-            courseTitle,
-            section: { sectionType, instructors, meetings, finalExam },
-        } = course;
+export function getEventsFromCourses(events = AppStore.getEventsInCalendar()): EventAttributes[] {
+    const calendarEvents = events.flatMap((event) => {
+        if (!event.isCustomEvent) {
+            const { term, title, courseTitle, instructors, sectionType, start, end, finalExam } = event;
 
-        const courseEvents: EventAttributes[] = meetings
-            .map((meeting) => {
-                if (meeting.timeIsTBA) {
-                    return;
+            const courseEvents: EventAttributes[] = event.locations
+                .map((location) => {
+                    if (location.days === null) return null;
+                    const days = getByDays(location.days);
+
+                    const classStartDate = getClassStartDate(term, days);
+
+                    const [firstClassStart, firstClassEnd] = getFirstClass(
+                        classStartDate,
+                        { hour: start.getHours(), minute: start.getMinutes() },
+                        { hour: end.getHours(), minute: end.getMinutes() }
+                    );
+
+                    const rrule = getRRule(days, getQuarter(term));
+
+                    // Add VEvent to events array.
+                    return {
+                        productId: 'antalmanac/ics',
+                        startOutputType: 'local' as const,
+                        endOutputType: 'local' as const,
+                        title: `${title} ${sectionType}`,
+                        description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
+                        location: `${location.building} ${location.room}`,
+                        start: firstClassStart,
+                        end: firstClassEnd,
+                        recurrenceRule: rrule,
+                    };
+                })
+                .filter(notNull);
+
+            // Add final to events.
+            if (finalExam.examStatus === 'SCHEDULED_FINAL') {
+                if (finalExam.startTime && finalExam.endTime) {
+                    courseEvents.push({
+                        productId: 'antalmanac/ics',
+                        startOutputType: 'local' as const,
+                        endOutputType: 'local' as const,
+                        title: `${title} ${sectionType} Final Exam`,
+                        description: `Final Exam for ${courseTitle}`,
+                        start: getExamTime(finalExam, getYear(term))[0]!,
+                        end: getExamTime(finalExam, getYear(term))[1]!,
+                    });
                 }
-
-                if (!(meeting.days && meeting.startTime && meeting.endTime)) {
-                    return;
-                }
-
-                const bydays = getByDays(meeting.days);
-
-                const classStartDate = getClassStartDate(term, bydays);
-
-                const [firstClassStart, firstClassEnd] = getFirstClass(
-                    classStartDate,
-                    meeting.startTime,
-                    meeting.endTime
-                );
-
-                const rrule = getRRule(bydays, getQuarter(term));
-
-                // Add VEvent to events array.
-                return {
-                    productId: 'antalmanac/ics',
-                    startOutputType: 'local' as const,
-                    endOutputType: 'local' as const,
-                    title: `${deptCode} ${courseNumber} ${sectionType}`,
-                    description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
-                    location: meeting.bldg.join(', '),
-                    start: firstClassStart,
-                    end: firstClassEnd,
-                    recurrenceRule: rrule,
-                };
-            })
-            .filter(notNull);
-
-        // Add final to events.
-        if (finalExam.examStatus === 'SCHEDULED_FINAL') {
-            const [examStart, examEnd] = getExamTime(finalExam, getYear(term));
-
-            if (examStart && examEnd) {
-                courseEvents.push({
-                    productId: 'antalmanac/ics',
-                    startOutputType: 'local' as const,
-                    endOutputType: 'local' as const,
-                    title: `${deptCode} ${courseNumber} Final Exam`,
-                    description: `Final Exam for ${courseTitle}`,
-                    start: examStart,
-                    end: examEnd,
-                });
             }
+            return courseEvents;
+        } else {
+            // FIXME: We don't have a way to get the term for custom events,
+            // so we just use the default term.
+            const { title, start, end } = event as CustomEvent;
+            const days = getByDays(event.days.join(''));
+            const term = getDefaultTerm().shortName;
+            const rrule = getRRule(days, getQuarter(term));
+            const eventStartDate = getClassStartDate(term, days);
+            const [firstClassStart, firstClassEnd] = getFirstClass(
+                eventStartDate,
+                { hour: start.getHours(), minute: start.getMinutes() },
+                { hour: end.getHours(), minute: end.getMinutes() }
+            );
+            const customEvent: EventAttributes = {
+                productId: 'antalmanac/ics',
+                startOutputType: 'local' as const,
+                endOutputType: 'local' as const,
+                title: title,
+                // TODO: Add location to custom events, waiting for https://github.com/icssc/AntAlmanac/issues/249
+                // location: `${location.building} ${location.room}`,
+                start: firstClassStart,
+                end: firstClassEnd,
+                recurrenceRule: rrule,
+            };
+            return customEvent;
         }
-
-        return courseEvents;
     });
-
-    return events;
+    return calendarEvents;
 }
 
 export function exportCalendar() {

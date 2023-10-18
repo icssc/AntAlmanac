@@ -10,7 +10,7 @@ const FINALS_WEEK_DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
 export function getLocation(location: string): Location {
     const [building = '', room = ''] = location.split(' ');
-    return { building, room };
+    return { building, room, days: null };
 }
 
 export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
@@ -48,7 +48,9 @@ export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): 
                         term: course.term,
                         title: `${course.deptCode} ${course.courseNumber}`,
                         courseTitle: course.courseTitle,
-                        locations: meeting.bldg.map(getLocation),
+                        locations: meeting.bldg.map(getLocation).map((location: Location) => {
+                            return { ...location, days: meeting.days };
+                        }),
                         showLocationInfo: false,
                         instructors: course.section.instructors,
                         sectionCode: course.section.sectionCode,
@@ -121,7 +123,7 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
 export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []): CustomEvent[] {
     return currentCustomEvents.flatMap((customEvent) => {
         const dayIndiciesOcurring = customEvent.days.map((day, index) => (day ? index : undefined)).filter(notNull);
-
+        const days = dayIndiciesOcurring.map((dayIndex) => COURSE_WEEK_DAYS[dayIndex]);
         return dayIndiciesOcurring.map((dayIndex) => {
             const startHour = parseInt(customEvent.start.slice(0, 2), 10);
             const startMin = parseInt(customEvent.start.slice(3, 5), 10);
@@ -135,6 +137,7 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
                 isCustomEvent: true,
                 end: new Date(2018, 0, dayIndex, endHour, endMin),
                 title: customEvent.title,
+                days: days,
             };
         });
     });
