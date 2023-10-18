@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
 import { Alert, Box, IconButton } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
-import { WebsocDepartment, WebsocSchool, WebsocAPIResponse } from 'peterportal-api-next-types';
+import { WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
 import RightPaneStore from '../RightPaneStore';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
@@ -15,6 +15,7 @@ import darkNoNothing from './static/dark-no_results.png';
 import noNothing from './static/no_results.png';
 import AppStore from '$stores/AppStore';
 import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '$lib/helpers';
+import Grades from '$lib/grades';
 import analyticsEnum from '$lib/analytics';
 
 function getColors() {
@@ -159,12 +160,12 @@ export default function CourseRenderPane() {
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
-    const loadCourses = async () => {
+    const loadCourses = useCallback(async () => {
         setLoading(true);
 
         const formData = RightPaneStore.getFormData();
 
-        const params = {
+        const websocQueryParams = {
             department: formData.deptValue,
             term: formData.term,
             ge: formData.ge,
@@ -180,22 +181,29 @@ export default function CourseRenderPane() {
             division: formData.division,
         };
 
+        const gradesQueryParams = {
+            department: formData.deptValue,
+            ge: formData.ge as GE,
+        };
+
         try {
-            let jsonResp;
-            if (params.units.includes(',')) {
-                jsonResp = await queryWebsocMultiple(params, 'units');
-            } else {
-                jsonResp = await queryWebsoc(params);
-            }
-            setLoading(false);
+            // Query websoc for course information and populate gradescache
+            const [websocJsonResp, _] = await Promise.all([
+                websocQueryParams.units.includes(',')
+                    ? queryWebsocMultiple(websocQueryParams, 'units')
+                    : queryWebsoc(websocQueryParams),
+                Grades.populateGradesCache(gradesQueryParams),
+            ]);
+
             setError(false);
-            setWebsocResp(jsonResp);
-            setCourseData(flattenSOCObject(jsonResp));
+            setWebsocResp(websocJsonResp);
+            setCourseData(flattenSOCObject(websocJsonResp));
         } catch (error) {
-            setLoading(false);
             setError(true);
+        } finally {
+            setLoading(false);
         }
-    };
+    }, []);
 
     const updateScheduleNames = () => {
         setScheduleNames(AppStore.getScheduleNames());
@@ -223,7 +231,7 @@ export default function CourseRenderPane() {
         return () => {
             AppStore.off('scheduleNamesChange', updateScheduleNames);
         };
-    }, []);
+    }, [loadCourses]);
 
     return (
         <>
