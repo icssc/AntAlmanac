@@ -141,6 +141,14 @@ const SectionTableWrapped = (
     return <div>{component}</div>;
 };
 
+const LoadingMessage = () => {
+    return (
+        <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <img src={isDarkMode() ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
+        </Box>
+    );
+};
+
 const ErrorMessage = () => {
     return (
         <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -236,16 +244,7 @@ export default function CourseRenderPane() {
     return (
         <>
             {loading ? (
-                <Box
-                    sx={{
-                        height: '100%',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}
-                >
-                    <img src={isDarkMode() ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
-                </Box>
+                <LoadingMessage />
             ) : error || courseData.length === 0 ? (
                 <ErrorMessage />
             ) : (
