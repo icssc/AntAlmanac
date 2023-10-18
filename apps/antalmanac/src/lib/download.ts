@@ -110,16 +110,6 @@ export function dateToIcs(date: Date) {
     ] as YearMonthDay;
 }
 
-export function dateToDateTimeArray(date: Date) {
-    return [
-        date.getFullYear(),
-        date.getMonth() + 1, // Add 1 month since it is 0-indexed
-        date.getDate(),
-        date.getHours(),
-        date.getMinutes(),
-    ] as DateTimeArray;
-}
-
 /**
  * Get the start and end datetime of the first class.
  *
