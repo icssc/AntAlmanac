@@ -55,7 +55,6 @@ interface ColumnStore {
 const enabledColumnsInitial = SECTION_TABLE_COLUMNS.map(
     (col) => !(window.location.pathname.split('/').slice(1)[0] === 'added' && col === 'gpa')
 );
-console.log(window.location.pathname.split('/').slice(1)[0] === 'added')
 const selectedColumnsInitial = SECTION_TABLE_COLUMNS.map(() => true);
 const activeColumnsInitial = SECTION_TABLE_COLUMNS.filter(
     (_, index) => enabledColumnsInitial[index] && selectedColumnsInitial[index]
