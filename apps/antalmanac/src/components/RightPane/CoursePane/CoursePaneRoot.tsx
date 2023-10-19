@@ -66,7 +66,7 @@ function RightPane() {
             {RightPaneStore.getDoDisplaySearch() ? (
                 <SearchForm toggleSearch={toggleSearch} />
             ) : (
-                <CourseRenderPane key={key} />
+                <CourseRenderPane key={key} id={key} />
             )}
         </div>
     );
