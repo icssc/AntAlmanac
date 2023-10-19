@@ -17,7 +17,7 @@ export const MAPBOX_PROXY_DIRECTIONS_ENDPOINT = endpointTransform('/mapbox/direc
 export const MAPBOX_PROXY_TILES_ENDPOINT = endpointTransform('/mapbox/tiles');
 
 // PeterPortal API
-export const PETERPORTAL_GRAPHQL_ENDPOINT = 'https://api-next.peterportal.org/v1/graphql';
+export const PETERPORTAL_GRAPHQL_ENDPOINT = 'https://staging-107.api-next.peterportal.org/v1/graphql';
 export const PETERPORTAL_REST_ENDPOINT = 'https://api-next.peterportal.org/v1/rest';
 
 export const PETERPORTAL_WEBSOC_ENDPOINT = `${PETERPORTAL_REST_ENDPOINT}/websoc`;
