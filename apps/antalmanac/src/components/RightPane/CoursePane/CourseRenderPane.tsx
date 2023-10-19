@@ -40,7 +40,7 @@ function flattenSOCObject(SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
 
         return accumulator;
     }, []);
-};
+}
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = React.useState<boolean>(true);
 
@@ -135,7 +135,7 @@ const SectionTableWrapped = (
     return <div>{component}</div>;
 };
 
-export function CourseRenderPane() {
+export function CourseRenderPane(props: { id?: number }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
@@ -203,7 +203,7 @@ export function CourseRenderPane() {
 
     useEffect(() => {
         loadCourses();
-    }, []);
+    }, [props.id]);
 
     useEffect(() => {
         const updateScheduleNames = () => {
