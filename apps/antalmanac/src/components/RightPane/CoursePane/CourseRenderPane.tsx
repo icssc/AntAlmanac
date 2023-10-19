@@ -18,6 +18,7 @@ import AppStore from '$stores/AppStore';
 import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '$lib/helpers';
 import Grades from '$lib/grades';
 import analyticsEnum from '$lib/analytics';
+import { websocCache } from '$lib/course-helpers';
 
 function flattenSOCObject(SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocDepartment | AACourse)[] {
     const courseColors = AppStore.getAddedCourses().reduce((accumulator, { section }) => {
@@ -202,7 +203,7 @@ export function CourseRenderPane(props: { id?: number }) {
     }, []);
 
     useEffect(() => {
-        console.log('loading courses');
+        console.log('loading courses, cache: ', websocCache);
         loadCourses();
     }, [props.id]);
 

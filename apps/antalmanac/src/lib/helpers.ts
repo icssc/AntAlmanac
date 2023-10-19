@@ -1,8 +1,6 @@
-import React from 'react';
-
 import { WebsocSectionMeeting, WebsocSection, WebsocAPIResponse } from 'peterportal-api-next-types';
 import { PETERPORTAL_GRAPHQL_ENDPOINT, PETERPORTAL_WEBSOC_ENDPOINT } from './api/endpoints';
-import Grades from './grades';
+import { websocCache } from './course-helpers';
 import { addCourse, openSnackbar } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
@@ -71,17 +69,6 @@ export async function queryZotCourse(schedule_name: string) {
     };
 }
 
-interface CacheEntry extends WebsocAPIResponse {
-    timestamp: number;
-}
-
-const websocCache: { [key: string]: CacheEntry } = {};
-
-export function clearCache() {
-    Object.keys(websocCache).forEach((key) => delete websocCache[key]); //https://stackoverflow.com/a/19316873/14587004
-    Grades.clearCache();
-}
-
 function cleanParams(record: Record<string, string>) {
     if ('term' in record) {
         const termValue = record['term'];
@@ -120,14 +107,14 @@ function cleanParams(record: Record<string, string>) {
 
 // Construct a request to PeterPortal with the params as a query string
 export async function queryWebsoc(params: Record<string, string>) {
-    // Construct a request to PeterPortal with the params as a query string
     const url = new URL(PETERPORTAL_WEBSOC_ENDPOINT);
+
     const searchString = new URLSearchParams(cleanParams(params)).toString();
+
     if (websocCache[searchString]?.timestamp > Date.now() - 30 * 60 * 1000) {
-        //NOTE: Check out how caching works
-        //if cache hit and less than 30 minutes old
         return websocCache[searchString];
     }
+
     url.search = searchString;
 
     //The data from the API will duplicate a section if it has multiple locations.
