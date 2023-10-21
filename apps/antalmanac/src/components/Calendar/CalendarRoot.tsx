@@ -36,7 +36,7 @@ CalendarRoot
 
 const styles: Styles<Theme, object> = {
     container: {
-        margin: '0px 4px 4px 4px',
+        margin: '0px 4px',
         borderRadius: '1px',
     },
     firstLineContainer: {
