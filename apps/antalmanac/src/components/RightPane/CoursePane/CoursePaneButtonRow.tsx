@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
     Box,
     Checkbox,
@@ -10,6 +10,7 @@ import {
     Tooltip,
     type SelectChangeEvent,
     type SxProps,
+    Popover,
 } from '@mui/material';
 import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
@@ -65,20 +66,24 @@ export function ColumnToggleButton() {
         store.selectedColumns,
         store.setSelectedColumns,
     ]);
-    const [open, setOpen] = useState(false);
+    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
+    const open = useMemo(() => Boolean(anchorEl), [anchorEl]);
 
-    const handleChange = useCallback((e: SelectChangeEvent<SectionTableColumn[]>) => {
-        if (typeof e.target.value !== 'string') {
-            setSelectedColumns(e.target.value);
-        }
+    const handleChange = useCallback(
+        (e: SelectChangeEvent<SectionTableColumn[]>) => {
+            if (typeof e.target.value !== 'string') {
+                setSelectedColumns(e.target.value);
+            }
+        },
+        [setSelectedColumns]
+    );
+
+    const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
     }, []);
 
-    const handleOpen = useCallback(() => {
-        setOpen(true);
-    }, [setOpen]);
-
     const handleClose = useCallback(() => {
-        setOpen(false);
+        setAnchorEl(undefined);
     }, []);
 
     const selectedColumnNames = useMemo(
@@ -89,28 +94,31 @@ export function ColumnToggleButton() {
     return (
         <>
             <Tooltip title="Show/Hide Columns">
-                <IconButton onClick={handleOpen} sx={buttonSx}>
+                <IconButton onClick={handleClick} sx={buttonSx}>
                     <Visibility />
                 </IconButton>
             </Tooltip>
-            <FormControl>
-                <Select
-                    multiple
-                    value={selectedColumnNames}
-                    open={open}
-                    onChange={handleChange}
-                    onClose={handleClose}
-                    renderValue={renderEmptySelectValue}
-                    sx={{ visibility: 'hidden', position: 'absolute' }}
-                >
-                    {COLUMN_LABEL_ENTRIES.map(([column, label], index) => (
-                        <MenuItem key={column} value={column}>
-                            <Checkbox checked={selectedColumns[index]} color="default" />
-                            <ListItemText primary={label} />
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
+
+            <Popover open={open} anchorEl={anchorEl} onClose={handleClose} sx={{ visibility: 'hidden' }}>
+                <FormControl>
+                    <Select
+                        multiple
+                        value={selectedColumnNames}
+                        open={open}
+                        onChange={handleChange}
+                        onClose={handleClose}
+                        renderValue={renderEmptySelectValue}
+                        MenuProps={{ anchorEl }}
+                    >
+                        {COLUMN_LABEL_ENTRIES.map(([column, label], index) => (
+                            <MenuItem key={column} value={column}>
+                                <Checkbox checked={selectedColumns[index]} color="default" />
+                                <ListItemText primary={label} />
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            </Popover>
         </>
     );
 }
