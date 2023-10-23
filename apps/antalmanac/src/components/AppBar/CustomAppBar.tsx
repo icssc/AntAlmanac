@@ -70,7 +70,7 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
                 <img
                     height={32}
                     src={isMobileScreen ? MobileLogo : Logo}
-                    title={'Thanks Aejin for making these seasonal logo variants!'}
+                    title={'Thanks Aejin for designing this seasonal logo!'}
                     alt="logo"
                 />
 
