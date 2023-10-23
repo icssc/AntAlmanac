@@ -42,6 +42,7 @@ function flattenSOCObject(SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
         return accumulator;
     }, []);
 }
+
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = React.useState<boolean>(true);
 
