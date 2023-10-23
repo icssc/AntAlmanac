@@ -18,6 +18,7 @@ import AppStore from '$stores/AppStore';
 import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '$lib/helpers';
 import Grades from '$lib/grades';
 import analyticsEnum from '$lib/analytics';
+import { openSnackbar } from '$actions/AppStoreActions';
 
 function flattenSOCObject(SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocDepartment | AACourse)[] {
     const courseColors = AppStore.getAddedCourses().reduce((accumulator, { section }) => {
@@ -196,7 +197,9 @@ export function CourseRenderPane() {
             setError(false);
             setCourseData(flattenSOCObject(websocJsonResp));
         } catch (error) {
+            console.error(error);
             setError(true);
+            openSnackbar('error', 'We ran into an error while looking up class info');
         } finally {
             setLoading(false);
         }
