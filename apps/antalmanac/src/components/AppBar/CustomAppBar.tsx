@@ -12,8 +12,8 @@ import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import News from './News';
 import SettingsMenu from './SettingsMenu';
 import Export from './Exports/Export';
-import { ReactComponent as Logo } from './logo.svg';
-import { ReactComponent as MobileLogo } from './mobile-logo.svg';
+import Logo from './halloween-logo.png';
+import MobileLogo from './halloween-mobile-logo.png';
 
 const styles = {
     appBar: {
@@ -67,7 +67,12 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar variant="dense">
-                {isMobileScreen ? <MobileLogo height={32} /> : <Logo height={32} />}
+                <img
+                    height={32}
+                    src={isMobileScreen ? MobileLogo : Logo}
+                    title={'Thanks Aejin for making these seasonal logo variants!'}
+                    alt="logo"
+                />
 
                 <div style={{ flexGrow: '1' }} />
 
