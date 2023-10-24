@@ -1,7 +1,7 @@
 import { Button, Paper, Popper, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { logAnalytics } from '$lib/analytics';
@@ -36,16 +36,23 @@ function CourseInfoButton({
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
     const [isClicked, setIsClicked] = useState(false);
 
+    useEffect(() => {
+        // When the user clicks on the button, it triggers both onMouseEnter
+        // and onClick. In order to log the analytics only once, we should
+        // have this hook when the popupAnchor changes
+        if (popupAnchor) {
+            logAnalytics({
+                category: analyticsCategory,
+                action: analyticsAction,
+            });
+        }
+    }, [popupAnchor, analyticsCategory, analyticsAction]);
+
     const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
         // If there is popup content, allow the content to be shown when the button is hovered
         // Note that on mobile devices, hovering is not possible, so the popup still needs to be able
         // to appear when the button is clicked
         if (popupContent) {
-            logAnalytics({
-                category: analyticsCategory,
-                action: analyticsAction,
-            });
-
             setPopupAnchor(event.currentTarget);
         }
     };
@@ -65,11 +72,6 @@ function CourseInfoButton({
                 variant="contained"
                 size="small"
                 onClick={(event: React.MouseEvent<HTMLElement>) => {
-                    logAnalytics({
-                        category: analyticsCategory,
-                        action: analyticsAction,
-                    });
-
                     if (redirectLink) {
                         window.open(redirectLink);
                     }
@@ -97,3 +99,6 @@ function CourseInfoButton({
 }
 
 export default withStyles(styles)(CourseInfoButton);
+
+// Test
+const courseInfoButtonId = 'course-info-button';
