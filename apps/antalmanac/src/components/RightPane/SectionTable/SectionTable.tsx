@@ -13,6 +13,7 @@ import {
     useMediaQuery,
 } from '@material-ui/core';
 import { Assessment, Help, RateReview, ShowChart as ShowChartIcon } from '@material-ui/icons';
+import { GlobalStyles } from '@mui/material';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import CourseInfoBar from './CourseInfoBar';
 import CourseInfoButton from './CourseInfoButton';
@@ -104,7 +105,7 @@ function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
 function SectionTable(props: SectionTableProps) {
     const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory } = props;
 
-    const [selectedColumns, activeColumns] = useColumnStore((store) => [store.selectedColumns, store.activeColumns]);
+    const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
 
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
 
@@ -127,6 +128,7 @@ function SectionTable(props: SectionTableProps) {
 
     return (
         <>
+            <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
             <Box style={{ display: 'flex', gap: 4, marginTop: 4, marginBottom: 8 }}>
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}

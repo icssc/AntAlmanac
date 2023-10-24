@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import useTabStore from './TabStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 /**
@@ -50,14 +51,23 @@ interface ColumnStore {
     setColumnEnabled: (column: SectionTableColumn, state: boolean) => void;
 }
 
+// Don't enable GPA column if the user is on the Added tab
+const enabledColumnsInitial = SECTION_TABLE_COLUMNS.map(
+    (col) => !(window.location.pathname.split('/').slice(1)[0] === 'added' && col === 'gpa')
+);
+const selectedColumnsInitial = SECTION_TABLE_COLUMNS.map(() => true);
+const activeColumnsInitial = SECTION_TABLE_COLUMNS.filter(
+    (_, index) => enabledColumnsInitial[index] && selectedColumnsInitial[index]
+);
+
 /**
  * Store of columns that are currently being displayed in the search results.
  */
 export const useColumnStore = create<ColumnStore>((set, get) => {
     return {
-        enabledColumns: SECTION_TABLE_COLUMNS.map(() => true),
-        selectedColumns: SECTION_TABLE_COLUMNS.map(() => true),
-        activeColumns: Array.from(SECTION_TABLE_COLUMNS),
+        enabledColumns: enabledColumnsInitial,
+        selectedColumns: selectedColumnsInitial,
+        activeColumns: activeColumnsInitial,
         setSelectedColumns: (columns: SectionTableColumn[]) => {
             set(() => {
                 const selectedColumns = SECTION_TABLE_COLUMNS.map((column) => columns.includes(column));
