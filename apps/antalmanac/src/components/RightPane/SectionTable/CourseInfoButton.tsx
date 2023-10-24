@@ -99,6 +99,3 @@ function CourseInfoButton({
 }
 
 export default withStyles(styles)(CourseInfoButton);
-
-// Test
-const courseInfoButtonId = 'course-info-button';
