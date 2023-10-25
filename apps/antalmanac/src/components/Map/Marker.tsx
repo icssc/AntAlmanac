@@ -101,10 +101,10 @@ const LocationMarker = forwardRef(
                             />
                         )}
 
-                        <Box display="flex" flexDirection="column" mx={2} my={1.25} gap={1.5}>
-                            <Box display="flex" flexDirection="column">
+                        <Box display="flex" flexDirection="column" mx={2} my={1.25} gap={1}>
+                            <Box display="flex" flexDirection="column" gap={0.5}>
                                 <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                                    <Typography fontSize={'1.25rem'} fontWeight={600}>
+                                    <Typography fontSize={'1.25rem'} lineHeight={1.25} fontWeight={600}>
                                         {location}
                                     </Typography>
                                     {location && (
