@@ -114,7 +114,7 @@ const LocationMarker = forwardRef(
                                             size="medium"
                                             sx={{ padding: 0 }}
                                         >
-                                            <Info fontSize="large" />
+                                            <Info fontSize="large" color="primary" />
                                         </IconButton>
                                     )}
                                 </Box>
