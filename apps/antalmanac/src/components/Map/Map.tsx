@@ -41,14 +41,10 @@ interface MarkerContent {
  */
 export function getCoursesPerBuilding() {
     const courseEvents = AppStore.getCourseEventsInCalendar();
-    const customEvents = AppStore.getCustomEvents();
 
     const courseBuildings = courseEvents.flatMap((event) => event.locations.map((location) => location.building));
-    const customEventBuildings = customEvents.map((e) => e.building).filter(notNull);
 
-    const allBuildingCodes = [...courseBuildings, ...customEventBuildings];
-
-    console.log({ allBuildingCodes });
+    const allBuildingCodes = [...courseBuildings];
 
     const uniqueBuildingCodes = new Set(allBuildingCodes);
 
@@ -84,6 +80,67 @@ export function getCoursesPerBuilding() {
     return coursesPerBuilding;
 }
 
+export function getCustomEventPerBuilding() {
+    const customEvents = AppStore.getCustomEvents();
+
+    const customEventBuildings = customEvents.map((e) => e.building).filter(notNull);
+
+    // convert all digit to name in customEventBuilding  for example: 83096  ->  ICS
+    for (let i = 0; i < customEventBuildings.length; i++) {
+        customEventBuildings[i] =
+            Object.keys(locationIds).find((key) => locationIds[key] === parseInt(customEventBuildings[i])) || '';
+    }
+
+    const allBuildingCodes = [...customEventBuildings];
+
+    const uniqueBuildingCodes = new Set(allBuildingCodes);
+
+    const validBuildingCodes = [...uniqueBuildingCodes].filter(
+        (buildingCode) => buildingCatalogue[locationIds[buildingCode]] != null
+    );
+
+    interface localCustomEventType {
+        title: string;
+        start: string;
+        end: string;
+        days: boolean[];
+        customEventID: number;
+        color?: string | undefined;
+        building?: string | undefined;
+    }
+
+    const customEventPerBuilding: Record<string, (localCustomEventType & Building & MarkerContent)[]> = {};
+    for (let i = 0; i < validBuildingCodes.length; i++) {
+        customEventPerBuilding[validBuildingCodes[i]] = customEvents
+            .filter((event) => {
+                return (
+                    Object.keys(locationIds).find(
+                        (key) => locationIds[key] === parseInt(event.building ? event.building : '')
+                    ) == validBuildingCodes[i]
+                );
+            })
+            .map((event) => {
+                const locationData = buildingCatalogue[locationIds[validBuildingCodes[i]]];
+                const key = `${event.title} @ ${event.building}`;
+                const acronym = locationData.name.substring(
+                    locationData.name.indexOf('(') + 1,
+                    locationData.name.indexOf(')')
+                );
+                const markerCustomEventData = {
+                    key,
+                    image: locationData.imageURLs[0],
+                    acronym,
+                    markerColor: event.color ? event.color : '',
+                    location: locationData.name,
+                    ...locationData,
+                    ...event,
+                };
+                return markerCustomEventData;
+            });
+    }
+    return customEventPerBuilding;
+}
+
 /**
  * Map of all course locations on UCI campus.
  */
@@ -94,6 +151,7 @@ export default function CourseMap() {
     const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
+    const [customEventMarkers] = useState(getCustomEventPerBuilding());
     const [calendarEvents, setCalendarEvents] = useState(AppStore.getCourseEventsInCalendar());
 
     useEffect(() => {
@@ -192,11 +250,43 @@ export default function CourseMap() {
 
         const markersToday =
             today === 'All' ? markerValues : markerValues.filter((course) => course.start.toString().includes(today));
-
         return markersToday
             .sort((a, b) => a.start.getTime() - b.start.getTime())
             .filter((marker, i, arr) => arr.findIndex((other) => other.sectionCode === marker.sectionCode) === i);
     }, [markers, today]);
+
+    const customEventMarkersToDisplay = useMemo(() => {
+        const markerValues = Object.keys(customEventMarkers).flatMap((markerKey) => customEventMarkers[markerKey]);
+
+        const markersToday =
+            today === 'All'
+                ? markerValues
+                : markerValues.filter((event) => {
+                      const eventDays = [];
+                      if (event.days[2] == true) {
+                          eventDays.push('Mon');
+                      }
+                      if (event.days[3] == true) {
+                          eventDays.push('Tue');
+                      }
+                      if (event.days[4] == true) {
+                          eventDays.push('Wed');
+                      }
+                      if (event.days[5] == true) {
+                          eventDays.push('Thu');
+                      }
+                      if (event.days[6] == true) {
+                          eventDays.push('Fri');
+                      }
+                      return eventDays.includes(today);
+                  });
+
+        return markersToday.sort((a, b) => {
+            const startDateA = new Date(`1970-01-01T${a.start}`);
+            const startDateB = new Date(`1970-01-01T${b.start}`);
+            return startDateA.getTime() - startDateB.getTime();
+        });
+    }, [customEventMarkers, today]);
 
     /**
      * Every two markers grouped as [start, destination] tuples for the routes.
@@ -269,6 +359,25 @@ export default function CourseMap() {
                                         Room{allRoomsInBuilding.length > 1 && 's'}: {marker.locations[0].building}{' '}
                                         {allRoomsInBuilding.join('/')}
                                     </Typography>
+                                </Box>
+                            </LocationMarker>
+                        </Fragment>
+                    );
+                })}
+
+                {/* Draw a marker for each custom Event that occurs today. */}
+                {customEventMarkersToDisplay.map((customEventMarkers, index) => {
+                    const customEventSameBuildingPrior = customEventMarkersToDisplay.slice(0, index);
+
+                    return (
+                        <Fragment key={Object.values(customEventMarkers).join('')}>
+                            <LocationMarker
+                                {...customEventMarkers}
+                                label={'E'}
+                                stackIndex={customEventSameBuildingPrior.length}
+                            >
+                                <Box>
+                                    <Typography variant="body2">Event: {customEventMarkers.title}</Typography>
                                 </Box>
                             </LocationMarker>
                         </Fragment>

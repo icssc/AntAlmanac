@@ -293,7 +293,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                     Location: &nbsp;&nbsp;
                     <Link
                         className={classes.clickableLocation}
-                        to={`/map?location=${locationIds[building] ?? 0}`}
+                        to={`/map?location=${building ?? 0}`}
                         onClick={focusMap}
                     >
                         {building ? buildingCatalogue[+building].name : ''}
