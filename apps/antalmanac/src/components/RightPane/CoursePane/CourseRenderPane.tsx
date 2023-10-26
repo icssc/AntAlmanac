@@ -207,7 +207,6 @@ export function CourseRenderPane(props: { id?: number }) {
         loadCourses();
     }, [props.id]);
 
-    console.log('id: ', props.id);
 
     useEffect(() => {
         const updateScheduleNames = () => {
