@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import useTabStore from './TabStore';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 /**
  * Search results are displayed in a tabular format.

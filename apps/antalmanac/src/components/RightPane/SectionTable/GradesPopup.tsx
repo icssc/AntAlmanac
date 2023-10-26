@@ -57,20 +57,22 @@ function GradesPopup(props: GradesPopupProps) {
 
     const [gradeData, setGradeData] = useState<GradeData>();
 
-    const width = useMemo(() => (isMobileScreen ? 300 : 500), [isMobileScreen]);
+    const width = useMemo(() => (isMobileScreen ? 250 : 400), [isMobileScreen]);
 
-    const height = useMemo(() => (isMobileScreen ? 200 : 300), [isMobileScreen]);
+    const height = useMemo(() => (isMobileScreen ? 150 : 200), [isMobileScreen]);
 
     const graphTitle = useMemo(() => {
         return gradeData
-            ? `${deptCode} ${courseNumber}${instructor ? ` — ${instructor}` : "" } | Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}`
+            ? `${deptCode} ${courseNumber}${
+                  instructor ? ` — ${instructor}` : ''
+              } | Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}`
             : 'Grades are not available for this class.';
     }, [deptCode, instructor, gradeData]);
 
     const gpaString = useMemo(
-        () => (gradeData ? `Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}` : ""), 
+        () => (gradeData ? `Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}` : ''),
         [gradeData]
-    )
+    );
 
     useEffect(() => {
         if (loading === false) {
@@ -107,15 +109,15 @@ function GradesPopup(props: GradesPopupProps) {
     const axisColor = isDarkMode() ? '#fff' : '#111';
 
     return (
-        <Box>
+        <Box sx={{ padding: '4px' }}>
             <Typography
                 sx={{
                     marginTop: '.5rem',
                     textAlign: 'center',
                     fontWeight: 500,
-                    fontSize: '1.2rem',
-                    marginRight: '4rem',
-                    marginLeft: '4rem',
+                    marginRight: '2rem',
+                    marginLeft: '2rem',
+                    marginBottom: '.5rem',
                 }}
             >
                 {graphTitle}
