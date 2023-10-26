@@ -39,7 +39,7 @@ export function getCourseInfo(SOCObject: WebsocAPIResponse) {
 export async function queryWebsoc(params: Record<string, string>) {
     // Construct a request to PeterPortal with the params as a query string
     const url = new URL(PETERPORTAL_WEBSOC_ENDPOINT);
-    const searchString = new URLSearchParams(cleanParams(params)).toString();
+    const searchString = new URLSearchParams(cleanSearchParams(params)).toString();
     if (websocCache[searchString]?.timestamp > Date.now() - 30 * 60 * 1000) {
         //NOTE: Check out how caching works
         //if cache hit and less than 30 minutes old
@@ -121,7 +121,7 @@ function removeDuplicateMeetings(websocResp: WebsocAPIResponse): WebsocAPIRespon
     return websocResp;
 }
 
-function cleanParams(record: Record<string, string>) {
+function cleanSearchParams(record: Record<string, string>) {
     if ('term' in record) {
         const termValue = record['term'];
         const termParts = termValue.split(' ');
