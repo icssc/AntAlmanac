@@ -290,8 +290,8 @@ export function getEventsFromCourses(events = AppStore.getEventsInCalendar()): E
                         productId: 'antalmanac/ics',
                         startOutputType: 'local' as const,
                         endOutputType: 'local' as const,
-                        title: `${title} ${sectionType} Final Exam`,
-                        description: `Final Exam for ${courseTitle}`,
+                        title: `${title} Final Exam`,
+                        description: `Final Exam for ${sectionType} ${courseTitle}`,
                         start: getExamTime(finalExam, getYear(term))[0]!,
                         end: getExamTime(finalExam, getYear(term))[1]!,
                     });
