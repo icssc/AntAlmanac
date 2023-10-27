@@ -48,8 +48,8 @@ export default function Desktop({ style }: DesktopTabsProps) {
     const { activeTab, setActiveTab } = useTabStore();
 
     return (
-        <div style={style}>
-            <Paper elevation={0} variant="outlined" square>
+        <Box style={{ ...style, margin: '0 4px' }}>
+            <Paper elevation={0} variant="outlined" square style={{ borderRadius: '4px 4px 0 0' }}>
                 <Tabs
                     value={activeTab}
                     onChange={(_event, value) => setActiveTab(value)}
@@ -69,12 +69,12 @@ export default function Desktop({ style }: DesktopTabsProps) {
                                 </div>
                             }
                             to={tab.href}
-                            style={{ minHeight: 'auto', height: '44px', padding: 3 }}
+                            style={{ minHeight: 'auto', height: '44px', padding: 3, minWidth: '33%' }}
                         />
                     ))}
                 </Tabs>
             </Paper>
-            <Box height="calc(100% - 54px)" overflow="auto">
+            <Box height="calc(100% - 54px)" overflow="auto" style={{ margin: '8px 4px 0px' }}>
                 {activeTab === 0 && <CoursePane />}
                 {activeTab === 1 && <AddedCoursePane />}
                 {activeTab === 2 && (
@@ -89,6 +89,6 @@ export default function Desktop({ style }: DesktopTabsProps) {
                     </Suspense>
                 )}
             </Box>
-        </div>
+        </Box>
     );
 }

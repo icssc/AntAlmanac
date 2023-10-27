@@ -1,8 +1,8 @@
 import { forwardRef, type Ref } from 'react';
 import Leaflet from 'leaflet';
 import { Marker, Popup } from 'react-leaflet';
-import { Box, Button, Link, Typography } from '@mui/material';
-import { DirectionsWalk as DirectionsWalkIcon } from '@mui/icons-material';
+import { Box, Button, IconButton, Typography } from '@mui/material';
+import { DirectionsWalk as DirectionsWalkIcon, Info } from '@mui/icons-material';
 
 const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';
 const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId=463&image=';
@@ -82,53 +82,64 @@ const LocationMarker = forwardRef(
                 <Popup>
                     <Box
                         sx={{
-                            width: 200,
                             display: 'flex',
                             flexDirection: 'column',
-                            gap: 0.5,
                             justifyContent: 'center',
-                            m: 2,
+                            width: 250,
                         }}
                     >
-                        <Box>
-                            {location ? (
-                                <Link
-                                    href={`http://www.classrooms.uci.edu/classrooms/${acronym}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    textAlign="center"
-                                    variant="h6"
-                                >
-                                    {location}
-                                </Link>
-                            ) : (
-                                <Typography textAlign="center">{location}</Typography>
-                            )}
-                        </Box>
-
                         {image && (
-                            <Box sx={{ mx: 'auto', my: 1, width: 150, height: 150 }}>
-                                <Box
-                                    component="img"
-                                    src={`${IMAGE_CMS_URL}${image}`}
-                                    alt="Building Snapshot"
-                                    sx={{ width: 1, height: 1, objectFit: 'cover' }}
-                                />
-                            </Box>
+                            <Box
+                                height={150}
+                                borderRadius={'0.75rem 0.75rem 0 0'}
+                                component="img"
+                                src={`${IMAGE_CMS_URL}${image}`}
+                                alt="Building Snapshot"
+                                sx={{
+                                    objectFit: 'cover',
+                                }}
+                            />
                         )}
 
-                        {children}
+                        <Box display="flex" flexDirection="column" mx={2} my={1.25} gap={1}>
+                            <Box display="flex" flexDirection="column" gap={0.5}>
+                                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                                    <Typography fontSize={'1.25rem'} lineHeight={1.25} fontWeight={600}>
+                                        {location}
+                                    </Typography>
+                                    {location && (
+                                        <IconButton
+                                            href={`http://www.classrooms.uci.edu/classrooms/${acronym}`}
+                                            target="_blank"
+                                            size="medium"
+                                            sx={{ padding: 0 }}
+                                        >
+                                            <Info fontSize="large" color="primary" />
+                                        </IconButton>
+                                    )}
+                                </Box>
 
-                        <Button
-                            variant="contained"
-                            color="inherit"
-                            startIcon={<DirectionsWalkIcon />}
-                            href={`${GOOGLE_MAPS_URL}${lat},${lng}`}
-                            target="_blank"
-                            sx={{ alignSelf: 'center' }}
-                        >
-                            Directions
-                        </Button>
+                                {children}
+                            </Box>
+
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={<DirectionsWalkIcon color="secondary" />}
+                                href={`${GOOGLE_MAPS_URL}${lat},${lng}`}
+                                target="_blank"
+                                sx={{ alignSelf: 'center', width: '100%', borderRadius: '0.75rem' }}
+                            >
+                                <Typography
+                                    color="secondary"
+                                    fontSize={'1.25rem'}
+                                    letterSpacing={1.25}
+                                    fontWeight={500}
+                                >
+                                    Directions
+                                </Typography>
+                            </Button>
+                        </Box>
                     </Box>
                 </Popup>
             </Marker>

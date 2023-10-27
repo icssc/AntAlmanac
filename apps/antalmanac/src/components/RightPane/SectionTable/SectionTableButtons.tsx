@@ -52,6 +52,7 @@ export const ColorAndDelete = withStyles(styles)((props: ColorAndDeleteProps) =>
                     <Delete fontSize="small" />
                 </IconButton>
                 <ColorPicker
+                    key={AppStore.getCurrentScheduleIndex()}
                     color={color}
                     isCustomEvent={false}
                     sectionCode={sectionCode}

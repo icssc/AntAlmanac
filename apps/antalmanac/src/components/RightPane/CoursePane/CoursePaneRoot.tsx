@@ -57,7 +57,7 @@ function RightPane() {
     }, []);
 
     return (
-        <div style={{ height: '100%', padding: 8 }}>
+        <div style={{ height: '100%' }}>
             <CoursePaneButtonRow
                 showSearch={!RightPaneStore.getDoDisplaySearch()}
                 onDismissSearchResults={toggleSearch}
