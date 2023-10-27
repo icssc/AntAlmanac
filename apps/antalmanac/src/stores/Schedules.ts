@@ -148,10 +148,22 @@ export class Schedules {
     }
 
     /**
-     * @return Reference of the course that matches the params
+     * @return A course that matches the params across all schedules
      */
     getExistingCourse(sectionCode: string, term: string) {
         for (const course of this.getAllCourses()) {
+            if (course.section.sectionCode === sectionCode && term === course.term) {
+                return course;
+            }
+        }
+        return undefined;
+    }
+
+    /**
+     * @return A course that matches the params in the current schedule
+     */
+    getExistingCourseInSchedule(sectionCode: string, term: string) {
+        for (const course of this.getCurrentCourses()) {
             if (course.section.sectionCode === sectionCode && term === course.term) {
                 return course;
             }
@@ -172,7 +184,7 @@ export class Schedules {
             this.addUndoState();
         }
 
-        const existingSection = this.getExistingCourse(newCourse.section.sectionCode, newCourse.term);
+        const existingSection = this.getExistingCourseInSchedule(newCourse.section.sectionCode, newCourse.term);
 
         const existsInSchedule = this.doesCourseExistInSchedule(
             newCourse.section.sectionCode,
@@ -222,7 +234,8 @@ export class Schedules {
      */
     changeCourseColor(sectionCode: string, term: string, newColor: string) {
         this.addUndoState();
-        const course = this.getExistingCourse(sectionCode, term);
+
+        const course = this.getExistingCourseInSchedule(sectionCode, term);
         if (course) {
             course.section.color = newColor;
         }
