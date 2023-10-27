@@ -14,11 +14,11 @@ import loadingGif from './SearchForm/Gifs/loading.gif';
 import darkNoNothing from './static/dark-no_results.png';
 import noNothing from './static/no_results.png';
 import AppStore from '$stores/AppStore';
-import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '$lib/helpers';
+import { isDarkMode } from '$lib/helpers';
 import Grades from '$lib/grades';
 import analyticsEnum from '$lib/analytics';
-import { websocCache } from '$lib/course-helpers';
 import { openSnackbar } from '$actions/AppStoreActions';
+import WebSOC from '$lib/websoc';
 
 function getColors() {
     const courseColors = AppStore.schedule.getCurrentCourses().reduce((accumulator, { section }) => {
@@ -200,8 +200,8 @@ export default function CourseRenderPane(props: { id?: number }) {
             // Query websoc for course information and populate gradescache
             const [websocJsonResp, _] = await Promise.all([
                 websocQueryParams.units.includes(',')
-                    ? queryWebsocMultiple(websocQueryParams, 'units')
-                    : queryWebsoc(websocQueryParams),
+                    ? WebSOC.queryMultiple(websocQueryParams, 'units')
+                    : WebSOC.query(websocQueryParams),
                 Grades.populateGradesCache(gradesQueryParams),
             ]);
 

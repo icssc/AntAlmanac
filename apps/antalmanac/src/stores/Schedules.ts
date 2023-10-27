@@ -7,9 +7,9 @@ import {
 } from '@packages/antalmanac-types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import type { CourseInfo } from '$lib/helpers';
+import type { CourseInfo } from '$lib/course_data.types';
 import { getColorForNewSection } from '$stores/scheduleHelpers';
-import { getCourseInfo, queryWebsoc } from '$lib/course-helpers';
+import WebSOC from '$lib/websoc';
 
 export class Schedules {
     private schedules: Schedule[];
@@ -477,7 +477,7 @@ export class Schedules {
 
             const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
                 const sectionCodes = Array.from(courseSet).join(',');
-                const courseInfo = getCourseInfo(await queryWebsoc({ term, sectionCodes }));
+                const courseInfo = await WebSOC.getCourseInfo({ term, sectionCodes });
                 courseInfoDict.set(term, courseInfo);
             });
 
