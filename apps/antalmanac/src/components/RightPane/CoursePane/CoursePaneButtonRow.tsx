@@ -67,7 +67,7 @@ export function ColumnToggleButton() {
         store.setSelectedColumns,
     ]);
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();
-    const open = useMemo(() => Boolean(anchorEl), [anchorEl]);
+    const open = Boolean(anchorEl);
 
     const handleChange = useCallback(
         (e: SelectChangeEvent<SectionTableColumn[]>) => {
