@@ -6,10 +6,11 @@ import { ScheduleCourse } from '@packages/antalmanac-types';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { courseNumAsDecimal, warnMultipleTerms } from '$lib/helpers';
+import { warnMultipleTerms } from '$lib/helpers';
 import { CourseDetails } from '$lib/course_data.types';
 import AppStore from '$stores/AppStore';
 import trpc from '$lib/api/trpc';
+import { courseNumAsDecimal } from '$lib/analytics';
 
 export const addCourse = (
     section: WebsocSection,
