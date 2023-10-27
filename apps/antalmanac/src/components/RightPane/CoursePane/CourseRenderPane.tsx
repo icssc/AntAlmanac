@@ -19,6 +19,7 @@ import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '$lib/helpers';
 import Grades from '$lib/grades';
 import analyticsEnum from '$lib/analytics';
 import { websocCache } from '$lib/course-helpers';
+import { openSnackbar } from '$actions/AppStoreActions';
 
 function flattenSOCObject(SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocDepartment | AACourse)[] {
     const courseColors = AppStore.getAddedCourses().reduce((accumulator, { section }) => {
@@ -196,7 +197,9 @@ export function CourseRenderPane(props: { id?: number }) {
             setError(false);
             setCourseData(flattenSOCObject(websocJsonResp));
         } catch (error) {
+            console.error(error);
             setError(true);
+            openSnackbar('error', 'We ran into an error while looking up class info');
         } finally {
             setLoading(false);
         }
@@ -206,7 +209,6 @@ export function CourseRenderPane(props: { id?: number }) {
         console.log('loading courses, cache: ', websocCache);
         loadCourses();
     }, [props.id]);
-
 
     useEffect(() => {
         const updateScheduleNames = () => {
