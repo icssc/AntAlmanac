@@ -16,10 +16,10 @@ import darkNoNothing from './static/dark-no_results.png';
 import noNothing from './static/no_results.png';
 import AppStore from '$stores/AppStore';
 import { isDarkMode } from '$lib/helpers';
-import { queryWebsoc, queryWebsocMultiple } from '$lib/course-helpers';
 import Grades from '$lib/grades';
 import analyticsEnum from '$lib/analytics';
 import { openSnackbar } from '$actions/AppStoreActions';
+import WebSOC from '$lib/websoc';
 
 function flattenSOCObject(SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocDepartment | AACourse)[] {
     const courseColors = AppStore.getAddedCourses().reduce((accumulator, { section }) => {
@@ -190,8 +190,8 @@ export function CourseRenderPane() {
             // Query websoc for course information and populate gradescache
             const [websocJsonResp, _] = await Promise.all([
                 websocQueryParams.units.includes(',')
-                    ? queryWebsocMultiple(websocQueryParams, 'units')
-                    : queryWebsoc(websocQueryParams),
+                    ? WebSOC.queryMultiple(websocQueryParams, 'units')
+                    : WebSOC.query(websocQueryParams),
                 Grades.populateGradesCache(gradesQueryParams),
             ]);
 

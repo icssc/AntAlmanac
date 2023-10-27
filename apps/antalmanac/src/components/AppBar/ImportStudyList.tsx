@@ -24,7 +24,7 @@ import { addCustomEvent, openSnackbar } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { warnMultipleTerms } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
-import { getCourseInfo, queryWebsoc } from '$lib/course-helpers';
+import WebSOC from '$lib/websoc';
 import { CourseInfo } from '$lib/course_data.types';
 import { addCourse } from '$actions/AppStoreActions';
 import { ZotCourseResponse, queryZotCourse } from '$lib/zotcourse';
@@ -110,12 +110,10 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
 
                 try {
                     const sectionsAdded = this.addCoursesMultiple(
-                        getCourseInfo(
-                            await queryWebsoc({
-                                term: this.state.selectedTerm,
-                                sectionCodes: sectionCodes.join(','),
-                            })
-                        ),
+                        await WebSOC.getCourseInfo({
+                            term: this.state.selectedTerm,
+                            sectionCodes: sectionCodes.join(','),
+                        }),
                         this.state.selectedTerm,
                         currSchedule
                     );
