@@ -25,9 +25,6 @@ export async function queryGraphQL<PromiseReturnType>(queryString: string): Prom
     return json as Promise<PromiseReturnType>;
 }
 
-export const termsInSchedule = (term: string) =>
-    new Set([term, ...AppStore.schedule.getCurrentCourses().map((course) => course.term)]);
-
 export const warnMultipleTerms = (terms: Set<string>) => {
     openSnackbar(
         'warning',

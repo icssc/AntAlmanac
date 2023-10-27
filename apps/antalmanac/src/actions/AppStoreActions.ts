@@ -6,7 +6,7 @@ import { ScheduleCourse } from '@packages/antalmanac-types';
 import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { courseNumAsDecimal, termsInSchedule, warnMultipleTerms } from '$lib/helpers';
+import { courseNumAsDecimal, warnMultipleTerms } from '$lib/helpers';
 import { CourseDetails } from '$lib/course_data.types';
 import AppStore from '$stores/AppStore';
 import trpc from '$lib/api/trpc';
@@ -24,7 +24,7 @@ export const addCourse = (
         label: courseDetails.deptCode,
         value: courseNumAsDecimal(courseDetails.courseNumber),
     });
-    const terms = termsInSchedule(term);
+    const terms = AppStore.termsInSchedule(term);
 
     if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 

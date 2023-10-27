@@ -22,7 +22,7 @@ import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '../RightPane/RightPaneStore';
 import { addCustomEvent, openSnackbar } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { termsInSchedule, warnMultipleTerms } from '$lib/helpers';
+import { warnMultipleTerms } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import { getCourseInfo, queryWebsoc } from '$lib/course-helpers';
 import { CourseInfo } from '$lib/course_data.types';
@@ -77,7 +77,7 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         for (const section of Object.values(courseInfo)) {
             addCourse(section.section, section.courseDetails, term, scheduleIndex, true);
         }
-        const terms = termsInSchedule(term);
+        const terms = AppStore.termsInSchedule(term);
         if (terms.size > 1) warnMultipleTerms(terms);
         return Object.values(courseInfo).length;
     };

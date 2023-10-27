@@ -310,6 +310,9 @@ class AppStore extends EventEmitter {
         this.schedule.updateScheduleNote(newScheduleNote, scheduleIndex);
         this.emit('scheduleNotesChange');
     }
+
+    termsInSchedule = (term: string) =>
+        new Set([term, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
 }
 
 const store = new AppStore();
