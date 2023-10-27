@@ -272,12 +272,15 @@ export default function CourseMap() {
                                 stackIndex={coursesSameBuildingPrior.length}
                             >
                                 <Box>
-                                    <Typography variant="body2">
-                                        Class: {marker.title} {marker.sectionType}
+                                    <Typography variant="body1">
+                                        <span style={{ fontWeight: 'bold' }}>Class:</span> {marker.title}{' '}
+                                        {marker.sectionType}
                                     </Typography>
-                                    <Typography variant="body2">
-                                        Room{allRoomsInBuilding.length > 1 && 's'}: {marker.locations[0].building}{' '}
-                                        {allRoomsInBuilding.join('/')}
+                                    <Typography variant="body1">
+                                        <span style={{ fontWeight: 'bold' }}>
+                                            Room{allRoomsInBuilding.length > 1 && 's'}:
+                                        </span>{' '}
+                                        {marker.locations[0].building} {allRoomsInBuilding.join('/')}
                                     </Typography>
                                 </Box>
                             </LocationMarker>

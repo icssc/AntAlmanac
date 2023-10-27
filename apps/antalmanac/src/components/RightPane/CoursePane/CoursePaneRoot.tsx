@@ -7,6 +7,7 @@ import SearchForm from './SearchForm/SearchForm';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { openSnackbar } from '$actions/AppStoreActions';
 import WebSOC from '$lib/websoc';
+import Grades from '$lib/grades';
 
 function RightPane() {
     const [key, forceUpdate] = useReducer((currentCount) => currentCount + 1, 0);
@@ -34,6 +35,7 @@ function RightPane() {
             action: analyticsEnum.classSearch.actions.REFRESH,
         });
         WebSOC.clearCache();
+        Grades.clearCache();
         forceUpdate();
     }, []);
 
@@ -66,7 +68,7 @@ function RightPane() {
             {RightPaneStore.getDoDisplaySearch() ? (
                 <SearchForm toggleSearch={toggleSearch} />
             ) : (
-                <CourseRenderPane key={key} />
+                <CourseRenderPane key={key} id={key} />
             )}
         </div>
     );
