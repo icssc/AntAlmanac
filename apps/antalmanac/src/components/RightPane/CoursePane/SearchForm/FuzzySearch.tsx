@@ -167,8 +167,12 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 style={{ width: '100%' }}
                 options={Object.keys(this.state.results)}
                 renderInput={(params) => (
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-                    <TextField {...params} inputRef={(input) => input} fullWidth label={'Search'} />
+                    <TextField
+                        {...params}
+                        inputRef={(input: HTMLInputElement | null) => input && input.focus()}
+                        fullWidth
+                        label={'Search'}
+                    />
                 )}
                 autoHighlight={true}
                 filterOptions={this.filterOptions}
