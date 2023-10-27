@@ -48,7 +48,7 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
 
         return accumulator;
     }, []);
-}
+};
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
 
@@ -243,7 +243,7 @@ export default function CourseRenderPane(props: { id?: number }) {
         return () => {
             AppStore.off('scheduleNamesChange', updateScheduleNames);
         };
-    }, [props.id]);
+    }, [loadCourses, props.id]);
 
     return (
         <>
