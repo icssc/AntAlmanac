@@ -22,11 +22,12 @@ import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '../RightPane/RightPaneStore';
 import { addCustomEvent, openSnackbar } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { ZotCourseResponse, queryZotCourse, termsInSchedule, warnMultipleTerms } from '$lib/helpers';
+import { termsInSchedule, warnMultipleTerms } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import { getCourseInfo, queryWebsoc } from '$lib/course-helpers';
 import { CourseInfo } from '$lib/course_data.types';
 import { addCourse } from '$actions/AppStoreActions';
+import { ZotCourseResponse, queryZotCourse } from '$lib/zotcourse';
 
 const styles = {
     inputLabel: {
