@@ -17,6 +17,7 @@ import AppStore from '$stores/AppStore';
 import { isDarkMode, queryWebsoc, queryWebsocMultiple } from '$lib/helpers';
 import Grades from '$lib/grades';
 import analyticsEnum from '$lib/analytics';
+import { websocCache } from '$lib/course-helpers';
 import { openSnackbar } from '$actions/AppStoreActions';
 
 function getColors() {
@@ -47,7 +48,7 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
 
         return accumulator;
     }, []);
-}
+};
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
 
@@ -162,7 +163,7 @@ const ErrorMessage = () => {
     );
 };
 
-export default function CourseRenderPane() {
+export default function CourseRenderPane(props: { id?: number }) {
     const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
     const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
     const [loading, setLoading] = useState(true);
@@ -242,7 +243,7 @@ export default function CourseRenderPane() {
         return () => {
             AppStore.off('scheduleNamesChange', updateScheduleNames);
         };
-    }, [loadCourses]);
+    }, [loadCourses, props.id]);
 
     return (
         <>

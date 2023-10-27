@@ -6,10 +6,10 @@ interface CacheEntry extends WebsocAPIResponse {
     timestamp: number;
 }
 
-const websocCache: { [key: string]: CacheEntry } = {};
+export let websocCache: { [key: string]: CacheEntry } = {};
 
 export function clearCache() {
-    Object.keys(websocCache).forEach((key) => delete websocCache[key]); //https://stackoverflow.com/a/19316873/14587004
+    websocCache = {};
 }
 
 export function getCourseInfo(SOCObject: WebsocAPIResponse) {
