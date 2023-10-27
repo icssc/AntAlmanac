@@ -1,6 +1,6 @@
 import type { WebsocAPIResponse, WebsocSectionMeeting } from 'peterportal-api-next-types';
 import { PETERPORTAL_WEBSOC_ENDPOINT } from './api/endpoints';
-import type { CourseInfo } from './helpers';
+import type { CourseInfo } from './course_data.types';
 
 interface CacheEntry extends WebsocAPIResponse {
     timestamp: number;
@@ -35,6 +35,40 @@ export function getCourseInfo(SOCObject: WebsocAPIResponse) {
     return courseInfo;
 }
 
+export function combineSOCObjects(SOCObjects: WebsocAPIResponse[]) {
+    const combined = SOCObjects.shift() as WebsocAPIResponse;
+    for (const res of SOCObjects) {
+        for (const school of res.schools) {
+            const schoolIndex = combined.schools.findIndex((s) => s.schoolName === school.schoolName);
+            if (schoolIndex !== -1) {
+                for (const dept of school.departments) {
+                    const deptIndex = combined.schools[schoolIndex].departments.findIndex(
+                        (d) => d.deptCode === dept.deptCode
+                    );
+                    if (deptIndex !== -1) {
+                        const courses = new Set(combined.schools[schoolIndex].departments[deptIndex].courses);
+                        for (const course of dept.courses) {
+                            courses.add(course);
+                        }
+                        const coursesArray = Array.from(courses);
+                        coursesArray.sort(
+                            (left, right) =>
+                                parseInt(left.courseNumber.replace(/\D/g, '')) -
+                                parseInt(right.courseNumber.replace(/\D/g, ''))
+                        );
+                        combined.schools[schoolIndex].departments[deptIndex].courses = coursesArray;
+                    } else {
+                        combined.schools[schoolIndex].departments.push(dept);
+                    }
+                }
+            } else {
+                combined.schools.push(school);
+            }
+        }
+    }
+    return combined;
+}
+
 // Construct a request to PeterPortal with the params as a query string
 export async function queryWebsoc(params: Record<string, string>) {
     // Construct a request to PeterPortal with the params as a query string
@@ -61,6 +95,17 @@ export async function queryWebsoc(params: Record<string, string>) {
         .then((r) => r.payload);
     websocCache[searchString] = { ...response, timestamp: Date.now() };
     return removeDuplicateMeetings(response);
+}
+
+export async function queryWebsocMultiple(params: { [key: string]: string }, fieldName: string) {
+    const responses: WebsocAPIResponse[] = [];
+    for (const field of params[fieldName].trim().replace(' ', '').split(',')) {
+        const req = JSON.parse(JSON.stringify(params)) as Record<string, string>;
+        req[fieldName] = field;
+        responses.push(await queryWebsoc(req));
+    }
+
+    return combineSOCObjects(responses);
 }
 
 // Removes duplicate meetings as a result of multiple locations from WebsocAPIResponse.

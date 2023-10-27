@@ -7,7 +7,7 @@ import {
 } from '@packages/antalmanac-types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import type { CourseInfo } from '$lib/helpers';
+import type { CourseInfo } from '$lib/course_data.types';
 import { getColorForNewSection } from '$stores/scheduleHelpers';
 import { getCourseInfo, queryWebsoc } from '$lib/course-helpers';
 

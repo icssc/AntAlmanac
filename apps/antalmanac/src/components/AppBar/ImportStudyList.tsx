@@ -22,9 +22,11 @@ import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '../RightPane/RightPaneStore';
 import { addCustomEvent, openSnackbar } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { ZotCourseResponse, addCoursesMultiple, queryZotCourse } from '$lib/helpers';
+import { ZotCourseResponse, queryZotCourse, termsInSchedule, warnMultipleTerms } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import { getCourseInfo, queryWebsoc } from '$lib/course-helpers';
+import { CourseInfo } from '$lib/course_data.types';
+import { addCourse } from '$actions/AppStoreActions';
 
 const styles = {
     inputLabel: {
@@ -66,6 +68,19 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         this.setState({ isOpen: true });
     };
 
+    addCoursesMultiple = (
+        courseInfo: { [sectionCode: string]: CourseInfo },
+        term: string,
+        scheduleIndex: number
+    ) => {
+        for (const section of Object.values(courseInfo)) {
+            addCourse(section.section, section.courseDetails, term, scheduleIndex, true);
+        }
+        const terms = termsInSchedule(term);
+        if (terms.size > 1) warnMultipleTerms(terms);
+        return Object.values(courseInfo).length;
+    };
+
     handleClose = (doImport: boolean) => {
         this.setState({ isOpen: false }, async () => {
             document.removeEventListener('keydown', this.enterEvent, false);
@@ -93,7 +108,7 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
                 }
 
                 try {
-                    const sectionsAdded = addCoursesMultiple(
+                    const sectionsAdded = this.addCoursesMultiple(
                         getCourseInfo(
                             await queryWebsoc({
                                 term: this.state.selectedTerm,
