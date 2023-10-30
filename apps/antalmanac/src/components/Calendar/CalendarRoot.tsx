@@ -36,7 +36,7 @@ CalendarRoot
 
 const styles: Styles<Theme, object> = {
     container: {
-        margin: '0px 4px 4px 4px',
+        margin: '0px 4px',
         borderRadius: '1px',
     },
     firstLineContainer: {
@@ -254,7 +254,6 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         return (
             <div className={classes.container} style={isMobile ? { height: 'calc(100% - 50px)' } : undefined}>
                 <CalendarToolbar
-                    onTakeScreenshot={this.handleTakeScreenshot}
                     currentScheduleIndex={this.state.currentScheduleIndex}
                     toggleDisplayFinalsSchedule={this.toggleDisplayFinalsSchedule}
                     showFinalsSchedule={this.state.showFinalsSchedule}

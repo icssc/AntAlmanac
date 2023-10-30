@@ -3,7 +3,7 @@ import { PureComponent } from 'react';
 import RightPaneStore from '../RightPaneStore';
 import { SectionTableProps } from './SectionTable.types';
 import SectionTableLazyWrapper from './SectionTableLazyWrapper';
-import { queryWebsoc } from '$lib/course-helpers';
+import WebSOC from '$lib/websoc';
 
 /**
  * If we remove this class, when you search a department+GE combo, only the lectures show up, not the discussions.
@@ -26,7 +26,7 @@ class GeDataFetchProvider extends PureComponent<SectionTableProps> {
             courseTitle: this.props.courseDetails.courseTitle,
         };
 
-        const jsonResp = await queryWebsoc(params);
+        const jsonResp = await WebSOC.query(params);
 
         this.setState({
             courseDetails: jsonResp.schools[0].departments[0].courses[0],

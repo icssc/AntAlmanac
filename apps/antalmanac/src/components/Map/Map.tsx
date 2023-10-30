@@ -14,13 +14,10 @@ import locationIds from '$lib/location_ids';
 import buildingCatalogue from '$lib/buildingCatalogue';
 import type { Building } from '$lib/buildingCatalogue';
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-
-const ACCESS_TOKEN = 'pk.eyJ1IjoicGVkcmljIiwiYSI6ImNsZzE0bjk2ajB0NHEzanExZGFlbGpwazIifQ.l14rgv5vmu5wIMgOUUhUXw';
+import { MAPBOX_PROXY_TILES_ENDPOINT } from '$lib/api/endpoints';
 
 const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
-
-const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`;
 
 const WORK_WEEK = ['All', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const FULL_WEEK = ['All', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -105,10 +102,12 @@ export default function CourseMap() {
 
         AppStore.on('addedCoursesChange', updateMarkers);
         AppStore.on('currentScheduleIndexChange', updateMarkers);
+        AppStore.on('colorChange', updateMarkers);
 
         return () => {
             AppStore.removeListener('addedCoursesChange', updateMarkers);
             AppStore.removeListener('currentScheduleIndexChange', updateMarkers);
+            AppStore.removeListener('colorChange', updateMarkers);
         };
     }, []);
 
@@ -217,7 +216,7 @@ export default function CourseMap() {
         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}>
             <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
                 {/* Menu floats above the map. */}
-                <Paper sx={{ zIndex: 400, position: 'relative', my: 2, mx: 6.942, marginX: '15%', marginY: 8 }}>
+                <Paper sx={{ position: 'relative', mx: 'auto', my: 2, width: '70%', zIndex: 400 }}>
                     <Tabs value={selectedDayIndex} onChange={handleChange} variant="fullWidth" sx={{ minHeight: 0 }}>
                         {days.map((day) => (
                             <Tab key={day} label={day} sx={{ padding: 1, minHeight: 'auto', minWidth: '10%' }} />
@@ -231,7 +230,13 @@ export default function CourseMap() {
                     />
                 </Paper>
 
-                <TileLayer attribution={ATTRIBUTION_MARKUP} url={url} tileSize={512} maxZoom={21} zoomOffset={-1} />
+                <TileLayer
+                    attribution={ATTRIBUTION_MARKUP}
+                    url={`${MAPBOX_PROXY_TILES_ENDPOINT}/{z}/{x}/{y}`}
+                    tileSize={512}
+                    maxZoom={21}
+                    zoomOffset={-1}
+                />
 
                 <UserLocator />
 
@@ -269,12 +274,15 @@ export default function CourseMap() {
                                 stackIndex={coursesSameBuildingPrior.length}
                             >
                                 <Box>
-                                    <Typography variant="body2">
-                                        Class: {marker.title} {marker.sectionType}
+                                    <Typography variant="body1">
+                                        <span style={{ fontWeight: 'bold' }}>Class:</span> {marker.title}{' '}
+                                        {marker.sectionType}
                                     </Typography>
-                                    <Typography variant="body2">
-                                        Room{allRoomsInBuilding.length > 1 && 's'}: {marker.locations[0].building}{' '}
-                                        {allRoomsInBuilding.join('/')}
+                                    <Typography variant="body1">
+                                        <span style={{ fontWeight: 'bold' }}>
+                                            Room{allRoomsInBuilding.length > 1 && 's'}:
+                                        </span>{' '}
+                                        {marker.locations[0].building} {allRoomsInBuilding.join('/')}
                                     </Typography>
                                 </Box>
                             </LocationMarker>

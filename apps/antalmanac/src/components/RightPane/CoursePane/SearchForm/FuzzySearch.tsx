@@ -64,13 +64,15 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 }
                 if (!deptLabel) {
                     const deptSearch = search({ query: deptValue.toLowerCase(), numResults: 1 });
-                    deptLabel = deptSearch[deptValue].name;
-                    this.setState({
-                        cache: {
-                            ...this.state.cache,
-                            [deptValue.toLowerCase()]: deptSearch,
-                        },
-                    });
+                    if (deptSearch[deptValue]) {
+                        deptLabel = deptSearch[deptValue].name;
+                        this.setState({
+                            cache: {
+                                ...this.state.cache,
+                                [deptValue.toLowerCase()]: deptSearch,
+                            },
+                        });
+                    }
                 }
                 RightPaneStore.updateFormValue('deptValue', deptValue);
                 RightPaneStore.updateFormValue('deptLabel', `${deptValue}: ${deptLabel}`);
@@ -123,11 +125,15 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     getOptionSelected = () => true;
 
     onInputChange = (event: ChangeEvent<unknown>, value: string, reason: AutocompleteInputChangeReason) => {
+        const lowerCaseValue = value.toLowerCase();
         if (reason === 'input') {
             this.setState(
-                { open: value.length >= 2, value: value.slice(-1) === ' ' ? value.slice(0, -1) : value },
+                {
+                    open: lowerCaseValue.length >= 2,
+                    value: lowerCaseValue.slice(-1) === ' ' ? lowerCaseValue.slice(0, -1) : lowerCaseValue,
+                },
                 () => {
-                    if (value.length < 2) return;
+                    if (lowerCaseValue.length < 2) return;
                     if (this.state.cache[this.state.value]) {
                         this.setState({ results: this.state.cache[this.state.value] });
                     } else {
@@ -146,7 +152,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
             );
         } else if (reason === 'reset') {
             this.setState({ open: false, value: '' }, () => {
-                this.doSearch(value);
+                this.doSearch(lowerCaseValue);
             });
         }
     };
@@ -161,8 +167,12 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 style={{ width: '100%' }}
                 options={Object.keys(this.state.results)}
                 renderInput={(params) => (
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-                    <TextField {...params} inputRef={(input) => input} fullWidth label={'Search'} />
+                    <TextField
+                        {...params}
+                        inputRef={(input: HTMLInputElement | null) => input && input.focus()}
+                        fullWidth
+                        label={'Search'}
+                    />
                 )}
                 autoHighlight={true}
                 filterOptions={this.filterOptions}

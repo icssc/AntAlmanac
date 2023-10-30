@@ -9,7 +9,7 @@ import { MOBILE_BREAKPOINT } from '../../../globals';
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { CourseDetails } from '$lib/helpers';
+import { CourseDetails } from '$lib/course_data.types';
 import AppStore from '$stores/AppStore';
 
 // Reset these params in url becasue when copy a specific class's link, it only copy its course code
@@ -17,6 +17,9 @@ import AppStore from '$stores/AppStore';
 const fieldsToReset = ['courseCode', 'courseNumber', 'deptLabel', 'deptValue', 'GE', 'term'];
 
 const styles = {
+    optionsCell: {
+        width: '8%',
+    },
     container: {
         display: 'flex',
         justifyContent: 'space-evenly',
@@ -35,7 +38,7 @@ export const ColorAndDelete = withStyles(styles)((props: ColorAndDeleteProps) =>
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
     return (
-        <TableCell padding="none">
+        <TableCell padding="none" className={classes.optionsCell}>
             <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
                 <IconButton
                     onClick={() => {
@@ -49,6 +52,7 @@ export const ColorAndDelete = withStyles(styles)((props: ColorAndDeleteProps) =>
                     <Delete fontSize="small" />
                 </IconButton>
                 <ColorPicker
+                    key={AppStore.getCurrentScheduleIndex()}
                     color={color}
                     isCustomEvent={false}
                     sectionCode={sectionCode}
@@ -116,7 +120,7 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
     };
 
     return (
-        <TableCell padding="none">
+        <TableCell padding="none" className={classes.optionsCell}>
             <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
                 {scheduleConflict ? (
                     <Tooltip title="This course overlaps with another event in your calendar!" arrow>

@@ -293,7 +293,14 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
         <Paper
             elevation={0}
             variant="outlined"
-            sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', padding: 1 }}
+            sx={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 1,
+                alignItems: 'center',
+                padding: 1,
+                borderRadius: '4px 4px 0 0',
+            }}
         >
             <Box gap={1} display="flex" alignItems="center">
                 <SelectSchedulePopover scheduleNames={scheduleNames} />
