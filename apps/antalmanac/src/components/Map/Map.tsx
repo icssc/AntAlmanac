@@ -102,10 +102,12 @@ export default function CourseMap() {
 
         AppStore.on('addedCoursesChange', updateMarkers);
         AppStore.on('currentScheduleIndexChange', updateMarkers);
+        AppStore.on('colorChange', updateMarkers);
 
         return () => {
             AppStore.removeListener('addedCoursesChange', updateMarkers);
             AppStore.removeListener('currentScheduleIndexChange', updateMarkers);
+            AppStore.removeListener('colorChange', updateMarkers);
         };
     }, []);
 
