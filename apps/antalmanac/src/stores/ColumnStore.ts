@@ -72,7 +72,7 @@ export const useColumnStore = create<ColumnStore>((set, get) => {
             set(() => {
                 const selectedColumns = SECTION_TABLE_COLUMNS.map((column) => columns.includes(column));
                 const activeColumns = SECTION_TABLE_COLUMNS.filter(
-                    (_, index) => get().enabledColumns[index] && get().selectedColumns[index]
+                    (_, index) => get().enabledColumns[index] && selectedColumns[index]
                 );
                 return { selectedColumns: selectedColumns, activeColumns: activeColumns };
             });
