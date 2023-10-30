@@ -28,7 +28,7 @@ describe('download-ics', () => {
                         hour: 3,
                         minute: 4,
                     },
-                    locations: [{ building: 'placeholderFinalLocation', room: 'placeholderFinalRoom', days: null }],
+                    locations: [{ building: 'placeholderFinalLocation', room: 'placeholderFinalRoom' }],
                 },
                 courseTitle: 'placeholderCourseTitle',
                 instructors: ['placeholderInstructor1', 'placeholderInstructor2'],
@@ -84,7 +84,6 @@ describe('download-ics', () => {
         ];
 
         const result = getEventsFromCourses(courses);
-        console.log(result);
 
         expect(result).toEqual(expectedResult);
     });

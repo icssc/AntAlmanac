@@ -10,7 +10,7 @@ const FINALS_WEEK_DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
 export function getLocation(location: string): Location {
     const [building = '', room = ''] = location.split(' ');
-    return { building, room, days: null };
+    return { building, room };
 }
 
 export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
@@ -137,7 +137,7 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
                 isCustomEvent: true,
                 end: new Date(2018, 0, dayIndex, endHour, endMin),
                 title: customEvent.title,
-                days: days,
+                days,
             };
         });
     });

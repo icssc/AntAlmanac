@@ -1,4 +1,3 @@
-import { title } from 'node:process';
 import type { Course, HourMinute, WebsocSectionFinalExam } from 'peterportal-api-next-types';
 import { saveAs } from 'file-saver';
 import { createEvents, type EventAttributes } from 'ics';
@@ -6,7 +5,7 @@ import { notNull } from './utils';
 import { openSnackbar } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { getDefaultTerm, termData } from '$lib/termData';
-import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+import { CourseEvent, CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
 
 export const quarterStartDates = Object.fromEntries(
@@ -155,7 +154,7 @@ export function getFirstClass(
  * // examEnd = [2019, 6, 7, 12, 30]
  * ```
  */
-export function getExamTime(exam: CourseEvent['finalExam'], year: number): [DateTimeArray, DateTimeArray] | [] {
+export function getExamTime(exam: FinalExam, year: number): [DateTimeArray, DateTimeArray] | [] {
     if (exam.month && exam.day && exam.startTime && exam.endTime) {
         const month = exam.month;
         const day = exam.day;
@@ -250,12 +249,36 @@ export function getRRule(bydays: string[], quarter: string) {
 
 export function getEventsFromCourses(events = AppStore.getEventsInCalendar()): EventAttributes[] {
     const calendarEvents = events.flatMap((event) => {
-        if (!event.isCustomEvent) {
+        if (event.isCustomEvent) {
+            // FIXME: We don't have a way to get the term for custom events,
+            // so we just use the default term.
+            const { title, start, end } = event as CustomEvent;
+            const days = getByDays(event.days.join(''));
+            const term = getDefaultTerm().shortName;
+            const rrule = getRRule(days, getQuarter(term));
+            const eventStartDate = getClassStartDate(term, days);
+            const [firstClassStart, firstClassEnd] = getFirstClass(
+                eventStartDate,
+                { hour: start.getHours(), minute: start.getMinutes() },
+                { hour: end.getHours(), minute: end.getMinutes() }
+            );
+            const customEvent: EventAttributes = {
+                productId: 'antalmanac/ics',
+                startOutputType: 'local' as const,
+                endOutputType: 'local' as const,
+                title: title,
+                // TODO: Add location to custom events, waiting for https://github.com/icssc/AntAlmanac/issues/249
+                // location: `${location.building} ${location.room}`,
+                start: firstClassStart,
+                end: firstClassEnd,
+                recurrenceRule: rrule,
+            };
+            return customEvent;
+        } else {
             const { term, title, courseTitle, instructors, sectionType, start, end, finalExam } = event;
-
             const courseEvents: EventAttributes[] = event.locations
                 .map((location) => {
-                    if (location.days === null) return null;
+                    if (location.days === undefined) return null;
                     const days = getByDays(location.days);
 
                     const classStartDate = getClassStartDate(term, days);
@@ -298,31 +321,6 @@ export function getEventsFromCourses(events = AppStore.getEventsInCalendar()): E
                 }
             }
             return courseEvents;
-        } else {
-            // FIXME: We don't have a way to get the term for custom events,
-            // so we just use the default term.
-            const { title, start, end } = event as CustomEvent;
-            const days = getByDays(event.days.join(''));
-            const term = getDefaultTerm().shortName;
-            const rrule = getRRule(days, getQuarter(term));
-            const eventStartDate = getClassStartDate(term, days);
-            const [firstClassStart, firstClassEnd] = getFirstClass(
-                eventStartDate,
-                { hour: start.getHours(), minute: start.getMinutes() },
-                { hour: end.getHours(), minute: end.getMinutes() }
-            );
-            const customEvent: EventAttributes = {
-                productId: 'antalmanac/ics',
-                startOutputType: 'local' as const,
-                endOutputType: 'local' as const,
-                title: title,
-                // TODO: Add location to custom events, waiting for https://github.com/icssc/AntAlmanac/issues/249
-                // location: `${location.building} ${location.room}`,
-                start: firstClassStart,
-                end: firstClassEnd,
-                recurrenceRule: rrule,
-            };
-            return customEvent;
         }
     });
     return calendarEvents;
