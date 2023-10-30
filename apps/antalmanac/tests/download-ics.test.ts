@@ -85,7 +85,7 @@ describe('download-ics', () => {
 
         const result = getEventsFromCourses(courses);
 
-        expect(result).toEqual(expectedResult);
+        expect(result).toMatchSnapshot();
     });
 
     test('ics file has the correct contents', () => {
