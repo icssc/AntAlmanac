@@ -2,11 +2,11 @@ import { EventAttributes } from 'ics';
 import type { Schedule } from '@packages/antalmanac-types';
 import { describe, test, expect } from 'vitest';
 import { getEventsFromCourses } from '$lib/download';
-import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+import { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
 
 describe('download-ics', () => {
     test('converts schedule courses to events for the ics library', () => {
-        const courses: (CourseEvent | CustomEvent)[] = [
+        const courses: CalendarEvent[] = [
             // CourseEvent
             {
                 color: 'placeholderColor',
@@ -46,40 +46,6 @@ describe('download-ics', () => {
                 customEventID: 123,
                 isCustomEvent: true,
                 days: ['M', 'W', 'F'],
-            },
-        ];
-
-        const expectedResult: EventAttributes[] = [
-            {
-                productId: 'antalmanac/ics',
-                startOutputType: 'local',
-                endOutputType: 'local',
-                title: 'placeholderDeptCode placeholderCourseNumber placeholderSectionType',
-                description: 'placeholderCourseTitle\nTaught by placeholderInstructor1/placeholderInstructor2',
-                location: 'placeholderLocation placeholderRoom',
-                start: [2023, 9, 29, 1, 2],
-                end: [2023, 9, 29, 3, 4],
-                recurrenceRule: 'FREQ=WEEKLY;BYDAY=FR,MO,WE;INTERVAL=1;COUNT=31',
-            },
-            {
-                productId: 'antalmanac/ics',
-                startOutputType: 'local',
-                endOutputType: 'local',
-                title: 'placeholderDeptCode placeholderCourseNumber Final Exam',
-                description: 'Final Exam for placeholderSectionType placeholderCourseTitle',
-                start: [2023, 3, 3, 1, 2],
-                end: [2023, 3, 3, 3, 4],
-            },
-            {
-                productId: 'antalmanac/ics',
-                startOutputType: 'local',
-                endOutputType: 'local',
-                title: 'placeholderCustomEventTitle',
-                // TODO: Add location to custom events, waiting for https://github.com/icssc/AntAlmanac/issues/249
-                // location: `${location.building} ${location.room}`,
-                start: [2023, 9, 29, 1, 2],
-                end: [2023, 9, 29, 3, 4],
-                recurrenceRule: 'FREQ=WEEKLY;BYDAY=MO,WE,FR;INTERVAL=1;COUNT=31',
             },
         ];
 

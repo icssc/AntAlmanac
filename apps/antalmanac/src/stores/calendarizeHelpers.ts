@@ -49,7 +49,7 @@ export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): 
                         title: `${course.deptCode} ${course.courseNumber}`,
                         courseTitle: course.courseTitle,
                         locations: meeting.bldg.map(getLocation).map((location: Location) => {
-                            return { ...location, days: meeting.days };
+                            return { ...location, days: meeting.days === null ? undefined : meeting.days };
                         }),
                         showLocationInfo: false,
                         instructors: course.section.instructors,
@@ -123,6 +123,11 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
 export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []): CustomEvent[] {
     return currentCustomEvents.flatMap((customEvent) => {
         const dayIndiciesOcurring = customEvent.days.map((day, index) => (day ? index : undefined)).filter(notNull);
+        /**
+         * Only include the day strings that the custom event occurs.
+         *
+         * @example [1, 3, 5] -> ['M', 'W', 'F']
+         */
         const days = dayIndiciesOcurring.map((dayIndex) => COURSE_WEEK_DAYS[dayIndex]);
         return dayIndiciesOcurring.map((dayIndex) => {
             const startHour = parseInt(customEvent.start.slice(0, 2), 10);
