@@ -202,7 +202,12 @@ export default function CourseRenderPane(props: { id?: number }) {
                 websocQueryParams.units.includes(',')
                     ? WebSOC.queryMultiple(websocQueryParams, 'units')
                     : WebSOC.query(websocQueryParams),
-                Grades.populateGradesCache(gradesQueryParams),
+                // Catch the error here so that the course pane still loads even if the grades cache fails to populate
+                Grades.populateGradesCache(gradesQueryParams)
+                    .catch((error) => {
+                        console.error(error);
+                        openSnackbar('error', 'Error loading grades information');
+                    }),
             ]);
 
             setError(false);
