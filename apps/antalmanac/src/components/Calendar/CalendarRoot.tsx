@@ -10,6 +10,7 @@ import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
 import { useTimeFormatStore } from '$stores/TimeStore';
+import { getDefaultTerm } from '$lib/termData';
 
 const localizer = momentLocalizer(moment);
 
@@ -223,7 +224,7 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
                             date.getMinutes() > 0 || !localizer
                                 ? ''
                                 : localizer.format(date, calendarTimeFormat, culture),
-                        dayFormat: 'ddd',
+                        dayFormat: `${showFinalsSchedule ? 'ddd MM/DD' : 'ddd'}`,
                         eventTimeRangeFormat: (
                             range: { start: Date; end: Date },
                             culture?: string,
@@ -240,9 +241,9 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
                     view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
                     step={15}
                     timeslots={2}
-                    defaultDate={new Date(2018, 0, 1)}
+                    defaultDate={new Date(2023, 11, 14)}
                     min={getStartTime()}
-                    max={new Date(2018, 0, 1, 23)}
+                    max={new Date(2023, 11, 15, 23)}
                     events={events}
                     eventPropGetter={eventStyleGetter}
                     showMultiDayTimes={false}

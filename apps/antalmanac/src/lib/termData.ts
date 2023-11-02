@@ -5,10 +5,17 @@ class Term {
     shortName: `${string} ${string}`;
     longName: string;
     startDate?: [number, number, number];
-    constructor(shortName: `${string} ${string}`, longName: string, startDate?: [number, number, number]) {
+    finalsStartDate?: [number, number, number];
+    constructor(
+        shortName: `${string} ${string}`,
+        longName: string,
+        startDate?: [number, number, number],
+        finalsStartDate?: [number, number, number]
+    ) {
         this.shortName = shortName;
         this.longName = longName;
         this.startDate = startDate;
+        this.finalsStartDate = finalsStartDate;
     }
 }
 
@@ -18,7 +25,7 @@ class Term {
  * Months are 0-indexed
  */
 const termData = [
-    new Term('2023 Fall', '2023 Fall Quarter', [2023, 8, 28]),
+    new Term('2023 Fall', '2023 Fall Quarter', [2023, 8, 28], [2023, 11, 9]),
     new Term('2023 Summer2', '2023 Summer Session 2', [2023, 7, 7]),
     new Term('2023 Summer10wk', '2023 10-wk Summer', [2023, 5, 26]),
     new Term('2023 Summer1', '2023 Summer Session 1', [2023, 5, 26]),
