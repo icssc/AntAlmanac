@@ -44,7 +44,7 @@ class OpenSpotAlertPopover extends PureComponent<OpenSpotAlertPopoverProps, Open
         invalidInputMessage: '',
     };
 
-    componentDidUpdate(prevProps: OpenSpotAlertPopoverProps, prevState: OpenSpotAlertPopoverState) {
+    componentDidUpdate(_prevProps: OpenSpotAlertPopoverProps, prevState: OpenSpotAlertPopoverState) {
         if (
             (!prevState.anchorElement && this.state.anchorElement) ||
             (prevState.anchorElement && !this.state.anchorElement)
@@ -124,14 +124,12 @@ class OpenSpotAlertPopover extends PureComponent<OpenSpotAlertPopoverProps, Open
                         {this.state.invalidInput ? <Typography>{this.state.invalidInputMessage}</Typography> : null}
                         <div>
                             <InputMask
-                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                /* @ts-ignore The type interface for this library uses "maskPlaceholder" while the library itself uses "maskChar"*/
                                 maskChar={null}
                                 mask="999 999 9999"
                                 value={this.state.phoneNumber}
                                 onChange={this.handlePhoneNumberChange}
                             >
-                                {() => <TextField label="Phone number" margin="dense" type="text" />}
+                                <TextField label="Phone number" margin="dense" type="text" />
                             </InputMask>
                         </div>
                         <div className={classes.buttonContainer}>
