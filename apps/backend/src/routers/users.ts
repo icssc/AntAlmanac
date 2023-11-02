@@ -8,10 +8,10 @@ import {
     ShortCourseSchema,
 } from '@packages/antalmanac-types';
 import { router, procedure } from '../trpc';
-import { getById, insertById } from '$db/ddb';
-import LegacyUserModel from '$models/User';
+import { getById, insertById } from '../db/ddb';
+import LegacyUserModel from '../models/User';
 
-import connectToMongoDB from '$db/mongodb';
+import connectToMongoDB from '../db/mongodb';
 
 export function convertLegacySchedule(legacyUserData: LegacyUserData) {
     const scheduleSaveState: ScheduleSaveState = { schedules: [], scheduleIndex: 0 };

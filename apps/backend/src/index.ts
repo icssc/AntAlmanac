@@ -25,7 +25,7 @@ export async function start(corsEnabled = false) {
     app.use('/mapbox/directions/*', async (req, res) => {
         const searchParams = new URLSearchParams(req.query as any);
         searchParams.set('access_token', env.MAPBOX_ACCESS_TOKEN);
-        const url = `${MAPBOX_API_URL}/directions/v5/${req.params[0]}?${searchParams.toString()}`;
+        const url = `${MAPBOX_API_URL}/directions/v5/${(req.params as any)[0]}?${searchParams.toString()}`;
         const result = await fetch(url).then((res) => res.text());
         res.send(result);
     });
@@ -33,7 +33,7 @@ export async function start(corsEnabled = false) {
     app.use('/mapbox/tiles/*', async (req, res) => {
         const searchParams = new URLSearchParams(req.query as any);
         searchParams.set('access_token', env.MAPBOX_ACCESS_TOKEN);
-        const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${req.params[0]}?${searchParams.toString()}`;
+        const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${(req.params as any)[0]}?${searchParams.toString()}`;
         const buffer = await fetch(url).then((res) => res.arrayBuffer());
         res.type('image/png')
         res.send(Buffer.from(buffer))
