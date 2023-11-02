@@ -3,7 +3,7 @@ import { VariantType } from 'notistack';
 import { TRPCError } from '@trpc/server';
 import { WebsocSection } from 'peterportal-api-next-types';
 import { ScheduleCourse } from '@packages/antalmanac-types';
-import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
+import { SnackbarPosition } from '$components/NotificationSnackbar';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { warnMultipleTerms } from '$lib/helpers';
