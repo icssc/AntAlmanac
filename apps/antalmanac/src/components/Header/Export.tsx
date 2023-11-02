@@ -2,8 +2,8 @@ import { Button, Paper, Popover, Tooltip } from '@mui/material';
 import { IosShare } from '@mui/icons-material';
 import { useCallback, useMemo, useState } from 'react';
 
-import ExportCalendar from '$components/AppBar/Exports/ExportCalendar';
-import ScreenshotButton from '$components/AppBar/Exports/ScreenshotButton';
+import ExportCalendar from '$components/buttons/ExportCalendar';
+import ScreenshotButton from '$components/buttons/Screenshot';
 
 function Export() {
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();

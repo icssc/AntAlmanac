@@ -11,7 +11,7 @@ import ImportStudyList from './ImportStudyList';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import News from './News';
 import SettingsMenu from './SettingsMenu';
-import Export from './Exports/Export';
+import Export from './Export';
 import Logo from './halloween-logo.png';
 import MobileLogo from './halloween-mobile-logo.png';
 
@@ -51,7 +51,7 @@ const components = [
     <AboutPage key="about" />,
 ];
 
-const CustomAppBar = ({ classes }: CustomAppBarProps) => {
+const Header = ({ classes }: CustomAppBarProps) => {
     const isMobileScreen = useMediaQuery('(max-width:750px)');
 
     const [anchorEl, setAnchorEl] = useState<Element | null>(null);
@@ -95,4 +95,4 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
     );
 };
 
-export default withStyles(styles)(CustomAppBar);
+export default withStyles(styles)(Header);
