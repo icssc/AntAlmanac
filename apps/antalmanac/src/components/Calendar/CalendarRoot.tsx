@@ -9,6 +9,7 @@ import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calen
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
+import { useTimeFormatStore } from '$stores/TimeStore';
 
 const localizer = momentLocalizer(moment);
 
@@ -60,6 +61,8 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(AppStore.getFinalEventsInCalendar());
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+
+    const { timeFormat } = useTimeFormatStore();
 
     const getEventsForCalendar = () => {
         return showFinalsSchedule ? finalsEventsInCalendar : eventsInCalendar;
@@ -131,6 +134,7 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     const events = getEventsForCalendar();
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
     const calendarStyling = isMobile ? { height: `calc(100% - 55px)` } : { height: `calc(100vh - 104px)` };
+    const calendarTimeFormat = timeFormat ? 'HH:mm' : 'h A';
 
     // If a final is on a Saturday or Sunday, let the calendar start on Saturday
     moment.updateLocale('es-us', {
@@ -216,8 +220,20 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
                     toolbar={false}
                     formats={{
                         timeGutterFormat: (date: Date, culture?: string, localizer?: DateLocalizer) =>
-                            date.getMinutes() > 0 || !localizer ? '' : localizer.format(date, 'h A', culture),
+                            date.getMinutes() > 0 || !localizer
+                                ? ''
+                                : localizer.format(date, calendarTimeFormat, culture),
                         dayFormat: 'ddd',
+                        eventTimeRangeFormat: (
+                            range: { start: Date; end: Date },
+                            culture?: string,
+                            localizer?: DateLocalizer
+                        ) =>
+                            !localizer
+                                ? ''
+                                : localizer.format(range.start, calendarTimeFormat, culture) +
+                                  ' - ' +
+                                  localizer.format(range.end, calendarTimeFormat, culture),
                     }}
                     views={[Views.WEEK, Views.WORK_WEEK]}
                     defaultView={Views.WORK_WEEK}
