@@ -225,7 +225,7 @@ export default function CourseMap() {
 
                 <TileLayer
                     attribution={ATTRIBUTION_MARKUP}
-                    url={`${MAPBOX_PROXY_TILES_ENDPOINT}/{z}/{x}/{y}`}
+                    url={`https://tile.openstreetmap.org/{z}/{x}/{y}.png`}
                     tileSize={512}
                     maxZoom={21}
                     zoomOffset={-1}
