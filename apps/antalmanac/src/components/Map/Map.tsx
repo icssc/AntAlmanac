@@ -74,14 +74,7 @@ export function getCoursesPerBuilding() {
     return coursesPerBuilding;
 }
 
-/**
- * Get unique building names for the MUI Autocomplete.
- * A building with a duplicate name will have a higher index then a `findIndex` for another building with the same name.
- */
-const buildings = Object.entries(buildingCatalogue).filter(
-    ([_, building], index, array) =>
-        array.findIndex(([_, otherBuilding]) => otherBuilding.name === building.name) === index
-);
+const buildings = Object.entries(buildingCatalogue);
 
 /**
  * Map of all course locations on UCI campus.
