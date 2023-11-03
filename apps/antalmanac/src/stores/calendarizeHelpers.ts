@@ -48,7 +48,9 @@ export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): 
                         term: course.term,
                         title: `${course.deptCode} ${course.courseNumber}`,
                         courseTitle: course.courseTitle,
-                        locations: meeting.bldg.map(getLocation),
+                        locations: meeting.bldg.map(getLocation).map((location: Location) => {
+                            return { ...location, days: meeting.days === null ? undefined : meeting.days };
+                        }),
                         showLocationInfo: false,
                         instructors: course.section.instructors,
                         sectionCode: course.section.sectionCode,
@@ -121,7 +123,12 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
 export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []): CustomEvent[] {
     return currentCustomEvents.flatMap((customEvent) => {
         const dayIndiciesOcurring = customEvent.days.map((day, index) => (day ? index : undefined)).filter(notNull);
-
+        /**
+         * Only include the day strings that the custom event occurs.
+         *
+         * @example [1, 3, 5] -> ['M', 'W', 'F']
+         */
+        const days = dayIndiciesOcurring.map((dayIndex) => COURSE_WEEK_DAYS[dayIndex]);
         return dayIndiciesOcurring.map((dayIndex) => {
             const startHour = parseInt(customEvent.start.slice(0, 2), 10);
             const startMin = parseInt(customEvent.start.slice(3, 5), 10);
@@ -135,6 +142,7 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
                 isCustomEvent: true,
                 end: new Date(2018, 0, dayIndex, endHour, endMin),
                 title: customEvent.title,
+                days,
             };
         });
     });

@@ -102,27 +102,29 @@ export interface Location {
     /**
      * If the location only applies on specific days, this is non-null.
      */
-    days?: string[];
+    days?: string;
+}
+
+export interface FinalExam {
+    examStatus: 'NO_FINAL' | 'TBA_FINAL' | 'SCHEDULED_FINAL';
+    dayOfWeek: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | null;
+    month: number | null;
+    day: number | null;
+    startTime: {
+        hour: number;
+        minute: number;
+    } | null;
+    endTime: {
+        hour: number;
+        minute: number;
+    } | null;
+    locations: Location[] | null;
 }
 
 export interface CourseEvent extends CommonCalendarEvent {
     locations: Location[];
     showLocationInfo: boolean;
-    finalExam: {
-        examStatus: 'NO_FINAL' | 'TBA_FINAL' | 'SCHEDULED_FINAL';
-        dayOfWeek: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | null;
-        month: number | null;
-        day: number | null;
-        startTime: {
-            hour: number;
-            minute: number;
-        } | null;
-        endTime: {
-            hour: number;
-            minute: number;
-        } | null;
-        locations: Location[] | null;
-    };
+    finalExam: FinalExam;
     courseTitle: string;
     instructors: string[];
     isCustomEvent: false;
@@ -138,6 +140,7 @@ export interface CourseEvent extends CommonCalendarEvent {
 export interface CustomEvent extends CommonCalendarEvent {
     customEventID: number;
     isCustomEvent: true;
+    days: string[];
 }
 
 export type CalendarEvent = CourseEvent | CustomEvent;

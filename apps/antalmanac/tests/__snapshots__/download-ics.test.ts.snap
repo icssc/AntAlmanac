@@ -1,0 +1,72 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`download-ics > converts schedule courses to events for the ics library 1`] = `
+[
+  {
+    "description": "placeholderCourseTitle
+Taught by placeholderInstructor1/placeholderInstructor2",
+    "end": [
+      2023,
+      9,
+      29,
+      3,
+      4,
+    ],
+    "endOutputType": "local",
+    "location": "placeholderLocation placeholderRoom",
+    "productId": "antalmanac/ics",
+    "recurrenceRule": "FREQ=WEEKLY;BYDAY=FR,MO,WE;INTERVAL=1;COUNT=31",
+    "start": [
+      2023,
+      9,
+      29,
+      1,
+      2,
+    ],
+    "startOutputType": "local",
+    "title": "placeholderDeptCode placeholderCourseNumber placeholderSectionType",
+  },
+  {
+    "description": "Final Exam for placeholderSectionType placeholderCourseTitle",
+    "end": [
+      2023,
+      3,
+      3,
+      3,
+      4,
+    ],
+    "endOutputType": "local",
+    "productId": "antalmanac/ics",
+    "start": [
+      2023,
+      3,
+      3,
+      1,
+      2,
+    ],
+    "startOutputType": "local",
+    "title": "placeholderDeptCode placeholderCourseNumber Final Exam",
+  },
+  {
+    "end": [
+      2023,
+      9,
+      29,
+      3,
+      4,
+    ],
+    "endOutputType": "local",
+    "productId": "antalmanac/ics",
+    "recurrenceRule": "FREQ=WEEKLY;BYDAY=MO,WE,FR;INTERVAL=1;COUNT=31",
+    "start": [
+      2023,
+      9,
+      29,
+      1,
+      2,
+    ],
+    "startOutputType": "local",
+    "title": "placeholderCustomEventTitle",
+  },
+]
+`;
