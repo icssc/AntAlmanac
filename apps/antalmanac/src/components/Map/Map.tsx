@@ -14,7 +14,7 @@ import locationIds from '$lib/location_ids';
 import buildingCatalogue from '$lib/buildingCatalogue';
 import type { Building } from '$lib/buildingCatalogue';
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { MAPBOX_PROXY_TILES_ENDPOINT } from '$lib/api/endpoints';
+import { TILES_URL } from '$lib/api/endpoints';
 
 const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
@@ -225,9 +225,10 @@ export default function CourseMap() {
 
                 <TileLayer
                     attribution={ATTRIBUTION_MARKUP}
-                    url={`https://tile.openstreetmap.org/{z}/{x}/{y}.png`}
+                    url={`https://${TILES_URL}/{z}/{x}/{y}.png`}
                     tileSize={512}
                     maxZoom={21}
+                    minZoom={15}
                     zoomOffset={-1}
                 />
 
