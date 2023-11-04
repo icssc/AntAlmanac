@@ -26,5 +26,8 @@
   "engines": {
     "pnpm": "^8.0.0",
     "node": ">=16"
+  },
+  "dependencies": {
+    "react-device-detect": "^2.2.3"
   }
 }

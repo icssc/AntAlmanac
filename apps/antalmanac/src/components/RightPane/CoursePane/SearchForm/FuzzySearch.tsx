@@ -2,6 +2,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Autocomplete';
 import { PureComponent } from 'react';
 import search from 'websoc-fuzzy-search';
+import { isMobile } from 'react-device-detect';
 
 type SearchResult = ReturnType<typeof search>;
 
@@ -171,7 +172,11 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 renderInput={(params) => (
                     <TextField
                         {...params}
-                        inputRef={(input: HTMLInputElement | null) => input && input.focus()}
+                        inputRef={(input: HTMLInputElement | null) => {
+                            if (input && !isMobile) {
+                                input.focus();
+                            }
+                        }}
                         fullWidth
                         label={'Search'}
                     />
