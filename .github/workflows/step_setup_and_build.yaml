@@ -59,6 +59,7 @@ jobs:
           HUSKY: 0
           # frontend env variables
           VITE_ENDPOINT: ${{ env.apiSubDomain }}
+          VITE_TILES_ENDPOINT: ${{ secrets.VITE_TILES_ENDPOINT}}
           NODE_ENV: ${{ env.nodeEnv }}
           # backend env variables
           HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}

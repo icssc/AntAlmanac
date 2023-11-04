@@ -14,7 +14,7 @@ function endpointTransform(path: string) {
 export const LOOKUP_NOTIFICATIONS_ENDPOINT = endpointTransform('/api/notifications/lookupNotifications');
 export const REGISTER_NOTIFICATIONS_ENDPOINT = endpointTransform('/api/notifications/registerNotifications');
 export const MAPBOX_PROXY_DIRECTIONS_ENDPOINT = endpointTransform('/mapbox/directions');
-export const MAPBOX_PROXY_TILES_ENDPOINT = endpointTransform('/mapbox/tiles');
+export const TILES_URL = import.meta.env.VITE_TILES_ENDPOINT || 'tile.openstreetmap.org';
 
 // PeterPortal API
 export const PETERPORTAL_GRAPHQL_ENDPOINT = 'https://api-next.peterportal.org/v1/graphql';
