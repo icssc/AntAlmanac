@@ -263,24 +263,23 @@ export default function CourseMap() {
                 ? markerValues
                 : markerValues.filter((event) => {
                       const eventDays = [];
-                      if (event.days[2] == true) {
+                      if (event.days[1] == true) {
                           eventDays.push('Mon');
                       }
-                      if (event.days[3] == true) {
+                      if (event.days[2] == true) {
                           eventDays.push('Tue');
                       }
-                      if (event.days[4] == true) {
+                      if (event.days[3] == true) {
                           eventDays.push('Wed');
                       }
-                      if (event.days[5] == true) {
+                      if (event.days[4] == true) {
                           eventDays.push('Thu');
                       }
-                      if (event.days[6] == true) {
+                      if (event.days[5] == true) {
                           eventDays.push('Fri');
                       }
                       return eventDays.includes(today);
                   });
-
         return markersToday.sort((a, b) => {
             const startDateA = new Date(`1970-01-01T${a.start}`);
             const startDateB = new Date(`1970-01-01T${b.start}`);
