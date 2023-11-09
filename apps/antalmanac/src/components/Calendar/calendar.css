@@ -24,8 +24,12 @@
 }
 
 .rbc-timeslot-group {
-    border-color: #80808080;
     min-height: 25px;
+    border-bottom-color: #80808080;
+}
+
+.rbc-timeslot-group:nth-child(odd) {
+    border-bottom-color: #80808020;
 }
 
 .rbc-event-label {
