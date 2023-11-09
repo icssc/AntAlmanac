@@ -25,7 +25,7 @@
 
 .rbc-timeslot-group {
     min-height: 25px;
-    border-bottom-color: #808080;
+    border-bottom-color: #80808080;
 }
 
 .rbc-timeslot-group:nth-child(odd) {
