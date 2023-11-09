@@ -6,15 +6,13 @@ export interface TimeFormatStore {
 }
 
 export const useTimeFormatStore = create<TimeFormatStore>((set) => {
-    const isMilitaryTime = !(
-        typeof Storage !== 'undefined' && window.localStorage.getItem('show24HourTime') === 'true'
-    );
+    const isMilitaryTime = typeof Storage !== 'undefined' && window.localStorage.getItem('show24HourTime') == 'true';
 
     return {
         isMilitaryTime,
-        setTimeFormat: (timeFormat) => {
+        setTimeFormat: (isMilitaryTime) => {
             if (typeof Storage !== 'undefined') {
-                window.localStorage.setItem('show24HourTime', timeFormat.toString());
+                window.localStorage.setItem('show24HourTime', isMilitaryTime.toString());
             }
             set({ isMilitaryTime });
         },
