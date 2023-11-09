@@ -134,7 +134,7 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     const events = getEventsForCalendar();
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
     const calendarStyling = isMobile ? { height: `calc(100% - 55px)` } : { height: `calc(100vh - 104px)` };
-    const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
+    const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
 
     // If a final is on a Saturday or Sunday, let the calendar start on Saturday
     moment.updateLocale('es-us', {
