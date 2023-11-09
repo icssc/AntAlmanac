@@ -425,7 +425,7 @@ interface DayAndTimeCellProps {
 const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
     const { classes, meetings } = props;
 
-    const { timeFormat } = useTimeFormatStore();
+    const { isMilitaryTime } = useTimeFormatStore();
 
     return (
         <NoPaddingTableCell className={classes.cell}>
@@ -435,7 +435,7 @@ const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
                 }
 
                 if (meeting.startTime && meeting.endTime) {
-                    const timeString = formatTimes(meeting.startTime, meeting.endTime, timeFormat);
+                    const timeString = formatTimes(meeting.startTime, meeting.endTime, isMilitaryTime);
 
                     return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>{`${meeting.days} ${timeString}`}</Box>;
                 }

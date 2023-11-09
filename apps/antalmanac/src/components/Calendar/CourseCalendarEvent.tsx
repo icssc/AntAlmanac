@@ -171,7 +171,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     }, []);
 
     const { setActiveTab } = useTabStore();
-    const { timeFormat } = useTimeFormatStore();
+    const { isMilitaryTime } = useTimeFormatStore();
 
     const focusMap = useCallback(() => {
         setActiveTab(2);
@@ -190,7 +190,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             finalExamString = 'Final TBA';
         } else {
             if (finalExam.startTime && finalExam.endTime && finalExam.month && finalExam.locations) {
-                const timeString = formatTimes(finalExam.startTime, finalExam.endTime, timeFormat);
+                const timeString = formatTimes(finalExam.startTime, finalExam.endTime, isMilitaryTime);
                 const locationString = `at ${finalExam.locations
                     .map((location) => `${location.building} ${location.room}`)
                     .join(', ')}`;
