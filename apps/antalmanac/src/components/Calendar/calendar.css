@@ -34,6 +34,15 @@
 
 .rbc-label {
     font-size: 0.9rem;
+    width: 41.8438px;
+}
+
+.rbc-time-header-gutter {
+    width: 42px;
+}
+
+.rbc-time-gutter {
+    width: 42px;
 }
 
 @media (min-resolution: 96dpi) {
