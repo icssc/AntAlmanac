@@ -9,7 +9,6 @@ import AboutPage from './AboutPage';
 import Feedback from './Feedback';
 import ImportStudyList from './ImportStudyList';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
-import News from './News';
 import SettingsMenu from './SettingsMenu';
 import Export from './Export';
 import Logo from './thanksgiving-logo.png';
@@ -46,7 +45,6 @@ const components = [
     <ImportStudyList key="studylist" />,
     <Export key="export" />,
     <Feedback key="feedback" />,
-    <News key="news" />,
     <AboutPage key="about" />,
     <SettingsMenu key="settings" />,
 ];
