@@ -14,7 +14,8 @@ import { clickToCopy, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
 import { useTabStore } from '$stores/TabStore';
-import { translate24To12HourTime } from '$stores/calendarizeHelpers';
+import { formatTimes } from '$stores/calendarizeHelpers';
+import { useTimeFormatStore } from '$stores/TimeStore';
 
 const styles: Styles<Theme, object> = {
     courseContainer: {
@@ -173,6 +174,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     }, []);
 
     const { setActiveTab } = useTabStore();
+    const { isMilitaryTime } = useTimeFormatStore();
 
     const focusMap = useCallback(() => {
         setActiveTab(2);
@@ -191,7 +193,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             finalExamString = 'Final TBA';
         } else {
             if (finalExam.startTime && finalExam.endTime && finalExam.month && finalExam.locations) {
-                const timeString = translate24To12HourTime(finalExam.startTime, finalExam.endTime);
+                const timeString = formatTimes(finalExam.startTime, finalExam.endTime, isMilitaryTime);
                 const locationString = `at ${finalExam.locations
                     .map((location) => `${location.building} ${location.room}`)
                     .join(', ')}`;

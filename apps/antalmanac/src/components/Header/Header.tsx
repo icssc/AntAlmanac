@@ -43,12 +43,12 @@ interface CustomAppBarProps {
 }
 
 const components = [
-    <SettingsMenu key="settings" />,
     <ImportStudyList key="studylist" />,
     <Export key="export" />,
     <Feedback key="feedback" />,
     <News key="news" />,
     <AboutPage key="about" />,
+    <SettingsMenu key="settings" />,
 ];
 
 const Header = ({ classes }: CustomAppBarProps) => {
