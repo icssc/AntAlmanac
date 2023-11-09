@@ -12,8 +12,8 @@ import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import News from './News';
 import SettingsMenu from './SettingsMenu';
 import Export from './Export';
-import Logo from './halloween-logo.png';
-import MobileLogo from './halloween-mobile-logo.png';
+import Logo from './thanksgiving-logo.png';
+import MobileLogo from './thanksgiving-mobile-logo.png';
 
 const styles = {
     appBar: {
