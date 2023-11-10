@@ -213,9 +213,16 @@ export function normalizeTime(options: NormalizeTimeOptions): NormalizedWebSOCTi
     return { startTime, endTime };
 }
 
-export function translate24To12HourTime(startTime?: HourMinute, endTime?: HourMinute): string | undefined {
+export function formatTimes(startTime: HourMinute, endTime: HourMinute, timeFormat: boolean): string | undefined {
     if (!startTime || !endTime) {
         return;
+    }
+
+    const formattedStartMinute = startTime.minute.toString().padStart(2, '0');
+    const formattedEndMinute = endTime.minute.toString().padStart(2, '0');
+
+    if (timeFormat) {
+        return `${startTime.hour}:${formattedStartMinute} - ${endTime.hour}:${formattedEndMinute}`;
     }
 
     const timeSuffix = endTime.hour >= 12 ? 'PM' : 'AM';
@@ -223,11 +230,8 @@ export function translate24To12HourTime(startTime?: HourMinute, endTime?: HourMi
     const formattedStartHour = `${startTime.hour > 12 ? startTime.hour - 12 : startTime.hour}`;
     const formattedEndHour = `${endTime.hour > 12 ? endTime.hour - 12 : endTime.hour}`;
 
-    const formattedStartMinute = `${startTime.minute}`;
-    const formattedEndMinute = `${endTime.minute}`;
-
-    const meetingStartTime = `${formattedStartHour}:${formattedStartMinute.padStart(2, '0')}`;
-    const meetingEndTime = `${formattedEndHour}:${formattedEndMinute.padStart(2, '0')}`;
+    const meetingStartTime = `${formattedStartHour}:${formattedStartMinute}`;
+    const meetingEndTime = `${formattedEndHour}:${formattedEndMinute}`;
 
     return `${meetingStartTime} - ${meetingEndTime} ${timeSuffix}`;
 }

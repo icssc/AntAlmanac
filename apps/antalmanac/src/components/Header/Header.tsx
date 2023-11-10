@@ -9,11 +9,10 @@ import AboutPage from './AboutPage';
 import Feedback from './Feedback';
 import ImportStudyList from './ImportStudyList';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
-import News from './News';
 import SettingsMenu from './SettingsMenu';
 import Export from './Export';
-import Logo from './halloween-logo.png';
-import MobileLogo from './halloween-mobile-logo.png';
+import Logo from './thanksgiving-logo.png';
+import MobileLogo from './thanksgiving-mobile-logo.png';
 
 const styles = {
     appBar: {
@@ -43,12 +42,11 @@ interface CustomAppBarProps {
 }
 
 const components = [
-    <SettingsMenu key="settings" />,
     <ImportStudyList key="studylist" />,
     <Export key="export" />,
     <Feedback key="feedback" />,
-    <News key="news" />,
     <AboutPage key="about" />,
+    <SettingsMenu key="settings" />,
 ];
 
 const Header = ({ classes }: CustomAppBarProps) => {

@@ -15,7 +15,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
-import { Fragment, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { AASection } from '@packages/antalmanac-types';
 import { WebsocSectionEnrollment, WebsocSectionMeeting } from 'peterportal-api-next-types';
@@ -32,8 +32,9 @@ import Grades from '$lib/grades';
 import AppStore from '$stores/AppStore';
 import { useTabStore } from '$stores/TabStore';
 import locationIds from '$lib/location_ids';
-import { normalizeTime, parseDaysString, translate24To12HourTime } from '$stores/calendarizeHelpers';
+import { normalizeTime, parseDaysString, formatTimes } from '$stores/calendarizeHelpers';
 import useColumnStore, { type SectionTableColumn } from '$stores/ColumnStore';
+import { useTimeFormatStore } from '$stores/TimeStore';
 
 const styles: Styles<Theme, object> = (theme) => ({
     sectionCode: {
@@ -424,6 +425,8 @@ interface DayAndTimeCellProps {
 const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
     const { classes, meetings } = props;
 
+    const { isMilitaryTime } = useTimeFormatStore();
+
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
@@ -432,7 +435,7 @@ const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
                 }
 
                 if (meeting.startTime && meeting.endTime) {
-                    const timeString = translate24To12HourTime(meeting.startTime, meeting.endTime);
+                    const timeString = formatTimes(meeting.startTime, meeting.endTime, isMilitaryTime);
 
                     return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>{`${meeting.days} ${timeString}`}</Box>;
                 }
