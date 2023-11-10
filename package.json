@@ -28,6 +28,6 @@
     "node": ">=16"
   },
   "dependencies": {
-    "react-device-detect": "^2.2.3"
+    "ua-parser-js": "^1.0.37"
   }
 }
