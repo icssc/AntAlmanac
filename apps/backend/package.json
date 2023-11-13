@@ -10,6 +10,7 @@
         "lint": "eslint --fix src"
     },
     "dependencies": {
+        "@aws-sdk/client-ses": "^3.449.0",
         "@packages/antalmanac-types": "*",
         "@trpc/server": "^10.30.0",
         "@vendia/serverless-express": "^4.10.1",

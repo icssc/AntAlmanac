@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
     Box,
+    Button,
     Paper,
     Table,
     TableBody,
@@ -22,6 +23,7 @@ import { SectionTableProps } from './SectionTable.types';
 import SectionTableBody from './SectionTableBody';
 import useColumnStore, { SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import analyticsEnum from '$lib/analytics';
+import trpc from '$lib/api/trpc';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -126,6 +128,11 @@ function SectionTable(props: SectionTableProps) {
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
     }, [isMobileScreen, activeColumns]);
 
+    const handleSESTestClick = async () => {
+        const sendEmail = await trpc.aants.sendEmail.mutate();
+        console.log('AANTS RESPONSE', sendEmail);
+    };
+
     return (
         <>
             <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
@@ -170,6 +177,10 @@ function SectionTable(props: SectionTableProps) {
                     icon={<ShowChartIcon />}
                     redirectLink={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${courseDetails.courseNumber}&courseType=all`}
                 />
+
+                <Button variant="contained" onClick={handleSESTestClick}>
+                    SES Test
+                </Button>
             </Box>
 
             <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
