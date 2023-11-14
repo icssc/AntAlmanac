@@ -92,7 +92,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
 
                     {!showLegacySearch ? (
                         <div className={classes.container}>
-                            <div className={classes.searchBar}>
+                            <div className={classes.searchBar} id="searchBar">
                                 <FuzzySearch
                                     toggleSearch={toggleSearch}
                                     toggleShowLegacySearch={toggleShowLegacySearch}
