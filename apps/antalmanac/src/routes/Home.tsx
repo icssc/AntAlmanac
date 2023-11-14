@@ -4,6 +4,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { Box, CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
 import Tour from 'reactour';
 
+import { useCallback } from 'react';
 import Header from '$components/Header';
 import MobileHome from '$components/MobileHome';
 import PatchNotes from '$components/PatchNotes';
@@ -17,6 +18,10 @@ export default function Home() {
     const theme = useTheme();
 
     const [tourEnabled, setTourEnabled] = useTourStore((state) => [state.tourEnabled, state.setTourEnabled]);
+
+    const disableTour = useCallback(() => {
+        setTourEnabled(false);
+    }, [setTourEnabled]);
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -54,9 +59,10 @@ export default function Home() {
                     <Tour
                         steps={tourSteps}
                         isOpen={tourEnabled}
-                        onRequestClose={setTourEnabled.bind(null, false)}
                         disableFocusLock={true}
                         rounded={5}
+                        closeWithMask={false}
+                        onRequestClose={disableTour}
                     />
                 </>
             )}
