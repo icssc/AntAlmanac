@@ -3,7 +3,7 @@ import { VariantType } from 'notistack';
 
 import { ScheduleCourse, ScheduleSaveState } from '@packages/antalmanac-types';
 import { Schedules } from './Schedules';
-import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
+import { SnackbarPosition } from '$components/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { useTabStore } from '$stores/TabStore';
@@ -310,6 +310,9 @@ class AppStore extends EventEmitter {
         this.schedule.updateScheduleNote(newScheduleNote, scheduleIndex);
         this.emit('scheduleNotesChange');
     }
+
+    termsInSchedule = (term: string) =>
+        new Set([term, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
 }
 
 const store = new AppStore();

@@ -51,15 +51,18 @@ function PatchNotes() {
             data-testid={dialogTestId}
             slots={{ backdrop: PatchNotesBackdrop }}
         >
-            <DialogTitle>{"What's New - August 2023"}</DialogTitle>
+            <DialogTitle>{"What's New - October 2023"}</DialogTitle>
 
             <DialogContent>
                 <Typography>Features</Typography>
                 <ul>
-                    <li>Courses will now be greyed out if they conflict with your current schedule</li>
+                    <li>
+                        You can now hover over the Zotistics button to see the Zotistics graph! On mobile, you can still
+                        click the Zotistics button to toggle the graph.
+                    </li>
                 </ul>
                 <img
-                    src="https://user-images.githubusercontent.com/100006999/255796434-10555ecb-5632-4ff3-8be3-c04267722011.gif"
+                    src="https://user-images.githubusercontent.com/78244965/277567417-f9816b9d-ddda-4c0f-80f4-eeac92428612.gif"
                     alt="(gif of the new feature)"
                     style={{
                         maxWidth: '100%',

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
     Box,
     Checkbox,
@@ -10,10 +10,10 @@ import {
     Tooltip,
     type SelectChangeEvent,
     type SxProps,
+    Popover,
 } from '@mui/material';
 import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
-import RightPaneStore, { type SectionTableColumn } from '../RightPaneStore';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 
 /**
  * All the interactive buttons have the same styles.
@@ -34,6 +34,7 @@ const columnLabels: Record<SectionTableColumn, string> = {
     sectionCode: 'Code',
     sectionDetails: 'Type',
     instructors: 'Instructors',
+    gpa: 'GPA',
     dayAndTime: 'Times',
     location: 'Places',
     sectionEnrollment: 'Enrollment',
@@ -53,80 +54,71 @@ function renderEmptySelectValue() {
     return '';
 }
 
+const COLUMN_LABEL_ENTRIES = Object.entries(columnLabels);
+
 /**
  * Toggles certain columns on/off.
  *
  * e.g. show/hide the section code, instructors, etc.
  */
 export function ColumnToggleButton() {
-    const [activeColumns, setActiveColumns] = useState(RightPaneStore.getActiveColumns());
-    const [open, setOpen] = useState(false);
-
-    const handleColumnChange = useCallback(
-        (newActiveColumns: SectionTableColumn[]) => {
-            logAnalytics({
-                category: analyticsEnum.classSearch.title,
-                action: analyticsEnum.classSearch.actions.TOGGLE_COLUMNS,
-            });
-
-            setActiveColumns(newActiveColumns);
-        },
-        [setActiveColumns]
-    );
+    const [selectedColumns, setSelectedColumns] = useColumnStore((store) => [
+        store.selectedColumns,
+        store.setSelectedColumns,
+    ]);
+    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
+    const open = Boolean(anchorEl);
 
     const handleChange = useCallback(
         (e: SelectChangeEvent<SectionTableColumn[]>) => {
             if (typeof e.target.value !== 'string') {
-                RightPaneStore.setActiveColumns(e.target.value);
+                setSelectedColumns(e.target.value);
             }
         },
-        [RightPaneStore.setActiveColumns]
+        [setSelectedColumns]
     );
 
-    const handleOpen = useCallback(() => {
-        setOpen(true);
-    }, [setOpen]);
+    const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    }, []);
 
     const handleClose = useCallback(() => {
-        setOpen(false);
-    }, [setOpen]);
+        setAnchorEl(undefined);
+    }, []);
 
-    useEffect(() => {
-        RightPaneStore.on('columnChange', handleColumnChange);
-
-        return () => {
-            RightPaneStore.removeListener('columnChange', handleColumnChange);
-        };
-    }, [handleColumnChange]);
+    const selectedColumnNames = useMemo(
+        () => SECTION_TABLE_COLUMNS.filter((_, index) => selectedColumns[index]),
+        [selectedColumns]
+    );
 
     return (
         <>
             <Tooltip title="Show/Hide Columns">
-                <IconButton onClick={handleOpen} sx={buttonSx}>
+                <IconButton onClick={handleClick} sx={buttonSx}>
                     <Visibility />
                 </IconButton>
             </Tooltip>
-            <FormControl>
-                <Select
-                    multiple
-                    value={activeColumns}
-                    open={open}
-                    onChange={handleChange}
-                    onClose={handleClose}
-                    renderValue={renderEmptySelectValue}
-                    sx={{ visibility: 'hidden', position: 'absolute' }}
-                >
-                    {Object.entries(columnLabels).map(([column, label]) => (
-                        <MenuItem key={column} value={column}>
-                            <Checkbox
-                                checked={activeColumns.indexOf(column as SectionTableColumn) > -1}
-                                color="default"
-                            />
-                            <ListItemText primary={label} />
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
+
+            <Popover open={open} anchorEl={anchorEl} onClose={handleClose} sx={{ visibility: 'hidden' }}>
+                <FormControl>
+                    <Select
+                        multiple
+                        value={selectedColumnNames}
+                        open={open}
+                        onChange={handleChange}
+                        onClose={handleClose}
+                        renderValue={renderEmptySelectValue}
+                        MenuProps={{ anchorEl }}
+                    >
+                        {COLUMN_LABEL_ENTRIES.map(([column, label], index) => (
+                            <MenuItem key={column} value={column}>
+                                <Checkbox checked={selectedColumns[index]} color="default" />
+                                <ListItemText primary={label} />
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            </Popover>
         </>
     );
 }

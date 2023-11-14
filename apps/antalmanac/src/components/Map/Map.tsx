@@ -15,13 +15,10 @@ import buildingCatalogue, { Building } from '$lib/buildingCatalogue';
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
 import { notNull } from '$lib/utils';
-
-const ACCESS_TOKEN = 'pk.eyJ1IjoicGVkcmljIiwiYSI6ImNsZzE0bjk2ajB0NHEzanExZGFlbGpwazIifQ.l14rgv5vmu5wIMgOUUhUXw';
+import { TILES_URL } from '$lib/api/endpoints';
 
 const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
-
-const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`;
 
 const WORK_WEEK = ['All', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const FULL_WEEK = ['All', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -161,10 +158,12 @@ export default function CourseMap() {
 
         AppStore.on('addedCoursesChange', updateMarkers);
         AppStore.on('currentScheduleIndexChange', updateMarkers);
+        AppStore.on('colorChange', updateMarkers);
 
         return () => {
             AppStore.removeListener('addedCoursesChange', updateMarkers);
             AppStore.removeListener('currentScheduleIndexChange', updateMarkers);
+            AppStore.removeListener('colorChange', updateMarkers);
         };
     }, []);
 
@@ -313,7 +312,14 @@ export default function CourseMap() {
                     <BuildingSelect onChange={onBuildingChange} />
                 </Paper>
 
-                <TileLayer attribution={ATTRIBUTION_MARKUP} url={url} tileSize={512} maxZoom={21} zoomOffset={-1} />
+                <TileLayer
+                    attribution={ATTRIBUTION_MARKUP}
+                    url={`https://${TILES_URL}/{z}/{x}/{y}.png`}
+                    tileSize={512}
+                    maxZoom={21}
+                    minZoom={15}
+                    zoomOffset={-1}
+                />
 
                 <UserLocator />
 
@@ -351,12 +357,15 @@ export default function CourseMap() {
                                 stackIndex={coursesSameBuildingPrior.length}
                             >
                                 <Box>
-                                    <Typography variant="body2">
-                                        Class: {marker.title} {marker.sectionType}
+                                    <Typography variant="body1">
+                                        <span style={{ fontWeight: 'bold' }}>Class:</span> {marker.title}{' '}
+                                        {marker.sectionType}
                                     </Typography>
-                                    <Typography variant="body2">
-                                        Room{allRoomsInBuilding.length > 1 && 's'}: {marker.locations[0].building}{' '}
-                                        {allRoomsInBuilding.join('/')}
+                                    <Typography variant="body1">
+                                        <span style={{ fontWeight: 'bold' }}>
+                                            Room{allRoomsInBuilding.length > 1 && 's'}:
+                                        </span>{' '}
+                                        {marker.locations[0].building} {allRoomsInBuilding.join('/')}
                                     </Typography>
                                 </Box>
                             </LocationMarker>

@@ -14,7 +14,8 @@ import { clickToCopy, isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
 import { useTabStore } from '$stores/TabStore';
-import { translate24To12HourTime } from '$stores/calendarizeHelpers';
+import { formatTimes } from '$stores/calendarizeHelpers';
+import { useTimeFormatStore } from '$stores/TimeStore';
 import buildingCatalogue from '$lib/buildingCatalogue';
 
 const styles: Styles<Theme, object> = {
@@ -103,27 +104,29 @@ export interface Location {
     /**
      * If the location only applies on specific days, this is non-null.
      */
-    days?: string[];
+    days?: string;
+}
+
+export interface FinalExam {
+    examStatus: 'NO_FINAL' | 'TBA_FINAL' | 'SCHEDULED_FINAL';
+    dayOfWeek: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | null;
+    month: number | null;
+    day: number | null;
+    startTime: {
+        hour: number;
+        minute: number;
+    } | null;
+    endTime: {
+        hour: number;
+        minute: number;
+    } | null;
+    locations: Location[] | null;
 }
 
 export interface CourseEvent extends CommonCalendarEvent {
     locations: Location[];
     showLocationInfo: boolean;
-    finalExam: {
-        examStatus: 'NO_FINAL' | 'TBA_FINAL' | 'SCHEDULED_FINAL';
-        dayOfWeek: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | null;
-        month: number | null;
-        day: number | null;
-        startTime: {
-            hour: number;
-            minute: number;
-        } | null;
-        endTime: {
-            hour: number;
-            minute: number;
-        } | null;
-        locations: Location[] | null;
-    };
+    finalExam: FinalExam;
     courseTitle: string;
     instructors: string[];
     isCustomEvent: false;
@@ -140,6 +143,7 @@ export interface CustomEvent extends CommonCalendarEvent {
     customEventID: number;
     isCustomEvent: true;
     building: string;
+    days: string[];
 }
 
 export type CalendarEvent = CourseEvent | CustomEvent;
@@ -172,6 +176,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     }, []);
 
     const { setActiveTab } = useTabStore();
+    const { isMilitaryTime } = useTimeFormatStore();
 
     const focusMap = useCallback(() => {
         setActiveTab(2);
@@ -190,7 +195,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             finalExamString = 'Final TBA';
         } else {
             if (finalExam.startTime && finalExam.endTime && finalExam.month && finalExam.locations) {
-                const timeString = translate24To12HourTime(finalExam.startTime, finalExam.endTime);
+                const timeString = formatTimes(finalExam.startTime, finalExam.endTime, isMilitaryTime);
                 const locationString = `at ${finalExam.locations
                     .map((location) => `${location.building} ${location.room}`)
                     .join(', ')}`;

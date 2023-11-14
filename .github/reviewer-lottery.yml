@@ -2,12 +2,11 @@ groups:
   - name: devs
     reviewers: 1
     usernames:
-      - Voark
+      - kevinwu098
       - EricPedley
       - bevm0
       - MinhxNguyen7
       - stevenguyukai
       - Douglas-Hong
-      - teresa-liang
       - JacE070
       

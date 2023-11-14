@@ -9,11 +9,10 @@ import AboutPage from './AboutPage';
 import Feedback from './Feedback';
 import ImportStudyList from './ImportStudyList';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
-import News from './News';
 import SettingsMenu from './SettingsMenu';
-import Export from './Exports/Export';
-import { ReactComponent as Logo } from './logo.svg';
-import { ReactComponent as MobileLogo } from './mobile-logo.svg';
+import Export from './Export';
+import Logo from './thanksgiving-logo.png';
+import MobileLogo from './thanksgiving-mobile-logo.png';
 
 const styles = {
     appBar: {
@@ -43,15 +42,14 @@ interface CustomAppBarProps {
 }
 
 const components = [
-    <SettingsMenu key="settings" />,
     <ImportStudyList key="studylist" />,
     <Export key="export" />,
     <Feedback key="feedback" />,
-    <News key="news" />,
     <AboutPage key="about" />,
+    <SettingsMenu key="settings" />,
 ];
 
-const CustomAppBar = ({ classes }: CustomAppBarProps) => {
+const Header = ({ classes }: CustomAppBarProps) => {
     const isMobileScreen = useMediaQuery('(max-width:750px)');
 
     const [anchorEl, setAnchorEl] = useState<Element | null>(null);
@@ -67,7 +65,12 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar variant="dense">
-                {isMobileScreen ? <MobileLogo height={32} /> : <Logo height={32} />}
+                <img
+                    height={32}
+                    src={isMobileScreen ? MobileLogo : Logo}
+                    title={'Thanks Aejin for designing this seasonal logo!'}
+                    alt="logo"
+                />
 
                 <div style={{ flexGrow: '1' }} />
 
@@ -90,4 +93,4 @@ const CustomAppBar = ({ classes }: CustomAppBarProps) => {
     );
 };
 
-export default withStyles(styles)(CustomAppBar);
+export default withStyles(styles)(Header);

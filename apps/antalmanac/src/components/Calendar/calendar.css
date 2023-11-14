@@ -24,8 +24,12 @@
 }
 
 .rbc-timeslot-group {
-    border-color: #80808080;
     min-height: 25px;
+    border-bottom-color: #80808080;
+}
+
+.rbc-timeslot-group:nth-child(odd) {
+    border-bottom-color: #80808020;
 }
 
 .rbc-event-label {
@@ -34,6 +38,14 @@
 
 .rbc-label {
     font-size: 0.9rem;
+}
+
+.rbc-time-header-gutter {
+    width: 42px;
+}
+
+.rbc-time-gutter {
+    width: 42px;
 }
 
 @media (min-resolution: 96dpi) {

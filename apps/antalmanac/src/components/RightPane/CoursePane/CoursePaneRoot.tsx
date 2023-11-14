@@ -6,7 +6,8 @@ import CourseRenderPane from './CourseRenderPane';
 import SearchForm from './SearchForm/SearchForm';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { openSnackbar } from '$actions/AppStoreActions';
-import { clearCache } from '$lib/course-helpers';
+import WebSOC from '$lib/websoc';
+import Grades from '$lib/grades';
 
 function RightPane() {
     const [key, forceUpdate] = useReducer((currentCount) => currentCount + 1, 0);
@@ -33,7 +34,8 @@ function RightPane() {
             category: analyticsEnum.classSearch.title,
             action: analyticsEnum.classSearch.actions.REFRESH,
         });
-        clearCache();
+        WebSOC.clearCache();
+        Grades.clearCache();
         forceUpdate();
     }, []);
 
@@ -57,7 +59,7 @@ function RightPane() {
     }, []);
 
     return (
-        <div style={{ height: '100%', padding: 8 }}>
+        <div style={{ height: '100%' }}>
             <CoursePaneButtonRow
                 showSearch={!RightPaneStore.getDoDisplaySearch()}
                 onDismissSearchResults={toggleSearch}
@@ -66,7 +68,7 @@ function RightPane() {
             {RightPaneStore.getDoDisplaySearch() ? (
                 <SearchForm toggleSearch={toggleSearch} />
             ) : (
-                <CourseRenderPane key={key} />
+                <CourseRenderPane key={key} id={key} />
             )}
         </div>
     );

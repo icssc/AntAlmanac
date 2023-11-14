@@ -2,16 +2,15 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
 import { Box, ClickAwayListener, Popper } from '@material-ui/core';
-import { Theme, withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import moment from 'moment';
-import { PureComponent, SyntheticEvent } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
 
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
 import buildingCatalogue from '$lib/buildingCatalogue';
+import { useTimeFormatStore } from '$stores/TimeStore';
 
 const localizer = momentLocalizer(moment);
 
@@ -97,49 +96,70 @@ const AntAlmanacEvent =
         );
     };
 interface ScheduleCalendarProps {
-    classes: ClassNameMap;
     isMobile: boolean;
 }
 
-interface ScheduleCalendarState {
-    screenshotting: boolean;
-    anchorEl: HTMLElement | null;
-    showFinalsSchedule: boolean;
-    moreInfoOpen: false;
-    courseInMoreInfo: CalendarEvent | null;
-    calendarEventKey: number | null;
-    eventsInCalendar: CalendarEvent[];
-    finalsEventsInCalendar: CalendarEvent[];
-    currentScheduleIndex: number;
-    scheduleNames: string[];
-}
-class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCalendarState> {
-    state: ScheduleCalendarState = {
-        screenshotting: false,
-        anchorEl: null,
-        showFinalsSchedule: false,
-        moreInfoOpen: false,
-        courseInMoreInfo: null,
-        calendarEventKey: null,
-        eventsInCalendar: AppStore.getEventsInCalendar(),
-        finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
-        currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
-        scheduleNames: AppStore.getScheduleNames(),
+export default function ScheduleCalendar(props: ScheduleCalendarProps) {
+    const { isMobile } = props;
+
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
+    const [courseInMoreInfo, setCourseInMoreInfo] = useState<CalendarEvent | null>(null);
+    const [calendarEventKey, setCalendarEventKey] = useState<number | null>(null);
+    const [eventsInCalendar, setEventsInCalendar] = useState(AppStore.getEventsInCalendar());
+    const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(AppStore.getFinalEventsInCalendar());
+    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+
+    const { isMilitaryTime } = useTimeFormatStore();
+
+    const getEventsForCalendar = () => {
+        return showFinalsSchedule ? finalsEventsInCalendar : eventsInCalendar;
     };
 
-    static eventStyleGetter = (event: CalendarEvent) => {
+    const handleClosePopover = () => {
+        setAnchorEl(null);
+    };
+
+    const toggleDisplayFinalsSchedule = () => {
+        handleClosePopover();
+
+        setShowFinalsSchedule((prevState) => !prevState);
+    };
+
+    const handleEventClick = (event: CalendarEvent, e: SyntheticEvent<HTMLElement, Event>) => {
+        const { currentTarget } = e;
+        e.stopPropagation();
+
+        if (event.isCustomEvent || event.sectionType !== 'Fin') {
+            setAnchorEl((prevAnchorEl) => (prevAnchorEl === currentTarget ? null : currentTarget));
+            setCourseInMoreInfo(event);
+            setCalendarEventKey(Math.random());
+        }
+    };
+
+    /**
+     * Finds the earliest start time and returns that or 7AM, whichever is earlier
+     * @returns A date with the earliest time or 7AM
+     */
+    const getStartTime = () => {
+        const eventStartHours = getEventsForCalendar().map((event) => event.start.getHours());
+        return new Date(2018, 0, 1, Math.min(7, Math.min(...eventStartHours)));
+    };
+
+    const eventStyleGetter = (event: CalendarEvent) => {
         return {
             style: {
                 backgroundColor: event.color,
                 cursor: 'pointer',
                 borderStyle: 'none',
                 borderRadius: '4px',
-                color: this.colorContrastSufficient(event.color) ? 'white' : 'black',
+                color: colorContrastSufficient(event.color) ? 'white' : 'black',
             },
         };
     };
 
-    static colorContrastSufficient = (bg: string) => {
+    const colorContrastSufficient = (bg: string) => {
         // This equation is taken from w3c, does not use the colour difference part
         const minBrightnessDiff = 125;
 
@@ -160,177 +180,126 @@ class ScheduleCalendar extends PureComponent<ScheduleCalendarProps, ScheduleCale
         return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff;
     };
 
-    toggleDisplayFinalsSchedule = () => {
-        this.handleClosePopover();
+    const events = getEventsForCalendar();
+    const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
+    const calendarStyling = isMobile ? { height: `calc(100% - 55px)` } : { height: `calc(100vh - 104px)` };
+    const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
+    const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
 
-        this.setState((prevState) => {
-            return { showFinalsSchedule: !prevState.showFinalsSchedule };
-        });
-    };
+    // If a final is on a Saturday or Sunday, let the calendar start on Saturday
+    moment.updateLocale('es-us', {
+        week: {
+            dow: hasWeekendCourse && showFinalsSchedule ? 6 : 0,
+        },
+    });
 
-    updateEventsInCalendar = (close = true) => {
-        this.setState({
-            currentScheduleIndex: AppStore.getCurrentScheduleIndex(),
-            eventsInCalendar: AppStore.getEventsInCalendar(),
-            finalsEventsInCalendar: AppStore.getFinalEventsInCalendar(),
-        });
-        if (close) this.handleClosePopover();
-    };
+    useEffect(() => {
+        const updateEventsInCalendar = () => {
+            setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
+            setEventsInCalendar(AppStore.getEventsInCalendar());
+            setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
 
-    updateScheduleNames = () => {
-        this.setState({
-            scheduleNames: AppStore.getScheduleNames(),
-        });
-    };
-
-    componentDidMount = () => {
-        AppStore.on('addedCoursesChange', this.updateEventsInCalendar);
-        AppStore.on('customEventsChange', this.updateEventsInCalendar);
-        AppStore.on('colorChange', this.updateEventsInCalendar);
-        AppStore.on('currentScheduleIndexChange', this.updateEventsInCalendar);
-        AppStore.on('scheduleNamesChange', this.updateScheduleNames);
-    };
-
-    componentWillUnmount = () => {
-        AppStore.removeListener('addedCoursesChange', this.updateEventsInCalendar);
-        AppStore.removeListener('customEventsChange', this.updateEventsInCalendar);
-        AppStore.removeListener('colorChange', this.updateEventsInCalendar);
-        AppStore.removeListener('currentScheduleIndexChange', this.updateEventsInCalendar);
-        AppStore.removeListener('scheduleNamesChange', this.updateScheduleNames);
-    };
-
-    handleTakeScreenshot = (html2CanvasScreenshot: () => void) => {
-        // This function takes a screenshot of the user's schedule
-
-        this.setState({ screenshotting: true }, () => {
-            // Take the picture
-            html2CanvasScreenshot();
-
-            this.setState({ screenshotting: false });
-        });
-    };
-
-    handleEventClick = (event: CalendarEvent, e: SyntheticEvent<HTMLElement, Event>) => {
-        const { currentTarget } = e;
-        e.stopPropagation();
-
-        if (event.isCustomEvent || event.sectionType !== 'Fin') {
-            this.setState((prevState) => ({
-                anchorEl: prevState.anchorEl === currentTarget ? null : currentTarget,
-                courseInMoreInfo: event,
-                calendarEventKey: Math.random(),
-            }));
-        }
-    };
-
-    handleClosePopover = () => {
-        this.setState({ anchorEl: null });
-    };
-
-    getEventsForCalendar = () => {
-        return this.state.showFinalsSchedule ? this.state.finalsEventsInCalendar : this.state.eventsInCalendar;
-    };
-
-    getStartTime = () => {
-        const eventStartHours = this.getEventsForCalendar().map((event) => event.start.getHours());
-        // If the earliest event has an earlier start time than 7am, return its hour;
-        // otherwise, just make 7am the start time
-        return new Date(2018, 0, 1, Math.min(7, Math.min(...eventStartHours)));
-    };
-
-    render() {
-        const { classes, isMobile } = this.props;
-        const events = this.getEventsForCalendar();
-        const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
-        const calStyling = isMobile ? { height: `calc(100% - 55px)` } : { height: `calc(100vh - 104px)` };
-
-        // If a final is on a Saturday or Sunday, let the calendar start on Saturday
-        moment.updateLocale('es-us', {
-            week: {
-                dow: hasWeekendCourse && this.state.showFinalsSchedule ? 6 : 0,
-            },
-        });
-
-        const handleOnView = () => {
-            return;
+            handleClosePopover();
         };
 
-        return (
-            <div className={classes.container} style={isMobile ? { height: 'calc(100% - 50px)' } : undefined}>
-                <CalendarToolbar
-                    onTakeScreenshot={this.handleTakeScreenshot}
-                    currentScheduleIndex={this.state.currentScheduleIndex}
-                    toggleDisplayFinalsSchedule={this.toggleDisplayFinalsSchedule}
-                    showFinalsSchedule={this.state.showFinalsSchedule}
-                    scheduleNames={this.state.scheduleNames}
-                />
-                <div
-                    id="screenshot"
-                    style={
-                        !this.state.screenshotting
-                            ? calStyling
-                            : {
-                                  height: '100%',
-                                  width: '1000px',
-                              }
-                    }
-                >
-                    <Popper
-                        anchorEl={this.state.anchorEl}
-                        placement="right"
-                        modifiers={{
-                            offset: {
-                                enabled: true,
-                                offset: '0, 10',
-                            },
-                            flip: {
-                                enabled: true,
-                            },
-                            preventOverflow: {
-                                enabled: true,
-                                boundariesElement: 'scrollParent',
-                            },
-                        }}
-                        open={Boolean(this.state.anchorEl)}
-                    >
-                        <ClickAwayListener onClickAway={this.handleClosePopover}>
-                            <Box>
-                                <CourseCalendarEvent
-                                    key={this.state.calendarEventKey}
-                                    closePopover={this.handleClosePopover}
-                                    courseInMoreInfo={this.state.courseInMoreInfo as CalendarEvent}
-                                    scheduleNames={this.state.scheduleNames}
-                                />
-                            </Box>
-                        </ClickAwayListener>
-                    </Popper>
-                    <Calendar<CalendarEvent, object>
-                        localizer={localizer}
-                        toolbar={false}
-                        formats={{
-                            timeGutterFormat: (date: Date, culture?: string, localizer?: DateLocalizer) =>
-                                date.getMinutes() > 0 || !localizer ? '' : localizer.format(date, 'h A', culture),
-                            dayFormat: 'ddd',
-                        }}
-                        views={[Views.WEEK, Views.WORK_WEEK]}
-                        defaultView={Views.WORK_WEEK}
-                        view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
-                        onView={handleOnView}
-                        step={15}
-                        timeslots={2}
-                        defaultDate={new Date(2018, 0, 1)}
-                        min={this.getStartTime()}
-                        max={new Date(2018, 0, 1, 23)}
-                        events={events}
-                        eventPropGetter={ScheduleCalendar.eventStyleGetter}
-                        showMultiDayTimes={false}
-                        components={{ event: AntAlmanacEvent({ classes }) }}
-                        onSelectEvent={this.handleEventClick}
-                    />
-                </div>
-            </div>
-        );
-    }
-}
+        const updateScheduleNames = () => {
+            setScheduleNames(AppStore.getScheduleNames());
+        };
 
-export default withStyles(styles)(ScheduleCalendar);
+        AppStore.on('addedCoursesChange', updateEventsInCalendar);
+        AppStore.on('customEventsChange', updateEventsInCalendar);
+        AppStore.on('colorChange', updateEventsInCalendar);
+        AppStore.on('currentScheduleIndexChange', updateEventsInCalendar);
+        AppStore.on('scheduleNamesChange', updateScheduleNames);
+
+        return () => {
+            AppStore.off('addedCoursesChange', updateEventsInCalendar);
+            AppStore.off('customEventsChange', updateEventsInCalendar);
+            AppStore.off('colorChange', updateEventsInCalendar);
+            AppStore.off('currentScheduleIndexChange', updateEventsInCalendar);
+            AppStore.off('scheduleNamesChange', updateScheduleNames);
+        };
+    }, []);
+
+    return (
+        <Box
+            style={{
+                height: isMobile ? 'calc(100% - 50px)' : undefined,
+                margin: '0px 4px',
+                borderRadius: '1px',
+            }}
+        >
+            <CalendarToolbar
+                currentScheduleIndex={currentScheduleIndex}
+                toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
+                showFinalsSchedule={showFinalsSchedule}
+                scheduleNames={scheduleNames}
+            />
+            <Box id="screenshot" style={calendarStyling}>
+                <Popper
+                    anchorEl={anchorEl}
+                    placement="right"
+                    modifiers={{
+                        offset: {
+                            enabled: true,
+                            offset: '0, 10',
+                        },
+                        flip: {
+                            enabled: true,
+                        },
+                        preventOverflow: {
+                            enabled: true,
+                            boundariesElement: 'scrollParent',
+                        },
+                    }}
+                    open={Boolean(anchorEl)}
+                >
+                    <ClickAwayListener onClickAway={handleClosePopover}>
+                        <Box>
+                            <CourseCalendarEvent
+                                key={calendarEventKey}
+                                closePopover={handleClosePopover}
+                                courseInMoreInfo={courseInMoreInfo as CalendarEvent}
+                                scheduleNames={scheduleNames}
+                            />
+                        </Box>
+                    </ClickAwayListener>
+                </Popper>
+                <Calendar<CalendarEvent, object>
+                    localizer={localizer}
+                    toolbar={false}
+                    formats={{
+                        timeGutterFormat: (date: Date, culture?: string, localizer?: DateLocalizer) =>
+                            date.getMinutes() > 0 || !localizer
+                                ? ''
+                                : localizer.format(date, calendarGutterTimeFormat, culture),
+                        dayFormat: 'ddd',
+                        eventTimeRangeFormat: (
+                            range: { start: Date; end: Date },
+                            culture?: string,
+                            localizer?: DateLocalizer
+                        ) =>
+                            !localizer
+                                ? ''
+                                : localizer.format(range.start, calendarTimeFormat, culture) +
+                                  ' - ' +
+                                  localizer.format(range.end, calendarTimeFormat, culture),
+                    }}
+                    views={[Views.WEEK, Views.WORK_WEEK]}
+                    defaultView={Views.WORK_WEEK}
+                    view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
+                    step={15}
+                    timeslots={2}
+                    defaultDate={new Date(2018, 0, 1)}
+                    min={getStartTime()}
+                    max={new Date(2018, 0, 1, 23)}
+                    events={events}
+                    eventPropGetter={eventStyleGetter}
+                    showMultiDayTimes={false}
+                    components={{ event: AntAlmanacEvent }}
+                    onSelectEvent={handleEventClick}
+                />
+            </Box>
+        </Box>
+    );
+}

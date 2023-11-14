@@ -1,11 +1,10 @@
-import { IconButton } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
-import { Alert } from '@mui/material';
+import { Alert, Box, IconButton } from '@mui/material';
+import { Close } from '@mui/icons-material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
-import { WebsocDepartment, WebsocSchool, WebsocAPIResponse } from 'peterportal-api-next-types';
+import { WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
 import RightPaneStore from '../RightPaneStore';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
@@ -15,15 +14,24 @@ import loadingGif from './SearchForm/Gifs/loading.gif';
 import darkNoNothing from './static/dark-no_results.png';
 import noNothing from './static/no_results.png';
 import AppStore from '$stores/AppStore';
-import { isDarkMode, queryWebsocMultiple } from '$lib/helpers';
+import { isDarkMode } from '$lib/helpers';
+import Grades from '$lib/grades';
 import analyticsEnum from '$lib/analytics';
-import { queryWebsoc } from '$lib/course-helpers';
+import { openSnackbar } from '$actions/AppStoreActions';
+import WebSOC from '$lib/websoc';
 
-function flattenSOCObject(SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocDepartment | AACourse)[] {
-    const courseColors = AppStore.getAddedCourses().reduce((accumulator, { section }) => {
+function getColors() {
+    const courseColors = AppStore.schedule.getCurrentCourses().reduce((accumulator, { section }) => {
         accumulator[section.sectionCode] = section.color;
         return accumulator;
     }, {} as { [key: string]: string });
+
+    return courseColors;
+}
+
+const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocDepartment | AACourse)[] => {
+    const courseColors = getColors();
+
     return SOCObject.schools.reduce((accumulator: (WebsocSchool | WebsocDepartment | AACourse)[], school) => {
         accumulator.push(school);
 
@@ -42,7 +50,7 @@ function flattenSOCObject(SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
     }, []);
 };
 const RecruitmentBanner = () => {
-    const [bannerVisibility, setBannerVisibility] = React.useState<boolean>(true);
+    const [bannerVisibility, setBannerVisibility] = useState(true);
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
     const recruitmentDismissalTime = window.localStorage.getItem('recruitmentDismissalTime');
@@ -53,7 +61,7 @@ const RecruitmentBanner = () => {
     const displayRecruitmentBanner = bannerVisibility && !dismissedRecently && isSearchCS;
 
     return (
-        <div style={{ position: 'fixed', bottom: 5, right: 5, zIndex: 999 }}>
+        <Box sx={{ position: 'fixed', bottom: 5, right: 5, zIndex: 999 }}>
             {displayRecruitmentBanner ? (
                 <Alert
                     icon={false}
@@ -72,7 +80,7 @@ const RecruitmentBanner = () => {
                                 setBannerVisibility(false);
                             }}
                         >
-                            <CloseIcon fontSize="inherit" />
+                            <Close fontSize="inherit" />
                         </IconButton>
                     }
                 >
@@ -84,8 +92,8 @@ const RecruitmentBanner = () => {
                     <br />
                     We have opportunities for experienced devs and those with zero experience!
                 </Alert>
-            ) : null}{' '}
-        </div>
+            ) : null}
+        </Box>
     );
 };
 
@@ -135,18 +143,39 @@ const SectionTableWrapped = (
     return <div>{component}</div>;
 };
 
-export function CourseRenderPane() {
+const LoadingMessage = () => {
+    return (
+        <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <img src={isDarkMode() ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
+        </Box>
+    );
+};
+
+const ErrorMessage = () => {
+    return (
+        <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <img
+                src={isDarkMode() ? darkNoNothing : noNothing}
+                alt="No Results Found"
+                style={{ objectFit: 'contain', width: '80%', height: '80%' }}
+            />
+        </Box>
+    );
+};
+
+export default function CourseRenderPane(props: { id?: number }) {
+    const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
+    const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
-    const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
 
     const loadCourses = useCallback(async () => {
         setLoading(true);
 
         const formData = RightPaneStore.getFormData();
 
-        const params = {
+        const websocQueryParams = {
             department: formData.deptValue,
             term: formData.term,
             ge: formData.ge,
@@ -162,110 +191,91 @@ export function CourseRenderPane() {
             division: formData.division,
         };
 
+        const gradesQueryParams = {
+            department: formData.deptValue,
+            ge: formData.ge as GE,
+        };
+
         try {
-            // If params has a comma, it means that we are searching for multiple units.
-            const socObject = params.units.includes(',')
-                ? await queryWebsocMultiple(params, 'units')
-                : await queryWebsoc(params);
+            // Query websoc for course information and populate gradescache
+            const [websocJsonResp, _] = await Promise.all([
+                websocQueryParams.units.includes(',')
+                    ? WebSOC.queryMultiple(websocQueryParams, 'units')
+                    : WebSOC.query(websocQueryParams),
+                // Catch the error here so that the course pane still loads even if the grades cache fails to populate
+                Grades.populateGradesCache(gradesQueryParams).catch((error) => {
+                    console.error(error);
+                    openSnackbar('error', 'Error loading grades information');
+                }),
+            ]);
 
             setError(false);
-            setCourseData(flattenSOCObject(socObject));
+            setWebsocResp(websocJsonResp);
+            setCourseData(flattenSOCObject(websocJsonResp));
         } catch (error) {
+            console.error(error);
             setError(true);
+            openSnackbar('error', 'We ran into an error while looking up class info');
         } finally {
             setLoading(false);
         }
     }, []);
 
-    useEffect(() => {
-        loadCourses();
-    }, []);
+    const updateScheduleNames = () => {
+        setScheduleNames(AppStore.getScheduleNames());
+    };
 
     useEffect(() => {
-        const updateScheduleNames = () => {
-            setScheduleNames(AppStore.getScheduleNames());
+        const changeColors = () => {
+            if (websocResp == null) {
+                return;
+            }
+            setCourseData(flattenSOCObject(websocResp));
         };
 
+        AppStore.on('currentScheduleIndexChange', changeColors);
+
+        return () => {
+            AppStore.off('currentScheduleIndexChange', changeColors);
+        };
+    }, [websocResp]);
+
+    useEffect(() => {
+        loadCourses();
         AppStore.on('scheduleNamesChange', updateScheduleNames);
 
         return () => {
             AppStore.off('scheduleNamesChange', updateScheduleNames);
         };
-    }, []);
-
-    if (loading) {
-        return (
-            <div
-                style={{
-                    height: '100%',
-                    width: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}
-            >
-                <img src={isDarkMode() ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div
-                style={{
-                    height: '100%',
-                    overflowY: 'scroll',
-                    position: 'relative',
-                }}
-            >
-                <div
-                    style={{
-                        height: '100%',
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}
-                >
-                    <img src={isDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
-                </div>
-            </div>
-        );
-    }
+    }, [loadCourses, props.id]);
 
     return (
         <>
-            <RecruitmentBanner />
-            <div style={{ height: '100%', overflowY: 'scroll', position: 'relative' }}>
-                <div style={{ height: '50px', marginBottom: '5px' }} />
-                {courseData.length === 0 ? (
-                    <div
-                        style={{
-                            height: '100%',
-                            width: '100%',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <img src={isDarkMode() ? darkNoNothing : noNothing} alt="No Results Found" />
-                    </div>
-                ) : (
-                    courseData.map((_, index: number) => {
-                        let heightEstimate = 200;
-                        if ((courseData[index] as AACourse).sections !== undefined)
-                            heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
-
-                        return (
-                            <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
-                                {SectionTableWrapped(index, { courseData, scheduleNames })}
-                            </LazyLoad>
-                        );
-                    })
-                )}
-            </div>
+            {loading ? (
+                <LoadingMessage />
+            ) : error || courseData.length === 0 ? (
+                <ErrorMessage />
+            ) : (
+                <>
+                    <RecruitmentBanner />
+                    <Box>
+                        <Box sx={{ height: '50px', marginBottom: '5px' }} />
+                        {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
+                            let heightEstimate = 200;
+                            if ((courseData[index] as AACourse).sections !== undefined)
+                                heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
+                            return (
+                                <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
+                                    {SectionTableWrapped(index, {
+                                        courseData: courseData,
+                                        scheduleNames: scheduleNames,
+                                    })}
+                                </LazyLoad>
+                            );
+                        })}
+                    </Box>
+                </>
+            )}
         </>
     );
 }
-
-export default CourseRenderPane;

@@ -1,30 +1,42 @@
-import { Box, Chip, Popover, TableCell, TableRow, Theme, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
+import {
+    Box,
+    Button,
+    Chip,
+    Popover,
+    TableCell,
+    TableRow,
+    Theme,
+    Tooltip,
+    Typography,
+    useMediaQuery,
+} from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
 import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
-import { Fragment, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { AASection } from '@packages/antalmanac-types';
 import { WebsocSectionEnrollment, WebsocSectionMeeting } from 'peterportal-api-next-types';
 
-import RightPaneStore, { type SectionTableColumn } from '../RightPaneStore';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import restrictionsMapping from './static/restrictionsMapping.json';
+import GradesPopup from './GradesPopup';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { clickToCopy, CourseDetails, isDarkMode } from '$lib/helpers';
+import { clickToCopy, isDarkMode } from '$lib/helpers';
+import { CourseDetails } from '$lib/course_data.types';
+import Grades from '$lib/grades';
 import AppStore from '$stores/AppStore';
 import { useTabStore } from '$stores/TabStore';
 import locationIds from '$lib/location_ids';
-import { normalizeTime, parseDaysString, translate24To12HourTime } from '$stores/calendarizeHelpers';
+import { normalizeTime, parseDaysString, formatTimes } from '$stores/calendarizeHelpers';
+import useColumnStore, { type SectionTableColumn } from '$stores/ColumnStore';
+import { useTimeFormatStore } from '$stores/TimeStore';
 
 const styles: Styles<Theme, object> = (theme) => ({
-    popover: {
-        pointerEvents: 'none',
-    },
     sectionCode: {
         display: 'inline-flex',
         cursor: 'pointer',
@@ -32,6 +44,7 @@ const styles: Styles<Theme, object> = (theme) => ({
             color: isDarkMode() ? 'gold' : 'blueviolet',
             cursor: 'pointer',
         },
+        alignSelf: 'center',
     },
     row: {
         '&:nth-of-type(odd)': {
@@ -47,9 +60,7 @@ const styles: Styles<Theme, object> = (theme) => ({
             opacity: isDarkMode() ? 0.6 : 1,
         },
     },
-    cell: {
-        fontSize: '0.85rem',
-    },
+    cell: {},
     link: {
         textDecoration: 'underline',
         color: isDarkMode() ? 'dodgerblue' : 'blue',
@@ -89,6 +100,16 @@ const styles: Styles<Theme, object> = (theme) => ({
     Stu: { color: '#179523' },
     Tap: { color: '#8d2df0' },
     Tut: { color: '#ffc705' },
+    popoverText: {
+        color: isDarkMode() ? 'dodgerblue' : 'blue',
+        cursor: 'pointer',
+    },
+    codeCell: {
+        width: '8%',
+    },
+    // statusCell: {
+    //     width: '9%',
+    // },
 });
 
 const NoPaddingTableCell = withStyles({
@@ -104,7 +125,7 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
     const { classes, sectionCode } = props;
 
     return (
-        <NoPaddingTableCell className={classes.cell}>
+        <NoPaddingTableCell className={`${classes.cell} ${classes.codeCell}`}>
             <Tooltip title="Click to copy course code" placement="bottom" enterDelay={150}>
                 <Chip
                     onClick={(event) => {
@@ -183,6 +204,96 @@ const InstructorsCell = withStyles(styles)((props: InstructorsCellProps) => {
     return <NoPaddingTableCell className={classes.cell}>{getLinks(instructors)}</NoPaddingTableCell>;
 });
 
+async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
+    const namedInstructors = instructors.filter((instructor) => instructor !== 'STAFF');
+
+    // Get the GPA of the first instructor of this section where data exists
+    for (const instructor of namedInstructors) {
+        const grades = await Grades.queryGrades(
+            deptCode,
+            courseNumber,
+            instructor,
+            useTabStore.getState().activeTab != 1
+        );
+        if (grades?.averageGPA) {
+            return {
+                gpa: grades.averageGPA.toFixed(2).toString(),
+                instructor: instructor,
+            };
+        }
+    }
+
+    return undefined;
+}
+
+interface GPACellProps {
+    deptCode: string;
+    courseNumber: string;
+    instructors: string[];
+}
+
+function GPACell(props: GPACellProps) {
+    const { deptCode, courseNumber, instructors } = props;
+
+    const [gpa, setGpa] = useState('');
+
+    const [instructor, setInstructor] = useState('');
+
+    const [anchorEl, setAnchorEl] = useState<Element>();
+
+    const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl((currentAnchorEl) => (currentAnchorEl ? undefined : event.currentTarget));
+    }, []);
+
+    const hideDistribution = useCallback(() => {
+        setAnchorEl(undefined);
+    }, []);
+
+    useEffect(() => {
+        getGpaData(deptCode, courseNumber, instructors)
+            .then((data) => {
+                if (data) {
+                    setGpa(data.gpa);
+                    setInstructor(data.instructor);
+                }
+            })
+            .catch(console.log);
+    }, [deptCode, courseNumber, instructors]);
+
+    return (
+        <NoPaddingTableCell>
+            <Button
+                style={{
+                    color: isDarkMode() ? 'dodgerblue' : 'blue',
+                    padding: 0,
+                    minWidth: 0,
+                    fontWeight: 400,
+                    fontSize: '1rem',
+                }}
+                onClick={handleClick}
+                variant="text"
+            >
+                {gpa}
+            </Button>
+            <Popover
+                open={Boolean(anchorEl)}
+                onClose={hideDistribution}
+                anchorEl={anchorEl}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                disableRestoreFocus
+            >
+                <GradesPopup
+                    deptCode={deptCode}
+                    courseNumber={courseNumber}
+                    instructor={instructor}
+                    isMobileScreen={useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`)}
+                />
+            </Popover>
+        </NoPaddingTableCell>
+    );
+}
+
 interface LocationsCellProps {
     classes: ClassNameMap;
     meetings: WebsocSectionMeeting[];
@@ -207,11 +318,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                         const buildingId = locationIds[buildingName];
                         return (
                             <Fragment key={meeting.timeIsTBA + bldg}>
-                                <Link
-                                    className={classes.mapLink}
-                                    to={`/map?location=${buildingId}`}
-                                    onClick={focusMap}
-                                >
+                                <Link className={classes.mapLink} to={`/map?location=${buildingId}`} onClick={focusMap}>
                                     {bldg}
                                 </Link>
                                 <br />
@@ -318,6 +425,8 @@ interface DayAndTimeCellProps {
 const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
     const { classes, meetings } = props;
 
+    const { isMilitaryTime } = useTimeFormatStore();
+
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
@@ -326,7 +435,7 @@ const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
                 }
 
                 if (meeting.startTime && meeting.endTime) {
-                    const timeString = translate24To12HourTime(meeting.startTime, meeting.endTime);
+                    const timeString = formatTimes(meeting.startTime, meeting.endTime, isMilitaryTime);
 
                     return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>{`${meeting.days} ${timeString}`}</Box>;
                 }
@@ -356,7 +465,9 @@ const StatusCell = withStyles(styles)((props: StatusCellProps) => {
     //         </NoPaddingTableCell>
     //     )
     return (
-        <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>{status}</NoPaddingTableCell>
+        <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell} ${classes.statusCell}`}>
+            {status}
+        </NoPaddingTableCell>
     );
 });
 
@@ -373,6 +484,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     sectionCode: CourseCodeCell,
     sectionDetails: SectionDetailsCell,
     instructors: InstructorsCell,
+    gpa: GPACell,
     dayAndTime: DayAndTimeCell,
     location: LocationsCell,
     sectionEnrollment: SectionEnrollmentCell,
@@ -386,7 +498,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, allowHighlight, scheduleNames } = props;
 
-    const [activeColumns, setColumns] = useState(RightPaneStore.getActiveColumns());
+    const activeColumns = useColumnStore((store) => store.activeColumns);
 
     const [addedCourse, setAddedCourse] = useState(
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
@@ -407,29 +519,15 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
 
     // Stable references to event listeners will synchronize React state with the store.
 
-    const updateColumns = useCallback(
-        (newActiveColumns: SectionTableColumn[]) => {
-            setColumns(newActiveColumns);
-        },
-        [setColumns]
-    );
-
     const updateHighlight = useCallback(() => {
         setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
-    }, [setAddedCourse]);
+    }, []);
 
     const updateCalendarEvents = useCallback(() => {
         setCalendarEvents(AppStore.getCourseEventsInCalendar());
     }, [setCalendarEvents]);
 
     // Attach event listeners to the store.
-
-    useEffect(() => {
-        RightPaneStore.on('columnChange', updateColumns);
-        return () => {
-            RightPaneStore.removeListener('columnChange', updateColumns);
-        };
-    }, [updateColumns]);
 
     useEffect(() => {
         AppStore.on('addedCoursesChange', updateHighlight);

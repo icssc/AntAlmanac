@@ -3,12 +3,14 @@ import { VariantType } from 'notistack';
 import { TRPCError } from '@trpc/server';
 import { WebsocSection } from 'peterportal-api-next-types';
 import { ScheduleCourse } from '@packages/antalmanac-types';
-import { SnackbarPosition } from '$components/AppBar/NotificationSnackbar';
+import { SnackbarPosition } from '$components/NotificationSnackbar';
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { CourseDetails, courseNumAsDecimal, termsInSchedule, warnMultipleTerms } from '$lib/helpers';
+import { warnMultipleTerms } from '$lib/helpers';
+import { CourseDetails } from '$lib/course_data.types';
 import AppStore from '$stores/AppStore';
 import trpc from '$lib/api/trpc';
+import { courseNumAsDecimal } from '$lib/analytics';
 
 export const addCourse = (
     section: WebsocSection,
@@ -23,7 +25,7 @@ export const addCourse = (
         label: courseDetails.deptCode,
         value: courseNumAsDecimal(courseDetails.courseNumber),
     });
-    const terms = termsInSchedule(term);
+    const terms = AppStore.termsInSchedule(term);
 
     if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 
