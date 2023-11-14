@@ -10,6 +10,10 @@ export const tourSteps: Array<ReactourStep> = [
         selector: '.rbc-time-view', // Calendar.
         content: 'See the classes in your schedule!',
     },
+    {
+        selector: '#finals-button',
+        content: 'See your finals times',
+    },
 ];
 
 interface TourStore {
