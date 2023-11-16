@@ -25,6 +25,7 @@
         "websoc-api": "^3.0.0"
     },
     "devDependencies": {
+        "@auth/core": "^0.18.1",
         "@aws-sdk/client-dynamodb": "^3.332.0",
         "@aws-sdk/lib-dynamodb": "^3.332.0",
         "@types/aws-lambda": "^8.10.110",
