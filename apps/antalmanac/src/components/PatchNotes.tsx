@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
     Backdrop,
     type BackdropProps,
@@ -9,6 +9,7 @@ import {
     DialogTitle,
     Typography,
 } from '@mui/material';
+import useTourStore from '$stores/TourStore';
 
 /**
  * Show modal only if the current patch notes haven't been shown.
@@ -37,6 +38,12 @@ function PatchNotesBackdrop(props: BackdropProps) {
  */
 function PatchNotes() {
     const [open, setOpen] = useState(isOutdated());
+
+    const [setTourEnabled] = useTourStore((state) => [state.setTourEnabled]);
+
+    useEffect(() => {
+        setTourEnabled(!open);
+    }, [open]);
 
     const handleClose = useCallback(() => {
         localStorage.setItem(patchNotesKey, latestPatchNotesUpdate);
