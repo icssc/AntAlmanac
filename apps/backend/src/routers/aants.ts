@@ -1,6 +1,5 @@
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import { router, procedure } from '../trpc';
-import env from '../env';
 
 // Initialize SES client to send AANTS emails
 const sesClient = new SESClient({
