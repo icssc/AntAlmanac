@@ -7,6 +7,10 @@ export const tourSteps: Array<ReactourStep> = [
         content: 'Search for your classes here!',
     },
     {
+        selector: '#import-button',
+        content: 'Quickly add your classes from WebReg or Zotcourse!',
+    },
+    {
         selector: '.rbc-time-view', // Calendar.
         content: 'See the classes in your schedule!',
     },

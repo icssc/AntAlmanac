@@ -69,11 +69,7 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         this.setState({ isOpen: true });
     };
 
-    addCoursesMultiple = (
-        courseInfo: { [sectionCode: string]: CourseInfo },
-        term: string,
-        scheduleIndex: number
-    ) => {
+    addCoursesMultiple = (courseInfo: { [sectionCode: string]: CourseInfo }, term: string, scheduleIndex: number) => {
         for (const section of Object.values(courseInfo)) {
             addCourse(section.section, section.courseDetails, term, scheduleIndex, true);
         }
@@ -172,7 +168,7 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
             <>
                 {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
                 <Tooltip title="Import a schedule from your Study List">
-                    <Button onClick={this.handleOpen} color="inherit" startIcon={<PostAdd />}>
+                    <Button onClick={this.handleOpen} color="inherit" startIcon={<PostAdd />} id="import-button">
                         Import
                     </Button>
                 </Tooltip>
