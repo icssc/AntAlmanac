@@ -18,16 +18,18 @@ export const tourSteps: Array<ReactourStep> = [
 
 interface TourStore {
     tourEnabled: boolean;
-    setTourEnabled: (state: boolean) => void;
+    setTourEnabled: (enabled: boolean) => void;
+    enableTour: () => void;
+    disableTour: () => void;
 }
 
 export const useTourStore = create<TourStore>((set, get) => {
     return {
         tourEnabled: true, // TODO: Check localstorage
-        setTourEnabled: (state: boolean) => {
-            set(() => {
-                return { tourEnabled: state };
-            });
-        },
+        setTourEnabled: (enabled: boolean) => set({ tourEnabled: enabled }),
+        enableTour: () => set({ tourEnabled: true }),
+        disableTour: () => set({ tourEnabled: false }),
     };
 });
+
+export default useTourStore;

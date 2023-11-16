@@ -17,11 +17,7 @@ export default function Home() {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
     const theme = useTheme();
 
-    const [tourEnabled, setTourEnabled] = useTourStore((state) => [state.tourEnabled, state.setTourEnabled]);
-
-    const disableTour = useCallback(() => {
-        setTourEnabled(false);
-    }, [setTourEnabled]);
+    const [tourEnabled, disableTour] = useTourStore((state) => [state.tourEnabled, state.disableTour]);
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
