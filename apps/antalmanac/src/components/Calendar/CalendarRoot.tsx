@@ -9,92 +9,43 @@ import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calen
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
-import buildingCatalogue from '$lib/buildingCatalogue';
 import { useTimeFormatStore } from '$stores/TimeStore';
 
 const localizer = momentLocalizer(moment);
 
-/*
-This is the composition structure of everything in components/Calendar, updated as of PR #411
-I did the file restructure for the folder based on this tree, so thought I 
-might as well include it since I made it. The file structure is close but doesn't
-match exactly.
-
-CalendarRoot
-    CourseCalendarEvent
-    CalendarToolbar
-        CustomEventDialog
-            DaySelector
-            ScheduleSelector
-        ScreenshotButton
-        ExportCalendar
-        ScheduleNameDialog (reused below)
-        EditSchedule
-            ScheduleNameDialog (reused above)
-            DeleteScheduleDialog
-*/
-
-const styles: Styles<Theme, object> = {
-    container: {
-        margin: '0px 4px 4px 4px',
-        borderRadius: '1px',
-    },
-    firstLineContainer: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        fontWeight: 500,
-        fontSize: '0.8rem',
-    },
-    sectionType: {
-        fontSize: '0.8rem',
-    },
-    secondLineContainer: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        fontSize: '0.7rem',
-    },
-    customEventContainer: {
-        marginTop: 2,
-        marginBottom: 2,
-        fontSize: '0.85rem',
-    },
-    customEventTitle: {
-        fontWeight: 500,
-    },
+const AntAlmanacEvent = ({ event }: { event: CalendarEvent }) => {
+    return event.isCustomEvent ? (
+        <Box style={{ marginTop: 2, marginBottom: 2, fontSize: '0.85rem' }}>
+            <Box style={{ fontWeight: 500 }}>{event.title}</Box>
+        </Box>
+    ) : (
+        <Box>
+            <Box
+                style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'space-between',
+                    fontWeight: 500,
+                    fontSize: '0.8rem',
+                }}
+            >
+                <Box>{event.title}</Box>
+                <Box style={{ fontSize: '0.8rem' }}> {event.sectionType}</Box>
+            </Box>
+            <Box style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontSize: '0.7rem' }}>
+                <Box>
+                    {event.showLocationInfo
+                        ? event.locations.map((location) => `${location.building} ${location.room}`).join(', ')
+                        : event.locations.length > 1
+                        ? `${event.locations.length} Locations`
+                        : `${event.locations[0].building} ${event.locations[0].room}`}
+                </Box>
+                <Box>{event.sectionCode}</Box>
+            </Box>
+        </Box>
+    );
 };
 
-const AntAlmanacEvent =
-    ({ classes }: { classes: ClassNameMap }) =>
-    // eslint-disable-next-line react/display-name
-    ({ event }: { event: CalendarEvent }) => {
-        return event.isCustomEvent ? (
-            <div className={classes.customEventContainer}>
-                <div className={classes.customEventTitle}>{event.title}</div>
-                <div className={classes.secondLineContainer}>
-                    {event.building ? buildingCatalogue[+event.building].name : ''}
-                </div>
-            </div>
-        ) : (
-            <div>
-                <div className={classes.firstLineContainer}>
-                    <div> {event.title}</div>
-                    <div className={classes.sectionType}> {event.sectionType}</div>
-                </div>
-                <div className={classes.secondLineContainer}>
-                    <div>
-                        {event.showLocationInfo
-                            ? event.locations.map((location) => `${location.building} ${location.room}`).join(', ')
-                            : event.locations.length > 1
-                            ? `${event.locations.length} Locations`
-                            : `${event.locations[0].building} ${event.locations[0].room}`}
-                    </div>
-                    <div>{event.sectionCode}</div>
-                </div>
-            </div>
-        );
-    };
 interface ScheduleCalendarProps {
     isMobile: boolean;
 }
