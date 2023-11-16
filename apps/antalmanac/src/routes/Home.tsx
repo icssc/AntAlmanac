@@ -59,6 +59,7 @@ export default function Home() {
                         rounded={5}
                         closeWithMask={false}
                         onRequestClose={disableTour}
+                        maskSpace={5}
                     />
                 </>
             )}
