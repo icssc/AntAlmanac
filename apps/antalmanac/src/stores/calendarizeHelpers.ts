@@ -4,9 +4,9 @@ import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseC
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { notNull, getReferencesOccurring } from '$lib/utils';
 
-const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
+export const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
-const FINALS_WEEK_DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+export const FINALS_WEEK_DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
 export function getLocation(location: string): Location {
     const [building = '', room = ''] = location.split(' ');
