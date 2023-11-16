@@ -4,17 +4,13 @@ import env from '../env';
 
 // Initialize SES client to send AANTS emails
 const sesClient = new SESClient({
-	region: env.AWS_REGION,
-	credentials: {
-		accessKeyId: '',
-		secretAccessKey: ''
-	}
+	region: 'us-west-1'
 });
 
 const sendEmail = async () => {
 	const params = {
 		Destination: {
-			ToAddresses: [''],
+			ToAddresses: ['antalmanac@gmail.com'],
 		},
 		Message: {
 			Body: {
@@ -26,7 +22,7 @@ const sendEmail = async () => {
 				Data: 'AANTS Test',
 			},
 		},
-		Source: '', // Must be a verified SES email
+		Source: 'antalmanac@gmail.com', // Must be a verified SES email
 	};
 
 	const command = new SendEmailCommand(params);
