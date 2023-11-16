@@ -238,6 +238,9 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
                     views={[Views.WEEK, Views.WORK_WEEK]}
                     defaultView={Views.WORK_WEEK}
                     view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
+                    onView={() => {
+                        return;
+                    }}
                     step={15}
                     timeslots={2}
                     defaultDate={new Date(2018, 0, 1)}

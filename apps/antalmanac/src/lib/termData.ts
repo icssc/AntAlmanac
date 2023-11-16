@@ -1,3 +1,5 @@
+import { queryGraphQL } from './helpers';
+
 // The index of the default term in termData, as per WebSOC
 const defaultTerm = 0;
 
@@ -12,12 +14,111 @@ class Term {
     }
 }
 
+export interface TermNew {
+    longName: string;
+    shortName: string;
+}
+export interface TermDataGraphQLResponse {
+    data: {
+        terms: TermNew[];
+    };
+}
+
+export interface Calendar {
+    finalsEnd: string;
+    finalsStart: string;
+    instructionEnd: string;
+    instructionStart: string;
+}
+export interface CalendarGraphQLResponse {
+    data: {
+        calendar: Calendar;
+    };
+}
+
+async function getTermNames() {
+    const queryString = `{
+        terms {
+            longName
+            shortName
+        }
+    }`;
+
+    const resp = (await queryGraphQL<TermDataGraphQLResponse>(queryString))?.data?.terms;
+
+    return resp;
+}
+
+async function getCalendarData(termNames: TermNew[] | undefined) {
+    if (!termNames) {
+        return null;
+    }
+
+    const calendarData = await Promise.all(
+        termNames.map(async (term) => {
+            const [year, quarter] = term.shortName.split(' ');
+
+            const queryString = `{
+                calendar(year: "${year}", quarter: ${quarter}) {
+                    finalsEnd
+                    finalsStart
+                    instructionEnd
+                    instructionStart
+                }
+            }`;
+
+            try {
+                const resp = (await queryGraphQL<CalendarGraphQLResponse>(queryString))?.data?.calendar;
+                return resp;
+            } catch (error) {
+                console.error('Error fetching calendar data:', error);
+                return null;
+            }
+        })
+    );
+
+    return calendarData;
+}
+
+// query Query($year: String!, $quarter: Quarter!) {
+//     calendar(year: $year, quarter: $quarter) {
+//       finalsEnd
+//       finalsStart
+//       instructionEnd
+//       instructionStart
+//     }
+//   }
+
+async function getTerms() {
+    const termNames = await getTermNames();
+    const calendarData = await getCalendarData(termNames);
+
+    if (!termNames || !calendarData) {
+        return null;
+    }
+
+    const names = termNames.map((term, index) => {
+        const instructionStart = calendarData[index]?.instructionStart.split('T')[0].split('-');
+        if (!instructionStart) {
+            return null;
+        }
+
+        const formattedInstructionStart = [instructionStart[0], parseInt(instructionStart[1]) - 1, instructionStart[2]];
+
+        return new Term(term.shortName, term.longName, formattedInstructionStart);
+    });
+
+    return names;
+}
+
+const termData = await getTerms();
+
 /**
  * Quarterly Academic Calendar {@link https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html}
  * The `startDate`, if available, should correspond to the __instruction start date__ (not the quarter start date)
  * Months are 0-indexed
  */
-const termData = [
+const oldtermData = [
     new Term('2024 Winter', '2024 Winter Quarter', [2023, 0, 8]),
     new Term('2023 Fall', '2023 Fall Quarter', [2023, 8, 28]),
     new Term('2023 Summer2', '2023 Summer Session 2', [2023, 7, 7]),
