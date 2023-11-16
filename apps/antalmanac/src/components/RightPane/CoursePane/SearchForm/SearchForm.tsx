@@ -17,6 +17,7 @@ const styles: Styles<Theme, object> = {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
+        overflowX: 'hidden',
     },
     container: {
         display: 'flex',

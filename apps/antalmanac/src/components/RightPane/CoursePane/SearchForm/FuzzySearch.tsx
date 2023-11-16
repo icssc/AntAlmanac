@@ -1,7 +1,9 @@
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Autocomplete';
-import { ChangeEvent, PureComponent } from 'react';
-import search, { SearchResult } from 'websoc-fuzzy-search';
+import { PureComponent } from 'react';
+import search from 'websoc-fuzzy-search';
+
+type SearchResult = ReturnType<typeof search>;
 
 import RightPaneStore from '../../RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
@@ -21,9 +23,9 @@ interface FuzzySearchProps {
 }
 
 interface FuzzySearchState {
-    cache: Record<string, Record<string, SearchResult>>;
+    cache: Record<string, SearchResult>;
     open: boolean;
-    results: Record<string, SearchResult>;
+    results: SearchResult;
     value: string;
 }
 
@@ -57,14 +59,14 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 const deptValue = ident[0].split(' ').slice(0, -1).join(' ');
                 let deptLabel;
                 for (const [key, value] of Object.entries(this.state.cache)) {
-                    if (Object.keys(value).includes(deptValue)) {
-                        deptLabel = this.state.cache[key][deptValue].name;
+                    if (Object.keys(value ?? {}).includes(deptValue)) {
+                        deptLabel = this.state.cache[key]?.[deptValue].name;
                         break;
                     }
                 }
                 if (!deptLabel) {
                     const deptSearch = search({ query: deptValue.toLowerCase(), numResults: 1 });
-                    if (deptSearch[deptValue]) {
+                    if (deptSearch?.[deptValue]) {
                         deptLabel = deptSearch[deptValue].name;
                         this.setState({
                             cache: {
@@ -82,7 +84,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
             case emojiMap.INSTRUCTOR:
                 RightPaneStore.updateFormValue(
                     'instructor',
-                    Object.keys(this.state.results).filter((x) => this.state.results[x].name === ident[0])[0]
+                    Object.keys(this.state.results ?? {}).filter((x) => this.state.results?.[x].name === ident[0])[0]
                 );
                 break;
             default:
@@ -98,7 +100,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     filterOptions = (options: string[]) => options;
 
     getOptionLabel = (option: string) => {
-        const object = this.state.results[option];
+        const object = this.state.results?.[option];
         if (!object) return option;
         switch (object.type) {
             case 'GE_CATEGORY': {
@@ -111,9 +113,9 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
             case 'DEPARTMENT':
                 return `${emojiMap.DEPARTMENT} ${option}: ${object.name}`;
             case 'COURSE':
-                // TODO: fix our `websoc-fuzzy-search` package to strongly type `object.metadata` correctly
-                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
-                return `${emojiMap.COURSE} ${object.metadata.department} ${object.metadata.number}: ${object.name}`;
+                return `${emojiMap.COURSE} ${object.metadata.department} ${(object.metadata as any).number}: ${
+                    object.name
+                }`;
             case 'INSTRUCTOR':
                 return `${emojiMap.INSTRUCTOR} ${object.name}`;
             default:
@@ -124,7 +126,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
     getOptionSelected = () => true;
 
-    onInputChange = (event: ChangeEvent<unknown>, value: string, reason: AutocompleteInputChangeReason) => {
+    onInputChange = (_event: unknown, value: string, reason: AutocompleteInputChangeReason) => {
         const lowerCaseValue = value.toLowerCase();
         if (reason === 'input') {
             this.setState(
@@ -165,7 +167,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         return (
             <Autocomplete
                 style={{ width: '100%' }}
-                options={Object.keys(this.state.results)}
+                options={Object.keys(this.state.results ?? {})}
                 renderInput={(params) => (
                     <TextField
                         {...params}

@@ -208,6 +208,7 @@ describe('calendarize-helpers', () => {
             start: new Date(2018, 0, 0, 1, 2),
             end: new Date(2018, 0, 0, 3, 4),
             title: 'title',
+            days: ['Su', 'Tu', 'Th', 'Sa'],
         },
         {
             isCustomEvent: true,
@@ -216,6 +217,7 @@ describe('calendarize-helpers', () => {
             start: new Date(2018, 0, 2, 1, 2),
             end: new Date(2018, 0, 2, 3, 4),
             title: 'title',
+            days: ['Su', 'Tu', 'Th', 'Sa'],
         },
         {
             isCustomEvent: true,
@@ -224,6 +226,7 @@ describe('calendarize-helpers', () => {
             start: new Date(2018, 0, 4, 1, 2),
             end: new Date(2018, 0, 4, 3, 4),
             title: 'title',
+            days: ['Su', 'Tu', 'Th', 'Sa'],
         },
         {
             isCustomEvent: true,
@@ -232,6 +235,7 @@ describe('calendarize-helpers', () => {
             start: new Date(2018, 0, 6, 1, 2),
             end: new Date(2018, 0, 6, 3, 4),
             title: 'title',
+            days: ['Su', 'Tu', 'Th', 'Sa'],
         },
     ];
 
