@@ -1,57 +1,6 @@
-import { ScheduleCourse } from '@packages/antalmanac-types';
 import { ReactourStep } from 'reactour';
 import { create } from 'zustand';
-import AppStore from '$stores/AppStore';
-import { sampleClassFactory } from '$lib/tourUtils';
-
-function addSampleClasses() {
-    if (AppStore.getAddedCourses().length > 0) return;
-
-    const sampleClasses: Array<ScheduleCourse> = [
-        {
-            courseTitle: 'Nice',
-            deptCode: 'GEN&SEX',
-            courseNumber: '69',
-            instructors: ['Your mother'],
-            meetings: [
-                {
-                    bldg: ['DBH'],
-                    days: 'MWF',
-                    startTime: {
-                        hour: 10,
-                        minute: 0,
-                    },
-                    endTime: {
-                        hour: 10,
-                        minute: 50,
-                    },
-                    timeIsTBA: false,
-                },
-            ],
-        },
-        {
-            meetings: [
-                {
-                    bldg: ['ELH 100'],
-                    days: 'TuTh',
-                    startTime: {
-                        hour: 9,
-                        minute: 30,
-                    },
-                    endTime: {
-                        hour: 10,
-                        minute: 50,
-                    },
-                    timeIsTBA: false,
-                },
-            ],
-        },
-    ].map(sampleClassFactory);
-
-    sampleClasses.forEach((sampleClass) => {
-        AppStore.addCourse(sampleClass);
-    });
-}
+import { addSampleClasses } from '$lib/tourExampleGeneration';
 
 export const tourSteps: Array<ReactourStep> = [
     {
