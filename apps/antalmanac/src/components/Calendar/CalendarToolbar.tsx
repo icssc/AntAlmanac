@@ -16,6 +16,7 @@ import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
 import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';
+import useTourStore from '$stores/TourStore';
 
 function handleScheduleChange(index: number) {
     logAnalytics({
@@ -249,12 +250,15 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
 
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
+    const [markFinalsButtonPressed] = useTourStore((state) => [state.markFinalsButtonPressed]);
+
     const handleToggleFinals = useCallback(() => {
         logAnalytics({
             category: analyticsEnum.calendar.title,
             action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
         });
         toggleDisplayFinalsSchedule();
+        markFinalsButtonPressed();
     }, [toggleDisplayFinalsSchedule]);
 
     const handleScheduleNamesChange = useCallback(() => {
