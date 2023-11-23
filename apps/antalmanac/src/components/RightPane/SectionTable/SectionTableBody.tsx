@@ -14,7 +14,6 @@ import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
-import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { AASection } from '@packages/antalmanac-types';
