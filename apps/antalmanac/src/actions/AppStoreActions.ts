@@ -191,12 +191,12 @@ export const copySchedule = (to: number) => {
     AppStore.copySchedule(to);
 };
 
-export const toggleTheme = (radioGroupEvent: React.ChangeEvent<HTMLInputElement>) => {
-    AppStore.toggleTheme(radioGroupEvent.target.value);
+export const toggleTheme = (event: React.MouseEvent<HTMLButtonElement>) => {
+    AppStore.toggleTheme(event.currentTarget.value);
     logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.CHANGE_THEME,
-        label: radioGroupEvent.target.value,
+        label: event.currentTarget.value,
     });
 };
 
