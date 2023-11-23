@@ -374,7 +374,6 @@ interface RestrictionsCellProps {
 
 const RestrictionsCell = withStyles(styles)((props: RestrictionsCellProps) => {
     const { classes, restrictions } = props;
-    const popupState = usePopupState({ popupId: 'RestrictionsCellPopup', variant: 'popover' });
 
     const parseRestrictions = (restrictionCode: string) => {
         return restrictionCode.split(' ').map((code, index) => {
@@ -393,25 +392,17 @@ const RestrictionsCell = withStyles(styles)((props: RestrictionsCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             <Box>
-                <Typography {...bindHover(popupState)}>
-                    <a
-                        href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        {restrictions}
-                    </a>
-                </Typography>
-                <Popover
-                    {...bindPopover(popupState)}
-                    className={classes.popover}
-                    classes={{ paper: classes.paper }}
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                    transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                    disableRestoreFocus
-                >
-                    <Typography>{parseRestrictions(restrictions)}</Typography>
-                </Popover>
+                <Tooltip title={<Typography>{parseRestrictions(restrictions)}</Typography>}>
+                    <Typography>
+                        <a
+                            href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {restrictions}
+                        </a>
+                    </Typography>
+                </Tooltip>
             </Box>
         </NoPaddingTableCell>
     );
