@@ -8,6 +8,8 @@ enum TourStepName {
     calendar = 'calendar',
     finalsButton = 'finalsButton',
     finalsButtonPostClick = 'finalsButtonPostClick',
+    welcome = 'welcome',
+    added = 'added',
 }
 
 /**
@@ -15,6 +17,18 @@ enum TourStepName {
  * The tour doesn't start with all of them.
  */
 export const namedTourSteps: Record<TourStepName, ReactourStep> = {
+    welcome: {
+        selector: '#welcome',
+        content: (
+            <>
+                Welcome to AntAlmanac! This tour will show you how to use the app.
+                <br />
+                Use <kbd>←</kbd> and <kbd>→</kbd> to navigate the tour.
+                <br />
+                Press <kbd>Esc</kbd> to exit.
+            </>
+        ),
+    },
     searchBar: {
         selector: '#searchBar',
         content: 'You can search for your classes here!',
@@ -37,6 +51,7 @@ export const namedTourSteps: Record<TourStepName, ReactourStep> = {
         selector: '.rbc-time-view',
         content: 'That shows your finals schedule!',
     },
+    
 };
 
 /** So that the finalsButtonAction only runs once */
@@ -89,6 +104,7 @@ export const useTourStore = create<TourStore>((set, get) => {
         markFinalsButtonPressed: () => set({ finalsButtonPressed: true }),
 
         tourSteps: [
+            namedTourSteps.welcome,
             namedTourSteps.searchBar,
             namedTourSteps.importButton,
             namedTourSteps.calendar,
