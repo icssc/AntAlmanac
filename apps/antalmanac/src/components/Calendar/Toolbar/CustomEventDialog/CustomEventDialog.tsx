@@ -54,6 +54,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
         setEnd(defaultCustomEventValues.end);
         setTitle(defaultCustomEventValues.title);
         setDays(defaultCustomEventValues.days);
+        setBuilding(undefined);
     };
 
     const disabled = !(scheduleIndices.length && days.includes(true));
@@ -152,6 +153,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                         setEnd(customEvent.end);
                         setTitle(customEvent.title);
                         setDays(customEvent.days);
+                        setBuilding(customEvent.building);
                     }}
                 >
                     <Edit fontSize="small" />
