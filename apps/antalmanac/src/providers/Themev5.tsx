@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from 'react';
 import { createTheme, CssBaseline, ThemeProvider, type PaletteOptions } from '@mui/material';
-import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/ThemeStore';
 
 const lightTheme: PaletteOptions = {
@@ -41,11 +40,11 @@ export default function AppThemev5Provider(props: Props) {
 
     useEffect(() => {
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (AppStore.getTheme() === 'system') {
+            if (theme === 'system') {
                 useThemeStore.getState().setTheme(e.matches ? 'dark' : 'light');
             }
         });
-    }, []);
+    }, [theme]);
 
     const AppTheme = useMemo(
         () =>

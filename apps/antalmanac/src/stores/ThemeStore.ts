@@ -9,12 +9,6 @@ export interface ThemeStore {
 export const useThemeStore = create<ThemeStore>((set) => {
     const theme = typeof Storage !== 'undefined' ? window.localStorage.getItem('theme') ?? 'system' : 'system';
 
-    logAnalytics({
-        category: analyticsEnum.nav.title,
-        action: analyticsEnum.nav.actions.CHANGE_THEME,
-        label: theme,
-    });
-
     return {
         theme: theme,
         setTheme: (theme) => {
@@ -22,6 +16,12 @@ export const useThemeStore = create<ThemeStore>((set) => {
                 window.localStorage.setItem('theme', theme);
             }
             set({ theme });
+
+            logAnalytics({
+                category: analyticsEnum.nav.title,
+                action: analyticsEnum.nav.actions.CHANGE_THEME,
+                label: theme,
+            });
         },
     };
 });
