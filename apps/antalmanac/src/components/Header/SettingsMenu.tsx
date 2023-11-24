@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Box, Button, ButtonGroup, Divider, Drawer, IconButton, Typography } from '@material-ui/core';
 import { Close, DarkMode, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
@@ -6,8 +6,10 @@ import { useTimeFormatStore } from '$stores/TimeStore';
 import { useThemeStore } from '$stores/ThemeStore';
 
 function ThemeMenu() {
+    const setTheme = useThemeStore((store) => store.setTheme);
+
     const handleThemeChange = (event: React.MouseEvent<HTMLButtonElement>) => {
-        useThemeStore.getState().setTheme(event.currentTarget.value);
+        setTheme(event.currentTarget.value);
     };
 
     return (
@@ -47,8 +49,10 @@ function ThemeMenu() {
 }
 
 function TimeMenu() {
-    const handleTimeChange = (event: React.MouseEvent<HTMLButtonElement>) => {
-        useTimeFormatStore.getState().setTimeFormat(event.currentTarget.value == 'true');
+    const setTimeFormat = useTimeFormatStore((store) => store.setTimeFormat);
+
+    const handleTimeFormatChange = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setTimeFormat(event.currentTarget.value == 'true');
     };
 
     return (
@@ -66,7 +70,7 @@ function TimeMenu() {
                         fontSize: '12px',
                     }}
                     value="false"
-                    onClick={(value) => handleTimeChange(value)}
+                    onClick={handleTimeFormatChange}
                     fullWidth={true}
                 >
                     12 Hour
@@ -79,7 +83,7 @@ function TimeMenu() {
                         fontSize: '12px',
                     }}
                     value="true"
-                    onClick={(value) => handleTimeChange(value)}
+                    onClick={handleTimeFormatChange}
                 >
                     24 Hour
                 </Button>
@@ -91,23 +95,23 @@ function TimeMenu() {
 function SettingsMenu() {
     const [drawerOpen, setDrawerOpen] = useState(false);
 
+    const handleDrawerOpen = useCallback(() => {
+        setDrawerOpen(true);
+    }, []);
+
+    const handleDrawerClose = useCallback(() => {
+        setDrawerOpen(false);
+    }, []);
+
     return (
         <>
-            <Button
-                onClick={() => {
-                    setDrawerOpen(true);
-                }}
-                color="inherit"
-                startIcon={<Settings />}
-            >
+            <Button onClick={handleDrawerOpen} color="inherit" startIcon={<Settings />}>
                 Settings
             </Button>
             <Drawer
                 anchor="right"
                 open={drawerOpen}
-                onClose={() => {
-                    setDrawerOpen(false);
-                }}
+                onClose={handleDrawerClose}
                 PaperProps={{ style: { borderRadius: '10px 0 0 10px' } }}
                 variant="temporary"
             >
@@ -122,12 +126,7 @@ function SettingsMenu() {
                         }}
                     >
                         <Typography variant="h6">Settings</Typography>
-                        <IconButton
-                            size="medium"
-                            onClick={() => {
-                                setDrawerOpen(false);
-                            }}
-                        >
+                        <IconButton size="medium" onClick={handleDrawerClose}>
                             <Close fontSize="inherit" />
                         </IconButton>
                     </Box>
