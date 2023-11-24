@@ -53,7 +53,7 @@ function finalsButtonAction() {
     waitForTourStoreValue('finalsButtonPressed', true).then(() => {
         const store = useTourStore.getState();
         store.setTourFrozen(false);
-        store.replaceTourStepByName(TourStepName.finalsButton, TourStepName.finalsButtonPostClick);
+        store.replaceTourStep(TourStepName.finalsButton, TourStepName.finalsButtonPostClick);
     });
 }
 
@@ -72,8 +72,7 @@ interface TourStore {
 
     tourSteps: Array<ReactourStep>;
     setTourSteps: (steps: Array<ReactourStep>) => void;
-    replaceTourStep: (index: number, step: ReactourStep) => void;
-    replaceTourStepByName: (replacedName: TourStepName, replacementName: TourStepName) => void;
+    replaceTourStep: (replacedName: TourStepName, replacementName: TourStepName) => void;
 }
 
 export const useTourStore = create<TourStore>((set, get) => {
@@ -96,12 +95,7 @@ export const useTourStore = create<TourStore>((set, get) => {
             namedTourSteps.finalsButton,
         ],
         setTourSteps: (steps: Array<ReactourStep>) => set({ tourSteps: steps }),
-        replaceTourStep: (index: number, step: ReactourStep) => {
-            set((state) => ({
-                tourSteps: [...state.tourSteps.slice(0, index), step, ...state.tourSteps.slice(index + 1)],
-            }));
-        },
-        replaceTourStepByName: (replacedName: TourStepName, replacementName: TourStepName) => {
+        replaceTourStep: (replacedName: TourStepName, replacementName: TourStepName) => {
             const index = get().tourSteps.findIndex((step) => step == namedTourSteps[replacedName]);
             if (index === -1) {
                 console.error(`Could not find tour step with name ${replacedName}`);
