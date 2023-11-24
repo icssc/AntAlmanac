@@ -7,4 +7,7 @@ export const RepeatingCustomEventSchema = type({
     days: 'boolean[]',
     customEventID: 'number | parsedNumber',
     'color?': 'string',
+    'building?': 'string',
 });
+
+export type RepeatingCustomEvent = typeof RepeatingCustomEventSchema.infer;
