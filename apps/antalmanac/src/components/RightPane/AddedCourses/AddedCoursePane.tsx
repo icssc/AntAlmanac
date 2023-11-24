@@ -193,7 +193,10 @@ function CustomEventsBox() {
                 {customEvents.map((customEvent) => {
                     return (
                         <Box key={customEvent.title}>
-                            <CustomEventDetailView customEvent={customEvent} />
+                            <CustomEventDetailView
+                                customEvent={customEvent}
+                                scheduleNames={AppStore.getScheduleNames()}
+                            />
                         </Box>
                     );
                 })}

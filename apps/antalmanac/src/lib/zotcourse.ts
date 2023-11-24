@@ -1,6 +1,6 @@
-import { RepeatingCustomEvent } from "$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog";
-import AppStore from "$stores/AppStore";
-import trpc from "./api/trpc";
+import trpc from './api/trpc';
+import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import AppStore from '$stores/AppStore';
 
 export interface ZotCourseResponse {
     codes: string[];

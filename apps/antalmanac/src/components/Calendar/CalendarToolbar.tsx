@@ -335,7 +335,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                 </Box>
 
                 <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
-                    <CustomEventDialog key="custom" />
+                    <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
                 </Box>
             </Box>
         </Paper>

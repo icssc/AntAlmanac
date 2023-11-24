@@ -89,7 +89,7 @@ export function logAnalytics({ category, action, label, value }: AnalyticsProps)
 /**
  * Converts course number to a decimal representation.
  * E.g., '122A' -> 122.1, '121' -> 121
- * 
+ *
  * @param courseNumber A string that represents the course number of a course (eg. '122A', '121')
  * @returns Decimal representation of courseNumber
  */
