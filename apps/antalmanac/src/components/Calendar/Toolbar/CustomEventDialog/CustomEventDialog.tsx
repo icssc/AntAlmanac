@@ -217,10 +217,10 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                 </DialogContent>
 
                 <DialogActions>
-                    <Button onClick={() => handleClose()} color={isDarkMode() ? 'secondary' : 'primary'}>
+                    <Button onClick={handleClose} color={isDarkMode() ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>
-                    <Button onClick={() => handleSubmit()} variant="contained" color="primary" disabled={disabled}>
+                    <Button onClick={handleSubmit} variant="contained" color="primary" disabled={disabled}>
                         {disabled
                             ? 'Schedule and day must be checked'
                             : props.customEvent
