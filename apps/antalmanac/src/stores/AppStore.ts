@@ -8,11 +8,6 @@ import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarE
 import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { useTabStore } from '$stores/TabStore';
 
-function getCurrentTheme() {
-    const theme = typeof Storage === 'undefined' ? 'system' : window.localStorage.getItem('theme');
-    return theme === null ? 'system' : theme;
-}
-
 class AppStore extends EventEmitter {
     schedule: Schedules;
     customEvents: RepeatingCustomEvent[];
@@ -22,7 +17,6 @@ class AppStore extends EventEmitter {
     snackbarDuration: number;
     snackbarPosition: SnackbarPosition;
     snackbarStyle: object; // not sure what this is. I don't think we ever use it
-    theme: string;
     eventsInCalendar: CalendarEvent[];
     finalsEventsInCalendar: CourseEvent[];
     unsavedChanges: boolean;
@@ -43,7 +37,6 @@ class AppStore extends EventEmitter {
         this.finalsEventsInCalendar = [];
         this.unsavedChanges = false;
         this.skeletonMode = false;
-        this.theme = getCurrentTheme();
 
         if (typeof window !== 'undefined') {
             window.addEventListener('beforeunload', (event) => {
@@ -116,10 +109,6 @@ class AppStore extends EventEmitter {
 
     getSnackbarStyle() {
         return this.snackbarStyle;
-    }
-
-    getTheme() {
-        return this.theme;
     }
 
     getAddedSectionCodes() {
@@ -298,12 +287,6 @@ class AppStore extends EventEmitter {
         this.snackbarPosition = position ? position : this.snackbarPosition;
         this.snackbarStyle = style ? style : this.snackbarStyle;
         this.emit('openSnackbar'); // sends event to NotificationSnackbar
-    }
-
-    toggleTheme(theme: string) {
-        this.theme = theme;
-        this.emit('themeToggle');
-        window.localStorage.setItem('theme', theme);
     }
 
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
