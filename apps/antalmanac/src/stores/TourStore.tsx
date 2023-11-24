@@ -9,7 +9,6 @@ enum TourStepName {
     finalsButton = 'finalsButton',
     finalsButtonPostClick = 'finalsButtonPostClick',
     welcome = 'welcome',
-    added = 'added',
 }
 
 /**
@@ -44,33 +43,28 @@ export const namedTourSteps: Record<TourStepName, ReactourStep> = {
     },
     finalsButton: {
         selector: '#finals-button',
-        content: 'Try this button!',
-        action: finalsButtonAction,
+        content: 'Guess what this does!',
+        /**
+         * Freezes the tour until the user presses the finals button.
+         */
+        action: tourActionFactory(
+            () => {
+                const store = useTourStore.getState();
+                store.setTourFrozen(true);
+            },
+            () => {
+                const store = useTourStore.getState();
+                store.setTourFrozen(false);
+                store.replaceTourStep(TourStepName.finalsButton, TourStepName.finalsButtonPostClick);
+            },
+            { field: 'finalsButtonPressed', value: true }
+        ),
     },
     finalsButtonPostClick: {
         selector: '.rbc-time-view',
-        content: 'That shows your finals schedule!',
+        content: 'It shows your finals schedule!',
     },
-    
 };
-
-/** So that the finalsButtonAction only runs once */
-let _finalsButtonActionActivated = false;
-/**
- * Freezes the tour until the user presses the finals button.
- */
-function finalsButtonAction() {
-    // TOOD: Replace the finals button tour step to highlight the calendar pane.
-    if (_finalsButtonActionActivated) return;
-    _finalsButtonActionActivated = true;
-
-    useTourStore.setState({ tourFrozen: true });
-    waitForTourStoreValue('finalsButtonPressed', true).then(() => {
-        const store = useTourStore.getState();
-        store.setTourFrozen(false);
-        store.replaceTourStep(TourStepName.finalsButton, TourStepName.finalsButtonPostClick);
-    });
-}
 
 // TODO: Document
 interface TourStore {
@@ -90,6 +84,7 @@ interface TourStore {
     replaceTourStep: (replacedName: TourStepName, replacementName: TourStepName) => void;
 }
 
+// TODO: Freeze tour while allowing escape. Remove all steps except for current one.
 export const useTourStore = create<TourStore>((set, get) => {
     return {
         tourEnabled: true, // TODO: Check localstorage
@@ -130,6 +125,7 @@ export const useTourStore = create<TourStore>((set, get) => {
 
 /**
  * Returns a promise that resolve when a field in the tour store changes to the given value.
+ *
  * @param field Name of TourStore field to watch.
  * @param value Value to watch for.
  * @returns The promise that resolves when the field changes to the given value.
@@ -143,6 +139,53 @@ export function waitForTourStoreValue(field: keyof TourStore, value: TourStore[k
             }
         });
     });
+}
+
+//eslint-disable-next-line
+type RunOnceCallable = ((domNode?: any) => void) & { _called: boolean };
+
+/**
+ * Returns a callable that runs the given function once and never again.
+ *
+ * @param callable Function to run once.
+ * @returns The function that you can call many times.
+ */
+//eslint-disable-next-line
+function runOneCallableFactory(callable: Function): RunOnceCallable {
+    // The weirdness allows the function to have state and track if it's been called.
+    const _call = () => {
+        if (runOnce._called) return;
+        runOnce._called = true;
+        callable();
+    };
+
+    const runOnce = Object.assign(_call, { _called: false }) as RunOnceCallable;
+    return runOnce;
+}
+
+/**
+ * Returns a callable that can be used as a tour step action.
+ *
+ * @param before Function to run before waiting for the field to change.
+ * @param after Function to run after the field changes to the desired value.
+ * @param waitFor Field and value to watch for in the tour store.
+ * @returns The function that can be used as a tour step action.
+ */
+function tourActionFactory(
+    before?: () => void,
+    after?: () => void,
+    waitFor?: { field: keyof TourStore; value: TourStore[keyof TourStore] }
+) {
+    const action = () => {
+        if (before) before();
+
+        if (!(waitFor && after)) return;
+        waitForTourStoreValue(waitFor.field, waitFor.value).then(() => {
+            if (after) after();
+        });
+    };
+
+    return runOneCallableFactory(action);
 }
 
 export default useTourStore;
