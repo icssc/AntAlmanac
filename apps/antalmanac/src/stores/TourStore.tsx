@@ -2,27 +2,12 @@ import { ReactourStep } from 'reactour';
 import { create } from 'zustand';
 import { addSampleClasses } from '$lib/tourExampleGeneration';
 
-/** So that the finalsButtonAction only runs once */
-let _finalsButtonActionActivated = false;
-/**
- * Freezes the tour until the user presses the finals button.
- */
-function finalsButtonAction() {
-    // TOOD: Replace the finals button tour step to highlight the calendar pane.
-    if (_finalsButtonActionActivated) return;
-    _finalsButtonActionActivated = true;
-
-    useTourStore.setState({ tourFrozen: true });
-    waitForTourStoreValue('finalsButtonPressed', true).then(() => {
-        useTourStore.setState({ tourFrozen: false });
-    });
-}
-
 enum TourStepName {
     searchBar = 'searchBar',
     importButton = 'importButton',
     calendar = 'calendar',
     finalsButton = 'finalsButton',
+    finalsButtonPostClick = 'finalsButtonPostClick',
 }
 
 /**
@@ -45,10 +30,32 @@ export const namedTourSteps: Record<TourStepName, ReactourStep> = {
     },
     finalsButton: {
         selector: '#finals-button',
-        content: 'See your finals times',
+        content: 'Try this button!',
         action: finalsButtonAction,
     },
+    finalsButtonPostClick: {
+        selector: '.rbc-time-view',
+        content: 'That shows your finals schedule!',
+    },
 };
+
+/** So that the finalsButtonAction only runs once */
+let _finalsButtonActionActivated = false;
+/**
+ * Freezes the tour until the user presses the finals button.
+ */
+function finalsButtonAction() {
+    // TOOD: Replace the finals button tour step to highlight the calendar pane.
+    if (_finalsButtonActionActivated) return;
+    _finalsButtonActionActivated = true;
+
+    useTourStore.setState({ tourFrozen: true });
+    waitForTourStoreValue('finalsButtonPressed', true).then(() => {
+        const store = useTourStore.getState();
+        store.setTourFrozen(false);
+        store.replaceTourStepByName(TourStepName.finalsButton, TourStepName.finalsButtonPostClick);
+    });
+}
 
 // TODO: Document
 interface TourStore {
