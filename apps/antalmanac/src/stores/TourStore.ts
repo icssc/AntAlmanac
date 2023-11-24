@@ -18,26 +18,37 @@ function finalsButtonAction() {
     });
 }
 
-export const tourSteps: Array<ReactourStep> = [
-    {
+enum TourStepName {
+    searchBar = 'searchBar',
+    importButton = 'importButton',
+    calendar = 'calendar',
+    finalsButton = 'finalsButton',
+}
+
+/**
+ * Exhaustive enumeration of all possible tour steps for reference.
+ * The tour doesn't start with all of them.
+ */
+export const namedTourSteps: Record<TourStepName, ReactourStep> = {
+    searchBar: {
         selector: '#searchBar',
         content: 'You can search for your classes here!',
     },
-    {
+    importButton: {
         selector: '#import-button',
         content: 'Quickly add your classes from WebReg or Zotcourse!',
     },
-    {
+    calendar: {
         selector: '.rbc-time-view', // Calendar.
         content: 'See the classes in your schedule!',
         action: addSampleClasses,
     },
-    {
+    finalsButton: {
         selector: '#finals-button',
         content: 'See your finals times',
         action: finalsButtonAction,
     },
-];
+};
 
 // TODO: Document
 interface TourStore {
@@ -51,6 +62,11 @@ interface TourStore {
 
     finalsButtonPressed: boolean;
     markFinalsButtonPressed: () => void;
+
+    tourSteps: Array<ReactourStep>;
+    setTourSteps: (steps: Array<ReactourStep>) => void;
+    replaceTourStep: (index: number, step: ReactourStep) => void;
+    replaceTourStepByName: (replacedName: TourStepName, replacementName: TourStepName) => void;
 }
 
 export const useTourStore = create<TourStore>((set, get) => {
@@ -65,6 +81,33 @@ export const useTourStore = create<TourStore>((set, get) => {
 
         finalsButtonPressed: false,
         markFinalsButtonPressed: () => set({ finalsButtonPressed: true }),
+
+        tourSteps: [
+            namedTourSteps.searchBar,
+            namedTourSteps.importButton,
+            namedTourSteps.calendar,
+            namedTourSteps.finalsButton,
+        ],
+        setTourSteps: (steps: Array<ReactourStep>) => set({ tourSteps: steps }),
+        replaceTourStep: (index: number, step: ReactourStep) => {
+            set((state) => ({
+                tourSteps: [...state.tourSteps.slice(0, index), step, ...state.tourSteps.slice(index + 1)],
+            }));
+        },
+        replaceTourStepByName: (replacedName: TourStepName, replacementName: TourStepName) => {
+            const index = get().tourSteps.findIndex((step) => step == namedTourSteps[replacedName]);
+            if (index === -1) {
+                console.error(`Could not find tour step with name ${replacedName}`);
+                return;
+            }
+            set((state) => ({
+                tourSteps: [
+                    ...state.tourSteps.slice(0, index),
+                    namedTourSteps[replacementName],
+                    ...state.tourSteps.slice(index + 1),
+                ],
+            }));
+        },
     };
 });
 

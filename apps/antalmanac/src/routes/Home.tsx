@@ -11,7 +11,7 @@ import PatchNotes from '$components/PatchNotes';
 import Calendar from '$components/Calendar/CalendarRoot';
 import DesktopTabs from '$components/RightPane/RightPaneRoot';
 import NotificationSnackbar from '$components/NotificationSnackbar';
-import { tourSteps, useTourStore } from '$stores/TourStore';
+import { useTourStore } from '$stores/TourStore';
 
 export default function Home() {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
@@ -22,6 +22,8 @@ export default function Home() {
         state.endTour,
         state.tourFrozen,
     ]);
+
+    const [tourSteps] = useTourStore((state) => [state.tourSteps]);
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
