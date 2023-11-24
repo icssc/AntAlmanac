@@ -11,22 +11,20 @@ interface Props {
  * sets and provides the MUI theme for the app
  */
 export default function AppThemeProvider(props: Props) {
-    const { theme } = useThemeStore();
+    const { theme, setTheme } = useThemeStore();
 
     useEffect(() => {
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (theme === 'system') {
-                useThemeStore.getState().setTheme(e.matches ? 'dark' : 'light');
-            }
+            setTheme(e.matches ? 'dark' : 'light');
         });
-    }, [theme]);
+    }, [setTheme, theme]);
 
     const AppTheme = createTheme({
         overrides: {
             MuiCssBaseline: {
                 '@global': {
                     a: {
-                        color: theme == 'light' ? 'blue' : 'dodgerBlue',
+                        color: theme == 'dark' ? 'dodgerBlue' : 'blue',
                     },
                 },
             },
@@ -37,7 +35,7 @@ export default function AppThemeProvider(props: Props) {
                 parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
         },
         palette: {
-            type: theme == 'light' ? 'light' : 'dark',
+            type: theme == 'dark' ? 'dark' : 'light',
             primary: {
                 light: '#5191d6',
                 main: '#305db7',
