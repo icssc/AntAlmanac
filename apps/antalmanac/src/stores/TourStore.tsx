@@ -17,7 +17,6 @@ enum TourStepName {
  */
 export const namedTourSteps: Record<TourStepName, ReactourStep> = {
     welcome: {
-        selector: '#welcome',
         content: (
             <>
                 Welcome to AntAlmanac! This tour will show you how to use the app.
@@ -57,7 +56,10 @@ export const namedTourSteps: Record<TourStepName, ReactourStep> = {
                 store.setTourFrozen(false);
                 store.replaceTourStep(TourStepName.finalsButton, TourStepName.finalsButtonPostClick);
             },
-            { field: 'finalsButtonPressed', value: true }
+            {
+                selector: '#finals-button',
+                eventType: 'click',
+            }
         ),
     },
     finalsButtonPostClick: {
@@ -76,9 +78,6 @@ interface TourStore {
     tourFrozen: boolean;
     setTourFrozen: (frozen: boolean) => void;
 
-    finalsButtonPressed: boolean;
-    markFinalsButtonPressed: () => void;
-
     tourSteps: Array<ReactourStep>;
     setTourSteps: (steps: Array<ReactourStep>) => void;
     replaceTourStep: (replacedName: TourStepName, replacementName: TourStepName) => void;
@@ -94,9 +93,6 @@ export const useTourStore = create<TourStore>((set, get) => {
 
         tourFrozen: false,
         setTourFrozen: (frozen: boolean) => set({ tourFrozen: frozen }),
-
-        finalsButtonPressed: false,
-        markFinalsButtonPressed: () => set({ finalsButtonPressed: true }),
 
         tourSteps: [
             namedTourSteps.welcome,
@@ -174,15 +170,21 @@ function runOneCallableFactory(callable: Function): RunOnceCallable {
 function tourActionFactory(
     before?: () => void,
     after?: () => void,
-    waitFor?: { field: keyof TourStore; value: TourStore[keyof TourStore] }
+    waitFor: { selector?: string; eventType?: string } = {}
 ) {
     const action = () => {
         if (before) before();
 
-        if (!(waitFor && after)) return;
-        waitForTourStoreValue(waitFor.field, waitFor.value).then(() => {
-            if (after) after();
-        });
+        if (!(waitFor?.eventType && waitFor?.selector && after)) return;
+
+        const domNode = document.querySelector(waitFor.selector);
+
+        if (!domNode) {
+            console.error(`Could not find element with selector ${waitFor.selector}`);
+            return;
+        }
+
+        domNode.addEventListener(waitFor.eventType, runOneCallableFactory(after));
     };
 
     return runOneCallableFactory(action);
