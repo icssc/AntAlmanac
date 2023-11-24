@@ -9,8 +9,8 @@ import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDi
 import { useTabStore } from '$stores/TabStore';
 
 function getCurrentTheme() {
-    const theme = typeof Storage === 'undefined' ? 'auto' : window.localStorage.getItem('theme');
-    return theme === null ? 'auto' : theme;
+    const theme = typeof Storage === 'undefined' ? 'system' : window.localStorage.getItem('theme');
+    return theme === null ? 'system' : theme;
 }
 
 class AppStore extends EventEmitter {

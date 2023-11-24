@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { createTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
-import AppStore from '$stores/AppStore';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/ThemeStore';
 
 interface Props {
     children?: React.ReactNode;
@@ -12,25 +11,22 @@ interface Props {
  * sets and provides the MUI theme for the app
  */
 export default function AppThemeProvider(props: Props) {
-    const [darkMode, setDarkMode] = useState(isDarkMode());
+    const { theme } = useThemeStore();
 
     useEffect(() => {
-        AppStore.on('themeToggle', () => {
-            setDarkMode(isDarkMode());
-        });
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (AppStore.getTheme() === 'auto') {
-                setDarkMode(e.matches);
+            if (theme === 'system') {
+                useThemeStore.getState().setTheme(e.matches ? 'dark' : 'light');
             }
         });
-    }, []);
+    }, [theme]);
 
-    const theme = createTheme({
+    const AppTheme = createTheme({
         overrides: {
             MuiCssBaseline: {
                 '@global': {
                     a: {
-                        color: darkMode ? 'dodgerblue' : 'blue',
+                        color: theme == 'light' ? 'blue' : 'dodgerBlue',
                     },
                 },
             },
@@ -41,7 +37,7 @@ export default function AppThemeProvider(props: Props) {
                 parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
         },
         palette: {
-            type: darkMode ? 'dark' : 'light',
+            type: theme == 'light' ? 'light' : 'dark',
             primary: {
                 light: '#5191d6',
                 main: '#305db7',
@@ -58,5 +54,5 @@ export default function AppThemeProvider(props: Props) {
         spacing: 4,
     });
 
-    return <ThemeProvider theme={theme}>{props.children}</ThemeProvider>;
+    return <ThemeProvider theme={AppTheme}>{props.children}</ThemeProvider>;
 }

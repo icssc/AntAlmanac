@@ -2,10 +2,14 @@ import { useState } from 'react';
 import { Box, Button, ButtonGroup, Divider, Drawer, IconButton, Typography } from '@material-ui/core';
 import { Close, DarkMode, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
-import { toggleTheme } from '$actions/AppStoreActions';
 import { useTimeFormatStore } from '$stores/TimeStore';
+import { useThemeStore } from '$stores/ThemeStore';
 
 function ThemeMenu() {
+    const handleThemeChange = (event: React.MouseEvent<HTMLButtonElement>) => {
+        useThemeStore.getState().setTheme(event.currentTarget.value);
+    };
+
     return (
         <Box sx={{ padding: '1rem 1rem 0 1rem', width: '100%' }}>
             <Typography variant="h6" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
@@ -17,7 +21,7 @@ function ThemeMenu() {
                     startIcon={<LightMode fontSize="small" />}
                     style={{ padding: '1rem 2rem', borderRadius: '12px 0px 0px 12px', width: '100%' }}
                     value="light"
-                    onClick={(value) => toggleTheme(value)}
+                    onClick={handleThemeChange}
                 >
                     Light
                 </Button>
@@ -25,7 +29,7 @@ function ThemeMenu() {
                     startIcon={<SettingsBrightness fontSize="small" />}
                     style={{ padding: '1rem 2rem', width: '100%' }}
                     value="system"
-                    onClick={(value) => toggleTheme(value)}
+                    onClick={handleThemeChange}
                 >
                     System
                 </Button>
@@ -33,7 +37,7 @@ function ThemeMenu() {
                     startIcon={<DarkMode fontSize="small" />}
                     style={{ padding: '1rem 2rem', borderRadius: '0px 12px 12px 0px', width: '100%' }}
                     value="dark"
-                    onClick={(value) => toggleTheme(value)}
+                    onClick={handleThemeChange}
                 >
                     Dark
                 </Button>

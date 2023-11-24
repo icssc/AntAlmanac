@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { createTheme, CssBaseline, ThemeProvider, type PaletteOptions } from '@mui/material';
 import AppStore from '$stores/AppStore';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/ThemeStore';
 
 const lightTheme: PaletteOptions = {
     primary: {
@@ -37,32 +37,29 @@ interface Props {
  * sets and provides the MUI theme for the app
  */
 export default function AppThemev5Provider(props: Props) {
-    const [darkMode, setDarkMode] = useState(isDarkMode());
+    const { theme } = useThemeStore();
 
     useEffect(() => {
-        AppStore.on('themeToggle', () => {
-            setDarkMode(isDarkMode());
-        });
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (AppStore.getTheme() === 'auto') {
-                setDarkMode(e.matches);
+            if (AppStore.getTheme() === 'system') {
+                useThemeStore.getState().setTheme(e.matches ? 'dark' : 'light');
             }
         });
     }, []);
 
-    const theme = useMemo(
+    const AppTheme = useMemo(
         () =>
             createTheme({
                 palette: {
-                    mode: darkMode ? 'dark' : 'light',
-                    ...(darkMode ? darkTheme : lightTheme),
+                    mode: theme == 'light' ? 'light' : 'dark',
+                    ...(theme == 'light' ? lightTheme : darkTheme),
                 },
             }),
-        [darkMode]
+        [theme]
     );
 
     return (
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={AppTheme}>
             <CssBaseline />
             {props.children}
         </ThemeProvider>
