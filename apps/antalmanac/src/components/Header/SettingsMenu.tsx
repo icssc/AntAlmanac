@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Box, Button, ButtonGroup, Divider, Drawer, IconButton, Typography } from '@material-ui/core';
+import { Box, Button, ButtonGroup, Divider, Drawer, IconButton, Typography, useMediaQuery } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { Close, DarkMode, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
@@ -130,6 +130,7 @@ function TimeMenu() {
 
 function SettingsMenu() {
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const isMobileScreen = useMediaQuery('(max-width:750px)');
 
     const handleDrawerOpen = useCallback(() => {
         setDrawerOpen(true);
@@ -151,7 +152,7 @@ function SettingsMenu() {
                 PaperProps={{ style: { borderRadius: '10px 0 0 10px' } }}
                 variant="temporary"
             >
-                <Box style={{ width: '360px' }}>
+                <Box style={{ width: isMobileScreen ? '300px' : '360px' }}>
                     <Box
                         sx={{
                             display: 'flex',
