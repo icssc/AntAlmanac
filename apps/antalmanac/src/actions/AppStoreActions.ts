@@ -190,11 +190,10 @@ export const copySchedule = (name: string, to: number) => {
 
     try {
         AppStore.copySchedule(to);
+        openSnackbar('success', `Schedule copied to ${name}.`);
     } catch (error) {
         openSnackbar('error', `Could not copy schedule to ${name}.`);
     }
-
-    openSnackbar('success', `Schedule copied to ${name}.`);
 };
 
 export const toggleTheme = (radioGroupEvent: React.ChangeEvent<HTMLInputElement>) => {
