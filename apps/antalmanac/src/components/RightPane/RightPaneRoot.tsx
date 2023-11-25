@@ -26,7 +26,14 @@ interface DesktopTabsProps {
     style: Record<string, unknown>;
 }
 
-const tabs = [
+interface TabInfo {
+    label: string;
+    href: string;
+    icon: React.ElementType;
+    id?: string;
+}
+
+const tabs: Array<TabInfo> = [
     {
         label: 'Search',
         href: '/',
@@ -36,6 +43,7 @@ const tabs = [
         label: 'Added',
         href: '/added',
         icon: FormatListBulleted,
+        id: 'added-courses-tab',
     },
     {
         label: 'Map',
@@ -70,6 +78,7 @@ export default function Desktop({ style }: DesktopTabsProps) {
                             }
                             to={tab.href}
                             style={{ minHeight: 'auto', height: '44px', padding: 3, minWidth: '33%' }}
+                            id={tab.id}
                         />
                     ))}
                 </Tabs>
