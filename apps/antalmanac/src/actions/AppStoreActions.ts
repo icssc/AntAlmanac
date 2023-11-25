@@ -182,13 +182,19 @@ export const changeCourseColor = (sectionCode: string, term: string, newColor: s
     AppStore.changeCourseColor(sectionCode, term, newColor);
 };
 
-export const copySchedule = (to: number) => {
+export const copySchedule = (name: string, to: number) => {
     logAnalytics({
         category: analyticsEnum.addedClasses.title,
         action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
     });
 
-    AppStore.copySchedule(to);
+    try {
+        AppStore.copySchedule(to);
+    } catch (error) {
+        openSnackbar('error', `Could not copy schedule to ${name}.`);
+    }
+
+    openSnackbar('success', `Schedule copied to ${name}.`);
 };
 
 export const toggleTheme = (radioGroupEvent: React.ChangeEvent<HTMLInputElement>) => {

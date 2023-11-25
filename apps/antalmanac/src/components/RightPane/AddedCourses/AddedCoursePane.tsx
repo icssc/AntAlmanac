@@ -100,9 +100,9 @@ function handleClear() {
     }
 }
 
-function createCopyHandler(index: number) {
+function createCopyHandler(name: string, index: number) {
     return () => {
-        copySchedule(index);
+        copySchedule(name, index);
     };
 }
 
@@ -148,12 +148,14 @@ function CopyScheduleButton() {
                             <MenuItem
                                 key={index}
                                 disabled={AppStore.getCurrentScheduleIndex() === index}
-                                onClick={createCopyHandler(index)}
+                                onClick={createCopyHandler(name, index)}
                             >
                                 Copy to {name}
                             </MenuItem>
                         ))}
-                        <MenuItem onClick={createCopyHandler(scheduleNames.length)}>Copy to All Schedules</MenuItem>
+                        <MenuItem onClick={createCopyHandler('All Schedules', scheduleNames.length)}>
+                            Copy to All Schedules
+                        </MenuItem>
                     </Menu>
                 </>
             )}
