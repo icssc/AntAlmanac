@@ -1,12 +1,25 @@
 import { useCallback, useState } from 'react';
 import { Box, Button, ButtonGroup, Divider, Drawer, IconButton, Typography } from '@material-ui/core';
+import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { Close, DarkMode, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
 import { useTimeFormatStore } from '$stores/TimeStore';
 import { useThemeStore } from '$stores/ThemeStore';
 
+const lightSelectedStyle: CSSProperties = {
+    backgroundColor: '#F0F7FF',
+    borderColor: '#007FFF',
+    color: '#007FFF',
+};
+
+const darkSelectedStyle: CSSProperties = {
+    backgroundColor: '#003A7570',
+    borderColor: '#0059B2',
+    color: '#99CCF3',
+};
+
 function ThemeMenu() {
-    const setTheme = useThemeStore((store) => store.setTheme);
+    const [value, theme, setTheme] = useThemeStore((store) => [store.value, store.theme, store.setTheme]);
 
     const handleThemeChange = (event: React.MouseEvent<HTMLButtonElement>) => {
         setTheme(event.currentTarget.value);
@@ -18,10 +31,15 @@ function ThemeMenu() {
                 Theme
             </Typography>
 
-            <ButtonGroup style={{ display: 'flex', placeContent: 'center', width: '100%' }}>
+            <ButtonGroup style={{ display: 'flex', placeContent: 'center', width: '100%', borderColor: 'unset' }}>
                 <Button
                     startIcon={<LightMode fontSize="small" />}
-                    style={{ padding: '1rem 2rem', borderRadius: '12px 0px 0px 12px', width: '100%' }}
+                    style={{
+                        padding: '1rem 2rem',
+                        borderRadius: '12px 0px 0px 12px',
+                        width: '100%',
+                        ...(value === 'light' ? (theme == 'dark' ? darkSelectedStyle : lightSelectedStyle) : {}),
+                    }}
                     value="light"
                     onClick={handleThemeChange}
                 >
@@ -29,7 +47,11 @@ function ThemeMenu() {
                 </Button>
                 <Button
                     startIcon={<SettingsBrightness fontSize="small" />}
-                    style={{ padding: '1rem 2rem', width: '100%' }}
+                    style={{
+                        padding: '1rem 2rem',
+                        width: '100%',
+                        ...(value === 'system' ? (theme == 'dark' ? darkSelectedStyle : lightSelectedStyle) : {}),
+                    }}
                     value="system"
                     onClick={handleThemeChange}
                 >
@@ -37,7 +59,12 @@ function ThemeMenu() {
                 </Button>
                 <Button
                     startIcon={<DarkMode fontSize="small" />}
-                    style={{ padding: '1rem 2rem', borderRadius: '0px 12px 12px 0px', width: '100%' }}
+                    style={{
+                        padding: '1rem 2rem',
+                        borderRadius: '0px 12px 12px 0px',
+                        width: '100%',
+                        ...(value === 'dark' ? (theme == 'dark' ? darkSelectedStyle : lightSelectedStyle) : {}),
+                    }}
                     value="dark"
                     onClick={handleThemeChange}
                 >
@@ -49,7 +76,8 @@ function ThemeMenu() {
 }
 
 function TimeMenu() {
-    const setTimeFormat = useTimeFormatStore((store) => store.setTimeFormat);
+    const [isMilitaryTime, setTimeFormat] = useTimeFormatStore((store) => [store.isMilitaryTime, store.setTimeFormat]);
+    const theme = useThemeStore((store) => store.theme);
 
     const handleTimeFormatChange = (event: React.MouseEvent<HTMLButtonElement>) => {
         setTimeFormat(event.currentTarget.value == 'true');
@@ -61,13 +89,20 @@ function TimeMenu() {
                 Time
             </Typography>
 
-            <ButtonGroup style={{ display: 'flex', placeContent: 'center', width: '100%' }}>
+            <ButtonGroup
+                style={{
+                    display: 'flex',
+                    placeContent: 'center',
+                    width: '100%',
+                }}
+            >
                 <Button
                     style={{
                         padding: '1rem 2rem',
                         borderRadius: '12px 0px 0px 12px',
                         width: '100%',
                         fontSize: '12px',
+                        ...(!isMilitaryTime ? (theme == 'dark' ? darkSelectedStyle : lightSelectedStyle) : {}),
                     }}
                     value="false"
                     onClick={handleTimeFormatChange}
@@ -81,6 +116,7 @@ function TimeMenu() {
                         borderRadius: '0px 12px 12px 0px',
                         width: '100%',
                         fontSize: '12px',
+                        ...(isMilitaryTime ? (theme == 'dark' ? darkSelectedStyle : lightSelectedStyle) : {}),
                     }}
                     value="true"
                     onClick={handleTimeFormatChange}
