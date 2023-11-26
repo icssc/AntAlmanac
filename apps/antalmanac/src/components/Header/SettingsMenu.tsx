@@ -18,6 +18,10 @@ const darkSelectedStyle: CSSProperties = {
     color: '#99CCF3',
 };
 
+function getSelectedStyle(buttonValue: string, value: string, theme: string) {
+    return value === buttonValue ? (theme == 'dark' ? darkSelectedStyle : lightSelectedStyle) : {};
+}
+
 function ThemeMenu() {
     const [value, theme, setTheme] = useThemeStore((store) => [store.value, store.theme, store.setTheme]);
 
@@ -38,7 +42,7 @@ function ThemeMenu() {
                         padding: '1rem 2rem',
                         borderRadius: '12px 0px 0px 12px',
                         width: '100%',
-                        ...(value === 'light' ? (theme == 'dark' ? darkSelectedStyle : lightSelectedStyle) : {}),
+                        ...getSelectedStyle('light', value, theme),
                     }}
                     value="light"
                     onClick={handleThemeChange}
@@ -50,7 +54,7 @@ function ThemeMenu() {
                     style={{
                         padding: '1rem 2rem',
                         width: '100%',
-                        ...(value === 'system' ? (theme == 'dark' ? darkSelectedStyle : lightSelectedStyle) : {}),
+                        ...getSelectedStyle('system', value, theme),
                     }}
                     value="system"
                     onClick={handleThemeChange}
@@ -63,7 +67,7 @@ function ThemeMenu() {
                         padding: '1rem 2rem',
                         borderRadius: '0px 12px 12px 0px',
                         width: '100%',
-                        ...(value === 'dark' ? (theme == 'dark' ? darkSelectedStyle : lightSelectedStyle) : {}),
+                        ...getSelectedStyle('dark', value, theme),
                     }}
                     value="dark"
                     onClick={handleThemeChange}
@@ -102,7 +106,7 @@ function TimeMenu() {
                         borderRadius: '12px 0px 0px 12px',
                         width: '100%',
                         fontSize: '12px',
-                        ...(!isMilitaryTime ? (theme == 'dark' ? darkSelectedStyle : lightSelectedStyle) : {}),
+                        ...getSelectedStyle('false', isMilitaryTime.toString(), theme),
                     }}
                     value="false"
                     onClick={handleTimeFormatChange}
@@ -116,7 +120,7 @@ function TimeMenu() {
                         borderRadius: '0px 12px 12px 0px',
                         width: '100%',
                         fontSize: '12px',
-                        ...(isMilitaryTime ? (theme == 'dark' ? darkSelectedStyle : lightSelectedStyle) : {}),
+                        ...getSelectedStyle('true', isMilitaryTime.toString(), theme),
                     }}
                     value="true"
                     onClick={handleTimeFormatChange}
