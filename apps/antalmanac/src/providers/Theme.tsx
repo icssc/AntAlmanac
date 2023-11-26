@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { createTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
-import { useThemeStore } from '$stores/ThemeStore';
+
+import { useThemeStore } from '$stores/SettingsStore';
 
 interface Props {
     children?: React.ReactNode;

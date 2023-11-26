@@ -3,8 +3,7 @@ import { Box, Button, ButtonGroup, Divider, Drawer, IconButton, Typography, useM
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { Close, DarkMode, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
-import { useTimeFormatStore } from '$stores/TimeStore';
-import { useThemeStore } from '$stores/ThemeStore';
+import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',

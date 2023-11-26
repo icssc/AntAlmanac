@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { createTheme, CssBaseline, ThemeProvider, type PaletteOptions } from '@mui/material';
-import { useThemeStore } from '$stores/ThemeStore';
+
+import { useThemeStore } from '$stores/SettingsStore';
 
 const lightTheme: PaletteOptions = {
     primary: {
