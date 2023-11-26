@@ -1,5 +1,4 @@
-import { WebsocSection } from "peterportal-api-next-types";
-
+import { WebsocSection } from 'peterportal-api-next-types';
 
 export interface CourseDetails {
     deptCode: string;

@@ -3,16 +3,25 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
+import { useCallback } from 'react';
 
 import CustomEventDialog, { RepeatingCustomEvent } from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '../../ColorPicker';
 import { deleteCustomEvent } from '$actions/AppStoreActions';
 import analyticsEnum from '$lib/analytics';
 import { useTimeFormatStore } from '$stores/SettingsStore';
+import buildingCatalogue from '$lib/buildingCatalogue';
+import { useTabStore } from '$stores/TabStore';
 
 const styles = {
     root: {
         padding: '4px 4px 0px 8px',
+    },
+    customEventLocation: {
+        margin: '0.75rem',
+        color: '#bbbbbb',
+        fontSize: '1rem',
     },
     colorPicker: {
         cursor: 'pointer',
@@ -55,6 +64,12 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
         return `${startTime.format(timeFormat)} — ${endTime.format(timeFormat)} • ${daysString}`;
     };
 
+    const { setActiveTab } = useTabStore();
+
+    const focusMap = useCallback(() => {
+        setActiveTab(2);
+    }, [setActiveTab]);
+
     return (
         <Card>
             <CardHeader
@@ -63,6 +78,15 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                 title={customEvent.title}
                 subheader={readableDateAndTimeFormat(customEvent.start, customEvent.end, customEvent.days)}
             />
+            <div className={classes.customEventLocation}>
+                <Link
+                    className={classes.clickableLocation}
+                    to={`/map?location=${customEvent.building ?? 0}`}
+                    onClick={focusMap}
+                >
+                    {customEvent.building ? buildingCatalogue[+customEvent.building].name : ''}
+                </Link>
+            </div>
             <CardActions disableSpacing={true}>
                 <div className={classes.colorPicker}>
                     <ColorPicker
@@ -72,6 +96,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                         analyticsCategory={analyticsEnum.addedClasses.title}
                     />
                 </div>
+                <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
                 <IconButton
                     onClick={() => {
                         deleteCustomEvent(customEvent.customEventID);
@@ -79,7 +104,6 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                 >
                     <Delete fontSize="small" />
                 </IconButton>
-                <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
             </CardActions>
         </Card>
     );

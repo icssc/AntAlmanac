@@ -12,7 +12,7 @@ class _WebSOC {
     constructor() {
         this.cache = {};
     }
-    
+
     clearCache() {
         Object.keys(this.cache).forEach((key) => delete this.cache[key]); //https://stackoverflow.com/a/19316873/14587004
     }
@@ -52,7 +52,7 @@ class _WebSOC {
             req[fieldName] = field;
             responses.push(await this.query(req));
         }
-    
+
         return this.combineSOCObjects(responses);
     }
 
@@ -176,35 +176,35 @@ class _WebSOC {
         if ('term' in record) {
             const termValue = record['term'];
             const termParts = termValue.split(' ');
-    
+
             if (termParts.length === 2) {
                 const [year, quarter] = termParts;
-    
+
                 delete record['term'];
-    
+
                 record['quarter'] = quarter;
                 record['year'] = year;
             }
         }
-    
+
         if ('startTime' in record) {
             if (record['startTime'] === '') {
                 delete record['startTime'];
             }
         }
-    
+
         if ('endTime' in record) {
             if (record['endTime'] === '') {
                 delete record['endTime'];
             }
         }
-    
+
         if ('division' in record) {
             if (record['division'] === '') {
                 delete record['division'];
             }
         }
-    
+
         return record;
     }
 }
