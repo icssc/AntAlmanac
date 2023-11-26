@@ -8,6 +8,7 @@ import CustomEventDialog, { RepeatingCustomEvent } from '../../Calendar/Toolbar/
 import ColorPicker from '../../ColorPicker';
 import { deleteCustomEvent } from '$actions/AppStoreActions';
 import analyticsEnum from '$lib/analytics';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const styles = {
     root: {
@@ -33,6 +34,7 @@ interface CustomEventDetailViewProps {
 
 const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
     const { classes, customEvent } = props;
+    const { isMilitaryTime } = useTimeFormatStore();
 
     const readableDateAndTimeFormat = (start: string, end: string, days: boolean[]) => {
         const startTime = moment({
@@ -48,7 +50,9 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
         const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         const daysString = days.map((includeDate, index) => (includeDate ? dayAbbreviations[index] : '')).join(' ');
 
-        return `${startTime.format('h:mm A')} — ${endTime.format('h:mm A')} • ${daysString}`;
+        const timeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
+
+        return `${startTime.format(timeFormat)} — ${endTime.format(timeFormat)} • ${daysString}`;
     };
 
     return (
