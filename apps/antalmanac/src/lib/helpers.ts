@@ -42,7 +42,7 @@ export async function clickToCopy(event: React.MouseEvent<HTMLElement, MouseEven
 }
 
 export function isDarkMode() {
-    switch (useThemeStore.getState().theme) {
+    switch (useThemeStore.getState().appTheme) {
         case 'light':
             return false;
         case 'dark':

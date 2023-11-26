@@ -36,11 +36,11 @@ interface Props {
  * sets and provides the MUI theme for the app
  */
 export default function AppThemev5Provider(props: Props) {
-    const [theme, setTheme] = useThemeStore((store) => [store.theme, store.setTheme]);
+    const [appTheme, setAppTheme] = useThemeStore((store) => [store.appTheme, store.setAppTheme]);
 
     useEffect(() => {
         const onChange = (e: MediaQueryListEvent) => {
-            setTheme(e.matches ? 'dark' : 'light');
+            setAppTheme(e.matches ? 'dark' : 'light');
         };
 
         const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
@@ -50,17 +50,17 @@ export default function AppThemev5Provider(props: Props) {
         return () => {
             mediaQueryList.removeEventListener('change', onChange);
         };
-    }, [setTheme, theme]);
+    }, [setAppTheme, appTheme]);
 
     const AppTheme = useMemo(
         () =>
             createTheme({
                 palette: {
-                    mode: theme == 'dark' ? 'dark' : 'light',
-                    ...(theme == 'dark' ? darkTheme : lightTheme),
+                    mode: appTheme == 'dark' ? 'dark' : 'light',
+                    ...(appTheme == 'dark' ? darkTheme : lightTheme),
                 },
             }),
-        [theme]
+        [appTheme]
     );
 
     return (

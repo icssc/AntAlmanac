@@ -11,11 +11,11 @@ interface Props {
  * sets and provides the MUI theme for the app
  */
 export default function AppThemeProvider(props: Props) {
-    const [theme, setTheme] = useThemeStore((store) => [store.theme, store.setTheme]);
+    const [appTheme, setAppTheme] = useThemeStore((store) => [store.appTheme, store.setAppTheme]);
 
     useEffect(() => {
         const onChange = (e: MediaQueryListEvent) => {
-            setTheme(e.matches ? 'dark' : 'light');
+            setAppTheme(e.matches ? 'dark' : 'light');
         };
 
         const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
@@ -25,14 +25,14 @@ export default function AppThemeProvider(props: Props) {
         return () => {
             mediaQueryList.removeEventListener('change', onChange);
         };
-    }, [setTheme, theme]);
+    }, [setAppTheme, appTheme]);
 
     const AppTheme = createTheme({
         overrides: {
             MuiCssBaseline: {
                 '@global': {
                     a: {
-                        color: theme == 'dark' ? 'dodgerBlue' : 'blue',
+                        color: appTheme == 'dark' ? 'dodgerBlue' : 'blue',
                     },
                 },
             },
@@ -43,7 +43,7 @@ export default function AppThemeProvider(props: Props) {
                 parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
         },
         palette: {
-            type: theme == 'dark' ? 'dark' : 'light',
+            type: appTheme == 'dark' ? 'dark' : 'light',
             primary: {
                 light: '#5191d6',
                 main: '#305db7',
