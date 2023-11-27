@@ -48,7 +48,7 @@ const defaultCustomEvent: RepeatingCustomEvent = {
     title: '',
     days: [false, false, false, false, false, false, false],
     customEventID: 0,
-    building: undefined,
+    building: '',
 };
 
 class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEventDialogState> {
@@ -100,7 +100,7 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
     };
 
     handleBuildingChange = (building?: ExtendedBuilding | null) => {
-        this.setState({ building: building?.id });
+        this.setState({ building: building?.id ?? '' });
     };
 
     handleAddToCalendar = () => {
