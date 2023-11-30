@@ -69,11 +69,7 @@ class ImportStudyList extends PureComponent<ImportStudyListProps, ImportStudyLis
         this.setState({ isOpen: true });
     };
 
-    addCoursesMultiple = (
-        courseInfo: { [sectionCode: string]: CourseInfo },
-        term: string,
-        scheduleIndex: number
-    ) => {
+    addCoursesMultiple = (courseInfo: { [sectionCode: string]: CourseInfo }, term: string, scheduleIndex: number) => {
         for (const section of Object.values(courseInfo)) {
             addCourse(section.section, section.courseDetails, term, scheduleIndex, true);
         }

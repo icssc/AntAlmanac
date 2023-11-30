@@ -193,7 +193,7 @@ export default function CourseMap() {
             map.current?.flyTo([building.lat + 0.001, building.lng], 18, { duration: 250, animate: false });
             markerRef.current?.openPopup();
         }, 250);
-    }, [searchParams]);
+    }, [markerRef, searchParams]);
 
     const handleChange = useCallback(
         (_event: React.SyntheticEvent, newValue: number) => {

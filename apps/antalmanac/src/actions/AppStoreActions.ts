@@ -110,7 +110,6 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
             window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
     ) {
         userId = userId.replace(/\s+/g, '');
-
         if (userId.length > 0) {
             if (rememberMe) {
                 window.localStorage.setItem('userID', userId);
@@ -122,7 +121,7 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
                 const res = await trpc.users.getUserData.query({ userId });
                 const scheduleSaveState = res?.userData;
 
-                if (scheduleSaveState === undefined) {
+                if (scheduleSaveState == null) {
                     openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
                 } else if (await AppStore.loadSchedule(scheduleSaveState)) {
                     openSnackbar('success', `Schedule for username "${userId}" loaded.`);
@@ -130,7 +129,7 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
                     AppStore.loadSkeletonSchedule(scheduleSaveState);
                     openSnackbar(
                         'error',
-                        `Network error loading course information for "${userId}". 
+                        `Network error loading course information for "${userId}". 	              
                         If this continues to happen, please submit a feedback form.`
                     );
                 }
