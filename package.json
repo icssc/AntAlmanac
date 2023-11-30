@@ -26,5 +26,8 @@
   "engines": {
     "pnpm": "^8.0.0",
     "node": ">=16"
+  },
+  "dependencies": {
+    "ua-parser-js": "^1.0.37"
   }
 }
