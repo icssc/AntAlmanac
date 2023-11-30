@@ -375,5 +375,5 @@ export default function AddedCoursePaneFunctionComponent() {
         };
     }, []);
 
-    return <Box>{skeletonMode ? <SkeletonSchedule /> : <AddedSectionsGrid />}</Box>;
+    return <Box id="added-course-pane">{skeletonMode ? <SkeletonSchedule /> : <AddedSectionsGrid />}</Box>;
 }

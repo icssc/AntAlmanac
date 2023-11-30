@@ -9,13 +9,17 @@ enum TourStepName {
     finalsButton = 'finalsButton',
     finalsButtonPostClick = 'finalsButtonPostClick',
     welcome = 'welcome',
+    addedCourses = 'addedCourses',
+    addedCoursesPostClick = 'addedCoursesPostClick',
 }
+
+type NamedTourSteps = Record<TourStepName, ReactourStep>;
 
 /**
  * Exhaustive enumeration of all possible tour steps for reference.
  * The tour doesn't start with all of them.
  */
-export const namedTourSteps: Record<TourStepName, ReactourStep> = {
+export const namedTourSteps: NamedTourSteps = {
     welcome: {
         content: (
             <>
@@ -71,6 +75,37 @@ export const namedTourSteps: Record<TourStepName, ReactourStep> = {
         content: (
             <>
                 <b>Click</b> to see your finals
+            </>
+        ),
+    },
+    addedCourses: {
+        selector: '#added-courses-tab',
+        content: (
+            <>
+                <b>Select</b> the added courses tab for a list of your courses and details
+            </>
+        ),
+        action: tourActionFactory(
+            () => {
+                const store = useTourStore.getState();
+                store.setTourFrozen(true);
+            },
+            () => {
+                const store = useTourStore.getState();
+                store.setTourFrozen(false);
+                store.replaceTourStep(TourStepName.addedCourses, TourStepName.addedCoursesPostClick);
+            },
+            {
+                selector: '#added-courses-tab',
+                eventType: 'click',
+            }
+        ),
+    },
+    addedCoursesPostClick: {
+        selector: '#added-course-pane',
+        content: (
+            <>
+                <b>Select</b> the added courses tab for a list of your courses and details
             </>
         ),
     },
