@@ -93,7 +93,10 @@ export const namedTourSteps: NamedTourSteps = {
             () => {
                 const store = useTourStore.getState();
                 store.setTourFrozen(false);
-                store.replaceTourStep(TourStepName.addedCourses, TourStepName.addedCoursesPostClick);
+                setTimeout(
+                    () => store.replaceTourStep(TourStepName.addedCourses, TourStepName.addedCoursesPostClick),
+                    75 // Wait for the classes to render.
+                );
             },
             {
                 selector: '#added-courses-tab',
