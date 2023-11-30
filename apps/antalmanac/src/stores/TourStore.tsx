@@ -76,6 +76,15 @@ export const namedTourSteps: Record<TourStepName, ReactourStep> = {
     },
 };
 
+const initialTourSteps: Array<NamedTourSteps[TourStepName]> = [
+    namedTourSteps.welcome,
+    namedTourSteps.searchBar,
+    namedTourSteps.importButton,
+    namedTourSteps.calendar,
+    namedTourSteps.finalsButton,
+    namedTourSteps.addedCourses,
+];
+
 // TODO: Document
 interface TourStore {
     tourEnabled: boolean;
@@ -102,13 +111,7 @@ export const useTourStore = create<TourStore>((set, get) => {
         tourFrozen: false,
         setTourFrozen: (frozen: boolean) => set({ tourFrozen: frozen }),
 
-        tourSteps: [
-            namedTourSteps.welcome,
-            namedTourSteps.searchBar,
-            namedTourSteps.importButton,
-            namedTourSteps.calendar,
-            namedTourSteps.finalsButton,
-        ],
+        tourSteps: initialTourSteps,
         setTourSteps: (steps: Array<ReactourStep>) => set({ tourSteps: steps }),
         replaceTourStep: (replacedName: TourStepName, replacementName: TourStepName) => {
             const index = get().tourSteps.findIndex((step) => step == namedTourSteps[replacedName]);
