@@ -1,96 +1,185 @@
-import {
-    Box,
-    Button,
-    FormControl,
-    FormControlLabel,
-    Paper,
-    Popover,
-    Radio,
-    RadioGroup,
-    Typography,
-} from '@material-ui/core';
-import { Settings } from '@material-ui/icons';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { Box, Button, ButtonGroup, Divider, Drawer, IconButton, Typography, useMediaQuery } from '@material-ui/core';
+import { CSSProperties } from '@material-ui/core/styles/withStyles';
+import { Close, DarkMode, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
-import { toggleTheme } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
-import { useTimeFormatStore } from '$stores/TimeStore';
+import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+
+const lightSelectedStyle: CSSProperties = {
+    backgroundColor: '#F0F7FF',
+    borderColor: '#007FFF',
+    color: '#007FFF',
+};
+
+const darkSelectedStyle: CSSProperties = {
+    backgroundColor: '#003A7570',
+    borderColor: '#0059B2',
+    color: '#99CCF3',
+};
+
+function getSelectedStyle(buttonValue: string, themeSetting: string, appTheme: string) {
+    return themeSetting === buttonValue ? (appTheme == 'dark' ? darkSelectedStyle : lightSelectedStyle) : {};
+}
+
+function ThemeMenu() {
+    const [themeSetting, appTheme, setTheme] = useThemeStore((store) => [
+        store.themeSetting,
+        store.appTheme,
+        store.setAppTheme,
+    ]);
+
+    const handleThemeChange = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setTheme(event.currentTarget.value as 'light' | 'dark' | 'system');
+    };
+
+    return (
+        <Box sx={{ padding: '1rem 1rem 0 1rem', width: '100%' }}>
+            <Typography variant="h6" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
+                Theme
+            </Typography>
+
+            <ButtonGroup style={{ display: 'flex', placeContent: 'center', width: '100%', borderColor: 'unset' }}>
+                <Button
+                    startIcon={<LightMode fontSize="small" />}
+                    style={{
+                        padding: '1rem 2rem',
+                        borderRadius: '12px 0px 0px 12px',
+                        width: '100%',
+                        ...getSelectedStyle('light', themeSetting, appTheme),
+                    }}
+                    value="light"
+                    onClick={handleThemeChange}
+                >
+                    Light
+                </Button>
+                <Button
+                    startIcon={<SettingsBrightness fontSize="small" />}
+                    style={{
+                        padding: '1rem 2rem',
+                        width: '100%',
+                        ...getSelectedStyle('system', themeSetting, appTheme),
+                    }}
+                    value="system"
+                    onClick={handleThemeChange}
+                >
+                    System
+                </Button>
+                <Button
+                    startIcon={<DarkMode fontSize="small" />}
+                    style={{
+                        padding: '1rem 2rem',
+                        borderRadius: '0px 12px 12px 0px',
+                        width: '100%',
+                        ...getSelectedStyle('dark', themeSetting, appTheme),
+                    }}
+                    value="dark"
+                    onClick={handleThemeChange}
+                >
+                    Dark
+                </Button>
+            </ButtonGroup>
+        </Box>
+    );
+}
+
+function TimeMenu() {
+    const [isMilitaryTime, setTimeFormat] = useTimeFormatStore((store) => [store.isMilitaryTime, store.setTimeFormat]);
+    const theme = useThemeStore((store) => store.appTheme);
+
+    const handleTimeFormatChange = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setTimeFormat(event.currentTarget.value == 'true');
+    };
+
+    return (
+        <Box sx={{ padding: '1rem 1rem 0 1rem', width: '100%' }}>
+            <Typography variant="h6" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
+                Time
+            </Typography>
+
+            <ButtonGroup
+                style={{
+                    display: 'flex',
+                    placeContent: 'center',
+                    width: '100%',
+                }}
+            >
+                <Button
+                    style={{
+                        padding: '1rem 2rem',
+                        borderRadius: '12px 0px 0px 12px',
+                        width: '100%',
+                        fontSize: '12px',
+                        ...getSelectedStyle('false', isMilitaryTime.toString(), theme),
+                    }}
+                    value="false"
+                    onClick={handleTimeFormatChange}
+                    fullWidth={true}
+                >
+                    12 Hour
+                </Button>
+                <Button
+                    style={{
+                        padding: '1rem 2rem',
+                        borderRadius: '0px 12px 12px 0px',
+                        width: '100%',
+                        fontSize: '12px',
+                        ...getSelectedStyle('true', isMilitaryTime.toString(), theme),
+                    }}
+                    value="true"
+                    onClick={handleTimeFormatChange}
+                >
+                    24 Hour
+                </Button>
+            </ButtonGroup>
+        </Box>
+    );
+}
 
 function SettingsMenu() {
-    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
-    const [theme, setTheme] = useState(AppStore.getTheme());
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const isMobileScreen = useMediaQuery('(max-width:750px)');
 
-    const { isMilitaryTime } = useTimeFormatStore();
+    const handleDrawerOpen = useCallback(() => {
+        setDrawerOpen(true);
+    }, []);
 
-    const handleThemeChange = () => {
-        setTheme(AppStore.getTheme());
-    };
-
-    const handleTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
-        useTimeFormatStore.getState().setTimeFormat(event.target.value == 'true');
-    };
-
-    useEffect(() => {
-        AppStore.on('themeToggle', handleThemeChange);
-
-        return () => {
-            AppStore.off('themeToggle', handleThemeChange);
-        };
+    const handleDrawerClose = useCallback(() => {
+        setDrawerOpen(false);
     }, []);
 
     return (
         <>
-            <Button
-                onClick={(event) => {
-                    setAnchorEl(event.currentTarget);
-                }}
-                color="inherit"
-                startIcon={<Settings />}
-            >
+            <Button onClick={handleDrawerOpen} color="inherit" startIcon={<Settings />}>
                 Settings
             </Button>
-            <Popover
-                open={Boolean(anchorEl)}
-                anchorEl={anchorEl}
-                onClose={() => {
-                    setAnchorEl(undefined);
-                }}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                }}
+            <Drawer
+                anchor="right"
+                open={drawerOpen}
+                onClose={handleDrawerClose}
+                PaperProps={{ style: { borderRadius: '10px 0 0 10px' } }}
+                variant="temporary"
             >
-                <Paper style={{ padding: '1rem', display: 'flex', gap: 10 }}>
-                    <Box>
-                        <Typography variant="h6">Theme</Typography>
-                        <FormControl>
-                            <RadioGroup aria-label="theme" name="theme" value={theme} onChange={toggleTheme}>
-                                <FormControlLabel value="light" control={<Radio color="primary" />} label="Light" />
-                                <FormControlLabel value="dark" control={<Radio color="primary" />} label="Dark" />
-                                <FormControlLabel value="auto" control={<Radio color="primary" />} label="Automatic" />
-                            </RadioGroup>
-                        </FormControl>
+                <Box style={{ width: isMobileScreen ? '300px' : '360px' }}>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '16px',
+                        }}
+                    >
+                        <Typography variant="h6">Settings</Typography>
+                        <IconButton size="medium" onClick={handleDrawerClose}>
+                            <Close fontSize="inherit" />
+                        </IconButton>
                     </Box>
-                    <Box>
-                        <Typography variant="h6">Time Format</Typography>
-                        <FormControl>
-                            <RadioGroup
-                                aria-label="theme"
-                                name="theme"
-                                value={isMilitaryTime}
-                                onChange={handleTimeChange}
-                            >
-                                <FormControlLabel value={false} control={<Radio color="primary" />} label="12 Hour" />
-                                <FormControlLabel value={true} control={<Radio color="primary" />} label="24 Hour" />
-                            </RadioGroup>
-                        </FormControl>
-                    </Box>
-                </Paper>
-            </Popover>
+                    <Divider />
+
+                    <ThemeMenu />
+                    <TimeMenu />
+                </Box>
+            </Drawer>
         </>
     );
 }

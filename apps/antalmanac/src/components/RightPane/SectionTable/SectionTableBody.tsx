@@ -33,7 +33,7 @@ import { useTabStore } from '$stores/TabStore';
 import locationIds from '$lib/location_ids';
 import { normalizeTime, parseDaysString, formatTimes } from '$stores/calendarizeHelpers';
 import useColumnStore, { type SectionTableColumn } from '$stores/ColumnStore';
-import { useTimeFormatStore } from '$stores/TimeStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const styles: Styles<Theme, object> = (theme) => ({
     sectionCode: {

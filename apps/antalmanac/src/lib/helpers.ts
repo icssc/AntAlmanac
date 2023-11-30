@@ -2,7 +2,7 @@ import React from 'react';
 
 import { PETERPORTAL_GRAPHQL_ENDPOINT } from './api/endpoints';
 import { openSnackbar } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 export async function queryGraphQL<PromiseReturnType>(queryString: string): Promise<PromiseReturnType | null> {
     const query = JSON.stringify({
@@ -42,7 +42,7 @@ export async function clickToCopy(event: React.MouseEvent<HTMLElement, MouseEven
 }
 
 export function isDarkMode() {
-    switch (AppStore.getTheme()) {
+    switch (useThemeStore.getState().appTheme) {
         case 'light':
             return false;
         case 'dark':

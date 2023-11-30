@@ -23,7 +23,7 @@ export default function Home() {
                 <MobileHome />
             ) : (
                 <Split
-                    sizes={[50, 50]}
+                    sizes={[45, 55]}
                     minSize={100}
                     expandToMin={false}
                     gutterSize={10}
