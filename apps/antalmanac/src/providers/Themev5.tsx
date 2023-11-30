@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { createTheme, CssBaseline, ThemeProvider, type PaletteOptions } from '@mui/material';
-import AppStore from '$stores/AppStore';
-import { isDarkMode } from '$lib/helpers';
+
+import { useThemeStore } from '$stores/SettingsStore';
 
 const lightTheme: PaletteOptions = {
     primary: {
@@ -37,32 +37,35 @@ interface Props {
  * sets and provides the MUI theme for the app
  */
 export default function AppThemev5Provider(props: Props) {
-    const [darkMode, setDarkMode] = useState(isDarkMode());
+    const [appTheme, setAppTheme] = useThemeStore((store) => [store.appTheme, store.setAppTheme]);
 
     useEffect(() => {
-        AppStore.on('themeToggle', () => {
-            setDarkMode(isDarkMode());
-        });
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (AppStore.getTheme() === 'auto') {
-                setDarkMode(e.matches);
-            }
-        });
-    }, []);
+        const onChange = (e: MediaQueryListEvent) => {
+            setAppTheme(e.matches ? 'dark' : 'light');
+        };
 
-    const theme = useMemo(
+        const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
+
+        mediaQueryList.addEventListener('change', onChange);
+
+        return () => {
+            mediaQueryList.removeEventListener('change', onChange);
+        };
+    }, [setAppTheme, appTheme]);
+
+    const AppTheme = useMemo(
         () =>
             createTheme({
                 palette: {
-                    mode: darkMode ? 'dark' : 'light',
-                    ...(darkMode ? darkTheme : lightTheme),
+                    mode: appTheme == 'dark' ? 'dark' : 'light',
+                    ...(appTheme == 'dark' ? darkTheme : lightTheme),
                 },
             }),
-        [darkMode]
+        [appTheme]
     );
 
     return (
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={AppTheme}>
             <CssBaseline />
             {props.children}
         </ThemeProvider>

@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import useTabStore from './TabStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 /**

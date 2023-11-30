@@ -15,7 +15,7 @@ import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
 import { useTabStore } from '$stores/TabStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
-import { useTimeFormatStore } from '$stores/TimeStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 import buildingCatalogue from '$lib/buildingCatalogue';
 
 const styles: Styles<Theme, object> = {

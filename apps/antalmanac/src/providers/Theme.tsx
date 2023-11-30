@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { createTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
-import AppStore from '$stores/AppStore';
-import { isDarkMode } from '$lib/helpers';
+
+import { useThemeStore } from '$stores/SettingsStore';
 
 interface Props {
     children?: React.ReactNode;
@@ -12,25 +12,28 @@ interface Props {
  * sets and provides the MUI theme for the app
  */
 export default function AppThemeProvider(props: Props) {
-    const [darkMode, setDarkMode] = useState(isDarkMode());
+    const [appTheme, setAppTheme] = useThemeStore((store) => [store.appTheme, store.setAppTheme]);
 
     useEffect(() => {
-        AppStore.on('themeToggle', () => {
-            setDarkMode(isDarkMode());
-        });
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (AppStore.getTheme() === 'auto') {
-                setDarkMode(e.matches);
-            }
-        });
-    }, []);
+        const onChange = (e: MediaQueryListEvent) => {
+            setAppTheme(e.matches ? 'dark' : 'light');
+        };
 
-    const theme = createTheme({
+        const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
+
+        mediaQueryList.addEventListener('change', onChange);
+
+        return () => {
+            mediaQueryList.removeEventListener('change', onChange);
+        };
+    }, [setAppTheme, appTheme]);
+
+    const AppTheme = createTheme({
         overrides: {
             MuiCssBaseline: {
                 '@global': {
                     a: {
-                        color: darkMode ? 'dodgerblue' : 'blue',
+                        color: appTheme == 'dark' ? 'dodgerBlue' : 'blue',
                     },
                 },
             },
@@ -41,7 +44,7 @@ export default function AppThemeProvider(props: Props) {
                 parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
         },
         palette: {
-            type: darkMode ? 'dark' : 'light',
+            type: appTheme == 'dark' ? 'dark' : 'light',
             primary: {
                 light: '#5191d6',
                 main: '#305db7',
@@ -58,5 +61,5 @@ export default function AppThemeProvider(props: Props) {
         spacing: 4,
     });
 
-    return <ThemeProvider theme={theme}>{props.children}</ThemeProvider>;
+    return <ThemeProvider theme={AppTheme}>{props.children}</ThemeProvider>;
 }
