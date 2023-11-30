@@ -1,4 +1,4 @@
-import { Card, CardActions, CardHeader, IconButton } from '@material-ui/core';
+import { Card, CardActions, CardHeader, IconButton, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
@@ -93,13 +93,15 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                     />
                 </div>
                 <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
-                <IconButton
-                    onClick={() => {
-                        deleteCustomEvent(customEvent.customEventID);
-                    }}
-                >
-                    <Delete fontSize="small" />
-                </IconButton>
+                <Tooltip title="Delete">
+                    <IconButton
+                        onClick={() => {
+                            deleteCustomEvent(customEvent.customEventID);
+                        }}
+                    >
+                        <Delete fontSize="small" />
+                    </IconButton>
+                </Tooltip>
             </CardActions>
         </Card>
     );
