@@ -20,7 +20,7 @@ interface CustomEventDetailViewProps {
 }
 
 const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
-    const { classes, customEvent } = props;
+    const { customEvent } = props;
     const { isMilitaryTime } = useTimeFormatStore();
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
