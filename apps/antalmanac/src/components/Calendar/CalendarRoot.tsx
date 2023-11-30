@@ -9,8 +9,8 @@ import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calen
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
-import { useTimeFormatStore } from '$stores/TimeStore';
 import locationIds from '$lib/location_ids';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const localizer = momentLocalizer(moment);
 
@@ -254,6 +254,9 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
                     views={[Views.WEEK, Views.WORK_WEEK]}
                     defaultView={Views.WORK_WEEK}
                     view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
+                    onView={() => {
+                        return;
+                    }}
                     step={15}
                     timeslots={2}
                     defaultDate={new Date(2018, 0, 1)}
