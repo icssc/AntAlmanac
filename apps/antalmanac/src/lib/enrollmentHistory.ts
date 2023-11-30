@@ -36,55 +36,79 @@ export interface EnrollmentHistoryDay {
     waitlist: number | null;
 }
 
-export const queryEnrollmentHistory = async (
-    department: string,
-    courseNumber: string,
-    sectionType: string
-): Promise<EnrollmentHistory[] | null> => {
-    const queryString = `{
-        enrollmentHistory(department: "${department}", courseNumber: "${courseNumber}", sectionType: ${sectionType}) {
-            year
-            quarter
-            department
-            courseNumber
-            dates
-            totalEnrolledHistory
-            maxCapacityHistory
-            waitlistHistory
-        }
-    }`;
+class _EnrollmentHistory {
+    // Each key in the cache will just be the department, courseNumber,
+    // and sectionType concatenated with each other; each value in the cache
+    // will be an array that contains the parsed enrollment history
+    // for each quarter the course was offered
+    enrollmentHistoryCache: Record<string, EnrollmentHistory[]>;
 
-    const res = (await queryGraphQL<EnrollmentHistoryGraphQLResponse>(queryString))?.data?.enrollmentHistory ?? null;
-
-    const enrollmentHistories: EnrollmentHistory[] = [];
-    if (res) {
-        for (const enrollmentHistory of res) {
-            const enrollmentDays: EnrollmentHistoryDay[] = [];
-
-            for (const [i, date] of enrollmentHistory.dates.entries()) {
-                const d = new Date(date);
-                const formattedDate = `${d.getMonth() + 1}/${d.getDate() + 1}/${d.getFullYear()}`;
-
-                enrollmentDays.push({
-                    date: formattedDate,
-                    totalEnrolled: Number(enrollmentHistory.totalEnrolledHistory[i]),
-                    maxCapacity: Number(enrollmentHistory.maxCapacityHistory[i]),
-                    waitlist:
-                        enrollmentHistory.waitlistHistory[i] === 'n/a'
-                            ? null
-                            : Number(enrollmentHistory.waitlistHistory[i]),
-                });
-            }
-
-            enrollmentHistories.push({
-                year: enrollmentHistory.year,
-                quarter: enrollmentHistory.quarter,
-                department: enrollmentHistory.department,
-                courseNumber: enrollmentHistory.courseNumber,
-                days: enrollmentDays,
-            });
-        }
+    constructor() {
+        this.enrollmentHistoryCache = {};
     }
 
-    return enrollmentHistories;
-};
+    queryEnrollmentHistory = async (
+        department: string,
+        courseNumber: string,
+        sectionType: string
+    ): Promise<EnrollmentHistory[] | null> => {
+        const cacheKey = department + courseNumber + sectionType;
+        if (cacheKey in this.enrollmentHistoryCache) {
+            return this.enrollmentHistoryCache[cacheKey];
+        }
+
+        const queryString = `{
+            enrollmentHistory(department: "${department}", courseNumber: "${courseNumber}", sectionType: ${sectionType}) {
+                year
+                quarter
+                department
+                courseNumber
+                dates
+                totalEnrolledHistory
+                maxCapacityHistory
+                waitlistHistory
+            }
+        }`;
+
+        const res =
+            (await queryGraphQL<EnrollmentHistoryGraphQLResponse>(queryString))?.data?.enrollmentHistory ?? null;
+
+        // Before caching and returning the response, we need to do
+        // some parsing so that we can pass the data into the graph
+        const enrollmentHistories: EnrollmentHistory[] = [];
+        if (res) {
+            for (const enrollmentHistory of res) {
+                const enrollmentDays: EnrollmentHistoryDay[] = [];
+
+                for (const [i, date] of enrollmentHistory.dates.entries()) {
+                    const d = new Date(date);
+                    const formattedDate = `${d.getMonth() + 1}/${d.getDate() + 1}/${d.getFullYear()}`;
+
+                    enrollmentDays.push({
+                        date: formattedDate,
+                        totalEnrolled: Number(enrollmentHistory.totalEnrolledHistory[i]),
+                        maxCapacity: Number(enrollmentHistory.maxCapacityHistory[i]),
+                        waitlist:
+                            enrollmentHistory.waitlistHistory[i] === 'n/a'
+                                ? null
+                                : Number(enrollmentHistory.waitlistHistory[i]),
+                    });
+                }
+
+                enrollmentHistories.push({
+                    year: enrollmentHistory.year,
+                    quarter: enrollmentHistory.quarter,
+                    department: enrollmentHistory.department,
+                    courseNumber: enrollmentHistory.courseNumber,
+                    days: enrollmentDays,
+                });
+            }
+        }
+
+        this.enrollmentHistoryCache[cacheKey] = enrollmentHistories;
+        return enrollmentHistories;
+    };
+}
+
+const enrollmentHistory = new _EnrollmentHistory();
+export default enrollmentHistory;

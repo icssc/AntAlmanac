@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { LineChart, Line, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { Box, Typography, Skeleton } from '@mui/material';
-import { queryEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
+import EnrollmentHistoryHelper, { EnrollmentHistory } from '$lib/enrollmentHistory';
 import { isDarkMode } from '$lib/helpers';
 
 export interface EnrollmentHistoryProps {
@@ -32,15 +32,15 @@ const EnrollmentHistoryPopup = (props: EnrollmentHistoryProps) => {
             return;
         }
 
-        queryEnrollmentHistory(department, courseNumber, sectionType).then((enrollmentHistory) => {
-            if (enrollmentHistory) {
-                setEnrollmentHistory(enrollmentHistory);
-                console.log(enrollmentHistory);
-                console.log(enrollmentHistory[enrollmentHistory.length - 1].days);
-            }
+        EnrollmentHistoryHelper.queryEnrollmentHistory(department, courseNumber, sectionType).then(
+            (enrollmentHistory) => {
+                if (enrollmentHistory) {
+                    setEnrollmentHistory(enrollmentHistory);
+                }
 
-            setLoading(false);
-        });
+                setLoading(false);
+            }
+        );
     }, [loading, department, courseNumber, sectionType]);
 
     if (loading) {
