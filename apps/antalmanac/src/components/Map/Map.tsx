@@ -369,7 +369,9 @@ export default function CourseMap() {
                                 stackIndex={customEventSameBuildingPrior.length}
                             >
                                 <Box>
-                                    <Typography variant="body2">Event: {customEventMarkers.title}</Typography>
+                                    <Typography variant="body1">
+                                        <span style={{ fontWeight: 'bold' }}>Event:</span> {customEventMarkers.title}
+                                    </Typography>
                                 </Box>
                             </LocationMarker>
                         </Fragment>
