@@ -11,6 +11,8 @@ enum TourStepName {
     welcome = 'welcome',
     addedCourses = 'addedCourses',
     addedCoursesPostClick = 'addedCoursesPostClick',
+    map = 'map',
+    mapPostClick = 'mapPostClick',
 }
 
 type NamedTourSteps = Record<TourStepName, ReactourStep>;
@@ -112,6 +114,35 @@ export const namedTourSteps: NamedTourSteps = {
             </>
         ),
     },
+    map: {
+        selector: '#map-tab',
+        content: (
+            <>
+                <b>Select</b> the map tab to see where your classes are.
+            </>
+        ),
+        action: tourActionFactory(
+            () => {
+                useTourStore.getState().setTourFrozen(true);
+            },
+            () => {
+                const store = useTourStore.getState();
+                store.setTourFrozen(false);
+                setTimeout(
+                    () => store.replaceTourStep(TourStepName.map, TourStepName.mapPostClick),
+                    75 // Wait for the map to render
+                );
+            },
+            {
+                selector: '#map-tab',
+                eventType: 'click',
+            }
+        ),
+    },
+    mapPostClick: {
+        selector: '#map-pane',
+        content: <>Select the map tab to see where your classes are.</>,
+    },
 };
 
 const initialTourSteps: Array<NamedTourSteps[TourStepName]> = [
@@ -121,6 +152,7 @@ const initialTourSteps: Array<NamedTourSteps[TourStepName]> = [
     namedTourSteps.calendar,
     namedTourSteps.finalsButton,
     namedTourSteps.addedCourses,
+    namedTourSteps.map,
 ];
 
 // TODO: Document

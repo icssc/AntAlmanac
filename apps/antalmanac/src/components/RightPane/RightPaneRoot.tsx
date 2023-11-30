@@ -49,6 +49,7 @@ const tabs: Array<TabInfo> = [
         label: 'Map',
         href: '/map',
         icon: MyLocation,
+        id: 'map-tab',
     },
 ];
 

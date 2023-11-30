@@ -213,7 +213,10 @@ export default function CourseMap() {
     }, [markersToDisplay]);
 
     return (
-        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}>
+        <Box
+            sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}
+            id="map-pane"
+        >
             <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
                 {/* Menu floats above the map. */}
                 <Paper sx={{ position: 'relative', mx: 'auto', my: 2, width: '70%', zIndex: 400 }}>
