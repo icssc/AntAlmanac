@@ -2,6 +2,18 @@ import { ReactourStep } from 'reactour';
 import { create } from 'zustand';
 import { addSampleClasses } from '$lib/tourExampleGeneration';
 
+const tourHasRunKey = 'tourHasRun';
+
+export function tourHasRun(): boolean {
+    console.log(localStorage.getItem(tourHasRunKey) === 'true');
+    return localStorage.getItem(tourHasRunKey) == 'true';
+}
+
+function markTourHasRun() {
+    console.log('Marking tour as run');
+    localStorage.setItem(tourHasRunKey, 'true');
+}
+
 enum TourStepName {
     searchBar = 'searchBar',
     importButton = 'importButton',
@@ -36,6 +48,7 @@ export const namedTourSteps: NamedTourSteps = {
     searchBar: {
         selector: '#searchBar',
         content: 'You can search for your classes here!',
+        action: () => markTourHasRun(),
     },
     importButton: {
         selector: '#import-button',
@@ -173,7 +186,7 @@ interface TourStore {
 // TODO: Freeze tour while allowing escape. Remove all steps except for current one.
 export const useTourStore = create<TourStore>((set, get) => {
     return {
-        tourEnabled: true, // TODO: Check localstorage
+        tourEnabled: !tourHasRun(),
         setTourEnabled: (enabled: boolean) => set({ tourEnabled: enabled }),
         startTour: () => set({ tourEnabled: true }),
         endTour: () => set({ tourEnabled: false }),
