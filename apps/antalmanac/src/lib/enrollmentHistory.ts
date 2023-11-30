@@ -47,6 +47,7 @@ class _EnrollmentHistory {
         this.enrollmentHistoryCache = {};
     }
 
+    // TODO: fix return type
     queryEnrollmentHistory = async (
         department: string,
         courseNumber: string,

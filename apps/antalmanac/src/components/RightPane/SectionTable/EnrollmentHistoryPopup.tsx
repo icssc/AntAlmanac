@@ -25,7 +25,7 @@ const EnrollmentHistoryPopup = (props: EnrollmentHistoryProps) => {
         : 'No past enrollment data found for this course';
 
     const axisColor = isDarkMode() ? '#fff' : '#111';
-    const tooltipDateColor = isDarkMode() ? '#111' : '#fff';
+    const tooltipDateColor = '#111';
 
     useEffect(() => {
         if (!loading) {
