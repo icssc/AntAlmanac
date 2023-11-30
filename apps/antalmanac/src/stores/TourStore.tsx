@@ -19,7 +19,7 @@ export const namedTourSteps: Record<TourStepName, ReactourStep> = {
     welcome: {
         content: (
             <>
-                Welcome to AntAlmanac! This tour will show you how to use the app.
+                Welcome to AntAlmanac!
                 <br />
                 Use <kbd>←</kbd> and <kbd>→</kbd> to navigate the tour.
                 <br />
@@ -42,7 +42,11 @@ export const namedTourSteps: Record<TourStepName, ReactourStep> = {
     },
     finalsButton: {
         selector: '#finals-button',
-        content: 'Guess what this does!',
+        content: (
+            <>
+                <b>Click</b> to see your finals
+            </>
+        ),
         /**
          * Freezes the tour until the user presses the finals button.
          */
@@ -63,8 +67,12 @@ export const namedTourSteps: Record<TourStepName, ReactourStep> = {
         ),
     },
     finalsButtonPostClick: {
-        selector: '.rbc-time-view',
-        content: 'It shows your finals schedule!',
+        selector: '#calendar-root',
+        content: (
+            <>
+                <b>Click</b> to see your finals
+            </>
+        ),
     },
 };
 

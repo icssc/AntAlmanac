@@ -179,6 +179,7 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
                 margin: '0px 4px',
                 borderRadius: '1px',
             }}
+            id={'calendar-root'}
         >
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}
