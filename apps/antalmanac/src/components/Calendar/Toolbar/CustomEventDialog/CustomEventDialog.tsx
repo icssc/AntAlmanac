@@ -142,22 +142,23 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
     return (
         <>
             {props.customEvent ? (
-                <IconButton
-                    onClick={() => {
-                        handleOpen();
-
-                        // Typecasting gets rid of a TypeScript possibly undefined compile error
-                        const customEvent = props.customEvent as RepeatingCustomEvent;
-                        setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(customEvent.customEventID));
-                        setStart(customEvent.start);
-                        setEnd(customEvent.end);
-                        setTitle(customEvent.title);
-                        setDays(customEvent.days);
-                        setBuilding(customEvent.building);
-                    }}
-                >
-                    <Edit fontSize="small" />
-                </IconButton>
+                <Tooltip title="Edit">
+                    <IconButton
+                        onClick={() => {
+                            handleOpen();
+                            // Typecasting prevents TypeScript possibly undefined compile error
+                            const customEvent = props.customEvent as RepeatingCustomEvent;
+                            setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(customEvent.customEventID));
+                            setStart(customEvent.start);
+                            setEnd(customEvent.end);
+                            setTitle(customEvent.title);
+                            setDays(customEvent.days);
+                            setBuilding(customEvent.building);
+                        }}
+                    >
+                        <Edit fontSize="small" />
+                    </IconButton>
+                </Tooltip>
             ) : (
                 <Tooltip title="Add custom events">
                     <Button

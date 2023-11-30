@@ -9,14 +9,29 @@ import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calen
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
+import locationIds from '$lib/location_ids';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const localizer = momentLocalizer(moment);
 
 const AntAlmanacEvent = ({ event }: { event: CalendarEvent }) => {
     return event.isCustomEvent ? (
-        <Box style={{ marginTop: 2, marginBottom: 2, fontSize: '0.85rem' }}>
-            <Box style={{ fontWeight: 500 }}>{event.title}</Box>
+        <Box>
+            <Box
+                style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'space-between',
+                    fontWeight: 500,
+                    fontSize: '0.8rem',
+                }}
+            >
+                <Box>{event.title}</Box>
+            </Box>
+
+            <Box style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontSize: '0.7rem' }}>
+                <Box>{Object.keys(locationIds).find((key) => locationIds[key] === parseInt(event.building))}</Box>
+            </Box>
         </Box>
     ) : (
         <Box>

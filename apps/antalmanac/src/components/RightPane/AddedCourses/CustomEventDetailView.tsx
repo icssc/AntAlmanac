@@ -1,4 +1,4 @@
-import { Box, Card, CardActions, CardHeader, IconButton } from '@mui/material';
+import { Box, Card, CardActions, CardHeader, IconButton, Tooltip } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 import moment from 'moment';
 import { useEffect, useState, useCallback } from 'react';
@@ -101,14 +101,16 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
 
                     <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
 
-                    <IconButton
-                        onClick={() => {
-                            deleteCustomEvent(customEvent.customEventID);
-                        }}
-                        size="large"
-                    >
-                        <Delete fontSize="small" />
-                    </IconButton>
+                    <Tooltip title="Delete">
+                        <IconButton
+                            onClick={() => {
+                                deleteCustomEvent(customEvent.customEventID);
+                            }}
+                            size="large"
+                        >
+                            <Delete fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
                 </CardActions>
             )}
         </Card>
