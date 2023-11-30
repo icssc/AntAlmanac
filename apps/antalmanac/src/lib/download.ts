@@ -247,7 +247,9 @@ export function getRRule(bydays: string[], quarter: string) {
     return `FREQ=WEEKLY;BYDAY=${bydays.toString()};INTERVAL=1;COUNT=${count}`;
 }
 
-export function getEventsFromCourses(events = AppStore.getEventsInCalendar()): EventAttributes[] {
+export function getEventsFromCourses(
+    events = [...AppStore.getEventsInCalendar(), ...AppStore.getFinalEventsInCalendar()]
+): EventAttributes[] {
     const calendarEvents = events.flatMap((event) => {
         if (event.isCustomEvent) {
             // FIXME: We don't have a way to get the term for custom events,
@@ -281,45 +283,42 @@ export function getEventsFromCourses(events = AppStore.getEventsInCalendar()): E
                     if (location.days === undefined) return null;
                     const days = getByDays(location.days);
 
-                    const classStartDate = getClassStartDate(term, days);
+                    if (sectionType === 'Fin') {
+                        return {
+                            productId: 'antalmanac/ics',
+                            startOutputType: 'local' as const,
+                            endOutputType: 'local' as const,
+                            title: `${title} Final Exam`,
+                            description: `Final Exam for ${courseTitle}`,
+                            start: getExamTime(finalExam, getYear(term))[0]!,
+                            end: getExamTime(finalExam, getYear(term))[1]!,
+                        };
+                    } else {
+                        const classStartDate = getClassStartDate(term, days);
 
-                    const [firstClassStart, firstClassEnd] = getFirstClass(
-                        classStartDate,
-                        { hour: start.getHours(), minute: start.getMinutes() },
-                        { hour: end.getHours(), minute: end.getMinutes() }
-                    );
+                        const [firstClassStart, firstClassEnd] = getFirstClass(
+                            classStartDate,
+                            { hour: start.getHours(), minute: start.getMinutes() },
+                            { hour: end.getHours(), minute: end.getMinutes() }
+                        );
 
-                    const rrule = getRRule(days, getQuarter(term));
+                        const rrule = getRRule(days, getQuarter(term));
 
-                    // Add VEvent to events array.
-                    return {
-                        productId: 'antalmanac/ics',
-                        startOutputType: 'local' as const,
-                        endOutputType: 'local' as const,
-                        title: `${title} ${sectionType}`,
-                        description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
-                        location: `${location.building} ${location.room}`,
-                        start: firstClassStart,
-                        end: firstClassEnd,
-                        recurrenceRule: rrule,
-                    };
+                        // Add VEvent to events array.
+                        return {
+                            productId: 'antalmanac/ics',
+                            startOutputType: 'local' as const,
+                            endOutputType: 'local' as const,
+                            title: `${title} ${sectionType}`,
+                            description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
+                            location: `${location.building} ${location.room}`,
+                            start: firstClassStart,
+                            end: firstClassEnd,
+                            recurrenceRule: rrule,
+                        };
+                    }
                 })
                 .filter(notNull);
-
-            // Add final to events.
-            if (finalExam.examStatus === 'SCHEDULED_FINAL') {
-                if (finalExam.startTime && finalExam.endTime) {
-                    courseEvents.push({
-                        productId: 'antalmanac/ics',
-                        startOutputType: 'local' as const,
-                        endOutputType: 'local' as const,
-                        title: `${title} Final Exam`,
-                        description: `Final Exam for ${sectionType} ${courseTitle}`,
-                        start: getExamTime(finalExam, getYear(term))[0]!,
-                        end: getExamTime(finalExam, getYear(term))[1]!,
-                    });
-                }
-            }
             return courseEvents;
         }
     });
