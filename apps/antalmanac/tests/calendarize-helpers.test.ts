@@ -1,6 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import type { Schedule } from '@packages/antalmanac-types';
-import type { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import type { Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 
