@@ -12,8 +12,12 @@ const client = new DynamoDB({
 // Create DynamoDB DocumentClient
 const documentClient = DynamoDBDocument.from(client, {
     marshallOptions: {
-        removeUndefinedValues: true
-    }
+        /**
+         * Some JSON properties may exist and be undefined; DDB will throw an error unless this is true.
+         * @example { "property": undefined }
+         */
+        removeUndefinedValues: true,
+    },
 });
 
 const TABLENAME = env.USERDATA_TABLE_NAME;
