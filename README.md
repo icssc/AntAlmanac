@@ -5,29 +5,29 @@
 AntAlmanac is a schedule planner website for classes at UC Irvine. These are some of its features:
 
 - ___Search bar___ to easily find classes by department (e.g COMPSCI), course code (e.g. ICS 31), and keywords (e.g. artificial intelligence).
-- ___Integrated calendar___ to preview class times and conflicts.
+- ___Integrated calendar___ to preview class times.
 - ___Quick links___ to professor reviews, prerequisites, grade distributions, and past enrollment data.
 - ___Interactive map___ with markers for your class locations.
 
 ![project screenshot](https://user-images.githubusercontent.com/48658337/177026240-be0f79b4-e909-486b-aa52-c1a435983781.png)
 
 ## Technology
-Our site is a single page React application hosted on Github Pages.
-A summary of the libraries we use in app are listed below.
+Our website is a single page React application hosted on Github Pages.
+A summary of the libraries we use are listed below.
 
 ### Frontend
 - [MUI](https://mui.com) - React UI library.
 - [React Big Calendar](https://github.com/jquense/react-big-calendar) - React calendar component.
+- [Recharts](https://recharts.org/en-US) - React chart component.
 - [Leaflet](https://leafletjs.com) - Interactive JS maps.
 - [Zustand](https://docs.pmnd.rs/zustand/getting-started/introduction) - State management.
-- [Recharts](https://recharts.org/en-US) - React chart component.
 
 ### Backend
 - [tRPC](https://trpc.io) - type-safe API access layer for the AntAlmanac API.
-- [PeterPortal API](https://api.peterportal.org) - ICSSC-maintined API for retrieving UCI data.
+- [PeterPortal API](https://api.peterportal.org) - API maintained by ICSSC for retrieving UCI data.
 
 ### Tooling
-- [Vite](https://vitejs.dev) - Blazinly fast, modern bundler.
+- [Vite](https://vitejs.dev) - Blazingly fast, modern bundler.
 - [Vitest](https://vitest.dev) - Test runner.
 - [AWS](https://aws.amazon.com) - Website deployment and hosting.
 - [TypeScript](https://www.typescriptlang.org) - JavaScript with type-checking.
@@ -77,7 +77,7 @@ Here is a rough guide on how to contribute:
 8. Merge your pull request and your changes will appear on the live website shortly! 🥳
 
 ## Video Walkhrough
-We also have a 30 minute contributor video tutorial available on YouTube (https://www.youtube.com/watch?v=_v91cqGzu5o).
+We also have a 30 minute contributor [video tutorial](https://www.youtube.com/watch?v=_v91cqGzu5o) available on YouTube.
 
 ## Additional Help
 If you ever need help, feel free to ask around on our [Discord server](https://discord.gg/Zu8KZHERtJ).
@@ -87,7 +87,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 ## Pre-requisites
 1. Install `Node.js`. This allows you to run JavaScript on your computer (outside of a browser).
-   This ideally done with a version manager that allows you to easily switch between
+   This is best done with a version manager that allows you to easily switch between
    Node.js versions based on the requirements of different projects.
    Try using any of the following.
    - [nvm](https://github.com/nvm-sh/nvm) - Node-Version-Manager.
@@ -95,7 +95,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
    - [nvm-widows](https://github.com/coreybutler/nvm-windows)
 
    If none of those work for any reason, you can defer to your Operating System's
-   package manager or [downloads from the official website](https://nodejs.org/en/download).
+   package manager or [the downloads from the official website](https://nodejs.org/en/download).
    We will be using the latest LTS version, 20.10.0, lts/iron.
 
 2. Install `pnpm`. This is our package manager of choice for this project.
@@ -112,8 +112,8 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 3. Start the development server for the frontend.
   `pnpm start:aa` or `cd apps/antalmanac && pnpm dev`
 
-4. View the frontend at http://localhost:5173.
-   As you make changes to the React application, those changes will be automatically reflected on the website locally.
+4. View the local website at http://localhost:5173.
+   As you make changes to the React application, those changes will be automatically reflected on the local website.
 
 
 For more information on developing the frontend and backend projects locally, 
@@ -129,8 +129,7 @@ However, if you would like to start both the frontend and the backend locally,
 you can run `pnpm start` from the project root.
 
 ## Testing
-1. From the root directory, run `pnpm test`.
-   Or from any directory, run `pnpm -w test`.
+From the root directory, run `pnpm test`. Or from any directory, run `pnpm -w test`.
 
 
 # Troubleshooting
