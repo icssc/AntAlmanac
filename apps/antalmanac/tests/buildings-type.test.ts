@@ -1,10 +1,7 @@
 import { describe, test, expect } from 'vitest';
-import { RepeatingCustomEvent } from '@packages/antalmanac-types';
-import AppStore from '$stores/AppStore';
-import trpc from '$lib/api/trpc';
+import { RepeatingCustomEvent, RepeatingCustomEventSchema } from '@packages/antalmanac-types';
 
 describe('building type', () => {
-    const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     const customEvent: RepeatingCustomEvent = {
         title: 'placeHoldertitle',
         start: '10:30',
@@ -15,11 +12,7 @@ describe('building type', () => {
         building: undefined,
     };
 
-    AppStore.addCustomEvent(customEvent, [0]);
-
     test('schema does not throw error when building property exists and is undefined', async () => {
-        expect(
-            await trpc.users.saveUserData.mutate({ id: 'testUser', userData: scheduleSaveState })
-        ).not.toThrowError();
+        expect(() => RepeatingCustomEventSchema.assert(customEvent)).not.toThrowError();
     });
 });
