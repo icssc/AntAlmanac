@@ -10,7 +10,11 @@ const client = new DynamoDB({
 });
 
 // Create DynamoDB DocumentClient
-const documentClient = DynamoDBDocument.from(client);
+const documentClient = DynamoDBDocument.from(client, {
+    marshallOptions: {
+        removeUndefinedValues: true
+    }
+});
 
 const TABLENAME = env.USERDATA_TABLE_NAME;
 
