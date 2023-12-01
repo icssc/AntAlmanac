@@ -122,6 +122,12 @@ see their respective READMEs.
 - [frontend](/apps/antalmanac/README.md)
 - [backend](/apps/backend/README.md)
 
+Typically, you won't need to start the backend server locally 
+because an active development server is available for usage. 
+
+However, if you would like to start both the frontend and the backend locally,
+you can run `pnpm start` from the project root.
+
 ## Testing
 1. From the root directory, run `pnpm test`.
    Or from any directory, run `pnpm -w test`.
