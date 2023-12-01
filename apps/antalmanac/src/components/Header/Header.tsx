@@ -11,8 +11,8 @@ import ImportStudyList from './ImportStudyList';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import SettingsMenu from './SettingsMenu';
 import Export from './Export';
-import Logo from './thanksgiving-logo.png';
-import MobileLogo from './thanksgiving-mobile-logo.png';
+import Logo from './christmas-logo.png';
+import MobileLogo from './christmas-mobile-logo.png';
 
 const styles = {
     appBar: {
