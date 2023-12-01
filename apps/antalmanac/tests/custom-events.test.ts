@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest';
 import { RepeatingCustomEvent, RepeatingCustomEventSchema } from '@packages/antalmanac-types';
 
-describe('building type', () => {
+describe('Custom Events', () => {
     const customEvent: RepeatingCustomEvent = {
         title: 'placeHoldertitle',
         start: '10:30',
