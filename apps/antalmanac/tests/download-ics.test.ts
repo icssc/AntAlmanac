@@ -1,5 +1,3 @@
-import { EventAttributes } from 'ics';
-import type { Schedule } from '@packages/antalmanac-types';
 import { describe, test, expect } from 'vitest';
 import { getEventsFromCourses } from '$lib/download';
 import { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';

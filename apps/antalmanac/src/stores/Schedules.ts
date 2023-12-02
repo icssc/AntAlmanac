@@ -4,9 +4,9 @@ import {
     ScheduleSaveState,
     ScheduleUndoState,
     ShortCourseSchedule,
+    RepeatingCustomEvent,
 } from '@packages/antalmanac-types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
-import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import type { CourseInfo } from '$lib/course_data.types';
 import { getColorForNewSection } from '$stores/scheduleHelpers';
 import WebSOC from '$lib/websoc';
