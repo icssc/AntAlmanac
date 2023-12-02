@@ -12,6 +12,11 @@ import AppStore from '$stores/AppStore';
 import trpc from '$lib/api/trpc';
 import { courseNumAsDecimal } from '$lib/analytics';
 
+export interface CallbackOptions {
+    onSuccess: (name?: string) => unknown;
+    onError: (name?: string) => unknown;
+}
+
 export const addCourse = (
     section: WebsocSection,
     courseDetails: CourseDetails,
@@ -182,7 +187,7 @@ export const changeCourseColor = (sectionCode: string, term: string, newColor: s
     AppStore.changeCourseColor(sectionCode, term, newColor);
 };
 
-export const copySchedule = (name: string, to: number) => {
+export const copySchedule = (name: string, to: number, options?: CallbackOptions) => {
     logAnalytics({
         category: analyticsEnum.addedClasses.title,
         action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
@@ -190,9 +195,9 @@ export const copySchedule = (name: string, to: number) => {
 
     try {
         AppStore.copySchedule(to);
-        openSnackbar('success', `Schedule copied to ${name}.`);
+        options?.onSuccess(name);
     } catch (error) {
-        openSnackbar('error', `Could not copy schedule to ${name}.`);
+        options?.onError(name);
     }
 };
 
