@@ -88,6 +88,8 @@ class _EnrollmentHistory {
         // in the beginning of the array
         this.sortEnrollmentHistory(parsedEnrollmentHistory);
 
+        // For now, just return the enrollment history of the most recent quarter
+        // instead of the entire list of enrollment histories
         const latestEnrollmentHistory = parsedEnrollmentHistory.length > 0 ? parsedEnrollmentHistory[0] : null;
         this.enrollmentHistoryCache[cacheKey] = latestEnrollmentHistory;
         return latestEnrollmentHistory;
