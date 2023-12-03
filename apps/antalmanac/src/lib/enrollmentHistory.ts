@@ -1,4 +1,5 @@
 import { queryGraphQL } from './helpers';
+import { termData } from './termData';
 
 export interface EnrollmentHistoryGraphQL {
     year: string;
@@ -9,6 +10,7 @@ export interface EnrollmentHistoryGraphQL {
     totalEnrolledHistory: string[];
     maxCapacityHistory: string[];
     waitlistHistory: string[];
+    instructors: string[];
 }
 
 export interface EnrollmentHistoryGraphQLResponse {
@@ -18,8 +20,8 @@ export interface EnrollmentHistoryGraphQLResponse {
 }
 
 // To organize the data and make it easier to graph the enrollment
-// data, we can merge the dates, total enrolled, max capacity,
-// and waitlist data into one array that contains the enrollment data
+// data, we can merge the dates, totalEnrolledHistory, maxCapacityHistory,
+// and waitlistHistory arrays into one array that contains the enrollment data
 // for each day
 export interface EnrollmentHistory {
     year: string;
@@ -27,6 +29,7 @@ export interface EnrollmentHistory {
     department: string;
     courseNumber: string;
     days: EnrollmentHistoryDay[];
+    instructors: string[];
 }
 
 export interface EnrollmentHistoryDay {
@@ -41,18 +44,20 @@ class _EnrollmentHistory {
     // and sectionType concatenated with each other; each value in the cache
     // will be an array that contains the parsed enrollment history
     // for each quarter the course was offered
-    enrollmentHistoryCache: Record<string, EnrollmentHistory[]>;
+    enrollmentHistoryCache: Record<string, EnrollmentHistory | null>;
+
+    termShortNames: string[];
 
     constructor() {
         this.enrollmentHistoryCache = {};
+        this.termShortNames = termData.map((term) => term.shortName);
     }
 
-    // TODO: fix return type
     queryEnrollmentHistory = async (
         department: string,
         courseNumber: string,
         sectionType: string
-    ): Promise<EnrollmentHistory[] | null> => {
+    ): Promise<EnrollmentHistory | null> => {
         const cacheKey = department + courseNumber + sectionType;
         if (cacheKey in this.enrollmentHistoryCache) {
             return this.enrollmentHistoryCache[cacheKey];
@@ -68,6 +73,7 @@ class _EnrollmentHistory {
                 totalEnrolledHistory
                 maxCapacityHistory
                 waitlistHistory
+                instructors
             }
         }`;
 
@@ -76,7 +82,20 @@ class _EnrollmentHistory {
 
         // Before caching and returning the response, we need to do
         // some parsing so that we can pass the data into the graph
-        const enrollmentHistories: EnrollmentHistory[] = [];
+        const parsedEnrollmentHistory = this.parseEnrollmentHistoryResponse(res);
+
+        // Sort the enrollment history so that the most recent quarters are
+        // in the beginning of the array
+        this.sortEnrollmentHistory(parsedEnrollmentHistory);
+
+        const latestEnrollmentHistory = parsedEnrollmentHistory.length > 0 ? parsedEnrollmentHistory[0] : null;
+        this.enrollmentHistoryCache[cacheKey] = latestEnrollmentHistory;
+        return latestEnrollmentHistory;
+    };
+
+    parseEnrollmentHistoryResponse = (res: EnrollmentHistoryGraphQL[] | null): EnrollmentHistory[] => {
+        const parsedEnrollmentHistory: EnrollmentHistory[] = [];
+
         if (res) {
             for (const enrollmentHistory of res) {
                 const enrollmentDays: EnrollmentHistoryDay[] = [];
@@ -96,18 +115,28 @@ class _EnrollmentHistory {
                     });
                 }
 
-                enrollmentHistories.push({
+                parsedEnrollmentHistory.push({
                     year: enrollmentHistory.year,
                     quarter: enrollmentHistory.quarter,
                     department: enrollmentHistory.department,
                     courseNumber: enrollmentHistory.courseNumber,
                     days: enrollmentDays,
+                    instructors: enrollmentHistory.instructors,
                 });
             }
         }
 
-        this.enrollmentHistoryCache[cacheKey] = enrollmentHistories;
-        return enrollmentHistories;
+        return parsedEnrollmentHistory;
+    };
+
+    sortEnrollmentHistory = (enrollmentHistory: EnrollmentHistory[]) => {
+        enrollmentHistory.sort((a, b) => {
+            const aTerm = `${a.year} ${a.quarter}`;
+            const bTerm = `${b.year} ${b.quarter}`;
+            // If the term for a appears earlier than the term for b in the list of
+            // term short names, then a must be the enrollment history for a later quarter
+            return this.termShortNames.indexOf(aTerm) - this.termShortNames.indexOf(bTerm);
+        });
     };
 }
 

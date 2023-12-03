@@ -147,7 +147,6 @@ function SectionTable(props: SectionTableProps) {
                     analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
                     text="Reviews"
                     icon={<RateReview />}
-                    redirectLink={`https://peterportal.org/course/${courseId}`}
                 />
 
                 <CourseInfoButton
