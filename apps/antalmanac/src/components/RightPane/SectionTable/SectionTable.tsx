@@ -178,14 +178,6 @@ function SectionTable(props: SectionTableProps) {
                         />
                     }
                 />
-
-                {/* <CourseInfoButton
-                    analyticsCategory={analyticsCategory}
-                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_ENROLLMENT}
-                    text="Past Enrollment"
-                    icon={<ShowChartIcon />}
-                    redirectLink={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${courseDetails.courseNumber}&courseType=all`}
-                /> */}
             </Box>
 
             <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">

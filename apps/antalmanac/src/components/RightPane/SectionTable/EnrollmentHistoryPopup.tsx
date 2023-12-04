@@ -4,14 +4,14 @@ import { Box, Link, Typography, Skeleton } from '@mui/material';
 import EnrollmentHistoryHelper, { EnrollmentHistory } from '$lib/enrollmentHistory';
 import { isDarkMode } from '$lib/helpers';
 
-export interface EnrollmentHistoryProps {
+export interface EnrollmentHistoryPopupProps {
     department: string;
     courseNumber: string;
     sectionType: string;
     isMobileScreen: boolean;
 }
 
-const EnrollmentHistoryPopup = (props: EnrollmentHistoryProps) => {
+const EnrollmentHistoryPopup = (props: EnrollmentHistoryPopupProps) => {
     const { department, courseNumber, sectionType, isMobileScreen } = props;
     const [loading, setLoading] = useState(true);
     const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory>();
@@ -57,7 +57,7 @@ const EnrollmentHistoryPopup = (props: EnrollmentHistoryProps) => {
         return (
             <Box padding={1}>
                 <Typography variant="body1" align="center">
-                    No past enrollment data found for this course
+                    {graphTitle}
                 </Typography>
             </Box>
         );

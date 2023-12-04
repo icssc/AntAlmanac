@@ -40,12 +40,9 @@ export interface EnrollmentHistoryDay {
 }
 
 class _EnrollmentHistory {
-    // Each key in the cache will just be the department, courseNumber,
-    // and sectionType concatenated with each other; each value in the cache
-    // will be an array that contains the parsed enrollment history
-    // for each quarter the course was offered
-    enrollmentHistoryCache: Record<string, EnrollmentHistory | null>;
-
+    // Each key in the cache will be the department, courseNumber, and sectionType
+    // concatenated with each other
+    enrollmentHistoryCache: Record<string, EnrollmentHistory>;
     termShortNames: string[];
 
     constructor() {
@@ -80,22 +77,26 @@ class _EnrollmentHistory {
         const res =
             (await queryGraphQL<EnrollmentHistoryGraphQLResponse>(queryString))?.data?.enrollmentHistory ?? null;
 
-        // Before caching and returning the response, we need to do
-        // some parsing so that we can pass the data into the graph
-        const parsedEnrollmentHistory = this.parseEnrollmentHistoryResponse(res);
+        if (res) {
+            // Before caching and returning the response, we need to do
+            // some parsing so that we can pass the data into the graph
+            const parsedEnrollmentHistory = this.parseEnrollmentHistoryResponse(res);
 
-        // Sort the enrollment history so that the most recent quarters are
-        // in the beginning of the array
-        this.sortEnrollmentHistory(parsedEnrollmentHistory);
+            // Sort the enrollment history so that the most recent quarters are
+            // in the beginning of the array
+            this.sortEnrollmentHistory(parsedEnrollmentHistory);
 
-        // For now, just return the enrollment history of the most recent quarter
-        // instead of the entire list of enrollment histories
-        const latestEnrollmentHistory = parsedEnrollmentHistory.length > 0 ? parsedEnrollmentHistory[0] : null;
-        this.enrollmentHistoryCache[cacheKey] = latestEnrollmentHistory;
-        return latestEnrollmentHistory;
+            // For now, just return the enrollment history of the most recent quarter
+            // instead of the entire array of enrollment histories
+            const latestEnrollmentHistory = parsedEnrollmentHistory[0];
+            this.enrollmentHistoryCache[cacheKey] = latestEnrollmentHistory;
+            return latestEnrollmentHistory;
+        }
+
+        return null;
     };
 
-    parseEnrollmentHistoryResponse = (res: EnrollmentHistoryGraphQL[] | null): EnrollmentHistory[] => {
+    parseEnrollmentHistoryResponse = (res: EnrollmentHistoryGraphQL[]): EnrollmentHistory[] => {
         const parsedEnrollmentHistory: EnrollmentHistory[] = [];
 
         if (res) {
