@@ -13,8 +13,8 @@ import trpc from '$lib/api/trpc';
 import { courseNumAsDecimal } from '$lib/analytics';
 
 export interface CallbackOptions {
-    onSuccess: (name?: string) => unknown;
-    onError: (name?: string) => unknown;
+    onSuccess: (index: number) => unknown;
+    onError: (index: number) => unknown;
 }
 
 export const addCourse = (
