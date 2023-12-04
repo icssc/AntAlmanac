@@ -1,6 +1,7 @@
 import { queryGraphQL } from './helpers';
 import { termData } from './termData';
 
+// This represents the enrollment history of a course section during one quarter
 export interface EnrollmentHistoryGraphQL {
     year: string;
     quarter: string;
@@ -40,8 +41,7 @@ export interface EnrollmentHistoryDay {
 }
 
 class _EnrollmentHistory {
-    // Each key in the cache will be the department, courseNumber, and sectionType
-    // concatenated with each other
+    // Each key in the cache will be the department and courseNumber concatenated
     enrollmentHistoryCache: Record<string, EnrollmentHistory>;
     termShortNames: string[];
 
@@ -50,18 +50,15 @@ class _EnrollmentHistory {
         this.termShortNames = termData.map((term) => term.shortName);
     }
 
-    queryEnrollmentHistory = async (
-        department: string,
-        courseNumber: string,
-        sectionType: string
-    ): Promise<EnrollmentHistory | null> => {
-        const cacheKey = department + courseNumber + sectionType;
+    queryEnrollmentHistory = async (department: string, courseNumber: string): Promise<EnrollmentHistory | null> => {
+        const cacheKey = department + courseNumber;
         if (cacheKey in this.enrollmentHistoryCache) {
             return this.enrollmentHistoryCache[cacheKey];
         }
 
+        // Query for the enrollment history of all lecture sections that were offered
         const queryString = `{
-            enrollmentHistory(department: "${department}", courseNumber: "${courseNumber}", sectionType: ${sectionType}) {
+            enrollmentHistory(department: "${department}", courseNumber: "${courseNumber}", sectionType: Lec) {
                 year
                 quarter
                 department

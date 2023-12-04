@@ -7,18 +7,17 @@ import { isDarkMode } from '$lib/helpers';
 export interface EnrollmentHistoryPopupProps {
     department: string;
     courseNumber: string;
-    sectionType: string;
     isMobileScreen: boolean;
 }
 
 const EnrollmentHistoryPopup = (props: EnrollmentHistoryPopupProps) => {
-    const { department, courseNumber, sectionType, isMobileScreen } = props;
+    const { department, courseNumber, isMobileScreen } = props;
     const [loading, setLoading] = useState(true);
     const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory>();
 
     const graphWidth = useMemo(() => (isMobileScreen ? 250 : 450), [isMobileScreen]);
     const graphHeight = useMemo(() => (isMobileScreen ? 175 : 250), [isMobileScreen]);
-    const graphTitle = useMemo(() => {
+    const popupTitle = useMemo(() => {
         return enrollmentHistory
             ? `${department} ${courseNumber} | ${enrollmentHistory.year} ${
                   enrollmentHistory.quarter
@@ -35,15 +34,13 @@ const EnrollmentHistoryPopup = (props: EnrollmentHistoryPopupProps) => {
             return;
         }
 
-        EnrollmentHistoryHelper.queryEnrollmentHistory(department, courseNumber, sectionType).then(
-            (enrollmentHistory) => {
-                if (enrollmentHistory) {
-                    setEnrollmentHistory(enrollmentHistory);
-                }
-                setLoading(false);
+        EnrollmentHistoryHelper.queryEnrollmentHistory(department, courseNumber).then((enrollmentHistory) => {
+            if (enrollmentHistory) {
+                setEnrollmentHistory(enrollmentHistory);
             }
-        );
-    }, [loading, department, courseNumber, sectionType]);
+            setLoading(false);
+        });
+    }, [loading, department, courseNumber]);
 
     if (loading) {
         return (
@@ -57,7 +54,7 @@ const EnrollmentHistoryPopup = (props: EnrollmentHistoryPopupProps) => {
         return (
             <Box padding={1}>
                 <Typography variant="body1" align="center">
-                    {graphTitle}
+                    {popupTitle}
                 </Typography>
             </Box>
         );
@@ -75,7 +72,7 @@ const EnrollmentHistoryPopup = (props: EnrollmentHistoryPopupProps) => {
                     marginBottom: '.5rem',
                 }}
             >
-                {graphTitle}
+                {popupTitle}
             </Typography>
             <Link
                 href={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${courseNumber}&courseType=all`}
