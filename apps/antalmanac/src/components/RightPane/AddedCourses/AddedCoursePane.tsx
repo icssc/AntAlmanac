@@ -5,12 +5,13 @@ import { Box, Chip, IconButton, Menu, MenuItem, Paper, SxProps, TextField, Toolt
 import { ContentCopy, DeleteOutline } from '@mui/icons-material';
 import { AACourse } from '@packages/antalmanac-types';
 
+import { useSnackbar } from 'notistack';
 import { ColumnToggleButton } from '../CoursePane/CoursePaneButtonRow';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
 import AppStore from '$stores/AppStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
+import { CopyScheduleOptions, clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
 import { clickToCopy } from '$lib/helpers';
 
 /**
@@ -88,9 +89,9 @@ function handleClear() {
     }
 }
 
-function createCopyHandler(index: number) {
+function createCopyHandler(index: number, options: CopyScheduleOptions) {
     return () => {
-        copySchedule(index);
+        copySchedule(index, options);
     };
 }
 
@@ -106,6 +107,20 @@ function ClearScheduleButton() {
 
 function CopyScheduleButton() {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+    const { enqueueSnackbar } = useSnackbar();
+
+    const options = useMemo(() => {
+        return {
+            onSuccess: (index: number) => {
+                const name = index === scheduleNames.length ? 'All Schedules' : scheduleNames[index];
+                enqueueSnackbar(`Schedule copied to ${name}.`, { variant: 'success' });
+            },
+            onError: (index: number) => {
+                const name = index === scheduleNames.length ? 'All Schedules' : scheduleNames[index];
+                enqueueSnackbar(`Could not copy schedule to ${name}.`, { variant: 'error' });
+            },
+        };
+    }, [enqueueSnackbar, scheduleNames]);
 
     useEffect(() => {
         /**
@@ -136,12 +151,14 @@ function CopyScheduleButton() {
                             <MenuItem
                                 key={index}
                                 disabled={AppStore.getCurrentScheduleIndex() === index}
-                                onClick={createCopyHandler(index)}
+                                onClick={createCopyHandler(index, options)}
                             >
                                 Copy to {name}
                             </MenuItem>
                         ))}
-                        <MenuItem onClick={createCopyHandler(scheduleNames.length)}>Copy to All Schedules</MenuItem>
+                        <MenuItem onClick={createCopyHandler(scheduleNames.length, options)}>
+                            Copy to All Schedules
+                        </MenuItem>
                     </Menu>
                 </>
             )}
