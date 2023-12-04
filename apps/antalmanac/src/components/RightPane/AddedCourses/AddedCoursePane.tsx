@@ -23,7 +23,7 @@ import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
 import AppStore from '$stores/AppStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { CallbackOptions, clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
+import { CopyScheduleOptions, clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
 import { clickToCopy } from '$lib/helpers';
 
 /**
@@ -101,9 +101,9 @@ function handleClear() {
     }
 }
 
-function createCopyHandler(name: string, index: number, options: CallbackOptions) {
+function createCopyHandler(index: number, options: CopyScheduleOptions) {
     return () => {
-        copySchedule(name, index, options);
+        copySchedule(index, options);
     };
 }
 
@@ -123,10 +123,20 @@ function CopyScheduleButton() {
 
     const options = useMemo(() => {
         return {
-            onSuccess: (index: number) => enqueueSnackbar(`Schedule copied to ${scheduleNames[index]}.`, { variant: 'success' }),
-            onError: (index: number) => enqueueSnackbar(`Could not copy schedule to ${scheduleNames[index]}.`, { variant: 'error' }),
+            onSuccess: (index: number) =>
+                enqueueSnackbar(
+                    `Schedule copied to ${index === scheduleNames.length ? 'All Schedules' : scheduleNames[index]}.`,
+                    { variant: 'success' }
+                ),
+            onError: (index: number) =>
+                enqueueSnackbar(
+                    `Could not copy schedule to ${
+                        index === scheduleNames.length ? 'All Schedules' : scheduleNames[index]
+                    }.`,
+                    { variant: 'error' }
+                ),
         };
-    }, [enqueueSnackbar]);
+    }, [enqueueSnackbar, scheduleNames]);
 
     useEffect(() => {
         /**
@@ -162,7 +172,7 @@ function CopyScheduleButton() {
                                 Copy to {name}
                             </MenuItem>
                         ))}
-                        <MenuItem onClick={createCopyHandler('All Schedules', scheduleNames.length, options)}>
+                        <MenuItem onClick={createCopyHandler(scheduleNames.length, options)}>
                             Copy to All Schedules
                         </MenuItem>
                     </Menu>

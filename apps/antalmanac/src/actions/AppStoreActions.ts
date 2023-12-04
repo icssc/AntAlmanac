@@ -187,7 +187,7 @@ export const changeCourseColor = (sectionCode: string, term: string, newColor: s
     AppStore.changeCourseColor(sectionCode, term, newColor);
 };
 
-export const copySchedule = (to: number, options?: CallbackOptions) => {
+export const copySchedule = (to: number, options?: CopyScheduleOptions) => {
     logAnalytics({
         category: analyticsEnum.addedClasses.title,
         action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
