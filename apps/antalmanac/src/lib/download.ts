@@ -45,6 +45,10 @@ export const vTimeZoneSection =
     'END:VTIMEZONE\n' +
     'BEGIN:VEVENT';
 
+export const CALENDAR_ID = 'antalmanac/ics';
+
+export const CALENDAR_OUTPUT = 'local' as const;
+
 /**
  * @example [YEAR, MONTH, DAY, HOUR, MINUTE]
  */
@@ -247,9 +251,7 @@ export function getRRule(bydays: string[], quarter: string) {
     return `FREQ=WEEKLY;BYDAY=${bydays.toString()};INTERVAL=1;COUNT=${count}`;
 }
 
-export function getEventsFromCourses(
-    events = [...AppStore.getEventsInCalendar(), ...AppStore.getFinalEventsInCalendar()]
-): EventAttributes[] {
+export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCalendar()): EventAttributes[] {
     const calendarEvents = events.flatMap((event) => {
         if (event.isCustomEvent) {
             // FIXME: We don't have a way to get the term for custom events,
@@ -280,18 +282,22 @@ export function getEventsFromCourses(
             const { term, title, courseTitle, instructors, sectionType, start, end, finalExam } = event;
             const courseEvents: EventAttributes[] = event.locations
                 .map((location) => {
-                    if (location.days === undefined) return null;
+                    if (location.days === undefined) {
+                        return null;
+                    }
                     const days = getByDays(location.days);
+
+                    const [finalStart, finalEnd] = getExamTime(finalExam, getYear(term));
 
                     if (sectionType === 'Fin') {
                         return {
-                            productId: 'antalmanac/ics',
-                            startOutputType: 'local' as const,
-                            endOutputType: 'local' as const,
+                            productId: CALENDAR_ID,
+                            startOutputType: CALENDAR_OUTPUT,
+                            endOutputType: CALENDAR_OUTPUT,
                             title: `${title} Final Exam`,
                             description: `Final Exam for ${courseTitle}`,
-                            start: getExamTime(finalExam, getYear(term))[0]!,
-                            end: getExamTime(finalExam, getYear(term))[1]!,
+                            start: finalStart!,
+                            end: finalEnd!,
                         };
                     } else {
                         const classStartDate = getClassStartDate(term, days);

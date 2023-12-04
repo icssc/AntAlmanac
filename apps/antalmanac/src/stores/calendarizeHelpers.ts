@@ -51,7 +51,7 @@ export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): 
                         locations: meeting.bldg.map(getLocation).map((location: Location) => {
                             return {
                                 ...location,
-                                days: meeting.days === null ? undefined : COURSE_WEEK_DAYS[dayIndex],
+                                ...(meeting.days && { days: COURSE_WEEK_DAYS[dayIndex] }),
                             };
                         }),
                         showLocationInfo: false,
