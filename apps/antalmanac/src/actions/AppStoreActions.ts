@@ -195,9 +195,9 @@ export const copySchedule = (name: string, to: number, options?: CallbackOptions
 
     try {
         AppStore.copySchedule(to);
-        options?.onSuccess(name);
+        options?.onSuccess(to);
     } catch (error) {
-        options?.onError(name);
+        options?.onError(to);
     }
 };
 
