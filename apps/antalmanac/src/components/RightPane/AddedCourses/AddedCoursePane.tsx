@@ -123,8 +123,8 @@ function CopyScheduleButton() {
 
     const options = useMemo(() => {
         return {
-            onSuccess: (name?: string) => enqueueSnackbar(`Schedule copied to ${name}.`, { variant: 'success' }),
-            onError: (name?: string) => enqueueSnackbar(`Could not copy schedule to ${name}.`, { variant: 'error' }),
+            onSuccess: (index: number) => enqueueSnackbar(`Schedule copied to ${scheduleNames[index]}.`, { variant: 'success' }),
+            onError: (index: number) => enqueueSnackbar(`Could not copy schedule to ${scheduleNames[index]}.`, { variant: 'error' }),
         };
     }, [enqueueSnackbar]);
 
