@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { LineChart, Line, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { Box, Link, Typography, Skeleton } from '@mui/material';
 import EnrollmentHistoryHelper, { EnrollmentHistory } from '$lib/enrollmentHistory';
@@ -16,14 +16,17 @@ const EnrollmentHistoryPopup = (props: EnrollmentHistoryProps) => {
     const [loading, setLoading] = useState(true);
     const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory>();
 
-    const graphWidth = isMobileScreen ? 250 : 450;
-    const graphHeight = isMobileScreen ? 175 : 250;
-    const graphTitle = enrollmentHistory
-        ? `${department} ${courseNumber} | ${enrollmentHistory.year} ${
-              enrollmentHistory.quarter
-          } | ${enrollmentHistory.instructors.join(', ')}`
-        : 'No past enrollment data found for this course';
+    const graphWidth = useMemo(() => (isMobileScreen ? 250 : 450), [isMobileScreen]);
+    const graphHeight = useMemo(() => (isMobileScreen ? 175 : 250), [isMobileScreen]);
+    const graphTitle = useMemo(() => {
+        return enrollmentHistory
+            ? `${department} ${courseNumber} | ${enrollmentHistory.year} ${
+                  enrollmentHistory.quarter
+              } | ${enrollmentHistory.instructors.join(', ')}`
+            : 'No past enrollment data found for this course';
+    }, [courseNumber, department, enrollmentHistory]);
 
+    const encodedDept = useMemo(() => encodeURIComponent(department), [department]);
     const axisColor = isDarkMode() ? '#fff' : '#111';
     const tooltipDateColor = '#111';
 
@@ -37,7 +40,6 @@ const EnrollmentHistoryPopup = (props: EnrollmentHistoryProps) => {
                 if (enrollmentHistory) {
                     setEnrollmentHistory(enrollmentHistory);
                 }
-
                 setLoading(false);
             }
         );
@@ -76,9 +78,7 @@ const EnrollmentHistoryPopup = (props: EnrollmentHistoryProps) => {
                 {graphTitle}
             </Typography>
             <Link
-                href={`https://zot-tracker.herokuapp.com/?dept=${encodeURIComponent(
-                    department
-                )}&number=${courseNumber}&courseType=all`}
+                href={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${courseNumber}&courseType=all`}
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{ display: 'flex', height: graphHeight, width: graphWidth }}
