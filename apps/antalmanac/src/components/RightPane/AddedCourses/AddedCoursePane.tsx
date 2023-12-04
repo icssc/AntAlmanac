@@ -157,7 +157,7 @@ function CopyScheduleButton() {
                             <MenuItem
                                 key={index}
                                 disabled={AppStore.getCurrentScheduleIndex() === index}
-                                onClick={createCopyHandler(name, index, options)}
+                                onClick={createCopyHandler(index, options)}
                             >
                                 Copy to {name}
                             </MenuItem>
