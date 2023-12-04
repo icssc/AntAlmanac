@@ -12,7 +12,7 @@ import AppStore from '$stores/AppStore';
 import trpc from '$lib/api/trpc';
 import { courseNumAsDecimal } from '$lib/analytics';
 
-export interface CallbackOptions {
+export interface CopyScheduleOptions {
     onSuccess: (index: number) => unknown;
     onError: (index: number) => unknown;
 }
