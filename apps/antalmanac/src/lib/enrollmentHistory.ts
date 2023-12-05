@@ -74,7 +74,7 @@ class _EnrollmentHistory {
         const res =
             (await queryGraphQL<EnrollmentHistoryGraphQLResponse>(queryString))?.data?.enrollmentHistory ?? null;
 
-        if (res) {
+        if (res && res.length > 0) {
             // Before caching and returning the response, we need to do
             // some parsing so that we can pass the data into the graph
             const parsedEnrollmentHistory = this.parseEnrollmentHistoryResponse(res);
@@ -96,34 +96,32 @@ class _EnrollmentHistory {
     parseEnrollmentHistoryResponse = (res: EnrollmentHistoryGraphQL[]): EnrollmentHistory[] => {
         const parsedEnrollmentHistory: EnrollmentHistory[] = [];
 
-        if (res) {
-            for (const enrollmentHistory of res) {
-                const enrollmentDays: EnrollmentHistoryDay[] = [];
+        for (const enrollmentHistory of res) {
+            const enrollmentDays: EnrollmentHistoryDay[] = [];
 
-                for (const [i, date] of enrollmentHistory.dates.entries()) {
-                    const d = new Date(date);
-                    const formattedDate = `${d.getMonth() + 1}/${d.getDate() + 1}/${d.getFullYear()}`;
+            for (const [i, date] of enrollmentHistory.dates.entries()) {
+                const d = new Date(date);
+                const formattedDate = `${d.getMonth() + 1}/${d.getDate() + 1}/${d.getFullYear()}`;
 
-                    enrollmentDays.push({
-                        date: formattedDate,
-                        totalEnrolled: Number(enrollmentHistory.totalEnrolledHistory[i]),
-                        maxCapacity: Number(enrollmentHistory.maxCapacityHistory[i]),
-                        waitlist:
-                            enrollmentHistory.waitlistHistory[i] === 'n/a'
-                                ? null
-                                : Number(enrollmentHistory.waitlistHistory[i]),
-                    });
-                }
-
-                parsedEnrollmentHistory.push({
-                    year: enrollmentHistory.year,
-                    quarter: enrollmentHistory.quarter,
-                    department: enrollmentHistory.department,
-                    courseNumber: enrollmentHistory.courseNumber,
-                    days: enrollmentDays,
-                    instructors: enrollmentHistory.instructors,
+                enrollmentDays.push({
+                    date: formattedDate,
+                    totalEnrolled: Number(enrollmentHistory.totalEnrolledHistory[i]),
+                    maxCapacity: Number(enrollmentHistory.maxCapacityHistory[i]),
+                    waitlist:
+                        enrollmentHistory.waitlistHistory[i] === 'n/a'
+                            ? null
+                            : Number(enrollmentHistory.waitlistHistory[i]),
                 });
             }
+
+            parsedEnrollmentHistory.push({
+                year: enrollmentHistory.year,
+                quarter: enrollmentHistory.quarter,
+                department: enrollmentHistory.department,
+                courseNumber: enrollmentHistory.courseNumber,
+                days: enrollmentDays,
+                instructors: enrollmentHistory.instructors,
+            });
         }
 
         return parsedEnrollmentHistory;
