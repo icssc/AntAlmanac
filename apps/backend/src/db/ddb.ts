@@ -1,7 +1,8 @@
+import type { Type } from 'arktype';
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 
-import { ScheduleSaveState } from '@packages/antalmanac-types';
+import { GoogleUserSchema, ScheduleSaveState, UserSchema } from '@packages/antalmanac-types';
 import env from '../env';
 
 // Initialise DynamoDB Client
@@ -47,3 +48,55 @@ async function insertById(id: string, userData: ScheduleSaveState) {
 }
 
 export { getById, insertById };
+
+class DDBClient<T extends Type<any>> {
+    private tableName: string;
+    private schema: any;
+
+    constructor(tableName: string, schema: T) {
+        this.tableName = tableName;
+        this.schema = schema;
+    }
+
+    async get(id: string) {
+        const params = {
+            TableName: this.tableName,
+            Key: {
+                id: id,
+            },
+        };
+
+        const data = await documentClient.get(params);
+        const { data: userData, problems } = this.schema(data.Item);
+        if (problems !== undefined) {
+            return undefined;
+        }
+        return userData as T['infer'];
+    }
+
+    async insertItem(item: T['infer']) {
+        const params = {
+            TableName: this.tableName,
+            Item: item as any,
+        };
+        await documentClient.put(params);
+    }
+
+    async updateSchedule(id: string, schedule: ScheduleSaveState) {
+        const params = {
+            TableName: this.tableName,
+            Key: {
+                id: id,
+            },
+            UpdateExpression: 'set userData = :u',
+            ExpressionAttributeValues: {
+                ':u': schedule,
+            },
+        };
+        await documentClient.update(params);
+    }
+}
+
+export const ScheduleCodeClient = new DDBClient(env.USERDATA_TABLE_NAME, UserSchema);
+
+export const AuthUserClient = new DDBClient(env.AUTH_USERDATA_TABLE_NAME, GoogleUserSchema);

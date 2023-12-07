@@ -4,6 +4,7 @@ import 'dotenv/config';
 const Environment = type([
     {
         'STAGE?': "'dev' | 'prod' | 'staging' | 'local'",
+        AUTH_USERDATA_TABLE_NAME: 'string',
         USERDATA_TABLE_NAME: 'string',
         AA_MONGODB_URI: 'string',
         AWS_REGION: 'string',
