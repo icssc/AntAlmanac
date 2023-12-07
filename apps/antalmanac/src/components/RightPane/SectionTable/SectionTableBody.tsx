@@ -521,7 +521,10 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     ]);
 
     const handleHover = useCallback(() => {
-        const alreadyHovered = hoveredCourseEvents && hoveredCourseEvents[0].sectionCode == section.sectionCode;
+        const alreadyHovered =
+            hoveredCourseEvents &&
+            hoveredCourseEvents.some((courseEvent) => courseEvent.sectionCode == section.sectionCode);
+
         alreadyHovered || addedCourse
             ? setHoveredCourseEvents(undefined)
             : setHoveredCourseEvents(section, courseDetails, term);
