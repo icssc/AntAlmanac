@@ -13,6 +13,6 @@ const Environment = type([
     '|>',
     (s) => ({ STAGE: 'local', ...s }),
 ]);
-const env = Environment.assert(process.env);
+const env = Environment.assert({ ...process.env });
 
 export default env;

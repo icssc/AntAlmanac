@@ -1,13 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import type { CorsOptions } from 'cors';
+import cookies from 'cookie-parser';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import AppRouter from './routers';
 import createContext from './context';
 import env from './env';
 import connectToMongoDB from '$db/mongodb';
 
-const corsOptions: CorsOptions = {
+const CORS_OPTIONS: CorsOptions = {
     origin: ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac'],
 };
 
@@ -19,7 +20,9 @@ export async function start(corsEnabled = false) {
     await connectToMongoDB();
 
     const app = express();
-    app.use(cors(corsEnabled ? corsOptions : undefined));
+
+    app.use(cookies());
+    app.use(cors(corsEnabled ? CORS_OPTIONS : undefined));
     app.use(express.json());
 
     app.use('/mapbox/directions/*', async (req, res) => {
@@ -33,16 +36,14 @@ export async function start(corsEnabled = false) {
     app.use('/mapbox/tiles/*', async (req, res) => {
         const searchParams = new URLSearchParams(req.query as any);
         searchParams.set('access_token', env.MAPBOX_ACCESS_TOKEN);
-        const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${(req.params as any)[0]}?${searchParams.toString()}`;
+        const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${
+            (req.params as any)[0]
+        }?${searchParams.toString()}`;
         const buffer = await fetch(url).then((res) => res.arrayBuffer());
-        res.type('image/png')
-        res.send(Buffer.from(buffer))
-        // // res.header('Content-Security-Policy', "img-src 'self'"); // https://stackoverflow.com/questions/56386307/loading-of-a-resource-blocked-by-content-security-policy
-        // // res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-        // res.type('image/png')
-        // res.send(result)
+        res.type('image/png');
+        res.send(Buffer.from(buffer));
     });
-    
+
     app.use(
         '/trpc',
         createExpressMiddleware({
