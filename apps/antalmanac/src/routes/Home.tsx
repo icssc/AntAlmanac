@@ -4,7 +4,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { Box, CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
 import Tour from 'reactour';
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import Header from '$components/Header';
 import MobileHome from '$components/MobileHome';
 import PatchNotes from '$components/PatchNotes';
@@ -17,13 +17,9 @@ export default function Home() {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
     const theme = useTheme();
 
-    const [tourEnabled, disableTour, tourFrozen] = useTourStore((state) => [
-        state.tourEnabled,
-        state.endTour,
-        state.tourFrozen,
-    ]);
+    const [tourEnabled, disableTour] = useTourStore((state) => [state.tourEnabled, state.endTour]);
 
-    const [tourSteps] = useTourStore((state) => [state.tourSteps]);
+    const [tourSteps, step, setStep] = useTourStore((state) => [state.tourSteps, state.step, state.setStep]);
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -60,9 +56,9 @@ export default function Home() {
                     </Split>
                     <Tour
                         steps={tourSteps}
+                        goToStep={step}
+                        getCurrentStep={setStep}
                         isOpen={tourEnabled}
-                        showButtons={!tourFrozen}
-                        disableKeyboardNavigation={tourFrozen}
                         showNavigationNumber={false}
                         disableFocusLock={true}
                         rounded={5}

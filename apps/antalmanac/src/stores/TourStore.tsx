@@ -5,12 +5,10 @@ import { addSampleClasses } from '$lib/tourExampleGeneration';
 const tourHasRunKey = 'tourHasRun';
 
 export function tourHasRun(): boolean {
-    console.log(localStorage.getItem(tourHasRunKey) === 'true');
     return localStorage.getItem(tourHasRunKey) == 'true';
 }
 
 function markTourHasRun() {
-    console.log('Marking tour as run');
     localStorage.setItem(tourHasRunKey, 'true');
 }
 
@@ -60,29 +58,19 @@ export const namedTourSteps: NamedTourSteps = {
         action: addSampleClasses,
     },
     finalsButton: {
-        selector: '#finals-button',
+        selector: '#finals-button, #finals-button-pressed',
         content: (
             <>
                 <b>Click</b> to see your finals
             </>
         ),
-        /**
-         * Freezes the tour until the user presses the finals button.
-         */
+        /** If the user presses/pressed the finals button, move to the next step */
         action: tourActionFactory(
             () => {
-                const store = useTourStore.getState();
-                store.setTourFrozen(true);
+                useTourStore.getState().nextStep();
             },
-            () => {
-                const store = useTourStore.getState();
-                store.setTourFrozen(false);
-                store.replaceTourStep(TourStepName.finalsButton, TourStepName.finalsButtonPostClick);
-            },
-            {
-                selector: '#finals-button',
-                eventType: 'click',
-            }
+            // Only move to the next step if the button is toggled from off to on, not vice versa.
+            { selector: '#finals-button', eventType: 'click' }
         ),
     },
     finalsButtonPostClick: {
@@ -102,21 +90,12 @@ export const namedTourSteps: NamedTourSteps = {
         ),
         action: tourActionFactory(
             () => {
-                const store = useTourStore.getState();
-                store.setTourFrozen(true);
+                // Wait for the tab to render, then move to the next step.
+                setTimeout(() => {
+                    useTourStore.getState().nextStep();
+                }, 75);
             },
-            () => {
-                const store = useTourStore.getState();
-                store.setTourFrozen(false);
-                setTimeout(
-                    () => store.replaceTourStep(TourStepName.addedCourses, TourStepName.addedCoursesPostClick),
-                    75 // Wait for the classes to render.
-                );
-            },
-            {
-                selector: '#added-courses-tab',
-                eventType: 'click',
-            }
+            { selector: '#added-courses-tab', eventType: 'click' }
         ),
     },
     addedCoursesPostClick: {
@@ -136,20 +115,12 @@ export const namedTourSteps: NamedTourSteps = {
         ),
         action: tourActionFactory(
             () => {
-                useTourStore.getState().setTourFrozen(true);
+                // Wait for the tab to render, then move to the next step.
+                setTimeout(() => {
+                    useTourStore.getState().nextStep();
+                }, 75);
             },
-            () => {
-                const store = useTourStore.getState();
-                store.setTourFrozen(false);
-                setTimeout(
-                    () => store.replaceTourStep(TourStepName.map, TourStepName.mapPostClick),
-                    75 // Wait for the map to render
-                );
-            },
-            {
-                selector: '#map-tab',
-                eventType: 'click',
-            }
+            { selector: '#map-tab', eventType: 'click' }
         ),
     },
     mapPostClick: {
@@ -158,16 +129,6 @@ export const namedTourSteps: NamedTourSteps = {
     },
 };
 
-const initialTourSteps: Array<NamedTourSteps[TourStepName]> = [
-    namedTourSteps.welcome,
-    namedTourSteps.searchBar,
-    namedTourSteps.importButton,
-    namedTourSteps.calendar,
-    namedTourSteps.finalsButton,
-    namedTourSteps.addedCourses,
-    namedTourSteps.map,
-];
-
 // TODO: Document
 interface TourStore {
     tourEnabled: boolean;
@@ -175,12 +136,11 @@ interface TourStore {
     startTour: () => void;
     endTour: () => void;
 
-    tourFrozen: boolean;
-    setTourFrozen: (frozen: boolean) => void;
-
     tourSteps: Array<ReactourStep>;
-    setTourSteps: (steps: Array<ReactourStep>) => void;
-    replaceTourStep: (replacedName: TourStepName, replacementName: TourStepName) => void;
+
+    step: number;
+    setStep: (step: number) => void;
+    nextStep: () => void;
 }
 
 // TODO: Freeze tour while allowing escape. Remove all steps except for current one.
@@ -191,10 +151,7 @@ export const useTourStore = create<TourStore>((set, get) => {
         startTour: () => set({ tourEnabled: true }),
         endTour: () => set({ tourEnabled: false }),
 
-        tourFrozen: false,
-        setTourFrozen: (frozen: boolean) => set({ tourFrozen: frozen }),
-
-        tourSteps: initialTourSteps,
+        tourSteps: Object.values(namedTourSteps),
         setTourSteps: (steps: Array<ReactourStep>) => set({ tourSteps: steps }),
         replaceTourStep: (replacedName: TourStepName, replacementName: TourStepName) => {
             const index = get().tourSteps.findIndex((step) => step == namedTourSteps[replacedName]);
@@ -210,6 +167,10 @@ export const useTourStore = create<TourStore>((set, get) => {
                 ],
             }));
         },
+
+        step: 0,
+        setStep: (step: number) => set({ step: step }),
+        nextStep: () => set((state) => ({ step: state.step + 1 })),
     };
 });
 
@@ -257,19 +218,13 @@ function runOneCallableFactory(callable: Function): RunOnceCallable {
  * Returns a callable that can be used as a tour step action.
  *
  * @param before Function to run before waiting for the field to change.
- * @param after Function to run after the field changes to the desired value.
+ * @param func Function to run after the field changes to the desired value.
  * @param waitFor Field and value to watch for in the tour store.
  * @returns The function that can be used as a tour step action.
  */
-function tourActionFactory(
-    before?: () => void,
-    after?: () => void,
-    waitFor: { selector?: string; eventType?: string } = {}
-) {
+function tourActionFactory(func: () => void, waitFor: { selector?: string; eventType?: string } = {}) {
     const action = () => {
-        if (before) before();
-
-        if (!(waitFor?.eventType && waitFor?.selector && after)) return;
+        if (!(waitFor?.eventType && waitFor?.selector && func)) return;
 
         const domNode = document.querySelector(waitFor.selector);
 
@@ -278,7 +233,7 @@ function tourActionFactory(
             return;
         }
 
-        domNode.addEventListener(waitFor.eventType, runOneCallableFactory(after));
+        domNode.addEventListener(waitFor.eventType, runOneCallableFactory(func));
     };
 
     return runOneCallableFactory(action);
