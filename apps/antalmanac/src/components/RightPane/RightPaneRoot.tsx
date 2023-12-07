@@ -84,7 +84,7 @@ export default function Desktop({ style }: DesktopTabsProps) {
                     ))}
                 </Tabs>
             </Paper>
-            <Box height="calc(100% - 54px)" overflow="auto" style={{ margin: '8px 4px 0px' }}>
+            <Box height="calc(100% - 54px)" overflow="auto" style={{ margin: '8px 4px 0px' }} id="course-pane-box">
                 {activeTab === 0 && <CoursePane />}
                 {activeTab === 1 && <AddedCoursePane />}
                 {activeTab === 2 && (

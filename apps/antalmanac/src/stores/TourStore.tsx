@@ -5,7 +5,8 @@ import { addSampleClasses } from '$lib/tourExampleGeneration';
 const tourHasRunKey = 'tourHasRun';
 
 export function tourHasRun(): boolean {
-    return localStorage.getItem(tourHasRunKey) == 'true';
+    return false;
+    // return localStorage.getItem(tourHasRunKey) == 'true';
 }
 
 function markTourHasRun() {
@@ -17,12 +18,12 @@ enum TourStepName {
     importButton = 'importButton',
     calendar = 'calendar',
     finalsButton = 'finalsButton',
-    finalsButtonPostClick = 'finalsButtonPostClick',
+    showFinals = 'showFinals',
     welcome = 'welcome',
-    addedCourses = 'addedCourses',
-    addedCoursesPostClick = 'addedCoursesPostClick',
+    addedCoursesTab = 'addedCoursesTab',
+    addedCoursePane = 'addedCoursePane',
     map = 'map',
-    mapPostClick = 'mapPostClick',
+    mapPane = 'mapPane',
 }
 
 type NamedTourSteps = Record<TourStepName, ReactourStep>;
@@ -67,21 +68,24 @@ export const namedTourSteps: NamedTourSteps = {
         /** If the user presses/pressed the finals button, move to the next step */
         action: tourActionFactory(
             () => {
-                useTourStore.getState().nextStep();
+                useTourStore.getState().goToStep(TourStepName.showFinals);
             },
             // Only move to the next step if the button is toggled from off to on, not vice versa.
             { selector: '#finals-button', eventType: 'click' }
         ),
     },
-    finalsButtonPostClick: {
+    showFinals: {
         selector: '#calendar-root',
-        content: (
-            <>
-                <b>Click</b> to see your finals
-            </>
-        ),
+        content: 'See your finals on the calendar',
+        /** Click the finals button if the user hasn't already */
+        action: () => {
+            // If the button has been clicked, we need to wait for the id to change.
+            setTimeout(() => {
+                document.getElementById('finals-button')?.click();
+            }, 50);
+        },
     },
-    addedCourses: {
+    addedCoursesTab: {
         selector: '#added-courses-tab',
         content: (
             <>
@@ -92,19 +96,20 @@ export const namedTourSteps: NamedTourSteps = {
             () => {
                 // Wait for the tab to render, then move to the next step.
                 setTimeout(() => {
-                    useTourStore.getState().nextStep();
+                    useTourStore.getState().goToStep(TourStepName.addedCoursePane);
                 }, 75);
             },
             { selector: '#added-courses-tab', eventType: 'click' }
         ),
     },
-    addedCoursesPostClick: {
-        selector: '#added-course-pane',
+    addedCoursePane: {
+        selector: '#course-pane-box',
         content: (
             <>
                 <b>Select</b> the added courses tab for a list of your courses and details
             </>
         ),
+        action: () => document.getElementById('added-courses-tab')?.click(),
     },
     map: {
         selector: '#map-tab',
@@ -117,15 +122,16 @@ export const namedTourSteps: NamedTourSteps = {
             () => {
                 // Wait for the tab to render, then move to the next step.
                 setTimeout(() => {
-                    useTourStore.getState().nextStep();
+                    useTourStore.getState().goToStep(TourStepName.mapPane);
                 }, 75);
             },
             { selector: '#map-tab', eventType: 'click' }
         ),
     },
-    mapPostClick: {
+    mapPane: {
         selector: '#map-pane',
         content: <>Select the map tab to see where your classes are.</>,
+        action: () => document.getElementById('map-tab')?.click(),
     },
 };
 
@@ -141,9 +147,10 @@ interface TourStore {
     step: number;
     setStep: (step: number) => void;
     nextStep: () => void;
+    previousStep: () => void;
+    goToStep: (stepName: TourStepName) => void;
 }
 
-// TODO: Freeze tour while allowing escape. Remove all steps except for current one.
 export const useTourStore = create<TourStore>((set, get) => {
     return {
         tourEnabled: !tourHasRun(),
@@ -171,6 +178,15 @@ export const useTourStore = create<TourStore>((set, get) => {
         step: 0,
         setStep: (step: number) => set({ step: step }),
         nextStep: () => set((state) => ({ step: state.step + 1 })),
+        previousStep: () => set((state) => ({ step: state.step - 1 })),
+        goToStep: (stepName: TourStepName) => {
+            const index = get().tourSteps.findIndex((step) => step == namedTourSteps[stepName]);
+            if (index === -1) {
+                console.error(`Could not find tour step with name ${stepName}`);
+                return;
+            }
+            set({ step: index });
+        },
     };
 });
 
