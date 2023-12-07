@@ -1,24 +1,44 @@
 import { parse } from 'cookie';
 import { decodeJwt } from 'jose';
 import { create } from 'zustand';
-import { GoogleUserSchema } from '@packages/antalmanac-types';
+import { GoogleUserSchema, type GoogleUser } from '@packages/antalmanac-types';
 import { CredentialResponse } from '@react-oauth/google';
 
+export type UserType = 'google' | 'code';
+
+export interface User extends GoogleUser {
+    type: UserType;
+}
+
 export interface AuthStore {
-    user?: typeof GoogleUserSchema.infer;
-    setUser: (credentialResponse: CredentialResponse) => void;
+    user?: User;
+    setCodeUser: (username: string) => void;
+    setGoogleUser: (credentialResponse: CredentialResponse) => void;
     logout: () => void;
 }
 
 export const useAuthStore = create<AuthStore>((set) => {
     return {
         user: getUser(),
-        setUser: (credentialResponse) => {
+        setCodeUser: (username: string) => {
+            set({
+                user: {
+                    type: 'code',
+                    sub: username,
+                    name: username,
+                    email: username,
+                },
+            });
+        },
+        setGoogleUser: (credentialResponse) => {
             document.cookie = `access_token=${credentialResponse.credential}; path=/;`;
 
             if (credentialResponse.credential) {
                 set({
-                    user: decodeJwt(credentialResponse.credential),
+                    user: {
+                        ...decodeJwt(credentialResponse.credential),
+                        type: 'google',
+                    },
                 });
             }
         },
@@ -31,7 +51,7 @@ export const useAuthStore = create<AuthStore>((set) => {
     };
 });
 
-export function getUser() {
+export function getUser(): User | undefined {
     const googleIdToken = getGoogleToken();
 
     if (googleIdToken == null) {
@@ -42,7 +62,7 @@ export function getUser() {
 
     const result = GoogleUserSchema(jwt);
 
-    return result.data;
+    return result.data ? { type: 'google', ...result.data } : undefined;
 }
 
 /**

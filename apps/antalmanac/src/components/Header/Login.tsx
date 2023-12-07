@@ -27,7 +27,7 @@ export function Login() {
 
     const [username, setUsername] = useState('');
 
-    const { user, setUser, logout } = useAuthStore();
+    const { user, setCodeUser, setGoogleUser, logout } = useAuthStore();
 
     const handleClick = useCallback(() => {
         setOpen((previousOpen) => !previousOpen);
@@ -35,11 +35,11 @@ export function Login() {
 
     const onSuccess = useCallback(
         (credentialResponse: CredentialResponse) => {
-            setUser(credentialResponse);
+            setGoogleUser(credentialResponse);
             enqueueSnackbar('Login Success', { variant: 'success' });
             setOpen(false);
         },
-        [setUser]
+        [setGoogleUser]
     );
 
     const onError = useCallback(() => {
@@ -56,6 +56,12 @@ export function Login() {
     const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(event.target.value);
     }, []);
+
+    const handleSubmit = useCallback(() => {
+        setCodeUser(username);
+        enqueueSnackbar('Login Success', { variant: 'success' });
+        setOpen(false);
+    }, [username]);
 
     return (
         <Box>
@@ -87,7 +93,7 @@ export function Login() {
                                         <FormGroup sx={{ gap: 1 }}>
                                             <FormLabel>Log in with legacy username</FormLabel>
                                             <TextField value={username} onChange={handleChange} size="small" />
-                                            <Button variant="outlined" color="inherit">
+                                            <Button variant="outlined" color="inherit" onClick={handleSubmit}>
                                                 Submit
                                             </Button>
                                         </FormGroup>
