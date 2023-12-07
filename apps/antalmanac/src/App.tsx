@@ -34,9 +34,11 @@ const BrowserRouter = createBrowserRouter([
  */
 export default function App() {
     useEffect(() => {
-        document.addEventListener('keydown', undoDelete, false);
         ReactGA4.initialize('G-30HVJXC2Y4');
         ReactGA4.send('pageview');
+
+        document.addEventListener('keydown', undoDelete, false);
+
         return () => {
             document.removeEventListener('keydown', undoDelete, false);
         };
