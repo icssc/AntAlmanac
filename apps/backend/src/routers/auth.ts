@@ -1,5 +1,5 @@
-import jose from 'jose'
-import { googleUserSchema } from 'src/schemas/user';
+import { GoogleUserSchema } from '@packages/antalmanac-types';
+import { decodeJwt } from 'jose'
 import { router, procedure } from '../trpc';
 
 const authRouter = router({
@@ -7,20 +7,21 @@ const authRouter = router({
      * Gets the status of the client, i.e whether the client is logged in or not.
      */
     status: procedure.query(async (opts) => {
-        const accessToken = opts.ctx.req.cookies.access_token
+        /**
+         * The client will append any Google ID token in their possession to the `Authorization` header.
+         */
+        const googleIdToken = opts.ctx.req.headers.authorization
 
-        if (accessToken == null) {
+        if (googleIdToken == null) {
             console.log('no access token')
             return
         }
 
-        const jwt = jose.decodeJwt(accessToken)
+        const jwt = decodeJwt(googleIdToken)
 
-        const result = googleUserSchema(jwt)
+        const result = GoogleUserSchema(jwt)
 
-        console.log('result', result)
-
-        return result
+        return result.data
     }),
 })
 
