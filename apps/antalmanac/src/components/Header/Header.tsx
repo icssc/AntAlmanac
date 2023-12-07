@@ -1,9 +1,10 @@
-import { AppBar, Box, Menu, Toolbar, useMediaQuery } from '@material-ui/core';
+import { AppBar, Box, Button, Menu, Toolbar, useMediaQuery } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import MenuIcon from '@material-ui/icons/Menu';
-import { useState, type MouseEventHandler } from 'react';
+import { useCallback, useState, type MouseEventHandler } from 'react';
+import { useGoogleLogin } from '@react-oauth/google';
 
 import AboutPage from './AboutPage';
 import Feedback from './Feedback';
@@ -62,6 +63,14 @@ const Header = ({ classes }: CustomAppBarProps) => {
         setAnchorEl(null);
     };
 
+    const googleLogin = useGoogleLogin({
+        onSuccess: (tokenResponse) => console.log(tokenResponse),
+    });
+
+    const login = useCallback(() => {
+        googleLogin();
+    }, [googleLogin]);
+
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar variant="dense">
@@ -75,6 +84,8 @@ const Header = ({ classes }: CustomAppBarProps) => {
                 <div style={{ flexGrow: '1' }} />
 
                 <LoadSaveScheduleFunctionality />
+
+                <Button onClick={login}>Sign in with Google 🚀</Button>
 
                 {isMobileScreen ? (
                     <Box className={classes.menuIconContainer}>

@@ -1,9 +1,10 @@
 import './App.css';
 
+import { useEffect } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
-import { useEffect } from 'react';
 import ReactGA4 from 'react-ga4';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 import { undoDelete } from './actions/AppStoreActions';
 import AppQueryProvider from './providers/Query';
@@ -46,7 +47,9 @@ export default function App() {
             <AppThemeProvider>
                 <AppThemev5Provider>
                     <SnackbarProvider>
-                        <RouterProvider router={BrowserRouter} />
+                        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_ID}>
+                            <RouterProvider router={BrowserRouter} />
+                        </GoogleOAuthProvider>
                     </SnackbarProvider>
                 </AppThemev5Provider>
             </AppThemeProvider>
