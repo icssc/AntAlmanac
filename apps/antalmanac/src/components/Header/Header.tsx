@@ -1,10 +1,9 @@
-import { AppBar, Box, Button, Menu, Toolbar, useMediaQuery } from '@material-ui/core';
+import { AppBar, Box, Menu, Toolbar, useMediaQuery } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import MenuIcon from '@material-ui/icons/Menu';
-import { useCallback, useState, type MouseEventHandler } from 'react';
-import { useGoogleLogin } from '@react-oauth/google';
+import { useState, type MouseEventHandler } from 'react';
 
 import AboutPage from './AboutPage';
 import Feedback from './Feedback';
@@ -12,6 +11,7 @@ import ImportStudyList from './ImportStudyList';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import SettingsMenu from './SettingsMenu';
 import Export from './Export';
+import { Login } from './Login';
 import Logo from '$assets/christmas-logo.png';
 import MobileLogo from '$assets/christmas-mobile-logo.png';
 
@@ -63,14 +63,6 @@ const Header = ({ classes }: CustomAppBarProps) => {
         setAnchorEl(null);
     };
 
-    const googleLogin = useGoogleLogin({
-        onSuccess: (tokenResponse) => console.log(tokenResponse),
-    });
-
-    const login = useCallback(() => {
-        googleLogin();
-    }, [googleLogin]);
-
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar variant="dense">
@@ -85,8 +77,6 @@ const Header = ({ classes }: CustomAppBarProps) => {
 
                 <LoadSaveScheduleFunctionality />
 
-                <Button onClick={login}>Sign in with Google 🚀</Button>
-
                 {isMobileScreen ? (
                     <Box className={classes.menuIconContainer}>
                         <MenuIcon onClick={handleClick} className={classes.menuIcon} />
@@ -99,6 +89,8 @@ const Header = ({ classes }: CustomAppBarProps) => {
                 ) : (
                     components
                 )}
+
+                <Login />
             </Toolbar>
         </AppBar>
     );
