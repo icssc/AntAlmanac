@@ -11,6 +11,7 @@ import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
 import { useTimeFormatStore } from '$stores/SettingsStore';
+import { useHoveredStore } from '$stores/HoveredStore';
 
 const localizer = momentLocalizer(moment);
 
@@ -52,8 +53,8 @@ const AntAlmanacEvent = ({ event }: { event: CalendarEvent }) => {
                     {event.showLocationInfo
                         ? event.locations.map((location) => `${location.building} ${location.room}`).join(', ')
                         : event.locations.length > 1
-                        ? `${event.locations.length} Locations`
-                        : `${event.locations[0].building} ${event.locations[0].room}`}
+                          ? `${event.locations.length} Locations`
+                          : `${event.locations[0].building} ${event.locations[0].room}`}
                 </Box>
                 <Box>{event.sectionCode}</Box>
             </Box>
@@ -78,9 +79,14 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
     const { isMilitaryTime } = useTimeFormatStore();
+    const { hoveredCourse } = useHoveredStore();
 
     const getEventsForCalendar = () => {
-        return showFinalsSchedule ? finalsEventsInCalendar : eventsInCalendar;
+        return showFinalsSchedule
+            ? finalsEventsInCalendar
+            : hoveredCourse
+              ? [...eventsInCalendar, hoveredCourse]
+              : eventsInCalendar;
     };
 
     const handleClosePopover = () => {

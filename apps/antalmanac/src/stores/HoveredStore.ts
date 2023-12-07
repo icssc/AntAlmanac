@@ -1,19 +1,33 @@
-import { ScheduleCourse } from '@packages/antalmanac-types';
 import { create } from 'zustand';
+import { AASection } from '@packages/antalmanac-types';
+import { calendarizeCourseEvents } from './calendarizeHelpers';
+import { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CourseDetails } from '$lib/course_data.types';
 
 export interface HoveredStore {
-    hoveredCourse: ScheduleCourse | undefined;
-    setHoveredCourse: (section: any, courseDetails: CourseDetails, term: string, scheduleIndex: number) => void;
+    hoveredCourse: CourseEvent | undefined;
+    setHoveredCourse: (section?: AASection, courseDetails?: CourseDetails, term?: string) => void;
 }
 
 export const useHoveredStore = create<HoveredStore>((set) => {
-    const hoveredSectionCode = undefined;
-
     return {
-        hoveredCourse: hoveredSectionCode,
-        setHoveredCourse: (hoveredCourse) => {
-            set({ hoveredCourse });
+        hoveredCourse: undefined,
+        setHoveredCourse: (section, courseDetails, term) => {
+            set({
+                hoveredCourse:
+                    section && courseDetails && term
+                        ? calendarizeCourseEvents([
+                              {
+                                  ...courseDetails,
+                                  section: {
+                                      ...section,
+                                      color: '#0000FF',
+                                  },
+                                  term,
+                              },
+                          ])[0]
+                        : undefined,
+            });
         },
     };
 });
