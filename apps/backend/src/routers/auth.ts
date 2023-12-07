@@ -1,17 +1,12 @@
-import { type } from 'arktype'
 import jose from 'jose'
+import { googleUserSchema } from 'src/schemas/user';
 import { router, procedure } from '../trpc';
 
-export const loginSchema = type({
-    email: 'string',
-    name: 'string',
-    'picture?': 'string',
-})
-
 const authRouter = router({
-    check: procedure.mutation(async (opts) => {
-        console.log(opts.ctx.req.cookies)
-
+    /**
+     * Gets the status of the client, i.e whether the client is logged in or not.
+     */
+    status: procedure.query(async (opts) => {
         const accessToken = opts.ctx.req.cookies.access_token
 
         if (accessToken == null) {
@@ -21,9 +16,11 @@ const authRouter = router({
 
         const jwt = jose.decodeJwt(accessToken)
 
-        const result = loginSchema(jwt)
+        const result = googleUserSchema(jwt)
 
-        console.log('result: ', result)
+        console.log('result', result)
+
+        return result
     }),
 })
 
