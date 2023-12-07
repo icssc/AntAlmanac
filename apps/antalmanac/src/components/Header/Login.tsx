@@ -6,6 +6,7 @@ import {
     Divider,
     Fade,
     FormGroup,
+    FormLabel,
     IconButton,
     Paper,
     Popper,
@@ -81,15 +82,14 @@ export function Login() {
                                     <Stack gap={2}>
                                         <GoogleLogin onSuccess={onSuccess} onError={onError} />
 
-                                        <Divider />
+                                        <Divider>OR</Divider>
 
-                                        <FormGroup>
-                                            <TextField
-                                                label="username"
-                                                helperText="Log in with legacy username"
-                                                value={username}
-                                                onChange={handleChange}
-                                            />
+                                        <FormGroup sx={{ gap: 1 }}>
+                                            <FormLabel>Log in with legacy username</FormLabel>
+                                            <TextField value={username} onChange={handleChange} size="small" />
+                                            <Button variant="outlined" color="inherit">
+                                                Submit
+                                            </Button>
                                         </FormGroup>
                                     </Stack>
                                 )}
