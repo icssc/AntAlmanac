@@ -182,9 +182,9 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                     <TextField
                         {...params}
                         inputRef={(input: HTMLInputElement | null) => {
-                            if (input && !isMobile()) {
-                                input.focus();
-                            }
+                            // if (input && !isMobile()) {
+                            //     input.focus();
+                            // }
                         }}
                         fullWidth
                         label={'Search'}

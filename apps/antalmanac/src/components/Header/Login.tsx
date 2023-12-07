@@ -1,5 +1,17 @@
 import { useState, useRef } from 'react';
-import { Avatar, Box, Button, Fade, IconButton, Paper, Popper } from '@mui/material';
+import {
+    Avatar,
+    Box,
+    Button,
+    Divider,
+    Fade,
+    FormGroup,
+    IconButton,
+    Paper,
+    Popper,
+    Stack,
+    TextField,
+} from '@mui/material';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 import { useCallback } from 'react';
 import { useSnackbar } from 'notistack';
@@ -11,6 +23,8 @@ export function Login() {
     const ref = useRef();
 
     const [open, setOpen] = useState(false);
+
+    const [username, setUsername] = useState('');
 
     const { user, setUser, logout } = useAuthStore();
 
@@ -38,6 +52,10 @@ export function Login() {
         setOpen(false);
     }, [logout]);
 
+    const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setUsername(event.target.value);
+    }, []);
+
     return (
         <Box>
             <Box ref={ref}>
@@ -60,7 +78,20 @@ export function Login() {
                                         LOG OUT
                                     </Button>
                                 ) : (
-                                    <GoogleLogin onSuccess={onSuccess} onError={onError} />
+                                    <Stack gap={2}>
+                                        <GoogleLogin onSuccess={onSuccess} onError={onError} />
+
+                                        <Divider />
+
+                                        <FormGroup>
+                                            <TextField
+                                                label="username"
+                                                helperText="Log in with legacy username"
+                                                value={username}
+                                                onChange={handleChange}
+                                            />
+                                        </FormGroup>
+                                    </Stack>
                                 )}
                             </Paper>
                         </Fade>
