@@ -5,27 +5,27 @@ import { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CourseDetails } from '$lib/course_data.types';
 
 export interface HoveredStore {
-    hoveredCourse: CourseEvent | undefined;
-    setHoveredCourse: (section?: AASection, courseDetails?: CourseDetails, term?: string) => void;
+    hoveredCourseEvents: CourseEvent[] | undefined;
+    setHoveredCourseEvents: (section?: AASection, courseDetails?: CourseDetails, term?: string) => void;
 }
 
 export const useHoveredStore = create<HoveredStore>((set) => {
     return {
-        hoveredCourse: undefined,
-        setHoveredCourse: (section, courseDetails, term) => {
+        hoveredCourseEvents: undefined,
+        setHoveredCourseEvents: (section, courseDetails, term) => {
             set({
-                hoveredCourse:
+                hoveredCourseEvents:
                     section && courseDetails && term
                         ? calendarizeCourseEvents([
                               {
                                   ...courseDetails,
                                   section: {
                                       ...section,
-                                      color: '#0000FF',
+                                      color: '#808080',
                                   },
                                   term,
                               },
-                          ])[0]
+                          ])
                         : undefined,
             });
         },

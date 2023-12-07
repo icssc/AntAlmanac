@@ -79,13 +79,13 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
     const { isMilitaryTime } = useTimeFormatStore();
-    const { hoveredCourse } = useHoveredStore();
+    const { hoveredCourseEvents } = useHoveredStore();
 
     const getEventsForCalendar = () => {
         return showFinalsSchedule
             ? finalsEventsInCalendar
-            : hoveredCourse
-              ? [...eventsInCalendar, hoveredCourse]
+            : hoveredCourseEvents
+              ? [...eventsInCalendar, ...hoveredCourseEvents]
               : eventsInCalendar;
     };
 

@@ -515,13 +515,17 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         setCalendarEvents(AppStore.getCourseEventsInCalendar());
     }, [setCalendarEvents]);
 
-    const [hoveredCourse, setHoveredCourse] = useHoveredStore((store) => [store.hoveredCourse, store.setHoveredCourse]);
+    const [hoveredCourseEvents, setHoveredCourseEvents] = useHoveredStore((store) => [
+        store.hoveredCourseEvents,
+        store.setHoveredCourseEvents,
+    ]);
 
     const handleHover = useCallback(() => {
-        hoveredCourse?.sectionCode == section.sectionCode
-            ? setHoveredCourse(undefined)
-            : setHoveredCourse(section, courseDetails, term);
-    }, [courseDetails, hoveredCourse, section, setHoveredCourse, term]);
+        const alreadyHovered = hoveredCourseEvents && hoveredCourseEvents[0].sectionCode == section.sectionCode;
+        alreadyHovered || addedCourse
+            ? setHoveredCourseEvents(undefined)
+            : setHoveredCourseEvents(section, courseDetails, term);
+    }, [addedCourse, courseDetails, hoveredCourseEvents, section, setHoveredCourseEvents, term]);
 
     // Attach event listeners to the store.
     useEffect(() => {
@@ -599,7 +603,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             )}
             onMouseEnter={handleHover}
             onMouseLeave={handleHover}
-            style={{ backgroundColor: hoveredCourse?.sectionCode == section.sectionCode ? 'red' : 'blue' }}
         >
             {!addedCourse ? (
                 <ScheduleAddCell
