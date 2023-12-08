@@ -34,7 +34,7 @@ function ThemeMenu() {
     };
 
     return (
-        <Box sx={{ padding: '1rem 1rem 0 1rem', width: '100%' }}>
+        <Box sx={{ padding: '0 1rem', width: '100%' }}>
             <Typography variant="h6" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
                 Theme
             </Typography>
@@ -92,7 +92,7 @@ function TimeMenu() {
     };
 
     return (
-        <Box sx={{ padding: '1rem 1rem 0 1rem', width: '100%' }}>
+        <Box sx={{ padding: '0 1rem', width: '100%' }}>
             <Typography variant="h6" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
                 Time
             </Typography>
@@ -186,7 +186,7 @@ function SettingsMenu() {
                             flexDirection: 'row',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            padding: '16px',
+                            padding: '12px',
                         }}
                     >
                         <Typography variant="h6">Settings</Typography>
@@ -196,11 +196,12 @@ function SettingsMenu() {
                     </Box>
 
                     <Divider />
+
                     <ThemeMenu />
                     <TimeMenu />
 
                     <Divider style={{ marginTop: '16px' }}>
-                        <Typography variant="h6">Experimental Features</Typography>
+                        <Typography variant="subtitle2">Experimental Features</Typography>
                     </Divider>
 
                     <ExperimentalMenu />
