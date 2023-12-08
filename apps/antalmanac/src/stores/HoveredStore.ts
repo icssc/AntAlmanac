@@ -21,7 +21,7 @@ export const useHoveredStore = create<HoveredStore>((set) => {
                                   ...courseDetails,
                                   section: {
                                       ...section,
-                                      color: '#808080',
+                                      color: '#80808080',
                                   },
                                   term,
                               },
