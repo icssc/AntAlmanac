@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react';
-import { Box, Button, ButtonGroup, Divider, Drawer, IconButton, Typography, useMediaQuery } from '@material-ui/core';
+import { Box, Button, ButtonGroup, Drawer, IconButton, Switch, Typography, useMediaQuery } from '@material-ui/core';
+import { Divider, Stack } from '@mui/material';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { Close, DarkMode, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
-import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { usePreviewStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -135,6 +136,25 @@ function TimeMenu() {
     );
 }
 
+function ExperimentalMenu() {
+    const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
+
+    const handlePreviewChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPreviewMode(event.target.checked);
+    };
+
+    return (
+        <Stack sx={{ padding: '1rem 1rem 0 1rem', width: '100%', display: 'flex' }} alignItems="middle">
+            <Box display="flex" justifyContent="space-between" width={1}>
+                <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                    Preview Mode
+                </Typography>
+                <Switch color="primary" value={previewMode} checked={previewMode} onChange={handlePreviewChange} />
+            </Box>
+        </Stack>
+    );
+}
+
 function SettingsMenu() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const isMobileScreen = useMediaQuery('(max-width:750px)');
@@ -174,10 +194,16 @@ function SettingsMenu() {
                             <Close fontSize="inherit" />
                         </IconButton>
                     </Box>
-                    <Divider />
 
+                    <Divider />
                     <ThemeMenu />
                     <TimeMenu />
+
+                    <Divider style={{ marginTop: '16px' }}>
+                        <Typography variant="h6">Experimental Features</Typography>
+                    </Divider>
+
+                    <ExperimentalMenu />
                 </Box>
             </Drawer>
         </>

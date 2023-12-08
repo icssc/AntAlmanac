@@ -33,7 +33,7 @@ import { useTabStore } from '$stores/TabStore';
 import locationIds from '$lib/location_ids';
 import { normalizeTime, parseDaysString, formatTimes } from '$stores/calendarizeHelpers';
 import useColumnStore, { type SectionTableColumn } from '$stores/ColumnStore';
-import { useTimeFormatStore } from '$stores/SettingsStore';
+import { usePreviewStore, useTimeFormatStore } from '$stores/SettingsStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 
 const styles: Styles<Theme, object> = (theme) => ({
@@ -471,6 +471,7 @@ interface SectionTableBodyProps {
     scheduleNames: string[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     sectionCode: CourseCodeCell,
     sectionDetails: SectionDetailsCell,
@@ -520,15 +521,17 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         store.setHoveredCourseEvents,
     ]);
 
+    const { previewMode } = usePreviewStore();
+
     const handleHover = useCallback(() => {
         const alreadyHovered =
             hoveredCourseEvents &&
             hoveredCourseEvents.some((courseEvent) => courseEvent.sectionCode == section.sectionCode);
 
-        alreadyHovered || addedCourse
+        !previewMode || alreadyHovered || addedCourse
             ? setHoveredCourseEvents(undefined)
             : setHoveredCourseEvents(section, courseDetails, term);
-    }, [addedCourse, courseDetails, hoveredCourseEvents, section, setHoveredCourseEvents, term]);
+    }, [addedCourse, courseDetails, hoveredCourseEvents, previewMode, section, setHoveredCourseEvents, term]);
 
     // Attach event listeners to the store.
     useEffect(() => {
