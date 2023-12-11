@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
 import { Box, Button, ButtonGroup, Drawer, IconButton, Switch, Typography, useMediaQuery } from '@material-ui/core';
-import { Divider, Stack } from '@mui/material';
+import { Divider, Stack, Tooltip } from '@mui/material';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
-import { Close, DarkMode, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
+import { Close, DarkMode, Help, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
 import { usePreviewStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 
@@ -146,9 +146,14 @@ function ExperimentalMenu() {
     return (
         <Stack sx={{ padding: '1rem 1rem 0 1rem', width: '100%', display: 'flex' }} alignItems="middle">
             <Box display="flex" justifyContent="space-between" width={1}>
-                <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
-                    Preview Mode
-                </Typography>
+                <Box display="flex" alignItems="center" style={{ gap: 4 }}>
+                    <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                        Preview Mode
+                    </Typography>
+                    <Tooltip title={<Typography>Hover over courses to preview them in your calendar!</Typography>}>
+                        <Help />
+                    </Tooltip>
+                </Box>
                 <Switch color="primary" value={previewMode} checked={previewMode} onChange={handlePreviewChange} />
             </Box>
         </Stack>
