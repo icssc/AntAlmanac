@@ -216,7 +216,7 @@ function Import() {
                     )}
 
                     <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
-                    <TermSelector changeState={setTerm} fieldName={'selectedTerm'} />
+                    <TermSelector changeTerm={setTerm} fieldName={'selectedTerm'} />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">
