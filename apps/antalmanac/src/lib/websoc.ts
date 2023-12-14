@@ -59,7 +59,6 @@ class _WebSOC {
     async getCourseInfo(websoc_params: Record<string, string>) {
         const SOCObject = await this.query(websoc_params);
 
-        console.log(SOCObject);
         const courseInfo: { [sectionCode: string]: CourseInfo } = {};
         for (const school of SOCObject.schools) {
             for (const department of school.departments) {
