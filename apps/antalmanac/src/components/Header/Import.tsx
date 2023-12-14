@@ -15,7 +15,7 @@ import {
 } from '@material-ui/core';
 import InputLabel from '@material-ui/core/InputLabel';
 import { PostAdd } from '@material-ui/icons';
-import { ChangeEvent, useCallback, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '../RightPane/RightPaneStore';
@@ -34,6 +34,8 @@ function Import() {
     const [importSource, setImportSource] = useState('studylist');
     const [studyListText, setStudyListText] = useState('');
     const [zotcourseScheduleName, setZotcourseScheduleName] = useState('');
+
+    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const handleOpen = useCallback(() => {
         setOpen(true);
@@ -143,11 +145,23 @@ function Import() {
         setZotcourseScheduleName(event.currentTarget.value);
     }, []);
 
+    useEffect(() => {
+        const handleSkeletonModeChange = () => {
+            setSkeletonMode(AppStore.getSkeletonMode());
+        };
+
+        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+
+        return () => {
+            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+        };
+    }, []);
+
     return (
         <>
             {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
             <Tooltip title="Import a schedule from your Study List">
-                <Button onClick={handleOpen} color="inherit" startIcon={<PostAdd />}>
+                <Button onClick={handleOpen} color="inherit" startIcon={<PostAdd />} disabled={skeletonMode}>
                     Import
                 </Button>
             </Tooltip>
