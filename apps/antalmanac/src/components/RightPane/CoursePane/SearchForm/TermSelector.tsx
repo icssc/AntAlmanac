@@ -9,10 +9,20 @@ interface TermSelectorProps {
     fieldName: string;
 }
 
-function NewTermSelector(props: TermSelectorProps) {
+function TermSelector(props: TermSelectorProps) {
     const { changeTerm, fieldName } = props;
 
-    const [term, setTerm] = useState(RightPaneStore.getFormData().term);
+    const getTerm = () => {
+        const urlTerm = RightPaneStore.getUrlTermValue();
+
+        if (urlTerm) {
+            RightPaneStore.updateFormValue('term', urlTerm);
+        }
+
+        return RightPaneStore.getFormData().term;
+    };
+
+    const [term, setTerm] = useState(getTerm());
 
     const handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
         const newValue = event.target.value as string;
@@ -51,4 +61,4 @@ function NewTermSelector(props: TermSelectorProps) {
     );
 }
 
-export default NewTermSelector;
+export default TermSelector;
