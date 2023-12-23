@@ -101,10 +101,8 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                         <DialogContentText>
                             Enter your unique user ID here to {this.props.actionName.toLowerCase()} your schedule.
                         </DialogContentText>
-                        <DialogContentText>
-                            <span style={{ color: 'red' }}>
-                                Make sure the user ID is unique and secret, or someone else can overwrite your schedule.
-                            </span>
+                        <DialogContentText style={{ color: 'red' }}>
+                            Make sure the user ID is unique and secret, or someone else can overwrite your schedule.
                         </DialogContentText>
                         <TextField
                             // eslint-disable-next-line jsx-a11y/no-autofocus
