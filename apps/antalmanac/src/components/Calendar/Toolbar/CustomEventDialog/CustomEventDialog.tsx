@@ -19,7 +19,7 @@ import DaySelector from './DaySelector';
 import ScheduleSelector from './ScheduleSelector';
 import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 import AppStore from '$stores/AppStore';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
 
@@ -129,6 +129,7 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
     };
 
     render() {
+        const appTheme = useThemeStore.getState().appTheme;
         return (
             <>
                 {this.props.customEvent !== undefined ? (
@@ -203,7 +204,10 @@ class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEven
                     </DialogContent>
 
                     <DialogActions>
-                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'secondary' : 'primary'}>
+                        <Button
+                            onClick={() => this.handleClose(true)}
+                            color={appTheme == 'dark' ? 'secondary' : 'primary'}
+                        >
                             Cancel
                         </Button>
                         <Tooltip title="Schedule and day must be checked" disableHoverListener={!this.isAddDisabled()}>

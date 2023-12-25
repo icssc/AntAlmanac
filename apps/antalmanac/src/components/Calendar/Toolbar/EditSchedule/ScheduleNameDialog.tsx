@@ -15,7 +15,7 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Add, Edit } from '@material-ui/icons';
 
 import { addSchedule, renameSchedule } from '$actions/AppStoreActions';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 
 const styles = () => ({
     addButton: {
@@ -35,6 +35,8 @@ interface ScheduleNameDialogProps {
 }
 
 const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
+    const appTheme = useThemeStore((store) => store.appTheme);
+
     const { classes, onOpen, onClose, scheduleNames, scheduleRenameIndex } = props;
 
     const [isOpen, setIsOpen] = useState(false);
@@ -143,7 +145,7 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
                 </DialogContent>
 
                 <DialogActions>
-                    <Button onClick={handleCancel} color={isDarkMode() ? 'secondary' : 'primary'}>
+                    <Button onClick={handleCancel} color={appTheme == 'dark' ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>
                     <Button

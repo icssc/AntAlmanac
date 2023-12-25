@@ -14,7 +14,7 @@ import { useState } from 'react';
 import { Clear } from '@material-ui/icons';
 
 import { deleteSchedule } from '$actions/AppStoreActions';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 import AppStore from '$stores/AppStore';
 
 interface DeleteScheduleDialogProps {
@@ -23,6 +23,8 @@ interface DeleteScheduleDialogProps {
 }
 
 const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
+    const appTheme = useThemeStore((store) => store.appTheme);
+
     const { scheduleIndex } = props;
 
     const [isOpen, setIsOpen] = useState(false);
@@ -58,7 +60,7 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDarkMode() ? 'secondary' : 'primary'}>
+                    <Button onClick={handleClose} color={appTheme == 'dark' ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>
                     <Button onClick={handleDelete} variant="contained" color="primary">

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { Box, Link, Typography, Skeleton } from '@mui/material';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 import GradesHelper, { type Grades } from '$lib/grades';
 
 export interface GradeData {
@@ -51,6 +51,8 @@ export interface GradesPopupProps {
 }
 
 function GradesPopup(props: GradesPopupProps) {
+    const appTheme = useThemeStore((store) => store.appTheme);
+
     const { deptCode, courseNumber, instructor = '', isMobileScreen } = props;
 
     const [loading, setLoading] = useState(true);
@@ -106,7 +108,7 @@ function GradesPopup(props: GradesPopupProps) {
     }
 
     const encodedDept = encodeURIComponent(deptCode);
-    const axisColor = isDarkMode() ? '#fff' : '#111';
+    const axisColor = appTheme == 'dark' ? '#fff' : '#111';
 
     return (
         <Box sx={{ padding: '4px' }}>
