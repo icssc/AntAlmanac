@@ -1,11 +1,10 @@
 import { EventEmitter } from 'events';
 import { VariantType } from 'notistack';
 
-import { ScheduleCourse, ScheduleSaveState } from '@packages/antalmanac-types';
+import { ScheduleCourse, ScheduleSaveState, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { Schedules } from './Schedules';
 import { SnackbarPosition } from '$components/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { useTabStore } from '$stores/TabStore';
 
 class AppStore extends EventEmitter {
@@ -81,6 +80,10 @@ class AppStore extends EventEmitter {
 
     getEventsInCalendar() {
         return this.schedule.getCalendarizedEvents();
+    }
+
+    getEventsWithFinalsInCalendar() {
+        return [...this.schedule.getCalendarizedEvents(), ...this.schedule.getCalendarizedFinals()];
     }
 
     getCourseEventsInCalendar() {

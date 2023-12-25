@@ -193,7 +193,7 @@ export default function CourseMap() {
             map.current?.flyTo([building.lat + 0.001, building.lng], 18, { duration: 250, animate: false });
             markerRef.current?.openPopup();
         }, 250);
-    }, [searchParams]);
+    }, [markerRef, searchParams]);
 
     const handleChange = useCallback(
         (_event: React.SyntheticEvent, newValue: number) => {
@@ -369,7 +369,9 @@ export default function CourseMap() {
                                 stackIndex={customEventSameBuildingPrior.length}
                             >
                                 <Box>
-                                    <Typography variant="body2">Event: {customEventMarkers.title}</Typography>
+                                    <Typography variant="body1">
+                                        <span style={{ fontWeight: 'bold' }}>Event:</span> {customEventMarkers.title}
+                                    </Typography>
                                 </Box>
                             </LocationMarker>
                         </Fragment>

@@ -1,5 +1,5 @@
+import { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import trpc from './api/trpc';
-import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import AppStore from '$stores/AppStore';
 
 export interface ZotCourseResponse {
