@@ -41,15 +41,4 @@ export async function clickToCopy(event: React.MouseEvent<HTMLElement, MouseEven
     openSnackbar('success', 'WebsocSection code copied to clipboard');
 }
 
-export function isDarkMode() {
-    switch (useThemeStore.getState().appTheme) {
-        case 'light':
-            return false;
-        case 'dark':
-            return true;
-        default:
-            return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-}
-
 export const FAKE_LOCATIONS = ['VRTL REMOTE', 'ON LINE', 'TBA'];

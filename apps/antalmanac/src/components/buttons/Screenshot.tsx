@@ -6,17 +6,18 @@ import html2canvas from 'html2canvas';
 import { PureComponent } from 'react';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 
 class ScreenshotButton extends PureComponent {
     handleClick = () => {
+        const appTheme = useThemeStore((store) => store.appTheme);
         logAnalytics({
             category: analyticsEnum.calendar.title,
             action: analyticsEnum.calendar.actions.SCREENSHOT,
         });
         void html2canvas(document.getElementById('screenshot') as HTMLElement, {
             scale: 2.5,
-            backgroundColor: isDarkMode() ? '#303030' : '#fafafa',
+            backgroundColor: appTheme == 'dark' ? '#303030' : '#fafafa',
         }).then((canvas) => {
             const imgRaw = canvas.toDataURL('image/png');
             saveAs(imgRaw, 'Schedule.png');

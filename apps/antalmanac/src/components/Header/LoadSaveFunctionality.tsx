@@ -14,13 +14,14 @@ import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 
 import { LoadingButton } from '@mui/lab';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 
 interface LoadSaveButtonBaseProps {
     action: typeof saveSchedule;
     actionName: 'Save' | 'Load';
     disabled: boolean;
     loading: boolean;
+    colorType: 'primary' | 'secondary';
 }
 
 interface LoadSaveButtonBaseState {
@@ -123,10 +124,10 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'secondary' : 'primary'}>
+                        <Button onClick={() => this.handleClose(true)} color={this.props.colorType}>
                             {'Cancel'}
                         </Button>
-                        <Button onClick={() => this.handleClose(false)} color={isDarkMode() ? 'secondary' : 'primary'}>
+                        <Button onClick={() => this.handleClose(false)} color={this.props.colorType}>
                             {this.props.actionName}
                         </Button>
                     </DialogActions>
@@ -137,6 +138,8 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
 }
 
 const LoadSaveScheduleFunctionality = () => {
+    const appTheme = useThemeStore((store) => store.appTheme);
+
     const [loading, setLoading] = useState(false);
 
     const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
@@ -158,12 +161,19 @@ const LoadSaveScheduleFunctionality = () => {
 
     return (
         <>
-            <LoadSaveButtonBase actionName={'Save'} action={saveSchedule} disabled={loading} loading={false} />
+            <LoadSaveButtonBase
+                actionName={'Save'}
+                action={saveSchedule}
+                disabled={loading}
+                loading={false}
+                colorType={appTheme == 'dark' ? 'primary' : 'secondary'}
+            />
             <LoadSaveButtonBase
                 actionName={'Load'}
                 action={loadScheduleAndSetLoading}
                 disabled={false}
                 loading={loading}
+                colorType={appTheme == 'dark' ? 'primary' : 'secondary'}
             />
         </>
     );

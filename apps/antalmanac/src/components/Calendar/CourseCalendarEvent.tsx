@@ -10,12 +10,12 @@ import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { clickToCopy, isDarkMode } from '$lib/helpers';
+import { clickToCopy } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
 import { useTabStore } from '$stores/TabStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
-import { useTimeFormatStore } from '$stores/SettingsStore';
+import { useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
 import buildingCatalogue from '$lib/buildingCatalogue';
 
 const styles: Styles<Theme, object> = {
@@ -74,7 +74,6 @@ const styles: Styles<Theme, object> = {
 
     clickableLocation: {
         cursor: 'pointer',
-        color: isDarkMode() ? '#1cbeff' : 'blue',
         background: 'none !important',
         border: 'none',
         padding: '0 !important',
@@ -177,6 +176,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
 
     const { setActiveTab } = useTabStore();
     const { isMilitaryTime } = useTimeFormatStore();
+    const appTheme = useThemeStore((store) => store.appTheme);
 
     const focusMap = useCallback(() => {
         setActiveTab(2);
@@ -262,6 +262,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                                             className={classes.clickableLocation}
                                             to={`/map?location=${locationIds[location.building] ?? 0}`}
                                             onClick={focusMap}
+                                            color={appTheme == 'dark' ? '#1cbeff' : 'blue'}
                                         >
                                             {location.building} {location.room}
                                         </Link>

@@ -9,7 +9,7 @@ import {
     type DialogProps,
 } from '@mui/material';
 import { deleteSchedule } from '$actions/AppStoreActions';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 import AppStore from '$stores/AppStore';
 
 interface ScheduleNameDialogProps extends DialogProps {
@@ -23,6 +23,8 @@ interface ScheduleNameDialogProps extends DialogProps {
  * Dialog with a prompt to delete the specified schedule.
  */
 function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
+    const appTheme = useThemeStore((store) => store.appTheme);
+
     /**
      * {@link props.onClose} also needs to be forwarded to the {@link Dialog} component.
      */
@@ -55,7 +57,7 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleCancel} color={isDarkMode() ? 'secondary' : 'primary'}>
+                <Button onClick={handleCancel} color={appTheme == 'dark' ? 'secondary' : 'primary'}>
                     Cancel
                 </Button>
                 <Button onClick={handleDelete} variant="contained" color="primary">
