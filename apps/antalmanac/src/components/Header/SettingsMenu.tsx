@@ -146,7 +146,7 @@ function AutofocusMenu() {
     return (
         <Box sx={{ padding: '1rem 1rem 0 1rem', width: '100%' }}>
             <Typography variant="h6" style={{ marginBottom: '1rem' }}>
-                Autofocus
+                Autofocus Search
             </Typography>
 
             <ButtonGroup
