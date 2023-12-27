@@ -92,7 +92,7 @@ function TimeMenu() {
 
     return (
         <Box sx={{ padding: '1rem 1rem 0 1rem', width: '100%' }}>
-            <Typography variant="h6" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
+            <Typography variant="h6" style={{ marginBottom: '1rem' }}>
                 Time
             </Typography>
 
@@ -145,7 +145,7 @@ function AutofocusMenu() {
 
     return (
         <Box sx={{ padding: '1rem 1rem 0 1rem', width: '100%' }}>
-            <Typography variant="h6" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
+            <Typography variant="h6" style={{ marginBottom: '1rem' }}>
                 Autofocus
             </Typography>
 
