@@ -20,8 +20,8 @@ export const useThemeStore = create<ThemeStore>((set) => {
         themeSetting !== 'system'
             ? themeSetting
             : window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'dark'
-            : 'light';
+              ? 'dark'
+              : 'light';
 
     return {
         themeSetting: themeSetting as 'light' | 'dark' | 'system',
@@ -35,8 +35,8 @@ export const useThemeStore = create<ThemeStore>((set) => {
                 themeSetting !== 'system'
                     ? themeSetting
                     : window.matchMedia('(prefers-color-scheme: dark)').matches
-                    ? 'dark'
-                    : 'light';
+                      ? 'dark'
+                      : 'light';
 
             set({ appTheme: appTheme, themeSetting: themeSetting });
 
@@ -64,6 +64,25 @@ export const useTimeFormatStore = create<TimeFormatStore>((set) => {
                 window.localStorage.setItem('show24HourTime', isMilitaryTime.toString());
             }
             set({ isMilitaryTime });
+        },
+    };
+});
+
+export interface AutofocusStore {
+    autofocus: boolean;
+    setAutofocus: (autofocus: boolean) => void;
+}
+
+export const useAutofocusStore = create<AutofocusStore>((set) => {
+    const autofocus = typeof Storage !== 'undefined' && window.localStorage.getItem('autofocus') == 'true';
+
+    return {
+        autofocus,
+        setAutofocus: (autofocus) => {
+            if (typeof Storage !== 'undefined') {
+                window.localStorage.setItem('autofocus', autofocus.toString());
+            }
+            set({ autofocus });
         },
     };
 });
