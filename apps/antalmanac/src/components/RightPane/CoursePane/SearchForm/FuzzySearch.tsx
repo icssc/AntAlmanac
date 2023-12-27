@@ -8,6 +8,7 @@ type SearchResult = ReturnType<typeof search>;
 
 import RightPaneStore from '../../RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { useAutofocusStore } from '$stores/SettingsStore';
 
 const emojiMap: Record<string, string> = {
     GE_CATEGORY: '🏫', // U+1F3EB :school:
@@ -182,7 +183,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                     <TextField
                         {...params}
                         inputRef={(input: HTMLInputElement | null) => {
-                            if (input && !isMobile()) {
+                            if (input && !isMobile() && useAutofocusStore.getState().autofocus) {
                                 input.focus();
                             }
                         }}
