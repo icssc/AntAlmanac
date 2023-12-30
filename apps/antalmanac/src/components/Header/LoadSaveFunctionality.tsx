@@ -21,6 +21,7 @@ interface LoadSaveButtonBaseProps {
     actionName: 'Save' | 'Load';
     disabled: boolean;
     loading: boolean;
+    id?: string;
 }
 
 interface LoadSaveButtonBaseState {
@@ -86,6 +87,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
         return (
             <>
                 <LoadingButton
+                    id={this.props.id}
                     onClick={this.handleOpen}
                     color="inherit"
                     startIcon={this.props.actionName === 'Save' ? <Save /> : <CloudDownload />}
@@ -158,8 +160,15 @@ const LoadSaveScheduleFunctionality = () => {
 
     return (
         <>
-            <LoadSaveButtonBase actionName={'Save'} action={saveSchedule} disabled={loading} loading={false} />
             <LoadSaveButtonBase
+                id="save-button"
+                actionName={'Save'}
+                action={saveSchedule}
+                disabled={loading}
+                loading={false}
+            />
+            <LoadSaveButtonBase
+                id="load-button"
                 actionName={'Load'}
                 action={loadScheduleAndSetLoading}
                 disabled={false}
