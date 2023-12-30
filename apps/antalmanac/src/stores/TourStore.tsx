@@ -92,15 +92,10 @@ export const namedTourSteps: NamedTourSteps = {
                 <b>Select</b> the added courses tab for a list of your courses and details
             </>
         ),
-        action: tourActionFactory(
-            () => {
-                // Wait for the tab to render, then move to the next step.
-                setTimeout(() => {
-                    useTourStore.getState().goToStep(TourStepName.addedCoursePane);
-                }, 75);
-            },
-            { selector: '#added-courses-tab', eventType: 'click' }
-        ),
+        action: tourActionFactory(() => useTourStore.getState().goToStep(TourStepName.addedCoursePane), {
+            selector: '#added-courses-tab',
+            eventType: 'click',
+        }),
     },
     addedCoursePane: {
         selector: '#course-pane-box',
@@ -110,6 +105,7 @@ export const namedTourSteps: NamedTourSteps = {
             </>
         ),
         action: () => document.getElementById('added-courses-tab')?.click(),
+        mutationObservables: ['#course-pane-box'],
     },
     map: {
         selector: '#map-tab',
@@ -118,20 +114,16 @@ export const namedTourSteps: NamedTourSteps = {
                 <b>Select</b> the map tab to see where your classes are.
             </>
         ),
-        action: tourActionFactory(
-            () => {
-                // Wait for the tab to render, then move to the next step.
-                setTimeout(() => {
-                    useTourStore.getState().goToStep(TourStepName.mapPane);
-                }, 75);
-            },
-            { selector: '#map-tab', eventType: 'click' }
-        ),
+        action: tourActionFactory(() => useTourStore.getState().goToStep(TourStepName.mapPane), {
+            selector: '#map-tab',
+            eventType: 'click',
+        }),
     },
     mapPane: {
         selector: '#map-pane',
         content: <>Select the map tab to see where your classes are.</>,
         action: () => document.getElementById('map-tab')?.click(),
+        mutationObservables: ['#map-pane'],
     },
 };
 
