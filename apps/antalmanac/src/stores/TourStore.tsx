@@ -4,8 +4,9 @@ import { addSampleClasses } from '$lib/tourExampleGeneration';
 
 const tourHasRunKey = 'tourHasRun';
 
-export function tourHasRun(): boolean {
-    return localStorage.getItem(tourHasRunKey) == 'true';
+/** Only run tour if it hasn't run before and we're on desktop */
+export function tourShouldActivate(): boolean {
+    return !(localStorage.getItem(tourHasRunKey) == 'true' || window.matchMedia('(max-width: 768px)').matches);
 }
 
 function markTourHasRun() {
@@ -160,7 +161,7 @@ interface TourStore {
 
 export const useTourStore = create<TourStore>((set, get) => {
     return {
-        tourEnabled: !tourHasRun(),
+        tourEnabled: tourShouldActivate(),
         setTourEnabled: (enabled: boolean) => set({ tourEnabled: enabled }),
         startTour: () => set({ tourEnabled: true }),
         endTour: () => set({ tourEnabled: false }),

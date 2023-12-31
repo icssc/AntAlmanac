@@ -9,7 +9,7 @@ import {
     DialogTitle,
     Typography,
 } from '@mui/material';
-import useTourStore, { tourHasRun } from '$stores/TourStore';
+import useTourStore, { tourShouldActivate } from '$stores/TourStore';
 
 /**
  * Show modal only if the current patch notes haven't been shown.
@@ -43,7 +43,7 @@ function PatchNotes() {
 
     useEffect(() => {
         // I don't like the coupling here, but I'm not sure how tour store can now if the patch notes have been dismissed.
-        setTourEnabled(!open && !tourHasRun());
+        setTourEnabled(!open && tourShouldActivate());
     }, [open]);
 
     const handleClose = useCallback(() => {
