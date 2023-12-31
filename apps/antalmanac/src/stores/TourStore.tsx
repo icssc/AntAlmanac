@@ -5,8 +5,7 @@ import { addSampleClasses } from '$lib/tourExampleGeneration';
 const tourHasRunKey = 'tourHasRun';
 
 export function tourHasRun(): boolean {
-    return false;
-    // return localStorage.getItem(tourHasRunKey) == 'true';
+    return localStorage.getItem(tourHasRunKey) == 'true';
 }
 
 function markTourHasRun() {
