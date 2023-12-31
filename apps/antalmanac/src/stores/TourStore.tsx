@@ -24,6 +24,8 @@ enum TourStepName {
     addedCoursePane = 'addedCoursePane',
     map = 'map',
     mapPane = 'mapPane',
+    saveAndLoad = 'saveAndLoad',
+    end = 'end',
 }
 
 type NamedTourSteps = Record<TourStepName, ReactourStep>;
@@ -124,6 +126,21 @@ export const namedTourSteps: NamedTourSteps = {
         content: <>Select the map tab to see where your classes are.</>,
         action: () => document.getElementById('map-tab')?.click(),
         mutationObservables: ['#map-pane'],
+    },
+    saveAndLoad: {
+        selector: '#load-save-container',
+        content: (
+            <>
+                <b>Save</b> your schedule when you&apos;re done. <br />
+                <b>Load</b> your schedule when you need it again. <br />
+                <hr />
+                That&apos;s it 🎉 Good luck with your classes!
+            </>
+        ),
+        action: tourActionFactory(() => useTourStore.getState().goToStep(TourStepName.saveAndLoad), {
+            selector: '#load-save-container',
+            eventType: 'click',
+        }),
     },
 };
 

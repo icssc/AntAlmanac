@@ -159,7 +159,7 @@ const LoadSaveScheduleFunctionality = () => {
     }, []);
 
     return (
-        <>
+        <div id="load-save-container">
             <LoadSaveButtonBase
                 id="save-button"
                 actionName={'Save'}
@@ -174,7 +174,7 @@ const LoadSaveScheduleFunctionality = () => {
                 disabled={false}
                 loading={loading}
             />
-        </>
+        </div>
     );
 };
 
