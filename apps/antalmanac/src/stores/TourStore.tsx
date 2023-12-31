@@ -25,7 +25,6 @@ enum TourStepName {
     map = 'map',
     mapPane = 'mapPane',
     saveAndLoad = 'saveAndLoad',
-    end = 'end',
 }
 
 type NamedTourSteps = Record<TourStepName, ReactourStep>;
