@@ -4,9 +4,13 @@ import { addSampleClasses } from '$lib/tourExampleGeneration';
 
 const tourHasRunKey = 'tourHasRun';
 
-/** Only run tour if it hasn't run before and we're on desktop */
+/** Only run tour if it hasn't run before, we're on desktop, and there isn't a user ID saved */
 export function tourShouldActivate(): boolean {
-    return !(localStorage.getItem(tourHasRunKey) == 'true' || window.matchMedia('(max-width: 768px)').matches);
+    return !(
+        localStorage.getItem(tourHasRunKey) == 'true' ||
+        window.matchMedia('(max-width: 768px)').matches ||
+        localStorage.getItem('userId') != null
+    );
 }
 
 function markTourHasRun() {
