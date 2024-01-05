@@ -1,5 +1,6 @@
 import { ReactourStep } from 'reactour';
 import { create } from 'zustand';
+import useTabStore from './TabStore';
 import { addSampleClasses } from '$lib/tourExampleGeneration';
 
 const tourHasRunKey = 'tourHasRun';
@@ -32,6 +33,8 @@ enum TourStepName {
 }
 
 type NamedTourSteps = Record<TourStepName, ReactourStep>;
+
+const setActiveTab = useTabStore.getState().setActiveTab;
 
 /**
  * Exhaustive enumeration of all possible tour steps for reference.
@@ -109,7 +112,7 @@ export const namedTourSteps: NamedTourSteps = {
                 <b>Select</b> the added courses tab for a list of your courses and details
             </>
         ),
-        action: () => document.getElementById('added-courses-tab')?.click(),
+        action: () => setActiveTab(1),
         mutationObservables: ['#course-pane-box'],
     },
     map: {
@@ -127,7 +130,7 @@ export const namedTourSteps: NamedTourSteps = {
     mapPane: {
         selector: '#map-pane',
         content: <>Select the map tab to see where your classes are.</>,
-        action: () => document.getElementById('map-tab')?.click(),
+        action: () => setActiveTab(2),
         mutationObservables: ['#map-pane'],
     },
     saveAndLoad: {
