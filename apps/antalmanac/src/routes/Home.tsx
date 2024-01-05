@@ -4,6 +4,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { Box, CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
 import Tour from 'reactour';
 
+import { useState, useEffect } from 'react';
 import Header from '$components/Header';
 import MobileHome from '$components/MobileHome';
 import PatchNotes from '$components/PatchNotes';
@@ -11,6 +12,7 @@ import Calendar from '$components/Calendar/CalendarRoot';
 import DesktopTabs from '$components/RightPane/RightPaneRoot';
 import NotificationSnackbar from '$components/NotificationSnackbar';
 import { useTourStore } from '$stores/TourStore';
+import ReactivateTutorial from '$components/buttons/ReactivateTutorialFAB';
 
 export default function Home() {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
@@ -19,6 +21,11 @@ export default function Home() {
     const [tourEnabled, disableTour] = useTourStore((state) => [state.tourEnabled, state.endTour]);
 
     const [tourSteps, step, setStep] = useTourStore((state) => [state.tourSteps, state.step, state.setStep]);
+
+    const [updater, setUpdater] = useState(0);
+
+    // Force component to re-render when the step changes. Idk why it doesn't *React* normally otherwise.
+    useEffect(() => setUpdater(updater + 1), [step]);
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -65,6 +72,7 @@ export default function Home() {
                         onRequestClose={disableTour}
                         maskSpace={5}
                     />
+                    <ReactivateTutorial />
                 </>
             )}
             <NotificationSnackbar />

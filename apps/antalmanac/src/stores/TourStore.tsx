@@ -153,6 +153,7 @@ interface TourStore {
     setTourEnabled: (enabled: boolean) => void;
     startTour: () => void;
     endTour: () => void;
+    restartTour: () => void;
 
     tourSteps: Array<ReactourStep>;
 
@@ -169,7 +170,9 @@ export const useTourStore = create<TourStore>((set, get) => {
         setTourEnabled: (enabled: boolean) => set({ tourEnabled: enabled }),
         startTour: () => set({ tourEnabled: true }),
         endTour: () => set({ tourEnabled: false }),
-
+        restartTour: () => {
+            set({ tourEnabled: true, step: 0 });
+        },
         tourSteps: Object.values(namedTourSteps),
         setTourSteps: (steps: Array<ReactourStep>) => set({ tourSteps: steps }),
         replaceTourStep: (replacedName: TourStepName, replacementName: TourStepName) => {
