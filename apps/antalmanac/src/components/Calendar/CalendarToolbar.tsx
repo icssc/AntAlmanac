@@ -16,7 +16,6 @@ import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
 import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';
-import useTourStore from '$stores/TourStore';
 
 function handleScheduleChange(index: number) {
     logAnalytics({
