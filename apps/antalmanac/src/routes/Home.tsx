@@ -4,7 +4,6 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { Box, CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
 import Tour from 'reactour';
 
-import { useCallback, useMemo } from 'react';
 import Header from '$components/Header';
 import MobileHome from '$components/MobileHome';
 import PatchNotes from '$components/PatchNotes';
