@@ -4,7 +4,7 @@ import { Fab, Tooltip } from '@mui/material';
 import { useTour } from '@reactour/tour';
 
 import { useEffect, useMemo } from 'react';
-import { stepsFactory } from '$lib/TutorialHelpers';
+import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
 
 export function Tutorial() {
     const { setCurrentStep, setIsOpen, setSteps } = useTour();
@@ -16,6 +16,8 @@ export function Tutorial() {
         },
         [setCurrentStep, setIsOpen]
     );
+
+    useEffect(() => setIsOpen(tourShouldRun), [setIsOpen]);
 
     // The steps need to be generated here, in the component, because Reactour hooks can only be used in components.
     useEffect(() => {

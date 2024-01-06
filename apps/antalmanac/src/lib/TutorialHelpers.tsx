@@ -3,7 +3,6 @@ import { Card } from '@mui/material';
 import useTabStore from '$stores/TabStore';
 import { addSampleClasses } from '$lib/tourExampleGeneration';
 
-
 export enum TourStepName {
     searchBar = 'searchBar',
     importButton = 'importButton',
@@ -25,7 +24,7 @@ function markTourHasRun() {
 }
 
 /** Only run tour if it hasn't run before, we're on desktop, and there isn't a user ID saved */
-function tourShouldActivate(): boolean {
+export function tourShouldRun(): boolean {
     return !(
         localStorage.getItem(tourHasRunKey) == 'true' ||
         window.matchMedia('(max-width: 768px)').matches ||
