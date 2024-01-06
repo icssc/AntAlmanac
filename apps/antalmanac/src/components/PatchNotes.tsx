@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
     Backdrop,
     type BackdropProps,
@@ -9,7 +9,6 @@ import {
     DialogTitle,
     Typography,
 } from '@mui/material';
-import useTourStore, { tourShouldActivate } from '$stores/TourStore';
 
 /**
  * Show modal only if the current patch notes haven't been shown.
@@ -38,13 +37,6 @@ function PatchNotesBackdrop(props: BackdropProps) {
  */
 function PatchNotes() {
     const [open, setOpen] = useState(isOutdated());
-
-    const [setTourEnabled] = useTourStore((state) => [state.setTourEnabled]);
-
-    useEffect(() => {
-        // I don't like the coupling here, but I'm not sure how tour store can now if the patch notes have been dismissed.
-        setTourEnabled(!open && tourShouldActivate());
-    }, [open]);
 
     const handleClose = useCallback(() => {
         localStorage.setItem(patchNotesKey, latestPatchNotesUpdate);

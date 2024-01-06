@@ -2,7 +2,6 @@ import Split from 'react-split';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { Box, CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
-import Tour from '$components/Tour';
 
 import Header from '$components/Header';
 import MobileHome from '$components/MobileHome';
@@ -10,7 +9,7 @@ import PatchNotes from '$components/PatchNotes';
 import Calendar from '$components/Calendar/CalendarRoot';
 import DesktopTabs from '$components/RightPane/RightPaneRoot';
 import NotificationSnackbar from '$components/NotificationSnackbar';
-import ReactivateTutorial from '$components/buttons/ReactivateTutorialFAB';
+import { Tutorial } from '$components/Tutorial';
 
 export default function Home() {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
@@ -49,8 +48,7 @@ export default function Home() {
                             <DesktopTabs style={{ height: 'calc(100vh - 58px)' }} />
                         </Box>
                     </Split>
-                    <Tour />
-                    <ReactivateTutorial />
+                    <Tutorial />
                 </>
             )}
             <NotificationSnackbar />
