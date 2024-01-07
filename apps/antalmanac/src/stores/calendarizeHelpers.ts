@@ -1,12 +1,12 @@
 import { ScheduleCourse } from '@packages/antalmanac-types';
 import { HourMinute } from 'peterportal-api-next-types';
+import { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
-import { RepeatingCustomEvent } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { notNull, getReferencesOccurring } from '$lib/utils';
 
-const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
+export const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
-const FINALS_WEEK_DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+export const FINALS_WEEK_DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
 export function getLocation(location: string): Location {
     const [building = '', room = ''] = location.split(' ');
@@ -49,7 +49,10 @@ export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): 
                         title: `${course.deptCode} ${course.courseNumber}`,
                         courseTitle: course.courseTitle,
                         locations: meeting.bldg.map(getLocation).map((location: Location) => {
-                            return { ...location, days: meeting.days === null ? undefined : meeting.days };
+                            return {
+                                ...location,
+                                ...(meeting.days && { days: COURSE_WEEK_DAYS[dayIndex] }),
+                            };
                         }),
                         showLocationInfo: false,
                         instructors: course.section.instructors,
@@ -99,12 +102,19 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
              */
             const dayIndicesOcurring = weekdaysOccurring.map((day, index) => (day ? index : undefined)).filter(notNull);
 
+            const locationsWithNoDays = bldg ? bldg.map(getLocation) : course.section.meetings[0].bldg.map(getLocation);
+
             return dayIndicesOcurring.map((dayIndex) => ({
                 color: course.section.color,
                 term: course.term,
                 title: `${course.deptCode} ${course.courseNumber}`,
                 courseTitle: course.courseTitle,
-                locations: bldg ? bldg.map(getLocation) : course.section.meetings[0].bldg.map(getLocation),
+                locations: locationsWithNoDays.map((location: Location) => {
+                    return {
+                        ...location,
+                        days: COURSE_WEEK_DAYS[dayIndex],
+                    };
+                }),
                 showLocationInfo: true,
                 instructors: course.section.instructors,
                 sectionCode: course.section.sectionCode,
@@ -142,6 +152,7 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
                 isCustomEvent: true,
                 end: new Date(2018, 0, dayIndex, endHour, endMin),
                 title: customEvent.title,
+                building: customEvent.building ?? '',
                 days,
             };
         });

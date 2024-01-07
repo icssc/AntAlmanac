@@ -14,7 +14,6 @@ import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
-import { bindHover, bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { AASection } from '@packages/antalmanac-types';
@@ -34,7 +33,7 @@ import { useTabStore } from '$stores/TabStore';
 import locationIds from '$lib/location_ids';
 import { normalizeTime, parseDaysString, formatTimes } from '$stores/calendarizeHelpers';
 import useColumnStore, { type SectionTableColumn } from '$stores/ColumnStore';
-import { useTimeFormatStore } from '$stores/TimeStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const styles: Styles<Theme, object> = (theme) => ({
     sectionCode: {
@@ -374,7 +373,6 @@ interface RestrictionsCellProps {
 
 const RestrictionsCell = withStyles(styles)((props: RestrictionsCellProps) => {
     const { classes, restrictions } = props;
-    const popupState = usePopupState({ popupId: 'RestrictionsCellPopup', variant: 'popover' });
 
     const parseRestrictions = (restrictionCode: string) => {
         return restrictionCode.split(' ').map((code, index) => {
@@ -393,25 +391,17 @@ const RestrictionsCell = withStyles(styles)((props: RestrictionsCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             <Box>
-                <Typography {...bindHover(popupState)}>
-                    <a
-                        href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        {restrictions}
-                    </a>
-                </Typography>
-                <Popover
-                    {...bindPopover(popupState)}
-                    className={classes.popover}
-                    classes={{ paper: classes.paper }}
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                    transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                    disableRestoreFocus
-                >
-                    <Typography>{parseRestrictions(restrictions)}</Typography>
-                </Popover>
+                <Tooltip title={<Typography>{parseRestrictions(restrictions)}</Typography>}>
+                    <Typography>
+                        <a
+                            href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {restrictions}
+                        </a>
+                    </Typography>
+                </Tooltip>
             </Box>
         </NoPaddingTableCell>
     );

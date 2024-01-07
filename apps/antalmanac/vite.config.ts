@@ -14,6 +14,7 @@ export default defineConfig({
             $providers: resolve(__dirname, './src/providers'),
             $routes: resolve(__dirname, './src/routes'),
             $stores: resolve(__dirname, './src/stores'),
+            $assets: resolve(__dirname, './src/assets'),
         },
     },
     build: {
@@ -21,5 +22,9 @@ export default defineConfig({
     },
     server: {
         host: 'localhost',
+    },
+    test: {
+        environment: 'jsdom',
+        setupFiles: [resolve(__dirname, 'tests/setup/setup.ts')],
     },
 });

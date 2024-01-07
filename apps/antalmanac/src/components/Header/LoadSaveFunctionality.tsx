@@ -15,6 +15,7 @@ import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 import { LoadingButton } from '@mui/lab';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
 import { isDarkMode } from '$lib/helpers';
+import AppStore from '$stores/AppStore';
 
 interface LoadSaveButtonBaseProps {
     action: typeof saveSchedule;
@@ -100,13 +101,16 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                     <DialogTitle>{this.props.actionName}</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Enter your username here to {this.props.actionName.toLowerCase()} your schedule.
+                            Enter your unique user ID here to {this.props.actionName.toLowerCase()} your schedule.
+                        </DialogContentText>
+                        <DialogContentText style={{ color: 'red' }}>
+                            Make sure the user ID is unique and secret, or someone else can overwrite your schedule.
                         </DialogContentText>
                         <TextField
                             // eslint-disable-next-line jsx-a11y/no-autofocus
                             autoFocus
                             margin="dense"
-                            label="User ID"
+                            label="Unique User ID"
                             type="text"
                             fullWidth
                             placeholder="Enter here"
@@ -140,12 +144,25 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
 
 const LoadSaveScheduleFunctionality = () => {
     const [loading, setLoading] = useState(false);
+    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
         setLoading(true);
         await loadSchedule(userID, rememberMe);
         setLoading(false);
     };
+
+    useEffect(() => {
+        const handleSkeletonModeChange = () => {
+            setSkeletonMode(AppStore.getSkeletonMode());
+        };
+
+        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+
+        return () => {
+            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+        };
+    }, []);
 
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
@@ -164,14 +181,14 @@ const LoadSaveScheduleFunctionality = () => {
                 id="save-button"
                 actionName={'Save'}
                 action={saveSchedule}
-                disabled={loading}
+                disabled={loading || skeletonMode}
                 loading={false}
             />
             <LoadSaveButtonBase
                 id="load-button"
                 actionName={'Load'}
                 action={loadScheduleAndSetLoading}
-                disabled={false}
+                disabled={skeletonMode}
                 loading={loading}
             />
         </div>

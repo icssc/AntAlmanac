@@ -27,7 +27,7 @@ Taught by placeholderInstructor1/placeholderInstructor2",
     "title": "placeholderDeptCode placeholderCourseNumber placeholderSectionType",
   },
   {
-    "description": "Final Exam for placeholderSectionType placeholderCourseTitle",
+    "description": "Final Exam for placeholderCourseTitle",
     "end": [
       2023,
       3,
@@ -49,7 +49,7 @@ Taught by placeholderInstructor1/placeholderInstructor2",
   },
   {
     "end": [
-      2023,
+      2024,
       1,
       8,
       3,
@@ -59,7 +59,7 @@ Taught by placeholderInstructor1/placeholderInstructor2",
     "productId": "antalmanac/ics",
     "recurrenceRule": "FREQ=WEEKLY;BYDAY=MO,WE,FR;INTERVAL=1;COUNT=30",
     "start": [
-      2023,
+      2024,
       1,
       8,
       1,

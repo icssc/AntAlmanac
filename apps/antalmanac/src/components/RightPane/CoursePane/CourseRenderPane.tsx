@@ -21,10 +21,13 @@ import { openSnackbar } from '$actions/AppStoreActions';
 import WebSOC from '$lib/websoc';
 
 function getColors() {
-    const courseColors = AppStore.schedule.getCurrentCourses().reduce((accumulator, { section }) => {
-        accumulator[section.sectionCode] = section.color;
-        return accumulator;
-    }, {} as { [key: string]: string });
+    const courseColors = AppStore.schedule.getCurrentCourses().reduce(
+        (accumulator, { section }) => {
+            accumulator[section.sectionCode] = section.color;
+            return accumulator;
+        },
+        {} as { [key: string]: string }
+    );
 
     return courseColors;
 }
@@ -203,11 +206,10 @@ export default function CourseRenderPane(props: { id?: number }) {
                     ? WebSOC.queryMultiple(websocQueryParams, 'units')
                     : WebSOC.query(websocQueryParams),
                 // Catch the error here so that the course pane still loads even if the grades cache fails to populate
-                Grades.populateGradesCache(gradesQueryParams)
-                    .catch((error) => {
-                        console.error(error);
-                        openSnackbar('error', 'Error loading grades information');
-                    }),
+                Grades.populateGradesCache(gradesQueryParams).catch((error) => {
+                    console.error(error);
+                    openSnackbar('error', 'Error loading grades information');
+                }),
             ]);
 
             setError(false);

@@ -15,7 +15,8 @@ import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
 import { useTabStore } from '$stores/TabStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
-import { useTimeFormatStore } from '$stores/TimeStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
+import buildingCatalogue from '$lib/buildingCatalogue';
 
 const styles: Styles<Theme, object> = {
     courseContainer: {
@@ -141,6 +142,7 @@ export interface CourseEvent extends CommonCalendarEvent {
 export interface CustomEvent extends CommonCalendarEvent {
     customEventID: number;
     isCustomEvent: true;
+    building: string;
     days: string[];
 }
 
@@ -288,10 +290,22 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             </Paper>
         );
     } else {
-        const { title, customEventID } = courseInMoreInfo;
+        const { title, customEventID, building } = courseInMoreInfo;
         return (
             <Paper className={classes.customEventContainer} ref={paperRef}>
                 <div className={classes.title}>{title}</div>
+                {building && (
+                    <div className={classes.table}>
+                        Location:&nbsp;
+                        <Link
+                            className={classes.clickableLocation}
+                            to={`/map?location=${building ?? 0}`}
+                            onClick={focusMap}
+                        >
+                            {buildingCatalogue[+building].name}
+                        </Link>
+                    </div>
+                )}
                 <div className={classes.buttonBar}>
                     <div className={`${classes.colorPicker}`}>
                         <ColorPicker

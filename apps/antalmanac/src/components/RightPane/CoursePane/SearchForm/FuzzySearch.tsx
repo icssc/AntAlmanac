@@ -2,6 +2,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Autocomplete';
 import { PureComponent } from 'react';
 import search from 'websoc-fuzzy-search';
+import UAParser from 'ua-parser-js';
 
 type SearchResult = ReturnType<typeof search>;
 
@@ -16,6 +17,15 @@ const emojiMap: Record<string, string> = {
 };
 
 const romanArr = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+
+const isMobile = () => {
+    const parser = new UAParser();
+    return parser.getDevice().type === 'mobile' || parser.getDevice().type === 'tablet' || isIpad();
+};
+
+const isIpad = () => {
+    return navigator.userAgent.includes('Mac') && 'ontouchend' in document;
+};
 
 interface FuzzySearchProps {
     toggleSearch: () => void;
@@ -171,7 +181,11 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 renderInput={(params) => (
                     <TextField
                         {...params}
-                        inputRef={(input: HTMLInputElement | null) => input && input.focus()}
+                        inputRef={(input: HTMLInputElement | null) => {
+                            if (input && !isMobile()) {
+                                input.focus();
+                            }
+                        }}
                         fullWidth
                         label={'Search'}
                     />

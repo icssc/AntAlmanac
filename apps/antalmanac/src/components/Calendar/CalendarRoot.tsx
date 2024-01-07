@@ -9,14 +9,29 @@ import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calen
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
-import { useTimeFormatStore } from '$stores/TimeStore';
+import locationIds from '$lib/location_ids';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const localizer = momentLocalizer(moment);
 
 const AntAlmanacEvent = ({ event }: { event: CalendarEvent }) => {
     return event.isCustomEvent ? (
-        <Box style={{ marginTop: 2, marginBottom: 2, fontSize: '0.85rem' }}>
-            <Box style={{ fontWeight: 500 }}>{event.title}</Box>
+        <Box>
+            <Box
+                style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'space-between',
+                    fontWeight: 500,
+                    fontSize: '0.8rem',
+                }}
+            >
+                <Box>{event.title}</Box>
+            </Box>
+
+            <Box style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontSize: '0.7rem' }}>
+                <Box>{Object.keys(locationIds).find((key) => locationIds[key] === parseInt(event.building))}</Box>
+            </Box>
         </Box>
     ) : (
         <Box>
@@ -37,8 +52,8 @@ const AntAlmanacEvent = ({ event }: { event: CalendarEvent }) => {
                     {event.showLocationInfo
                         ? event.locations.map((location) => `${location.building} ${location.room}`).join(', ')
                         : event.locations.length > 1
-                        ? `${event.locations.length} Locations`
-                        : `${event.locations[0].building} ${event.locations[0].room}`}
+                          ? `${event.locations.length} Locations`
+                          : `${event.locations[0].building} ${event.locations[0].room}`}
                 </Box>
                 <Box>{event.sectionCode}</Box>
             </Box>
@@ -240,6 +255,9 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
                     views={[Views.WEEK, Views.WORK_WEEK]}
                     defaultView={Views.WORK_WEEK}
                     view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
+                    onView={() => {
+                        return;
+                    }}
                     step={15}
                     timeslots={2}
                     defaultDate={new Date(2018, 0, 1)}

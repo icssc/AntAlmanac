@@ -1,28 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 
-import {
-    Box,
-    Chip,
-    Grid,
-    IconButton,
-    Menu,
-    MenuItem,
-    Paper,
-    SxProps,
-    TextField,
-    Tooltip,
-    Typography,
-} from '@mui/material';
+import { Box, Chip, IconButton, Menu, MenuItem, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
 import { ContentCopy, DeleteOutline } from '@mui/icons-material';
 import { AACourse } from '@packages/antalmanac-types';
 
+import { useSnackbar } from 'notistack';
 import { ColumnToggleButton } from '../CoursePane/CoursePaneButtonRow';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
 import AppStore from '$stores/AppStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
+import { CopyScheduleOptions, clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
 import { clickToCopy } from '$lib/helpers';
 
 /**
@@ -100,9 +89,9 @@ function handleClear() {
     }
 }
 
-function createCopyHandler(index: number) {
+function createCopyHandler(index: number, options: CopyScheduleOptions) {
     return () => {
-        copySchedule(index);
+        copySchedule(index, options);
     };
 }
 
@@ -118,6 +107,20 @@ function ClearScheduleButton() {
 
 function CopyScheduleButton() {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+    const { enqueueSnackbar } = useSnackbar();
+
+    const options = useMemo(() => {
+        return {
+            onSuccess: (index: number) => {
+                const name = index === scheduleNames.length ? 'All Schedules' : scheduleNames[index];
+                enqueueSnackbar(`Schedule copied to ${name}.`, { variant: 'success' });
+            },
+            onError: (index: number) => {
+                const name = index === scheduleNames.length ? 'All Schedules' : scheduleNames[index];
+                enqueueSnackbar(`Could not copy schedule to ${name}.`, { variant: 'error' });
+            },
+        };
+    }, [enqueueSnackbar, scheduleNames]);
 
     useEffect(() => {
         /**
@@ -148,16 +151,139 @@ function CopyScheduleButton() {
                             <MenuItem
                                 key={index}
                                 disabled={AppStore.getCurrentScheduleIndex() === index}
-                                onClick={createCopyHandler(index)}
+                                onClick={createCopyHandler(index, options)}
                             >
                                 Copy to {name}
                             </MenuItem>
                         ))}
-                        <MenuItem onClick={createCopyHandler(scheduleNames.length)}>Copy to All Schedules</MenuItem>
+                        <MenuItem onClick={createCopyHandler(scheduleNames.length, options)}>
+                            Copy to All Schedules
+                        </MenuItem>
                     </Menu>
                 </>
             )}
         </PopupState>
+    );
+}
+
+function CustomEventsBox() {
+    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+
+    const [customEvents, setCustomEvents] = useState(
+        skeletonMode ? AppStore.getSkeletonSchedule().customEvents : AppStore.schedule.getCurrentCustomEvents()
+    );
+
+    useEffect(() => {
+        const handleSkeletonModeChange = () => {
+            setSkeletonMode(AppStore.getSkeletonMode());
+        };
+
+        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+
+        return () => {
+            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleCustomEventsChange = () => {
+            setCustomEvents([...AppStore.schedule.getCurrentCustomEvents()]);
+        };
+
+        AppStore.on('customEventsChange', handleCustomEventsChange);
+        AppStore.on('currentScheduleIndexChange', handleCustomEventsChange);
+
+        return () => {
+            AppStore.off('customEventsChange', handleCustomEventsChange);
+            AppStore.off('currentScheduleIndexChange', handleCustomEventsChange);
+        };
+    }, []);
+
+    if (customEvents.length <= 0) {
+        return null;
+    }
+
+    return (
+        <Box>
+            <Typography variant="h6">Custom Events</Typography>
+            <Box display="flex" flexDirection="column" gap={1}>
+                {customEvents.map((customEvent) => {
+                    return (
+                        <Box key={customEvent.title}>
+                            <CustomEventDetailView
+                                customEvent={customEvent}
+                                scheduleNames={AppStore.getScheduleNames()}
+                            />
+                        </Box>
+                    );
+                })}
+            </Box>
+        </Box>
+    );
+}
+
+function ScheduleNoteBox() {
+    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const [scheduleNote, setScheduleNote] = useState(
+        skeletonMode ? AppStore.getSkeletonSchedule().scheduleNote : AppStore.getCurrentScheduleNote()
+    );
+    const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+
+    const handleNoteChange = useCallback(
+        (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+            setScheduleNote(event.target.value);
+            updateScheduleNote(event.target.value, scheduleIndex);
+        },
+        [scheduleIndex]
+    );
+
+    useEffect(() => {
+        const handleSkeletonModeChange = () => {
+            setSkeletonMode(AppStore.getSkeletonMode());
+        };
+
+        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+
+        return () => {
+            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleScheduleNoteChange = () => {
+            setScheduleNote(AppStore.getCurrentScheduleNote());
+        };
+
+        const handleScheduleIndexChange = () => {
+            setScheduleIndex(AppStore.getCurrentScheduleIndex());
+        };
+
+        AppStore.on('scheduleNotesChange', handleScheduleNoteChange);
+        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
+
+        return () => {
+            AppStore.off('scheduleNotesChange', handleScheduleNoteChange);
+            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
+        };
+    }, []);
+
+    return (
+        <Box>
+            <Typography variant="h6">Schedule Notes</Typography>
+
+            <TextField
+                type="text"
+                variant="filled"
+                label="Click here to start typing!"
+                onChange={handleNoteChange}
+                value={scheduleNote}
+                inputProps={{ maxLength: NOTE_MAX_LEN }}
+                InputProps={{ disableUnderline: true }}
+                fullWidth
+                multiline
+                disabled={skeletonMode}
+            />
+        </Box>
     );
 }
 
@@ -177,18 +303,21 @@ function SkeletonSchedule() {
     }, []);
 
     const sectionsByTerm: [string, string[]][] = useMemo(() => {
-        const result = skeletonSchedule.courses.reduce((accumulated, course) => {
-            accumulated[course.term] ??= [];
-            accumulated[course.term].push(course.sectionCode);
-            return accumulated;
-        }, {} as Record<string, string[]>);
+        const result = skeletonSchedule.courses.reduce(
+            (accumulated, course) => {
+                accumulated[course.term] ??= [];
+                accumulated[course.term].push(course.sectionCode);
+                return accumulated;
+            },
+            {} as Record<string, string[]>
+        );
 
         return Object.entries(result);
     }, [skeletonSchedule.courses]);
 
     return (
-        <Box>
-            <Typography>{skeletonSchedule.scheduleName}</Typography>
+        <Box display="flex" flexDirection="column" gap={1}>
+            <Typography variant="h6">{skeletonSchedule.scheduleName}</Typography>
             {
                 // Sections organized under terms, in case the schedule contains multiple terms
                 sectionsByTerm.map(([term, sections]) => (
@@ -216,6 +345,11 @@ function SkeletonSchedule() {
                     </Box>
                 ))
             }
+
+            <CustomEventsBox />
+
+            <ScheduleNoteBox />
+
             <Typography variant="body1">
                 PeterPortal or WebSoc is currently unreachable. This is the information that we can currently retrieve.
             </Typography>
@@ -225,34 +359,16 @@ function SkeletonSchedule() {
 
 function AddedSectionsGrid() {
     const [courses, setCourses] = useState(getCourses());
-    const [customEvents, setCustomEvents] = useState(AppStore.schedule.getCurrentCustomEvents());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
-    const [scheduleNote, setScheduleNote] = useState(AppStore.getCurrentScheduleNote());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
-
-    const handleNoteChange = useCallback(
-        (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-            setScheduleNote(event.target.value);
-            updateScheduleNote(event.target.value, scheduleIndex);
-        },
-        [scheduleIndex]
-    );
 
     useEffect(() => {
         const handleCoursesChange = () => {
             setCourses(getCourses());
         };
 
-        const handleCustomEventsChange = () => {
-            setCustomEvents([...AppStore.schedule.getCurrentCustomEvents()]);
-        };
-
         const handleScheduleNamesChange = () => {
             setScheduleNames([...AppStore.getScheduleNames()]);
-        };
-
-        const handleScheduleNoteChange = () => {
-            setScheduleNote(AppStore.getCurrentScheduleNote());
         };
 
         const handleScheduleIndexChange = () => {
@@ -260,20 +376,14 @@ function AddedSectionsGrid() {
         };
 
         AppStore.on('addedCoursesChange', handleCoursesChange);
-        AppStore.on('customEventsChange', handleCustomEventsChange);
         AppStore.on('currentScheduleIndexChange', handleCoursesChange);
-        AppStore.on('currentScheduleIndexChange', handleCustomEventsChange);
         AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-        AppStore.on('scheduleNotesChange', handleScheduleNoteChange);
         AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
 
         return () => {
             AppStore.off('addedCoursesChange', handleCoursesChange);
-            AppStore.off('customEventsChange', handleCustomEventsChange);
             AppStore.off('currentScheduleIndexChange', handleCoursesChange);
-            AppStore.off('currentScheduleIndexChange', handleCustomEventsChange);
             AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-            AppStore.off('scheduleNotesChange', handleScheduleNoteChange);
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
         };
     }, []);
@@ -305,10 +415,10 @@ function AddedSectionsGrid() {
             </Box>
             <Box style={{ marginTop: 50 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-                <Grid container spacing={2} padding={0}>
+                <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
                         return (
-                            <Grid item md={12} xs={12} key={course.deptCode + course.courseNumber + course.courseTitle}>
+                            <Box key={course.deptCode + course.courseNumber + course.courseTitle}>
                                 <SectionTableLazyWrapper
                                     courseDetails={course}
                                     term={course.term}
@@ -316,46 +426,15 @@ function AddedSectionsGrid() {
                                     analyticsCategory={analyticsEnum.addedClasses.title}
                                     scheduleNames={scheduleNames}
                                 />
-                            </Grid>
+                            </Box>
                         );
                     })}
-                </Grid>
-            </Box>
-
-            {customEvents.length > 0 && (
-                <Box>
-                    <Typography variant="h6">Custom Events</Typography>
-                    <Grid container spacing={2} padding={0}>
-                        {customEvents.map((customEvent) => {
-                            return (
-                                <Grid item md={12} xs={12} key={customEvent.title}>
-                                    <CustomEventDetailView
-                                        customEvent={customEvent}
-                                        currentScheduleIndex={AppStore.getCurrentScheduleIndex()}
-                                        scheduleNames={scheduleNames}
-                                    />
-                                </Grid>
-                            );
-                        })}
-                    </Grid>
                 </Box>
-            )}
-
-            <Box>
-                <Typography variant="h6">Schedule Notes</Typography>
-
-                <TextField
-                    type="text"
-                    variant="filled"
-                    label="Click here to start typing!"
-                    onChange={handleNoteChange}
-                    value={scheduleNote}
-                    inputProps={{ maxLength: NOTE_MAX_LEN }}
-                    InputProps={{ disableUnderline: true }}
-                    fullWidth
-                    multiline
-                />
             </Box>
+
+            <CustomEventsBox />
+
+            <ScheduleNoteBox />
         </Box>
     );
 }

@@ -1,3 +1,4 @@
+import React from 'react';
 import {
     Button,
     Dialog,
@@ -10,9 +11,9 @@ import {
     TextField,
     Tooltip,
 } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { Add, Edit } from '@material-ui/icons';
-import React, { PureComponent } from 'react';
+import { Add, Edit } from '@mui/icons-material';
+import { useCallback, useEffect, useState } from 'react';
+import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 
 import DaySelector from './DaySelector';
 import ScheduleSelector from './ScheduleSelector';
@@ -20,26 +21,7 @@ import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
-
-const styles = {
-    textField: {
-        minWidth: 120,
-    },
-};
-
-/**
- * There is another CustomEvent interface in CourseCalendarEvent and they are slightly different. This one encapsulates the occurences of an event on multiple days, like Monday Tuesday Wednesday all in the same object as specified by the days array. The other one, `CustomEventDialog`'s CustomEvent, represents only one day, like the event on Monday, and needs to be duplicated to be repeated across multiple days.
- * https://github.com/icssc/AntAlmanac/wiki/The-Great-AntAlmanac-TypeScript-Rewritening%E2%84%A2#duplicate-interface-names-%EF%B8%8F
- * TODO: This needs to be moved to course_data.types.ts. It's stupid that components need to import from here instead of $lib
- */
-export interface RepeatingCustomEvent {
-    title: string;
-    start: string;
-    end: string;
-    days: boolean[];
-    customEventID: number;
-    color?: string;
-}
+import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
 
 interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
@@ -47,185 +29,208 @@ interface CustomEventDialogProps {
     scheduleNames: string[];
 }
 
-interface CustomEventDialogState extends RepeatingCustomEvent {
-    open: boolean;
-    scheduleIndices: number[];
-}
-
-const defaultCustomEvent: RepeatingCustomEvent = {
+const defaultCustomEventValues: RepeatingCustomEvent = {
     start: '10:30',
     end: '15:30',
     title: '',
     days: [false, false, false, false, false, false, false],
     customEventID: 0,
+    building: undefined,
 };
 
-class CustomEventDialog extends PureComponent<CustomEventDialogProps, CustomEventDialogState> {
-    state: CustomEventDialogState = {
-        open: false,
-        ...(this.props.customEvent || defaultCustomEvent),
-        scheduleIndices: [],
+function CustomEventDialogs(props: CustomEventDialogProps) {
+    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+
+    const [open, setOpen] = useState(false);
+    const [scheduleIndices, setScheduleIndices] = useState<number[]>([]);
+    const [start, setStart] = useState(defaultCustomEventValues.start);
+    const [end, setEnd] = useState(defaultCustomEventValues.end);
+    const [title, setTitle] = useState(defaultCustomEventValues.title);
+    const [days, setDays] = useState(defaultCustomEventValues.days);
+    const [building, setBuilding] = useState<string | undefined>();
+
+    const resetForm = () => {
+        setStart(defaultCustomEventValues.start);
+        setEnd(defaultCustomEventValues.end);
+        setTitle(defaultCustomEventValues.title);
+        setDays(defaultCustomEventValues.days);
+        setBuilding(undefined);
     };
 
-    handleOpen = () => {
-        this.setState({ open: true, scheduleIndices: [AppStore.schedule.getCurrentScheduleIndex()] });
+    const disabled = !(scheduleIndices.length && days.includes(true));
+
+    const handleSubmit = () => {
+        handleClose();
+        handleAddToCalendar();
+
+        logAnalytics({
+            category: analyticsEnum.calendar.title,
+            action: analyticsEnum.calendar.actions.ADD_CUSTOM_EVENT,
+        });
+    };
+
+    const handleOpen = useCallback(() => {
+        setOpen(true);
+        setScheduleIndices([AppStore.schedule.getCurrentScheduleIndex()]);
 
         logAnalytics({
             category: analyticsEnum.calendar.title,
             action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
         });
+    }, []);
+
+    const handleClose = useCallback(() => {
+        setOpen(false);
+    }, []);
+
+    const handleEventNameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setTitle(event.target.value);
+    }, []);
+
+    const handleStartTimeChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setStart(event.target.value);
+    }, []);
+
+    const handleEndTimeChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setEnd(event.target.value);
+    }, []);
+
+    const handleDayChange = useCallback((days: boolean[]) => {
+        setDays(days);
+    }, []);
+
+    const handleSelectScheduleIndices = useCallback((scheduleIndices: number[]) => {
+        setScheduleIndices(scheduleIndices);
+    }, []);
+
+    const handleBuildingChange = (building?: ExtendedBuilding | null) => {
+        setBuilding(building?.id);
     };
 
-    handleClose = (cancel: boolean) => {
-        if (!cancel) {
-            logAnalytics({
-                category: analyticsEnum.calendar.title,
-                action: analyticsEnum.calendar.actions.ADD_CUSTOM_EVENT,
-            });
-            if (this.props.onDialogClose) this.props.onDialogClose();
-            this.handleAddToCalendar();
-        }
+    const handleAddToCalendar = () => {
+        if (!days.some((day) => day) || scheduleIndices.length === 0) return;
 
-        this.setState({
-            ...this.state,
-            open: false,
-        });
-    };
-
-    handleEventNameChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
-        this.setState({ title: event.target.value });
-    };
-
-    handleEndTimeChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
-        this.setState({ end: event.target.value });
-    };
-
-    handleStartTimeChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
-        this.setState({ start: event.target.value });
-    };
-
-    handleDayChange = (days: boolean[]) => {
-        this.setState({ days: days });
-    };
-
-    handleAddToCalendar = () => {
-        if (!this.state.days.some((day) => day) || this.state.scheduleIndices.length === 0) return;
-
-        const newCustomEvent = {
-            color: this.props.customEvent ? this.props.customEvent.color : '#551a8b',
-            title: this.state.title,
-            days: this.state.days,
-            start: this.state.start,
-            end: this.state.end,
-            customEventID: this.props.customEvent ? this.props.customEvent.customEventID : Date.now(),
+        const newCustomEvent: RepeatingCustomEvent = {
+            color: props.customEvent ? props.customEvent.color : '#551a8b',
+            title: title,
+            days: days,
+            start: start,
+            end: end,
+            customEventID: props.customEvent ? props.customEvent.customEventID : Date.now(),
+            building: building,
         };
 
-        if (this.props.customEvent) editCustomEvent(newCustomEvent, this.state.scheduleIndices);
-        else addCustomEvent(newCustomEvent, this.state.scheduleIndices);
+        resetForm();
+
+        props.customEvent
+            ? editCustomEvent(newCustomEvent, scheduleIndices)
+            : addCustomEvent(newCustomEvent, scheduleIndices);
     };
 
-    handleSelectScheduleIndices = (scheduleIndices: number[]) => {
-        this.setState({ scheduleIndices: scheduleIndices });
-    };
+    useEffect(() => {
+        const handleSkeletonModeChange = () => {
+            setSkeletonMode(AppStore.getSkeletonMode());
+        };
 
-    isAddDisabled = () => {
-        return !(this.state.scheduleIndices.length && this.state.days.some(Boolean));
-    };
+        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
 
-    render() {
-        return (
-            <>
-                {this.props.customEvent !== undefined ? (
-                    // Dumb ternary below added to get rid of TypeScript possibly undefined compile error
+        return () => {
+            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+        };
+    }, []);
+
+    return (
+        <>
+            {props.customEvent ? (
+                <Tooltip title="Edit">
                     <IconButton
-                        onClick={() =>
-                            this.setState({
-                                open: true,
-                                scheduleIndices: AppStore.schedule.getIndexesOfCustomEvent(
-                                    this.props.customEvent ? this.props.customEvent.customEventID : 0
-                                ),
-                            })
-                        }
+                        onClick={() => {
+                            handleOpen();
+                            // Typecasting prevents TypeScript possibly undefined compile error
+                            const customEvent = props.customEvent as RepeatingCustomEvent;
+                            setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(customEvent.customEventID));
+                            setStart(customEvent.start);
+                            setEnd(customEvent.end);
+                            setTitle(customEvent.title);
+                            setDays(customEvent.days);
+                            setBuilding(customEvent.building);
+                        }}
                     >
                         <Edit fontSize="small" />
                     </IconButton>
-                ) : (
-                    <Tooltip title="Add custom events">
-                        <Button
-                            disableRipple={true}
-                            onClick={this.handleOpen}
-                            variant="outlined"
-                            size="small"
-                            startIcon={<Add fontSize="small" />}
-                        >
-                            Custom
-                        </Button>
-                    </Tooltip>
-                )}
-                <Dialog open={this.state.open} onClose={this.handleClose} maxWidth={'lg'}>
-                    <DialogContent>
-                        <FormControl>
-                            <InputLabel htmlFor="EventNameInput">Event Name</InputLabel>
-                            <Input required={true} value={this.state.title} onChange={this.handleEventNameChange} />
-                        </FormControl>
-                        <form noValidate>
-                            <TextField
-                                onChange={this.handleStartTimeChange}
-                                label="Start Time"
-                                type="time"
-                                defaultValue={this.state.start}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                inputProps={{
-                                    step: 300,
-                                }}
-                                style={{ marginRight: 5, marginTop: 5 }}
-                            />
-                            <TextField
-                                onChange={this.handleEndTimeChange}
-                                label="End Time"
-                                type="time"
-                                defaultValue={this.state.end}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                inputProps={{
-                                    step: 300,
-                                }}
-                                style={{ marginRight: 5, marginTop: 5 }}
-                            />
-                        </form>
-                        <DaySelector onSelectDay={this.handleDayChange} days={this.props.customEvent?.days} />
-                        <ScheduleSelector
-                            scheduleIndices={this.state.scheduleIndices}
-                            onSelectScheduleIndices={this.handleSelectScheduleIndices}
-                            customEvent={this.props.customEvent}
-                            scheduleNames={this.props.scheduleNames}
+                </Tooltip>
+            ) : (
+                <Tooltip title="Add custom events">
+                    <Button
+                        disableRipple={true}
+                        onClick={handleOpen}
+                        variant="outlined"
+                        size="small"
+                        startIcon={<Add fontSize="small" />}
+                        disabled={skeletonMode}
+                    >
+                        Custom
+                    </Button>
+                </Tooltip>
+            )}
+            <Dialog open={open} onClose={handleClose} maxWidth={'lg'}>
+                <DialogContent>
+                    <FormControl>
+                        <InputLabel htmlFor="EventNameInput">Event Name</InputLabel>
+                        <Input required={true} value={title} onChange={handleEventNameChange} />
+                    </FormControl>
+                    <form noValidate style={{ display: 'flex', gap: 5, marginTop: 5 }}>
+                        <TextField
+                            onChange={handleStartTimeChange}
+                            label="Start Time"
+                            type="time"
+                            defaultValue={start}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            inputProps={{
+                                step: 300,
+                            }}
+                            style={{ marginRight: 5, marginTop: 5 }}
                         />
-                    </DialogContent>
+                        <TextField
+                            onChange={handleEndTimeChange}
+                            label="End Time"
+                            type="time"
+                            defaultValue={end}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            inputProps={{
+                                step: 300,
+                            }}
+                            style={{ marginRight: 5, marginTop: 5 }}
+                        />
+                    </form>
+                    <DaySelector onSelectDay={handleDayChange} days={props.customEvent?.days} />
+                    <BuildingSelect value={building} onChange={handleBuildingChange} />
+                    <ScheduleSelector
+                        scheduleIndices={scheduleIndices}
+                        onSelectScheduleIndices={handleSelectScheduleIndices}
+                        customEvent={props.customEvent}
+                        scheduleNames={props.scheduleNames}
+                    />
+                </DialogContent>
 
-                    <DialogActions>
-                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'secondary' : 'primary'}>
-                            Cancel
-                        </Button>
-                        <Tooltip title="Schedule and day must be checked" disableHoverListener={!this.isAddDisabled()}>
-                            <span>
-                                <Button
-                                    onClick={() => this.handleClose(false)}
-                                    variant="contained"
-                                    color="primary"
-                                    disabled={this.isAddDisabled()}
-                                >
-                                    {this.props.customEvent ? 'Save Changes' : 'Add Event'}
-                                </Button>
-                            </span>
-                        </Tooltip>
-                    </DialogActions>
-                </Dialog>
-            </>
-        );
-    }
+                <DialogActions>
+                    <Button onClick={handleClose} color={isDarkMode() ? 'secondary' : 'primary'}>
+                        Cancel
+                    </Button>
+                    <Button onClick={handleSubmit} variant="contained" color="primary" disabled={disabled}>
+                        {disabled
+                            ? 'Schedule and day must be checked'
+                            : props.customEvent
+                              ? 'Save Changes'
+                              : 'Add Event'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>
+    );
 }
-
-export default withStyles(styles)(CustomEventDialog);
+export default CustomEventDialogs;

@@ -5,15 +5,16 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import L, { type Map, type LatLngTuple } from 'leaflet';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet-routing-machine';
-import { Autocomplete, Box, Paper, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
 import ClassRoutes from './Routes';
 import LocationMarker from './Marker';
 import UserLocator from './UserLocator';
 import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
-import buildingCatalogue from '$lib/buildingCatalogue';
-import type { Building } from '$lib/buildingCatalogue';
+import buildingCatalogue, { Building } from '$lib/buildingCatalogue';
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
+import { notNull } from '$lib/utils';
 import { TILES_URL } from '$lib/api/endpoints';
 
 const ATTRIBUTION_MARKUP =
@@ -38,7 +39,9 @@ interface MarkerContent {
 export function getCoursesPerBuilding() {
     const courseEvents = AppStore.getCourseEventsInCalendar();
 
-    const allBuildingCodes = courseEvents.flatMap((event) => event.locations.map((location) => location.building));
+    const courseBuildings = courseEvents.flatMap((event) => event.locations.map((location) => location.building));
+
+    const allBuildingCodes = [...courseBuildings];
 
     const uniqueBuildingCodes = new Set(allBuildingCodes);
 
@@ -74,14 +77,66 @@ export function getCoursesPerBuilding() {
     return coursesPerBuilding;
 }
 
-/**
- * Get unique building names for the MUI Autocomplete.
- * A building with a duplicate name will have a higher index then a `findIndex` for another building with the same name.
- */
-const buildings = Object.entries(buildingCatalogue).filter(
-    ([_, building], index, array) =>
-        array.findIndex(([_, otherBuilding]) => otherBuilding.name === building.name) === index
-);
+export function getCustomEventPerBuilding() {
+    const customEvents = AppStore.getCustomEvents();
+
+    const customEventBuildings = customEvents.map((e) => e.building).filter(notNull);
+
+    // convert all digit to name in customEventBuilding  for example: 83096  ->  ICS
+    for (let i = 0; i < customEventBuildings.length; i++) {
+        customEventBuildings[i] =
+            Object.keys(locationIds).find((key) => locationIds[key] === parseInt(customEventBuildings[i])) || '';
+    }
+
+    const allBuildingCodes = [...customEventBuildings];
+
+    const uniqueBuildingCodes = new Set(allBuildingCodes);
+
+    const validBuildingCodes = [...uniqueBuildingCodes].filter(
+        (buildingCode) => buildingCatalogue[locationIds[buildingCode]] != null
+    );
+
+    interface localCustomEventType {
+        title: string;
+        start: string;
+        end: string;
+        days: boolean[];
+        customEventID: number;
+        color?: string | undefined;
+        building?: string | undefined;
+    }
+
+    const customEventPerBuilding: Record<string, (localCustomEventType & Building & MarkerContent)[]> = {};
+    for (let i = 0; i < validBuildingCodes.length; i++) {
+        customEventPerBuilding[validBuildingCodes[i]] = customEvents
+            .filter((event) => {
+                return (
+                    Object.keys(locationIds).find(
+                        (key) => locationIds[key] === parseInt(event.building ? event.building : '')
+                    ) == validBuildingCodes[i]
+                );
+            })
+            .map((event) => {
+                const locationData = buildingCatalogue[locationIds[validBuildingCodes[i]]];
+                const key = `${event.title} @ ${event.building}`;
+                const acronym = locationData.name.substring(
+                    locationData.name.indexOf('(') + 1,
+                    locationData.name.indexOf(')')
+                );
+                const markerCustomEventData = {
+                    key,
+                    image: locationData.imageURLs[0],
+                    acronym,
+                    markerColor: event.color ? event.color : '',
+                    location: locationData.name,
+                    ...locationData,
+                    ...event,
+                };
+                return markerCustomEventData;
+            });
+    }
+    return customEventPerBuilding;
+}
 
 /**
  * Map of all course locations on UCI campus.
@@ -93,6 +148,7 @@ export default function CourseMap() {
     const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
+    const [customEventMarkers] = useState(getCustomEventPerBuilding());
     const [calendarEvents, setCalendarEvents] = useState(AppStore.getCourseEventsInCalendar());
 
     useEffect(() => {
@@ -137,7 +193,7 @@ export default function CourseMap() {
             map.current?.flyTo([building.lat + 0.001, building.lng], 18, { duration: 250, animate: false });
             markerRef.current?.openPopup();
         }, 250);
-    }, [searchParams]);
+    }, [markerRef, searchParams]);
 
     const handleChange = useCallback(
         (_event: React.SyntheticEvent, newValue: number) => {
@@ -146,9 +202,9 @@ export default function CourseMap() {
         [setSelectedDay]
     );
 
-    const handleSearch = useCallback(
-        (_event: React.SyntheticEvent, value: [string, Building] | null) => {
-            navigate(`/map?location=${value?.[0]}`);
+    const onBuildingChange = useCallback(
+        (building?: ExtendedBuilding | null) => {
+            navigate(`/map?location=${building?.id}`);
         },
         [navigate]
     );
@@ -193,23 +249,41 @@ export default function CourseMap() {
 
         const markersToday =
             today === 'All' ? markerValues : markerValues.filter((course) => course.start.toString().includes(today));
-
         return markersToday
             .sort((a, b) => a.start.getTime() - b.start.getTime())
             .filter((marker, i, arr) => arr.findIndex((other) => other.sectionCode === marker.sectionCode) === i);
     }, [markers, today]);
 
+    const customEventMarkersToDisplay = useMemo(() => {
+        const markerValues = Object.keys(customEventMarkers).flatMap((markerKey) => customEventMarkers[markerKey]);
+
+        const markersToday =
+            today === 'All'
+                ? markerValues
+                : markerValues.filter((event) => {
+                      return event.days.some((day, index) => day && WORK_WEEK[index] === today);
+                  });
+        return markersToday.sort((a, b) => {
+            const startDateA = new Date(`1970-01-01T${a.start}`);
+            const startDateB = new Date(`1970-01-01T${b.start}`);
+            return startDateA.getTime() - startDateB.getTime();
+        });
+    }, [customEventMarkers, today]);
+
     /**
      * Every two markers grouped as [start, destination] tuples for the routes.
      */
     const startDestPairs = useMemo(() => {
-        return markersToDisplay.reduce((acc, cur, index) => {
-            acc.push([cur]);
-            if (index > 0) {
-                acc[index - 1].push(cur);
-            }
-            return acc;
-        }, [] as (typeof markersToDisplay)[]);
+        return markersToDisplay.reduce(
+            (acc, cur, index) => {
+                acc.push([cur]);
+                if (index > 0) {
+                    acc[index - 1].push(cur);
+                }
+                return acc;
+            },
+            [] as (typeof markersToDisplay)[]
+        );
     }, [markersToDisplay]);
 
     return (
@@ -225,12 +299,7 @@ export default function CourseMap() {
                             <Tab key={day} label={day} sx={{ padding: 1, minHeight: 'auto', minWidth: '10%' }} />
                         ))}
                     </Tabs>
-                    <Autocomplete
-                        options={buildings}
-                        getOptionLabel={(option) => option[1].name ?? ''}
-                        onChange={handleSearch}
-                        renderInput={(params) => <TextField {...params} label="Search for a place" variant="filled" />}
-                    />
+                    <BuildingSelect onChange={onBuildingChange} />
                 </Paper>
 
                 <TileLayer
@@ -287,6 +356,27 @@ export default function CourseMap() {
                                             Room{allRoomsInBuilding.length > 1 && 's'}:
                                         </span>{' '}
                                         {marker.locations[0].building} {allRoomsInBuilding.join('/')}
+                                    </Typography>
+                                </Box>
+                            </LocationMarker>
+                        </Fragment>
+                    );
+                })}
+
+                {/* Draw a marker for each custom Event that occurs today. */}
+                {customEventMarkersToDisplay.map((customEventMarkers, index) => {
+                    const customEventSameBuildingPrior = customEventMarkersToDisplay.slice(0, index);
+
+                    return (
+                        <Fragment key={Object.values(customEventMarkers).join('')}>
+                            <LocationMarker
+                                {...customEventMarkers}
+                                label={'E'}
+                                stackIndex={customEventSameBuildingPrior.length}
+                            >
+                                <Box>
+                                    <Typography variant="body1">
+                                        <span style={{ fontWeight: 'bold' }}>Event:</span> {customEventMarkers.title}
                                     </Typography>
                                 </Box>
                             </LocationMarker>

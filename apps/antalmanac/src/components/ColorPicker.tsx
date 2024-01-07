@@ -1,4 +1,4 @@
-import { IconButton, Popover } from '@material-ui/core';
+import { IconButton, Popover, Tooltip } from '@material-ui/core';
 import { ColorLens } from '@material-ui/icons';
 import React, { PureComponent } from 'react';
 import { SketchPicker } from 'react-color';
@@ -79,14 +79,16 @@ class ColorPicker extends PureComponent<ColorPickerProps> {
     render() {
         return (
             <>
-                <IconButton
-                    style={{ color: this.state.color }}
-                    onClick={(e) => {
-                        this.handleClick(e);
-                    }}
-                >
-                    <ColorLens fontSize="small" />
-                </IconButton>
+                <Tooltip title="Change Color">
+                    <IconButton
+                        style={{ color: this.state.color }}
+                        onClick={(e) => {
+                            this.handleClick(e);
+                        }}
+                    >
+                        <ColorLens fontSize="small" />
+                    </IconButton>
+                </Tooltip>
 
                 <Popover
                     open={Boolean(this.state.anchorEl)}
