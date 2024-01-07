@@ -3,18 +3,21 @@ import useTabStore from '$stores/TabStore';
 import { addSampleClasses } from '$lib/tourExampleGeneration';
 
 export enum TourStepName {
+    welcome = 'welcome',
     searchBar = 'searchBar',
     importButton = 'importButton',
     calendar = 'calendar',
     finalsButton = 'finalsButton',
     showFinals = 'showFinals',
-    welcome = 'welcome',
     addedCoursesTab = 'addedCoursesTab',
     addedCoursePane = 'addedCoursePane',
     map = 'map',
     mapPane = 'mapPane',
     saveAndLoad = 'saveAndLoad',
 }
+
+// Preserves ordering of steps as defined in enum.
+export const tourStepNames = Object.values(TourStepName);
 
 const tourHasRunKey = 'tourHasRun';
 
@@ -54,7 +57,7 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
     const setTab = useTabStore.getState().setActiveTab;
 
     const goToNamedStep = (stepName: TourStepName) => {
-        const stepIndex = Object.values(TourStepName).findIndex((step) => step == stepName);
+        const stepIndex = tourStepNames.findIndex((step) => step == stepName);
 
         if (stepIndex == -1) {
             console.error(`Could not find step with name ${stepName}`);
@@ -183,7 +186,9 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
 }
 
 export function stepsFactory(goToStep: (step: number) => void): Array<StepType> {
-    return Object.values(namedStepsFactory(goToStep));
+    const namedSteps = namedStepsFactory(goToStep);
+    // Preserve the order of the steps.
+    return tourStepNames.map((key: TourStepName) => namedSteps[key]);
 }
 
 //eslint-disable-next-line
