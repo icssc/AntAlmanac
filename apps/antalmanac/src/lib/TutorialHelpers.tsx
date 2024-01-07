@@ -1,5 +1,4 @@
 import { StepType } from '@reactour/tour';
-import { Card } from '@mui/material';
 import useTabStore from '$stores/TabStore';
 import { addSampleClasses } from '$lib/tourExampleGeneration';
 
