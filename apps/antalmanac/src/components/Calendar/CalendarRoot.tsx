@@ -164,8 +164,6 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
             setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
             setEventsInCalendar(AppStore.getEventsInCalendar());
             setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
-
-            handleClosePopover();
         };
 
         const updateScheduleNames = () => {
