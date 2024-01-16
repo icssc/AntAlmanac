@@ -274,14 +274,18 @@ export default function CourseMap() {
      * Every two markers grouped as [start, destination] tuples for the routes.
      */
     const startDestPairs = useMemo(() => {
-        return markersToDisplay.reduce((acc, cur, index) => {
-            acc.push([cur]);
-            if (index > 0) {
-                acc[index - 1].push(cur);
-            }
-            return acc;
-        }, [] as (typeof markersToDisplay)[]);
-    }, [markersToDisplay]);
+        const allEvents = [...markersToDisplay, ...customEventMarkersToDisplay];
+        return allEvents.reduce(
+            (acc, cur, index) => {
+                acc.push([cur]);
+                if (index > 0) {
+                    acc[index - 1].push(cur);
+                }
+                return acc;
+            },
+            [] as (typeof allEvents)[]
+        );
+    }, [markersToDisplay, customEventMarkersToDisplay]);
 
     return (
         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}>
