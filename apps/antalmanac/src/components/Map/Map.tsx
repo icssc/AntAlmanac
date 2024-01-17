@@ -148,7 +148,7 @@ export default function CourseMap() {
     const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
-    const [customEventMarkers] = useState(getCustomEventPerBuilding());
+    const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
     const [calendarEvents, setCalendarEvents] = useState(AppStore.getCourseEventsInCalendar());
 
     useEffect(() => {
@@ -164,6 +164,22 @@ export default function CourseMap() {
             AppStore.removeListener('addedCoursesChange', updateMarkers);
             AppStore.removeListener('currentScheduleIndexChange', updateMarkers);
             AppStore.removeListener('colorChange', updateMarkers);
+        };
+    }, []);
+
+    useEffect(() => {
+        const updateCustomEventMarkers = () => {
+            setCustomEventMarkers(getCustomEventPerBuilding());
+        };
+
+        AppStore.on('customEventsChange', updateCustomEventMarkers);
+        AppStore.on('currentScheduleIndexChange', updateCustomEventMarkers);
+        AppStore.on('colorChange', updateCustomEventMarkers);
+
+        return () => {
+            AppStore.removeListener('customEventsChange', updateCustomEventMarkers);
+            AppStore.removeListener('currentScheduleIndexChange', updateCustomEventMarkers);
+            AppStore.removeListener('colorChange', updateCustomEventMarkers);
         };
     }, []);
 
