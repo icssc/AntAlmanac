@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { LineChart, Line, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { Box, Link, Typography, Skeleton } from '@mui/material';
-import EnrollmentHistoryHelper, { EnrollmentHistory } from '$lib/enrollmentHistory';
+import enrollmentHistoryCache, { EnrollmentHistory } from '$lib/enrollmentHistory';
 import { isDarkMode } from '$lib/helpers';
 
 export interface EnrollmentHistoryPopupProps {
@@ -35,9 +35,9 @@ const EnrollmentHistoryPopup = ({ department, courseNumber, isMobileScreen }: En
             return;
         }
 
-        EnrollmentHistoryHelper.queryEnrollmentHistory(department, courseNumber).then((enrollmentHistory) => {
-            if (enrollmentHistory) {
-                setEnrollmentHistory(enrollmentHistory);
+        enrollmentHistoryCache.queryEnrollmentHistory(department, courseNumber).then((data) => {
+            if (data) {
+                setEnrollmentHistory(data);
             }
             setLoading(false);
         });

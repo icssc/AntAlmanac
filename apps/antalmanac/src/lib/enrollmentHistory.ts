@@ -75,12 +75,7 @@ class _EnrollmentHistory {
             (await queryGraphQL<EnrollmentHistoryGraphQLResponse>(queryString))?.data?.enrollmentHistory ?? null;
 
         if (res && res.length > 0) {
-            // Before caching and returning the response, we need to do
-            // some parsing so that we can pass the data into the graph
             const parsedEnrollmentHistory = this.parseEnrollmentHistoryResponse(res);
-
-            // Sort the enrollment history so that the most recent quarters are
-            // in the beginning of the array
             this.sortEnrollmentHistory(parsedEnrollmentHistory);
 
             // For now, just return the enrollment history of the most recent quarter
@@ -93,6 +88,16 @@ class _EnrollmentHistory {
         return null;
     };
 
+    /**
+     * This function parses enrollment history data from PeterPortal so that
+     * we can pass the data into a recharts graph. For each element in the given
+     * array, merge the dates, totalEnrolledHistory, maxCapacityHistory,
+     * and waitlistHistory arrays into one array that contains the enrollment data
+     * for each day.
+     *
+     * @param res an array of enrollment histories from PeterPortal
+     * @returns an array of enrollment histories that we can use for the graph
+     */
     parseEnrollmentHistoryResponse = (res: EnrollmentHistoryGraphQL[]): EnrollmentHistory[] => {
         const parsedEnrollmentHistory: EnrollmentHistory[] = [];
 
@@ -127,6 +132,13 @@ class _EnrollmentHistory {
         return parsedEnrollmentHistory;
     };
 
+    /**
+     * This function sorts the given array of enrollment histories so that
+     * the most recent quarters are in the beginning of the array.
+     *
+     * @param enrollmentHistory an array where each element represents the enrollment
+     * history of a course section during one quarter
+     */
     sortEnrollmentHistory = (enrollmentHistory: EnrollmentHistory[]) => {
         enrollmentHistory.sort((a, b) => {
             const aTerm = `${a.year} ${a.quarter}`;
@@ -138,5 +150,5 @@ class _EnrollmentHistory {
     };
 }
 
-const enrollmentHistory = new _EnrollmentHistory();
-export default enrollmentHistory;
+const enrollmentHistoryCache = new _EnrollmentHistory();
+export default enrollmentHistoryCache;
