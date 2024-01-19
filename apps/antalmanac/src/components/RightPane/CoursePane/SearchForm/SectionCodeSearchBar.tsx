@@ -10,9 +10,9 @@ class SectionCodeSearchBar extends PureComponent {
     }
 
     getSectionCode() {
-      return RightPaneStore.getUrlCourseCodeValue()
-        ? this.updateCourseCodeAndGetFormData()
-        : RightPaneStore.getFormData().sectionCode;
+        return RightPaneStore.getUrlCourseCodeValue()
+            ? this.updateCourseCodeAndGetFormData()
+            : RightPaneStore.getFormData().sectionCode;
     }
 
     state = {
