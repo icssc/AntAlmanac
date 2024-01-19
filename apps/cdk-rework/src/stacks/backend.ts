@@ -21,7 +21,8 @@ export class BackendStack extends Stack {
             CERTIFICATE_ARN: 'string',
             HOSTED_ZONE_ID: 'string',
             MONGODB_URI_PROD: 'string',
-            NODE_ENV: 'string',
+            'MAPBOX_ACCESS_TOKEN?': 'string',
+            'NODE_ENV?': 'string',
             'PR_NUM?': 'string',
         }).assert({ ...process.env });
 
@@ -51,7 +52,8 @@ export class BackendStack extends Stack {
             environment: {
                 // We don't need dev database because we will never write to it.
                 AA_MONGODB_URI: env.MONGODB_URI_PROD,
-                STAGE: env.NODE_ENV,
+                MAPBOX_ACCESS_TOKEN: env.MAPBOX_ACCESS_TOKEN ?? '',
+                STAGE: env.NODE_ENV ?? 'development',
                 USERDATA_TABLE_NAME: userDataDDB.tableName,
             },
         });
