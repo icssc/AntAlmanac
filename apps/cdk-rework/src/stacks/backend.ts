@@ -34,7 +34,7 @@ export class BackendStack extends Stack {
          */
         const domain = env.PR_NUM ? `staging-${env.PR_NUM}.api` : env.NODE_ENV === 'production' ? 'api' : 'dev.api';
 
-        const userDataDDB = new dynamnodb.Table(this, `${id}-user-data-ddb`, {
+        const userDataDDB = new dynamnodb.Table(this, 'user-data-ddb', {
             partitionKey: {
                 name: 'id',
                 type: dynamnodb.AttributeType.STRING,
@@ -43,7 +43,7 @@ export class BackendStack extends Stack {
             removalPolicy: env.NODE_ENV === 'staging' ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
         });
 
-        const handler = new lambda.Function(this, `${id}-lambda`, {
+        const handler = new lambda.Function(this, 'lambda', {
             runtime: lambda.Runtime.NODEJS_18_X,
             code: lambda.Code.fromAsset('../backend/dist'),
             handler: 'lambda.handler',
@@ -60,13 +60,9 @@ export class BackendStack extends Stack {
 
         userDataDDB.grantReadWriteData(handler);
 
-        const certificate = acm.Certificate.fromCertificateArn(
-            this,
-            `${id}-api-gateway-certificate`,
-            env.CERTIFICATE_ARN
-        );
+        const certificate = acm.Certificate.fromCertificateArn(this, 'api-gateway-certificate', env.CERTIFICATE_ARN);
 
-        const apiGateway = new apigateway.LambdaRestApi(this, `${id}-api-gateway`, {
+        const apiGateway = new apigateway.LambdaRestApi(this, 'api-gateway', {
             handler,
             domainName: {
                 domainName: `${domain}.${zoneName}`,
@@ -75,14 +71,14 @@ export class BackendStack extends Stack {
             },
         });
 
-        const zone = route53.HostedZone.fromHostedZoneAttributes(this, `${id}-hosted-zone`, {
+        const zone = route53.HostedZone.fromHostedZoneAttributes(this, 'hosted-zone', {
             zoneName,
             hostedZoneId: env.HOSTED_ZONE_ID,
         });
 
         const target = new targets.ApiGateway(apiGateway);
 
-        new route53.ARecord(this, `${id}-a-record`, {
+        new route53.ARecord(this, 'a-record', {
             zone: zone,
             recordName: domain,
             target: route53.RecordTarget.fromAlias(target),

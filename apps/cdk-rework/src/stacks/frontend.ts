@@ -22,7 +22,7 @@ export class FrontendStack extends Stack {
         const env = type({
             CERTIFICATE_ARN: 'string',
             HOSTED_ZONE_ID: 'string',
-            NODE_ENV: 'string',
+            'NODE_ENV?': 'string',
             'PR_NUM?': 'string',
         }).assert({ ...process.env });
 
