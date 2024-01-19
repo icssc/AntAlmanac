@@ -47,7 +47,7 @@ const tabs = [
 export default function Desktop({ style }: DesktopTabsProps) {
     const { activeTab, setActiveTab } = useTabStore();
 
-    const appTheme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => store.isDark);
 
     return (
         <Box style={{ ...style, margin: '0 4px' }}>
@@ -83,7 +83,7 @@ export default function Desktop({ style }: DesktopTabsProps) {
                     <Suspense
                         fallback={
                             <div style={styles.fallback}>
-                                <img src={appTheme == 'dark' ? darkModeLoadingGif : loadingGif} alt="Loading map" />
+                                <img src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading map" />
                             </div>
                         }
                     >

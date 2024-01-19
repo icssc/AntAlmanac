@@ -108,7 +108,7 @@ interface CourseCodeCellProps {
 }
 
 const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
-    const appTheme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => store.isDark);
 
     const { classes, sectionCode } = props;
 
@@ -138,7 +138,7 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                     style={{
-                        color: isHovered ? (appTheme == 'dark' ? 'gold' : 'blueviolet') : '',
+                        color: isHovered ? (isDark ? 'gold' : 'blueviolet') : '',
                     }}
                     size="small"
                 />
@@ -236,7 +236,7 @@ interface GPACellProps {
 }
 
 function GPACell(props: GPACellProps) {
-    const appTheme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => store.isDark);
 
     const { deptCode, courseNumber, instructors } = props;
 
@@ -269,7 +269,7 @@ function GPACell(props: GPACellProps) {
         <NoPaddingTableCell>
             <Button
                 style={{
-                    color: appTheme == 'dark' ? 'dodgerblue' : 'blue',
+                    color: isDark ? 'dodgerblue' : 'blue',
                     padding: 0,
                     minWidth: 0,
                     fontWeight: 400,
@@ -306,7 +306,7 @@ interface LocationsCellProps {
 }
 
 const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
-    const appTheme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => store.isDark);
 
     const { classes, meetings } = props;
 
@@ -329,7 +329,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                                     className={classes.mapLink}
                                     to={`/map?location=${buildingId}`}
                                     onClick={focusMap}
-                                    color={appTheme == 'dark' ? 'dodgerblue' : 'blue'}
+                                    color={isDark ? 'dodgerblue' : 'blue'}
                                 >
                                     {bldg}
                                 </Link>
@@ -499,7 +499,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
  * TODO: SectionNum name parity -> SectionNumber
  */
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
-    const appTheme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => store.isDark);
 
     const { classes, section, courseDetails, term, allowHighlight, scheduleNames } = props;
 
@@ -610,15 +610,15 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             style={{
                 background:
                     addedCourse && allowHighlight
-                        ? appTheme == 'dark'
+                        ? isDark
                             ? '#b0b04f'
                             : '#fcfc97'
                         : scheduleConflict && allowHighlight
-                        ? appTheme == 'dark'
+                        ? isDark
                             ? '#121212'
                             : '#a0a0a0'
                         : '',
-                opacity: scheduleConflict && allowHighlight && appTheme == 'dark' ? 0.6 : 1,
+                opacity: scheduleConflict && allowHighlight && isDark ? 0.6 : 1,
             }}
         >
             {!addedCourse ? (

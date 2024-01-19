@@ -108,7 +108,7 @@ function GradesPopup(props: GradesPopupProps) {
     }
 
     const encodedDept = encodeURIComponent(deptCode);
-    const axisColor = appTheme == 'dark' ? '#fff' : '#111';
+    const axisColor = isDark ? '#fff' : '#111';
 
     return (
         <Box sx={{ padding: '4px' }}>

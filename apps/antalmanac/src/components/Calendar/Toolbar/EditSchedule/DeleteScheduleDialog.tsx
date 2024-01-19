@@ -23,7 +23,7 @@ interface DeleteScheduleDialogProps {
 }
 
 const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
-    const appTheme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => store.isDark);
 
     const { scheduleIndex } = props;
 
@@ -60,7 +60,7 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color={appTheme == 'dark' ? 'secondary' : 'primary'}>
+                    <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>
                     <Button onClick={handleDelete} variant="contained" color="primary">

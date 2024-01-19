@@ -35,7 +35,7 @@ interface ScheduleNameDialogProps {
 }
 
 const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
-    const appTheme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => store.isDark);
 
     const { classes, onOpen, onClose, scheduleNames, scheduleRenameIndex } = props;
 
@@ -145,7 +145,7 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
                 </DialogContent>
 
                 <DialogActions>
-                    <Button onClick={handleCancel} color={appTheme == 'dark' ? 'secondary' : 'primary'}>
+                    <Button onClick={handleCancel} color={isDark ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>
                     <Button

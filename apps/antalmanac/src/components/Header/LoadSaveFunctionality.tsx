@@ -142,7 +142,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
 }
 
 const LoadSaveScheduleFunctionality = () => {
-    const appTheme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => store.isDark);
 
     const [loading, setLoading] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
@@ -183,14 +183,14 @@ const LoadSaveScheduleFunctionality = () => {
                 action={saveSchedule}
                 disabled={loading}
                 loading={false}
-                colorType={appTheme == 'dark' ? 'primary' : 'secondary'}
+                colorType={isDark ? 'primary' : 'secondary'}
             />
             <LoadSaveButtonBase
                 actionName={'Load'}
                 action={loadScheduleAndSetLoading}
                 disabled={skeletonMode}
                 loading={loading}
-                colorType={appTheme == 'dark' ? 'primary' : 'secondary'}
+                colorType={isDark ? 'primary' : 'secondary'}
             />
         </>
     );

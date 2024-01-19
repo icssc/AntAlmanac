@@ -17,7 +17,7 @@ class ScreenshotButton extends PureComponent {
         });
         void html2canvas(document.getElementById('screenshot') as HTMLElement, {
             scale: 2.5,
-            backgroundColor: appTheme == 'dark' ? '#303030' : '#fafafa',
+            backgroundColor: isDark ? '#303030' : '#fafafa',
         }).then((canvas) => {
             const imgRaw = canvas.toDataURL('image/png');
             saveAs(imgRaw, 'Schedule.png');

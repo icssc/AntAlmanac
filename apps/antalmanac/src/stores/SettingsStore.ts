@@ -10,6 +10,8 @@ export interface ThemeStore {
      * The 'derived' theme, based on user settings and device preferences
      */
     appTheme: 'light' | 'dark';
+    isDark: boolean;
+
     setAppTheme: (themeSetting: 'light' | 'dark' | 'system') => void;
 }
 
@@ -23,9 +25,19 @@ export const useThemeStore = create<ThemeStore>((set) => {
             ? 'dark'
             : 'light';
 
+    const isDark =
+        themeSetting !== 'system'
+            ? themeSetting === 'dark'
+                ? true
+                : false
+            : window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? true
+            : false;
+
     return {
         themeSetting: themeSetting as 'light' | 'dark' | 'system',
         appTheme: appTheme as 'light' | 'dark',
+        isDark,
         setAppTheme: (themeSetting) => {
             if (typeof Storage !== 'undefined') {
                 window.localStorage.setItem('theme', themeSetting);
@@ -38,7 +50,16 @@ export const useThemeStore = create<ThemeStore>((set) => {
                     ? 'dark'
                     : 'light';
 
-            set({ appTheme: appTheme, themeSetting: themeSetting });
+            const isDark =
+                themeSetting !== 'system'
+                    ? themeSetting === 'dark'
+                        ? true
+                        : false
+                    : window.matchMedia('(prefers-color-scheme: dark)').matches
+                    ? true
+                    : false;
+
+            set({ appTheme, themeSetting, isDark });
 
             logAnalytics({
                 category: analyticsEnum.nav.title,

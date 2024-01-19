@@ -23,7 +23,7 @@ interface ScheduleNameDialogProps extends DialogProps {
  * Dialog with a prompt to delete the specified schedule.
  */
 function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
-    const appTheme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => store.isDark);
 
     /**
      * {@link props.onClose} also needs to be forwarded to the {@link Dialog} component.
@@ -57,7 +57,7 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleCancel} color={appTheme == 'dark' ? 'secondary' : 'primary'}>
+                <Button onClick={handleCancel} color={isDark ? 'secondary' : 'primary'}>
                     Cancel
                 </Button>
                 <Button onClick={handleDelete} variant="contained" color="primary">

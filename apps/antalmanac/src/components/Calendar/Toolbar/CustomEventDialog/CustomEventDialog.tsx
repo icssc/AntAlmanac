@@ -139,7 +139,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
         };
     }, []);
 
-    const appTheme = useThemeStore.getState().appTheme;
+    const isDark = useThemeStore.getState().isDark;
     return (
         <>
             {props.customEvent ? (
@@ -219,7 +219,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                 </DialogContent>
 
                 <DialogActions>
-                    <Button onClick={handleClose} color={appTheme == 'dark' ? 'secondary' : 'primary'}>
+                    <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>
                     <Button onClick={handleSubmit} variant="contained" color="primary" disabled={disabled}>

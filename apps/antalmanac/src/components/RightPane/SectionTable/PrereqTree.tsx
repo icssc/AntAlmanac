@@ -29,8 +29,8 @@ const Node: FC<NodeProps> = (props) => {
             <div
                 className={'course'}
                 style={{
-                    backgroundColor: appTheme == 'dark' ? '#303030' : '#e0e0e0',
-                    color: appTheme == 'dark' ? '#bfbfbf' : 'black',
+                    backgroundColor: isDark ? '#303030' : '#e0e0e0',
+                    color: isDark ? '#bfbfbf' : 'black',
                 }}
             >
                 {props.label}

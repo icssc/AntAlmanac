@@ -176,7 +176,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
 
     const { setActiveTab } = useTabStore();
     const { isMilitaryTime } = useTimeFormatStore();
-    const appTheme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => store.isDark);
 
     const focusMap = useCallback(() => {
         setActiveTab(2);
@@ -262,7 +262,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                                             className={classes.clickableLocation}
                                             to={`/map?location=${locationIds[location.building] ?? 0}`}
                                             onClick={focusMap}
-                                            color={appTheme == 'dark' ? '#1cbeff' : 'blue'}
+                                            color={isDark ? '#1cbeff' : 'blue'}
                                         >
                                             {location.building} {location.room}
                                         </Link>

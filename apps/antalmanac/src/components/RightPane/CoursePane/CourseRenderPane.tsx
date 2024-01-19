@@ -52,7 +52,7 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
 
-    const appTheme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => store.isDark);
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
     const recruitmentDismissalTime = window.localStorage.getItem('recruitmentDismissalTime');
@@ -69,8 +69,8 @@ const RecruitmentBanner = () => {
                     icon={false}
                     severity="info"
                     style={{
-                        color: appTheme == 'dark' ? '#ece6e6' : '#2e2e2e',
-                        backgroundColor: appTheme == 'dark' ? '#2e2e2e' : '#ece6e6',
+                        color: isDark ? '#ece6e6' : '#2e2e2e',
+                        backgroundColor: isDark ? '#2e2e2e' : '#ece6e6',
                     }}
                     action={
                         <IconButton
@@ -146,20 +146,20 @@ const SectionTableWrapped = (
 };
 
 const LoadingMessage = () => {
-    const appTheme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => store.isDark);
     return (
         <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <img src={appTheme == 'dark' ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
+            <img src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
         </Box>
     );
 };
 
 const ErrorMessage = () => {
-    const appTheme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => store.isDark);
     return (
         <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <img
-                src={appTheme == 'dark' ? darkNoNothing : noNothing}
+                src={isDark ? darkNoNothing : noNothing}
                 alt="No Results Found"
                 style={{ objectFit: 'contain', width: '80%', height: '80%' }}
             />
