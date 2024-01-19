@@ -316,7 +316,7 @@ importers:
         version: 3.332.0
       '@aws-sdk/lib-dynamodb':
         specifier: ^3.332.0
-        version: 3.332.0(@aws-sdk/client-dynamodb@3.332.0)(@aws-sdk/smithy-client@3.347.0)(@aws-sdk/types@3.347.0)
+        version: 3.332.0(@aws-sdk/client-dynamodb@3.332.0)(@aws-sdk/smithy-client@3.347.0)(@aws-sdk/types@3.489.0)
       '@types/aws-lambda':
         specifier: ^8.10.110
         version: 8.10.110
@@ -436,6 +436,9 @@ importers:
         specifier: ^16.0.3
         version: 16.0.3
     devDependencies:
+      '@types/node':
+        specifier: ^20.11.5
+        version: 20.11.5
       aws-cdk:
         specifier: ^2.94.0
         version: 2.121.1
@@ -1107,7 +1110,7 @@ packages:
       tslib: 2.5.0
     dev: true
 
-  /@aws-sdk/lib-dynamodb@3.332.0(@aws-sdk/client-dynamodb@3.332.0)(@aws-sdk/smithy-client@3.347.0)(@aws-sdk/types@3.347.0):
+  /@aws-sdk/lib-dynamodb@3.332.0(@aws-sdk/client-dynamodb@3.332.0)(@aws-sdk/smithy-client@3.347.0)(@aws-sdk/types@3.489.0):
     resolution: {integrity: sha512-qs/Ki8/W7fVwI0DBKJ3mwTst+md+jNitHQD6neuxifi8NkdWkDwXFO32DIuHBkXbeo1aERLKF7Q1N046gVSm7A==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -1117,7 +1120,7 @@ packages:
     dependencies:
       '@aws-sdk/client-dynamodb': 3.332.0
       '@aws-sdk/smithy-client': 3.347.0
-      '@aws-sdk/types': 3.347.0
+      '@aws-sdk/types': 3.489.0
       '@aws-sdk/util-dynamodb': 3.332.0
       tslib: 2.5.0
     dev: true
@@ -1484,7 +1487,6 @@ packages:
     dependencies:
       '@smithy/types': 2.8.0
       tslib: 2.5.0
-    dev: false
 
   /@aws-sdk/url-parser@3.329.0:
     resolution: {integrity: sha512-/VcfL7vNJKJGSjYYHVQF3bYCDFs4fSzB7j5qeVDwRdWr870gE7O1Dar+sLWBRKFF3AX+4VzplqzUfpu9t44JVA==}
@@ -3616,7 +3618,6 @@ packages:
     engines: {node: '>=14.0.0'}
     dependencies:
       tslib: 2.5.0
-    dev: false
 
   /@smithy/url-parser@2.0.16:
     resolution: {integrity: sha512-Wfz5WqAoRT91TjRy1JeLR0fXtkIXHGsMbgzKFTx7E68SrZ55TB8xoG+vm11Ru4gheFTMXjAjwAxv1jQdC+pAQA==}
@@ -4138,6 +4139,12 @@ packages:
 
   /@types/node@18.13.0:
     resolution: {integrity: sha512-gC3TazRzGoOnoKAhUx+Q0t8S9Tzs74z7m0ipwGpSqQrleP14hKxP4/JUeEQcD3W1/aIpnWl8pHowI7WokuZpXg==}
+
+  /@types/node@20.11.5:
+    resolution: {integrity: sha512-g557vgQjUUfN76MZAN/dt1z3dzcUsimuysco0KeluHgrPdJXkP/XdAURgyO2W9fZWHRtRBiVKzKn8vyOAwlG+w==}
+    dependencies:
+      undici-types: 5.26.5
+    dev: true
 
   /@types/parse-json@4.0.0:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}
@@ -9365,6 +9372,10 @@ packages:
 
   /undefsafe@2.0.5:
     resolution: {integrity: sha512-WxONCrssBM8TSPRqN5EmsjVrsv4A8X12J4ArBiiayv3DyyG3ZlIg6yysuuSYdZsVz3TKcTg2fd//Ujd4CHV1iA==}
+    dev: true
+
+  /undici-types@5.26.5:
+    resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
     dev: true
 
   /universalify@0.1.2:

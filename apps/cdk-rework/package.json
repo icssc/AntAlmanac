@@ -27,6 +27,7 @@
         "dotenv": "^16.0.3"
     },
     "devDependencies": {
+        "@types/node": "^20.11.5",
         "aws-cdk": "^2.94.0",
         "tsx": "^3.12.7",
         "typescript": "^5.1.0"
