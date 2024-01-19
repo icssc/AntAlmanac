@@ -146,7 +146,7 @@ export default function ClassRoutes(props: ClassRoutesProps) {
         return () => {
             routerRef.current.instance.remove();
         };
-    }, []);
+    }, [context.map, routerRef]);
 
     return null;
 }
