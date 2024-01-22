@@ -21,6 +21,8 @@ export class BackendStack extends Stack {
             CERTIFICATE_ARN: 'string',
             HOSTED_ZONE_ID: 'string',
             MONGODB_URI_PROD: 'string',
+            GOOGLE_CLIENT_ID: 'string',
+            GOOGLE_CLIENT_SECRET: 'string',
             'MAPBOX_ACCESS_TOKEN?': 'string',
             'NODE_ENV?': 'string',
             'PR_NUM?': 'string',
@@ -35,6 +37,15 @@ export class BackendStack extends Stack {
         const domain = env.PR_NUM ? `staging-${env.PR_NUM}.api` : env.NODE_ENV === 'production' ? 'api' : 'dev.api';
 
         const userDataDDB = new dynamnodb.Table(this, 'user-data-ddb', {
+            partitionKey: {
+                name: 'id',
+                type: dynamnodb.AttributeType.STRING,
+            },
+            billingMode: dynamnodb.BillingMode.PAY_PER_REQUEST,
+            removalPolicy: env.NODE_ENV === 'staging' ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
+        });
+
+        const authUserDataDDB = new dynamnodb.Table(this, `authuserdata-ddb`, {
             partitionKey: {
                 name: 'id',
                 type: dynamnodb.AttributeType.STRING,
@@ -59,6 +70,7 @@ export class BackendStack extends Stack {
         });
 
         userDataDDB.grantReadWriteData(handler);
+        authUserDataDDB.grantReadWriteData(handler);
 
         const certificate = acm.Certificate.fromCertificateArn(this, 'api-gateway-certificate', env.CERTIFICATE_ARN);
 
