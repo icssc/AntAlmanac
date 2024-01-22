@@ -59,10 +59,7 @@ jobs:
 
             # If a staging backend is deployed, then the frontend should use its URL.
             # Otherwise use the default development API endpoint.
-            antalmanac-api-endpoint: |
-                (${{ steps.changed.outputs.backend }} == true ||  ${{ steps.changed.outputs.cdk }} == true) 
-                && https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
-                || https://dev.api.antalmanac.com
+            antalmanac-api-endpoint: (${{ steps.changed.outputs.backend }} == true ||  ${{ steps.changed.outputs.cdk }} == true) && https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com || https://dev.api.antalmanac.com
 
         steps:
             - name: Checkout repository
@@ -103,7 +100,7 @@ jobs:
               run: pnpm --filter "antalmanac" build
               env:
                   # https://stackoverflow.com/q/76218717
-                  VITE_ENDPOINT: ${{ github.event.deployment.url }}
+                  VITE_ENDPOINT: ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
 
             - name: Deploy frontend staging CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" frontend-staging deploy
