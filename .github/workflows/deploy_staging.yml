@@ -29,6 +29,8 @@ env:
     MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
     MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
     VITE_TILES_ENDPOINT: ${{ secrets.VITE_TILES_ENDPOINT}}
+    GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+    GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
 
     # Turborepo credentials.
     TURBO_API: ${{ vars.TURBO_API }}
