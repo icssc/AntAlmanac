@@ -92,6 +92,7 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
                 );
                 AppStore.saveSchedule();
             } catch (e) {
+                console.log('Error: ', e);
                 if (e instanceof TRPCError) {
                     openSnackbar('error', `Schedule could not be saved under username "${userID}`);
                 } else {
