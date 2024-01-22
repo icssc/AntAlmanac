@@ -90,12 +90,6 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v3
 
-            - name: Check Endpoint
-              run: echo ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
-
-            - name: Check Backend
-              run: echo ${{ needs.get_staging_configuration.outputs.should-deploy-backend }}
-
             - name: Setup Node.js and pnpm
               uses: ./.github/actions/setup-node-and-pnpm
 
@@ -105,7 +99,6 @@ jobs:
             - name: Build frontend
               run: pnpm --filter "antalmanac" build
               env:
-                  # https://stackoverflow.com/q/76218717
                   VITE_ENDPOINT: ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
 
             - name: Deploy frontend staging CloudFormation stack
