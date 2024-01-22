@@ -61,19 +61,8 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Build frontend
-              run: pnpm --filter "antalmanac" build
-              env:
-                  VITE_ENDPOINT: ${{ needs.get_staging_configuration.outputs.api-endpoint }}
-
             - name: Destroy frontend staging CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" frontend-staging destroy
-
-            - name: Delete staging frontend URL
-              uses: marocchino/sticky-pull-request-comment@v2
-              with:
-                  header: staging url
-                  delete: true
 
             - name: Deactivate frontend staging environment
               uses: strumwolf/delete-deployment-environment@195215d2c5602aee6fb4b9cf0853970decca9e7a # v2.3.0
@@ -96,9 +85,6 @@ jobs:
 
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
-
-            - name: Build backend
-              run: pnpm --filter "antalmanac-backend" build
 
             - name: Destroy backend staging CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" backend-staging destroy
