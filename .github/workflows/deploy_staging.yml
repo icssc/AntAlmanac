@@ -59,7 +59,11 @@ jobs:
 
             # If a staging backend is deployed, then the frontend should use its URL.
             # Otherwise use the default development API endpoint.
-            antalmanac-api-endpoint: (steps.changed.outputs.backend == true ||  steps.changed.outputs.cdk == true) && format("https://staging-{}.api.antalmanac.com", github.event.pull_request.number) || "https://dev.api.antalmanac.com"
+            antalmanac-api-endpoint: ${{
+                (steps.changed.outputs.backend == true ||  steps.changed.outputs.cdk == true) 
+                && format("https://staging-{0}.api.antalmanac.com", github.event.pull_request.number) 
+                || "https://dev.api.antalmanac.com"
+            }}
 
         steps:
             - name: Checkout repository
@@ -90,14 +94,17 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v3
 
+            - name: Check Endpoint
+              run: echo ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
+
+            - name: Check Backend
+              run: echo ${{ needs.get_staging_configuration.outputs.should-deploy-backend }}
+
             - name: Setup Node.js and pnpm
               uses: ./.github/actions/setup-node-and-pnpm
 
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
-
-            - name: Check Endpoint
-              run: echo ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
 
             - name: Build frontend
               run: pnpm --filter "antalmanac" build
