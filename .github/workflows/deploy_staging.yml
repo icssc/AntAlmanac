@@ -59,11 +59,7 @@ jobs:
 
             # If a staging backend is deployed, then the frontend should use its URL.
             # Otherwise use the default development API endpoint.
-            antalmanac-api-endpoint: ${{ 
-                (steps.changed.outputs.backend == true ||  steps.changed.outputs.cdk == true) 
-                && "https://dev.api.antalmanac.com" 
-                || "https://dev.api.antalmanac.com"
-            }}
+            antalmanac-api-endpoint: ${{ (steps.changed.outputs.backend == true ||  steps.changed.outputs.cdk == true) && "https://dev.api.antalmanac.com" || "https://dev.api.antalmanac.com" }}
             # antalmanac-api-endpoint: ${{
             #     ((steps.changed.outputs.backend == true ||  steps.changed.outputs.cdk == true) 
             #     && format("https://staging-{0}.api.antalmanac.com", github.event.pull_request.number))
