@@ -3,7 +3,7 @@ import { Box, Button, ButtonGroup, Divider, Drawer, IconButton, Typography, useM
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { Close, DarkMode, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
-import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -135,6 +135,59 @@ function TimeMenu() {
     );
 }
 
+function SaveMenu() {
+    const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
+    const theme = useThemeStore((store) => store.appTheme);
+
+    const handleAutoSaveChange = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAutoSave(event.currentTarget.value == 'true');
+    };
+
+    return (
+        <Box sx={{ padding: '1rem 1rem 0 1rem', width: '100%' }}>
+            <Typography variant="h6" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
+                Auto Save
+            </Typography>
+
+            <ButtonGroup
+                style={{
+                    display: 'flex',
+                    placeContent: 'center',
+                    width: '100%',
+                }}
+            >
+                <Button
+                    style={{
+                        padding: '1rem 2rem',
+                        borderRadius: '12px 0px 0px 12px',
+                        width: '100%',
+                        fontSize: '12px',
+                        ...getSelectedStyle('false', autoSave.toString(), theme),
+                    }}
+                    value="false"
+                    onClick={handleAutoSaveChange}
+                    fullWidth={true}
+                >
+                    Off
+                </Button>
+                <Button
+                    style={{
+                        padding: '1rem 2rem',
+                        borderRadius: '0px 12px 12px 0px',
+                        width: '100%',
+                        fontSize: '12px',
+                        ...getSelectedStyle('true', autoSave.toString(), theme),
+                    }}
+                    value="true"
+                    onClick={handleAutoSaveChange}
+                >
+                    On
+                </Button>
+            </ButtonGroup>
+        </Box>
+    );
+}
+
 function SettingsMenu() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const isMobileScreen = useMediaQuery('(max-width:750px)');
@@ -178,6 +231,7 @@ function SettingsMenu() {
 
                     <ThemeMenu />
                     <TimeMenu />
+                    <SaveMenu />
                 </Box>
             </Drawer>
         </>

@@ -6,6 +6,7 @@ import { Schedules } from './Schedules';
 import { SnackbarPosition } from '$components/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { useTabStore } from '$stores/TabStore';
+import { saveSchedule } from '$actions/AppStoreActions';
 
 class AppStore extends EventEmitter {
     schedule: Schedules;
@@ -74,6 +75,7 @@ class AppStore extends EventEmitter {
             addedCourse = this.schedule.addCourse(newCourse, scheduleIndex);
         }
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['addCourse', newCourse, scheduleIndex]);
         this.emit('addedCoursesChange');
         return addedCourse;
     }
@@ -151,12 +153,14 @@ class AppStore extends EventEmitter {
     deleteCourse(sectionCode: string, term: string) {
         this.schedule.deleteCourse(sectionCode, term);
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['deleteCourse', sectionCode, term]);
         this.emit('addedCoursesChange');
     }
 
     undoAction() {
         this.schedule.revertState();
         this.unsavedChanges = true;
+        this.autoSaveSchedule();
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
         this.emit('colorChange', false);
@@ -168,24 +172,28 @@ class AppStore extends EventEmitter {
     addCustomEvent(customEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
         this.schedule.addCustomEvent(customEvent, scheduleIndices);
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['addCustomEvent', customEvent, scheduleIndices]);
         this.emit('customEventsChange');
     }
 
     editCustomEvent(editedCustomEvent: RepeatingCustomEvent, newScheduleIndices: number[]) {
         this.schedule.editCustomEvent(editedCustomEvent, newScheduleIndices);
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['editCustomEvent', editedCustomEvent, newScheduleIndices]);
         this.emit('customEventsChange');
     }
 
     deleteCustomEvent(customEventId: number) {
         this.schedule.deleteCustomEvent(customEventId);
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['deleteCustomEvent', customEventId]);
         this.emit('customEventsChange');
     }
 
     changeCustomEventColor(customEventId: number, newColor: string) {
         this.schedule.changeCustomEventColor(customEventId, newColor);
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['changeCustomEventColor', customEventId, newColor]);
         this.colorPickers[customEventId].emit('colorChange', newColor);
         this.emit('colorChange', false);
     }
@@ -212,6 +220,7 @@ class AppStore extends EventEmitter {
     copySchedule(to: number) {
         this.schedule.copySchedule(to);
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['copySchedule', to]);
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
     }
@@ -223,6 +232,37 @@ class AppStore extends EventEmitter {
             return false;
         }
         this.unsavedChanges = false;
+
+        if (window.localStorage.getItem('unsavedAction') != null) {
+            if (confirm('You have unsaved changes. Would you like to load them?')) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                const unsavedAction = JSON.parse(window.localStorage.getItem('unsavedAction'));
+                for (const action of unsavedAction) {
+                    if (action[0] == 'addCourse') {
+                        this.schedule.addCourse(action[1], action[2]);
+                    } else if (action[0] == 'deleteCourse') {
+                        this.schedule.deleteCourse(action[1], action[2]);
+                    } else if (action[0] == 'addCustomEvent') {
+                        this.schedule.addCustomEvent(action[1], action[2]);
+                    } else if (action[0] == 'deleteCustomEvent') {
+                        this.schedule.deleteCustomEvent(action[1]);
+                    } else if (action[0] == 'editCustomEvent') {
+                        this.schedule.editCustomEvent(action[1], action[2]);
+                    } else if (action[0] == 'changeCustomEventColor') {
+                        this.schedule.changeCustomEventColor(action[1], action[2]);
+                    } else if (action[0] == 'changeCourseColor') {
+                        this.schedule.changeCourseColor(action[1], action[2], action[3]);
+                    } else if (action[0] == 'clearSchedule') {
+                        this.schedule.clearCurrentSchedule();
+                    } else if (action[0] == 'copySchedule') {
+                        this.schedule.copySchedule(action[1]);
+                    }
+                }
+                localStorage.removeItem('unsavedAction');
+            }
+        }
+
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
         this.emit('scheduleNamesChange');
@@ -257,6 +297,7 @@ class AppStore extends EventEmitter {
     clearSchedule() {
         this.schedule.clearCurrentSchedule();
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['clearSchedule']);
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
     }
@@ -273,6 +314,7 @@ class AppStore extends EventEmitter {
     changeCourseColor(sectionCode: string, term: string, newColor: string) {
         this.schedule.changeCourseColor(sectionCode, term, newColor);
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['changeCourseColor', sectionCode, term, newColor]);
         this.colorPickers[sectionCode].emit('colorChange', newColor);
         this.emit('colorChange', false);
     }
@@ -299,6 +341,29 @@ class AppStore extends EventEmitter {
 
     termsInSchedule = (term: string) =>
         new Set([term, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
+
+    autoSaveSchedule = (action: any[] = [null, null, null]) => {
+        const autoSave = typeof Storage !== 'undefined' && window.localStorage.getItem('autoSave') == 'true';
+        if (autoSave) {
+            const savedUserID = window.localStorage.getItem('userID');
+
+            if (savedUserID != null) {
+                saveSchedule(savedUserID, true, true).then((r) => void r);
+                this.unsavedChanges = false;
+            }
+        } else {
+            if (window.localStorage.getItem('unsavedAction') == null) {
+                const unsavedAction = [action];
+                localStorage.setItem('unsavedAction', JSON.stringify(unsavedAction));
+            } else {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                const unsavedAction = JSON.parse(window.localStorage.getItem('unsavedAction'));
+                unsavedAction.push(action);
+                localStorage.setItem('unsavedAction', JSON.stringify(unsavedAction));
+            }
+        }
+    };
 }
 
 const store = new AppStore();
