@@ -69,7 +69,6 @@ jobs:
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   environment: frontend-staging-${{ github.event.pull_request.number }}
-                  onlyDeactivateDeployments: true
 
     destroy_staging_backend:
         name: Destroy backend staging CloudFormation stack and environment
@@ -97,4 +96,3 @@ jobs:
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   environment: backend-staging-${{ github.event.pull_request.number }}
-                  onlyDeactivateDeployments: true
