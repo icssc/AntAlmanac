@@ -55,7 +55,7 @@ jobs:
 
         outputs:
             # A staging backend should only be deployed if either the backend or CDK changed.
-            should-deploy-backend: ${{ steps.changed.outputs.backend == true ||  steps.changed.outputs.cdk == true }}
+            should-deploy-backend: ${{ steps.changed.outputs.backend == 'true' ||  steps.changed.outputs.cdk == 'true' }}
 
             # If a staging backend is deployed, then the frontend should use its URL.
             # Otherwise use the default development API endpoint.
@@ -87,12 +87,6 @@ jobs:
             url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
 
         steps:
-            - name: Check Endpoint
-              run: echo ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
-
-            - name: Check changed
-              run: echo ${{ needs.get_staging_configuration.outputs.should-deploy-backend }}
-
             - name: Checkout repository
               uses: actions/checkout@v3
 
@@ -124,12 +118,6 @@ jobs:
             url: https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
 
         steps:
-            - name: Check Endpoint
-              run: echo ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
-
-            - name: Check changed
-              run: echo ${{ needs.get_staging_configuration.outputs.should-deploy-backend }}
-
             - name: Checkout repository
               uses: actions/checkout@v3
 
