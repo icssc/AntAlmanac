@@ -10,7 +10,7 @@ on:
             - unlabeled
 
 concurrency:
-    group: ${{ github.ref }}-deploy-staging
+    group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
 
 permissions:

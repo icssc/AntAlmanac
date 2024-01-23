@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-action.json
+---
+name: Setup Node.js and pnpm
+
+description: Loads environment variables.
+
+runs:
+    using: composite
+
+    steps:
+        - name: Setup Node.js environment
+          uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4
+          with:
+              node-version: lts/*
+
+        - name: Install pnpm
+          uses: pnpm/action-setup@v2
+          with:
+              version: 8
+              run_install: false
+
+        - name: Get pnpm store directory
+          id: pnpm-cache
+          shell: bash
+          run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+        - name: Setup pnpm cache
+          uses: actions/cache@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3
+          with:
+              path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+              key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+              restore-keys: ${{ runner.os }}-pnpm-store-
