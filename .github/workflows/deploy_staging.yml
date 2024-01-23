@@ -74,7 +74,6 @@ jobs:
                         - 'apps/backend/**'
                       cdk:
                         - 'apps/cdk/**'
-
     deploy_staging_frontend:
         name: Deploy frontend staging CloudFormation stack and environment
 
@@ -87,6 +86,12 @@ jobs:
             url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
 
         steps:
+            - name: Check Endpoint
+              run: echo ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
+
+            - name: Check changed
+              run: echo ${{ needs.get_staging_configuration.outputs.should-deploy-backend }}
+
             - name: Checkout repository
               uses: actions/checkout@v3
 
@@ -118,6 +123,12 @@ jobs:
             url: https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
 
         steps:
+            - name: Check Endpoint
+              run: echo ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
+
+            - name: Check changed
+              run: echo ${{ needs.get_staging_configuration.outputs.should-deploy-backend }}
+
             - name: Checkout repository
               uses: actions/checkout@v3
 
