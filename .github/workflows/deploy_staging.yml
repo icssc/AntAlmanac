@@ -114,7 +114,7 @@ jobs:
 
         needs: get_staging_configuration
 
-        if: ${{ needs.get_staging_configuration.outputs.should-deploy-backend == true }}
+        if: ${{ needs.get_staging_configuration.outputs.should-deploy-backend == 'true' }}
 
         runs-on: ubuntu-latest
 
