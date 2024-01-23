@@ -14,11 +14,9 @@ concurrency:
     cancel-in-progress: true
 
 permissions:
-    id-token: write
     contents: read
     pull-requests: write
     deployments: write
-    repository-projects: write
 
 env:
     # Tooling settings.
