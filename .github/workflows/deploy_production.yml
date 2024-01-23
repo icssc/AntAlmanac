@@ -20,7 +20,7 @@ permissions:
 env:
     # Tooling settings.
     HUSKY: 0
-    NODE_ENV: staging
+    NODE_ENV: production
 
     # Application information.
     MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
