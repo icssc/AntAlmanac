@@ -12,6 +12,7 @@ async function main() {
     const token = core.getInput('GITHUB_TOKEN');
     const name = core.getInput('name');
     const environment = core.getInput('environment');
+    const url = core.getInput('url');
 
     const octokit = github.getOctokit(token);
 
@@ -48,7 +49,7 @@ async function main() {
         })
     );
 
-    let deploymentId = deploymentsWithPrefix[0].id;
+    let deploymentId = deploymentsWithPrefix[0]?.id;
 
     /**
      * If no other deployments had this prefix, then create a new one.
@@ -62,11 +63,14 @@ async function main() {
                 [NAME_KEY]: name,
             },
         });
-        if (response.status !== 201) {
-            throw new Error(`Failed to create deployment: ${response.status}`);
-        } else {
+
+        if (response.status === 201) {
             deploymentId = response.data.id;
         }
+    }
+
+    if (deploymentId == null) {
+        throw new Error('Could not find or create a deployment');
     }
 
     /**
@@ -78,6 +82,7 @@ async function main() {
         environment,
         deployment_id: deploymentId,
         state: SUCCESS_STATE,
+        environment_url: url,
     });
 }
 
