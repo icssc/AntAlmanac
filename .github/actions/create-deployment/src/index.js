@@ -49,6 +49,7 @@ async function main() {
             [NAME_KEY]: name,
         },
         description: 'This is a test deployment',
+        task: 'deploying test environment',
     });
 
     if (response.status !== 201) {
