@@ -152,18 +152,21 @@ export default function CourseMap() {
     const [calendarEvents, setCalendarEvents] = useState(AppStore.getCourseEventsInCalendar());
 
     useEffect(() => {
-        const updateMarkers = () => {
+        const updateAllMarkers = () => {
             setMarkers(getCoursesPerBuilding());
+            setCustomEventMarkers(getCustomEventPerBuilding());
         };
 
-        AppStore.on('addedCoursesChange', updateMarkers);
-        AppStore.on('currentScheduleIndexChange', updateMarkers);
-        AppStore.on('colorChange', updateMarkers);
+        AppStore.on('addedCoursesChange', updateAllMarkers);
+        AppStore.on('customEventsChange', updateAllMarkers);
+        AppStore.on('currentScheduleIndexChange', updateAllMarkers);
+        AppStore.on('colorChange', updateAllMarkers);
 
         return () => {
-            AppStore.removeListener('addedCoursesChange', updateMarkers);
-            AppStore.removeListener('currentScheduleIndexChange', updateMarkers);
-            AppStore.removeListener('colorChange', updateMarkers);
+            AppStore.removeListener('addedCoursesChange', updateAllMarkers);
+            AppStore.removeListener('customEventsChange', updateAllMarkers);
+            AppStore.removeListener('currentScheduleIndexChange', updateAllMarkers);
+            AppStore.removeListener('colorChange', updateAllMarkers);
         };
     }, []);
 
