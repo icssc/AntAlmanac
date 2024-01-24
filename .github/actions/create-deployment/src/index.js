@@ -54,21 +54,22 @@ async function main() {
     }
 
     const deploymentId = response.data.id;
+    console.log({ response });
 
     /**
      * Create a new deployment status.
      */
-    await octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
-        ...github.context.repo,
-        ...github.context,
-        environment,
-        deployment_id: deploymentId,
-        state: SUCCESS_STATE,
-        log_url: url,
-        environment_url: url,
-        auto_inactive: false,
-        description: 'This is a test deployment status',
-    });
+    // await octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
+    //     ...github.context.repo,
+    //     ...github.context,
+    //     environment,
+    //     deployment_id: deploymentId,
+    //     state: SUCCESS_STATE,
+    //     log_url: url,
+    //     environment_url: url,
+    //     auto_inactive: false,
+    //     description: 'This is a test deployment status',
+    // });
 }
 
 main();
