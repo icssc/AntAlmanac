@@ -39,8 +39,9 @@ async function main() {
     // );
 
     const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
-        ...github.context.repo,
-        ...github.context,
+        repo: github.context.repo.repo,
+        owner: github.context.repo.owner,
+        ref: github.context.ref.slice(0, github.context.ref.length - 6),
         environment,
         payload: {
             [NAME_KEY]: name,
@@ -60,8 +61,8 @@ async function main() {
      * Create a new deployment status.
      */
     await octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
-        ...github.context.repo,
-        ...github.context,
+        repo: github.context.repo.repo,
+        owner: github.context.repo.owner,
         environment,
         deployment_id: deploymentId,
         state: SUCCESS_STATE,
