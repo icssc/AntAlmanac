@@ -16,11 +16,6 @@ async function main() {
 
     const octokit = github.getOctokit(token);
 
-    const repo = github.context.repo;
-    const ref = github.context.sha;
-
-    console.log('CONTEXT OBJECT: ', github);
-
     // const response = await octokit.request('GET /repos/{owner}/{repo}/deployments', { ...repo, environment });
 
     // const deploymentsWithPrefix = response.data.filter((deployment) => {
@@ -44,8 +39,8 @@ async function main() {
     // );
 
     const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
-        ...repo,
-        ref,
+        ...github.context.repo,
+        ...github.context,
         environment,
         payload: {
             [NAME_KEY]: name,
@@ -64,8 +59,8 @@ async function main() {
      * Create a new deployment status.
      */
     await octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
-        ...repo,
-        ref,
+        ...github.context.repo,
+        ...github.context,
         environment,
         deployment_id: deploymentId,
         state: SUCCESS_STATE,
