@@ -67,3 +67,22 @@ export const useTimeFormatStore = create<TimeFormatStore>((set) => {
         },
     };
 });
+export interface PreviewStore {
+    previewMode: boolean;
+    setPreviewMode: (previewMode: boolean) => void;
+}
+
+export const usePreviewStore = create<PreviewStore>((set) => {
+    const previewMode = typeof Storage !== 'undefined' && window.localStorage.getItem('previewMode') == 'true';
+
+    return {
+        previewMode: previewMode,
+        setPreviewMode: (previewMode) => {
+            if (typeof Storage !== 'undefined') {
+                window.localStorage.setItem('previewMode', previewMode.toString());
+            }
+
+            set({ previewMode: previewMode });
+        },
+    };
+});

@@ -11,6 +11,7 @@ import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
 import { useTimeFormatStore } from '$stores/SettingsStore';
+import { useHoveredStore } from '$stores/HoveredStore';
 
 const localizer = momentLocalizer(moment);
 
@@ -78,9 +79,14 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
     const { isMilitaryTime } = useTimeFormatStore();
+    const { hoveredCourseEvents } = useHoveredStore();
 
     const getEventsForCalendar = () => {
-        return showFinalsSchedule ? finalsEventsInCalendar : eventsInCalendar;
+        return showFinalsSchedule
+            ? finalsEventsInCalendar
+            : hoveredCourseEvents
+              ? [...eventsInCalendar, ...hoveredCourseEvents]
+              : eventsInCalendar;
     };
 
     const handleClosePopover = () => {
@@ -129,7 +135,9 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
         // This equation is taken from w3c, does not use the colour difference part
         const minBrightnessDiff = 125;
 
-        const backgroundRegexResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(bg) as RegExpExecArray; // returns {hex, r, g, b}
+        const backgroundRegexResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(
+            bg.slice(0, 7)
+        ) as RegExpExecArray; // returns {hex, r, g, b}
         const backgroundRGB = {
             r: parseInt(backgroundRegexResult[1], 16),
             g: parseInt(backgroundRegexResult[2], 16),
