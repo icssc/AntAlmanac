@@ -1,12 +1,19 @@
 name: Create Deployment
 description: Workflow for creating deployments within one environment with distinct naming conventions.
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
-    required: true
-    default: 'World'
+    token:
+        description: GitHub Actions secret token.
+        required: true
+    environment:
+        description: Environment name for the deployment.
+        required: true
+    name:
+        description: Name of the deployment.
+        required: true
+    url:
+        description: Deployment environment URL.
+        required: true
 outputs:
 runs:
-  using: 'node20'
-  main: 'src/index.js'
-
+    using: 'node20'
+    main: 'src/index.js'
