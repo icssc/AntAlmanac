@@ -19,53 +19,47 @@ async function main() {
     const repo = github.context.repo;
     const ref = github.context.ref;
 
-    const response = await octokit.request('GET /repos/{owner}/{repo}/deployments', { ...repo, environment });
+    // const response = await octokit.request('GET /repos/{owner}/{repo}/deployments', { ...repo, environment });
 
-    const deploymentsWithPrefix = response.data.filter((deployment) => {
-        if (typeof deployment.payload === 'string') {
-            return deployment.payload.startsWith(name);
-        }
-        const deploymentName = deployment.payload[NAME_KEY];
-        return typeof deploymentName === 'string' && deploymentName.startsWith(name);
-    });
+    // const deploymentsWithPrefix = response.data.filter((deployment) => {
+    //     if (typeof deployment.payload === 'string') {
+    //         return deployment.payload.startsWith(name);
+    //     }
+    //     const deploymentName = deployment.payload[NAME_KEY];
+    //     return typeof deploymentName === 'string' && deploymentName.startsWith(name);
+    // });
 
-    console.log(deploymentsWithPrefix);
+    // console.log(deploymentsWithPrefix);
 
-    await Promise.all(
-        deploymentsWithPrefix.map(async (deployment) => {
-            console.log({ deployment });
+    // await Promise.all(
+    //     deploymentsWithPrefix.map(async (deployment) => {
+    //         console.log({ deployment });
 
-            return octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
-                deployment_id: deployment.id,
-                state: INACTIVE_STATE,
-                ...repo,
-            });
-        })
-    );
-
-    let deploymentId = deploymentsWithPrefix[0]?.id;
+    //         return octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
+    //             deployment_id: deployment.id,
+    //             state: INACTIVE_STATE,
+    //             ...repo,
+    //         });
+    //     })
+    // );
 
     /**
      * If no other deployments had this prefix, then create a new one.
      */
-    if (!deploymentsWithPrefix.length) {
-        const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
-            ...repo,
-            ref,
-            environment,
-            payload: {
-                [NAME_KEY]: name,
-            },
-        });
+    const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
+        ...repo,
+        ref,
+        environment,
+        payload: {
+            [NAME_KEY]: name,
+        },
+    });
 
-        if (response.status === 201) {
-            deploymentId = response.data.id;
-        }
+    if (response.status !== 201) {
+        throw new Error('Could not create a deployment');
     }
 
-    if (deploymentId == null) {
-        throw new Error('Could not find or create a deployment');
-    }
+    const deploymentId = response.data.id;
 
     /**
      * Create a new deployment status.
