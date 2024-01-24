@@ -48,6 +48,7 @@ async function main() {
         payload: {
             [NAME_KEY]: name,
         },
+        description: 'This is a test deployment',
     });
 
     if (response.status !== 201) {
@@ -68,6 +69,7 @@ async function main() {
         log_url: url,
         environment_url: url,
         auto_inactive: false,
+        description: 'This is a test deployment status',
     });
 }
 

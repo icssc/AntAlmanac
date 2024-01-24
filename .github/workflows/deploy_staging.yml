@@ -102,13 +102,13 @@ jobs:
                   # - name: Deploy frontend staging CloudFormation stack
                   #   run: pnpm --filter "antalmanac-cdk" frontend-staging deploy
 
-                  # - name: Create deployment
-                  #   uses: ./.github/actions/create-deployment
-                  #   with:
-                  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  #       environment: staging
-                  #       name: frontend-staging-${{ github.event.pull_request.number }}
-                  #       url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
+            - name: Create deployment
+              uses: ./.github/actions/create-deployment
+              with:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  environment: staging
+                  name: frontend-staging-${{ github.event.pull_request.number }}
+                  url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
 
     deploy_staging_backend:
         name: Deploy backend staging CloudFormation stack and environment
@@ -140,10 +140,10 @@ jobs:
                   # - name: Deploy backend staging CloudFormation stack
                   #   run: pnpm --filter "antalmanac-cdk" backend-staging deploy
 
-                  # - name: Create deployment
-                  #   uses: ./.github/actions/create-deployment
-                  #   with:
-                  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  #       environment: staging
-                  #       name: backend-staging-${{ github.event.pull_request.number }}
-                  #       url: https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
+            - name: Create deployment
+              uses: ./.github/actions/create-deployment
+              with:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  environment: staging
+                  name: backend-staging-${{ github.event.pull_request.number }}
+                  url: https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
