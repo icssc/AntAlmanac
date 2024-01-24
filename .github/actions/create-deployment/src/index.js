@@ -65,6 +65,7 @@ async function main() {
         environment,
         deployment_id: deploymentId,
         state: SUCCESS_STATE,
+        log_url: url,
         environment_url: url,
         auto_inactive: false,
     });
