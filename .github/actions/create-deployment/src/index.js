@@ -29,6 +29,8 @@ async function main() {
         return typeof deploymentName === 'string' && deploymentName.startsWith(name);
     });
 
+    console.log(deploymentsWithPrefix);
+
     await Promise.all(
         deploymentsWithPrefix.map(async (deployment) => {
             const response = await octokit.request('GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
