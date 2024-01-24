@@ -42,8 +42,7 @@ async function main() {
     // );
 
     const response = await octokit.request('DELETE /repos/{owner}/{repo}/environments/{environment_name}', {
-        owner: 'OWNER',
-        repo: 'REPO',
+        ...repo,
         environment_name: environment,
     });
 
