@@ -52,8 +52,8 @@ const AntAlmanacEvent = ({ event }: { event: CalendarEvent }) => {
                     {event.showLocationInfo
                         ? event.locations.map((location) => `${location.building} ${location.room}`).join(', ')
                         : event.locations.length > 1
-                        ? `${event.locations.length} Locations`
-                        : `${event.locations[0].building} ${event.locations[0].room}`}
+                          ? `${event.locations.length} Locations`
+                          : `${event.locations[0].building} ${event.locations[0].room}`}
                 </Box>
                 <Box>{event.sectionCode}</Box>
             </Box>
@@ -164,8 +164,6 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
             setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
             setEventsInCalendar(AppStore.getEventsInCalendar());
             setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
-
-            handleClosePopover();
         };
 
         const updateScheduleNames = () => {
