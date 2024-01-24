@@ -1,0 +1,12 @@
+name: Create Deployment
+description: Workflow for creating deployments within one environment with distinct naming conventions.
+inputs:
+  who-to-greet:  # id of input
+    description: 'Who to greet'
+    required: true
+    default: 'World'
+outputs:
+runs:
+  using: 'node20'
+  main: 'src/index.js'
+
