@@ -89,13 +89,13 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Build frontend
-              run: pnpm --filter "antalmanac" build
-              env:
-                  VITE_ENDPOINT: ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
+                  # - name: Build frontend
+                  #   run: pnpm --filter "antalmanac" build
+                  #   env:
+                  #       VITE_ENDPOINT: ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
 
-            - name: Deploy frontend staging CloudFormation stack
-              run: pnpm --filter "antalmanac-cdk" frontend-staging deploy
+                  # - name: Deploy frontend staging CloudFormation stack
+                  #   run: pnpm --filter "antalmanac-cdk" frontend-staging deploy
 
             - name: Create deployment
               uses: ./.github/actions/create-deployment
@@ -124,11 +124,11 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Build backend
-              run: pnpm --filter "antalmanac-backend" build
+                  # - name: Build backend
+                  #   run: pnpm --filter "antalmanac-backend" build
 
-            - name: Deploy backend staging CloudFormation stack
-              run: pnpm --filter "antalmanac-cdk" backend-staging deploy
+                  # - name: Deploy backend staging CloudFormation stack
+                  #   run: pnpm --filter "antalmanac-cdk" backend-staging deploy
 
             - name: Create deployment
               uses: ./.github/actions/create-deployment
