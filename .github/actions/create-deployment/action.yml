@@ -1,7 +1,7 @@
 name: Create Deployment
 description: Workflow for creating deployments within one environment with distinct naming conventions.
 inputs:
-    token:
+    GITHUB_TOKEN:
         description: GitHub Actions secret token.
         required: true
     environment:
