@@ -148,7 +148,7 @@ function ExperimentalMenu() {
             <Box display="flex" justifyContent="space-between" width={1}>
                 <Box display="flex" alignItems="center" style={{ gap: 4 }}>
                     <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
-                        Preview Mode
+                        Hover to Preview
                     </Typography>
                     <Tooltip title={<Typography>Hover over courses to preview them in your calendar!</Typography>}>
                         <Help />
