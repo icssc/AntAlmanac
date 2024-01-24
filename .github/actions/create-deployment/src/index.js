@@ -17,7 +17,9 @@ async function main() {
     const octokit = github.getOctokit(token);
 
     const repo = github.context.repo;
-    const ref = github.context.ref;
+    const ref = github.context.sha;
+
+    console.log('CONTEXT OBJECT: ', github);
 
     // const response = await octokit.request('GET /repos/{owner}/{repo}/deployments', { ...repo, environment });
 
@@ -41,44 +43,37 @@ async function main() {
     //     })
     // );
 
-    const response = await octokit.request('DELETE /repos/{owner}/{repo}/environments/{environment_name}', {
+    const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
         ...repo,
-        environment_name: environment,
+        ref,
+        environment,
+        payload: {
+            [NAME_KEY]: name,
+        },
+        description: 'This is a test deployment',
+        task: 'deploying test environment',
     });
 
-    console.log({ response });
+    if (response.status !== 201) {
+        throw new Error('Could not create a deployment');
+    }
 
-    // const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
-    //     ...repo,
-    //     ref,
-    //     environment,
-    //     payload: {
-    //         [NAME_KEY]: name,
-    //     },
-    //     description: 'This is a test deployment',
-    //     task: 'deploying test environment',
-    // });
+    const deploymentId = response.data.id;
 
-    // if (response.status !== 201) {
-    //     throw new Error('Could not create a deployment');
-    // }
-
-    // const deploymentId = response.data.id;
-
-    // /**
-    //  * Create a new deployment status.
-    //  */
-    // await octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
-    //     ...repo,
-    //     ref,
-    //     environment,
-    //     deployment_id: deploymentId,
-    //     state: SUCCESS_STATE,
-    //     log_url: url,
-    //     environment_url: url,
-    //     auto_inactive: false,
-    //     description: 'This is a test deployment status',
-    // });
+    /**
+     * Create a new deployment status.
+     */
+    await octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
+        ...repo,
+        ref,
+        environment,
+        deployment_id: deploymentId,
+        state: SUCCESS_STATE,
+        log_url: url,
+        environment_url: url,
+        auto_inactive: false,
+        description: 'This is a test deployment status',
+    });
 }
 
 main();
