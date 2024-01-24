@@ -33,6 +33,8 @@ async function main() {
 
     await Promise.all(
         deploymentsWithPrefix.map(async (deployment) => {
+            console.log({ deployment });
+
             const response = await octokit.request('GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
                 deployment_id: deployment.id,
                 state: 'success',
@@ -40,6 +42,8 @@ async function main() {
             });
 
             const promises = response.data.map(async (activeDeployment) => {
+                console.log({ activeDeployment });
+
                 return octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
                     deployment_id: activeDeployment.id,
                     state: INACTIVE_STATE,
