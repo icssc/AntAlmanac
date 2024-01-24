@@ -87,12 +87,12 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v3
 
-                  #  - name: Setup Node.js and pnpm
-                  #    uses: ./.github/actions/setup-node-and-pnpm
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
 
-                  #  - name: Install dependencies
-                  #    run:
-                  #        pnpm install --frozen-lockfile
+            - name: Install dependencies
+              run:
+                  pnpm install --frozen-lockfile
 
                   # - name: Build frontend
                   #   run: pnpm --filter "antalmanac" build
@@ -127,12 +127,12 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v3
 
-                  # - name: Setup Node.js and pnpm
-                  #   uses: ./.github/actions/setup-node-and-pnpm
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
 
-                  # - name: Install dependencies
-                  #   run:
-                  #       pnpm install --frozen-lockfile
+            - name: Install dependencies
+              run:
+                  pnpm install --frozen-lockfile
 
                   # - name: Build backend
                   #   run: pnpm --filter "antalmanac-backend" build
