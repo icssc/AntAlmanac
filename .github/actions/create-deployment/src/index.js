@@ -41,37 +41,45 @@ async function main() {
     //     })
     // );
 
-    const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
-        ...repo,
-        ref,
-        environment,
-        payload: {
-            [NAME_KEY]: name,
-        },
-        description: 'This is a test deployment',
-        task: 'deploying test environment',
+    const response = await octokit.request('DELETE /repos/{owner}/{repo}/environments/{environment_name}', {
+        owner: 'OWNER',
+        repo: 'REPO',
+        environment_name: environment,
     });
 
-    if (response.status !== 201) {
-        throw new Error('Could not create a deployment');
-    }
+    console.log({ response });
 
-    const deploymentId = response.data.id;
+    // const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
+    //     ...repo,
+    //     ref,
+    //     environment,
+    //     payload: {
+    //         [NAME_KEY]: name,
+    //     },
+    //     description: 'This is a test deployment',
+    //     task: 'deploying test environment',
+    // });
 
-    /**
-     * Create a new deployment status.
-     */
-    await octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
-        ...repo,
-        ref,
-        environment,
-        deployment_id: deploymentId,
-        state: SUCCESS_STATE,
-        log_url: url,
-        environment_url: url,
-        auto_inactive: false,
-        description: 'This is a test deployment status',
-    });
+    // if (response.status !== 201) {
+    //     throw new Error('Could not create a deployment');
+    // }
+
+    // const deploymentId = response.data.id;
+
+    // /**
+    //  * Create a new deployment status.
+    //  */
+    // await octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
+    //     ...repo,
+    //     ref,
+    //     environment,
+    //     deployment_id: deploymentId,
+    //     state: SUCCESS_STATE,
+    //     log_url: url,
+    //     environment_url: url,
+    //     auto_inactive: false,
+    //     description: 'This is a test deployment status',
+    // });
 }
 
 main();

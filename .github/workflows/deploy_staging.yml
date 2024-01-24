@@ -13,9 +13,7 @@ concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
 
-permissions:
-    contents: read
-    deployments: write
+permissions: write-all
 
 env:
     # Tooling settings.
