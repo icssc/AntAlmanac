@@ -71,6 +71,7 @@ async function main() {
         deployment_id: deploymentId,
         state: SUCCESS_STATE,
         environment_url: url,
+        auto_inactive: false,
     });
 }
 
