@@ -29,8 +29,6 @@ async function main() {
     //     return typeof deploymentName === 'string' && deploymentName.startsWith(name);
     // });
 
-    // console.log(deploymentsWithPrefix);
-
     // await Promise.all(
     //     deploymentsWithPrefix.map(async (deployment) => {
     //         console.log({ deployment });
@@ -43,9 +41,6 @@ async function main() {
     //     })
     // );
 
-    /**
-     * If no other deployments had this prefix, then create a new one.
-     */
     const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
         ...repo,
         ref,
