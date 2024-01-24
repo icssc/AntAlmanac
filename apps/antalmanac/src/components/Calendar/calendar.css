@@ -40,14 +40,6 @@
     font-size: 0.9rem;
 }
 
-.rbc-time-header-gutter {
-    width: 42px;
-}
-
-.rbc-time-gutter {
-    width: 42px;
-}
-
 @media (min-resolution: 96dpi) {
     .rbc-timeslot-group {
         min-height: 28px;
