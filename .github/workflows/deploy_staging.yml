@@ -86,12 +86,15 @@ jobs:
 
         steps:
             - name: Create in-progress deployment
+              id: create_deployment
+              description: Creates a new deployment and outputs the deployment ID under "deployment_id".
               uses: ./.github/actions/create-deployment
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   environment: staging-frontend
                   name: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
                   url: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
+                  status: in_progress
 
             - name: Checkout repository
               uses: actions/checkout@v3
@@ -102,30 +105,34 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Build frontend
-              run: pnpm --filter "antalmanac" build
-              env:
-                  VITE_ENDPOINT: ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
-
-            - name: Deploy frontend staging CloudFormation stack
-              run: pnpm --filter "antalmanac-cdk" frontend-staging deploy
+#            - name: Build frontend
+#              run: pnpm --filter "antalmanac" build
+#              env:
+#                  VITE_ENDPOINT: ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
+#
+#            - name: Deploy frontend staging CloudFormation stack
+#              run: pnpm --filter "antalmanac-cdk" frontend-staging deploy
 
             - name: Create success deployment
               uses: ./.github/actions/create-deployment
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  deployment_id: ${{ steps.create_deployment.deployment_id }}
                   environment: staging-frontend
                   name: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
                   url: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
+                  status: success
 
-            - name: Create failed deployment
+            - name: Create failure deployment
               if: ${{ failure() }}
               uses: ./.github/actions/create-deployment
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  deployment_id: ${{ steps.create_deployment.deployment_id }}
                   environment: staging-frontend
                   name: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
                   url: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
+                  status: failure
 
     deploy_staging_backend:
         name: Deploy backend staging CloudFormation stack and environment
@@ -138,12 +145,15 @@ jobs:
 
         steps:
             - name: Create in-progress deployment
+              id: create_deployment
+              description: Creates a new deployment and outputs the deployment ID under "deployment_id".
               uses: ./.github/actions/create-deployment
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   environment: staging-backend
                   name: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
                   url: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
+                  status: in_progress
 
             - name: Checkout repository
               uses: actions/checkout@v3
@@ -154,25 +164,29 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Build backend
-              run: pnpm --filter "antalmanac-backend" build
-
-            - name: Deploy backend staging CloudFormation stack
-              run: pnpm --filter "antalmanac-cdk" backend-staging deploy
+#            - name: Build backend
+#              run: pnpm --filter "antalmanac-backend" build
+#
+#            - name: Deploy backend staging CloudFormation stack
+#              run: pnpm --filter "antalmanac-cdk" backend-staging deploy
 
             - name: Create success deployment
               uses: ./.github/actions/create-deployment
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  deployment_id: ${{ steps.create_deployment.deployment_id }}
                   environment: staging-backend
                   name: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
                   url: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
+                  status: success
 
             - name: Create failed deployment
               if: ${{ failure() }}
               uses: ./.github/actions/create-deployment
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  deployment_id: ${{ steps.create_deployment.deployment_id }}
                   environment: staging-backend
                   name: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
                   url: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
+                  status: failure

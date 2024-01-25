@@ -13,6 +13,13 @@ inputs:
     url:
         description: Deployment environment URL.
         required: true
+    status:
+        description: The deployment status. It's used as the "state" parameter when creating a deployment status.
+        required: true
+        default: in_progress
+    deployment_id:
+        description: If referencing an existing deployment, provide the ID to update the status.
+        required: false
 
 outputs:
     deployment_id:

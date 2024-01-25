@@ -5,9 +5,8 @@ import github from '@actions/github';
 
 const NAME_KEY = 'name';
 const DEPLOYMENT_ID_OUTPUT_KEY = 'deployment_id';
+const ACTIVE_STATE = 'active';
 const INACTIVE_STATE = 'inactive';
-const IN_PROGRESS_STATE = 'in_progress';
-// const SUCCESS_STATE = 'success';
 
 /**
  * @see https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
@@ -43,49 +42,72 @@ function getBranchName() {
 }
 
 async function main() {
+    const deploymentIdInput = core.getInput('deployment_id');
+
     const token = core.getInput('GITHUB_TOKEN');
     const name = core.getInput('name');
     const environment = core.getInput('environment');
     const url = core.getInput('url');
+    let deploymentId = deploymentIdInput ? parseInt(deploymentIdInput, 10) : undefined;
+    /** @type {any} */
+    const state = core.getInput('status');
     const ref = getBranchName();
 
     const octokit = github.getOctokit(token);
 
     const repo = github.context.repo;
 
-    octokit.log.info('Creating deployment...');
+    if (deploymentId == null) {
+        octokit.log.info('No deployment ID provided, creating a new deployment.');
 
-    const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
-        ...repo,
-        ref,
-        environment,
-        payload: {
-            [NAME_KEY]: name,
-        },
-        auto_merge: false,
-        required_contexts: [],
-    });
+        const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
+            ...repo,
+            ref,
+            environment,
+            payload: {
+                [NAME_KEY]: name,
+            },
+            auto_merge: false,
+            required_contexts: [],
+        });
 
-    octokit.log.info('Create deployment response: ', response);
+        octokit.log.info('Create deployment response: ', response);
 
-    if (response.status !== 201) {
-        throw new Error('Could not create a deployment');
+        if (response.status !== 201) {
+            throw new Error('Could not create a deployment');
+        }
+
+        deploymentId = response.data.id;
     }
 
-    const deploymentId = response.data.id;
+    octokit.log.info(`Creating deployment status as ${state}...`);
 
-    octokit.log.info('Creating deployment status as in-progress...');
-
-    await octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
+    const response = await octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
         ...repo,
         environment,
         deployment_id: deploymentId,
-        state: IN_PROGRESS_STATE,
+        state,
         environment_url: url,
         auto_inactive: false,
     });
 
     octokit.log.info('Create deployment status response: ', response);
+
+    if (response.status !== 201) {
+        throw new Error('Could not create a deployment status');
+    }
+
+    // If this deployment isn't active, then we're done.
+
+    if (state !== ACTIVE_STATE) {
+        octokit.log.info('Done creating deployment.');
+        octokit.log.info(`Deployment ID: ${deploymentId}`);
+
+        core.setOutput(DEPLOYMENT_ID_OUTPUT_KEY, deploymentId);
+        return;
+    }
+
+    // If this deployment is active, then delete all previous deployments with the same name.
 
     await octokit
         .request('GET /repos/{owner}/{repo}/deployments', { ...repo, environment, per_page: 100 })
