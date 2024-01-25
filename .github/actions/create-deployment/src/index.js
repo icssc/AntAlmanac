@@ -5,7 +5,8 @@ import github from '@actions/github';
 
 const NAME_KEY = 'name';
 const INACTIVE_STATE = 'inactive';
-const SUCCESS_STATE = 'success';
+const IN_PROGRESS_STATE = 'in_progress';
+// const SUCCESS_STATE = 'success';
 
 /**
  * @see https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
@@ -51,6 +52,8 @@ async function main() {
 
     const repo = github.context.repo;
 
+    octokit.log.info('Creating deployment...');
+
     const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
         ...repo,
         ref,
@@ -62,7 +65,7 @@ async function main() {
         required_contexts: [],
     });
 
-    console.log('Creating deployment response: ', response);
+    octokit.log.info('Create deployment response: ', response);
 
     if (response.status !== 201) {
         throw new Error('Could not create a deployment');
@@ -70,14 +73,20 @@ async function main() {
 
     const deploymentId = response.data.id;
 
+    octokit.log.info('Creating deployment status as in-progress...');
+
     await octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
         ...repo,
         environment,
         deployment_id: deploymentId,
-        state: SUCCESS_STATE,
+        state: IN_PROGRESS_STATE,
         environment_url: url,
         auto_inactive: false,
     });
+
+    octokit.log.info('Create deployment status response: ', response);
+
+    core.setOutput('deployment_id', deploymentId);
 
     await octokit
         .request('GET /repos/{owner}/{repo}/deployments', { ...repo, environment, per_page: 100 })
@@ -106,6 +115,9 @@ async function main() {
                 );
             });
 
+            octokit.log.info('Found deployments with the same name: ', deploymentsWithPrefix);
+            octokit.log.info('Setting matching deployments to inactive');
+
             /**
              * Set all deployments with the same name to inactive.
              */
@@ -119,6 +131,8 @@ async function main() {
                 })
             );
 
+            octokit.log.info('Deleting matching deployments');
+
             /**
              * Delete all deployments with the same name.
              */
@@ -130,6 +144,8 @@ async function main() {
                     });
                 })
             );
+
+            octokit.log.info('Done deleting matching deployments');
         });
 }
 

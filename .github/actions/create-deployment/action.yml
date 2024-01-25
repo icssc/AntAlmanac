@@ -13,6 +13,11 @@ inputs:
     url:
         description: Deployment environment URL.
         required: true
+
+outputs:
+    deployment_id:
+        description: Deployment ID.
+
 runs:
     using: 'node20'
     main: 'src/index.js'
