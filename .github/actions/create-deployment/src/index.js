@@ -16,6 +16,8 @@ async function main() {
 
     const octokit = github.getOctokit(token);
 
+    console.log(JSON.stringify(github.context, null, 2));
+
     // const response = await octokit.request('GET /repos/{owner}/{repo}/deployments', { ...repo, environment });
 
     // const deploymentsWithPrefix = response.data.filter((deployment) => {
