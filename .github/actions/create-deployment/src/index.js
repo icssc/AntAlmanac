@@ -5,7 +5,7 @@ import github from '@actions/github';
 
 const NAME_KEY = 'name';
 const DEPLOYMENT_ID_OUTPUT_KEY = 'deployment_id';
-const ACTIVE_STATE = 'active';
+const SUCCESS_STATE = 'success';
 const INACTIVE_STATE = 'inactive';
 
 /**
@@ -99,7 +99,7 @@ async function main() {
 
     // If this deployment isn't active, then we're done.
 
-    if (state !== ACTIVE_STATE) {
+    if (state !== SUCCESS_STATE) {
         console.log('Done creating deployment.');
         console.log(`Deployment ID: ${deploymentId}`);
 
