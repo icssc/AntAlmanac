@@ -14,7 +14,7 @@ const REGEX = {
     BRANCH: /refs\/heads\/(.*)/,
     TAG: /refs\/tags\/(.*)/,
 
-    // Not used; if the other two fail, then use GITHUB_HEAD_REF instead of regex match.
+    // If the above two fail to match, then use GITHUB_HEAD_REF instead of regex match.
     PULL_REQUEST: /refs\/pull\/(\d+)\/merge/,
 };
 
