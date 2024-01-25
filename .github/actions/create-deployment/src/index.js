@@ -71,7 +71,7 @@ async function main() {
             required_contexts: [],
         });
 
-        console.log('Create deployment response: ', response);
+        console.log('Created deployment.');
 
         if (response.status !== 201) {
             throw new Error('Could not create a deployment');
@@ -91,7 +91,7 @@ async function main() {
         auto_inactive: false,
     });
 
-    console.log('Create deployment status response: ', response);
+    console.log('Created deployment status.');
 
     if (response.status !== 201) {
         throw new Error('Could not create a deployment status');
@@ -136,7 +136,6 @@ async function main() {
                 );
             });
 
-            console.log('Found deployments with the same name: ', deploymentsWithPrefix);
             console.log('Setting matching deployments to inactive');
 
             /**
@@ -170,7 +169,6 @@ async function main() {
         });
 
     console.log('Done creating deployment.');
-    console.log(`Deployment ID: ${deploymentId}`);
 
     core.setOutput(DEPLOYMENT_ID_OUTPUT_KEY, deploymentId);
 }
