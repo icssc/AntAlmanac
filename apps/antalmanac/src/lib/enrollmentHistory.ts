@@ -20,10 +20,12 @@ export interface EnrollmentHistoryGraphQLResponse {
     };
 }
 
-// To organize the data and make it easier to graph the enrollment
-// data, we can merge the dates, totalEnrolledHistory, maxCapacityHistory,
-// and waitlistHistory arrays into one array that contains the enrollment data
-// for each day
+/**
+ * To organize the data and make it easier to graph the enrollment
+ * data, we can merge the dates, totalEnrolledHistory, maxCapacityHistory,
+ * and waitlistHistory arrays into one array that contains the enrollment data
+ * for each day
+ */
 export interface EnrollmentHistory {
     year: string;
     quarter: string;
@@ -93,14 +95,14 @@ export class DepartmentEnrollmentHistory {
     }
 
     /**
-     * This function parses enrollment history data from PeterPortal so that
+     * Parses enrollment history data from PeterPortal so that
      * we can pass the data into a recharts graph. For each element in the given
      * array, merge the dates, totalEnrolledHistory, maxCapacityHistory,
      * and waitlistHistory arrays into one array that contains the enrollment data
      * for each day.
      *
-     * @param res an array of enrollment histories from PeterPortal
-     * @returns an array of enrollment histories that we can use for the graph
+     * @param res Array of enrollment histories from PeterPortal
+     * @returns Array of enrollment histories that we can use for the graph
      */
     static parseEnrollmentHistoryResponse(res: EnrollmentHistoryGraphQL[]): EnrollmentHistory[] {
         const parsedEnrollmentHistory: EnrollmentHistory[] = [];
@@ -137,10 +139,10 @@ export class DepartmentEnrollmentHistory {
     }
 
     /**
-     * This function sorts the given array of enrollment histories so that
+     * Sorts the given array of enrollment histories so that
      * the most recent quarters are in the beginning of the array.
      *
-     * @param enrollmentHistory an array where each element represents the enrollment
+     * @param enrollmentHistory Array where each element represents the enrollment
      * history of a course section during one quarter
      */
     static sortEnrollmentHistory(enrollmentHistory: EnrollmentHistory[]) {

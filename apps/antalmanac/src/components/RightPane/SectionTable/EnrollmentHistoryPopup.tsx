@@ -10,7 +10,7 @@ export interface EnrollmentHistoryPopupProps {
     courseNumber: string;
 }
 
-const EnrollmentHistoryPopup = ({ department, courseNumber }: EnrollmentHistoryPopupProps) => {
+export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentHistoryPopupProps) {
     const [loading, setLoading] = useState(true);
     const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory>();
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
@@ -20,7 +20,7 @@ const EnrollmentHistoryPopup = ({ department, courseNumber }: EnrollmentHistoryP
     const graphWidth = useMemo(() => (isMobileScreen ? 250 : 450), [isMobileScreen]);
     const graphHeight = useMemo(() => (isMobileScreen ? 175 : 250), [isMobileScreen]);
     const popupTitle = useMemo(() => {
-        if (!enrollmentHistory) {
+        if (enrollmentHistory == null) {
             return 'No past enrollment data found for this course';
         }
 
@@ -54,7 +54,7 @@ const EnrollmentHistoryPopup = ({ department, courseNumber }: EnrollmentHistoryP
         );
     }
 
-    if (!enrollmentHistory) {
+    if (enrollmentHistory == null) {
         return (
             <Box padding={1}>
                 <Typography variant="body1" align="center">
@@ -99,6 +99,4 @@ const EnrollmentHistoryPopup = ({ department, courseNumber }: EnrollmentHistoryP
             </Link>
         </Box>
     );
-};
-
-export default EnrollmentHistoryPopup;
+}

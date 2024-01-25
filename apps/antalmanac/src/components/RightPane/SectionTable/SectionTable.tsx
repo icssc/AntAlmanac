@@ -17,7 +17,7 @@ import { GlobalStyles } from '@mui/material';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import CourseInfoBar from './CourseInfoBar';
 import CourseInfoButton from './CourseInfoButton';
-import EnrollmentHistoryPopup from './EnrollmentHistoryPopup';
+import { EnrollmentHistoryPopup } from './EnrollmentHistoryPopup';
 import GradesPopup from './GradesPopup';
 import { SectionTableProps } from './SectionTable.types';
 import SectionTableBody from './SectionTableBody';
