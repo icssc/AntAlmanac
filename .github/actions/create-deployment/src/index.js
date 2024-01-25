@@ -4,15 +4,48 @@ import core from '@actions/core';
 import github from '@actions/github';
 
 const NAME_KEY = 'name';
-
 const INACTIVE_STATE = 'inactive';
 const SUCCESS_STATE = 'success';
+
+/**
+ * @see https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
+ */
+const REGEX = {
+    BRANCH: /refs\/heads\/(.*)/,
+    TAG: /refs\/tags\/(.*)/,
+
+    // Not used; if the other two fail, then use GITHUB_HEAD_REF instead of regex match.
+    PULL_REQUEST: /refs\/pull\/(\d+)\/merge/,
+};
+
+/**
+ * If triggered by PUSH or TAG, return a regex match.
+ * For pull requests, use the head ref.
+ *
+ * @returns {string} Current branch the action is running for.
+ */
+function getBranchName() {
+    const ref = process.env['GITHUB_REF'] ?? '';
+
+    const branchMatch = REGEX.BRANCH.exec(ref);
+    if (branchMatch) {
+        return branchMatch[1] ?? '';
+    }
+
+    const tagMatch = REGEX.TAG.exec(ref);
+    if (tagMatch) {
+        return tagMatch[1] ?? '';
+    }
+
+    return process.env['GITHUB_HEAD_REF'] ?? '';
+}
 
 async function main() {
     const token = core.getInput('GITHUB_TOKEN');
     const name = core.getInput('name');
     const environment = core.getInput('environment');
     const url = core.getInput('url');
+    const ref = getBranchName();
 
     const octokit = github.getOctokit(token);
 
@@ -23,10 +56,18 @@ async function main() {
             return;
         }
 
+        /**
+         * Get existing deployments with the same name saved in the payload,
+         * but with a different sha and deactivate them.
+         */
         const deploymentsWithPrefix = response.data.filter((deployment) => {
+            /**
+             * Ignore deployments with a string payload.
+             */
             if (typeof deployment.payload === 'string') {
-                return deployment.payload.startsWith(name);
+                return false;
             }
+
             const deploymentName = deployment.payload[NAME_KEY];
             return (
                 typeof deploymentName === 'string' &&
@@ -48,7 +89,7 @@ async function main() {
 
     const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
         ...repo,
-        ref: github.context.ref, // 'refs/heads/google-auth-devops',
+        ref,
         environment,
         payload: {
             [NAME_KEY]: name,

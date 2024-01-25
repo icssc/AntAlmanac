@@ -100,7 +100,7 @@ jobs:
               uses: ./.github/actions/create-deployment
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  environment: staging
+                  environment: staging-frontend
                   name: frontend-staging-${{ github.event.pull_request.number }}
                   url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
 
@@ -134,6 +134,6 @@ jobs:
               uses: ./.github/actions/create-deployment
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  environment: staging
+                  environment: staging-backend
                   name: backend-staging-${{ github.event.pull_request.number }}
                   url: https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
