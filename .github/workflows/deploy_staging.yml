@@ -87,7 +87,6 @@ jobs:
         steps:
             - name: Create in-progress deployment
               id: create_deployment
-              description: Creates a new deployment and outputs the deployment ID under `deployment_id`.
               uses: ./.github/actions/create-deployment
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -146,7 +145,6 @@ jobs:
         steps:
             - name: Create in-progress deployment
               id: create_deployment
-              description: Creates a new deployment and outputs the deployment ID under `deployment_id`.
               uses: ./.github/actions/create-deployment
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
