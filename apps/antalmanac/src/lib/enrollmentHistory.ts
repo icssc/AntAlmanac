@@ -40,53 +40,57 @@ export interface EnrollmentHistoryDay {
     waitlist: number | null;
 }
 
-class _EnrollmentHistory {
+export class DepartmentEnrollmentHistory {
     // Each key in the cache will be the department and courseNumber concatenated
-    enrollmentHistoryCache: Record<string, EnrollmentHistory>;
-    termShortNames: string[];
+    static enrollmentHistoryCache: Record<string, EnrollmentHistory | null> = {};
+    static termShortNames: string[] = termData.map((term) => term.shortName);
+    static QUERY_TEMPLATE = `{
+        enrollmentHistory(department: "$$DEPARTMENT$$", courseNumber: "$$COURSE_NUMBER$$", sectionType: Lec) {
+            year
+            quarter
+            department
+            courseNumber
+            dates
+            totalEnrolledHistory
+            maxCapacityHistory
+            waitlistHistory
+            instructors
+        }
+    }`;
 
-    constructor() {
-        this.enrollmentHistoryCache = {};
-        this.termShortNames = termData.map((term) => term.shortName);
+    department: string;
+    partialQueryString: string;
+
+    constructor(department: string) {
+        this.department = department;
+        this.partialQueryString = DepartmentEnrollmentHistory.QUERY_TEMPLATE.replace('$$DEPARTMENT$$', department);
     }
 
-    queryEnrollmentHistory = async (department: string, courseNumber: string): Promise<EnrollmentHistory | null> => {
-        const cacheKey = department + courseNumber;
-        if (cacheKey in this.enrollmentHistoryCache) {
-            return this.enrollmentHistoryCache[cacheKey];
-        }
+    async find(courseNumber: string): Promise<EnrollmentHistory | null> {
+        const cacheKey = this.department + courseNumber;
+        return (DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] ??= await this.queryEnrollmentHistory(
+            courseNumber
+        ));
+    }
 
+    async queryEnrollmentHistory(courseNumber: string): Promise<EnrollmentHistory | null> {
         // Query for the enrollment history of all lecture sections that were offered
-        const queryString = `{
-            enrollmentHistory(department: "${department}", courseNumber: "${courseNumber}", sectionType: Lec) {
-                year
-                quarter
-                department
-                courseNumber
-                dates
-                totalEnrolledHistory
-                maxCapacityHistory
-                waitlistHistory
-                instructors
-            }
-        }`;
+        const queryString = this.partialQueryString.replace('$$COURSE_NUMBER$$', courseNumber);
 
-        const res =
-            (await queryGraphQL<EnrollmentHistoryGraphQLResponse>(queryString))?.data?.enrollmentHistory ?? null;
+        const res = (await queryGraphQL<EnrollmentHistoryGraphQLResponse>(queryString))?.data?.enrollmentHistory;
 
-        if (res && res.length > 0) {
-            const parsedEnrollmentHistory = this.parseEnrollmentHistoryResponse(res);
-            this.sortEnrollmentHistory(parsedEnrollmentHistory);
+        if (res?.length) {
+            const parsedEnrollmentHistory = DepartmentEnrollmentHistory.parseEnrollmentHistoryResponse(res);
+            DepartmentEnrollmentHistory.sortEnrollmentHistory(parsedEnrollmentHistory);
 
             // For now, just return the enrollment history of the most recent quarter
             // instead of the entire array of enrollment histories
             const latestEnrollmentHistory = parsedEnrollmentHistory[0];
-            this.enrollmentHistoryCache[cacheKey] = latestEnrollmentHistory;
             return latestEnrollmentHistory;
         }
 
         return null;
-    };
+    }
 
     /**
      * This function parses enrollment history data from PeterPortal so that
@@ -98,7 +102,7 @@ class _EnrollmentHistory {
      * @param res an array of enrollment histories from PeterPortal
      * @returns an array of enrollment histories that we can use for the graph
      */
-    parseEnrollmentHistoryResponse = (res: EnrollmentHistoryGraphQL[]): EnrollmentHistory[] => {
+    static parseEnrollmentHistoryResponse(res: EnrollmentHistoryGraphQL[]): EnrollmentHistory[] {
         const parsedEnrollmentHistory: EnrollmentHistory[] = [];
 
         for (const enrollmentHistory of res) {
@@ -130,7 +134,7 @@ class _EnrollmentHistory {
         }
 
         return parsedEnrollmentHistory;
-    };
+    }
 
     /**
      * This function sorts the given array of enrollment histories so that
@@ -139,16 +143,16 @@ class _EnrollmentHistory {
      * @param enrollmentHistory an array where each element represents the enrollment
      * history of a course section during one quarter
      */
-    sortEnrollmentHistory = (enrollmentHistory: EnrollmentHistory[]) => {
+    static sortEnrollmentHistory(enrollmentHistory: EnrollmentHistory[]) {
         enrollmentHistory.sort((a, b) => {
             const aTerm = `${a.year} ${a.quarter}`;
             const bTerm = `${b.year} ${b.quarter}`;
             // If the term for a appears earlier than the term for b in the list of
             // term short names, then a must be the enrollment history for a later quarter
-            return this.termShortNames.indexOf(aTerm) - this.termShortNames.indexOf(bTerm);
+            return (
+                DepartmentEnrollmentHistory.termShortNames.indexOf(aTerm) -
+                DepartmentEnrollmentHistory.termShortNames.indexOf(bTerm)
+            );
         });
-    };
+    }
 }
-
-const enrollmentHistoryCache = new _EnrollmentHistory();
-export default enrollmentHistoryCache;

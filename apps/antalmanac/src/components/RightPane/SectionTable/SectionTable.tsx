@@ -173,7 +173,6 @@ function SectionTable(props: SectionTableProps) {
                         <EnrollmentHistoryPopup
                             department={courseDetails.deptCode}
                             courseNumber={courseDetails.courseNumber}
-                            isMobileScreen={isMobileScreen}
                         />
                     }
                 />

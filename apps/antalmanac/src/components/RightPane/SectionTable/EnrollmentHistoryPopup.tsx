@@ -1,18 +1,21 @@
 import { useState, useEffect, useMemo } from 'react';
 import { LineChart, Line, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from 'recharts';
-import { Box, Link, Typography, Skeleton } from '@mui/material';
-import enrollmentHistoryCache, { EnrollmentHistory } from '$lib/enrollmentHistory';
+import { Box, Link, Typography, Skeleton, useMediaQuery } from '@mui/material';
+import { MOBILE_BREAKPOINT } from '../../../globals';
+import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
 import { isDarkMode } from '$lib/helpers';
 
 export interface EnrollmentHistoryPopupProps {
     department: string;
     courseNumber: string;
-    isMobileScreen: boolean;
 }
 
-const EnrollmentHistoryPopup = ({ department, courseNumber, isMobileScreen }: EnrollmentHistoryPopupProps) => {
+const EnrollmentHistoryPopup = ({ department, courseNumber }: EnrollmentHistoryPopupProps) => {
     const [loading, setLoading] = useState(true);
     const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory>();
+    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
+
+    const deptEnrollmentHistory = useMemo(() => new DepartmentEnrollmentHistory(department), [department]);
 
     const graphWidth = useMemo(() => (isMobileScreen ? 250 : 450), [isMobileScreen]);
     const graphHeight = useMemo(() => (isMobileScreen ? 175 : 250), [isMobileScreen]);
@@ -35,13 +38,13 @@ const EnrollmentHistoryPopup = ({ department, courseNumber, isMobileScreen }: En
             return;
         }
 
-        enrollmentHistoryCache.queryEnrollmentHistory(department, courseNumber).then((data) => {
+        deptEnrollmentHistory.find(courseNumber).then((data) => {
             if (data) {
                 setEnrollmentHistory(data);
             }
             setLoading(false);
         });
-    }, [loading, department, courseNumber]);
+    }, [loading, deptEnrollmentHistory, courseNumber]);
 
     if (loading) {
         return (
@@ -62,7 +65,7 @@ const EnrollmentHistoryPopup = ({ department, courseNumber, isMobileScreen }: En
     }
 
     return (
-        <Box sx={{ padding: '4px' }}>
+        <Box sx={{ padding: 0.5 }}>
             <Typography
                 sx={{
                     marginTop: '.5rem',
