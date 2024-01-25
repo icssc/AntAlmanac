@@ -85,6 +85,15 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
             - name: Create in-progress deployment
               id: create_deployment
               uses: ./.github/actions/create-deployment
@@ -94,15 +103,6 @@ jobs:
                   name: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
                   url: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
                   status: in_progress
-
-            - name: Checkout repository
-              uses: actions/checkout@v3
-
-            - name: Setup Node.js and pnpm
-              uses: ./.github/actions/setup-node-and-pnpm
-
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile
 
 #            - name: Build frontend
 #              run: pnpm --filter "antalmanac" build
@@ -143,6 +143,15 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
             - name: Create in-progress deployment
               id: create_deployment
               uses: ./.github/actions/create-deployment
@@ -152,15 +161,6 @@ jobs:
                   name: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
                   url: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
                   status: in_progress
-
-            - name: Checkout repository
-              uses: actions/checkout@v3
-
-            - name: Setup Node.js and pnpm
-              uses: ./.github/actions/setup-node-and-pnpm
-
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile
 
 #            - name: Build backend
 #              run: pnpm --filter "antalmanac-backend" build
