@@ -19,6 +19,8 @@ async function main() {
         .request('GET /repos/{owner}/{repo}/deployments', { ...repo, environment, per_page: 100 })
         .then(async (response) => {
             if (response.status !== 200) {
+                console.log('Failed to get deployments.');
+
                 return;
             }
 
@@ -38,6 +40,8 @@ async function main() {
                 return typeof deploymentName === 'string' && deploymentName.startsWith(name);
             });
 
+            console.log(`Setting ${deploymentsWithPrefix.length} deployments to inactive...`);
+
             /**
              * Set all deployments with the same name to inactive.
              */
@@ -50,6 +54,8 @@ async function main() {
                     });
                 })
             );
+
+            console.log(`Deleting ${deploymentsWithPrefix.length} deployments...`);
 
             /**
              * Delete all deployments with the same name.
