@@ -104,13 +104,13 @@ jobs:
                   url: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
                   status: in_progress
 
-#            - name: Build frontend
-#              run: pnpm --filter "antalmanac" build
-#              env:
-#                  VITE_ENDPOINT: ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
-#
-#            - name: Deploy frontend staging CloudFormation stack
-#              run: pnpm --filter "antalmanac-cdk" frontend-staging deploy
+            - name: Build frontend
+              run: pnpm --filter "antalmanac" build
+              env:
+                  VITE_ENDPOINT: ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
+
+            - name: Deploy frontend staging CloudFormation stack
+              run: pnpm --filter "antalmanac-cdk" frontend-staging deploy
 
             - name: Create success deployment
               uses: ./.github/actions/create-deployment
@@ -162,11 +162,11 @@ jobs:
                   url: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
                   status: in_progress
 
-#           - name: Build backend
-#             run: pnpm --filter "antalmanac-backend" build
-#
-#           - name: Deploy backend staging CloudFormation stack
-#             run: pnpm --filter "antalmanac-cdk" backend-staging deploy
+           - name: Build backend
+             run: pnpm --filter "antalmanac-backend" build
+
+           - name: Deploy backend staging CloudFormation stack
+             run: pnpm --filter "antalmanac-cdk" backend-staging deploy
 
             - name: Create success deployment
               uses: ./.github/actions/create-deployment
