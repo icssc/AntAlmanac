@@ -113,7 +113,7 @@ async function main() {
              */
             await Promise.all(
                 deploymentsWithPrefix.map(async (deployment) => {
-                    return octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
+                    return await octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
                         deployment_id: deployment.id,
                         state: INACTIVE_STATE,
                         ...repo,
@@ -124,10 +124,14 @@ async function main() {
             /**
              * Delete all deployments with the same name.
              */
-            await octokit.request('DELETE /repos/{owner}/{repo}/deployments/{deployment_id}', {
-                ...repo,
-                deployment_id: deploymentId,
-            });
+            await Promise.all(
+                deploymentsWithPrefix.map(async (deployment) => {
+                    return await octokit.request('DELETE /repos/{owner}/{repo}/deployments/{deployment_id}', {
+                        ...repo,
+                        deployment_id: deployment.id,
+                    });
+                })
+            );
         });
 }
 
