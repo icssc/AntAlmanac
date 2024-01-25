@@ -69,7 +69,7 @@ jobs:
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   environment: staging-backend
-                  name: backend-staging-${{ github.event.pull_request.number }}
+                  name: frontend-staging-${{ github.event.pull_request.number }}
 
     destroy_staging_backend:
         name: Destroy backend staging CloudFormation stack and environment
