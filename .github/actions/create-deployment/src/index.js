@@ -43,13 +43,14 @@ async function main() {
     const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
         repo: github.context.repo.repo,
         owner: github.context.repo.owner,
-        ref: 'google-auth-devops',
+        ref: 'refs/head/google-auth-devops',
         environment,
         payload: {
             [NAME_KEY]: name,
         },
         description: 'This is a test deployment',
         task: 'deploy',
+        auto_merge: false,
     });
 
     if (response.status !== 201) {
