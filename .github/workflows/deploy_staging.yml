@@ -77,10 +77,6 @@ jobs:
 
         runs-on: ubuntu-latest
 
-        environment:
-            name: frontend-staging-${{ github.event.pull_request.number }}
-            url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
-
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
@@ -116,10 +112,6 @@ jobs:
         if: ${{ needs.get_staging_configuration.outputs.should-deploy-backend == 'true' }}
 
         runs-on: ubuntu-latest
-
-        environment:
-            name: backend-staging-${{ github.event.pull_request.number }}
-            url: https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
 
         steps:
             - name: Checkout repository

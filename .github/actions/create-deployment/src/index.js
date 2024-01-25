@@ -16,40 +16,43 @@ async function main() {
 
     const octokit = github.getOctokit(token);
 
-    console.log(JSON.stringify(github.context, null, 2));
+    const repo = github.context.repo;
 
-    // const response = await octokit.request('GET /repos/{owner}/{repo}/deployments', { ...repo, environment });
+    await octokit.request('GET /repos/{owner}/{repo}/deployments', { ...repo, environment }).then(async (response) => {
+        if (response.status !== 200) {
+            return;
+        }
 
-    // const deploymentsWithPrefix = response.data.filter((deployment) => {
-    //     if (typeof deployment.payload === 'string') {
-    //         return deployment.payload.startsWith(name);
-    //     }
-    //     const deploymentName = deployment.payload[NAME_KEY];
-    //     return typeof deploymentName === 'string' && deploymentName.startsWith(name);
-    // });
+        const deploymentsWithPrefix = response.data.filter((deployment) => {
+            if (typeof deployment.payload === 'string') {
+                return deployment.payload.startsWith(name);
+            }
+            const deploymentName = deployment.payload[NAME_KEY];
+            return (
+                typeof deploymentName === 'string' &&
+                deploymentName.startsWith(name) &&
+                deployment.sha !== github.context.sha
+            );
+        });
 
-    // await Promise.all(
-    //     deploymentsWithPrefix.map(async (deployment) => {
-    //         console.log({ deployment });
-
-    //         return octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
-    //             deployment_id: deployment.id,
-    //             state: INACTIVE_STATE,
-    //             ...repo,
-    //         });
-    //     })
-    // );
+        await Promise.all(
+            deploymentsWithPrefix.map(async (deployment) => {
+                return octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
+                    deployment_id: deployment.id,
+                    state: INACTIVE_STATE,
+                    ...repo,
+                });
+            })
+        );
+    });
 
     const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
-        repo: github.context.repo.repo,
-        owner: github.context.repo.owner,
+        ...repo,
         ref: 'refs/heads/google-auth-devops',
         environment,
         payload: {
             [NAME_KEY]: name,
         },
-        description: 'This is a test deployment',
-        task: 'deploy',
         auto_merge: false,
         required_contexts: [],
     });
@@ -59,21 +62,14 @@ async function main() {
     }
 
     const deploymentId = response.data.id;
-    console.log({ response });
 
-    /**
-     * Create a new deployment status.
-     */
     await octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
-        repo: github.context.repo.repo,
-        owner: github.context.repo.owner,
+        ...repo,
         environment,
         deployment_id: deploymentId,
         state: SUCCESS_STATE,
-        log_url: url,
         environment_url: url,
         auto_inactive: false,
-        description: 'This is a test deployment status',
     });
 }
 
