@@ -64,11 +64,12 @@ jobs:
             - name: Destroy frontend staging CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" frontend-staging destroy --force
 
-            - name: Deactivate frontend staging environment
-              uses: strumwolf/delete-deployment-environment@195215d2c5602aee6fb4b9cf0853970decca9e7a # v2.3.0
+            - name: Delete deployment
+              uses: ./.github/actions/delete-deployment
               with:
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  environment: frontend-staging-${{ github.event.pull_request.number }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  environment: staging-backend
+                  name: backend-staging-${{ github.event.pull_request.number }}
 
     destroy_staging_backend:
         name: Destroy backend staging CloudFormation stack and environment
@@ -91,8 +92,9 @@ jobs:
             - name: Destroy backend staging CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" backend-staging destroy --force
 
-            - name: Deactivate backend staging environment
-              uses: strumwolf/delete-deployment-environment@195215d2c5602aee6fb4b9cf0853970decca9e7a # v2.3.0
+            - name: Delete deployment
+              uses: ./.github/actions/delete-deployment
               with:
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  environment: backend-staging-${{ github.event.pull_request.number }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  environment: staging-backend
+                  name: backend-staging-${{ github.event.pull_request.number }}
