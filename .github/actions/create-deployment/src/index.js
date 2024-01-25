@@ -51,6 +51,7 @@ async function main() {
         description: 'This is a test deployment',
         task: 'deploy',
         auto_merge: false,
+        required_contexts: [],
     });
 
     if (response.status !== 201) {
