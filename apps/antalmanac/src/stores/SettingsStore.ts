@@ -20,8 +20,8 @@ export const useThemeStore = create<ThemeStore>((set) => {
         themeSetting !== 'system'
             ? themeSetting
             : window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'dark'
-            : 'light';
+              ? 'dark'
+              : 'light';
 
     return {
         themeSetting: themeSetting as 'light' | 'dark' | 'system',
@@ -35,8 +35,8 @@ export const useThemeStore = create<ThemeStore>((set) => {
                 themeSetting !== 'system'
                     ? themeSetting
                     : window.matchMedia('(prefers-color-scheme: dark)').matches
-                    ? 'dark'
-                    : 'light';
+                      ? 'dark'
+                      : 'light';
 
             set({ appTheme: appTheme, themeSetting: themeSetting });
 
@@ -64,6 +64,25 @@ export const useTimeFormatStore = create<TimeFormatStore>((set) => {
                 window.localStorage.setItem('show24HourTime', isMilitaryTime.toString());
             }
             set({ isMilitaryTime });
+        },
+    };
+});
+export interface PreviewStore {
+    previewMode: boolean;
+    setPreviewMode: (previewMode: boolean) => void;
+}
+
+export const usePreviewStore = create<PreviewStore>((set) => {
+    const previewMode = typeof Storage !== 'undefined' && window.localStorage.getItem('previewMode') == 'true';
+
+    return {
+        previewMode: previewMode,
+        setPreviewMode: (previewMode) => {
+            if (typeof Storage !== 'undefined') {
+                window.localStorage.setItem('previewMode', previewMode.toString());
+            }
+
+            set({ previewMode: previewMode });
         },
     };
 });

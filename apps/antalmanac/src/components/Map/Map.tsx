@@ -152,18 +152,21 @@ export default function CourseMap() {
     const [calendarEvents, setCalendarEvents] = useState(AppStore.getCourseEventsInCalendar());
 
     useEffect(() => {
-        const updateMarkers = () => {
+        const updateAllMarkers = () => {
             setMarkers(getCoursesPerBuilding());
+            setCustomEventMarkers(getCustomEventPerBuilding());
         };
 
-        AppStore.on('addedCoursesChange', updateMarkers);
-        AppStore.on('currentScheduleIndexChange', updateMarkers);
-        AppStore.on('colorChange', updateMarkers);
+        AppStore.on('addedCoursesChange', updateAllMarkers);
+        AppStore.on('customEventsChange', updateAllMarkers);
+        AppStore.on('currentScheduleIndexChange', updateAllMarkers);
+        AppStore.on('colorChange', updateAllMarkers);
 
         return () => {
-            AppStore.removeListener('addedCoursesChange', updateMarkers);
-            AppStore.removeListener('currentScheduleIndexChange', updateMarkers);
-            AppStore.removeListener('colorChange', updateMarkers);
+            AppStore.removeListener('addedCoursesChange', updateAllMarkers);
+            AppStore.removeListener('customEventsChange', updateAllMarkers);
+            AppStore.removeListener('currentScheduleIndexChange', updateAllMarkers);
+            AppStore.removeListener('colorChange', updateAllMarkers);
         };
     }, []);
 
@@ -289,13 +292,16 @@ export default function CourseMap() {
      */
     const startDestPairs = useMemo(() => {
         const allEvents = [...markersToDisplay, ...customEventMarkersToDisplay];
-        return allEvents.reduce((acc, cur, index) => {
-            acc.push([cur]);
-            if (index > 0) {
-                acc[index - 1].push(cur);
-            }
-            return acc;
-        }, [] as (typeof allEvents)[]);
+        return allEvents.reduce(
+            (acc, cur, index) => {
+                acc.push([cur]);
+                if (index > 0) {
+                    acc[index - 1].push(cur);
+                }
+                return acc;
+            },
+            [] as (typeof allEvents)[]
+        );
     }, [markersToDisplay, customEventMarkersToDisplay]);
 
     return (
@@ -352,7 +358,7 @@ export default function CourseMap() {
                         <Fragment key={Object.values(marker).join('')}>
                             <LocationMarker
                                 {...marker}
-                                label={today === 'All' ? undefined : index + 1}
+                                label={today === 'All' ? undefined : (index + 1).toString()}
                                 stackIndex={coursesSameBuildingPrior.length}
                             >
                                 <Box>
