@@ -80,6 +80,14 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
+            - name: Create in-progress deployment
+              uses: ./.github/actions/create-deployment
+              with:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  environment: staging-frontend
+                  name: frontend-staging-${{ github.event.pull_request.number }}
+                  url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
+
             - name: Checkout repository
               uses: actions/checkout@v3
 
@@ -98,7 +106,16 @@ jobs:
             - name: Deploy frontend staging CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" frontend-staging deploy
 
-            - name: Create deployment
+            - name: Create success deployment
+              uses: ./.github/actions/create-deployment
+              with:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  environment: staging-frontend
+                  name: frontend-staging-${{ github.event.pull_request.number }}
+                  url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
+
+            - name: Create failed deployment
+              if: ${{ failure }}
               uses: ./.github/actions/create-deployment
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -116,6 +133,14 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
+            - name: Create in-progress deployment
+              uses: ./.github/actions/create-deployment
+              with:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  environment: staging-backend
+                  name: backend-staging-${{ github.event.pull_request.number }}
+                  url: https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
+
             - name: Checkout repository
               uses: actions/checkout@v3
 
@@ -132,10 +157,19 @@ jobs:
             - name: Deploy backend staging CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" backend-staging deploy
 
-            - name: Create deployment
+            - name: Create success deployment
               uses: ./.github/actions/create-deployment
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   environment: staging-backend
                   name: backend-staging-${{ github.event.pull_request.number }}
                   url: https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
+
+            - name: Create failed deployment
+              if: ${{ failure }}
+              uses: ./.github/actions/create-deployment
+              with:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  environment: staging-frontend
+                  name: frontend-staging-${{ github.event.pull_request.number }}
+                  url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com

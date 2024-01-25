@@ -4,6 +4,7 @@ import core from '@actions/core';
 import github from '@actions/github';
 
 const NAME_KEY = 'name';
+const DEPLOYMENT_ID_OUTPUT_KEY = 'deployment_id';
 const INACTIVE_STATE = 'inactive';
 const IN_PROGRESS_STATE = 'in_progress';
 // const SUCCESS_STATE = 'success';
@@ -86,8 +87,6 @@ async function main() {
 
     octokit.log.info('Create deployment status response: ', response);
 
-    core.setOutput('deployment_id', deploymentId);
-
     await octokit
         .request('GET /repos/{owner}/{repo}/deployments', { ...repo, environment, per_page: 100 })
         .then(async (response) => {
@@ -147,6 +146,11 @@ async function main() {
 
             octokit.log.info('Done deleting matching deployments');
         });
+
+    octokit.log.info('Done creating deployment.');
+    octokit.log.info(`Deployment ID: ${deploymentId}`);
+
+    core.setOutput(DEPLOYMENT_ID_OUTPUT_KEY, deploymentId);
 }
 
 main();
