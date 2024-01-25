@@ -58,7 +58,7 @@ async function main() {
     const repo = github.context.repo;
 
     if (deploymentId == null) {
-        octokit.log.info('No deployment ID provided, creating a new deployment.');
+        console.log('No deployment ID provided, creating a new deployment.');
 
         const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
             ...repo,
@@ -71,7 +71,7 @@ async function main() {
             required_contexts: [],
         });
 
-        octokit.log.info('Create deployment response: ', response);
+        console.log('Create deployment response: ', response);
 
         if (response.status !== 201) {
             throw new Error('Could not create a deployment');
@@ -80,7 +80,7 @@ async function main() {
         deploymentId = response.data.id;
     }
 
-    octokit.log.info(`Creating deployment status as ${state}...`);
+    console.log(`Creating deployment status as ${state}...`);
 
     const response = await octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
         ...repo,
@@ -91,7 +91,7 @@ async function main() {
         auto_inactive: false,
     });
 
-    octokit.log.info('Create deployment status response: ', response);
+    console.log('Create deployment status response: ', response);
 
     if (response.status !== 201) {
         throw new Error('Could not create a deployment status');
@@ -100,8 +100,8 @@ async function main() {
     // If this deployment isn't active, then we're done.
 
     if (state !== ACTIVE_STATE) {
-        octokit.log.info('Done creating deployment.');
-        octokit.log.info(`Deployment ID: ${deploymentId}`);
+        console.log('Done creating deployment.');
+        console.log(`Deployment ID: ${deploymentId}`);
 
         core.setOutput(DEPLOYMENT_ID_OUTPUT_KEY, deploymentId);
         return;
@@ -136,8 +136,8 @@ async function main() {
                 );
             });
 
-            octokit.log.info('Found deployments with the same name: ', deploymentsWithPrefix);
-            octokit.log.info('Setting matching deployments to inactive');
+            console.log('Found deployments with the same name: ', deploymentsWithPrefix);
+            console.log('Setting matching deployments to inactive');
 
             /**
              * Set all deployments with the same name to inactive.
@@ -152,7 +152,7 @@ async function main() {
                 })
             );
 
-            octokit.log.info('Deleting matching deployments');
+            console.log('Deleting matching deployments');
 
             /**
              * Delete all deployments with the same name.
@@ -166,11 +166,11 @@ async function main() {
                 })
             );
 
-            octokit.log.info('Done deleting matching deployments');
+            console.log('Done deleting matching deployments');
         });
 
-    octokit.log.info('Done creating deployment.');
-    octokit.log.info(`Deployment ID: ${deploymentId}`);
+    console.log('Done creating deployment.');
+    console.log(`Deployment ID: ${deploymentId}`);
 
     core.setOutput(DEPLOYMENT_ID_OUTPUT_KEY, deploymentId);
 }
