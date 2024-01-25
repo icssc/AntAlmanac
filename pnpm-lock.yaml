@@ -46,6 +46,15 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
 
+  .github/actions/delete-deployment:
+    dependencies:
+      '@actions/core':
+        specifier: ^1.10.1
+        version: 1.10.1
+      '@actions/github':
+        specifier: ^6.0.0
+        version: 6.0.0
+
   apps/antalmanac:
     dependencies:
       '@date-io/date-fns':
