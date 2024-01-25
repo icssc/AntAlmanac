@@ -58,6 +58,11 @@ jobs:
             # Otherwise use the default development API endpoint.
             antalmanac-api-endpoint: ${{ ((steps.changed.outputs.backend == 'true' ||  steps.changed.outputs.cdk == 'true') && format('staging-{0}', github.event.pull_request.number)) || 'dev' }}
 
+            frontend_environment: frontend-staging-${{ github.event.pull_request.number }}
+            frontend_environment_url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
+            backend_environment: backend-staging-${{ github.event.pull_request.number }}
+            backend_environment_url: https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
+
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
@@ -85,8 +90,8 @@ jobs:
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   environment: staging-frontend
-                  name: frontend-staging-${{ github.event.pull_request.number }}
-                  url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
+                  name: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
+                  url: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
 
             - name: Checkout repository
               uses: actions/checkout@v3
@@ -95,8 +100,7 @@ jobs:
               uses: ./.github/actions/setup-node-and-pnpm
 
             - name: Install dependencies
-              run:
-                  pnpm install --frozen-lockfile
+              run: pnpm install --frozen-lockfile
 
             - name: Build frontend
               run: pnpm --filter "antalmanac" build
@@ -111,17 +115,17 @@ jobs:
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   environment: staging-frontend
-                  name: frontend-staging-${{ github.event.pull_request.number }}
-                  url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
+                  name: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
+                  url: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
 
             - name: Create failed deployment
-              if: ${{ failure }}
+              if: ${{ failure() }}
               uses: ./.github/actions/create-deployment
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   environment: staging-frontend
-                  name: frontend-staging-${{ github.event.pull_request.number }}
-                  url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
+                  name: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
+                  url: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
 
     deploy_staging_backend:
         name: Deploy backend staging CloudFormation stack and environment
@@ -138,8 +142,8 @@ jobs:
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   environment: staging-backend
-                  name: backend-staging-${{ github.event.pull_request.number }}
-                  url: https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
+                  name: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
+                  url: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
 
             - name: Checkout repository
               uses: actions/checkout@v3
@@ -148,8 +152,7 @@ jobs:
               uses: ./.github/actions/setup-node-and-pnpm
 
             - name: Install dependencies
-              run:
-                  pnpm install --frozen-lockfile
+              run: pnpm install --frozen-lockfile
 
             - name: Build backend
               run: pnpm --filter "antalmanac-backend" build
@@ -162,14 +165,14 @@ jobs:
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   environment: staging-backend
-                  name: backend-staging-${{ github.event.pull_request.number }}
-                  url: https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
+                  name: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
+                  url: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
 
             - name: Create failed deployment
-              if: ${{ failure }}
+              if: ${{ failure() }}
               uses: ./.github/actions/create-deployment
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  environment: staging-frontend
-                  name: frontend-staging-${{ github.event.pull_request.number }}
-                  url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
+                  environment: staging-backend
+                  name: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
+                  url: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
