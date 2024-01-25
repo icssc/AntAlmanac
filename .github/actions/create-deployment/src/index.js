@@ -43,7 +43,7 @@ async function main() {
     const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
         repo: github.context.repo.repo,
         owner: github.context.repo.owner,
-        ref: github.context.ref.slice(0, github.context.ref.length - 6),
+        ref: github.context.sha,
         environment,
         payload: {
             [NAME_KEY]: name,
