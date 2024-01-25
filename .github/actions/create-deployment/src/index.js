@@ -51,8 +51,6 @@ async function main() {
 
     const repo = github.context.repo;
 
-    console.log('ACTOR: ', github.context.actor);
-
     const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
         ...repo,
         ref,
@@ -64,7 +62,7 @@ async function main() {
         required_contexts: [],
     });
 
-    console.log(response);
+    console.log('Creating deployment response: ', response);
 
     if (response.status !== 201) {
         throw new Error('Could not create a deployment');
