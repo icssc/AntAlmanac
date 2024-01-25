@@ -43,7 +43,7 @@ async function main() {
     const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
         repo: github.context.repo.repo,
         owner: github.context.repo.owner,
-        ref: 'refs/head/google-auth-devops',
+        ref: 'refs/heads/google-auth-devops',
         environment,
         payload: {
             [NAME_KEY]: name,
