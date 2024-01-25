@@ -51,41 +51,7 @@ async function main() {
 
     const repo = github.context.repo;
 
-    await octokit.request('GET /repos/{owner}/{repo}/deployments', { ...repo, environment }).then(async (response) => {
-        if (response.status !== 200) {
-            return;
-        }
-
-        /**
-         * Get existing deployments with the same name saved in the payload,
-         * but with a different sha and deactivate them.
-         */
-        const deploymentsWithPrefix = response.data.filter((deployment) => {
-            /**
-             * Ignore deployments with a string payload.
-             */
-            if (typeof deployment.payload === 'string') {
-                return false;
-            }
-
-            const deploymentName = deployment.payload[NAME_KEY];
-            return (
-                typeof deploymentName === 'string' &&
-                deploymentName.startsWith(name) &&
-                deployment.sha !== github.context.sha
-            );
-        });
-
-        await Promise.all(
-            deploymentsWithPrefix.map(async (deployment) => {
-                return octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
-                    deployment_id: deployment.id,
-                    state: INACTIVE_STATE,
-                    ...repo,
-                });
-            })
-        );
-    });
+    console.log('ACTOR: ', github.context.actor);
 
     const response = await octokit.request('POST /repos/{owner}/{repo}/deployments', {
         ...repo,
@@ -97,6 +63,8 @@ async function main() {
         auto_merge: false,
         required_contexts: [],
     });
+
+    console.log(response);
 
     if (response.status !== 201) {
         throw new Error('Could not create a deployment');
@@ -112,6 +80,55 @@ async function main() {
         environment_url: url,
         auto_inactive: false,
     });
+
+    await octokit
+        .request('GET /repos/{owner}/{repo}/deployments', { ...repo, environment, per_page: 100 })
+        .then(async (response) => {
+            if (response.status !== 200) {
+                return;
+            }
+
+            /**
+             * Get existing deployments with the same name, but with a different deployment ID;
+             * set them to inactive, then delete them.
+             */
+            const deploymentsWithPrefix = response.data.filter((deployment) => {
+                /**
+                 * Ignore deployments with a string payload.
+                 */
+                if (typeof deployment.payload === 'string') {
+                    return false;
+                }
+
+                const deploymentName = deployment.payload[NAME_KEY];
+                return (
+                    typeof deploymentName === 'string' &&
+                    deploymentName.startsWith(name) &&
+                    deployment.id !== deploymentId
+                );
+            });
+
+            /**
+             * Set all deployments with the same name to inactive.
+             */
+            await Promise.all(
+                deploymentsWithPrefix.map(async (deployment) => {
+                    return octokit.request('POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
+                        deployment_id: deployment.id,
+                        state: INACTIVE_STATE,
+                        ...repo,
+                    });
+                })
+            );
+
+            /**
+             * Delete all deployments with the same name.
+             */
+            await octokit.request('DELETE /repos/{owner}/{repo}/deployments/{deployment_id}', {
+                ...repo,
+                deployment_id: deploymentId,
+            });
+        });
 }
 
 main();
