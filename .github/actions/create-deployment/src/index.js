@@ -121,6 +121,8 @@ async function main() {
              * set them to inactive, then delete them.
              */
             const deploymentsWithPrefix = response.data.filter((deployment) => {
+                return deployment.environment === environment;
+
                 /**
                  * Ignore deployments with a string payload.
                  */
