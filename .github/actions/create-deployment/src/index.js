@@ -74,7 +74,7 @@ async function main() {
         console.log('Created deployment.');
 
         if (response.status !== 201) {
-            throw new Error('Could not create a deployment');
+            throw new Error('Could not create a deployment.');
         }
 
         deploymentId = response.data.id;
@@ -94,7 +94,7 @@ async function main() {
     console.log('Created deployment status.');
 
     if (response.status !== 201) {
-        throw new Error('Could not create a deployment status');
+        throw new Error('Could not create a deployment status.');
     }
 
     // If this deployment isn't active, then we're done.
@@ -136,7 +136,7 @@ async function main() {
                 );
             });
 
-            console.log('Setting matching deployments to inactive');
+            console.log('Setting matching deployments to inactive...');
 
             /**
              * Set all deployments with the same name to inactive.
@@ -151,7 +151,7 @@ async function main() {
                 })
             );
 
-            console.log('Deleting matching deployments');
+            console.log('Deleting matching deployments...');
 
             /**
              * Delete all deployments with the same name.
@@ -165,7 +165,7 @@ async function main() {
                 })
             );
 
-            console.log('Done deleting matching deployments');
+            console.log('Done deleting matching deployments.');
         });
 
     console.log('Done creating deployment.');
