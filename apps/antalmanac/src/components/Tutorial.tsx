@@ -5,12 +5,19 @@ import { useTour } from '@reactour/tour';
 
 import { useEffect, useMemo } from 'react';
 import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
+import useCoursePaneStore from '$stores/CoursePaneStore';
 
 export function Tutorial() {
     const { setCurrentStep, setIsOpen, setSteps } = useTour();
+    const [displaySearch, disableManualSearch] = useCoursePaneStore((state) => [
+        state.displaySearch,
+        state.disableManualSearch,
+    ]);
 
     const restartTour = useMemo(
         () => () => {
+            displaySearch();
+            disableManualSearch();
             setCurrentStep(0);
             setIsOpen(true);
         },
