@@ -169,7 +169,7 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
         },
         mapPane: {
             selector: '#map-pane',
-            content: <>Select the map tab to see where your classes are.</>,
+            content: 'Click on a day to see your route!',
             action: () => setTab(2),
             mutationObservables: ['#map-pane'],
         },

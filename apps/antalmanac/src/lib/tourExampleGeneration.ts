@@ -53,6 +53,40 @@ export function addSampleClasses() {
                 },
             ],
         },
+        {
+            meetings: [
+                {
+                    bldg: ['SSH 100'],
+                    days: 'MWF',
+                    startTime: {
+                        hour: 11,
+                        minute: 0,
+                    },
+                    endTime: {
+                        hour: 12,
+                        minute: 20,
+                    },
+                    timeIsTBA: false,
+                },
+            ],
+        },
+        {
+            meetings: [
+                {
+                    bldg: ['ALP 100'],
+                    days: 'TuTh',
+                    startTime: {
+                        hour: 11,
+                        minute: 0,
+                    },
+                    endTime: {
+                        hour: 11,
+                        minute: 50,
+                    },
+                    timeIsTBA: false,
+                },
+            ],
+        },
     ];
 
     const sampleClasses: Array<ScheduleCourse> = sampleClassesOptions.map(sampleClassFactory);
@@ -186,17 +220,17 @@ export function sampleClassFactory({
         section: {
             color: '#FF0000',
             instructors: instructors,
-            maxCapacity: '1000',
+            maxCapacity: '500',
             meetings: meetings ?? sampleMeetingsFactory({}),
             finalExam: finalExam ?? sampleFinalExamFactory({}),
             numCurrentlyEnrolled: {
-                sectionEnrolled: '100',
-                totalEnrolled: '100',
+                sectionEnrolled: '500',
+                totalEnrolled: '500',
             },
             numNewOnlyReserved: '0',
-            numOnWaitlist: '0',
+            numOnWaitlist: '99',
             numRequested: '0',
-            numWaitlistCap: '0',
+            numWaitlistCap: '100',
             restrictions: '',
             sectionCode: randint(10000, 99999).toString(),
             sectionComment: '',
