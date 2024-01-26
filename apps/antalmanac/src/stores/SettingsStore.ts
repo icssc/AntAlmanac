@@ -15,6 +15,17 @@ export interface ThemeStore {
     setAppTheme: (themeSetting: 'light' | 'dark' | 'system') => void;
 }
 
+function computeTheme(themeSetting: string) {
+    if (themeSetting === 'system') {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? true : false;
+    } else {
+        if (themeSetting === 'dark') {
+            return true;
+        }
+        return false;
+    }
+}
+
 export const useThemeStore = create<ThemeStore>((set) => {
     const themeSetting = typeof Storage !== 'undefined' ? window.localStorage.getItem('theme') ?? 'system' : 'system';
 
@@ -25,14 +36,7 @@ export const useThemeStore = create<ThemeStore>((set) => {
             ? 'dark'
             : 'light';
 
-    const isDark =
-        themeSetting !== 'system'
-            ? themeSetting === 'dark'
-                ? true
-                : false
-            : window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? true
-            : false;
+    const isDark = computeTheme(themeSetting);
 
     return {
         themeSetting: themeSetting as 'light' | 'dark' | 'system',
@@ -50,14 +54,7 @@ export const useThemeStore = create<ThemeStore>((set) => {
                     ? 'dark'
                     : 'light';
 
-            const isDark =
-                themeSetting !== 'system'
-                    ? themeSetting === 'dark'
-                        ? true
-                        : false
-                    : window.matchMedia('(prefers-color-scheme: dark)').matches
-                    ? true
-                    : false;
+            const isDark = computeTheme(themeSetting);
 
             set({ appTheme, themeSetting, isDark });
 

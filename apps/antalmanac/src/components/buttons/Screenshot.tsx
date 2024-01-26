@@ -10,7 +10,7 @@ import { useThemeStore } from '$stores/SettingsStore';
 
 class ScreenshotButton extends PureComponent {
     handleClick = () => {
-        const appTheme = useThemeStore((store) => store.appTheme);
+        const isDark = useThemeStore((store) => store.isDark);
         logAnalytics({
             category: analyticsEnum.calendar.title,
             action: analyticsEnum.calendar.actions.SCREENSHOT,
