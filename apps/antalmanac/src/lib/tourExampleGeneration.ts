@@ -14,7 +14,7 @@ let sampleClassesSectionCodes: Array<string> = [];
 export function addSampleClasses() {
     if (AppStore.getAddedCourses().length > 0) return;
 
-    const sampleClasses: Array<ScheduleCourse> = [
+    const sampleClassesOptions: sampleClassOptions[] = [
         {
             courseTitle: 'Nice',
             deptCode: 'GEN&SEX',
@@ -53,7 +53,9 @@ export function addSampleClasses() {
                 },
             ],
         },
-    ].map(sampleClassFactory);
+    ];
+
+    const sampleClasses: Array<ScheduleCourse> = sampleClassesOptions.map(sampleClassFactory);
 
     sampleClasses.forEach((sampleClass) => {
         AppStore.addCourse(sampleClass);
@@ -81,6 +83,15 @@ function randomClasstime(): HourMinute {
     };
 }
 
+function randomStartEndTime(duration: number): [HourMinute, HourMinute] {
+    const start = randomClasstime();
+    const end = {
+        hour: start.hour + duration / 60,
+        minute: start.minute + (duration % 60),
+    };
+    return [start, end];
+}
+
 export function sampleMeetingsFactory({
     bldg = ['DBH 1200'],
     days = 'MWF',
@@ -93,7 +104,7 @@ export function sampleMeetingsFactory({
         minute: 50,
     },
     timeIsTBA = false,
-}: Partial<WebsocSectionMeeting>) {
+}: Partial<WebsocSectionMeeting>): WebsocSectionMeeting[] {
     return [
         {
             bldg,
@@ -131,13 +142,17 @@ export function sampleFinalExamFactory({
             bldg,
         };
 
+    const [randomStartTime, randomEndTime] = randomStartEndTime(120);
+    startTime = startTime ?? randomStartTime;
+    endTime = endTime ?? randomEndTime;
+
     return {
         examStatus,
         dayOfWeek: dayOfWeek ?? randomWeekday(),
         month,
         day,
-        startTime: startTime ?? randomClasstime(),
-        endTime: endTime ?? randomClasstime(),
+        startTime: startTime,
+        endTime: endTime,
         bldg,
     };
 }
