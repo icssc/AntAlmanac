@@ -126,6 +126,12 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
                     document.getElementById('finals-button')?.click();
                 }, 50);
             },
+            actionAfter: () => {
+                // Switch back to normal calendar
+                setTimeout(() => {
+                    document.getElementById('finals-button-pressed')?.click();
+                }, 50);
+            },
         },
         addedCoursesTab: {
             selector: '#added-courses-tab',
