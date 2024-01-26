@@ -154,6 +154,12 @@ class AppStore extends EventEmitter {
         this.emit('addedCoursesChange');
     }
 
+    deleteCourses(sectionCodes: string[], term: string) {
+        sectionCodes.forEach((sectionCode) => this.deleteCourse(sectionCode, term));
+        this.unsavedChanges = true;
+        this.emit('addedCoursesChange');
+    }
+
     undoAction() {
         this.schedule.revertState();
         this.unsavedChanges = true;

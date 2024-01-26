@@ -8,6 +8,9 @@ import {
 } from 'peterportal-api-next-types';
 import AppStore from '$stores/AppStore';
 
+const CURRENT_TERM = '2024 Winter'; // TODO: Check the current term when that PR's in
+let sampleClassesSectionCodes: Array<string> = [];
+
 export function addSampleClasses() {
     if (AppStore.getAddedCourses().length > 0) return;
 
@@ -54,7 +57,13 @@ export function addSampleClasses() {
 
     sampleClasses.forEach((sampleClass) => {
         AppStore.addCourse(sampleClass);
+        sampleClassesSectionCodes.push(sampleClass.section.sectionCode);
     });
+}
+
+export function removeSampleClasses() {
+    AppStore.deleteCourses(sampleClassesSectionCodes, CURRENT_TERM);
+    sampleClassesSectionCodes = [];
 }
 
 export function randint(min: number, max: number): number {
@@ -158,7 +167,7 @@ export function sampleClassFactory({
         courseTitle: courseTitle,
         deptCode: deptCode,
         prerequisiteLink: '',
-        term: '2024 Winter', // TODO: Check the current term when that PR's in
+        term: CURRENT_TERM,
         section: {
             color: '#FF0000',
             instructors: instructors,
