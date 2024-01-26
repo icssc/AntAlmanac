@@ -23,7 +23,7 @@ const DaySelector: React.FC<DaySelectorProps> = ({
 
     useEffect(() => {
         onSelectDay(selectedDays);
-    }, [selectedDays]);
+    }, [onSelectDay, selectedDays]);
 
     const handleChange = (dayIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
         const newSelectedDays = [...selectedDays];

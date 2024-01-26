@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react';
-import { Box, Button, ButtonGroup, Divider, Drawer, IconButton, Typography, useMediaQuery } from '@material-ui/core';
+import { Box, Button, ButtonGroup, Drawer, IconButton, Switch, Typography, useMediaQuery } from '@material-ui/core';
+import { Divider, Stack, Tooltip } from '@mui/material';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
-import { Close, DarkMode, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
+import { Close, DarkMode, Help, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
-import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { usePreviewStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -34,7 +35,7 @@ function ThemeMenu() {
     };
 
     return (
-        <Box sx={{ padding: '1rem 1rem 0 1rem', width: '100%' }}>
+        <Box sx={{ padding: '0 1rem', width: '100%' }}>
             <Typography variant="h6" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
                 Theme
             </Typography>
@@ -93,7 +94,7 @@ function TimeMenu() {
     };
 
     return (
-        <Box sx={{ padding: '1rem 1rem 0 1rem', width: '100%' }}>
+        <Box sx={{ padding: '0 1rem', width: '100%' }}>
             <Typography variant="h6" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
                 Time
             </Typography>
@@ -137,6 +138,30 @@ function TimeMenu() {
     );
 }
 
+function ExperimentalMenu() {
+    const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
+
+    const handlePreviewChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPreviewMode(event.target.checked);
+    };
+
+    return (
+        <Stack sx={{ padding: '1rem 1rem 0 1rem', width: '100%', display: 'flex' }} alignItems="middle">
+            <Box display="flex" justifyContent="space-between" width={1}>
+                <Box display="flex" alignItems="center" style={{ gap: 4 }}>
+                    <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                        Hover to Preview
+                    </Typography>
+                    <Tooltip title={<Typography>Hover over courses to preview them in your calendar!</Typography>}>
+                        <Help />
+                    </Tooltip>
+                </Box>
+                <Switch color="primary" value={previewMode} checked={previewMode} onChange={handlePreviewChange} />
+            </Box>
+        </Stack>
+    );
+}
+
 function SettingsMenu() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const isMobileScreen = useMediaQuery('(max-width:750px)');
@@ -168,7 +193,7 @@ function SettingsMenu() {
                             flexDirection: 'row',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            padding: '16px',
+                            padding: '12px',
                         }}
                     >
                         <Typography variant="h6">Settings</Typography>
@@ -176,10 +201,17 @@ function SettingsMenu() {
                             <Close fontSize="inherit" />
                         </IconButton>
                     </Box>
+
                     <Divider />
 
                     <ThemeMenu />
                     <TimeMenu />
+
+                    <Divider style={{ marginTop: '16px' }}>
+                        <Typography variant="subtitle2">Experimental Features</Typography>
+                    </Divider>
+
+                    <ExperimentalMenu />
                 </Box>
             </Drawer>
         </>
