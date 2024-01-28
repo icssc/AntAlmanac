@@ -83,7 +83,7 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
                 }
                 const instructorArr = Array.from(instructorSet);
                 instructorArr.sort();
-                setInstructors(Array.from(instructorSet));
+                setInstructors(instructorArr);
             }
             setLoading(false);
         });
