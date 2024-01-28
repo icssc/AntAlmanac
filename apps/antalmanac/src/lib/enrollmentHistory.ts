@@ -44,7 +44,7 @@ export interface EnrollmentHistoryDay {
 
 export class DepartmentEnrollmentHistory {
     // Each key in the cache will be the department and courseNumber concatenated
-    static enrollmentHistoryCache: Record<string, EnrollmentHistory | null> = {};
+    static enrollmentHistoryCache: Record<string, EnrollmentHistory[] | null> = {};
     static termShortNames: string[] = termData.map((term) => term.shortName);
     static QUERY_TEMPLATE = `{
         enrollmentHistory(department: "$$DEPARTMENT$$", courseNumber: "$$COURSE_NUMBER$$", sectionType: Lec) {
@@ -68,14 +68,13 @@ export class DepartmentEnrollmentHistory {
         this.partialQueryString = DepartmentEnrollmentHistory.QUERY_TEMPLATE.replace('$$DEPARTMENT$$', department);
     }
 
-    async find(courseNumber: string): Promise<EnrollmentHistory | null> {
+    async find(courseNumber: string): Promise<EnrollmentHistory[] | null> {
         const cacheKey = this.department + courseNumber;
-        return (DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] ??= await this.queryEnrollmentHistory(
-            courseNumber
-        ));
+        return (DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] ??=
+            await this.queryEnrollmentHistory(courseNumber));
     }
 
-    async queryEnrollmentHistory(courseNumber: string): Promise<EnrollmentHistory | null> {
+    async queryEnrollmentHistory(courseNumber: string): Promise<EnrollmentHistory[] | null> {
         // Query for the enrollment history of all lecture sections that were offered
         const queryString = this.partialQueryString.replace('$$COURSE_NUMBER$$', courseNumber);
 
@@ -84,11 +83,7 @@ export class DepartmentEnrollmentHistory {
         if (res?.length) {
             const parsedEnrollmentHistory = DepartmentEnrollmentHistory.parseEnrollmentHistoryResponse(res);
             DepartmentEnrollmentHistory.sortEnrollmentHistory(parsedEnrollmentHistory);
-
-            // For now, just return the enrollment history of the most recent quarter
-            // instead of the entire array of enrollment histories
-            const latestEnrollmentHistory = parsedEnrollmentHistory[0];
-            return latestEnrollmentHistory;
+            return parsedEnrollmentHistory;
         }
 
         return null;
