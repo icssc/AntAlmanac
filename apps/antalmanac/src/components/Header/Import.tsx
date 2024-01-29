@@ -46,7 +46,6 @@ function Import() {
     }, []);
 
     const handleSubmit = async () => {
-        console.log(term);
         const currentSchedule = AppStore.getCurrentScheduleIndex();
 
         let zotcourseImport: ZotCourseResponse | null = null;
