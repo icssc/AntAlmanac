@@ -65,7 +65,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                 <div className={classes.container}>
                     <div className={classes.margin}>
                         <TermSelector
-                            changeState={(field: string, value: string) => RightPaneStore.updateFormValue(field, value)}
+                            changeTerm={(field: string, value: string) => RightPaneStore.updateFormValue(field, value)}
                             fieldName={'term'}
                         />
                         <Tooltip title="Toggle Manual Search">
