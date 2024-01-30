@@ -90,7 +90,23 @@ function CourseInfoButton({
             </Button>
 
             {popupContent && (
-                <Popper anchorEl={popupAnchor} open={Boolean(popupAnchor)} placement="bottom">
+                <Popper
+                    anchorEl={popupAnchor}
+                    open={Boolean(popupAnchor)}
+                    modifiers={{
+                        // offset: {
+                        //     enabled: true,
+                        //     offset: '-15 0',
+                        // },
+                        // flip: {
+                        //     enabled: true,
+                        // },
+                        preventOverflow: {
+                            enabled: true,
+                            // boundariesElement: 'scrollParent',
+                        },
+                    }}
+                >
                     <Paper>{popupContent}</Paper>
                 </Popper>
             )}
