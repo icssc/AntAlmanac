@@ -43,7 +43,3 @@ export const useCoursePaneStore = create<CoursePaneStore>((set) => {
 });
 
 export default useCoursePaneStore;
-
-setInterval(() => {
-    console.log(useCoursePaneStore.getState().searchIsDisplayed);
-}, 5000);
