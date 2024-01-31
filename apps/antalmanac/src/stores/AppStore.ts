@@ -342,7 +342,7 @@ class AppStore extends EventEmitter {
     termsInSchedule = (term: string) =>
         new Set([term, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
 
-    autoSaveSchedule = (action: any[] = [null, null, null]) => {
+    autoSaveSchedule = (action: unknown[] = [null, null, null]) => {
         const autoSave = typeof Storage !== 'undefined' && window.localStorage.getItem('autoSave') == 'true';
         if (autoSave) {
             const savedUserID = window.localStorage.getItem('userID');
