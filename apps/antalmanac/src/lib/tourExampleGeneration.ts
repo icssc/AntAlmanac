@@ -153,11 +153,11 @@ export function sampleMeetingsFactory({
 export function sampleFinalExamFactory({
     examStatus = 'SCHEDULED_FINAL',
     dayOfWeek,
-    month = 12,
+    month = 11,
     day = 12,
     startTime,
     endTime,
-    bldg = [],
+    bldg = ['DBH'],
 }: Partial<WebsocSectionFinalExam>): WebsocSectionFinalExam {
     if (examStatus == 'NO_FINAL')
         return {
