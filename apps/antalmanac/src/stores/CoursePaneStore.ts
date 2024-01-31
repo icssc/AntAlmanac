@@ -27,11 +27,9 @@ export const useCoursePaneStore = create<CoursePaneStore>((set) => {
     return {
         searchIsDisplayed: true,
         displaySearch: () => {
-            console.log('switching to search');
             set({ searchIsDisplayed: true });
         },
         displaySections: () => {
-            console.log('Switching to sections');
             set({ searchIsDisplayed: false });
         },
 
