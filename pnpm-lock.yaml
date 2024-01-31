@@ -75,6 +75,9 @@ importers:
       '@react-leaflet/core':
         specifier: ^2.1.0
         version: 2.1.0(leaflet@1.9.3)(react-dom@18.2.0)(react@18.2.0)
+      '@reactour/tour':
+        specifier: ^3.6.1
+        version: 3.6.1(react@18.2.0)
       '@tanstack/react-query':
         specifier: ^4.24.4
         version: 4.24.10(react-dom@18.2.0)(react@18.2.0)
@@ -214,6 +217,9 @@ importers:
       '@types/react-lazyload':
         specifier: ^3.2.0
         version: 3.2.0
+      '@types/reactour':
+        specifier: ^1.18.5
+        version: 1.18.5
       '@types/ua-parser-js':
         specifier: ^0.7.39
         version: 0.7.39
@@ -1690,7 +1696,7 @@ packages:
     resolution: {integrity: sha512-p2dAqtVrkhSa7xz1u/m9eHYdLi+en8NowrmXeF/dKtJpU8lCWli8RUAati7NcSl0afsBott48pdnANuD0wh9QQ==}
     dependencies:
       '@babel/helper-module-imports': 7.18.6
-      '@babel/runtime': 7.20.13
+      '@babel/runtime': 7.22.11
       '@emotion/hash': 0.9.0
       '@emotion/memoize': 0.8.0
       '@emotion/serialize': 1.1.1
@@ -2520,7 +2526,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.20.13
+      '@babel/runtime': 7.22.11
       '@emotion/hash': 0.8.0
       '@material-ui/types': 5.1.0(@types/react@18.0.28)
       '@material-ui/utils': 4.11.3(react-dom@18.2.0)(react@18.2.0)
@@ -2552,7 +2558,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.20.13
+      '@babel/runtime': 7.22.11
       '@material-ui/utils': 4.11.3(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.0.28
       csstype: 2.6.21
@@ -2579,7 +2585,7 @@ packages:
       react: ^16.8.0 || ^17.0.0
       react-dom: ^16.8.0 || ^17.0.0
     dependencies:
-      '@babel/runtime': 7.20.13
+      '@babel/runtime': 7.22.11
       prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -2597,7 +2603,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.20.13
+      '@babel/runtime': 7.22.11
       '@emotion/is-prop-valid': 1.2.0
       '@mui/types': 7.2.3(@types/react@18.0.28)
       '@mui/utils': 5.11.9(react@18.2.0)
@@ -2781,7 +2787,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.20.13
+      '@babel/runtime': 7.22.11
       '@emotion/react': 11.10.6(@types/react@18.0.28)(react@18.2.0)
       '@emotion/styled': 11.10.6(@emotion/react@11.10.6)(@types/react@18.0.28)(react@18.2.0)
       '@mui/private-theming': 5.11.9(@types/react@18.0.28)(react@18.2.0)
@@ -2823,7 +2829,7 @@ packages:
     peerDependencies:
       react: ^17.0.0 || ^18.0.0
     dependencies:
-      '@babel/runtime': 7.20.13
+      '@babel/runtime': 7.22.11
       '@types/prop-types': 15.7.5
       '@types/react-is': 17.0.3
       prop-types: 15.8.1
@@ -2886,6 +2892,45 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
+  /@reactour/mask@1.1.0(react@18.2.0):
+    resolution: {integrity: sha512-GkJMLuTs3vTsm4Ryq2uXcE4sMzRP1p4xSd6juSOMqbHa7IVD/UiLCLqJWHR9xGSQPbYhpZAZAORUG5cS0U5tBA==}
+    peerDependencies:
+      react: 16.x || 17.x || 18.x
+    dependencies:
+      '@reactour/utils': 0.5.0(react@18.2.0)
+      react: 18.2.0
+    dev: false
+
+  /@reactour/popover@1.1.1(react@18.2.0):
+    resolution: {integrity: sha512-BouulO0sXfmuHSPX8FwCYI0fMeT+VsWqk7UTao3NQcUC5H903ZeKOV2GYpwSJtRUQhsyNEu1Q8cEruGRf1SOXQ==}
+    peerDependencies:
+      react: 16.x || 17.x || 18.x
+    dependencies:
+      '@reactour/utils': 0.5.0(react@18.2.0)
+      react: 18.2.0
+    dev: false
+
+  /@reactour/tour@3.6.1(react@18.2.0):
+    resolution: {integrity: sha512-vzmgbm4T7n5gh0cjc4Zi4G3K29dXQyEdi/o7ZYLpNcisJ0hwP5jNKH7BgckrHWEGldBxYSWl34tsRmHcyxporQ==}
+    peerDependencies:
+      react: 16.x || 17.x || 18.x
+    dependencies:
+      '@reactour/mask': 1.1.0(react@18.2.0)
+      '@reactour/popover': 1.1.1(react@18.2.0)
+      '@reactour/utils': 0.5.0(react@18.2.0)
+      react: 18.2.0
+    dev: false
+
+  /@reactour/utils@0.5.0(react@18.2.0):
+    resolution: {integrity: sha512-yQs5Nm/Dg1xRM7d/S/UILBV5OInrTgrjGzgc81/RP5khqdO5KnpOaC46yF83kDtCalte8X3RCwp+F2YA509k1w==}
+    peerDependencies:
+      react: 16.x || 17.x || 18.x
+    dependencies:
+      '@rooks/use-mutation-observer': 4.11.2(react@18.2.0)
+      react: 18.2.0
+      resize-observer-polyfill: 1.5.1
+    dev: false
+
   /@remix-run/router@1.3.2:
     resolution: {integrity: sha512-t54ONhl/h75X94SWsHGQ4G/ZrCEguKSRQr7DrjTciJXW0YU1QhlwYeycvK5JgkzlxmvrK7wq1NB/PLtHxoiDcA==}
     engines: {node: '>=14'}
@@ -2913,6 +2958,14 @@ packages:
       estree-walker: 2.0.2
       picomatch: 2.3.1
     dev: true
+
+  /@rooks/use-mutation-observer@4.11.2(react@18.2.0):
+    resolution: {integrity: sha512-vpsdrZdr6TkB1zZJcHx+fR1YC/pHs2BaqcuYiEGjBVbwY5xcC49+h0hAUtQKHth3oJqXfIX/Ng8S7s5HFHdM/A==}
+    peerDependencies:
+      react: '>=16.8.0'
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /@sinclair/typebox@0.27.8:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
@@ -3365,6 +3418,12 @@ packages:
 
   /@types/reactcss@1.2.6:
     resolution: {integrity: sha512-qaIzpCuXNWomGR1Xq8SCFTtF4v8V27Y6f+b9+bzHiv087MylI/nTCqqdChNeWS7tslgROmYB7yeiruWX7WnqNg==}
+    dependencies:
+      '@types/react': 18.0.28
+    dev: true
+
+  /@types/reactour@1.18.5:
+    resolution: {integrity: sha512-Pl5yh9bXeXaFcioDk6XVmUzdJGZDAKesVmwoh2KvN/1FXSd9saN8pIprLvfspnXANMcgl3AtSlD4zs0cJIhGIw==}
     dependencies:
       '@types/react': 18.0.28
     dev: true
@@ -4790,7 +4849,7 @@ packages:
   /dom-helpers@5.2.1:
     resolution: {integrity: sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==}
     dependencies:
-      '@babel/runtime': 7.20.13
+      '@babel/runtime': 7.22.11
       csstype: 3.1.1
     dev: false
 
@@ -7505,7 +7564,7 @@ packages:
       react: '>=16.3.0'
       react-dom: '>=16.3.0'
     dependencies:
-      '@babel/runtime': 7.20.13
+      '@babel/runtime': 7.22.11
       '@popperjs/core': 2.11.6
       '@restart/hooks': 0.4.9(react@18.2.0)
       '@types/warning': 3.0.0
@@ -7600,7 +7659,7 @@ packages:
       react: '>=16.6.0'
       react-dom: '>=16.6.0'
     dependencies:
-      '@babel/runtime': 7.20.13
+      '@babel/runtime': 7.22.11
       dom-helpers: 5.2.1
       loose-envify: 1.4.0
       prop-types: 15.8.1
@@ -7689,6 +7748,10 @@ packages:
     resolution: {integrity: sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==}
     dev: true
 
+  /resize-observer-polyfill@1.5.1:
+    resolution: {integrity: sha512-LwZrotdHOo12nQuZlHEmtuXdqGoOD0OhaxopaNFxWzInpEgaLWoVuAMbTzixuosCx2nEG58ngzW3vxdWoxIgdg==}
+    dev: false
+
   /resolve-from@4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
     engines: {node: '>=4'}
@@ -7736,7 +7799,7 @@ packages:
     peerDependencies:
       react: '>=16.8'
     dependencies:
-      '@babel/runtime': 7.20.13
+      '@babel/runtime': 7.22.11
       react: 18.2.0
     dev: false
 
@@ -8462,7 +8525,7 @@ packages:
     peerDependencies:
       react: '>=15.0.0'
     dependencies:
-      '@babel/runtime': 7.20.13
+      '@babel/runtime': 7.22.11
       '@types/react': 18.0.28
       invariant: 2.2.4
       react: 18.2.0
@@ -8973,7 +9036,7 @@ packages:
     resolution: {integrity: sha512-Z2Fe1bn+eLstG8DRR6FTavGD+MeAwyfmouhHsIUgaADz8jvFKbO/fXc2trJKZg+5EBjh4gGm3iU/t3onKlXHIg==}
     engines: {node: '>=10'}
     dependencies:
-      '@babel/runtime': 7.20.13
+      '@babel/runtime': 7.22.11
       '@types/lodash': 4.14.191
       lodash: 4.17.21
       lodash-es: 4.17.21

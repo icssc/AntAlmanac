@@ -21,10 +21,13 @@ import { openSnackbar } from '$actions/AppStoreActions';
 import WebSOC from '$lib/websoc';
 
 function getColors() {
-    const courseColors = AppStore.schedule.getCurrentCourses().reduce((accumulator, { section }) => {
-        accumulator[section.sectionCode] = section.color;
-        return accumulator;
-    }, {} as { [key: string]: string });
+    const courseColors = AppStore.schedule.getCurrentCourses().reduce(
+        (accumulator, { section }) => {
+            accumulator[section.sectionCode] = section.color;
+            return accumulator;
+        },
+        {} as { [key: string]: string }
+    );
 
     return courseColors;
 }
