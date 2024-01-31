@@ -234,7 +234,7 @@ function tourActionFactory(func: () => void, waitFor: { selector?: string; event
         const domNode = document.querySelector(waitFor.selector);
 
         if (!domNode) {
-            console.error(`Could not find element with selector ${waitFor.selector}`);
+            console.info(`Could not find element with selector ${waitFor.selector}`);
             return;
         }
 
