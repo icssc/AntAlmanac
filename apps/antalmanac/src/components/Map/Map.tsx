@@ -171,6 +171,34 @@ export default function CourseMap() {
     }, []);
 
     useEffect(() => {
+        const updateCustomEventMarkers = () => {
+            setCustomEventMarkers(getCustomEventPerBuilding());
+        };
+
+        AppStore.on('customEventsChange', updateCustomEventMarkers);
+        AppStore.on('currentScheduleIndexChange', updateCustomEventMarkers);
+
+        return () => {
+            AppStore.removeListener('customEventsChange', updateCustomEventMarkers);
+            AppStore.removeListener('currentScheduleIndexChange', updateCustomEventMarkers);
+        };
+    }, []);
+
+    useEffect(() => {
+        const updateCustomEventMarkers = () => {
+            setCustomEventMarkers(getCustomEventPerBuilding());
+        };
+
+        AppStore.on('customEventsChange', updateCustomEventMarkers);
+        AppStore.on('currentScheduleIndexChange', updateCustomEventMarkers);
+
+        return () => {
+            AppStore.removeListener('customEventsChange', updateCustomEventMarkers);
+            AppStore.removeListener('currentScheduleIndexChange', updateCustomEventMarkers);
+        };
+    }, []);
+
+    useEffect(() => {
         const locationID = Number(searchParams.get('location') ?? 0);
         const building = locationID in buildingCatalogue ? buildingCatalogue[locationID] : undefined;
 
