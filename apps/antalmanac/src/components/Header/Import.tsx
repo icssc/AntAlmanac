@@ -160,7 +160,13 @@ function Import() {
         <>
             {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
             <Tooltip title="Import a schedule from your Study List">
-                <Button onClick={handleOpen} color="inherit" startIcon={<PostAdd />} disabled={skeletonMode} if="import-button">
+                <Button
+                    onClick={handleOpen}
+                    color="inherit"
+                    startIcon={<PostAdd />}
+                    disabled={skeletonMode}
+                    id="import-button"
+                >
                     Import
                 </Button>
             </Tooltip>
