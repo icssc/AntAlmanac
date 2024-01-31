@@ -8,6 +8,13 @@ import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarE
 import { useTabStore } from '$stores/TabStore';
 import { saveSchedule } from '$actions/AppStoreActions';
 
+type ActionType = [
+    null | string,
+    null | number | string | RepeatingCustomEvent | ScheduleCourse,
+    null | number | string | number[],
+    null | number | string | RepeatingCustomEvent,
+];
+
 class AppStore extends EventEmitter {
     schedule: Schedules;
     customEvents: RepeatingCustomEvent[];
@@ -75,7 +82,7 @@ class AppStore extends EventEmitter {
             addedCourse = this.schedule.addCourse(newCourse, scheduleIndex);
         }
         this.unsavedChanges = true;
-        this.autoSaveSchedule(['addCourse', newCourse, scheduleIndex]);
+        this.autoSaveSchedule(['addCourse', newCourse, scheduleIndex, null]);
         this.emit('addedCoursesChange');
         return addedCourse;
     }
@@ -153,7 +160,7 @@ class AppStore extends EventEmitter {
     deleteCourse(sectionCode: string, term: string) {
         this.schedule.deleteCourse(sectionCode, term);
         this.unsavedChanges = true;
-        this.autoSaveSchedule(['deleteCourse', sectionCode, term]);
+        this.autoSaveSchedule(['deleteCourse', sectionCode, term, null]);
         this.emit('addedCoursesChange');
     }
 
@@ -172,28 +179,28 @@ class AppStore extends EventEmitter {
     addCustomEvent(customEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
         this.schedule.addCustomEvent(customEvent, scheduleIndices);
         this.unsavedChanges = true;
-        this.autoSaveSchedule(['addCustomEvent', customEvent, scheduleIndices]);
+        this.autoSaveSchedule(['addCustomEvent', customEvent, scheduleIndices, null]);
         this.emit('customEventsChange');
     }
 
     editCustomEvent(editedCustomEvent: RepeatingCustomEvent, newScheduleIndices: number[]) {
         this.schedule.editCustomEvent(editedCustomEvent, newScheduleIndices);
         this.unsavedChanges = true;
-        this.autoSaveSchedule(['editCustomEvent', editedCustomEvent, newScheduleIndices]);
+        this.autoSaveSchedule(['editCustomEvent', editedCustomEvent, newScheduleIndices, null]);
         this.emit('customEventsChange');
     }
 
     deleteCustomEvent(customEventId: number) {
         this.schedule.deleteCustomEvent(customEventId);
         this.unsavedChanges = true;
-        this.autoSaveSchedule(['deleteCustomEvent', customEventId]);
+        this.autoSaveSchedule(['deleteCustomEvent', customEventId, null, null]);
         this.emit('customEventsChange');
     }
 
     changeCustomEventColor(customEventId: number, newColor: string) {
         this.schedule.changeCustomEventColor(customEventId, newColor);
         this.unsavedChanges = true;
-        this.autoSaveSchedule(['changeCustomEventColor', customEventId, newColor]);
+        this.autoSaveSchedule(['changeCustomEventColor', customEventId, newColor, null]);
         this.colorPickers[customEventId].emit('colorChange', newColor);
         this.emit('colorChange', false);
     }
@@ -220,7 +227,7 @@ class AppStore extends EventEmitter {
     copySchedule(to: number) {
         this.schedule.copySchedule(to);
         this.unsavedChanges = true;
-        this.autoSaveSchedule(['copySchedule', to]);
+        this.autoSaveSchedule(['copySchedule', to, null, null]);
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
     }
@@ -233,34 +240,42 @@ class AppStore extends EventEmitter {
         }
         this.unsavedChanges = false;
 
-        if (window.localStorage.getItem('unsavedAction') != null) {
-            if (confirm('You have unsaved changes. Would you like to load them?')) {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                const unsavedAction = JSON.parse(window.localStorage.getItem('unsavedAction'));
-                for (const action of unsavedAction) {
-                    if (action[0] == 'addCourse') {
+        const unsavedActionString = window.localStorage.getItem('unsavedAction');
+        if (unsavedActionString !== null && confirm('You have unsaved changes. Would you like to load them?')) {
+            for (const action of JSON.parse(unsavedActionString)) {
+                switch (action[0]) {
+                    case 'addCourse':
                         this.schedule.addCourse(action[1], action[2]);
-                    } else if (action[0] == 'deleteCourse') {
+                        break;
+                    case 'deleteCourse':
                         this.schedule.deleteCourse(action[1], action[2]);
-                    } else if (action[0] == 'addCustomEvent') {
+                        break;
+                    case 'addCustomEvent':
                         this.schedule.addCustomEvent(action[1], action[2]);
-                    } else if (action[0] == 'deleteCustomEvent') {
+                        break;
+                    case 'deleteCustomEvent':
                         this.schedule.deleteCustomEvent(action[1]);
-                    } else if (action[0] == 'editCustomEvent') {
+                        break;
+                    case 'editCustomEvent':
                         this.schedule.editCustomEvent(action[1], action[2]);
-                    } else if (action[0] == 'changeCustomEventColor') {
+                        break;
+                    case 'changeCustomEventColor':
                         this.schedule.changeCustomEventColor(action[1], action[2]);
-                    } else if (action[0] == 'changeCourseColor') {
+                        break;
+                    case 'changeCourseColor':
                         this.schedule.changeCourseColor(action[1], action[2], action[3]);
-                    } else if (action[0] == 'clearSchedule') {
+                        break;
+                    case 'clearSchedule':
                         this.schedule.clearCurrentSchedule();
-                    } else if (action[0] == 'copySchedule') {
+                        break;
+                    case 'copySchedule':
                         this.schedule.copySchedule(action[1]);
-                    }
+                        break;
+                    default:
+                        break;
                 }
-                localStorage.removeItem('unsavedAction');
             }
+            window.localStorage.removeItem('unsavedAction');
         }
 
         this.emit('addedCoursesChange');
@@ -297,7 +312,7 @@ class AppStore extends EventEmitter {
     clearSchedule() {
         this.schedule.clearCurrentSchedule();
         this.unsavedChanges = true;
-        this.autoSaveSchedule(['clearSchedule']);
+        this.autoSaveSchedule(['clearSchedule', null, null, null]);
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
     }
@@ -342,23 +357,22 @@ class AppStore extends EventEmitter {
     termsInSchedule = (term: string) =>
         new Set([term, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
 
-    autoSaveSchedule = (action: unknown[] = [null, null, null]) => {
+    autoSaveSchedule = (action: ActionType = [null, null, null, null]) => {
         const autoSave = typeof Storage !== 'undefined' && window.localStorage.getItem('autoSave') == 'true';
         if (autoSave) {
             const savedUserID = window.localStorage.getItem('userID');
 
-            if (savedUserID != null) {
-                saveSchedule(savedUserID, true, true).then((r) => void r);
+            if (savedUserID) {
+                saveSchedule(savedUserID, true, true);
                 this.unsavedChanges = false;
             }
         } else {
-            if (window.localStorage.getItem('unsavedAction') == null) {
+            const unsavedActionString = window.localStorage.getItem('unsavedAction');
+            if (unsavedActionString == null) {
                 const unsavedAction = [action];
                 localStorage.setItem('unsavedAction', JSON.stringify(unsavedAction));
             } else {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                const unsavedAction = JSON.parse(window.localStorage.getItem('unsavedAction'));
+                const unsavedAction = JSON.parse(unsavedActionString);
                 unsavedAction.push(action);
                 localStorage.setItem('unsavedAction', JSON.stringify(unsavedAction));
             }
