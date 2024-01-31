@@ -98,7 +98,12 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
         calendar: {
             selector: '.rbc-time-view', // Calendar.
             content: 'See the classes in your schedule!',
-            action: addSampleClasses,
+            action: () => {
+                addSampleClasses();
+                const finalsButtonPressed = document.getElementById('finals-button-pressed');
+                if (!finalsButtonPressed) return;
+                finalsButtonPressed.click(); // To switch back to normal view
+            },
         },
         finalsButton: {
             selector: '#finals-button, #finals-button-pressed',
