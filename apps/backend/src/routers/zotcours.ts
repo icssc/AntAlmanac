@@ -8,7 +8,7 @@ const zotcourseRouter = router({
         .input(type({ scheduleName: 'string' }).assert)
         .mutation(async ({ input }) => {
             let url = new URL(zotcourseUrl);
-            url.searchParams.append('username', input.scheduleName);
+            url.searchParams.append('username', 'aa-backend-test');
             const response = await fetch(url);
             return await response.json();
         }),
