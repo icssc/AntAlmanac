@@ -22,7 +22,7 @@ export function Tutorial() {
             setCurrentStep(0);
             setIsOpen(true);
         },
-        [setCurrentStep, setIsOpen]
+        [displaySearch, disableManualSearch, setCurrentStep, setIsOpen]
     );
 
     useEffect(() => setIsOpen(tourShouldRun), [setIsOpen]);
