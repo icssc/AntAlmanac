@@ -72,6 +72,8 @@ const Header = ({ classes }: CustomAppBarProps) => {
                     alt="logo"
                 />
 
+                <h1>Hello New Staging!</h1>
+
                 <div style={{ flexGrow: '1' }} />
 
                 <LoadSaveScheduleFunctionality />
