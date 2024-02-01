@@ -2,7 +2,6 @@ import React from 'react';
 
 import { PETERPORTAL_GRAPHQL_ENDPOINT } from './api/endpoints';
 import { openSnackbar } from '$actions/AppStoreActions';
-import { useThemeStore } from '$stores/SettingsStore';
 
 export async function queryGraphQL<PromiseReturnType>(queryString: string): Promise<PromiseReturnType | null> {
     const query = JSON.stringify({
