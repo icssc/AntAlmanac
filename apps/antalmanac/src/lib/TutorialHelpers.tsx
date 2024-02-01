@@ -81,6 +81,9 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
                     You can always review the tour by clicking the button in the bottom right corner.
                 </>
             ),
+            actionAfter: () => {
+                markTourHasRun();
+            },
         },
         searchBar: {
             selector: '#searchBar',
