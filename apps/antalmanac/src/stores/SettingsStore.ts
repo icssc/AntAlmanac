@@ -1,67 +1,48 @@
 import { create } from 'zustand';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
+export type ThemeSetting = 'light' | 'dark' | 'system';
+
 export interface ThemeStore {
     /**
      * The 'raw' theme, based on the user's selected setting
      */
-    themeSetting: 'light' | 'dark' | 'system';
+    themeSetting: ThemeSetting;
     /**
      * The 'derived' theme, based on user settings and device preferences
      */
     appTheme: 'light' | 'dark';
     isDark: boolean;
 
-    setAppTheme: (themeSetting: 'light' | 'dark' | 'system') => void;
+    setAppTheme: (themeSetting: ThemeSetting) => void;
 }
 
-function computeTheme(themeSetting: string) {
-    if (themeSetting === 'system') {
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? true : false;
-    } else {
-        if (themeSetting === 'dark') {
-            return true;
-        }
-        return false;
-    }
+function themeShouldBeDark(themeSetting: ThemeSetting) {
+    if (themeSetting == 'system') return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return themeSetting == 'dark';
 }
 
 export const useThemeStore = create<ThemeStore>((set) => {
-    const themeSetting = typeof Storage !== 'undefined' ? window.localStorage.getItem('theme') ?? 'system' : 'system';
-
-    const appTheme =
-        themeSetting !== 'system'
-            ? themeSetting
-            : window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'dark'
-            : 'light';
-
-    const isDark = computeTheme(themeSetting);
+    const storedThemeSetting: ThemeSetting = (window.localStorage?.getItem('theme') ?? 'system') as ThemeSetting;
+    const isDark = themeShouldBeDark(storedThemeSetting);
 
     return {
-        themeSetting: themeSetting as 'light' | 'dark' | 'system',
-        appTheme: appTheme as 'light' | 'dark',
-        isDark,
+        themeSetting: storedThemeSetting,
+        appTheme: isDark ? 'dark' : 'light',
+        isDark: isDark,
+
         setAppTheme: (themeSetting) => {
-            if (typeof Storage !== 'undefined') {
-                window.localStorage.setItem('theme', themeSetting);
-            }
+            window.localStorage?.setItem('theme', themeSetting);
 
-            const appTheme =
-                themeSetting !== 'system'
-                    ? themeSetting
-                    : window.matchMedia('(prefers-color-scheme: dark)').matches
-                    ? 'dark'
-                    : 'light';
-
-            const isDark = computeTheme(themeSetting);
+            const isDark = themeShouldBeDark(themeSetting);
+            const appTheme = isDark ? 'dark' : 'light';
 
             set({ appTheme, themeSetting, isDark });
 
             logAnalytics({
                 category: analyticsEnum.nav.title,
                 action: analyticsEnum.nav.actions.CHANGE_THEME,
-                label: appTheme,
+                label: themeSetting,
             });
         },
     };
