@@ -30,7 +30,7 @@ export function tourShouldRun(): boolean {
     return !(
         localStorage.getItem(tourHasRunKey) == 'true' ||
         window.matchMedia('(max-width: 768px)').matches ||
-        localStorage.getItem('userId') != null
+        localStorage.getItem('userID') != null
     );
 }
 
