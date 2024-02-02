@@ -19,7 +19,7 @@ import DaySelector from './DaySelector';
 import ScheduleSelector from './ScheduleSelector';
 import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 import AppStore from '$stores/AppStore';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
 
@@ -139,6 +139,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
         };
     }, []);
 
+    const isDark = useThemeStore.getState().isDark;
     return (
         <>
             {props.customEvent ? (
@@ -218,15 +219,15 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                 </DialogContent>
 
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDarkMode() ? 'secondary' : 'primary'}>
+                    <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>
                     <Button onClick={handleSubmit} variant="contained" color="primary" disabled={disabled}>
                         {disabled
                             ? 'Schedule and day must be checked'
                             : props.customEvent
-                              ? 'Save Changes'
-                              : 'Add Event'}
+                            ? 'Save Changes'
+                            : 'Add Event'}
                     </Button>
                 </DialogActions>
             </Dialog>
