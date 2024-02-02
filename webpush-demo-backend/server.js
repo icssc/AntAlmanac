@@ -6,15 +6,18 @@ const webpush = require('web-push');
 const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require("cors");
+
+
 // Create express app.
 const app = express();
 app.use(cors());
 
+
+// test routes
 app.get('/', (req, res) => {
   res.send('Hello from our server!');
   console.log("Hello World!");
 })
-
 
 app.get("/test", (req, res) => {
   console.log("Testing World!");
@@ -22,6 +25,7 @@ app.get("/test", (req, res) => {
 })
 
 
+// webpush
 // Use body parser which we will use to parse request body that sending from client.
 app.use(bodyParser.json());
 
@@ -39,11 +43,16 @@ webpush.setVapidDetails("mailto:test@test.com", publicVapidKey, privateVapidKey)
 
 // Create route for allow client to subscribe to push notification.
 app.post('/subscribe', (req, res) => {
-    console.log("Posting Notification")
+    console.log("Subscribing User to Notifications");
     const subscription = req.body;
     res.status(201).json({});
     const payload = JSON.stringify({ title: "Webpush Demo", body: "Here is an example of a push notification" });
     webpush.sendNotification(subscription, payload).catch(console.log);
+})
+
+
+app.get('/notification', (req, res) => {
+  console.log("Pushing Notifications to User");
 })
 
 const PORT = 5001;
