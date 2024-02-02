@@ -10,6 +10,7 @@ import {
     Select,
     type DialogProps,
 } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material';
 import AppStore from '$stores/AppStore';
 import { copySchedule } from '$actions/AppStoreActions';
 
@@ -23,7 +24,7 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [selectedSchedule, setSelectedSchedule] = useState<number>(0);
 
-    const handleScheduleChange = useCallback((event: React.ChangeEvent<{ value: unknown }>) => {
+    const handleScheduleChange = useCallback((event: SelectChangeEvent<number>) => {
         setSelectedSchedule(event.target.value as number);
     }, []);
 
