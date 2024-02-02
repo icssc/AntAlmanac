@@ -5,7 +5,7 @@ import axios from 'axios';
 import {useState} from 'react';
 
 function App() {
-  const [reg, setReg] = useState('')
+  const [reg, setReg] = useState(null)
   const publicVapidKey = "BOd2EQ8LTe3KAgMX9lWwTlHTRzv1Iantw50Mw6pUnsNr3pcxl8iglUs-YlQEQLo4UbJk9oyXs_BxgyAe0TCqKME";
   
   const registerServiceWorker = async () => {
@@ -14,8 +14,6 @@ function App() {
         scope: '/'
     });
     setReg(register);
-
-
   }
 
   const pushNotification = async () => {

@@ -30,7 +30,7 @@ app.use(express.static(path.join(__dirname, "client")))
 
 const publicVapidKey = "BOd2EQ8LTe3KAgMX9lWwTlHTRzv1Iantw50Mw6pUnsNr3pcxl8iglUs-YlQEQLo4UbJk9oyXs_BxgyAe0TCqKME";
 
-const privateVapidKey = "";
+const privateVapidKey = "4AoSsRHFaHv0Fupd2NRtrungJF2jkqgccTu-WEc781w";
 
 // Setup the public and private VAPID keys to web-push library.
 webpush.setVapidDetails("mailto:test@test.com", publicVapidKey, privateVapidKey);
