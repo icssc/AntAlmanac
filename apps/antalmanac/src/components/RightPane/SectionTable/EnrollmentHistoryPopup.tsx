@@ -3,7 +3,7 @@ import { LineChart, Line, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tool
 import { Box, Link, Typography, Skeleton, useMediaQuery } from '@mui/material';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 
 export interface EnrollmentHistoryPopupProps {
     department: string;
@@ -28,9 +28,9 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
             enrollmentHistory.quarter
         } | ${enrollmentHistory.instructors.join(', ')}`;
     }, [courseNumber, department, enrollmentHistory]);
-
+    const isDarkMode = useThemeStore((state) => state.isDark);
     const encodedDept = useMemo(() => encodeURIComponent(department), [department]);
-    const axisColor = isDarkMode() ? '#fff' : '#111';
+    const axisColor = isDarkMode ? '#fff' : '#111';
     const tooltipDateColor = '#111';
 
     useEffect(() => {
