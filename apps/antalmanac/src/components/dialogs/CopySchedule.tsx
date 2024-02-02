@@ -27,6 +27,10 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
         setSelectedSchedule(event.target.value as number);
     }, []);
 
+    const handleCancel = useCallback(() => {
+        onClose?.({}, 'escapeKeyDown');
+    }, [onClose, index]);
+
     const handleCopy = useCallback(() => {
         if (selectedSchedule !== scheduleNames.length) {
             copySchedule(selectedSchedule);
@@ -70,7 +74,7 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={onClose} color="inherit">
+                <Button onClick={handleCancel} color="inherit">
                     Cancel
                 </Button>
                 <Button onClick={handleCopy} variant="contained" color="primary">
