@@ -18,7 +18,8 @@ interface CopyScheduleDialogProps extends DialogProps {
 }
 
 function CopyScheduleDialog(props: CopyScheduleDialogProps) {
-    const { index, onClose } = props;
+    const { index } = props;
+    const { onClose } = props; // destructured separately for memoization.
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [selectedSchedule, setSelectedSchedule] = useState<number>(0);
 
