@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
-
 import { Box, Chip, IconButton, Menu, MenuItem, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
 import { ContentCopy, DeleteOutline } from '@mui/icons-material';
 import { AACourse } from '@packages/antalmanac-types';
-
 import { ColumnToggleButton } from '../CoursePane/CoursePaneButtonRow';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
@@ -12,6 +9,7 @@ import AppStore from '$stores/AppStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
 import { clickToCopy } from '$lib/helpers';
+import CopyScheduleDialog from '$components/dialogs/CopySchedule';
 
 /**
  * All the interactive buttons have the same styles.
@@ -104,48 +102,26 @@ function ClearScheduleButton() {
     );
 }
 
-function CopyScheduleButton() {
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+function CopyScheduleButton(props: { index: number }) {
+    const [open, setOpen] = useState(false);
 
-    useEffect(() => {
-        /**
-         * A shallow copy needs to be made so the array reference is different and the component re-renders.
-         */
-        const handleScheduleNamesChange = () => {
-            setScheduleNames([...AppStore.getScheduleNames()]);
-        };
+    const handleOpen = useCallback(() => {
+        setOpen(true);
+    }, []);
 
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-
-        return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-        };
+    const handleClose = useCallback(() => {
+        setOpen(false);
     }, []);
 
     return (
-        <PopupState variant="popover">
-            {(popupState) => (
-                <>
-                    <Tooltip title="Copy Schedule">
-                        <IconButton {...bindTrigger(popupState)} sx={buttonSx} size="medium">
-                            <ContentCopy />
-                        </IconButton>
-                    </Tooltip>
-                    <Menu {...bindMenu(popupState)}>
-                        {scheduleNames.map((name, index) => (
-                            <MenuItem
-                                key={index}
-                                disabled={AppStore.getCurrentScheduleIndex() === index}
-                                onClick={createCopyHandler(index)}
-                            >
-                                Copy to {name}
-                            </MenuItem>
-                        ))}
-                        <MenuItem onClick={createCopyHandler(scheduleNames.length)}>Copy to All Schedules</MenuItem>
-                    </Menu>
-                </>
-            )}
-        </PopupState>
+        <>
+            <Tooltip title="Copy Schedule">
+                <IconButton sx={buttonSx} onClick={handleOpen} size="small">
+                    <ContentCopy />
+                </IconButton>
+            </Tooltip>
+            <CopyScheduleDialog fullWidth open={open} index={props.index} onClose={handleClose} />
+        </>
     );
 }
 
