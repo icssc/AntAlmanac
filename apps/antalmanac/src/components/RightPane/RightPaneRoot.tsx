@@ -26,7 +26,14 @@ interface DesktopTabsProps {
     style: Record<string, unknown>;
 }
 
-const tabs = [
+interface TabInfo {
+    label: string;
+    href: string;
+    icon: React.ElementType;
+    id?: string;
+}
+
+const tabs: Array<TabInfo> = [
     {
         label: 'Search',
         href: '/',
@@ -36,11 +43,13 @@ const tabs = [
         label: 'Added',
         href: '/added',
         icon: FormatListBulleted,
+        id: 'added-courses-tab',
     },
     {
         label: 'Map',
         href: '/map',
         icon: MyLocation,
+        id: 'map-tab',
     },
 ];
 
@@ -72,11 +81,12 @@ export default function Desktop({ style }: DesktopTabsProps) {
                             }
                             to={tab.href}
                             style={{ minHeight: 'auto', height: '44px', padding: 3, minWidth: '33%' }}
+                            id={tab.id}
                         />
                     ))}
                 </Tabs>
             </Paper>
-            <Box height="calc(100% - 54px)" overflow="auto" style={{ margin: '8px 4px 0px' }}>
+            <Box height="calc(100% - 54px)" overflow="auto" style={{ margin: '8px 4px 0px' }} id="course-pane-box">
                 {activeTab === 0 && <CoursePane />}
                 {activeTab === 1 && <AddedCoursePane />}
                 {activeTab === 2 && (
