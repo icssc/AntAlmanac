@@ -126,4 +126,3 @@ jobs:
               run: pnpm --filter "antalmanac-cdk" backend-development deploy
               env:
                   NODE_ENV: development
-                  AWS_DEFAULT_REGION: us-west-1
