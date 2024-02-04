@@ -44,6 +44,7 @@ export class BackendStack extends Stack {
             },
             billingMode: dynamnodb.BillingMode.PAY_PER_REQUEST,
             removalPolicy,
+            deletionProtection: true,
         });
 
         const authUserDataDDB = new dynamnodb.Table(this, `authuserdata-ddb`, {
@@ -53,6 +54,7 @@ export class BackendStack extends Stack {
             },
             billingMode: dynamnodb.BillingMode.PAY_PER_REQUEST,
             removalPolicy,
+            deletionProtection: true,
         });
 
         const handler = new lambda.Function(this, 'lambda', {
