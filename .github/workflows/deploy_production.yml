@@ -48,8 +48,6 @@ jobs:
     deploy_production_frontend:
         name: Deploy production frontend to GitHub Pages
 
-        needs: setup_and_build
-
         runs-on: ubuntu-latest
 
         environment:
