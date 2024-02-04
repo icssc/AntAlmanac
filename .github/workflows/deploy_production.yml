@@ -62,7 +62,7 @@ jobs:
               uses: ./.github/actions/setup-node-and-pnpm
 
             - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+              run: pnpm install --frozen-lockfile --prod false
 
             - name: Build frontend
               run: pnpm --filter "antalmanac" build
@@ -89,7 +89,7 @@ jobs:
               uses: ./.github/actions/setup-node-and-pnpm
 
             - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+              run: pnpm install --frozen-lockfile --prod false
 
             - name: Build backend
               run: pnpm --filter "antalmanac-backend" build
@@ -118,7 +118,7 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Build backend
-              run: pnpm --filter "antalmanac-backend" build
+              run: pnpm --filter "antalmanac-backend" build --prod false
               env:
                   NODE_ENV: development
 
