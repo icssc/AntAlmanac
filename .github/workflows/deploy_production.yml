@@ -45,6 +45,7 @@ env:
     PR_NUM: ${{ github.event.pull_request.number }}
 
 jobs:
+    # Deploy production version of the website to GitHub Pages.
     deploy_production_frontend:
         name: Deploy production frontend to GitHub Pages
 
