@@ -73,31 +73,6 @@ jobs:
               with:
                   path: apps/antalmanac/build
 
-    deploy_production_backend:
-        name: Deploy production backend CloudFormation stack and environment
-
-        runs-on: ubuntu-latest
-
-        environment:
-            name: backend-production
-            url: https://api.antalmanac.com
-
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
-
-            - name: Setup Node.js and pnpm
-              uses: ./.github/actions/setup-node-and-pnpm
-
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile --prod false
-
-            - name: Build backend
-              run: pnpm --filter "antalmanac-backend" build
-
-            - name: Deploy backend production CloudFormation stack
-              run: pnpm --filter "antalmanac-cdk" backend-production deploy
-
     # A shadow/mirror of the production backend used as the default API endpoint during development and staging.
     deploy_development_backend:
         name: Deploy development backend CloudFormation stack and environment
