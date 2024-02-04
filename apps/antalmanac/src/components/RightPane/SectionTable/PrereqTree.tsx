@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */
 import { Prerequisite, PrerequisiteTree } from 'peterportal-api-next-types';
 import { FC, useState } from 'react';
-import { Button, Modal, Popover } from '@material-ui/core';
+import { Button, Popover } from '@material-ui/core';
 
 import { CourseInfo } from './CourseInfoBar';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -23,7 +23,7 @@ interface NodeProps {
 }
 
 const Node: FC<NodeProps> = (props) => {
-    const appTheme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => store.isDark);
     return (
         <div style={{ padding: '1px 0' }} className={`${props.node}`} key={props.index}>
             <div
