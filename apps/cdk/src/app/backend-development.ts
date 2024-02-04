@@ -22,7 +22,7 @@ async function main() {
 
     const app = new App({ autoSynth: true });
 
-    new BackendStack(app, stackName);
+    new BackendStack(app, stackName, { env: { region: 'us-east-1' } });
 }
 
 main();
