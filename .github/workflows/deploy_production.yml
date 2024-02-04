@@ -1,0 +1,131 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json
+---
+name: Deploy CloudFormation stacks for production environment and development environment mirror
+
+on:
+    push:
+        branches:
+            - main
+
+    workflow_dispatch:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+    deployments: write
+
+env:
+    # Tooling settings.
+    HUSKY: 0
+    NODE_ENV: production
+
+    # Application information.
+    MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
+    MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
+    VITE_TILES_ENDPOINT: ${{ secrets.VITE_TILES_ENDPOINT}}
+    GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+    GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+
+    # Turborepo credentials.
+    TURBO_API: ${{ vars.TURBO_API }}
+    TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+    TURBO_TEAM: team_antalmanac
+
+    # AWS credentials.
+    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    AWS_DEFAULT_REGION: us-east-1
+
+    # Information used by AWS CDK stacks.
+    HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
+    CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+    PR_NUM: ${{ github.event.pull_request.number }}
+
+jobs:
+    deploy_production_frontend:
+        name: Deploy production frontend to GitHub Pages
+
+        needs: setup_and_build
+
+        runs-on: ubuntu-latest
+
+        environment:
+            name: frontend-production
+            url: https://antalmanac.com
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build frontend
+              run: pnpm --filter "antalmanac" build
+
+            - name: Upload frontend artifacts
+              uses: actions/upload-pages-artifact@v2
+              with:
+                  path: apps/antalmanac/build
+
+    deploy_production_backend:
+        name: Deploy production backend CloudFormation stack and environment
+
+        runs-on: ubuntu-latest
+
+        environment:
+            name: backend-production
+            url: https://api.antalmanac.com
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build backend
+              run: pnpm --filter "antalmanac-backend" build
+
+            - name: Deploy backend production CloudFormation stack
+              run: pnpm --filter "antalmanac-cdk" backend-production deploy
+
+    # A shadow/mirror of the production backend used as the default API endpoint during development and staging.
+    deploy_development_backend:
+        name: Deploy development backend CloudFormation stack and environment
+
+        runs-on: ubuntu-latest
+
+        environment:
+            name: backend-development
+            url: https://dev.api.antalmanac.com
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build backend
+              run: pnpm --filter "antalmanac-backend" build
+              env:
+                  NODE_ENV: development
+
+            - name: Deploy backend development CloudFormation stack
+              run: pnpm --filter "antalmanac-cdk" backend-development deploy
+              env:
+                  NODE_ENV: development
+                  AWS_DEFAULT_REGION: us-west-1
