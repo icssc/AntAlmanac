@@ -35,6 +35,7 @@ export class BackendStack extends Stack {
          * @example complete domain name: "api.antalmanac.com", "staging-123.api.antalmanac.com"
          */
         const domain = env.PR_NUM ? `staging-${env.PR_NUM}.api` : env.NODE_ENV === 'production' ? 'api' : 'dev.api';
+        const removalPolicy: RemovalPolicy = env.NODE_ENV === 'staging' ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN;
 
         const userDataDDB = new dynamnodb.Table(this, `${id}-user-data-ddb`, {
             partitionKey: {
@@ -42,7 +43,7 @@ export class BackendStack extends Stack {
                 type: dynamnodb.AttributeType.STRING,
             },
             billingMode: dynamnodb.BillingMode.PAY_PER_REQUEST,
-            removalPolicy: env.NODE_ENV === 'staging' ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
+            removalPolicy,
         });
 
         const authUserDataDDB = new dynamnodb.Table(this, `${id}-authuserdata-ddb`, {
@@ -51,7 +52,7 @@ export class BackendStack extends Stack {
                 type: dynamnodb.AttributeType.STRING,
             },
             billingMode: dynamnodb.BillingMode.PAY_PER_REQUEST,
-            removalPolicy: env.NODE_ENV === 'staging' ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
+            removalPolicy,
         });
 
         const handler = new lambda.Function(this, 'lambda', {
