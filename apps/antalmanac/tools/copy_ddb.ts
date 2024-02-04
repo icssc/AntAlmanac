@@ -17,7 +17,7 @@ async function main() {
         secretAccessKey: '',
     };
 
-    const sourceTableName = 'prod-us-west-1-Backend-antalmanacuserdataddbprodE407436D-Q87Q74FD29CS';
+    const sourceTableName = '';
     const sourceDdbClient = new DynamoDB.DocumentClient(config);
     const sourceDdb = new DynamoDB(config);
 
@@ -34,7 +34,7 @@ async function main() {
         }
     );
 
-    const destinationTableName = 'antalmanac-backend-production-userdataddbAB232634-1OXTJU2H7VZWT';
+    const destinationTableName = '';
     const destinationDdbClient = new DynamoDB.DocumentClient(config);
     const destinationDdb = new DynamoDB(config);
 

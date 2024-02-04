@@ -88,6 +88,7 @@
         "@typescript-eslint/eslint-plugin": "^5.54.1",
         "@typescript-eslint/parser": "^5.54.1",
         "@vitejs/plugin-react": "^4.0.4",
+        "aws-sdk": "^2.1550.0",
         "eslint": "^8.36.0",
         "eslint-config-prettier": "^8.7.0",
         "eslint-plugin-import": "^2.27.5",
