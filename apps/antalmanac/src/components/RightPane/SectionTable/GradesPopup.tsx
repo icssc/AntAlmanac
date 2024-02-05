@@ -51,7 +51,7 @@ export interface GradesPopupProps {
 }
 
 function GradesPopup(props: GradesPopupProps) {
-    const appTheme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => [store.isDark]);
 
     const { deptCode, courseNumber, instructor = '', isMobileScreen } = props;
 
@@ -69,12 +69,12 @@ function GradesPopup(props: GradesPopupProps) {
                   instructor ? ` — ${instructor}` : ''
               } | Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}`
             : 'Grades are not available for this class.';
-    }, [deptCode, instructor, gradeData]);
+    }, [gradeData, deptCode, courseNumber, instructor]);
 
-    const gpaString = useMemo(
-        () => (gradeData ? `Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}` : ''),
-        [gradeData]
-    );
+    // const gpaString = useMemo(
+    //     () => (gradeData ? `Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}` : ''),
+    //     [gradeData]
+    // );
 
     useEffect(() => {
         if (loading === false) {
