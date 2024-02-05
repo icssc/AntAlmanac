@@ -5,20 +5,29 @@ class Term {
     shortName: `${string} ${string}`;
     longName: string;
     startDate?: [number, number, number];
-    constructor(shortName: `${string} ${string}`, longName: string, startDate?: [number, number, number]) {
+    finalsStartDate?: [number, number, number];
+    constructor(
+        shortName: `${string} ${string}`,
+        longName: string,
+        startDate?: [number, number, number],
+        finalsStartDate?: [number, number, number]
+    ) {
         this.shortName = shortName;
         this.longName = longName;
         this.startDate = startDate;
+        this.finalsStartDate = finalsStartDate;
     }
 }
 
 /**
  * Quarterly Academic Calendar {@link https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html}
+ * Quick Reference Ten Year Calendar {@link https://www.reg.uci.edu/calendars/academic/tenyr-19-29.html}
  * The `startDate`, if available, should correspond to the __instruction start date__ (not the quarter start date)
+ * The `finalsStartDate`, if available, should correspond to the __final exams__ date **plus two days** (to offset finals start to Monday)
  * Months are 0-indexed
  */
 const termData = [
-    new Term('2024 Winter', '2024 Winter Quarter', [2024, 0, 8]),
+    new Term('2024 Winter', '2024 Winter Quarter', [2024, 0, 8], [2024, 2, 18]),
     new Term('2023 Fall', '2023 Fall Quarter', [2023, 8, 28]),
     new Term('2023 Summer2', '2023 Summer Session 2', [2023, 7, 7]),
     new Term('2023 Summer10wk', '2023 10-wk Summer', [2023, 5, 26]),
@@ -81,4 +90,13 @@ function getDefaultTerm() {
     return termData[defaultTerm];
 }
 
-export { defaultTerm, getDefaultTerm, termData };
+function getDefaultFinalsStart() {
+    return termData[defaultTerm].finalsStartDate;
+}
+
+function getDefaultFinalsStartDate() {
+    const defaultFinals = termData[defaultTerm].finalsStartDate;
+    return defaultFinals ? new Date(defaultFinals[0], defaultFinals[1], defaultFinals[2]) : new Date(2024, 2, 18); // Defaults to finals for Winter 2024
+}
+
+export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStart, getDefaultFinalsStartDate };

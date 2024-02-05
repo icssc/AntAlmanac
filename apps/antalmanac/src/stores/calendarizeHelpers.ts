@@ -3,6 +3,7 @@ import { HourMinute } from 'peterportal-api-next-types';
 import { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { notNull, getReferencesOccurring } from '$lib/utils';
+import { getDefaultFinalsStart } from '$lib/termData';
 
 export const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
@@ -104,6 +105,10 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
 
             const locationsWithNoDays = bldg ? bldg.map(getLocation) : course.section.meetings[0].bldg.map(getLocation);
 
+            const [defaultFinalsYear, defaultFinalsMonth, defaultFinalsDay] = [
+                ...(getDefaultFinalsStart() || [2018, 0]),
+            ];
+
             return dayIndicesOcurring.map((dayIndex) => ({
                 color: course.section.color,
                 term: course.term,
@@ -119,8 +124,20 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                 instructors: course.section.instructors,
                 sectionCode: course.section.sectionCode,
                 sectionType: 'Fin',
-                start: new Date(2018, 0, dayIndex - 1, startHour, startMin),
-                end: new Date(2018, 0, dayIndex - 1, endHour, endMin),
+                start: new Date(
+                    defaultFinalsYear,
+                    defaultFinalsMonth,
+                    defaultFinalsDay ? defaultFinalsDay + dayIndex - 2 : dayIndex - 1,
+                    startHour,
+                    startMin
+                ), //TODO: here
+                end: new Date(
+                    defaultFinalsYear,
+                    defaultFinalsMonth,
+                    defaultFinalsDay ? defaultFinalsDay + dayIndex - 2 : dayIndex - 1,
+                    endHour,
+                    endMin
+                ),
                 finalExam: {
                     ...finalExam,
                     locations: bldg?.map(getLocation) ?? [],
