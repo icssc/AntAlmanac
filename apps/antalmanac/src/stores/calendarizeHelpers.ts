@@ -127,14 +127,14 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                 start: new Date(
                     defaultFinalsYear,
                     defaultFinalsMonth,
-                    defaultFinalsDay ? defaultFinalsDay + dayIndex - 2 : dayIndex - 1,
+                    defaultFinalsDay ? defaultFinalsDay + dayIndex : dayIndex - 1,
                     startHour,
                     startMin
-                ), //TODO: here
+                ),
                 end: new Date(
                     defaultFinalsYear,
                     defaultFinalsMonth,
-                    defaultFinalsDay ? defaultFinalsDay + dayIndex - 2 : dayIndex - 1,
+                    defaultFinalsDay ? defaultFinalsDay + dayIndex : dayIndex - 1,
                     endHour,
                     endMin
                 ),
