@@ -498,8 +498,6 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 };
 
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
-    const isDark = useThemeStore((store) => store.isDark);
-
     const { classes, section, courseDetails, term, allowHighlight, scheduleNames } = props;
 
     const activeColumns = useColumnStore((store) => store.activeColumns);
@@ -622,6 +620,8 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                 // allowHighlight is ALWAYS false when in Added Course Pane and ALWAYS true when in CourseRenderPane
                 addedCourse ? { addedCourse: addedCourse && allowHighlight } : { scheduleConflict: scheduleConflict }
             )}
+            onMouseEnter={handleHover}
+            onMouseLeave={handleHover}
         >
             {!addedCourse ? (
                 <ScheduleAddCell
