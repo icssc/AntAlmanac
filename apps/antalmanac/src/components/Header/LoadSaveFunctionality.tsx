@@ -147,12 +147,19 @@ const LoadSaveScheduleFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
 
     const [loading, setLoading] = useState(false);
+    const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
         setLoading(true);
         await loadSchedule(userID, rememberMe);
         setLoading(false);
+    };
+
+    const saveScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
+        setSaving(true);
+        await saveSchedule(userID, rememberMe);
+        setSaving(false);
     };
 
     useEffect(() => {
@@ -178,14 +185,27 @@ const LoadSaveScheduleFunctionality = () => {
         }
     }, []);
 
+    useEffect(() => {
+        const handleAutoSaveStart = () => setSaving(true);
+        const handleAutoSaveEnd = () => setSaving(false);
+
+        AppStore.on('autoSaveStart', handleAutoSaveStart);
+        AppStore.on('autoSaveEnd', handleAutoSaveEnd);
+
+        return () => {
+            AppStore.off('autoSaveStart', handleAutoSaveStart);
+            AppStore.off('autoSaveEnd', handleAutoSaveEnd);
+        };
+    }, []);
+
     return (
         <div id="load-save-container">
             <LoadSaveButtonBase
                 id="save-button"
                 actionName={'Save'}
-                action={saveSchedule}
+                action={saveScheduleAndSetLoading}
                 disabled={loading}
-                loading={false}
+                loading={saving}
                 colorType={isDark ? 'primary' : 'secondary'}
             />
             <LoadSaveButtonBase

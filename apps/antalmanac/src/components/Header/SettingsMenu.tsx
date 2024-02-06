@@ -4,7 +4,7 @@ import { Divider, Stack, Tooltip } from '@mui/material';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { Close, DarkMode, Help, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
-import { usePreviewStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -138,9 +138,14 @@ function TimeMenu() {
 
 function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
+    const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
 
     const handlePreviewChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPreviewMode(event.target.checked);
+    };
+
+    const handleAutoSaveChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setAutoSave(event.target.checked);
     };
 
     return (
@@ -155,6 +160,18 @@ function ExperimentalMenu() {
                     </Tooltip>
                 </Box>
                 <Switch color="primary" value={previewMode} checked={previewMode} onChange={handlePreviewChange} />
+            </Box>
+
+            <Box display="flex" justifyContent="space-between" width={1}>
+                <Box display="flex" alignItems="center" style={{ gap: 4 }}>
+                    <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                        Auto Save
+                    </Typography>
+                    <Tooltip title={<Typography>Auto Saving your process when you modified the calendar</Typography>}>
+                        <Help />
+                    </Tooltip>
+                </Box>
+                <Switch color="primary" value={autoSave} checked={autoSave} onChange={handleAutoSaveChange} />
             </Box>
         </Stack>
     );

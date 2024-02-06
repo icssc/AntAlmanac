@@ -6,6 +6,14 @@ import { Schedules } from './Schedules';
 import { SnackbarPosition } from '$components/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { useTabStore } from '$stores/TabStore';
+import { saveSchedule } from '$actions/AppStoreActions';
+
+type ActionType = [
+    null | string,
+    null | number | string | RepeatingCustomEvent | ScheduleCourse,
+    null | number | string | number[],
+    null | number | string | RepeatingCustomEvent,
+];
 
 class AppStore extends EventEmitter {
     schedule: Schedules;
@@ -74,6 +82,7 @@ class AppStore extends EventEmitter {
             addedCourse = this.schedule.addCourse(newCourse, scheduleIndex);
         }
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['addCourse', newCourse, scheduleIndex, null]);
         this.emit('addedCoursesChange');
         return addedCourse;
     }
@@ -151,6 +160,7 @@ class AppStore extends EventEmitter {
     deleteCourse(sectionCode: string, term: string) {
         this.schedule.deleteCourse(sectionCode, term);
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['deleteCourse', sectionCode, term, null]);
         this.emit('addedCoursesChange');
     }
 
@@ -163,6 +173,7 @@ class AppStore extends EventEmitter {
     undoAction() {
         this.schedule.revertState();
         this.unsavedChanges = true;
+        this.autoSaveSchedule();
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
         this.emit('colorChange', false);
@@ -174,24 +185,28 @@ class AppStore extends EventEmitter {
     addCustomEvent(customEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
         this.schedule.addCustomEvent(customEvent, scheduleIndices);
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['addCustomEvent', customEvent, scheduleIndices, null]);
         this.emit('customEventsChange');
     }
 
     editCustomEvent(editedCustomEvent: RepeatingCustomEvent, newScheduleIndices: number[]) {
         this.schedule.editCustomEvent(editedCustomEvent, newScheduleIndices);
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['editCustomEvent', editedCustomEvent, newScheduleIndices, null]);
         this.emit('customEventsChange');
     }
 
     deleteCustomEvent(customEventId: number) {
         this.schedule.deleteCustomEvent(customEventId);
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['deleteCustomEvent', customEventId, null, null]);
         this.emit('customEventsChange');
     }
 
     changeCustomEventColor(customEventId: number, newColor: string) {
         this.schedule.changeCustomEventColor(customEventId, newColor);
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['changeCustomEventColor', customEventId, newColor, null]);
         this.colorPickers[customEventId].emit('colorChange', newColor);
         this.emit('colorChange', false);
     }
@@ -218,6 +233,7 @@ class AppStore extends EventEmitter {
     copySchedule(to: number) {
         this.schedule.copySchedule(to);
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['copySchedule', to, null, null]);
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
     }
@@ -229,6 +245,45 @@ class AppStore extends EventEmitter {
             return false;
         }
         this.unsavedChanges = false;
+
+        const unsavedActionString = window.localStorage.getItem('unsavedAction');
+        if (unsavedActionString !== null && confirm('You have unsaved changes. Would you like to load them?')) {
+            for (const action of JSON.parse(unsavedActionString)) {
+                switch (action[0]) {
+                    case 'addCourse':
+                        this.schedule.addCourse(action[1], action[2]);
+                        break;
+                    case 'deleteCourse':
+                        this.schedule.deleteCourse(action[1], action[2]);
+                        break;
+                    case 'addCustomEvent':
+                        this.schedule.addCustomEvent(action[1], action[2]);
+                        break;
+                    case 'deleteCustomEvent':
+                        this.schedule.deleteCustomEvent(action[1]);
+                        break;
+                    case 'editCustomEvent':
+                        this.schedule.editCustomEvent(action[1], action[2]);
+                        break;
+                    case 'changeCustomEventColor':
+                        this.schedule.changeCustomEventColor(action[1], action[2]);
+                        break;
+                    case 'changeCourseColor':
+                        this.schedule.changeCourseColor(action[1], action[2], action[3]);
+                        break;
+                    case 'clearSchedule':
+                        this.schedule.clearCurrentSchedule();
+                        break;
+                    case 'copySchedule':
+                        this.schedule.copySchedule(action[1]);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            window.localStorage.removeItem('unsavedAction');
+        }
+
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
         this.emit('scheduleNamesChange');
@@ -263,6 +318,7 @@ class AppStore extends EventEmitter {
     clearSchedule() {
         this.schedule.clearCurrentSchedule();
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['clearSchedule', null, null, null]);
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
     }
@@ -279,6 +335,7 @@ class AppStore extends EventEmitter {
     changeCourseColor(sectionCode: string, term: string, newColor: string) {
         this.schedule.changeCourseColor(sectionCode, term, newColor);
         this.unsavedChanges = true;
+        this.autoSaveSchedule(['changeCourseColor', sectionCode, term, newColor]);
         this.colorPickers[sectionCode].emit('colorChange', newColor);
         this.emit('colorChange', false);
     }
@@ -305,6 +362,30 @@ class AppStore extends EventEmitter {
 
     termsInSchedule = (term: string) =>
         new Set([term, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
+
+    autoSaveSchedule = async (action: ActionType = [null, null, null, null]) => {
+        const autoSave = typeof Storage !== 'undefined' && window.localStorage.getItem('autoSave') == 'true';
+        if (autoSave) {
+            const savedUserID = window.localStorage.getItem('userID');
+
+            if (savedUserID) {
+                this.emit('autoSaveStart');
+                await saveSchedule(savedUserID, true, true);
+                this.unsavedChanges = false;
+                this.emit('autoSaveEnd');
+            }
+        } else {
+            const unsavedActionString = window.localStorage.getItem('unsavedAction');
+            if (unsavedActionString == null) {
+                const unsavedAction = [action];
+                localStorage.setItem('unsavedAction', JSON.stringify(unsavedAction));
+            } else {
+                const unsavedAction = JSON.parse(unsavedActionString);
+                unsavedAction.push(action);
+                localStorage.setItem('unsavedAction', JSON.stringify(unsavedAction));
+            }
+        }
+    };
 }
 
 const store = new AppStore();

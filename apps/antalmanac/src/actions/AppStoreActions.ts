@@ -64,7 +64,7 @@ export const openSnackbar = (
     AppStore.openSnackbar(variant, message, duration, position, style);
 };
 
-export const saveSchedule = async (userID: string, rememberMe: boolean) => {
+export const saveSchedule = async (userID: string, rememberMe: boolean, autoSave = false) => {
     logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
@@ -86,10 +86,12 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
             try {
                 await trpc.users.saveUserData.mutate({ id: userID, userData: scheduleSaveState });
 
-                openSnackbar(
-                    'success',
-                    `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
-                );
+                if (!autoSave) {
+                    openSnackbar(
+                        'success',
+                        `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
+                    );
+                }
                 AppStore.saveSchedule();
             } catch (e) {
                 if (e instanceof TRPCError) {
