@@ -499,9 +499,10 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, allowHighlight, scheduleNames } = props;
-    const isDark = useThemeStore((store) => store.isDark);
 
+    const isDark = useThemeStore((store) => store.isDark);
     const activeColumns = useColumnStore((store) => store.activeColumns);
+    const previewMode = usePreviewStore((store) => store.previewMode);
 
     const [addedCourse, setAddedCourse] = useState(
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
@@ -534,8 +535,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         store.hoveredCourseEvents,
         store.setHoveredCourseEvents,
     ]);
-
-    const { previewMode } = usePreviewStore();
 
     const handleHover = useCallback(() => {
         const alreadyHovered =
