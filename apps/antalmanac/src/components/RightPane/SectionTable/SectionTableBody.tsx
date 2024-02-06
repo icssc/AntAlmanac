@@ -500,7 +500,9 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, allowHighlight, scheduleNames } = props;
 
+    const isDark = useThemeStore((store) => store.isDark);
     const activeColumns = useColumnStore((store) => store.activeColumns);
+    const previewMode = usePreviewStore((store) => store.previewMode);
 
     const [addedCourse, setAddedCourse] = useState(
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
@@ -533,8 +535,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         store.hoveredCourseEvents,
         store.setHoveredCourseEvents,
     ]);
-
-    const { previewMode } = usePreviewStore();
 
     const handleHover = useCallback(() => {
         const alreadyHovered =
@@ -611,15 +611,25 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         return Boolean(conflictingEvent);
     }, [calendarEvents, sectionDetails]);
 
+    /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursePane */
+    const computedAddedCourseStyle = allowHighlight
+        ? isDark
+            ? { background: '#b0b04f' }
+            : { background: '#fcfc97' }
+        : {};
+    const computedScheduleConflictStyle = scheduleConflict
+        ? isDark
+            ? { background: '#121212', opacity: '0.6' }
+            : { background: '#a0a0a0', opacity: '1' }
+        : {};
+
+    const computedRowStyle = addedCourse ? computedAddedCourseStyle : computedScheduleConflictStyle;
+
     return (
         <TableRow
             classes={{ root: classes.row }}
-            className={classNames(
-                classes.tr,
-                // If the course is added, then don't check for/apply scheduleConflict
-                // allowHighlight is ALWAYS false when in Added Course Pane and ALWAYS true when in CourseRenderPane
-                addedCourse ? { addedCourse: addedCourse && allowHighlight } : { scheduleConflict: scheduleConflict }
-            )}
+            className={classNames(classes.tr)}
+            style={computedRowStyle}
             onMouseEnter={handleHover}
             onMouseLeave={handleHover}
         >
