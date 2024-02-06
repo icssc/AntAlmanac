@@ -91,8 +91,6 @@ export const saveSchedule = async (userID: string, rememberMe: boolean, autoSave
                         'success',
                         `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
                     );
-                } else {
-                    openSnackbar('success', `Updated`);
                 }
                 AppStore.saveSchedule();
             } catch (e) {

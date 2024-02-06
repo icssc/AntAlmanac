@@ -138,9 +138,14 @@ function TimeMenu() {
 
 function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
+    const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
 
     const handlePreviewChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPreviewMode(event.target.checked);
+    };
+
+    const handleAutoSaveChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setAutoSave(event.target.checked);
     };
 
     return (
@@ -156,60 +161,19 @@ function ExperimentalMenu() {
                 </Box>
                 <Switch color="primary" value={previewMode} checked={previewMode} onChange={handlePreviewChange} />
             </Box>
+
+            <Box display="flex" justifyContent="space-between" width={1}>
+                <Box display="flex" alignItems="center" style={{ gap: 4 }}>
+                    <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                        Auto Save
+                    </Typography>
+                    <Tooltip title={<Typography>Auto Saving your process when you modified the calendar</Typography>}>
+                        <Help />
+                    </Tooltip>
+                </Box>
+                <Switch color="primary" value={autoSave} checked={autoSave} onChange={handleAutoSaveChange} />
+            </Box>
         </Stack>
-    );
-}
-
-function SaveMenu() {
-    const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
-    const theme = useThemeStore((store) => store.appTheme);
-
-    const handleAutoSaveChange = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAutoSave(event.currentTarget.value == 'true');
-    };
-
-    return (
-        <Box sx={{ padding: '1rem 1rem 0 1rem', width: '100%' }}>
-            <Typography variant="h6" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
-                Auto Save
-            </Typography>
-
-            <ButtonGroup
-                style={{
-                    display: 'flex',
-                    placeContent: 'center',
-                    width: '100%',
-                }}
-            >
-                <Button
-                    style={{
-                        padding: '1rem 2rem',
-                        borderRadius: '12px 0px 0px 12px',
-                        width: '100%',
-                        fontSize: '12px',
-                        ...getSelectedStyle('false', autoSave.toString(), theme),
-                    }}
-                    value="false"
-                    onClick={handleAutoSaveChange}
-                    fullWidth={true}
-                >
-                    Off
-                </Button>
-                <Button
-                    style={{
-                        padding: '1rem 2rem',
-                        borderRadius: '0px 12px 12px 0px',
-                        width: '100%',
-                        fontSize: '12px',
-                        ...getSelectedStyle('true', autoSave.toString(), theme),
-                    }}
-                    value="true"
-                    onClick={handleAutoSaveChange}
-                >
-                    On
-                </Button>
-            </ButtonGroup>
-        </Box>
     );
 }
 
@@ -263,7 +227,6 @@ function SettingsMenu() {
                     </Divider>
 
                     <ExperimentalMenu />
-                    <SaveMenu />
                 </Box>
             </Drawer>
         </>
