@@ -36,6 +36,7 @@ export class BackendStack extends Stack {
          */
         const domain = env.PR_NUM ? `staging-${env.PR_NUM}.api` : env.NODE_ENV === 'production' ? 'api' : 'dev.api';
         const removalPolicy: RemovalPolicy = env.NODE_ENV === 'staging' ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN;
+        const deletionProtection = removalPolicy === RemovalPolicy.RETAIN;
 
         const userDataDDB = new dynamnodb.Table(this, `userdata-ddb`, {
             partitionKey: {
@@ -44,7 +45,7 @@ export class BackendStack extends Stack {
             },
             billingMode: dynamnodb.BillingMode.PAY_PER_REQUEST,
             removalPolicy,
-            deletionProtection: true,
+            deletionProtection,
         });
 
         const authUserDataDDB = new dynamnodb.Table(this, `google-userdata-ddb`, {
@@ -54,7 +55,7 @@ export class BackendStack extends Stack {
             },
             billingMode: dynamnodb.BillingMode.PAY_PER_REQUEST,
             removalPolicy,
-            deletionProtection: true,
+            deletionProtection,
         });
 
         const handler = new lambda.Function(this, 'lambda', {
