@@ -45,15 +45,11 @@ env:
     PR_NUM: ${{ github.event.pull_request.number }}
 
 jobs:
-    # Deploy production version of the website to GitHub Pages.
-    deploy_production_frontend:
-        name: Deploy production frontend to GitHub Pages
+    # Build production version of the frontend and upload the artifacts.
+    build_production_frontend:
+        name: Build production frontend and upload artifacts
 
         runs-on: ubuntu-latest
-
-        environment:
-            name: frontend-production
-            url: https://antalmanac.com
 
         steps:
             - name: Checkout repository
@@ -68,11 +64,31 @@ jobs:
             - name: Build frontend
               run: pnpm --filter "antalmanac" build
 
-            - name: Deploy
-              uses: peaceiris/actions-gh-pages@v3
-              with:
-                github_token: ${{ secrets.GITHUB_TOKEN }}
-                publish_dir: apps/antalmanac/build
+            - name: Upload built artifacts
+                uses: actions/upload-pages-artifact@v2
+                with:
+                  path: apps/antalmanac/build
+
+    # Deploy the built website to GitHub Pages.
+    deploy_production_frontend:
+        name: Deploy built frontend to GitHub Pages
+
+        needs: build_production_frontend
+
+        runs-on: ubuntu-latest
+
+        permissions:
+            pages: write
+            id-token: write
+
+        environment:
+            name: frontend-production
+            url: ${{ steps.deployment.outputs.page_url }}
+
+        steps:
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v2
 
     # Production backend used by the live production website.
     deploy_production_backend:
