@@ -68,10 +68,11 @@ jobs:
             - name: Build frontend
               run: pnpm --filter "antalmanac" build
 
-            - name: Upload frontend artifacts
-              uses: actions/upload-pages-artifact@v2
+            - name: Deploy
+              uses: peaceiris/actions-gh-pages@v3
               with:
-                  path: apps/antalmanac/build
+                github_token: ${{ secrets.GITHUB_TOKEN }}
+                publish_dir: apps/antalmanac/build
 
     # Production backend used by the live production website.
     deploy_production_backend:
