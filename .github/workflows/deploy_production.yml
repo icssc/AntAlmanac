@@ -65,8 +65,8 @@ jobs:
               run: pnpm --filter "antalmanac" build
 
             - name: Upload built artifacts
-                uses: actions/upload-pages-artifact@v2
-                with:
+              uses: actions/upload-pages-artifact@v2
+              with:
                   path: apps/antalmanac/build
 
     # Deploy the built website to GitHub Pages.
