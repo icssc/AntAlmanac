@@ -71,7 +71,7 @@ jobs:
             - name: Deploy
               uses: peaceiris/actions-gh-pages@v3
               with:
-                github_token: ${{ secrets.GITHUB_TOKEN }}
+                github_token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
                 publish_dir: apps/antalmanac/build
 
     # Production backend used by the live production website.
