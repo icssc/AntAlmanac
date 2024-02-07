@@ -30,7 +30,7 @@ export function tourShouldRun(): boolean {
     return !(
         localStorage.getItem(tourHasRunKey) == 'true' ||
         window.matchMedia('(max-width: 768px)').matches ||
-        localStorage.getItem('userId') != null
+        localStorage.getItem('userID') != null
     );
 }
 
@@ -81,6 +81,9 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
                     You can always review the tour by clicking the button in the bottom right corner.
                 </>
             ),
+            actionAfter: () => {
+                markTourHasRun();
+            },
         },
         searchBar: {
             selector: '#searchBar',
