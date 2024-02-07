@@ -94,16 +94,8 @@ function CourseInfoButton({
                     anchorEl={popupAnchor}
                     open={Boolean(popupAnchor)}
                     modifiers={{
-                        // offset: {
-                        //     enabled: true,
-                        //     offset: '-15 0',
-                        // },
-                        // flip: {
-                        //     enabled: true,
-                        // },
                         preventOverflow: {
                             enabled: true,
-                            // boundariesElement: 'scrollParent',
                         },
                     }}
                 >
