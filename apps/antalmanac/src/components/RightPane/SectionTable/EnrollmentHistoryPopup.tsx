@@ -10,20 +10,7 @@ import {
     Legend,
 } from 'recharts';
 import { ArrowBack, ArrowForward } from '@material-ui/icons';
-import {
-    Box,
-    IconButton,
-    Link,
-    Typography,
-    Skeleton,
-    Tooltip,
-    useMediaQuery,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
-    SelectChangeEvent,
-} from '@mui/material';
+import { Box, IconButton, Link, Typography, Skeleton, Tooltip, useMediaQuery } from '@mui/material';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
 import { isDarkMode } from '$lib/helpers';
@@ -36,11 +23,7 @@ export interface EnrollmentHistoryPopupProps {
 export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentHistoryPopupProps) {
     const [loading, setLoading] = useState(true);
     const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory[]>();
-    const [filteredEnrollmentHistory, setFilteredEnrollmentHistory] = useState<EnrollmentHistory[]>([]);
     const [graphIndex, setGraphIndex] = useState(0);
-
-    const [instructorFilter, setInstructorFilter] = useState('All Instructors');
-    const [instructors, setInstructors] = useState<string[]>([]);
 
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
 
@@ -53,11 +36,11 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
             return 'No past enrollment data found for this course';
         }
 
-        const currEnrollmentHistory = filteredEnrollmentHistory[graphIndex];
+        const currEnrollmentHistory = enrollmentHistory[graphIndex];
         return `${department} ${courseNumber} | ${currEnrollmentHistory.year} ${
             currEnrollmentHistory.quarter
         } | ${currEnrollmentHistory.instructors.join(', ')}`;
-    }, [courseNumber, department, enrollmentHistory, filteredEnrollmentHistory, graphIndex]);
+    }, [courseNumber, department, enrollmentHistory, graphIndex]);
 
     const encodedDept = useMemo(() => encodeURIComponent(department), [department]);
     const axisColor = isDarkMode() ? '#fff' : '#111';
@@ -71,19 +54,7 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
         deptEnrollmentHistory.find(courseNumber).then((data) => {
             if (data) {
                 setEnrollmentHistory(data);
-                setFilteredEnrollmentHistory(data);
                 setGraphIndex(0);
-
-                // Find each unique instructor, and then sort them in ABC order
-                const instructorSet = new Set<string>();
-                for (const history of data) {
-                    for (const instructor of history.instructors) {
-                        instructorSet.add(instructor);
-                    }
-                }
-                const instructorArr = Array.from(instructorSet);
-                instructorArr.sort();
-                setInstructors(instructorArr);
             }
             setLoading(false);
         });
@@ -115,24 +86,6 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
         setGraphIndex((prev) => prev + 1);
     };
 
-    const handleChangeFilter = (event: SelectChangeEvent) => {
-        const newFilter = event.target.value;
-        setInstructorFilter(newFilter);
-        setGraphIndex(0);
-
-        if (newFilter === 'All Instructors') {
-            setFilteredEnrollmentHistory(enrollmentHistory);
-        } else {
-            const filteredHistory = [];
-            for (const history of enrollmentHistory) {
-                if (history.instructors.includes(newFilter)) {
-                    filteredHistory.push(history);
-                }
-            }
-            setFilteredEnrollmentHistory(filteredHistory);
-        }
-    };
-
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', padding: 0.5, alignItems: 'center' }}>
             {/* TODO: make text smaller or not overflow in mobile */}
@@ -161,10 +114,7 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
                 </Typography>
                 <Tooltip title="Older Graph">
                     <span>
-                        <IconButton
-                            onClick={handleForward}
-                            disabled={graphIndex === filteredEnrollmentHistory.length - 1}
-                        >
+                        <IconButton onClick={handleForward} disabled={graphIndex === enrollmentHistory.length - 1}>
                             <ArrowForward />
                         </IconButton>
                     </span>
@@ -177,7 +127,7 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
                 sx={{ display: 'flex', height: graphHeight, width: graphWidth }}
             >
                 <ResponsiveContainer width="95%" height="95%">
-                    <LineChart data={filteredEnrollmentHistory[graphIndex].days} style={{ cursor: 'pointer' }}>
+                    <LineChart data={enrollmentHistory[graphIndex].days} style={{ cursor: 'pointer' }}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="date" tick={{ fontSize: 12, fill: axisColor }} />
                         <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} />
@@ -189,24 +139,6 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
                     </LineChart>
                 </ResponsiveContainer>
             </Link>
-            <FormControl sx={{ marginBottom: '1rem' }}>
-                <InputLabel id="instructor-label">Instructor</InputLabel>
-                {/* TODO: select menu not clickable in mobile */}
-                <Select
-                    labelId="instructor-label"
-                    label="Instructor"
-                    value={instructorFilter}
-                    onChange={handleChangeFilter}
-                    size="small"
-                >
-                    <MenuItem value="All Instructors">All Instructors</MenuItem>
-                    {instructors.map((instructor, i) => (
-                        <MenuItem value={instructor} key={i}>
-                            {instructor}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
         </Box>
     );
 }
