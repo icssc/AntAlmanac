@@ -90,15 +90,7 @@ function CourseInfoButton({
             </Button>
 
             {popupContent && (
-                <Popper
-                    anchorEl={popupAnchor}
-                    open={Boolean(popupAnchor)}
-                    modifiers={{
-                        preventOverflow: {
-                            enabled: true,
-                        },
-                    }}
-                >
+                <Popper anchorEl={popupAnchor} open={Boolean(popupAnchor)}>
                     <Paper>{popupContent}</Paper>
                 </Popper>
             )}
