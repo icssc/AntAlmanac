@@ -96,6 +96,9 @@ importers:
       '@react-leaflet/core':
         specifier: ^2.1.0
         version: 2.1.0(leaflet@1.9.3)(react-dom@18.2.0)(react@18.2.0)
+      '@react-oauth/google':
+        specifier: ^0.12.1
+        version: 0.12.1(react-dom@18.2.0)(react@18.2.0)
       '@reactour/tour':
         specifier: ^3.6.1
         version: 3.6.1(react@18.2.0)
@@ -114,6 +117,9 @@ importers:
       classnames:
         specifier: ^2.3.2
         version: 2.3.2
+      cookie:
+        specifier: ^0.6.0
+        version: 0.6.0
       date-fns:
         specifier: ^2.29.3
         version: 2.29.3
@@ -132,6 +138,9 @@ importers:
       ics:
         specifier: ^3.0.1
         version: 3.1.0
+      jose:
+        specifier: ^5.2.1
+        version: 5.2.1
       leaflet:
         specifier: ^1.9.3
         version: 1.9.3
@@ -205,6 +214,9 @@ importers:
       '@testing-library/react':
         specifier: ^14.0.0
         version: 14.0.0(react-dom@18.2.0)(react@18.2.0)
+      '@types/cookie':
+        specifier: ^0.6.0
+        version: 0.6.0
       '@types/file-saver':
         specifier: ^2.0.5
         version: 2.0.5
@@ -3397,6 +3409,16 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
+  /@react-oauth/google@0.12.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-qagsy22t+7UdkYAiT5ZhfM4StXi9PPNvw0zuwNmabrWyMKddczMtBIOARflbaIj+wHiQjnMAsZmzsUYuXeyoSg==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
   /@reactour/mask@1.1.0(react@18.2.0):
     resolution: {integrity: sha512-GkJMLuTs3vTsm4Ryq2uXcE4sMzRP1p4xSd6juSOMqbHa7IVD/UiLCLqJWHR9xGSQPbYhpZAZAORUG5cS0U5tBA==}
     peerDependencies:
@@ -4101,6 +4123,10 @@ packages:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
     dependencies:
       '@types/node': 20.11.5
+    dev: true
+
+  /@types/cookie@0.6.0:
+    resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
     dev: true
 
   /@types/cors@2.8.13:
@@ -5288,6 +5314,11 @@ packages:
 
   /cookie@0.5.0:
     resolution: {integrity: sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==}
+    engines: {node: '>= 0.6'}
+    dev: false
+
+  /cookie@0.6.0:
+    resolution: {integrity: sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==}
     engines: {node: '>= 0.6'}
     dev: false
 
@@ -7041,6 +7072,10 @@ packages:
   /jmespath@0.16.0:
     resolution: {integrity: sha512-9FzQjJ7MATs1tSpnco1K6ayiYE3figslrXA72G2HQ/n76RzvYlofyi5QM+iX4YRs/pu3yzxlVQSST23+dMDknw==}
     engines: {node: '>= 0.6.0'}
+
+  /jose@5.2.1:
+    resolution: {integrity: sha512-qiaQhtQRw6YrOaOj0v59h3R6hUY9NvxBmmnMfKemkqYmBB0tEc97NbLP7ix44VP5p9/0YHG8Vyhzuo5YBNwviA==}
+    dev: false
 
   /js-sdsl@4.3.0:
     resolution: {integrity: sha512-mifzlm2+5nZ+lEcLJMoBK0/IH/bDg8XnJfd/Wq6IP+xoCjLZsTOnV2QpxlVbX9bMnkl5PdEjNtBJ9Cj1NjifhQ==}
