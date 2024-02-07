@@ -90,7 +90,7 @@ function CourseInfoButton({
             </Button>
 
             {popupContent && (
-                <Popper anchorEl={popupAnchor} open={Boolean(popupAnchor)}>
+                <Popper anchorEl={popupAnchor} open={Boolean(popupAnchor)} placement="bottom">
                     <Paper>{popupContent}</Paper>
                 </Popper>
             )}

@@ -29,8 +29,8 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
 
     const deptEnrollmentHistory = useMemo(() => new DepartmentEnrollmentHistory(department), [department]);
 
-    const graphWidth = useMemo(() => (isMobileScreen ? 250 : 400), [isMobileScreen]);
-    const graphHeight = useMemo(() => (isMobileScreen ? 150 : 225), [isMobileScreen]);
+    const graphWidth = useMemo(() => (isMobileScreen ? 250 : 450), [isMobileScreen]);
+    const graphHeight = useMemo(() => (isMobileScreen ? 175 : 250), [isMobileScreen]);
     const popupTitle = useMemo(() => {
         if (enrollmentHistory == null) {
             return 'No past enrollment data found for this course';
