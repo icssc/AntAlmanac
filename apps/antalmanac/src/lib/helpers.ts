@@ -2,7 +2,6 @@ import React from 'react';
 
 import { PETERPORTAL_GRAPHQL_ENDPOINT } from './api/endpoints';
 import { openSnackbar } from '$actions/AppStoreActions';
-import { useThemeStore } from '$stores/SettingsStore';
 
 export async function queryGraphQL<PromiseReturnType>(queryString: string): Promise<PromiseReturnType | null> {
     const query = JSON.stringify({
@@ -39,17 +38,6 @@ export async function clickToCopy(event: React.MouseEvent<HTMLElement, MouseEven
     event.stopPropagation();
     await navigator.clipboard.writeText(sectionCode);
     openSnackbar('success', 'WebsocSection code copied to clipboard');
-}
-
-export function isDarkMode() {
-    switch (useThemeStore.getState().appTheme) {
-        case 'light':
-            return false;
-        case 'dark':
-            return true;
-        default:
-            return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
 }
 
 export const FAKE_LOCATIONS = ['VRTL REMOTE', 'ON LINE', 'TBA'];

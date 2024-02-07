@@ -25,7 +25,7 @@ import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import restrictionsMapping from './static/restrictionsMapping.json';
 import GradesPopup from './GradesPopup';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { clickToCopy, isDarkMode } from '$lib/helpers';
+import { clickToCopy } from '$lib/helpers';
 import { CourseDetails } from '$lib/course_data.types';
 import Grades from '$lib/grades';
 import AppStore from '$stores/AppStore';
@@ -33,14 +33,14 @@ import { useTabStore } from '$stores/TabStore';
 import locationIds from '$lib/location_ids';
 import { normalizeTime, parseDaysString, formatTimes } from '$stores/calendarizeHelpers';
 import useColumnStore, { type SectionTableColumn } from '$stores/ColumnStore';
-import { useTimeFormatStore } from '$stores/SettingsStore';
+import { usePreviewStore, useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
+import { useHoveredStore } from '$stores/HoveredStore';
 
 const styles: Styles<Theme, object> = (theme) => ({
     sectionCode: {
         display: 'inline-flex',
         cursor: 'pointer',
         '&:hover': {
-            color: isDarkMode() ? 'gold' : 'blueviolet',
             cursor: 'pointer',
         },
         alignSelf: 'center',
@@ -50,23 +50,12 @@ const styles: Styles<Theme, object> = (theme) => ({
             backgroundColor: theme.palette.action.hover,
         },
     },
-    tr: {
-        '&.addedCourse': {
-            background: isDarkMode() ? '#b0b04f' : '#fcfc97',
-        },
-        '&.scheduleConflict': {
-            background: isDarkMode() ? '#121212' : '#a0a0a0',
-            opacity: isDarkMode() ? 0.6 : 1,
-        },
-    },
     cell: {},
     link: {
         textDecoration: 'underline',
-        color: isDarkMode() ? 'dodgerblue' : 'blue',
         cursor: 'pointer',
     },
     mapLink: {
-        color: isDarkMode() ? 'dodgerblue' : 'blue',
         cursor: 'pointer',
         background: 'none !important',
         border: 'none',
@@ -100,7 +89,6 @@ const styles: Styles<Theme, object> = (theme) => ({
     Tap: { color: '#8d2df0' },
     Tut: { color: '#ffc705' },
     popoverText: {
-        color: isDarkMode() ? 'dodgerblue' : 'blue',
         cursor: 'pointer',
     },
     codeCell: {
@@ -121,7 +109,19 @@ interface CourseCodeCellProps {
 }
 
 const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
+    const isDark = useThemeStore((store) => store.isDark);
+
     const { classes, sectionCode } = props;
+
+    const [isHovered, setIsHovered] = useState(false);
+
+    const handleMouseEnter = () => {
+        setIsHovered(true);
+    };
+
+    const handleMouseLeave = () => {
+        setIsHovered(false);
+    };
 
     return (
         <NoPaddingTableCell className={`${classes.cell} ${classes.codeCell}`}>
@@ -136,6 +136,11 @@ const CourseCodeCell = withStyles(styles)((props: CourseCodeCellProps) => {
                     }}
                     className={classes.sectionCode}
                     label={sectionCode}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    style={{
+                        color: isHovered ? (isDark ? 'gold' : 'blueviolet') : '',
+                    }}
                     size="small"
                 />
             </Tooltip>
@@ -148,12 +153,12 @@ type SectionType = 'Act' | 'Col' | 'Dis' | 'Fld' | 'Lab' | 'Lec' | 'Qiz' | 'Res'
 interface SectionDetailCellProps {
     classes: ClassNameMap;
     sectionType: SectionType;
-    sectionNum: string;
+    sectionNumber: string;
     units: number;
 }
 
 const SectionDetailsCell = withStyles(styles)((props: SectionDetailCellProps) => {
-    const { classes, sectionType, sectionNum, units } = props;
+    const { classes, sectionType, sectionNumber, units } = props;
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
 
     return (
@@ -161,7 +166,7 @@ const SectionDetailsCell = withStyles(styles)((props: SectionDetailCellProps) =>
             <Box className={classes[sectionType]}>{sectionType}</Box>
             <Box>
                 {!isMobileScreen && <>Sec: </>}
-                {sectionNum}
+                {sectionNumber}
             </Box>
             <Box>
                 {!isMobileScreen && <>Units: </>}
@@ -232,6 +237,8 @@ interface GPACellProps {
 }
 
 function GPACell(props: GPACellProps) {
+    const isDark = useThemeStore((store) => store.isDark);
+
     const { deptCode, courseNumber, instructors } = props;
 
     const [gpa, setGpa] = useState('');
@@ -263,7 +270,7 @@ function GPACell(props: GPACellProps) {
         <NoPaddingTableCell>
             <Button
                 style={{
-                    color: isDarkMode() ? 'dodgerblue' : 'blue',
+                    color: isDark ? 'dodgerblue' : 'blue',
                     padding: 0,
                     minWidth: 0,
                     fontWeight: 400,
@@ -300,6 +307,8 @@ interface LocationsCellProps {
 }
 
 const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
+    const isDark = useThemeStore((store) => store.isDark);
+
     const { classes, meetings } = props;
 
     const { setActiveTab } = useTabStore();
@@ -317,7 +326,12 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                         const buildingId = locationIds[buildingName];
                         return (
                             <Fragment key={meeting.timeIsTBA + bldg}>
-                                <Link className={classes.mapLink} to={`/map?location=${buildingId}`} onClick={focusMap}>
+                                <Link
+                                    className={classes.mapLink}
+                                    to={`/map?location=${buildingId}`}
+                                    onClick={focusMap}
+                                    color={isDark ? 'dodgerblue' : 'blue'}
+                                >
                                     {bldg}
                                 </Link>
                                 <br />
@@ -470,6 +484,7 @@ interface SectionTableBodyProps {
     scheduleNames: string[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     sectionCode: CourseCodeCell,
     sectionDetails: SectionDetailsCell,
@@ -482,13 +497,12 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     status: StatusCell,
 };
 
-/**
- * TODO: SectionNum name parity -> SectionNumber
- */
 const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const { classes, section, courseDetails, term, allowHighlight, scheduleNames } = props;
 
+    const isDark = useThemeStore((store) => store.isDark);
     const activeColumns = useColumnStore((store) => store.activeColumns);
+    const previewMode = usePreviewStore((store) => store.previewMode);
 
     const [addedCourse, setAddedCourse] = useState(
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
@@ -505,20 +519,34 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             daysOccurring: parseDaysString(section.meetings[0].days),
             ...normalizeTime(section.meetings[0]),
         };
-    }, [section.meetings[0]]);
+    }, [section.meetings]);
 
     // Stable references to event listeners will synchronize React state with the store.
 
     const updateHighlight = useCallback(() => {
         setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
-    }, []);
+    }, [section.sectionCode, term]);
 
     const updateCalendarEvents = useCallback(() => {
         setCalendarEvents(AppStore.getCourseEventsInCalendar());
     }, [setCalendarEvents]);
 
-    // Attach event listeners to the store.
+    const [hoveredCourseEvents, setHoveredCourseEvents] = useHoveredStore((store) => [
+        store.hoveredCourseEvents,
+        store.setHoveredCourseEvents,
+    ]);
 
+    const handleHover = useCallback(() => {
+        const alreadyHovered =
+            hoveredCourseEvents &&
+            hoveredCourseEvents.some((courseEvent) => courseEvent.sectionCode == section.sectionCode);
+
+        !previewMode || alreadyHovered || addedCourse
+            ? setHoveredCourseEvents(undefined)
+            : setHoveredCourseEvents(section, courseDetails, term);
+    }, [addedCourse, courseDetails, hoveredCourseEvents, previewMode, section, setHoveredCourseEvents, term]);
+
+    // Attach event listeners to the store.
     useEffect(() => {
         AppStore.on('addedCoursesChange', updateHighlight);
         AppStore.on('currentScheduleIndexChange', updateHighlight);
@@ -583,15 +611,27 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         return Boolean(conflictingEvent);
     }, [calendarEvents, sectionDetails]);
 
+    /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursePane */
+    const computedAddedCourseStyle = allowHighlight
+        ? isDark
+            ? { background: '#b0b04f' }
+            : { background: '#fcfc97' }
+        : {};
+    const computedScheduleConflictStyle = scheduleConflict
+        ? isDark
+            ? { background: '#121212', opacity: '0.6' }
+            : { background: '#a0a0a0', opacity: '1' }
+        : {};
+
+    const computedRowStyle = addedCourse ? computedAddedCourseStyle : computedScheduleConflictStyle;
+
     return (
         <TableRow
             classes={{ root: classes.row }}
-            className={classNames(
-                classes.tr,
-                // If the course is added, then don't check for/apply scheduleConflict
-                // allowHighlight is ALWAYS false when in Added Course Pane and ALWAYS true when in CourseRenderPane
-                addedCourse ? { addedCourse: addedCourse && allowHighlight } : { scheduleConflict: scheduleConflict }
-            )}
+            className={classNames(classes.tr)}
+            style={computedRowStyle}
+            onMouseEnter={handleHover}
+            onMouseLeave={handleHover}
         >
             {!addedCourse ? (
                 <ScheduleAddCell
@@ -604,12 +644,10 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             ) : (
                 <ColorAndDelete color={section.color} sectionCode={section.sectionCode} term={term} />
             )}
-
             {Object.entries(tableBodyCells)
                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
                 .map(([column, Component]) => {
                     return (
-                        // All of this is a little bulky, so if the props can be added specifically to activeTableBodyColumns, LMK!
                         <Component
                             key={column}
                             section={section}

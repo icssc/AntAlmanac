@@ -10,7 +10,6 @@ import {
     type DialogProps,
 } from '@mui/material';
 import { renameSchedule } from '$actions/AppStoreActions';
-import { isDarkMode } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 
 interface ScheduleNameDialogProps extends DialogProps {

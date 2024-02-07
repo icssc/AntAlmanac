@@ -14,7 +14,7 @@ import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 
 import { LoadingButton } from '@mui/lab';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 import AppStore from '$stores/AppStore';
 
 interface LoadSaveButtonBaseProps {
@@ -22,6 +22,8 @@ interface LoadSaveButtonBaseProps {
     actionName: 'Save' | 'Load';
     disabled: boolean;
     loading: boolean;
+    colorType: 'primary' | 'secondary';
+    id?: string;
 }
 
 interface LoadSaveButtonBaseState {
@@ -87,6 +89,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
         return (
             <>
                 <LoadingButton
+                    id={this.props.id}
                     onClick={this.handleOpen}
                     color="inherit"
                     startIcon={this.props.actionName === 'Save' ? <Save /> : <CloudDownload />}
@@ -127,10 +130,10 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => this.handleClose(true)} color={isDarkMode() ? 'secondary' : 'primary'}>
+                        <Button onClick={() => this.handleClose(true)} color={this.props.colorType}>
                             {'Cancel'}
                         </Button>
-                        <Button onClick={() => this.handleClose(false)} color={isDarkMode() ? 'secondary' : 'primary'}>
+                        <Button onClick={() => this.handleClose(false)} color={this.props.colorType}>
                             {this.props.actionName}
                         </Button>
                     </DialogActions>
@@ -141,6 +144,8 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
 }
 
 const LoadSaveScheduleFunctionality = () => {
+    const isDark = useThemeStore((store) => store.isDark);
+
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
@@ -194,20 +199,24 @@ const LoadSaveScheduleFunctionality = () => {
     }, []);
 
     return (
-        <>
+        <div id="load-save-container">
             <LoadSaveButtonBase
+                id="save-button"
                 actionName={'Save'}
                 action={saveScheduleAndSetLoading}
-                disabled={loading || skeletonMode}
+                disabled={loading}
                 loading={saving}
+                colorType={isDark ? 'primary' : 'secondary'}
             />
             <LoadSaveButtonBase
+                id="load-button"
                 actionName={'Load'}
                 action={loadScheduleAndSetLoading}
                 disabled={skeletonMode}
                 loading={loading}
+                colorType={isDark ? 'primary' : 'secondary'}
             />
-        </>
+        </div>
     );
 };
 

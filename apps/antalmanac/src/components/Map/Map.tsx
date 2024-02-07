@@ -177,21 +177,6 @@ export default function CourseMap() {
 
         return () => {
             AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
-            AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
-        };
-    }, []);
-
-    useEffect(() => {
-        const updateCustomEventMarkers = () => {
-            setCustomEventMarkers(getCustomEventPerBuilding());
-        };
-
-        AppStore.on('customEventsChange', updateCustomEventMarkers);
-        AppStore.on('currentScheduleIndexChange', updateCustomEventMarkers);
-
-        return () => {
-            AppStore.removeListener('customEventsChange', updateCustomEventMarkers);
-            AppStore.removeListener('currentScheduleIndexChange', updateCustomEventMarkers);
         };
     }, []);
 
@@ -302,7 +287,10 @@ export default function CourseMap() {
     }, [markersToDisplay, customEventMarkersToDisplay]);
 
     return (
-        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}>
+        <Box
+            sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}
+            id="map-pane"
+        >
             <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
                 {/* Menu floats above the map. */}
                 <Paper sx={{ position: 'relative', mx: 'auto', my: 2, width: '70%', zIndex: 400 }}>
