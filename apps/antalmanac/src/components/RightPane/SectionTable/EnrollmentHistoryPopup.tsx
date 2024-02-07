@@ -29,8 +29,8 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
 
     const deptEnrollmentHistory = useMemo(() => new DepartmentEnrollmentHistory(department), [department]);
 
-    const graphWidth = useMemo(() => (isMobileScreen ? 250 : 450), [isMobileScreen]);
-    const graphHeight = useMemo(() => (isMobileScreen ? 175 : 250), [isMobileScreen]);
+    const graphWidth = useMemo(() => (isMobileScreen ? 250 : 400), [isMobileScreen]);
+    const graphHeight = useMemo(() => (isMobileScreen ? 150 : 225), [isMobileScreen]);
     const popupTitle = useMemo(() => {
         if (enrollmentHistory == null) {
             return 'No past enrollment data found for this course';
@@ -87,14 +87,13 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', padding: 0.5, alignItems: 'center' }}>
-            {/* TODO: make text smaller or not overflow in mobile */}
+        <Box sx={{ padding: 0.5 }}>
             <Box
                 sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    width: '100%',
+                    width: graphWidth,
                 }}
             >
                 <Tooltip title="Newer Graph">
@@ -105,11 +104,7 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
                         </IconButton>
                     </span>
                 </Tooltip>
-                <Typography
-                    sx={{
-                        fontWeight: 500,
-                    }}
-                >
+                <Typography sx={{ fontWeight: 500, fontSize: isMobileScreen ? '0.8rem' : '1rem', textAlign: 'center' }}>
                     {popupTitle}
                 </Typography>
                 <Tooltip title="Older Graph">
