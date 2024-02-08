@@ -14,17 +14,20 @@ import loadingGif from './SearchForm/Gifs/loading.gif';
 import darkNoNothing from './static/dark-no_results.png';
 import noNothing from './static/no_results.png';
 import AppStore from '$stores/AppStore';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 import Grades from '$lib/grades';
 import analyticsEnum from '$lib/analytics';
 import { openSnackbar } from '$actions/AppStoreActions';
 import WebSOC from '$lib/websoc';
 
 function getColors() {
-    const courseColors = AppStore.schedule.getCurrentCourses().reduce((accumulator, { section }) => {
-        accumulator[section.sectionCode] = section.color;
-        return accumulator;
-    }, {} as { [key: string]: string });
+    const courseColors = AppStore.schedule.getCurrentCourses().reduce(
+        (accumulator, { section }) => {
+            accumulator[section.sectionCode] = section.color;
+            return accumulator;
+        },
+        {} as { [key: string]: string }
+    );
 
     return courseColors;
 }
@@ -52,6 +55,8 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
 
+    const isDark = useThemeStore((store) => store.isDark);
+
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
     const recruitmentDismissalTime = window.localStorage.getItem('recruitmentDismissalTime');
     const dismissedRecently =
@@ -67,8 +72,8 @@ const RecruitmentBanner = () => {
                     icon={false}
                     severity="info"
                     style={{
-                        color: isDarkMode() ? '#ece6e6' : '#2e2e2e',
-                        backgroundColor: isDarkMode() ? '#2e2e2e' : '#ece6e6',
+                        color: isDark ? '#ece6e6' : '#2e2e2e',
+                        backgroundColor: isDark ? '#2e2e2e' : '#ece6e6',
                     }}
                     action={
                         <IconButton
@@ -144,18 +149,20 @@ const SectionTableWrapped = (
 };
 
 const LoadingMessage = () => {
+    const isDark = useThemeStore((store) => store.isDark);
     return (
         <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <img src={isDarkMode() ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
+            <img src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
         </Box>
     );
 };
 
 const ErrorMessage = () => {
+    const isDark = useThemeStore((store) => store.isDark);
     return (
         <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <img
-                src={isDarkMode() ? darkNoNothing : noNothing}
+                src={isDark ? darkNoNothing : noNothing}
                 alt="No Results Found"
                 style={{ objectFit: 'contain', width: '80%', height: '80%' }}
             />

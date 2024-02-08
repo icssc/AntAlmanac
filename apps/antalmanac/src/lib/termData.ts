@@ -5,20 +5,29 @@ class Term {
     shortName: `${string} ${string}`;
     longName: string;
     startDate?: [number, number, number];
-    constructor(shortName: `${string} ${string}`, longName: string, startDate?: [number, number, number]) {
+    finalsStartDate?: [number, number, number];
+    constructor(
+        shortName: `${string} ${string}`,
+        longName: string,
+        startDate?: [number, number, number],
+        finalsStartDate?: [number, number, number]
+    ) {
         this.shortName = shortName;
         this.longName = longName;
         this.startDate = startDate;
+        this.finalsStartDate = finalsStartDate;
     }
 }
 
 /**
  * Quarterly Academic Calendar {@link https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html}
+ * Quick Reference Ten Year Calendar {@link https://www.reg.uci.edu/calendars/academic/tenyr-19-29.html}
  * The `startDate`, if available, should correspond to the __instruction start date__ (not the quarter start date)
+ * The `finalsStartDate`, if available, should correspond to the __final exams__ first date (should be a Saturday)
  * Months are 0-indexed
  */
 const termData = [
-    new Term('2024 Winter', '2024 Winter Quarter', [2024, 0, 8]),
+    new Term('2024 Winter', '2024 Winter Quarter', [2024, 0, 8], [2024, 2, 16]),
     new Term('2023 Fall', '2023 Fall Quarter', [2023, 8, 28]),
     new Term('2023 Summer2', '2023 Summer Session 2', [2023, 7, 7]),
     new Term('2023 Summer10wk', '2023 10-wk Summer', [2023, 5, 26]),
@@ -76,9 +85,23 @@ const termData = [
     new Term('2014 Fall', '2014 Fall Quarter'),
 ];
 
-//returns the default term
+// Returns the default term
 function getDefaultTerm() {
     return termData[defaultTerm];
 }
 
-export { defaultTerm, getDefaultTerm, termData };
+// Returns the default finals start as array
+function getDefaultFinalsStart() {
+    return termData[defaultTerm].finalsStartDate;
+}
+
+/**
+ * Returns the default finals start as Date object
+ * Days offset by 1 to accomodate toggling with Saturday finals
+ */
+function getDefaultFinalsStartDate() {
+    const [year, month, day] = termData[defaultTerm].finalsStartDate || [];
+    return year && month && day ? new Date(year, month, day + 1) : undefined;
+}
+
+export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStart, getDefaultFinalsStartDate };

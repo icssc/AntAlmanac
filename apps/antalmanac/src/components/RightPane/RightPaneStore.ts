@@ -54,10 +54,6 @@ class RightPaneStore extends EventEmitter {
         return this.formData;
     };
 
-    getDoDisplaySearch = () => {
-        return this.doDisplaySearch;
-    };
-
     getOpenSpotAlertPopoverActive = () => {
         return this.openSpotAlertPopoverActive;
     };
@@ -79,12 +75,13 @@ class RightPaneStore extends EventEmitter {
         this.emit('formReset');
     };
 
-    toggleSearch = () => {
-        this.doDisplaySearch = !this.doDisplaySearch;
-    };
-
     toggleOpenSpotAlert = () => {
         this.openSpotAlertPopoverActive = !this.openSpotAlertPopoverActive;
+    };
+
+    formDataIsValid = () => {
+        const { ge, deptValue, sectionCode, instructor } = this.formData;
+        return ge !== 'ANY' || deptValue !== 'ALL' || sectionCode !== '' || instructor !== '';
     };
 }
 

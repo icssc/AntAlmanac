@@ -13,7 +13,7 @@ import { ArrowBack, ArrowForward } from '@material-ui/icons';
 import { Box, IconButton, Link, Typography, Skeleton, Tooltip, useMediaQuery } from '@mui/material';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 
 export interface EnrollmentHistoryPopupProps {
     department: string;
@@ -41,9 +41,9 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
             currEnrollmentHistory.quarter
         } | ${currEnrollmentHistory.instructors.join(', ')}`;
     }, [courseNumber, department, enrollmentHistory, graphIndex]);
-
+    const isDark = useThemeStore((state) => state.isDark);
     const encodedDept = useMemo(() => encodeURIComponent(department), [department]);
-    const axisColor = isDarkMode() ? '#fff' : '#111';
+    const axisColor = isDark ? '#fff' : '#111';
     const tooltipDateColor = '#111';
 
     useEffect(() => {

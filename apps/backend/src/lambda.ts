@@ -8,7 +8,7 @@ let cachedHandler: Handler;
 
 export async function handler(event: any, context: Context, callback: any) {
     if (!cachedHandler) {
-        const app = await start(env.STAGE === 'prod');
+        const app = await start(env.NODE_ENV === 'production');
         cachedHandler = serverlessExpress({ app });
     }
     await connectToMongoDB();

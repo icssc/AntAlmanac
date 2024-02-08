@@ -1,10 +1,10 @@
 /* eslint-disable prefer-const */
 import { Prerequisite, PrerequisiteTree } from 'peterportal-api-next-types';
 import { FC, useState } from 'react';
-import { Button, Modal, Popover } from '@material-ui/core';
+import { Button, Popover } from '@material-ui/core';
 
 import { CourseInfo } from './CourseInfoBar';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 
 import './PrereqTree.css';
 
@@ -23,13 +23,14 @@ interface NodeProps {
 }
 
 const Node: FC<NodeProps> = (props) => {
+    const isDark = useThemeStore((store) => store.isDark);
     return (
         <div style={{ padding: '1px 0' }} className={`${props.node}`} key={props.index}>
             <div
                 className={'course'}
                 style={{
-                    backgroundColor: isDarkMode() ? '#303030' : '#e0e0e0',
-                    color: isDarkMode() ? '#bfbfbf' : 'black',
+                    backgroundColor: isDark ? '#303030' : '#e0e0e0',
+                    color: isDark ? '#bfbfbf' : 'black',
                 }}
             >
                 {props.label}
