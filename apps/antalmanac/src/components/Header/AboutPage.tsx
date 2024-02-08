@@ -50,6 +50,13 @@ class AboutPage extends PureComponent {
                             Projects Committee and built by students from the UCI community.
                             <br />
                             <br />
+                            To support the ongoing development and enhancement of AntAlmanac, consider making a{' '}
+                            <Link target="_blank" href="https://venmo.com/u/ICSSC">
+                                donation
+                            </Link>
+                            ; your generosity helps us continue our mission.
+                            <br />
+                            <br />
                             <Link target="_blank" href="https://github.com/icssc/AntAlmanac/contributors">
                                 <img
                                     src="https://contrib.rocks/image?repo=icssc/antalmanac"
