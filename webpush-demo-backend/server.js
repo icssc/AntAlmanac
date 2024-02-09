@@ -39,26 +39,13 @@ const privateVapidKey = "4AoSsRHFaHv0Fupd2NRtrungJF2jkqgccTu-WEc781w";
 // Setup the public and private VAPID keys to web-push library.
 webpush.setVapidDetails("mailto:test@test.com", publicVapidKey, privateVapidKey);
 
-
-
-// Create route for allow client to subscribe to push notification.
-app.post('/subscribe', (req, res) => {
-    console.log("Subscribing User to Notifications");
-    const subscription = req.body;
-    res.status(201).json({});
-    const payload = JSON.stringify({ title: "Webpush Demo", body: "Here is an example of a push notification" });
-    webpush.sendNotification(subscription, payload).catch(console.log);
-})
-
-
-app.post('/unsubscribe', (req, res) => {
-  console.log("Unsubscribing User to Notifications");
-
-})
-
-
-app.get('/notification', (req, res) => {
+// Route to send notification to user
+app.post('/notification', (req, res) => {
   console.log("Pushing Notifications to User");
+  const subscription = req.body;
+  res.status(201).json({});
+  const payload = JSON.stringify({ title: "Webpush Demo", body: "Here is an example of a push notification" });
+  webpush.sendNotification(subscription, payload).catch(console.log);
 })
 
 const PORT = 5001;

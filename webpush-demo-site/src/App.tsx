@@ -2,7 +2,7 @@
 import './App.css'
 import { ChakraProvider, Text, Center, Button, Stack, Flex, UnorderedList, ListItem } from '@chakra-ui/react'
 import axios from 'axios';
-import {useState} from 'react';
+import {useState, useRef} from 'react';
 
 function App() {
   const [reg, setReg] = useState(null);
@@ -10,6 +10,7 @@ function App() {
   const [routeText, setRouteText] = useState('');
   const [registrationText, setRegistrationText] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [regular, setRegular] = useState(false);
   const publicVapidKey = "BOd2EQ8LTe3KAgMX9lWwTlHTRzv1Iantw50Mw6pUnsNr3pcxl8iglUs-YlQEQLo4UbJk9oyXs_BxgyAe0TCqKME";
   
   
@@ -48,7 +49,7 @@ function App() {
       Unsubscribes a subscribed user from push notifications
     */
   const unsubscribeUser = async () => {
-    navigator.serviceWorker.ready.then((reg) => {
+    navigator.serviceWorker.ready.then((reg) => { // makes sure the service worker is active
       reg.pushManager.getSubscription().then(() => {
         sub
           .unsubscribe()
@@ -68,7 +69,7 @@ function App() {
     Send a push notification to subscribed users
   */
     const sendNotification = async () => {
-      await fetch("http://localhost:5001/subscribe", {
+      await fetch("http://localhost:5001/notification", {
         method: "POST",
         body: JSON.stringify(sub),
         headers: {
@@ -78,10 +79,22 @@ function App() {
     }
 
   /* 
-    Regularly sends a push notification every 10 seconds using the service worker
+    Sends 5 push notifications
   */
   const setNotificationsRegularly = async () => {
-
+    const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
+    setRegular(true);
+    while (5) {
+      await sleep(10000);
+      console.log("Sending!")
+      await fetch("http://localhost:5001/notification", {
+        method: "POST",
+        body: JSON.stringify(sub),
+        headers: {
+            "Content-Type": "application/json",
+        }
+    })
+    }
   }
 
   // hard refresh - workaround or allow?
@@ -91,7 +104,7 @@ function App() {
     <ChakraProvider>
         <Stack>
           <Center>
-            <Text fontSize="4xl">
+            <Text fontSize="4xl" mb="5rem">
               Webpush Demo
             </Text>
           </Center>
@@ -105,7 +118,7 @@ function App() {
           </Flex>
           {subscribed ? <Text>Currently Subscribed to Push Notifications</Text> : <Text>Currently Unsubscribed from Push Notifications</Text>}
           <Button onClick={() => sendNotification()} mt={3}>send push notifications to subscribers</Button>
-          <Button onClick={() => setNotificationsRegularly()} mt={3}>set a push notification for every 10 seconds</Button>
+          <Button onClick={() => setNotificationsRegularly()} mt={3}>send five push notifications every 10 seconds</Button>
         </Stack>
       </ChakraProvider>
     </>
