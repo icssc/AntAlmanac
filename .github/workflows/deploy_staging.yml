@@ -48,6 +48,8 @@ jobs:
     get_staging_configuration:
         name: Get staging configuration
 
+        if: (!contains(github.event.pull_request.labels.*.name, 'no deploy'))
+
         runs-on: ubuntu-latest
 
         outputs:
