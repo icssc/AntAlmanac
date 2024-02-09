@@ -20,8 +20,8 @@ app.get('/', (req, res) => {
 })
 
 app.get("/test", (req, res) => {
-  console.log("Testing World!");
-  res.status(201).json({message: "Congrats!"});
+  console.log("Testing Routing!");
+  res.status(201).json({message: "Routing is working!"});
 })
 
 
@@ -48,6 +48,12 @@ app.post('/subscribe', (req, res) => {
     res.status(201).json({});
     const payload = JSON.stringify({ title: "Webpush Demo", body: "Here is an example of a push notification" });
     webpush.sendNotification(subscription, payload).catch(console.log);
+})
+
+
+app.post('/unsubscribe', (req, res) => {
+  console.log("Unsubscribing User to Notifications");
+
 })
 
 
