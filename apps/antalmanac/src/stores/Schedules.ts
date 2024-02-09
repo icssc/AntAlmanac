@@ -530,6 +530,7 @@ export class Schedules {
                 });
             }
         } catch (e) {
+            console.error(e);
             this.revertState();
             throw new Error('Unable to load schedule');
         }
