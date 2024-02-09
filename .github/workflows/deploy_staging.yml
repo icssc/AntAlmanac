@@ -80,6 +80,8 @@ jobs:
     deploy_staging_frontend:
         name: Deploy frontend staging CloudFormation stack and environment
 
+        if: (!contains(github.event.pull_request.labels.*.name, 'no deploy'))
+
         needs: get_staging_configuration
 
         runs-on: ubuntu-latest
@@ -138,7 +140,7 @@ jobs:
 
         needs: get_staging_configuration
 
-        if: ${{ needs.get_staging_configuration.outputs.should-deploy-backend == 'true' }}
+        if: needs.get_staging_configuration.outputs.should-deploy-backend == 'true' && (!contains(github.event.pull_request.labels.*.name, 'no deploy'))
 
         runs-on: ubuntu-latest
 
