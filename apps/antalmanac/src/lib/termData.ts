@@ -27,6 +27,7 @@ class Term {
  * Months are 0-indexed
  */
 const termData = [
+    new Term('2024 Spring', '2024 Spring Quarter', [2024, 3, 1], [2024, 5, 8]),
     new Term('2024 Winter', '2024 Winter Quarter', [2024, 0, 8], [2024, 2, 16]),
     new Term('2023 Fall', '2023 Fall Quarter', [2023, 8, 28]),
     new Term('2023 Summer2', '2023 Summer Session 2', [2023, 7, 7]),
@@ -92,7 +93,8 @@ function getDefaultTerm() {
 
 // Returns the default finals start as array
 function getDefaultFinalsStart() {
-    return termData[defaultTerm].finalsStartDate;
+    // FIXME: Un-offset once Spring starts, or figure out a proper fix
+    return termData[defaultTerm + 1].finalsStartDate;
 }
 
 /**
@@ -100,7 +102,8 @@ function getDefaultFinalsStart() {
  * Days offset by 1 to accomodate toggling with Saturday finals
  */
 function getDefaultFinalsStartDate() {
-    const [year, month, day] = termData[defaultTerm].finalsStartDate || [];
+    // FIXME: Un-offset once Spring starts, or figure out a proper fix
+    const [year, month, day] = termData[defaultTerm + 1].finalsStartDate || [];
     return year && month && day ? new Date(year, month, day + 1) : undefined;
 }
 
