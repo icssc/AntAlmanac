@@ -93,7 +93,8 @@ function getDefaultTerm() {
 
 // Returns the default finals start as array
 function getDefaultFinalsStart() {
-    return termData[defaultTerm].finalsStartDate;
+    // FIXME: Un-offset once Spring starts, or figure out a proper fix
+    return termData[defaultTerm + 1].finalsStartDate;
 }
 
 /**
@@ -101,7 +102,8 @@ function getDefaultFinalsStart() {
  * Days offset by 1 to accomodate toggling with Saturday finals
  */
 function getDefaultFinalsStartDate() {
-    const [year, month, day] = termData[defaultTerm].finalsStartDate || [];
+    // FIXME: Un-offset once Spring starts, or figure out a proper fix
+    const [year, month, day] = termData[defaultTerm + 1].finalsStartDate || [];
     return year && month && day ? new Date(year, month, day + 1) : undefined;
 }
 
