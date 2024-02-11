@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
-import { Alert, Box, IconButton } from '@mui/material';
+import { Alert, Box, GlobalStyles, IconButton } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
 import { WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
@@ -281,6 +281,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                     <RecruitmentBanner />
                     <Box>
                         <Box sx={{ height: '50px', marginBottom: '5px' }} />
+                        <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
                         {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
                             let heightEstimate = 200;
                             if ((courseData[index] as AACourse).sections !== undefined)
