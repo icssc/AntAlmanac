@@ -19,12 +19,16 @@ import Grades from '$lib/grades';
 import analyticsEnum from '$lib/analytics';
 import { openSnackbar } from '$actions/AppStoreActions';
 import WebSOC from '$lib/websoc';
+import { useHoveredStore } from '$stores/HoveredStore';
 
 function getColors() {
-    const courseColors = AppStore.schedule.getCurrentCourses().reduce((accumulator, { section }) => {
-        accumulator[section.sectionCode] = section.color;
-        return accumulator;
-    }, {} as { [key: string]: string });
+    const courseColors = AppStore.schedule.getCurrentCourses().reduce(
+        (accumulator, { section }) => {
+            accumulator[section.sectionCode] = section.color;
+            return accumulator;
+        },
+        {} as { [key: string]: string }
+    );
 
     return courseColors;
 }
@@ -174,6 +178,8 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
+    const setHoveredCourseEvents = useHoveredStore((store) => store.setHoveredCourseEvents);
+
     const loadCourses = useCallback(async () => {
         setLoading(true);
 
@@ -252,6 +258,17 @@ export default function CourseRenderPane(props: { id?: number }) {
             AppStore.off('scheduleNamesChange', updateScheduleNames);
         };
     }, [loadCourses, props.id]);
+
+    /**
+     * Removes hovered course when component unmounts
+     * Handles edge cases where the Section Table is removed, rather than the mouse
+     * ex: Swapping to the Added tab, clicking the LocationCell link
+     */
+    useEffect(() => {
+        return () => {
+            setHoveredCourseEvents(undefined);
+        };
+    }, [setHoveredCourseEvents]);
 
     return (
         <>
