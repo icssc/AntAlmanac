@@ -259,7 +259,11 @@ export default function CourseRenderPane(props: { id?: number }) {
         };
     }, [loadCourses, props.id]);
 
-    /* Removes hovered course when component unmounts */
+    /**
+     * Removes hovered course when component unmounts
+     * Handles edge cases where the Section Table is removed, rather than the mouse
+     * ex: Swapping to the Added tab, clicking the LocationCell link
+     */
     useEffect(() => {
         return () => {
             setHoveredCourseEvents(undefined);
