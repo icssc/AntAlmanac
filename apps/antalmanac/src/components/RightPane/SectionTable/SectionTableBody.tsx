@@ -551,7 +551,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         return () => {
             setHoveredCourseEvents(undefined);
         };
-    });
+    }, [setHoveredCourseEvents]);
 
     // Attach event listeners to the store.
     useEffect(() => {
