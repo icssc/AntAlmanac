@@ -546,13 +546,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             : setHoveredCourseEvents(section, courseDetails, term);
     }, [addedCourse, courseDetails, hoveredCourseEvents, previewMode, section, setHoveredCourseEvents, term]);
 
-    /* Removes hovered course when component unmounts */
-    useEffect(() => {
-        return () => {
-            setHoveredCourseEvents(undefined);
-        };
-    }, [setHoveredCourseEvents]);
-
     // Attach event listeners to the store.
     useEffect(() => {
         AppStore.on('addedCoursesChange', updateHighlight);
