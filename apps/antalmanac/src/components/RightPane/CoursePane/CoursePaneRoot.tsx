@@ -24,7 +24,7 @@ function RightPane() {
                 `Please provide one of the following: Department, GE, Course Code/Range, or Instructor`
             );
         }
-    }, []);
+    }, [displaySections]);
 
     const refreshSearch = useCallback(() => {
         logAnalytics({
@@ -49,7 +49,7 @@ function RightPane() {
         return () => {
             document.removeEventListener('keydown', handleKeydown, false);
         };
-    }, []);
+    }, [handleKeydown]);
 
     return (
         <div style={{ height: '100%' }}>
