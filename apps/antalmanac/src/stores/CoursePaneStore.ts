@@ -12,6 +12,9 @@ interface CoursePaneStore {
     enableManualSearch: () => void;
     disableManualSearch: () => void;
     toggleManualSearch: () => void;
+
+    key: number;
+    forceUpdate: () => void;
 }
 
 function paramsAreInURL() {
@@ -37,6 +40,9 @@ export const useCoursePaneStore = create<CoursePaneStore>((set) => {
         enableManualSearch: () => set({ manualSearchEnabled: true }),
         disableManualSearch: () => set({ manualSearchEnabled: false }),
         toggleManualSearch: () => set((state) => ({ manualSearchEnabled: !state.manualSearchEnabled })),
+
+        key: 0,
+        forceUpdate: () => set((state) => ({ key: (state.key += 1) })),
     };
 });
 
