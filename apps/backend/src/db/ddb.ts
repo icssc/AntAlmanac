@@ -1,7 +1,7 @@
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 
-import { ScheduleSaveState, User, UserSchema, AuthUser, AuthUserSchema } from '@packages/antalmanac-types';
+import { ScheduleSaveState, User, UserSchema } from '@packages/antalmanac-types';
 import env from '../env';
 
 // Initialise DynamoDB Client
@@ -65,4 +65,3 @@ class DDBClient<T extends Record<string, any>> {
 }
 
 export const ScheduleCodeClient = new DDBClient<User>(env.USERDATA_TABLE_NAME, UserSchema);
-export const AuthUserClient = new DDBClient<AuthUser>(env.AUTH_USERDATA_TABLE_NAME, AuthUserSchema);
