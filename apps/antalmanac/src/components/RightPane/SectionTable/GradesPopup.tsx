@@ -51,7 +51,7 @@ export interface GradesPopupProps {
 }
 
 function GradesPopup(props: GradesPopupProps) {
-    const isDark = useThemeStore((store) => [store.isDark]);
+    const { isDark } = useThemeStore();
 
     const { deptCode, courseNumber, instructor = '', isMobileScreen } = props;
 
@@ -108,7 +108,7 @@ function GradesPopup(props: GradesPopupProps) {
     }
 
     const encodedDept = encodeURIComponent(deptCode);
-    const axisColor = isDark ? '#fff' : '#111';
+    const axisColor = isDark ? '#fff' : '#000';
 
     return (
         <Box sx={{ padding: '4px' }}>
