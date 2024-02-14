@@ -1,7 +1,7 @@
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 
-import { ScheduleSaveState } from '@packages/antalmanac-types';
+import { ScheduleSaveState, User, UserSchema, AuthUser, AuthUserSchema } from '@packages/antalmanac-types';
 import env from '../env';
 
 // Initialise DynamoDB Client
@@ -20,30 +20,49 @@ const documentClient = DynamoDBDocument.from(client, {
     },
 });
 
-const TABLENAME = env.USERDATA_TABLE_NAME;
+class DDBClient<T extends Record<string, any>> {
+    private tableName: string;
+    private schema: any;
 
-async function getById(id: string) {
-    const params = {
-        TableName: TABLENAME,
-        Key: {
-            id: id,
-        },
-    };
+    constructor(tableName: string, schema: any) {
+        this.tableName = tableName;
+        this.schema = schema;
+    }
 
-    const data = await documentClient.get(params);
-    return data.Item;
+    async get(id: string): Promise<T | undefined> {
+        const params = {
+            TableName: this.tableName,
+            Key: {
+                id: id,
+            },
+        };
+
+        const { Item } = await documentClient.get(params);
+        const { data, problems } = this.schema(Item);
+        return problems === undefined ? data : undefined;
+    }
+
+    async insertItem(item: T) {
+        await documentClient.put({
+            TableName: this.tableName,
+            Item: item,
+        });
+    }
+
+    async updateSchedule(id: string, schedule: ScheduleSaveState) {
+        const params = {
+            TableName: this.tableName,
+            Key: {
+                id: id,
+            },
+            UpdateExpression: 'set userData = :u',
+            ExpressionAttributeValues: {
+                ':u': schedule,
+            },
+        };
+        await documentClient.update(params);
+    }
 }
 
-async function insertById(id: string, userData: ScheduleSaveState) {
-    const params = {
-        TableName: TABLENAME,
-        Item: {
-            id: id,
-            userData: userData,
-        },
-    };
-
-    await documentClient.put(params);
-}
-
-export { getById, insertById };
+export const ScheduleCodeClient = new DDBClient<User>(env.USERDATA_TABLE_NAME, UserSchema);
+export const AuthUserClient = new DDBClient<AuthUser>(env.AUTH_USERDATA_TABLE_NAME, AuthUserSchema);
