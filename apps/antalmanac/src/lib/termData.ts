@@ -97,6 +97,11 @@ function getDefaultFinalsStart() {
     return termData[defaultTerm + 1].finalsStartDate;
 }
 
+function getFinalsStartForTerm(term: string) {
+    const termThatMatches = termData.find((t) => t.shortName === term) as Term;
+    return termThatMatches.finalsStartDate;
+}
+
 /**
  * Returns the default finals start as Date object
  * Days offset by 1 to accomodate toggling with Saturday finals
@@ -107,4 +112,18 @@ function getDefaultFinalsStartDate() {
     return year && month && day ? new Date(year, month, day + 1) : undefined;
 }
 
-export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStart, getDefaultFinalsStartDate };
+function getFinalsStartDateForTerm(term: string) {
+    const date = getFinalsStartForTerm(term);
+    const [year, month, day] = date || [];
+    return year && month && day ? new Date(year, month, day + 1) : undefined;
+}
+
+export {
+    defaultTerm,
+    getDefaultTerm,
+    termData,
+    getDefaultFinalsStart,
+    getDefaultFinalsStartDate,
+    getFinalsStartForTerm,
+    getFinalsStartDateForTerm,
+};
