@@ -3,7 +3,7 @@ import { HourMinute } from 'peterportal-api-next-types';
 import { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { notNull, getReferencesOccurring } from '$lib/utils';
-import { getDefaultFinalsStart } from '$lib/termData';
+import { getFinalsStartForTerm } from '$lib/termData';
 
 export const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
@@ -109,9 +109,7 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
              * Fallback to January 2018 if no finals start date is available.
              * defaultFinalsDay is handled later by day since it varies by day.
              */
-            const [defaultFinalsYear, defaultFinalsMonth, defaultFinalsDay] = [
-                ...(getDefaultFinalsStart() ?? [2018, 0]),
-            ];
+            const [finalsYear, finalsMonth, finalsDay] = [...(getFinalsStartForTerm(course.term) ?? [2018, 0])];
 
             return dayIndicesOcurring.map((dayIndex) => ({
                 color: course.section.color,
@@ -129,16 +127,16 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                 sectionCode: course.section.sectionCode,
                 sectionType: 'Fin',
                 start: new Date(
-                    defaultFinalsYear,
-                    defaultFinalsMonth,
-                    defaultFinalsDay ? defaultFinalsDay + dayIndex : dayIndex - 1,
+                    finalsYear,
+                    finalsMonth,
+                    finalsDay ? finalsDay + dayIndex : dayIndex - 1,
                     startHour,
                     startMin
                 ),
                 end: new Date(
-                    defaultFinalsYear,
-                    defaultFinalsMonth,
-                    defaultFinalsDay ? defaultFinalsDay + dayIndex : dayIndex - 1,
+                    finalsYear,
+                    finalsMonth,
+                    finalsDay ? finalsDay + dayIndex : dayIndex - 1,
                     endHour,
                     endMin
                 ),
