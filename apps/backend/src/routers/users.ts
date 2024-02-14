@@ -13,6 +13,8 @@ import LegacyUserModel from '../models/User';
 
 import connectToMongoDB from '../db/mongodb';
 
+const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
+
 export function convertLegacySchedule(legacyUserData: LegacyUserData) {
     const scheduleSaveState: ScheduleSaveState = { schedules: [], scheduleIndex: 0 };
     for (const scheduleName of legacyUserData.scheduleNames) {
@@ -59,8 +61,12 @@ async function getUserData(userId: string) {
 }
 
 const usersRouter = router({
-    getUserData: procedure.input(type({ userId: 'string' }).assert).query(async ({ input }) => {
-        return (await getUserData(input.userId)) ?? (await getLegacyUserData(input.userId));
+    getUserData: procedure.input(userInputSchema.assert).query(async ({ input }) => {
+        if ('userId' in input) {
+            return (await getUserData(input.userId)) ?? (await getLegacyUserData(input.userId));
+        } else {
+            console.log('Google is not yet supported... Google ID: ', input.googleId);
+        }
     }),
     saveUserData: procedure.input(UserSchema.assert).mutation(async ({ input }) => {
         await ScheduleCodeClient.insertItem(input);
