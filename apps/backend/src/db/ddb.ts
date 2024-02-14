@@ -4,27 +4,31 @@ import { DynamoDB } from '@aws-sdk/client-dynamodb';
 import { ScheduleSaveState, User, UserSchema } from '@packages/antalmanac-types';
 import env from '../env';
 
-// Initialise DynamoDB Client
-const client = new DynamoDB({
-    region: env.AWS_REGION,
-});
-
-// Create DynamoDB DocumentClient
-const documentClient = DynamoDBDocument.from(client, {
-    marshallOptions: {
-        /**
-         * Some JSON properties may exist and be undefined; DDB will throw an error unless this is true.
-         * @example { "property": undefined }
-         */
-        removeUndefinedValues: true,
-    },
-});
-
 class DDBClient<T extends Record<string, any>> {
+    // Initialise DynamoDB Client
+    client: DynamoDB;
+
+    // Create DynamoDB DocumentClient
+    documentClient: DynamoDBDocument;
+
     private tableName: string;
     private schema: any;
 
     constructor(tableName: string, schema: any) {
+        this.client = new DynamoDB({
+            region: env.AWS_REGION,
+        });
+
+        // Create DynamoDB DocumentClient
+        this.documentClient = DynamoDBDocument.from(this.client, {
+            marshallOptions: {
+                /**
+                 * Some JSON properties may exist and be undefined; DDB will throw an error unless this is true.
+                 * @example { "property": undefined }
+                 */
+                removeUndefinedValues: true,
+            },
+        });
         this.tableName = tableName;
         this.schema = schema;
     }
@@ -37,13 +41,13 @@ class DDBClient<T extends Record<string, any>> {
             },
         };
 
-        const { Item } = await documentClient.get(params);
+        const { Item } = await this.documentClient.get(params);
         const { data, problems } = this.schema(Item);
         return problems === undefined ? data : undefined;
     }
 
     async insertItem(item: T) {
-        await documentClient.put({
+        await this.documentClient.put({
             TableName: this.tableName,
             Item: item,
         });
@@ -60,7 +64,7 @@ class DDBClient<T extends Record<string, any>> {
                 ':u': schedule,
             },
         };
-        await documentClient.update(params);
+        await this.documentClient.update(params);
     }
 }
 
