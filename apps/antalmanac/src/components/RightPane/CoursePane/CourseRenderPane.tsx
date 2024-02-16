@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
-import { Alert, Box, IconButton } from '@mui/material';
+import { Alert, Box, GlobalStyles, IconButton } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
 import { WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
@@ -19,6 +19,7 @@ import Grades from '$lib/grades';
 import analyticsEnum from '$lib/analytics';
 import { openSnackbar } from '$actions/AppStoreActions';
 import WebSOC from '$lib/websoc';
+import { useHoveredStore } from '$stores/HoveredStore';
 
 function getColors() {
     const courseColors = AppStore.schedule.getCurrentCourses().reduce(
@@ -177,6 +178,8 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
+    const setHoveredCourseEvents = useHoveredStore((store) => store.setHoveredCourseEvents);
+
     const loadCourses = useCallback(async () => {
         setLoading(true);
 
@@ -256,6 +259,17 @@ export default function CourseRenderPane(props: { id?: number }) {
         };
     }, [loadCourses, props.id]);
 
+    /**
+     * Removes hovered course when component unmounts
+     * Handles edge cases where the Section Table is removed, rather than the mouse
+     * ex: Swapping to the Added tab, clicking the LocationCell link
+     */
+    useEffect(() => {
+        return () => {
+            setHoveredCourseEvents(undefined);
+        };
+    }, [setHoveredCourseEvents]);
+
     return (
         <>
             {loading ? (
@@ -267,6 +281,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                     <RecruitmentBanner />
                     <Box>
                         <Box sx={{ height: '50px', marginBottom: '5px' }} />
+                        <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
                         {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
                             let heightEstimate = 200;
                             if ((courseData[index] as AACourse).sections !== undefined)

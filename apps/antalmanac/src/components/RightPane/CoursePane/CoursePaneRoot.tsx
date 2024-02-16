@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import RightPaneStore from '../RightPaneStore';
 import CoursePaneButtonRow from './CoursePaneButtonRow';
@@ -11,8 +11,7 @@ import Grades from '$lib/grades';
 import useCoursePaneStore from '$stores/CoursePaneStore';
 
 function RightPane() {
-    const [key, forceUpdate] = useReducer((currentCount) => currentCount + 1, 0);
-    const { searchIsDisplayed, displaySearch, displaySections } = useCoursePaneStore();
+    const { key, forceUpdate, searchIsDisplayed, displaySearch, displaySections } = useCoursePaneStore();
 
     const handleSearch = useCallback(() => {
         if (RightPaneStore.formDataIsValid()) {
@@ -24,7 +23,7 @@ function RightPane() {
                 `Please provide one of the following: Department, GE, Course Code/Range, or Instructor`
             );
         }
-    }, []);
+    }, [displaySections, forceUpdate]);
 
     const refreshSearch = useCallback(() => {
         logAnalytics({
@@ -34,7 +33,7 @@ function RightPane() {
         WebSOC.clearCache();
         Grades.clearCache();
         forceUpdate();
-    }, []);
+    }, [forceUpdate]);
 
     const handleKeydown = useCallback(
         (event: KeyboardEvent) => {
@@ -49,7 +48,7 @@ function RightPane() {
         return () => {
             document.removeEventListener('keydown', handleKeydown, false);
         };
-    }, []);
+    }, [handleKeydown]);
 
     return (
         <div style={{ height: '100%' }}>

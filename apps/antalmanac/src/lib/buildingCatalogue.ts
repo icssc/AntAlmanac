@@ -168,11 +168,29 @@ export default {
         lng: -117.849297,
         imageURLs: ['463/vista-field.jpg'],
     },
+    83057: {
+        name: 'Biological Sciences III (BS3)',
+        lat: 33.645363,
+        lng: -117.846222,
+        imageURLs: ['463/biological-sciences-iii.jpg'],
+    },
     83058: {
         name: 'Bison Modular (BIMO)',
         lat: 33.643814,
         lng: -117.84639,
         imageURLs: ['463/bison-modular.jpg'],
+    },
+    83059: {
+        name: 'Bonney Research Laboratory (BRL)',
+        lat: 33.646461,
+        lng: -117.846169,
+        imageURLs: ['463/bonney-research-laboratory.jpg'],
+    },
+    83060: {
+        name: 'Center for the Neurobiology of Learning & Memory Annex (CNLM)',
+        lat: 33.646629,
+        lng: -117.846428,
+        imageURLs: ['463/center-for-the-neurobiology-of-learning-and-memory-annex.jpg'],
     },
     83061: {
         name: 'Greenhouse',
@@ -185,6 +203,12 @@ export default {
         lat: 33.645618,
         lng: -117.844666,
         imageURLs: ['463/howard-schneiderman-lecture-hall.jpg'],
+    },
+    83065: {
+        name: 'Steinhaus Hall (SH)',
+        lat: 33.646347,
+        lng: -117.844887,
+        imageURLs: ['463/steinhaus-hall.jpg'],
     },
     83068: {
         name: 'Arroyo Vista',
@@ -330,17 +354,23 @@ export default {
         lng: -117.841713,
         imageURLs: ['463/information-and-computer-science-ii.jpg'],
     },
-    // 83099: {
-    //     name: 'Interim Classroom Facility (ICF)',
-    //     lat: 33.644463,
-    //     lng: -117.840012,
-    //     imageURLs: ['463/interim-classroom-facility.jpg'],
-    // },
+    83099: {
+        name: 'Interim Classroom Facility (ICF)',
+        lat: 33.644463,
+        lng: -117.840012,
+        imageURLs: ['463/interim-classroom-facility.jpg'],
+    },
     83101: {
         name: 'Engineering & Computing Trailer (ECT)',
         lat: 33.644051,
         lng: -117.840149,
         imageURLs: ['463/engineering-and-comuting-trailer.jpg'],
+    },
+    83102: {
+        name: 'Engineering Gateway (EG)',
+        lat: 33.643215,
+        lng: -117.840157,
+        imageURLs: ['463/engineering-gateway.jpg'],
     },
     83103: {
         name: 'Engineering Hall (EH)',
@@ -576,6 +606,12 @@ export default {
         lng: -117.835938,
         imageURLs: ['463/law.jpg'],
     },
+    83167: {
+        name: 'Multipurpose Academic & Administrative Building (MPAA)',
+        lat: 33.647156,
+        lng: -117.837013,
+        imageURLs: ['463/multipurpose-academic-and-admin-building.jpg'],
+    },
     83168: {
         name: 'Science Library (SLIB)',
         lat: 33.645908,
@@ -672,6 +708,12 @@ export default {
         lng: -117.835938,
         imageURLs: ['463/continuing-education-6.jpg'],
     },
+    83544: {
+        name: 'Social Ecology I (SE)',
+        lat: 33.646194,
+        lng: -117.838844,
+        imageURLs: ['463/social-ecology-i.jpg'],
+    },
     83545: {
         name: 'Social Ecology II (SE2)',
         lat: 33.64666,
@@ -696,6 +738,12 @@ export default {
         lng: -117.847198,
         imageURLs: ['463/kuci-radio-station.jpg'],
     },
+    83559: {
+        name: 'Student Center (SC)',
+        lat: 33.649323,
+        lng: -117.842255,
+        imageURLs: ['463/student-center_1.jpg'],
+    },
     83560: {
         name: 'Student Health Center (SHC)',
         lat: 33.64555,
@@ -707,6 +755,12 @@ export default {
         lat: 33.647888,
         lng: -117.842316,
         imageURLs: ['463/student-services-i.jpg'],
+    },
+    83565: {
+        name: 'Social & Behavioral Sciences Gateway (SBSG)',
+        lat: 33.647488,
+        lng: -117.839165,
+        imageURLs: ['463/social-and-behavioral-sciences-gateway.jpg'],
     },
     83566: {
         name: 'Social Science Hall (SSH)',
@@ -737,6 +791,12 @@ export default {
         lat: 33.647083,
         lng: -117.839096,
         imageURLs: ['463/social-science-plaza-b.jpg'],
+    },
+    83571: {
+        name: 'Social Science Tower (SST)',
+        lat: 33.646591,
+        lng: -117.840294,
+        imageURLs: ['463/social-science-tower.jpg'],
     },
     83572: {
         name: 'Social Science Trailer (SSTR)',
@@ -810,6 +870,12 @@ export default {
         lng: -117.838409,
         imageURLs: ['463/university-tower-2.jpg'],
     },
+    99610: {
+        name: 'Interim Classroom Facility (ICF)',
+        lat: 33.644463,
+        lng: -117.840012,
+        imageURLs: ['463/interim-classroom-facility.jpg'],
+    },
     101047: {
         name: 'University Hills Community Center',
         lat: 33.636307,
@@ -839,6 +905,18 @@ export default {
         lat: 33.64669,
         lng: -117.838112,
         imageURLs: ['463/business-ii.jpg'],
+    },
+    114585: {
+        name: '100 Theory',
+        lat: 33.644245,
+        lng: -117.855675,
+        imageURLs: [],
+    },
+    114586: {
+        name: 'Anteater Instruction & Research Building (AIRB)',
+        lat: 33.643009,
+        lng: -117.838013,
+        imageURLs: ['463/anteater-instruction-and-research-building.jpg'],
     },
     114588: {
         name: 'Beckman Center of the National Academies of Sciences & Engineering',
@@ -894,11 +972,23 @@ export default {
         lng: -117.840157,
         imageURLs: ['463/engineering-gateway.jpg'],
     },
+    114601: {
+        name: 'Engineering Laboratory Facility (ELF)',
+        lat: 33.643822,
+        lng: -117.839622,
+        imageURLs: ['463/engineering-laboratory-facility.jpg'],
+    },
     114602: {
         name: 'Little Theatre',
         lat: 33.647213,
         lng: -117.844063,
         imageURLs: ['463/little-theatre.jpg'],
+    },
+    114603: {
+        name: 'Humanities Interim Classroom Facility (HICF) | Studio Art Trailer',
+        lat: 33.646919,
+        lng: -117.84687,
+        imageURLs: ['463/humanities-interim-classroom-facility.jpg'],
     },
     114604: {
         name: 'Multipurpose Academic & Administrative Building (MPAA)',
@@ -906,11 +996,29 @@ export default {
         lng: -117.837013,
         imageURLs: ['463/multipurpose-academic-and-admin-building.jpg'],
     },
+    114605: {
+        name: 'Beckman Laser Institute (BLI)',
+        lat: 33.644192,
+        lng: -117.849915,
+        imageURLs: ['463/beckman-laser-institute.jpg'],
+    },
+    114606: {
+        name: 'Gillespie Neuroscience Research Facility (GNRF)',
+        lat: 33.644009,
+        lng: -117.851265,
+        imageURLs: ['463/gillespie-neuroscience-research-facility.jpg'],
+    },
     114607: {
         name: 'Sue & Bill Gross Hall: A CIRM Institute',
         lat: 33.643555,
         lng: -117.851501,
         imageURLs: ['463/gross-hall.jpg'],
+    },
+    114608: {
+        name: 'Hewitt Research Hall (HRH)',
+        lat: 33.643505,
+        lng: -117.851921,
+        imageURLs: ['463/hewitt-hall.jpg'],
     },
     114609: {
         name: 'Plumwood House (PH)',
@@ -942,11 +1050,23 @@ export default {
         lng: -117.838013,
         imageURLs: ['463/anteater-instruction-and-research-building.jpg'],
     },
+    114618: {
+        name: 'Sprague Hall (SPH)',
+        lat: 33.644062,
+        lng: -117.852066,
+        imageURLs: ['463/sprague-hall.jpg'],
+    },
     114621: {
         name: 'Facilities Management Building',
         lat: 33.664715,
         lng: -117.854805,
         imageURLs: [],
+    },
+    114622: {
+        name: 'Humanities Gateway (HG)',
+        lat: 33.648266,
+        lng: -117.844406,
+        imageURLs: ['463/humanities-gateway.jpg'],
     },
     114623: {
         name: 'Social Ecology I (SE)',
@@ -1529,6 +1649,12 @@ export default {
         lat: 33.64621,
         lng: -117.837051,
         imageURLs: ['463/banning-house.jpg'],
+    },
+    407362: {
+        name: 'Gateway Study Center (GC)',
+        lat: 33.647388,
+        lng: -117.841873,
+        imageURLs: ['463/gateway-study-center.jpg'],
     },
     444368: {
         name: 'Plaza Verde',
