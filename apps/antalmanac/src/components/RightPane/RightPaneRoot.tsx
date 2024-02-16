@@ -58,7 +58,12 @@ export default function Desktop({ style }: DesktopTabsProps) {
 
     return (
         <Box style={{ ...style, margin: '0 4px' }}>
-            <Paper elevation={0} variant="outlined" square style={{ borderRadius: '4px 4px 0 0' }}>
+            <Paper
+                elevation={0}
+                variant="outlined"
+                square
+                style={{ borderRadius: '4px 4px 0 0', backgroundColor: isDarkMode() ? 'rgb(24, 26, 27)' : '' }}
+            >
                 <Tabs
                     value={activeTab}
                     onChange={(_event, value) => setActiveTab(value)}
