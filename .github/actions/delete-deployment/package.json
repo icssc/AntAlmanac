@@ -1,8 +1,0 @@
-{
-    "name": "@github-actions/delete-deployment",
-    "type": "module",
-    "dependencies": {
-        "@actions/core": "^1.10.1",
-        "@actions/github": "^6.0.0"
-    }
-}
