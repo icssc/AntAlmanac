@@ -5,6 +5,7 @@ import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { Close, DarkMode, Help, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
 import { usePreviewStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import useCoursePaneStore from '$stores/CoursePaneStore';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -28,8 +29,10 @@ function ThemeMenu() {
         store.isDark,
         store.setAppTheme,
     ]);
+    const { forceUpdate } = useCoursePaneStore();
 
     const handleThemeChange = (event: React.MouseEvent<HTMLButtonElement>) => {
+        forceUpdate();
         setTheme(event.currentTarget.value as 'light' | 'dark' | 'system');
     };
 

@@ -139,6 +139,7 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
                     );
                 }
             } catch (e) {
+                console.error(e);
                 openSnackbar(
                     'error',
                     `Failed to load schedules. If this continues to happen, please submit a feedback form.`
