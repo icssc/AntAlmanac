@@ -72,12 +72,12 @@ export class DepartmentEnrollmentHistory {
         return this.department + '/' + courseNumber;
     }
 
-    decodeCacheKey(key: string) {
-        const [department, courseNumber] = key.split('/');
+    decodeCacheKey(cacheKey: string) {
+        return cacheKey.split('/');
     }
 
     async find(courseNumber: string): Promise<EnrollmentHistory[] | null> {
-        const cacheKey = this.department + courseNumber;
+        const cacheKey = this.createCacheKey(courseNumber);
         return (DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] ??=
             await this.queryEnrollmentHistory(courseNumber));
     }
