@@ -3,6 +3,7 @@ import { HourMinute } from 'peterportal-api-next-types';
 import { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { notNull, getReferencesOccurring } from '$lib/utils';
+import { getDefaultFinalsStart } from '$lib/termData';
 
 export const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
@@ -49,7 +50,10 @@ export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): 
                         title: `${course.deptCode} ${course.courseNumber}`,
                         courseTitle: course.courseTitle,
                         locations: meeting.bldg.map(getLocation).map((location: Location) => {
-                            return { ...location, days: meeting.days === null ? undefined : meeting.days };
+                            return {
+                                ...location,
+                                ...(meeting.days && { days: COURSE_WEEK_DAYS[dayIndex] }),
+                            };
                         }),
                         showLocationInfo: false,
                         instructors: course.section.instructors,
@@ -99,18 +103,45 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
              */
             const dayIndicesOcurring = weekdaysOccurring.map((day, index) => (day ? index : undefined)).filter(notNull);
 
+            const locationsWithNoDays = bldg ? bldg.map(getLocation) : course.section.meetings[0].bldg.map(getLocation);
+
+            /**
+             * Fallback to January 2018 if no finals start date is available.
+             * defaultFinalsDay is handled later by day since it varies by day.
+             */
+            const [defaultFinalsYear, defaultFinalsMonth, defaultFinalsDay] = [
+                ...(getDefaultFinalsStart() ?? [2018, 0]),
+            ];
+
             return dayIndicesOcurring.map((dayIndex) => ({
                 color: course.section.color,
                 term: course.term,
                 title: `${course.deptCode} ${course.courseNumber}`,
                 courseTitle: course.courseTitle,
-                locations: bldg ? bldg.map(getLocation) : course.section.meetings[0].bldg.map(getLocation),
+                locations: locationsWithNoDays.map((location: Location) => {
+                    return {
+                        ...location,
+                        days: COURSE_WEEK_DAYS[dayIndex],
+                    };
+                }),
                 showLocationInfo: true,
                 instructors: course.section.instructors,
                 sectionCode: course.section.sectionCode,
                 sectionType: 'Fin',
-                start: new Date(2018, 0, dayIndex - 1, startHour, startMin),
-                end: new Date(2018, 0, dayIndex - 1, endHour, endMin),
+                start: new Date(
+                    defaultFinalsYear,
+                    defaultFinalsMonth,
+                    defaultFinalsDay ? defaultFinalsDay + dayIndex : dayIndex - 1,
+                    startHour,
+                    startMin
+                ),
+                end: new Date(
+                    defaultFinalsYear,
+                    defaultFinalsMonth,
+                    defaultFinalsDay ? defaultFinalsDay + dayIndex : dayIndex - 1,
+                    endHour,
+                    endMin
+                ),
                 finalExam: {
                     ...finalExam,
                     locations: bldg?.map(getLocation) ?? [],

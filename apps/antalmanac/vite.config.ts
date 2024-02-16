@@ -23,4 +23,8 @@ export default defineConfig({
     server: {
         host: 'localhost',
     },
+    test: {
+        environment: 'jsdom',
+        setupFiles: [resolve(__dirname, 'tests/setup/setup.ts')],
+    },
 });

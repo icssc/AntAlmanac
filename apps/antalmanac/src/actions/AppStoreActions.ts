@@ -12,6 +12,11 @@ import AppStore from '$stores/AppStore';
 import trpc from '$lib/api/trpc';
 import { courseNumAsDecimal } from '$lib/analytics';
 
+export interface CopyScheduleOptions {
+    onSuccess: (index: number) => unknown;
+    onError: (index: number) => unknown;
+}
+
 export const addCourse = (
     section: WebsocSection,
     courseDetails: CourseDetails,
@@ -134,6 +139,7 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
                     );
                 }
             } catch (e) {
+                console.error(e);
                 openSnackbar(
                     'error',
                     `Failed to load schedules. If this continues to happen, please submit a feedback form.`
@@ -181,13 +187,18 @@ export const changeCourseColor = (sectionCode: string, term: string, newColor: s
     AppStore.changeCourseColor(sectionCode, term, newColor);
 };
 
-export const copySchedule = (to: number) => {
+export const copySchedule = (to: number, options?: CopyScheduleOptions) => {
     logAnalytics({
         category: analyticsEnum.addedClasses.title,
         action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
     });
 
-    AppStore.copySchedule(to);
+    try {
+        AppStore.copySchedule(to);
+        options?.onSuccess(to);
+    } catch (error) {
+        options?.onError(to);
+    }
 };
 
 export const addSchedule = (scheduleName: string) => {

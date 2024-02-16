@@ -8,9 +8,11 @@ import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calen
 
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent } from './CourseCalendarEvent';
+import { getDefaultFinalsStartDate } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
 import { useTimeFormatStore } from '$stores/SettingsStore';
+import { useHoveredStore } from '$stores/HoveredStore';
 
 const localizer = momentLocalizer(moment);
 
@@ -52,8 +54,8 @@ const AntAlmanacEvent = ({ event }: { event: CalendarEvent }) => {
                     {event.showLocationInfo
                         ? event.locations.map((location) => `${location.building} ${location.room}`).join(', ')
                         : event.locations.length > 1
-                        ? `${event.locations.length} Locations`
-                        : `${event.locations[0].building} ${event.locations[0].room}`}
+                          ? `${event.locations.length} Locations`
+                          : `${event.locations[0].building} ${event.locations[0].room}`}
                 </Box>
                 <Box>{event.sectionCode}</Box>
             </Box>
@@ -78,9 +80,14 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
     const { isMilitaryTime } = useTimeFormatStore();
+    const { hoveredCourseEvents } = useHoveredStore();
 
     const getEventsForCalendar = () => {
-        return showFinalsSchedule ? finalsEventsInCalendar : eventsInCalendar;
+        return showFinalsSchedule
+            ? finalsEventsInCalendar
+            : hoveredCourseEvents
+              ? [...eventsInCalendar, ...hoveredCourseEvents]
+              : eventsInCalendar;
     };
 
     const handleClosePopover = () => {
@@ -129,7 +136,9 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
         // This equation is taken from w3c, does not use the colour difference part
         const minBrightnessDiff = 125;
 
-        const backgroundRegexResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(bg) as RegExpExecArray; // returns {hex, r, g, b}
+        const backgroundRegexResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(
+            bg.slice(0, 7)
+        ) as RegExpExecArray; // returns {hex, r, g, b}
         const backgroundRGB = {
             r: parseInt(backgroundRegexResult[1], 16),
             g: parseInt(backgroundRegexResult[2], 16),
@@ -148,9 +157,15 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
 
     const events = getEventsForCalendar();
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
+
     const calendarStyling = isMobile ? { height: `calc(100% - 55px)` } : { height: `calc(100vh - 104px)` };
+
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
     const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
+
+    const defaultFinals = getDefaultFinalsStartDate();
+    const finalsDateFormat = defaultFinals ? 'ddd MM/DD' : 'ddd';
+    const date = showFinalsSchedule && defaultFinals ? defaultFinals : new Date(2018, 0, 1);
 
     // If a final is on a Saturday or Sunday, let the calendar start on Saturday
     moment.updateLocale('es-us', {
@@ -164,8 +179,6 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
             setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
             setEventsInCalendar(AppStore.getEventsInCalendar());
             setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
-
-            handleClosePopover();
         };
 
         const updateScheduleNames = () => {
@@ -194,6 +207,7 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
                 margin: '0px 4px',
                 borderRadius: '1px',
             }}
+            id={'calendar-root'}
         >
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}
@@ -239,7 +253,7 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
                             date.getMinutes() > 0 || !localizer
                                 ? ''
                                 : localizer.format(date, calendarGutterTimeFormat, culture),
-                        dayFormat: 'ddd',
+                        dayFormat: `${showFinalsSchedule ? finalsDateFormat : 'ddd'}`,
                         eventTimeRangeFormat: (
                             range: { start: Date; end: Date },
                             culture?: string,
@@ -259,7 +273,7 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
                     }}
                     step={15}
                     timeslots={2}
-                    defaultDate={new Date(2018, 0, 1)}
+                    date={date}
                     min={getStartTime()}
                     max={new Date(2018, 0, 1, 23)}
                     events={events}

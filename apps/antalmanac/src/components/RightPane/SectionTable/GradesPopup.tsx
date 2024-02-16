@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { Box, Link, Typography, Skeleton } from '@mui/material';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 import GradesHelper, { type Grades } from '$lib/grades';
 
 export interface GradeData {
@@ -51,6 +51,8 @@ export interface GradesPopupProps {
 }
 
 function GradesPopup(props: GradesPopupProps) {
+    const { isDark } = useThemeStore();
+
     const { deptCode, courseNumber, instructor = '', isMobileScreen } = props;
 
     const [loading, setLoading] = useState(true);
@@ -67,12 +69,12 @@ function GradesPopup(props: GradesPopupProps) {
                   instructor ? ` — ${instructor}` : ''
               } | Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}`
             : 'Grades are not available for this class.';
-    }, [deptCode, instructor, gradeData]);
+    }, [gradeData, deptCode, courseNumber, instructor]);
 
-    const gpaString = useMemo(
-        () => (gradeData ? `Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}` : ''),
-        [gradeData]
-    );
+    // const gpaString = useMemo(
+    //     () => (gradeData ? `Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}` : ''),
+    //     [gradeData]
+    // );
 
     useEffect(() => {
         if (loading === false) {
@@ -106,7 +108,7 @@ function GradesPopup(props: GradesPopupProps) {
     }
 
     const encodedDept = encodeURIComponent(deptCode);
-    const axisColor = isDarkMode() ? '#fff' : '#111';
+    const axisColor = isDark ? '#fff' : '#000';
 
     return (
         <Box sx={{ padding: '4px' }}>

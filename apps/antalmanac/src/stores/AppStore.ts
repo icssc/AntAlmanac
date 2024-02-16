@@ -82,6 +82,10 @@ class AppStore extends EventEmitter {
         return this.schedule.getCalendarizedEvents();
     }
 
+    getEventsWithFinalsInCalendar() {
+        return [...this.schedule.getCalendarizedEvents(), ...this.schedule.getCalendarizedFinals()];
+    }
+
     getCourseEventsInCalendar() {
         return this.schedule.getCalendarizedCourseEvents();
     }
@@ -146,6 +150,12 @@ class AppStore extends EventEmitter {
 
     deleteCourse(sectionCode: string, term: string) {
         this.schedule.deleteCourse(sectionCode, term);
+        this.unsavedChanges = true;
+        this.emit('addedCoursesChange');
+    }
+
+    deleteCourses(sectionCodes: string[], term: string) {
+        sectionCodes.forEach((sectionCode) => this.deleteCourse(sectionCode, term));
         this.unsavedChanges = true;
         this.emit('addedCoursesChange');
     }

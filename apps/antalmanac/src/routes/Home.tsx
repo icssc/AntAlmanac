@@ -9,6 +9,7 @@ import PatchNotes from '$components/PatchNotes';
 import Calendar from '$components/Calendar/CalendarRoot';
 import DesktopTabs from '$components/RightPane/RightPaneRoot';
 import NotificationSnackbar from '$components/NotificationSnackbar';
+import { Tutorial } from '$components/Tutorial';
 
 export default function Home() {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
@@ -22,30 +23,33 @@ export default function Home() {
             {isMobileScreen ? (
                 <MobileHome />
             ) : (
-                <Split
-                    sizes={[45, 55]}
-                    minSize={100}
-                    expandToMin={false}
-                    gutterSize={10}
-                    gutterAlign="center"
-                    snapOffset={30}
-                    dragInterval={1}
-                    direction="horizontal"
-                    cursor="col-resize"
-                    style={{ display: 'flex' }}
-                    gutterStyle={() => ({
-                        backgroundColor: theme.palette.primary.main,
-                        width: '10px',
-                    })}
-                >
-                    <Box>
-                        <Calendar isMobile={false} />
-                    </Box>
+                <>
+                    <Split
+                        sizes={[45, 55]}
+                        minSize={100}
+                        expandToMin={false}
+                        gutterSize={10}
+                        gutterAlign="center"
+                        snapOffset={30}
+                        dragInterval={1}
+                        direction="horizontal"
+                        cursor="col-resize"
+                        style={{ display: 'flex' }}
+                        gutterStyle={() => ({
+                            backgroundColor: theme.palette.primary.main,
+                            width: '10px',
+                        })}
+                    >
+                        <Box>
+                            <Calendar isMobile={false} />
+                        </Box>
 
-                    <Box>
-                        <DesktopTabs style={{ height: 'calc(100vh - 58px)' }} />
-                    </Box>
-                </Split>
+                        <Box>
+                            <DesktopTabs style={{ height: 'calc(100vh - 58px)' }} />
+                        </Box>
+                    </Split>
+                    <Tutorial />
+                </>
             )}
             <NotificationSnackbar />
         </MuiPickersUtilsProvider>

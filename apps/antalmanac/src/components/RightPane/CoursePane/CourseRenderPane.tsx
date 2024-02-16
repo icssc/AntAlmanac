@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
-import { Alert, Box, IconButton } from '@mui/material';
+import { Alert, Box, GlobalStyles, IconButton } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
 import { WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
@@ -14,17 +14,21 @@ import loadingGif from './SearchForm/Gifs/loading.gif';
 import darkNoNothing from './static/dark-no_results.png';
 import noNothing from './static/no_results.png';
 import AppStore from '$stores/AppStore';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 import Grades from '$lib/grades';
 import analyticsEnum from '$lib/analytics';
 import { openSnackbar } from '$actions/AppStoreActions';
 import WebSOC from '$lib/websoc';
+import { useHoveredStore } from '$stores/HoveredStore';
 
 function getColors() {
-    const courseColors = AppStore.schedule.getCurrentCourses().reduce((accumulator, { section }) => {
-        accumulator[section.sectionCode] = section.color;
-        return accumulator;
-    }, {} as { [key: string]: string });
+    const courseColors = AppStore.schedule.getCurrentCourses().reduce(
+        (accumulator, { section }) => {
+            accumulator[section.sectionCode] = section.color;
+            return accumulator;
+        },
+        {} as { [key: string]: string }
+    );
 
     return courseColors;
 }
@@ -52,6 +56,8 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
 
+    const isDark = useThemeStore((store) => store.isDark);
+
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
     const recruitmentDismissalTime = window.localStorage.getItem('recruitmentDismissalTime');
     const dismissedRecently =
@@ -67,8 +73,8 @@ const RecruitmentBanner = () => {
                     icon={false}
                     severity="info"
                     style={{
-                        color: isDarkMode() ? '#ece6e6' : '#2e2e2e',
-                        backgroundColor: isDarkMode() ? '#2e2e2e' : '#ece6e6',
+                        color: isDark ? '#ece6e6' : '#2e2e2e',
+                        backgroundColor: isDark ? '#2e2e2e' : '#ece6e6',
                     }}
                     action={
                         <IconButton
@@ -144,18 +150,20 @@ const SectionTableWrapped = (
 };
 
 const LoadingMessage = () => {
+    const isDark = useThemeStore((store) => store.isDark);
     return (
         <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <img src={isDarkMode() ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
+            <img src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
         </Box>
     );
 };
 
 const ErrorMessage = () => {
+    const isDark = useThemeStore((store) => store.isDark);
     return (
         <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <img
-                src={isDarkMode() ? darkNoNothing : noNothing}
+                src={isDark ? darkNoNothing : noNothing}
                 alt="No Results Found"
                 style={{ objectFit: 'contain', width: '80%', height: '80%' }}
             />
@@ -169,6 +177,8 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+
+    const setHoveredCourseEvents = useHoveredStore((store) => store.setHoveredCourseEvents);
 
     const loadCourses = useCallback(async () => {
         setLoading(true);
@@ -249,6 +259,17 @@ export default function CourseRenderPane(props: { id?: number }) {
         };
     }, [loadCourses, props.id]);
 
+    /**
+     * Removes hovered course when component unmounts
+     * Handles edge cases where the Section Table is removed, rather than the mouse
+     * ex: Swapping to the Added tab, clicking the LocationCell link
+     */
+    useEffect(() => {
+        return () => {
+            setHoveredCourseEvents(undefined);
+        };
+    }, [setHoveredCourseEvents]);
+
     return (
         <>
             {loading ? (
@@ -260,6 +281,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                     <RecruitmentBanner />
                     <Box>
                         <Box sx={{ height: '50px', marginBottom: '5px' }} />
+                        <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
                         {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
                             let heightEstimate = 200;
                             if ((courseData[index] as AACourse).sections !== undefined)

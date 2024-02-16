@@ -1,0 +1,194 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json
+---
+name: Deploy CloudFormation stacks for staging
+
+on:
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - unlabeled
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+    deployments: write
+
+env:
+    # Tooling settings.
+    HUSKY: 0
+    NODE_ENV: staging
+
+    # Application information.
+    MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
+    MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
+    VITE_TILES_ENDPOINT: ${{ secrets.VITE_TILES_ENDPOINT}}
+    GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+    GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+
+    # Turborepo credentials.
+    TURBO_API: ${{ vars.TURBO_API }}
+    TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+    TURBO_TEAM: team_antalmanac
+
+    # AWS credentials.
+    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    AWS_DEFAULT_REGION: us-east-1
+
+    # Information used by AWS CDK stacks.
+    HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
+    CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+    PR_NUM: ${{ github.event.pull_request.number }}
+
+jobs:
+    get_staging_configuration:
+        name: Get staging configuration
+
+        if: (!contains(github.event.pull_request.labels.*.name, 'no deploy'))
+
+        runs-on: ubuntu-latest
+
+        outputs:
+            # A staging backend should only be deployed if either the backend or CDK changed.
+            should-deploy-backend: ${{ steps.changed.outputs.backend == 'true' ||  steps.changed.outputs.cdk == 'true' }}
+
+            # If a staging backend is deployed, then the frontend should use its URL.
+            # Otherwise use the default development API endpoint.
+            antalmanac-api-endpoint: ${{ ((steps.changed.outputs.backend == 'true' ||  steps.changed.outputs.cdk == 'true') && format('staging-{0}', github.event.pull_request.number)) || 'dev' }}
+
+            frontend_environment: frontend-staging-${{ github.event.pull_request.number }}
+            frontend_environment_url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
+            backend_environment: backend-staging-${{ github.event.pull_request.number }}
+            backend_environment_url: https://staging-${{ github.event.pull_request.number }}.api.antalmanac.com
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Check for changes
+              id: changed
+              uses: dorny/paths-filter@v2
+              with:
+                  filters: |
+                      backend:
+                        - 'apps/backend/**'
+                      cdk:
+                        - 'apps/cdk/**'
+
+    deploy_staging_frontend:
+        name: Deploy frontend staging CloudFormation stack and environment
+
+        if: (!contains(github.event.pull_request.labels.*.name, 'no deploy'))
+
+        needs: get_staging_configuration
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Create in-progress deployment
+              id: create_deployment
+              uses: ./.github/actions/create-deployment
+              with:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  environment: staging-frontend
+                  name: ${{ needs.get_staging_configuration.outputs.frontend_environment }}
+                  url: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
+                  status: in_progress
+
+            - name: Build frontend
+              run: pnpm --filter "antalmanac" build
+              env:
+                  VITE_ENDPOINT: ${{ needs.get_staging_configuration.outputs.antalmanac-api-endpoint }}
+
+            - name: Deploy frontend staging CloudFormation stack
+              run: pnpm --filter "antalmanac-cdk" frontend-staging deploy
+
+            - name: Create success deployment
+              uses: ./.github/actions/create-deployment
+              with:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  deployment_id: ${{ steps.create_deployment.outputs.deployment_id }}
+                  environment: staging-frontend
+                  name: ${{ needs.get_staging_configuration.outputs.frontend_environment }}
+                  url: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
+                  status: success
+
+            - name: Create failure deployment
+              if: ${{ failure() }}
+              uses: ./.github/actions/create-deployment
+              with:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  deployment_id: ${{ steps.create_deployment.outputs.deployment_id }}
+                  environment: staging-frontend
+                  name: ${{ needs.get_staging_configuration.outputs.frontend_environment }}
+                  url: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
+                  status: failure
+
+    deploy_staging_backend:
+        name: Deploy backend staging CloudFormation stack and environment
+
+        needs: get_staging_configuration
+
+        if: needs.get_staging_configuration.outputs.should-deploy-backend == 'true' && (!contains(github.event.pull_request.labels.*.name, 'no deploy'))
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Create in-progress deployment
+              id: create_deployment
+              uses: ./.github/actions/create-deployment
+              with:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  environment: staging-backend
+                  name: ${{ needs.get_staging_configuration.outputs.backend_environment }}
+                  url: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
+                  status: in_progress
+
+            - name: Build backend
+              run: pnpm --filter "antalmanac-backend" build
+
+            - name: Deploy backend staging CloudFormation stack
+              run: pnpm --filter "antalmanac-cdk" backend-staging deploy
+
+            - name: Create success deployment
+              uses: ./.github/actions/create-deployment
+              with:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  deployment_id: ${{ steps.create_deployment.outputs.deployment_id }}
+                  environment: staging-backend
+                  name: ${{ needs.get_staging_configuration.outputs.backend_environment }}
+                  url: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
+                  status: success
+
+            - name: Create failed deployment
+              if: ${{ failure() }}
+              uses: ./.github/actions/create-deployment
+              with:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  deployment_id: ${{ steps.create_deployment.outputs.deployment_id }}
+                  environment: staging-backend
+                  name: ${{ needs.get_staging_configuration.outputs.backend_environment }}
+                  url: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
+                  status: failure

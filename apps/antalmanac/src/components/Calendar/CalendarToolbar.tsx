@@ -334,6 +334,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                         variant={showFinalsSchedule ? 'contained' : 'outlined'}
                         onClick={handleToggleFinals}
                         size="small"
+                        id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
                         disabled={skeletonMode}
                     >
                         Finals

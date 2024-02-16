@@ -148,22 +148,25 @@ export default function CourseMap() {
     const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
-    const [customEventMarkers] = useState(getCustomEventPerBuilding());
+    const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
     const [calendarEvents, setCalendarEvents] = useState(AppStore.getCourseEventsInCalendar());
 
     useEffect(() => {
-        const updateMarkers = () => {
+        const updateAllMarkers = () => {
             setMarkers(getCoursesPerBuilding());
+            setCustomEventMarkers(getCustomEventPerBuilding());
         };
 
-        AppStore.on('addedCoursesChange', updateMarkers);
-        AppStore.on('currentScheduleIndexChange', updateMarkers);
-        AppStore.on('colorChange', updateMarkers);
+        AppStore.on('addedCoursesChange', updateAllMarkers);
+        AppStore.on('customEventsChange', updateAllMarkers);
+        AppStore.on('currentScheduleIndexChange', updateAllMarkers);
+        AppStore.on('colorChange', updateAllMarkers);
 
         return () => {
-            AppStore.removeListener('addedCoursesChange', updateMarkers);
-            AppStore.removeListener('currentScheduleIndexChange', updateMarkers);
-            AppStore.removeListener('colorChange', updateMarkers);
+            AppStore.removeListener('addedCoursesChange', updateAllMarkers);
+            AppStore.removeListener('customEventsChange', updateAllMarkers);
+            AppStore.removeListener('currentScheduleIndexChange', updateAllMarkers);
+            AppStore.removeListener('colorChange', updateAllMarkers);
         };
     }, []);
 
@@ -177,7 +180,6 @@ export default function CourseMap() {
 
         return () => {
             AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
-            AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
         };
     }, []);
 
@@ -274,17 +276,24 @@ export default function CourseMap() {
      * Every two markers grouped as [start, destination] tuples for the routes.
      */
     const startDestPairs = useMemo(() => {
-        return markersToDisplay.reduce((acc, cur, index) => {
-            acc.push([cur]);
-            if (index > 0) {
-                acc[index - 1].push(cur);
-            }
-            return acc;
-        }, [] as (typeof markersToDisplay)[]);
-    }, [markersToDisplay]);
+        const allEvents = [...markersToDisplay, ...customEventMarkersToDisplay];
+        return allEvents.reduce(
+            (acc, cur, index) => {
+                acc.push([cur]);
+                if (index > 0) {
+                    acc[index - 1].push(cur);
+                }
+                return acc;
+            },
+            [] as (typeof allEvents)[]
+        );
+    }, [markersToDisplay, customEventMarkersToDisplay]);
 
     return (
-        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}>
+        <Box
+            sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}
+            id="map-pane"
+        >
             <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
                 {/* Menu floats above the map. */}
                 <Paper sx={{ position: 'relative', mx: 'auto', my: 2, width: '70%', zIndex: 400 }}>
@@ -337,7 +346,7 @@ export default function CourseMap() {
                         <Fragment key={Object.values(marker).join('')}>
                             <LocationMarker
                                 {...marker}
-                                label={today === 'All' ? undefined : index + 1}
+                                label={today === 'All' ? undefined : (index + 1).toString()}
                                 stackIndex={coursesSameBuildingPrior.length}
                             >
                                 <Box>

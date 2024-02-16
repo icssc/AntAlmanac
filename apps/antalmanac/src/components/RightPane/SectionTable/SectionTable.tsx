@@ -13,10 +13,10 @@ import {
     useMediaQuery,
 } from '@material-ui/core';
 import { Assessment, Help, RateReview, ShowChart as ShowChartIcon } from '@material-ui/icons';
-import { GlobalStyles } from '@mui/material';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import CourseInfoBar from './CourseInfoBar';
 import CourseInfoButton from './CourseInfoButton';
+import { EnrollmentHistoryPopup } from './EnrollmentHistoryPopup';
 import GradesPopup from './GradesPopup';
 import { SectionTableProps } from './SectionTable.types';
 import SectionTableBody from './SectionTableBody';
@@ -128,7 +128,6 @@ function SectionTable(props: SectionTableProps) {
 
     return (
         <>
-            <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
             <Box style={{ display: 'flex', gap: 4, marginTop: 4, marginBottom: 8 }}>
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
@@ -168,7 +167,12 @@ function SectionTable(props: SectionTableProps) {
                     analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_ENROLLMENT}
                     text="Past Enrollment"
                     icon={<ShowChartIcon />}
-                    redirectLink={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${courseDetails.courseNumber}&courseType=all`}
+                    popupContent={
+                        <EnrollmentHistoryPopup
+                            department={courseDetails.deptCode}
+                            courseNumber={courseDetails.courseNumber}
+                        />
+                    }
                 />
             </Box>
 

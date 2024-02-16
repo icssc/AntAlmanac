@@ -1,49 +1,48 @@
 import { create } from 'zustand';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
+export type ThemeSetting = 'light' | 'dark' | 'system';
+
 export interface ThemeStore {
     /**
      * The 'raw' theme, based on the user's selected setting
      */
-    themeSetting: 'light' | 'dark' | 'system';
+    themeSetting: ThemeSetting;
     /**
      * The 'derived' theme, based on user settings and device preferences
      */
     appTheme: 'light' | 'dark';
-    setAppTheme: (themeSetting: 'light' | 'dark' | 'system') => void;
+    isDark: boolean;
+
+    setAppTheme: (themeSetting: ThemeSetting) => void;
+}
+
+function themeShouldBeDark(themeSetting: ThemeSetting) {
+    if (themeSetting == 'system') return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return themeSetting == 'dark';
 }
 
 export const useThemeStore = create<ThemeStore>((set) => {
-    const themeSetting = typeof Storage !== 'undefined' ? window.localStorage.getItem('theme') ?? 'system' : 'system';
-
-    const appTheme =
-        themeSetting !== 'system'
-            ? themeSetting
-            : window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'dark'
-            : 'light';
+    const storedThemeSetting: ThemeSetting = (window.localStorage?.getItem('theme') ?? 'system') as ThemeSetting;
+    const isDark = themeShouldBeDark(storedThemeSetting);
 
     return {
-        themeSetting: themeSetting as 'light' | 'dark' | 'system',
-        appTheme: appTheme as 'light' | 'dark',
+        themeSetting: storedThemeSetting,
+        appTheme: isDark ? 'dark' : 'light',
+        isDark: isDark,
+
         setAppTheme: (themeSetting) => {
-            if (typeof Storage !== 'undefined') {
-                window.localStorage.setItem('theme', themeSetting);
-            }
+            window.localStorage?.setItem('theme', themeSetting);
 
-            const appTheme =
-                themeSetting !== 'system'
-                    ? themeSetting
-                    : window.matchMedia('(prefers-color-scheme: dark)').matches
-                    ? 'dark'
-                    : 'light';
+            const isDark = themeShouldBeDark(themeSetting);
+            const appTheme = isDark ? 'dark' : 'light';
 
-            set({ appTheme: appTheme, themeSetting: themeSetting });
+            set({ appTheme, themeSetting, isDark });
 
             logAnalytics({
                 category: analyticsEnum.nav.title,
                 action: analyticsEnum.nav.actions.CHANGE_THEME,
-                label: appTheme,
+                label: themeSetting,
             });
         },
     };
@@ -64,6 +63,25 @@ export const useTimeFormatStore = create<TimeFormatStore>((set) => {
                 window.localStorage.setItem('show24HourTime', isMilitaryTime.toString());
             }
             set({ isMilitaryTime });
+        },
+    };
+});
+export interface PreviewStore {
+    previewMode: boolean;
+    setPreviewMode: (previewMode: boolean) => void;
+}
+
+export const usePreviewStore = create<PreviewStore>((set) => {
+    const previewMode = typeof Storage !== 'undefined' && window.localStorage.getItem('previewMode') == 'true';
+
+    return {
+        previewMode: previewMode,
+        setPreviewMode: (previewMode) => {
+            if (typeof Storage !== 'undefined') {
+                window.localStorage.setItem('previewMode', previewMode.toString());
+            }
+
+            set({ previewMode: previewMode });
         },
     };
 });

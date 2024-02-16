@@ -10,7 +10,7 @@ import {
     Box,
 } from '@mui/material';
 import { addSchedule } from '$actions/AppStoreActions';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 import AppStore from '$stores/AppStore';
 
 type ScheduleNameDialogProps = DialogProps;
@@ -19,6 +19,8 @@ type ScheduleNameDialogProps = DialogProps;
  * Dialog with a text field to add a schedule.
  */
 function AddScheduleDialog(props: ScheduleNameDialogProps) {
+    const isDark = useThemeStore((store) => store.isDark);
+
     /**
      * {@link props.onClose} also needs to be forwarded to the {@link Dialog} component.
      * A custom {@link onKeyDown} handler is provided to handle the Enter and Escape keys.
@@ -88,7 +90,7 @@ function AddScheduleDialog(props: ScheduleNameDialogProps) {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleCancel} color={isDarkMode() ? 'secondary' : 'primary'}>
+                <Button onClick={handleCancel} color={isDark ? 'secondary' : 'primary'}>
                     Cancel
                 </Button>
                 <Button onClick={submitName} variant="contained" color="primary" disabled={name.trim() === ''}>

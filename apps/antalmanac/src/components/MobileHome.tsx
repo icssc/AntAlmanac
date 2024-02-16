@@ -19,7 +19,7 @@ export const mobileContext = createContext<MobileContext>({
 });
 
 const MobileHome = () => {
-    const [selectedTab, setSelectedTab] = useState(0);
+    const [selectedTab, setSelectedTab] = useState(localStorage.getItem('userID') ? 0 : 1);
     const params = useParams();
 
     useEffect(() => {
