@@ -18,14 +18,14 @@ const darkSelectedStyle: CSSProperties = {
     color: '#99CCF3',
 };
 
-function getSelectedStyle(buttonValue: string, themeSetting: string, appTheme: string) {
-    return themeSetting === buttonValue ? (appTheme == 'dark' ? darkSelectedStyle : lightSelectedStyle) : {};
+function getSelectedStyle(buttonValue: string, themeSetting: string, isDark: boolean) {
+    return themeSetting === buttonValue ? (isDark ? darkSelectedStyle : lightSelectedStyle) : {};
 }
 
 function ThemeMenu() {
-    const [themeSetting, appTheme, setTheme] = useThemeStore((store) => [
+    const [themeSetting, isDark, setTheme] = useThemeStore((store) => [
         store.themeSetting,
-        store.appTheme,
+        store.isDark,
         store.setAppTheme,
     ]);
 
@@ -46,7 +46,7 @@ function ThemeMenu() {
                         padding: '1rem 2rem',
                         borderRadius: '12px 0px 0px 12px',
                         width: '100%',
-                        ...getSelectedStyle('light', themeSetting, appTheme),
+                        ...getSelectedStyle('light', themeSetting, isDark),
                     }}
                     value="light"
                     onClick={handleThemeChange}
@@ -58,7 +58,7 @@ function ThemeMenu() {
                     style={{
                         padding: '1rem 2rem',
                         width: '100%',
-                        ...getSelectedStyle('system', themeSetting, appTheme),
+                        ...getSelectedStyle('system', themeSetting, isDark),
                     }}
                     value="system"
                     onClick={handleThemeChange}
@@ -71,7 +71,7 @@ function ThemeMenu() {
                         padding: '1rem 2rem',
                         borderRadius: '0px 12px 12px 0px',
                         width: '100%',
-                        ...getSelectedStyle('dark', themeSetting, appTheme),
+                        ...getSelectedStyle('dark', themeSetting, isDark),
                     }}
                     value="dark"
                     onClick={handleThemeChange}
@@ -85,7 +85,7 @@ function ThemeMenu() {
 
 function TimeMenu() {
     const [isMilitaryTime, setTimeFormat] = useTimeFormatStore((store) => [store.isMilitaryTime, store.setTimeFormat]);
-    const theme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => store.isDark);
 
     const handleTimeFormatChange = (event: React.MouseEvent<HTMLButtonElement>) => {
         setTimeFormat(event.currentTarget.value == 'true');
@@ -110,7 +110,7 @@ function TimeMenu() {
                         borderRadius: '12px 0px 0px 12px',
                         width: '100%',
                         fontSize: '12px',
-                        ...getSelectedStyle('false', isMilitaryTime.toString(), theme),
+                        ...getSelectedStyle('false', isMilitaryTime.toString(), isDark),
                     }}
                     value="false"
                     onClick={handleTimeFormatChange}
@@ -124,7 +124,7 @@ function TimeMenu() {
                         borderRadius: '0px 12px 12px 0px',
                         width: '100%',
                         fontSize: '12px',
-                        ...getSelectedStyle('true', isMilitaryTime.toString(), theme),
+                        ...getSelectedStyle('true', isMilitaryTime.toString(), isDark),
                     }}
                     value="true"
                     onClick={handleTimeFormatChange}

@@ -330,12 +330,12 @@ export default {
         lng: -117.841713,
         imageURLs: ['463/information-and-computer-science-ii.jpg'],
     },
-    83099: {
-        name: 'Interim Classroom Facility (ICF)',
-        lat: 33.644463,
-        lng: -117.840012,
-        imageURLs: ['463/interim-classroom-facility.jpg'],
-    },
+    // 83099: {
+    //     name: 'Interim Classroom Facility (ICF)',
+    //     lat: 33.644463,
+    //     lng: -117.840012,
+    //     imageURLs: ['463/interim-classroom-facility.jpg'],
+    // },
     83101: {
         name: 'Engineering & Computing Trailer (ECT)',
         lat: 33.644051,
@@ -1787,5 +1787,5 @@ export default {
         lat: 33.64517,
         lng: -117.84476,
         imageURLs: [],
-    }
+    },
 } as Record<number, Building>;

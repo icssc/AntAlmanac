@@ -126,6 +126,14 @@ export class Schedules {
                 this.addCourse(course, to, false);
             }
         }
+
+        for (const customEvent of this.getCurrentCustomEvents()) {
+            if (to === this.getNumberOfSchedules()) {
+                this.addCustomEvent(customEvent, [...Array(to).keys()]);
+            } else {
+                this.addCustomEvent(customEvent, [to]);
+            }
+        }
     }
 
     // --- Course related methods ---

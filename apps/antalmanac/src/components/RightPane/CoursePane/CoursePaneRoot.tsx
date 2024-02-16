@@ -8,18 +8,15 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { openSnackbar } from '$actions/AppStoreActions';
 import WebSOC from '$lib/websoc';
 import Grades from '$lib/grades';
+import useCoursePaneStore from '$stores/CoursePaneStore';
 
 function RightPane() {
     const [key, forceUpdate] = useReducer((currentCount) => currentCount + 1, 0);
+    const { searchIsDisplayed, displaySearch, displaySections } = useCoursePaneStore();
 
-    const toggleSearch = useCallback(() => {
-        if (
-            RightPaneStore.getFormData().ge !== 'ANY' ||
-            RightPaneStore.getFormData().deptValue !== 'ALL' ||
-            RightPaneStore.getFormData().sectionCode !== '' ||
-            RightPaneStore.getFormData().instructor !== ''
-        ) {
-            RightPaneStore.toggleSearch();
+    const handleSearch = useCallback(() => {
+        if (RightPaneStore.formDataIsValid()) {
+            displaySections();
             forceUpdate();
         } else {
             openSnackbar(
@@ -39,37 +36,29 @@ function RightPane() {
         forceUpdate();
     }, []);
 
-    useEffect(() => {
-        const handleReturnToSearch = (event: KeyboardEvent) => {
-            if (
-                !(RightPaneStore.getDoDisplaySearch() || RightPaneStore.getOpenSpotAlertPopoverActive()) &&
-                (event.key === 'Backspace' || event.key === 'Escape')
-            ) {
-                event.preventDefault();
-                RightPaneStore.toggleSearch();
-                forceUpdate();
-            }
-        };
+    const handleKeydown = useCallback(
+        (event: KeyboardEvent) => {
+            if (event.key === 'Escape') displaySearch();
+        },
+        [displaySearch]
+    );
 
-        document.addEventListener('keydown', handleReturnToSearch, false);
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeydown, false);
 
         return () => {
-            document.removeEventListener('keydown', handleReturnToSearch, false);
+            document.removeEventListener('keydown', handleKeydown, false);
         };
     }, []);
 
     return (
         <div style={{ height: '100%' }}>
             <CoursePaneButtonRow
-                showSearch={!RightPaneStore.getDoDisplaySearch()}
-                onDismissSearchResults={toggleSearch}
+                showSearch={!searchIsDisplayed}
+                onDismissSearchResults={displaySearch}
                 onRefreshSearch={refreshSearch}
             />
-            {RightPaneStore.getDoDisplaySearch() ? (
-                <SearchForm toggleSearch={toggleSearch} />
-            ) : (
-                <CourseRenderPane key={key} id={key} />
-            )}
+            {searchIsDisplayed ? <SearchForm toggleSearch={handleSearch} /> : <CourseRenderPane key={key} id={key} />}
         </div>
     );
 }
