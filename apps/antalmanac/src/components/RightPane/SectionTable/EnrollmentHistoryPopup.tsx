@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
     LineChart,
     Line,
@@ -9,15 +9,65 @@ import {
     Tooltip as RechartsTooltip,
     Legend,
 } from 'recharts';
-import { ArrowBack, ArrowForward } from '@material-ui/icons';
+import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, IconButton, Link, Typography, Skeleton, Tooltip, useMediaQuery } from '@mui/material';
 import { MOBILE_BREAKPOINT } from '../../../globals';
 import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
 import { useThemeStore } from '$stores/SettingsStore';
 
+export interface PopupHeaderProps {
+    graphWidth: number;
+    graphIndex: number;
+    handleForward: () => void;
+    handleBack: () => void;
+    popupTitle: string;
+    enrollmentHistory: EnrollmentHistory[];
+}
+
 export interface EnrollmentHistoryPopupProps {
     department: string;
     courseNumber: string;
+}
+
+function PopupHeader({
+    graphWidth,
+    graphIndex,
+    handleForward,
+    handleBack,
+    popupTitle,
+    enrollmentHistory,
+}: PopupHeaderProps) {
+    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
+
+    return (
+        <Box
+            sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                width: graphWidth,
+            }}
+        >
+            <Tooltip title="Newer Graph">
+                {/* In order for a tooltip to work properly with disabled buttons, we need to wrap the button in a span */}
+                <span>
+                    <IconButton onClick={handleBack} disabled={graphIndex === 0}>
+                        <ArrowBack />
+                    </IconButton>
+                </span>
+            </Tooltip>
+            <Typography sx={{ fontWeight: 500, fontSize: isMobileScreen ? '0.8rem' : '1rem', textAlign: 'center' }}>
+                {popupTitle}
+            </Typography>
+            <Tooltip title="Older Graph">
+                <span>
+                    <IconButton onClick={handleForward} disabled={graphIndex === enrollmentHistory.length - 1}>
+                        <ArrowForward />
+                    </IconButton>
+                </span>
+            </Tooltip>
+        </Box>
+    );
 }
 
 export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentHistoryPopupProps) {
@@ -45,6 +95,14 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
     const encodedDept = useMemo(() => encodeURIComponent(department), [department]);
     const axisColor = isDark ? '#fff' : '#111';
     const tooltipDateColor = '#111';
+
+    const handleBack = useCallback(() => {
+        setGraphIndex((prev) => prev - 1);
+    }, []);
+
+    const handleForward = useCallback(() => {
+        setGraphIndex((prev) => prev + 1);
+    }, []);
 
     useEffect(() => {
         if (!loading) {
@@ -78,43 +136,18 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
         );
     }
 
-    const handleBack = () => {
-        setGraphIndex((prev) => prev - 1);
-    };
-
-    const handleForward = () => {
-        setGraphIndex((prev) => prev + 1);
-    };
+    const lineChartData = enrollmentHistory[graphIndex].days;
 
     return (
         <Box sx={{ padding: 0.5 }}>
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    width: graphWidth,
-                }}
-            >
-                <Tooltip title="Newer Graph">
-                    {/* In order for a tooltip to work properly with disabled buttons, we need to wrap the button in a span */}
-                    <span>
-                        <IconButton onClick={handleBack} disabled={graphIndex === 0}>
-                            <ArrowBack />
-                        </IconButton>
-                    </span>
-                </Tooltip>
-                <Typography sx={{ fontWeight: 500, fontSize: isMobileScreen ? '0.8rem' : '1rem', textAlign: 'center' }}>
-                    {popupTitle}
-                </Typography>
-                <Tooltip title="Older Graph">
-                    <span>
-                        <IconButton onClick={handleForward} disabled={graphIndex === enrollmentHistory.length - 1}>
-                            <ArrowForward />
-                        </IconButton>
-                    </span>
-                </Tooltip>
-            </Box>
+            <PopupHeader
+                graphWidth={graphWidth}
+                graphIndex={graphIndex}
+                handleForward={handleForward}
+                handleBack={handleBack}
+                popupTitle={popupTitle}
+                enrollmentHistory={enrollmentHistory}
+            />
             <Link
                 href={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${courseNumber}&courseType=all`}
                 target="_blank"
@@ -122,7 +155,7 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
                 sx={{ display: 'flex', height: graphHeight, width: graphWidth }}
             >
                 <ResponsiveContainer width="95%" height="95%">
-                    <LineChart data={enrollmentHistory[graphIndex].days} style={{ cursor: 'pointer' }}>
+                    <LineChart data={lineChartData} style={{ cursor: 'pointer' }}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="date" tick={{ fontSize: 12, fill: axisColor }} />
                         <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} />

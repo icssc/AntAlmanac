@@ -68,6 +68,14 @@ export class DepartmentEnrollmentHistory {
         this.partialQueryString = DepartmentEnrollmentHistory.QUERY_TEMPLATE.replace('$$DEPARTMENT$$', department);
     }
 
+    createCacheKey(courseNumber: string) {
+        return this.department + '/' + courseNumber;
+    }
+
+    decodeCacheKey(key: string) {
+        const [department, courseNumber] = key.split('/');
+    }
+
     async find(courseNumber: string): Promise<EnrollmentHistory[] | null> {
         const cacheKey = this.department + courseNumber;
         return (DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] ??=
@@ -80,13 +88,13 @@ export class DepartmentEnrollmentHistory {
 
         const res = (await queryGraphQL<EnrollmentHistoryGraphQLResponse>(queryString))?.data?.enrollmentHistory;
 
-        if (res?.length) {
-            const parsedEnrollmentHistory = DepartmentEnrollmentHistory.parseEnrollmentHistoryResponse(res);
-            DepartmentEnrollmentHistory.sortEnrollmentHistory(parsedEnrollmentHistory);
-            return parsedEnrollmentHistory;
+        if (!res?.length) {
+            return null;
         }
 
-        return null;
+        const parsedEnrollmentHistory = DepartmentEnrollmentHistory.parseEnrollmentHistoryResponse(res);
+        DepartmentEnrollmentHistory.sortEnrollmentHistory(parsedEnrollmentHistory);
+        return parsedEnrollmentHistory;
     }
 
     /**

@@ -26,7 +26,7 @@ function getColors() {
             accumulator[section.sectionCode] = section.color;
             return accumulator;
         },
-        {} as { [key: string]: string }
+        {} as Record<string, string>
     );
 
     return courseColors;
