@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Chip, IconButton, Menu, MenuItem, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, Chip, IconButton, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
 import { ContentCopy, DeleteOutline } from '@mui/icons-material';
 import { AACourse } from '@packages/antalmanac-types';
 import { ColumnToggleButton } from '../CoursePane/CoursePaneButtonRow';
@@ -102,7 +102,7 @@ function ClearScheduleButton() {
     );
 }
 
-function CopyScheduleButton(props: { index: number }) {
+function CopyScheduleButton(index: number) {
     const [open, setOpen] = useState(false);
 
     const handleOpen = useCallback(() => {
@@ -120,7 +120,7 @@ function CopyScheduleButton(props: { index: number }) {
                     <ContentCopy />
                 </IconButton>
             </Tooltip>
-            <CopyScheduleDialog fullWidth open={open} index={props.index} onClose={handleClose} />
+            <CopyScheduleDialog fullWidth open={open} index={index} onClose={handleClose} />
         </>
     );
 }
@@ -262,11 +262,14 @@ function SkeletonSchedule() {
     }, []);
 
     const sectionsByTerm: [string, string[]][] = useMemo(() => {
-        const result = skeletonSchedule.courses.reduce((accumulated, course) => {
-            accumulated[course.term] ??= [];
-            accumulated[course.term].push(course.sectionCode);
-            return accumulated;
-        }, {} as Record<string, string[]>);
+        const result = skeletonSchedule.courses.reduce(
+            (accumulated, course) => {
+                accumulated[course.term] ??= [];
+                accumulated[course.term].push(course.sectionCode);
+                return accumulated;
+            },
+            {} as Record<string, string[]>
+        );
 
         return Object.entries(result);
     }, [skeletonSchedule.courses]);

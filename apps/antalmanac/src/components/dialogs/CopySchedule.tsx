@@ -30,7 +30,7 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
-    }, [onClose, index]);
+    }, [onClose]);
 
     const handleCopy = useCallback(() => {
         if (selectedSchedule !== scheduleNames.length) {
