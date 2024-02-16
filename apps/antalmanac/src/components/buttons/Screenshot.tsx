@@ -3,18 +3,19 @@ import Button from '@material-ui/core/Button';
 import { Panorama } from '@material-ui/icons';
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
-import { PureComponent } from 'react';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { useThemeStore } from '$stores/SettingsStore';
 
-class ScreenshotButton extends PureComponent {
-    handleClick = () => {
-        const isDark = useThemeStore((store) => store.isDark);
+const ScreenshotButton = () => {
+    const { isDark } = useThemeStore();
+
+    const handleClick = () => {
         logAnalytics({
             category: analyticsEnum.calendar.title,
             action: analyticsEnum.calendar.actions.SCREENSHOT,
         });
+
         void html2canvas(document.getElementById('screenshot') as HTMLElement, {
             scale: 2.5,
             backgroundColor: isDark ? '#303030' : '#fafafa',
@@ -24,20 +25,13 @@ class ScreenshotButton extends PureComponent {
         });
     };
 
-    render() {
-        return (
-            <Tooltip title="Get a screenshot of your schedule">
-                <Button
-                    onClick={this.handleClick}
-                    variant="outlined"
-                    size="small"
-                    startIcon={<Panorama fontSize="small" />}
-                >
-                    Screenshot
-                </Button>
-            </Tooltip>
-        );
-    }
-}
+    return (
+        <Tooltip title="Get a screenshot of your schedule">
+            <Button onClick={handleClick} variant="outlined" size="small" startIcon={<Panorama fontSize="small" />}>
+                Screenshot
+            </Button>
+        </Tooltip>
+    );
+};
 
 export default ScreenshotButton;
