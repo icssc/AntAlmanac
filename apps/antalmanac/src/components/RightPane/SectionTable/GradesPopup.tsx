@@ -1,9 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Rectangle, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Box, Link, Typography, Skeleton } from '@mui/material';
 import { useThemeStore } from '$stores/SettingsStore';
 import GradesHelper, { type Grades } from '$lib/grades';
-
 export interface GradeData {
     grades: {
         name: string;
@@ -31,12 +30,16 @@ async function getGradeData(
      *
      * @example { gradeACount: 10, gradeBCount: 20 }
      */
+    const totalGrades = Object.values(Object.entries(courseGrades).filter(([key]) => key !== 'averageGPA')).reduce(
+        (acc, [_, value]) => acc + value,
+        0
+    );
     const grades = Object.entries(courseGrades)
         .filter(([key]) => key !== 'averageGPA')
         .map(([key, value]) => {
             return {
                 name: key.replace('grade', '').replace('Count', ''),
-                all: value,
+                all: Number(((value / totalGrades) * 100).toFixed(2)),
             };
         });
 
@@ -134,13 +137,45 @@ function GradesPopup(props: GradesPopupProps) {
                     <BarChart data={gradeData.grades} style={{ cursor: 'pointer' }}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
-                        <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} />
+                        <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} unit="%" />
+                        <Tooltip content={<GradeTooltip />} position={{ y: 100 }} offset={-5} />
                         <Bar dataKey="all" fill="#5182ed" />
                     </BarChart>
                 </ResponsiveContainer>
             </Link>
         </Box>
     );
+}
+
+const GradeTooltip = (props: GradeTooltipProps) => {
+    const { active, payload, label } = props;
+    if (active && payload && payload.length) {
+        return (
+            <>
+                <Box
+                    sx={{
+                        backgroundColor: '#5182ed',
+                        padding: '5px',
+                        border: '1px solid #000',
+                        borderRadius: '5px',
+                        boxShadow: '0 0 5px 0 rgba(0, 0, 0, 0.5)',
+                    }}
+                >
+                    <Typography variant="body1" align="center" sx={{ color: '#fff', fontWeight: 500 }}>
+                        {`${label}: ${payload[0].value}%`}
+                    </Typography>
+                </Box>
+            </>
+        );
+    }
+
+    return null;
+};
+
+export interface GradeTooltipProps {
+    active: boolean;
+    payload: Array<any>;
+    label: string;
 }
 
 export default GradesPopup;
