@@ -82,7 +82,7 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     const { isMilitaryTime } = useTimeFormatStore();
     const { hoveredCourseEvents } = useHoveredStore();
 
-    const getEventsForCalendar = (): CourseEvent[] => {
+    const getEventsForCalendar = (): CalendarEvent[] => {
         return showFinalsSchedule
             ? finalsEventsInCalendar
             : hoveredCourseEvents
@@ -163,9 +163,10 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
     const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
 
-    const finalsDate =
-        eventsInCalendar.length > 0 ? getFinalsStartDateForTerm(eventsInCalendar[0].term) : getDefaultFinalsStartDate();
+    const onlyCourseEvents = eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[];
 
+    const finalsDate =
+        onlyCourseEvents.length > 0 ? getFinalsStartDateForTerm(onlyCourseEvents[0].term) : getDefaultFinalsStartDate();
 
     const finalsDateFormat = finalsDate ? 'ddd MM/DD' : 'ddd';
     const date = showFinalsSchedule && finalsDate ? finalsDate : new Date(2018, 0, 1);
