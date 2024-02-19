@@ -166,7 +166,6 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     const finalsDate =
         eventsInCalendar.length > 0 ? getFinalsStartDateForTerm(eventsInCalendar[0].term) : getDefaultFinalsStartDate();
 
-    console.log(events);
 
     const finalsDateFormat = finalsDate ? 'ddd MM/DD' : 'ddd';
     const date = showFinalsSchedule && finalsDate ? finalsDate : new Date(2018, 0, 1);
