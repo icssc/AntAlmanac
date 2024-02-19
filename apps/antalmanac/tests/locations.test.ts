@@ -21,7 +21,12 @@ describe('buildingCatalogue', () => {
 describe('locationIds and buildingCatalogue', () => {
     test('all locationIds are in buildingCatalogue', () => {
         const locationNames = Object.keys(locationIds);
-        const buildingNames = Object.values(buildingCatalogue).map((building) => building.name);
+        const buildingNames = Object.values(buildingCatalogue).map((building) => {
+            const buildingName = building.name.includes('(')
+                ? building.name.substring(building.name.indexOf('(') + 1, building.name.indexOf(')'))
+                : building.name;
+            return buildingName;
+        });
         for (const locationName of locationNames) {
             expect(buildingNames).toContain(locationName);
         }
@@ -31,7 +36,10 @@ describe('locationIds and buildingCatalogue', () => {
         const locationNames = Object.keys(locationIds);
         const buildingNames = Object.values(buildingCatalogue).map((building) => building.name);
         for (const buildingName of buildingNames) {
-            expect(locationNames).toContain(buildingName);
+            const name = buildingName.includes('(')
+                ? buildingName.substring(buildingName.indexOf('(') + 1, buildingName.indexOf(')'))
+                : buildingName;
+            expect(locationNames).toContain(name);
         }
     });
 });
