@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Bar, BarChart, CartesianGrid, Rectangle, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Box, Link, Typography, Skeleton } from '@mui/material';
 import { useThemeStore } from '$stores/SettingsStore';
 import GradesHelper, { type Grades } from '$lib/grades';
@@ -25,15 +25,16 @@ async function getGradeData(
         return undefined;
     }
 
+    const totalGrades = Object.values(Object.entries(courseGrades).filter(([key]) => key !== 'averageGPA')).reduce(
+        (acc, [_, value]) => acc + value,
+        0
+    );
+
     /**
      * Format data for displaying in chart.
      *
      * @example { gradeACount: 10, gradeBCount: 20 }
      */
-    const totalGrades = Object.values(Object.entries(courseGrades).filter(([key]) => key !== 'averageGPA')).reduce(
-        (acc, [_, value]) => acc + value,
-        0
-    );
     const grades = Object.entries(courseGrades)
         .filter(([key]) => key !== 'averageGPA')
         .map(([key, value]) => {
@@ -174,8 +175,13 @@ const GradeTooltip = (props: GradeTooltipProps) => {
 
 export interface GradeTooltipProps {
     active: boolean;
-    payload: Array<any>;
+    payload: Array<Payload> | null;
     label: string;
+}
+
+export interface Payload {
+    name: string;
+    value: number;
 }
 
 export default GradesPopup;
