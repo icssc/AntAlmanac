@@ -98,7 +98,11 @@ function getDefaultFinalsStart() {
 }
 
 function getFinalsStartForTerm(term: string) {
-    const termThatMatches = termData.find((t) => t.shortName === term) as Term;
+    const termThatMatches = termData.find((t) => t.shortName === term);
+    if (termThatMatches === undefined) {
+        console.warn(`No matching term for ${term}`);
+        return getDefaultFinalsStart();
+    }
     return termThatMatches.finalsStartDate;
 }
 
