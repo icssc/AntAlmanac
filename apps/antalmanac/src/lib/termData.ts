@@ -29,7 +29,7 @@ class Term {
 const termData = [
     new Term('2024 Spring', '2024 Spring Quarter', [2024, 3, 1], [2024, 5, 8]),
     new Term('2024 Winter', '2024 Winter Quarter', [2024, 0, 8], [2024, 2, 16]),
-    new Term('2023 Fall', '2023 Fall Quarter', [2023, 8, 28]),
+    new Term('2023 Fall', '2023 Fall Quarter', [2023, 8, 28], [2023, 11, 9]),
     new Term('2023 Summer2', '2023 Summer Session 2', [2023, 7, 7]),
     new Term('2023 Summer10wk', '2023 10-wk Summer', [2023, 5, 26]),
     new Term('2023 Summer1', '2023 Summer Session 1', [2023, 5, 26]),
@@ -97,6 +97,15 @@ function getDefaultFinalsStart() {
     return termData[defaultTerm + 1].finalsStartDate;
 }
 
+function getFinalsStartForTerm(term: string) {
+    const termThatMatches = termData.find((t) => t.shortName === term);
+    if (termThatMatches === undefined) {
+        console.warn(`No matching term for ${term}`);
+        return getDefaultFinalsStart();
+    }
+    return termThatMatches.finalsStartDate;
+}
+
 /**
  * Returns the default finals start as Date object
  * Days offset by 1 to accomodate toggling with Saturday finals
@@ -107,4 +116,18 @@ function getDefaultFinalsStartDate() {
     return year && month && day ? new Date(year, month, day + 1) : undefined;
 }
 
-export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStart, getDefaultFinalsStartDate };
+function getFinalsStartDateForTerm(term: string) {
+    const date = getFinalsStartForTerm(term);
+    const [year, month, day] = date || [];
+    return year && month && day ? new Date(year, month, day + 1) : undefined;
+}
+
+export {
+    defaultTerm,
+    getDefaultTerm,
+    termData,
+    getDefaultFinalsStart,
+    getDefaultFinalsStartDate,
+    getFinalsStartForTerm,
+    getFinalsStartDateForTerm,
+};
