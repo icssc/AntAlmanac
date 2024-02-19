@@ -163,7 +163,8 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
     const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
 
-    const finalsDate = events.length > 0 ? getFinalsStartDateForTerm(events[0].term) : getDefaultFinalsStartDate();
+    const finalsDate =
+        eventsInCalendar.length > 0 ? getFinalsStartDateForTerm(eventsInCalendar[0].term) : getDefaultFinalsStartDate();
 
     console.log(events);
 
