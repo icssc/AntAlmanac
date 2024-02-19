@@ -107,7 +107,7 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
 
             /**
              * Fallback to January 2018 if no finals start date is available.
-             * defaultFinalsDay is handled later by day since it varies by day.
+             * finalsDay is handled later by day since it varies by day.
              */
             const [finalsYear, finalsMonth, finalsDay] = [...(getFinalsStartForTerm(course.term) ?? [2018, 0])];
 
