@@ -15,18 +15,13 @@ import { MOBILE_BREAKPOINT } from '../../../globals';
 import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
 import { useThemeStore } from '$stores/SettingsStore';
 
-export interface PopupHeaderProps {
+interface PopupHeaderProps {
     graphWidth: number;
     graphIndex: number;
     handleForward: () => void;
     handleBack: () => void;
     popupTitle: string;
     enrollmentHistory: EnrollmentHistory[];
-}
-
-export interface EnrollmentHistoryPopupProps {
-    department: string;
-    courseNumber: string;
 }
 
 function PopupHeader({
@@ -68,6 +63,11 @@ function PopupHeader({
             </Tooltip>
         </Box>
     );
+}
+
+interface EnrollmentHistoryPopupProps {
+    department: string;
+    courseNumber: string;
 }
 
 export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentHistoryPopupProps) {
