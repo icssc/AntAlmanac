@@ -213,6 +213,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         <IconButton
                             size="small"
                             onClick={() => {
+                                props.closePopover();
                                 deleteCourse(sectionCode, term);
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
