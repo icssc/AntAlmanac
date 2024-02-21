@@ -59,7 +59,6 @@ export interface ChangeCourseColorAction extends BaseAction {
     newColor: string;
 }
 
-// 定义一个类型别名，表示所有可能的操作
 export type ActionType =
     | AddCourseAction
     | DeleteCourseAction
