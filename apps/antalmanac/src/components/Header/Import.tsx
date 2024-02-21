@@ -27,6 +27,7 @@ import WebSOC from '$lib/websoc';
 import { CourseInfo } from '$lib/course_data.types';
 import { addCourse } from '$actions/AppStoreActions';
 import { ZotCourseResponse, queryZotCourse } from '$lib/zotcourse';
+import { useThemeStore } from '$stores/SettingsStore';
 
 function Import() {
     const [open, setOpen] = useState(false);
@@ -36,6 +37,8 @@ function Import() {
     const [zotcourseScheduleName, setZotcourseScheduleName] = useState('');
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+
+    const { isDark } = useThemeStore();
 
     const handleOpen = useCallback(() => {
         setOpen(true);
@@ -238,10 +241,10 @@ function Import() {
                     <TermSelector changeTerm={setTerm} fieldName={'selectedTerm'} />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="primary">
+                    <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} color="primary">
+                    <Button onClick={handleSubmit} color={isDark ? 'secondary' : 'primary'}>
                         Import
                     </Button>
                 </DialogActions>

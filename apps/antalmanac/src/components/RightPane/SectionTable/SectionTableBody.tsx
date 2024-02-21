@@ -153,12 +153,12 @@ type SectionType = 'Act' | 'Col' | 'Dis' | 'Fld' | 'Lab' | 'Lec' | 'Qiz' | 'Res'
 interface SectionDetailCellProps {
     classes: ClassNameMap;
     sectionType: SectionType;
-    sectionNumber: string;
+    sectionNum: string;
     units: number;
 }
 
 const SectionDetailsCell = withStyles(styles)((props: SectionDetailCellProps) => {
-    const { classes, sectionType, sectionNumber, units } = props;
+    const { classes, sectionType, sectionNum, units } = props;
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
 
     return (
@@ -166,7 +166,7 @@ const SectionDetailsCell = withStyles(styles)((props: SectionDetailCellProps) =>
             <Box className={classes[sectionType]}>{sectionType}</Box>
             <Box>
                 {!isMobileScreen && <>Sec: </>}
-                {sectionNumber}
+                {sectionNum}
             </Box>
             <Box>
                 {!isMobileScreen && <>Units: </>}

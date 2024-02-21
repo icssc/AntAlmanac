@@ -166,7 +166,7 @@ describe('calendarize-helpers', () => {
             instructors: [],
             sectionCode: 'placeholderSectionCode',
             sectionType: 'Fin',
-            start: new Date(2024, 2, 17, 1, 2), // Predicated on default term being Winter 2024
+            start: new Date(2024, 2, 17, 1, 2), // Predicated on default term being Spring 2024
             end: new Date(2024, 2, 17, 3, 4), // ...
             finalExam: {
                 examStatus: 'SCHEDULED_FINAL',

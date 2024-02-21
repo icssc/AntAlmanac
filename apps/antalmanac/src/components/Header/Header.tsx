@@ -5,7 +5,7 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import MenuIcon from '@material-ui/icons/Menu';
 import { useState, type MouseEventHandler } from 'react';
 
-import AboutPage from './AboutPage';
+import About from './About';
 import Feedback from './Feedback';
 import Import from './Import';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
@@ -45,7 +45,7 @@ const components = [
     <Import key="studylist" />,
     <Export key="export" />,
     <Feedback key="feedback" />,
-    <AboutPage key="about" />,
+    <About key="about" />,
     <SettingsMenu key="settings" />,
 ];
 
