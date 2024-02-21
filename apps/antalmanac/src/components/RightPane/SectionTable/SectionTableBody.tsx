@@ -531,20 +531,17 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         setCalendarEvents(AppStore.getCourseEventsInCalendar());
     }, [setCalendarEvents]);
 
-    const [hoveredCourseEvents, setHoveredCourseEvents] = useHoveredStore((store) => [
-        store.hoveredCourseEvents,
-        store.setHoveredCourseEvents,
-    ]);
+    const [hoveredEvents, setHoveredEvents] = useHoveredStore((store) => [store.hoveredEvents, store.setHoveredEvents]);
 
     const handleHover = useCallback(() => {
         const alreadyHovered =
-            hoveredCourseEvents &&
-            hoveredCourseEvents.some((courseEvent) => courseEvent.sectionCode == section.sectionCode);
+            hoveredEvents &&
+            hoveredEvents.some((scheduleCourse) => scheduleCourse.section.sectionCode == section.sectionCode);
 
         !previewMode || alreadyHovered || addedCourse
-            ? setHoveredCourseEvents(undefined)
-            : setHoveredCourseEvents(section, courseDetails, term);
-    }, [addedCourse, courseDetails, hoveredCourseEvents, previewMode, section, setHoveredCourseEvents, term]);
+            ? setHoveredEvents(undefined)
+            : setHoveredEvents(section, courseDetails, term);
+    }, [addedCourse, courseDetails, hoveredEvents, previewMode, section, setHoveredEvents, term]);
 
     // Attach event listeners to the store.
     useEffect(() => {

@@ -80,14 +80,15 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
     const { isMilitaryTime } = useTimeFormatStore();
-    const { hoveredCourseEvents } = useHoveredStore();
+    const { hoveredCalendarizedCourses, hoveredCalendarizedFinal } = useHoveredStore();
 
     const getEventsForCalendar = (): CalendarEvent[] => {
-        return showFinalsSchedule
-            ? finalsEventsInCalendar
-            : hoveredCourseEvents
-              ? [...eventsInCalendar, ...hoveredCourseEvents]
-              : eventsInCalendar;
+        if (showFinalsSchedule)
+            return hoveredCalendarizedFinal
+                ? [...finalsEventsInCalendar, hoveredCalendarizedFinal]
+                : finalsEventsInCalendar;
+        else
+            return hoveredCalendarizedCourses ? [...eventsInCalendar, ...hoveredCalendarizedCourses] : eventsInCalendar;
     };
 
     const handleClosePopover = () => {
@@ -165,8 +166,11 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
 
     const onlyCourseEvents = eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[];
 
-    const finalsDate =
-        onlyCourseEvents.length > 0 ? getFinalsStartDateForTerm(onlyCourseEvents[0].term) : getDefaultFinalsStartDate();
+    const finalsDate = hoveredCalendarizedFinal
+        ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
+        : onlyCourseEvents.length > 0
+          ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
+          : getDefaultFinalsStartDate();
 
     const finalsDateFormat = finalsDate ? 'ddd MM/DD' : 'ddd';
     const date = showFinalsSchedule && finalsDate ? finalsDate : new Date(2018, 0, 1);
