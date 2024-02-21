@@ -6,6 +6,7 @@ import {
     DialogContentText,
     DialogTitle,
     TextField,
+    CircularProgress,
 } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -30,6 +31,17 @@ interface LoadSaveButtonBaseState {
     isOpen: boolean;
     userID: string;
     rememberMe: boolean;
+}
+
+class SaveLoadIcon extends PureComponent<{ loading: boolean; actionName: 'Save' | 'Load' }> {
+    render() {
+        const { loading, actionName } = this.props;
+        if (loading) {
+            return <CircularProgress size={20} color={'inherit'} />;
+        } else {
+            return actionName === 'Save' ? <Save /> : <CloudDownload />;
+        }
+    }
 }
 
 class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSaveButtonBaseState> {
@@ -92,9 +104,9 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                     id={this.props.id}
                     onClick={this.handleOpen}
                     color="inherit"
-                    startIcon={this.props.actionName === 'Save' ? <Save /> : <CloudDownload />}
+                    startIcon={<SaveLoadIcon loading={this.props.loading} actionName={this.props.actionName} />}
                     disabled={this.props.disabled}
-                    loading={this.props.loading}
+                    loading={false}
                 >
                     {this.props.actionName}
                 </LoadingButton>

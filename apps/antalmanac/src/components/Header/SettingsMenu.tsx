@@ -167,7 +167,7 @@ function ExperimentalMenu() {
                     <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
                         Auto Save
                     </Typography>
-                    <Tooltip title={<Typography>Auto Saving your process when you modified the calendar</Typography>}>
+                    <Tooltip title={<Typography>Auto Save your schedule!</Typography>}>
                         <Help />
                     </Tooltip>
                 </Box>

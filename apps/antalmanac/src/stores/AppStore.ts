@@ -246,9 +246,9 @@ class AppStore extends EventEmitter {
         }
         this.unsavedChanges = false;
 
-        const unsavedActionString = window.localStorage.getItem('unsavedAction');
-        if (unsavedActionString !== null && confirm('You have unsaved changes. Would you like to load them?')) {
-            for (const action of JSON.parse(unsavedActionString)) {
+        const unsavedActionsString = window.localStorage.getItem('unsavedActions');
+        if (unsavedActionsString !== null && confirm('You have unsaved changes. Would you like to load them?')) {
+            for (const action of JSON.parse(unsavedActionsString)) {
                 switch (action[0]) {
                     case 'addCourse':
                         this.schedule.addCourse(action[1], action[2]);
@@ -281,7 +281,7 @@ class AppStore extends EventEmitter {
                         break;
                 }
             }
-            window.localStorage.removeItem('unsavedAction');
+            window.localStorage.removeItem('unsavedActions');
         }
 
         this.emit('addedCoursesChange');
@@ -375,14 +375,14 @@ class AppStore extends EventEmitter {
                 this.emit('autoSaveEnd');
             }
         } else {
-            const unsavedActionString = window.localStorage.getItem('unsavedAction');
-            if (unsavedActionString == null) {
-                const unsavedAction = [action];
-                localStorage.setItem('unsavedAction', JSON.stringify(unsavedAction));
+            const unsavedActionsString = window.localStorage.getItem('unsavedActions');
+            if (unsavedActionsString == null) {
+                const unsavedActions = [action];
+                localStorage.setItem('unsavedActions', JSON.stringify(unsavedActions));
             } else {
-                const unsavedAction = JSON.parse(unsavedActionString);
-                unsavedAction.push(action);
-                localStorage.setItem('unsavedAction', JSON.stringify(unsavedAction));
+                const unsavedActions = JSON.parse(unsavedActionsString);
+                unsavedActions.push(action);
+                localStorage.setItem('unsavedActions', JSON.stringify(unsavedActions));
             }
         }
     };
