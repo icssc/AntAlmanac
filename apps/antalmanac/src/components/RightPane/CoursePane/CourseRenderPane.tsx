@@ -63,7 +63,9 @@ const RecruitmentBanner = () => {
     const dismissedRecently =
         recruitmentDismissalTime !== null &&
         Date.now() - parseInt(recruitmentDismissalTime) < 11 * 7 * 24 * 3600 * 1000;
-    const isSearchCS = ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue);
+    const isSearchCS = ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(
+        RightPaneStore.getFormData().deptValue.toUpperCase()
+    );
     const displayRecruitmentBanner = bannerVisibility && !dismissedRecently && isSearchCS;
 
     return (
