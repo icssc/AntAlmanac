@@ -277,7 +277,7 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
                     }}
                     step={15}
                     timeslots={2}
-                    date={date}
+                    defaultDate={date}
                     min={getStartTime()}
                     max={new Date(2018, 0, 1, 23)}
                     events={events}

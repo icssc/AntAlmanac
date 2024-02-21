@@ -1,5 +1,14 @@
 export enum LocalStorageKeys {
     userId = 'userID' /* The case-difference is due to the original implementation */,
+    patchNotesKey = 'latestPatchSeen',
+    phoneNumber = 'phoneNumber',
+    recruitmentDismissalTime = 'recruitmentDismissalTime',
+    advanced = 'advanced',
+    favorites = 'favorites',
+    tourHasRun = 'tourHasRun',
+    theme = 'theme',
+    show24HourTime = 'show24HourTime',
+    previewMode = 'previewMode',
 }
 
 export function setLocalStorageItem(key: LocalStorageKeys, value: string) {

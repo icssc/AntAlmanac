@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { LocalStorageKeys, getLocalStorageItem, setLocalStorageItem } from '$lib/localStorage';
 
 export type ThemeSetting = 'light' | 'dark' | 'system';
 
@@ -23,7 +24,7 @@ function themeShouldBeDark(themeSetting: ThemeSetting) {
 }
 
 export const useThemeStore = create<ThemeStore>((set) => {
-    const storedThemeSetting: ThemeSetting = (window.localStorage?.getItem('theme') ?? 'system') as ThemeSetting;
+    const storedThemeSetting: ThemeSetting = (getLocalStorageItem(LocalStorageKeys.theme) ?? 'system') as ThemeSetting;
     const isDark = themeShouldBeDark(storedThemeSetting);
 
     return {
@@ -32,7 +33,7 @@ export const useThemeStore = create<ThemeStore>((set) => {
         isDark: isDark,
 
         setAppTheme: (themeSetting) => {
-            window.localStorage?.setItem('theme', themeSetting);
+            setLocalStorageItem(LocalStorageKeys.theme, themeSetting);
 
             const isDark = themeShouldBeDark(themeSetting);
             const appTheme = isDark ? 'dark' : 'light';
@@ -54,13 +55,14 @@ export interface TimeFormatStore {
 }
 
 export const useTimeFormatStore = create<TimeFormatStore>((set) => {
-    const isMilitaryTime = typeof Storage !== 'undefined' && window.localStorage.getItem('show24HourTime') == 'true';
+    const isMilitaryTime =
+        typeof Storage !== 'undefined' && getLocalStorageItem(LocalStorageKeys.show24HourTime) == 'true';
 
     return {
         isMilitaryTime,
         setTimeFormat: (isMilitaryTime) => {
             if (typeof Storage !== 'undefined') {
-                window.localStorage.setItem('show24HourTime', isMilitaryTime.toString());
+                setLocalStorageItem(LocalStorageKeys.show24HourTime, isMilitaryTime.toString());
             }
             set({ isMilitaryTime });
         },
@@ -72,13 +74,13 @@ export interface PreviewStore {
 }
 
 export const usePreviewStore = create<PreviewStore>((set) => {
-    const previewMode = typeof Storage !== 'undefined' && window.localStorage.getItem('previewMode') == 'true';
+    const previewMode = typeof Storage !== 'undefined' && getLocalStorageItem(LocalStorageKeys.previewMode) == 'true';
 
     return {
         previewMode: previewMode,
         setPreviewMode: (previewMode) => {
             if (typeof Storage !== 'undefined') {
-                window.localStorage.setItem('previewMode', previewMode.toString());
+                setLocalStorageItem(LocalStorageKeys.previewMode, previewMode.toString());
             }
 
             set({ previewMode: previewMode });

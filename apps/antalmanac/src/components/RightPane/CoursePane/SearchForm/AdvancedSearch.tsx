@@ -18,6 +18,7 @@ import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
+import { LocalStorageKeys, getLocalStorageItem, setLocalStorageItem } from '$lib/localStorage';
 
 const styles: Styles<Theme, object> = {
     fieldContainer: {
@@ -293,7 +294,7 @@ class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchSt
 
         let advanced = false;
         if (typeof Storage !== 'undefined') {
-            advanced = window.localStorage.getItem('advanced') === 'expanded';
+            advanced = getLocalStorageItem(LocalStorageKeys.advanced) === 'expanded';
         }
 
         this.state = {
@@ -303,7 +304,7 @@ class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchSt
 
     handleExpand = () => {
         const nextExpansionState = !this.state.expandAdvanced;
-        window.localStorage.setItem('advanced', nextExpansionState ? 'expanded' : 'notexpanded');
+        setLocalStorageItem(LocalStorageKeys.advanced, nextExpansionState ? 'expanded' : 'notexpanded');
         this.setState({ expandAdvanced: nextExpansionState });
     };
 
