@@ -139,7 +139,17 @@ function GradesPopup(props: GradesPopupProps) {
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
                         <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} unit="%" />
-                        <Tooltip content={<GradeTooltip />} position={{ y: 100 }} offset={-5} />
+                        <Tooltip
+                            content={({ active, payload, label }) => (
+                                <GradeTooltip
+                                    active={active !== undefined ? active : false}
+                                    payload={payload !== undefined ? (payload as Array<Payload>) : null}
+                                    label={label !== undefined ? label : ''} // Ensure label is passed as a string
+                                />
+                            )}
+                            position={{ y: 100 }}
+                            offset={-5}
+                        />
                         <Bar dataKey="all" fill="#5182ed" />
                     </BarChart>
                 </ResponsiveContainer>
