@@ -40,6 +40,10 @@
     font-size: 0.9rem;
 }
 
+.rbc-time-content > * + * > * {
+    border-left-color: rgb(58, 62, 65);
+}
+
 @media (min-resolution: 96dpi) {
     .rbc-timeslot-group {
         min-height: 28px;
