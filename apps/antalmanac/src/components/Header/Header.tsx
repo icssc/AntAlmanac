@@ -13,6 +13,7 @@ import SettingsMenu from './SettingsMenu';
 import Export from './Export';
 import Logo from '$assets/christmas-logo.png';
 import MobileLogo from '$assets/christmas-mobile-logo.png';
+import { isDarkMode } from '$lib/helpers';
 
 const styles = {
     appBar: {
@@ -20,6 +21,7 @@ const styles = {
         boxShadow: 'none',
         minHeight: 0,
         height: '50px',
+        ...(isDarkMode() ? { backgroundColor: '#264a92' } : {}),
     },
     buttonMargin: {
         marginRight: '4px',

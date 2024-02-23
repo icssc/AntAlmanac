@@ -13,6 +13,7 @@ import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { isDarkMode } from '$lib/helpers';
 
 const localizer = momentLocalizer(moment);
 
@@ -275,6 +276,7 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
                     onView={() => {
                         return;
                     }}
+                    className={isDarkMode() ? 'dark-mode' : ''}
                     step={15}
                     timeslots={2}
                     date={date}
