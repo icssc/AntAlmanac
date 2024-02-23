@@ -13,6 +13,7 @@ import SettingsMenu from './SettingsMenu';
 import Export from './Export';
 import Logo from '$assets/christmas-logo.png';
 import MobileLogo from '$assets/christmas-mobile-logo.png';
+import { useThemeStore } from '$stores/SettingsStore';
 
 const styles = {
     appBar: {
@@ -20,8 +21,6 @@ const styles = {
         boxShadow: 'none',
         minHeight: 0,
         height: '50px',
-        // FIXME: How to access isDark from the useThemeStore?
-        ...(isDarkMode() ? { backgroundColor: '#264a92' } : {}),
     },
     buttonMargin: {
         marginRight: '4px',
@@ -53,6 +52,9 @@ const components = [
 
 const Header = ({ classes }: CustomAppBarProps) => {
     const isMobileScreen = useMediaQuery('(max-width:750px)');
+    const isDark = useThemeStore((store) => store.isDark);
+
+    const backgroundColor = isDark ? '#264a92' : undefined;
 
     const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
@@ -65,7 +67,7 @@ const Header = ({ classes }: CustomAppBarProps) => {
     };
 
     return (
-        <AppBar position="static" className={classes.appBar}>
+        <AppBar position="static" className={classes.appBar} style={{ backgroundColor }}>
             <Toolbar variant="dense">
                 <img
                     height={32}
