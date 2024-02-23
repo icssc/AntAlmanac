@@ -5,9 +5,7 @@ import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { Close, DarkMode, Help, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
 import { usePreviewStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
-import { isDarkMode } from '$lib/helpers';
 import useCoursePaneStore from '$stores/CoursePaneStore';
-import { isDarkMode } from '$lib/helpers';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -168,6 +166,7 @@ function ExperimentalMenu() {
 function SettingsMenu() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const isMobileScreen = useMediaQuery('(max-width:750px)');
+    const [isDark] = useThemeStore((store) => [store.isDark]);
 
     const handleDrawerOpen = useCallback(() => {
         setDrawerOpen(true);
@@ -187,7 +186,7 @@ function SettingsMenu() {
                 open={drawerOpen}
                 onClose={handleDrawerClose}
                 PaperProps={{
-                    style: { borderRadius: '10px 0 0 10px', backgroundColor: isDarkMode() ? 'rgb(24, 26, 27)' : '' },
+                    style: { borderRadius: '10px 0 0 10px', backgroundColor: isDark ? 'rgb(24, 26, 27)' : '' },
                 }}
                 variant="temporary"
             >

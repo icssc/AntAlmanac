@@ -11,9 +11,8 @@ import CourseCalendarEvent, { CalendarEvent, CourseEvent } from './CourseCalenda
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
-import { useTimeFormatStore } from '$stores/SettingsStore';
+import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 import { useHoveredStore } from '$stores/HoveredStore';
-import { isDarkMode } from '$lib/helpers';
 
 const localizer = momentLocalizer(moment);
 
@@ -171,6 +170,7 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
 
     const finalsDateFormat = finalsDate ? 'ddd MM/DD' : 'ddd';
     const date = showFinalsSchedule && finalsDate ? finalsDate : new Date(2018, 0, 1);
+    const isDark = useThemeStore((store) => store.isDark);
 
     // If a final is on a Saturday or Sunday, let the calendar start on Saturday
     moment.updateLocale('es-us', {
@@ -276,7 +276,7 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
                     onView={() => {
                         return;
                     }}
-                    className={isDarkMode() ? 'dark-mode' : ''}
+                    className={isDark ? 'dark-mode' : ''}
                     step={15}
                     timeslots={2}
                     date={date}

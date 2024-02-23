@@ -16,7 +16,7 @@ import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
 import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';
-import { isDarkMode } from '$lib/helpers';
+import { useThemeStore } from '$stores/SettingsStore';
 
 function handleScheduleChange(index: number) {
     logAnalytics({
@@ -257,6 +257,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const isDark = useThemeStore((store) => store.isDark);
 
     const handleToggleFinals = useCallback(() => {
         logAnalytics({
@@ -300,7 +301,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                 alignItems: 'center',
                 padding: 1,
                 borderRadius: '4px 4px 0 0',
-                backgroundColor: isDarkMode() ? 'rgb(24, 26, 27)' : '',
+                backgroundColor: isDark ? 'rgb(24, 26, 27)' : '',
             }}
         >
             <Box gap={1} display="flex" alignItems="center">

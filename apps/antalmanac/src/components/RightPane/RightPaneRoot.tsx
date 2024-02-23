@@ -64,7 +64,7 @@ export default function Desktop({ style }: DesktopTabsProps) {
                 elevation={0}
                 variant="outlined"
                 square
-                style={{ borderRadius: '4px 4px 0 0', backgroundColor: isDarkMode() ? 'rgb(24, 26, 27)' : '' }}
+                style={{ borderRadius: '4px 4px 0 0', backgroundColor: isDark ? 'rgb(24, 26, 27)' : '' }}
             >
                 <Tabs
                     value={activeTab}
