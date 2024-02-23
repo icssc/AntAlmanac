@@ -6,6 +6,7 @@ import { Close, DarkMode, Help, LightMode, Settings, SettingsBrightness } from '
 
 import { usePreviewStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 import useCoursePaneStore from '$stores/CoursePaneStore';
+import { isDarkMode } from '$lib/helpers';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -184,7 +185,9 @@ function SettingsMenu() {
                 anchor="right"
                 open={drawerOpen}
                 onClose={handleDrawerClose}
-                PaperProps={{ style: { borderRadius: '10px 0 0 10px' } }}
+                PaperProps={{
+                    style: { borderRadius: '10px 0 0 10px', backgroundColor: isDarkMode() ? 'rgb(24, 26, 27)' : '' },
+                }}
                 variant="temporary"
             >
                 <Box style={{ width: isMobileScreen ? '300px' : '360px' }}>
