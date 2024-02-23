@@ -277,13 +277,16 @@ export default function CourseMap() {
      */
     const startDestPairs = useMemo(() => {
         const allEvents = [...markersToDisplay, ...customEventMarkersToDisplay];
-        return allEvents.reduce((acc, cur, index) => {
-            acc.push([cur]);
-            if (index > 0) {
-                acc[index - 1].push(cur);
-            }
-            return acc;
-        }, [] as (typeof allEvents)[]);
+        return allEvents.reduce(
+            (acc, cur, index) => {
+                acc.push([cur]);
+                if (index > 0) {
+                    acc[index - 1].push(cur);
+                }
+                return acc;
+            },
+            [] as (typeof allEvents)[]
+        );
     }, [markersToDisplay, customEventMarkersToDisplay]);
 
     return (
