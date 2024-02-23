@@ -5,6 +5,7 @@ import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { Close, DarkMode, Help, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
 import { usePreviewStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { isDarkMode } from '$lib/helpers';
 import useCoursePaneStore from '$stores/CoursePaneStore';
 import { isDarkMode } from '$lib/helpers';
 
