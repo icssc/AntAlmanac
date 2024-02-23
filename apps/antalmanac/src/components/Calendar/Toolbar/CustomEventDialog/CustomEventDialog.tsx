@@ -226,8 +226,8 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                         {disabled
                             ? 'Schedule and day must be checked'
                             : props.customEvent
-                              ? 'Save Changes'
-                              : 'Add Event'}
+                            ? 'Save Changes'
+                            : 'Add Event'}
                     </Button>
                 </DialogActions>
             </Dialog>

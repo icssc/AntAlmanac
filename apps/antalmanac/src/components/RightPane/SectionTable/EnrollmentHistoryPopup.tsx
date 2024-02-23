@@ -15,11 +15,13 @@ import { MOBILE_BREAKPOINT } from '../../../globals';
 import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
 import { useThemeStore } from '$stores/SettingsStore';
 
+type PopupHeaderCallback = () => void;
+
 interface PopupHeaderProps {
     graphWidth: number;
     graphIndex: number;
-    handleForward: () => void;
-    handleBack: () => void;
+    handleForward: PopupHeaderCallback;
+    handleBack: PopupHeaderCallback;
     popupTitle: string;
     enrollmentHistory: EnrollmentHistory[];
 }

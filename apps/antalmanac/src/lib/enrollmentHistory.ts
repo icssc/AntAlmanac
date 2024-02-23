@@ -68,16 +68,8 @@ export class DepartmentEnrollmentHistory {
         this.partialQueryString = DepartmentEnrollmentHistory.QUERY_TEMPLATE.replace('$$DEPARTMENT$$', department);
     }
 
-    createCacheKey(courseNumber: string) {
-        return this.department + '/' + courseNumber;
-    }
-
-    decodeCacheKey(cacheKey: string) {
-        return cacheKey.split('/');
-    }
-
     async find(courseNumber: string): Promise<EnrollmentHistory[] | null> {
-        const cacheKey = this.createCacheKey(courseNumber);
+        const cacheKey = this.department + courseNumber;
         return (DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] ??=
             await this.queryEnrollmentHistory(courseNumber));
     }
