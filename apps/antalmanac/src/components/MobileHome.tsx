@@ -29,20 +29,22 @@ const Views = ({ selectedTab }: { selectedTab: number }) => {
     return selectedTab === 0 ? (
         <Calendar isMobile={true} />
     ) : (
-        <Box height="calc(100% - 54px)" overflow="auto" style={{ margin: '8px 4px 0px' }} id="course-pane-box">
-            {selectedTab === 1 && <CoursePane />}
-            {selectedTab === 2 && <AddedCoursePane />}
-            {selectedTab === 3 && (
-                <Suspense
-                    fallback={
-                        <div style={styles.fallback}>
-                            <img src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading map" />
-                        </div>
-                    }
-                >
-                    <UCIMap />
-                </Suspense>
-            )}
+        <Box height="100%" style={{ margin: '0 4px' }}>
+            <Box height="calc(100% - 54px)" overflow="auto" style={{ margin: '8px 4px 0px' }} id="course-pane-box">
+                {selectedTab === 1 && <CoursePane />}
+                {selectedTab === 2 && <AddedCoursePane />}
+                {selectedTab === 3 && (
+                    <Suspense
+                        fallback={
+                            <div style={styles.fallback}>
+                                <img src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading map" />
+                            </div>
+                        }
+                    >
+                        <UCIMap />
+                    </Suspense>
+                )}
+            </Box>
         </Box>
     );
 };
