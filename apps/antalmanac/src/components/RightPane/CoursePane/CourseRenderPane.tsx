@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
-import { Alert, Box, GlobalStyles, IconButton, useMediaQuery } from '@mui/material';
+import { Alert, Box, GlobalStyles, IconButton } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
 import { WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
@@ -22,13 +22,10 @@ import WebSOC from '$lib/websoc';
 import { useHoveredStore } from '$stores/HoveredStore';
 
 function getColors() {
-    const courseColors = AppStore.schedule.getCurrentCourses().reduce(
-        (accumulator, { section }) => {
-            accumulator[section.sectionCode] = section.color;
-            return accumulator;
-        },
-        {} as { [key: string]: string }
-    );
+    const courseColors = AppStore.schedule.getCurrentCourses().reduce((accumulator, { section }) => {
+        accumulator[section.sectionCode] = section.color;
+        return accumulator;
+    }, {} as { [key: string]: string });
 
     return courseColors;
 }
@@ -68,7 +65,7 @@ const RecruitmentBanner = () => {
 
     return (
         <Box sx={{ position: 'fixed', bottom: 5, right: 5, zIndex: 999 }}>
-            {!displayRecruitmentBanner ? (
+            {displayRecruitmentBanner ? (
                 <Alert
                     icon={false}
                     severity="info"
