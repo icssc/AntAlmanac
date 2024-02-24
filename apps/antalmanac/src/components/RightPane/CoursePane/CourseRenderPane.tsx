@@ -66,10 +66,8 @@ const RecruitmentBanner = () => {
     const isSearchCS = ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue);
     const displayRecruitmentBanner = bannerVisibility && !dismissedRecently && isSearchCS;
 
-    const isMobile = useMediaQuery('(max-width:750px)');
-
     return (
-        <Box sx={{ position: 'fixed', bottom: 5, right: isMobile ? 5 : 70, zIndex: 999 }}>
+        <Box sx={{ position: 'fixed', bottom: 5, right: 5, zIndex: 999 }}>
             {!displayRecruitmentBanner ? (
                 <Alert
                     icon={false}
