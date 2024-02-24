@@ -1,13 +1,51 @@
 import { useParams } from 'react-router-dom';
-import { useEffect, useState, createContext } from 'react';
-import { Paper, Tab, Tabs } from '@material-ui/core';
-import Calendar from './Calendar/CalendarRoot';
-import DesktopTabs from './RightPane/RightPaneRoot';
+import React, { useEffect, useState, createContext, Suspense } from 'react';
+import { Box, Paper, Tab, Tabs } from '@material-ui/core';
 
-const components = [
-    <Calendar isMobile={true} key="calendar" />,
-    <DesktopTabs style={{ height: 'calc(100% - 50px' }} key="desktop" />,
-];
+// import DesktopTabs from './RightPane/RightPaneRoot';
+import AddedCoursePane from '../components/RightPane/AddedCourses/AddedCoursePane';
+import CoursePane from '../components/RightPane/CoursePane/CoursePaneRoot';
+
+import darkModeLoadingGif from './RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
+import loadingGif from './RightPane/CoursePane/SearchForm/Gifs/loading.gif';
+import Calendar from './Calendar/CalendarRoot';
+import { useThemeStore } from '$stores/SettingsStore';
+
+const UCIMap = React.lazy(() => import('../components/Map/Map'));
+
+const styles = {
+    fallback: {
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+};
+
+const Views = ({ selectedTab }: { selectedTab: number }) => {
+    const isDark = useThemeStore((store) => store.isDark);
+
+    return selectedTab === 0 ? (
+        <Calendar isMobile={true} />
+    ) : (
+        <Box height="calc(100% - 54px)" overflow="auto" style={{ margin: '8px 4px 0px' }} id="course-pane-box">
+            {selectedTab === 1 && <CoursePane />}
+            {selectedTab === 2 && <AddedCoursePane />}
+            {selectedTab === 3 && (
+                <Suspense
+                    fallback={
+                        <div style={styles.fallback}>
+                            <img src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading map" />
+                        </div>
+                    }
+                >
+                    <UCIMap />
+                </Suspense>
+            )}
+        </Box>
+    );
+};
 
 export type MobileContext = {
     setSelectedTab: React.Dispatch<React.SetStateAction<number>>;
@@ -44,10 +82,14 @@ const MobileHome = () => {
                     }}
                 >
                     <Tab label={<div>Calendar</div>} />
-                    <Tab label={<div>Classes</div>} />
+                    <Tab label={<div>Search</div>} />
+                    <Tab label={<div>Added</div>} />
+                    <Tab label={<div>Map</div>} />
                 </Tabs>
             </Paper>
-            <mobileContext.Provider value={{ setSelectedTab }}>{components[selectedTab]}</mobileContext.Provider>
+            <mobileContext.Provider value={{ setSelectedTab }}>
+                {<Views selectedTab={selectedTab} />}
+            </mobileContext.Provider>
         </div>
     );
 };

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
-import { Alert, Box, GlobalStyles, IconButton } from '@mui/material';
+import { Alert, Box, GlobalStyles, IconButton, useMediaQuery } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
 import { WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
@@ -66,9 +66,11 @@ const RecruitmentBanner = () => {
     const isSearchCS = ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue);
     const displayRecruitmentBanner = bannerVisibility && !dismissedRecently && isSearchCS;
 
+    const isMobile = useMediaQuery('(max-width:750px)');
+
     return (
-        <Box sx={{ position: 'fixed', bottom: 5, right: 5, zIndex: 999 }}>
-            {displayRecruitmentBanner ? (
+        <Box sx={{ position: 'fixed', bottom: 5, right: isMobile ? 5 : 70, zIndex: 999 }}>
+            {!displayRecruitmentBanner ? (
                 <Alert
                     icon={false}
                     severity="info"
