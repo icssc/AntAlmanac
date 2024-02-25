@@ -3,7 +3,6 @@ import React, { useEffect, useState, createContext, Suspense } from 'react';
 import { Box, Paper, Tab, Tabs, Typography } from '@material-ui/core';
 import { Event, FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
 
-// import DesktopTabs from './RightPane/RightPaneRoot';
 import AddedCoursePane from '../components/RightPane/AddedCourses/AddedCoursePane';
 import CoursePane from '../components/RightPane/CoursePane/CoursePaneRoot';
 
