@@ -118,9 +118,10 @@ const MobileHome = () => {
                                         display: 'flex',
                                         flexDirection: 'column',
                                         justifyContent: 'center',
+                                        gap: 2,
                                     }}
                                 >
-                                    <tab.icon style={{ width: '100%', fontSize: '24px' }} />
+                                    <tab.icon style={{ width: '100%', fontSize: '22px' }} />
                                     <Typography style={{ fontSize: '10px' }}>{tab.label}</Typography>
                                 </Box>
                             }
