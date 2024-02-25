@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import React, { useEffect, useState, createContext, Suspense } from 'react';
-import { Box, Paper, Tab, Tabs } from '@material-ui/core';
+import { Box, Paper, Tab, Tabs, Typography } from '@material-ui/core';
+import { Event, FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
 
 // import DesktopTabs from './RightPane/RightPaneRoot';
 import AddedCoursePane from '../components/RightPane/AddedCourses/AddedCoursePane';
@@ -22,6 +23,33 @@ const styles = {
         alignItems: 'center',
     },
 };
+
+interface TabInfo {
+    label: string;
+    icon: React.ElementType;
+    id?: string;
+}
+
+const tabs: Array<TabInfo> = [
+    {
+        label: 'Calendar',
+        icon: Event,
+    },
+    {
+        label: 'Search',
+        icon: Search,
+    },
+    {
+        label: 'Added',
+        icon: FormatListBulleted,
+        id: 'added-courses-tab',
+    },
+    {
+        label: 'Map',
+        icon: MyLocation,
+        id: 'map-tab',
+    },
+];
 
 const Views = ({ selectedTab }: { selectedTab: number }) => {
     const isDark = useThemeStore((store) => store.isDark);
@@ -83,10 +111,24 @@ const MobileHome = () => {
                         height: '100%',
                     }}
                 >
-                    <Tab label={<div>Calendar</div>} />
-                    <Tab label={<div>Search</div>} />
-                    <Tab label={<div>Added</div>} />
-                    <Tab label={<div>Map</div>} />
+                    {tabs.map((tab) => (
+                        <Tab
+                            label={
+                                <Box
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+                                    <tab.icon style={{ width: '100%', fontSize: '24px' }} />
+                                    <Typography style={{ fontSize: '10px' }}>{tab.label}</Typography>
+                                </Box>
+                            }
+                            style={{ paddingTop: 0, paddingBottom: 0 }}
+                            key={tab.label}
+                        />
+                    ))}
                 </Tabs>
             </Paper>
             <mobileContext.Provider value={{ setSelectedTab }}>
