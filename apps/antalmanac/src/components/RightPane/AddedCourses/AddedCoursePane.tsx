@@ -303,11 +303,14 @@ function SkeletonSchedule() {
     }, []);
 
     const sectionsByTerm: [string, string[]][] = useMemo(() => {
-        const result = skeletonSchedule.courses.reduce((accumulated, course) => {
-            accumulated[course.term] ??= [];
-            accumulated[course.term].push(course.sectionCode);
-            return accumulated;
-        }, {} as Record<string, string[]>);
+        const result = skeletonSchedule.courses.reduce(
+            (accumulated, course) => {
+                accumulated[course.term] ??= [];
+                accumulated[course.term].push(course.sectionCode);
+                return accumulated;
+            },
+            {} as Record<string, string[]>
+        );
 
         return Object.entries(result);
     }, [skeletonSchedule.courses]);
@@ -412,6 +415,7 @@ function AddedSectionsGrid() {
             </Box>
             <Box style={{ marginTop: 50 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
+                {courses.length < 1 ? <Typography variant="h7">No Courses Added Yet!</Typography> : <></>}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
                         return (
