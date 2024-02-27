@@ -304,7 +304,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             to={`/map?location=${building ?? 0}`}
                             onClick={focusMap}
                         >
-                            {buildingCatalogue[+building].name}
+                            {buildingCatalogue[+building]?.name ?? ''}
                         </Link>
                     </div>
                 )}
