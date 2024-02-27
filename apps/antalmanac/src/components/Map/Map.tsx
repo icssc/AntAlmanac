@@ -78,7 +78,7 @@ export function getCoursesPerBuilding() {
 }
 
 export function getCustomEventPerBuilding() {
-    const customEvents = AppStore.getCustomEvents();
+    const customEvents = AppStore.getCustomEventsInCalendar();
 
     const customEventBuildings = customEvents.map((e) => e.building).filter(notNull);
 
@@ -98,9 +98,9 @@ export function getCustomEventPerBuilding() {
 
     interface localCustomEventType {
         title: string;
-        start: string;
-        end: string;
-        days: boolean[];
+        start: Date;
+        end: Date;
+        days: string[];
         customEventID: number;
         color?: string | undefined;
         building?: string | undefined;
