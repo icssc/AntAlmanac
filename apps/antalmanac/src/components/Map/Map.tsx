@@ -251,20 +251,24 @@ export default function CourseMap() {
 
         const markersToday =
             today === 'All' ? markerValues : markerValues.filter((course) => course.start.toString().includes(today));
+
         return markersToday
             .sort((a, b) => a.start.getTime() - b.start.getTime())
             .filter((marker, i, arr) => arr.findIndex((other) => other.sectionCode === marker.sectionCode) === i);
     }, [markers, today]);
 
     const customEventMarkersToDisplay = useMemo(() => {
-        const markerValues = Object.keys(customEventMarkers).flatMap((markerKey) => customEventMarkers[markerKey]);
+        const markerValues = Object.keys(customEventMarkers)
+            .flatMap((markerKey) => customEventMarkers[markerKey])
+            .filter((marker, i, arr) => arr.findIndex((other) => other.key === marker.key) === i);
 
         const markersToday =
             today === 'All'
                 ? markerValues
                 : markerValues.filter((event) => {
-                      return event.days.some((day, index) => day && WORK_WEEK[index] === today);
+                      return event.days.some((day) => day && today.includes(day));
                   });
+
         return markersToday.sort((a, b) => {
             const startDateA = new Date(`1970-01-01T${a.start}`);
             const startDateB = new Date(`1970-01-01T${b.start}`);
