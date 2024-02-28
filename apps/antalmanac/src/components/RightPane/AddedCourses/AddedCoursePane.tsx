@@ -406,6 +406,13 @@ function AddedSectionsGrid() {
         return scheduleNames[scheduleIndex];
     }, [scheduleNames, scheduleIndex]);
 
+    // "No Courses Added Yet!" notification
+    const noCoursesNotif = (
+        <Box style={{ backgroundColor: 'grey', padding: '16px' }}>
+            <Typography align="center">No Courses Added Yet!</Typography>
+        </Box>
+    );
+
     return (
         <Box display="flex" flexDirection="column" gap={1}>
             <Box display="flex" width={1} position="absolute" zIndex="2">
@@ -415,7 +422,7 @@ function AddedSectionsGrid() {
             </Box>
             <Box style={{ marginTop: 50 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-                {courses.length < 1 ? <Typography>No Courses Added Yet!</Typography> : <></>}
+                {courses.length < 1 ? noCoursesNotif : <></>}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
                         return (
