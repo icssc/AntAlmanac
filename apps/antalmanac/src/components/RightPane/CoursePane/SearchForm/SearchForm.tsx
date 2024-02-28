@@ -58,9 +58,9 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
     };
 
     const currentMonthIndex = new Date().getMonth(); // 0=Jan
-    // Active months: February/March for Spring planning, May/June for Fall planning, August for Summer planning,
+    // Active months: February/March for Spring planning, May/June for Fall planning, July/August for Summer planning,
     // and November/December for Winter planning
-    const activeMonthIndices = [false, true, true, false, true, true, false, true, false, false, true, true];
+    const activeMonthIndices = [false, true, true, false, true, true, true, true, false, false, true, true];
 
     // Display the help box only if more than 30 days has passed since the last dismissal and
     // the current month is an active month
