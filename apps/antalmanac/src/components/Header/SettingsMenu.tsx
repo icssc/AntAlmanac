@@ -6,6 +6,8 @@ import { Close, DarkMode, Help, LightMode, Settings, SettingsBrightness } from '
 
 import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
 import useCoursePaneStore from '$stores/CoursePaneStore';
+import appStore from '$stores/AppStore';
+import { saveSchedule } from '$actions/AppStoreActions';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -147,8 +149,18 @@ function ExperimentalMenu() {
         setPreviewMode(event.target.checked);
     };
 
-    const handleAutoSaveChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleAutoSaveChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         setAutoSave(event.target.checked);
+        if (event.target.checked) {
+            const savedUserID = window.localStorage.getItem('userID');
+
+            if (savedUserID) {
+                appStore.emit('autoSaveStart');
+                await saveSchedule(savedUserID, true, true);
+                appStore.unsavedChanges = false;
+                appStore.emit('autoSaveEnd');
+            }
+        }
     };
 
     return (
