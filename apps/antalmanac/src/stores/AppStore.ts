@@ -290,41 +290,44 @@ class AppStore extends EventEmitter {
         this.unsavedChanges = false;
 
         const unsavedActionsString = window.localStorage.getItem('unsavedActions');
-        if (unsavedActionsString !== null && confirm('You have unsaved changes. Would you like to load them?')) {
-            for (const action of JSON.parse(unsavedActionsString)) {
-                switch (action.type) {
-                    case 'addCourse':
-                        this.schedule.addCourse(action.course, action.scheduleIndex);
-                        break;
-                    case 'deleteCourse':
-                        this.schedule.deleteCourse(action.sectionCode, action.term);
-                        break;
-                    case 'addCustomEvent':
-                        this.schedule.addCustomEvent(action.customEvent, action.scheduleIndices);
-                        break;
-                    case 'deleteCustomEvent':
-                        this.schedule.deleteCustomEvent(action.customEventId);
-                        break;
-                    case 'editCustomEvent':
-                        this.schedule.editCustomEvent(action.editedCustomEvent, action.newScheduleIndices);
-                        break;
-                    case 'changeCustomEventColor':
-                        this.schedule.changeCustomEventColor(action.customEventId, action.newColor);
-                        break;
-                    case 'changeCourseColor':
-                        this.schedule.changeCourseColor(action.sectionCode, action.term, action.newColor);
-                        break;
-                    case 'clearSchedule':
-                        this.schedule.clearCurrentSchedule();
-                        break;
-                    case 'copySchedule':
-                        this.schedule.copySchedule(action.to);
-                        break;
-                    default:
-                        break;
+        if (unsavedActionsString !== null) {
+            if (confirm('You have unsaved changes. Would you like to load them?')) {
+                for (const action of JSON.parse(unsavedActionsString)) {
+                    switch (action.type) {
+                        case 'addCourse':
+                            this.schedule.addCourse(action.course, action.scheduleIndex);
+                            break;
+                        case 'deleteCourse':
+                            this.schedule.deleteCourse(action.sectionCode, action.term);
+                            break;
+                        case 'addCustomEvent':
+                            this.schedule.addCustomEvent(action.customEvent, action.scheduleIndices);
+                            break;
+                        case 'deleteCustomEvent':
+                            this.schedule.deleteCustomEvent(action.customEventId);
+                            break;
+                        case 'editCustomEvent':
+                            this.schedule.editCustomEvent(action.editedCustomEvent, action.newScheduleIndices);
+                            break;
+                        case 'changeCustomEventColor':
+                            this.schedule.changeCustomEventColor(action.customEventId, action.newColor);
+                            break;
+                        case 'changeCourseColor':
+                            this.schedule.changeCourseColor(action.sectionCode, action.term, action.newColor);
+                            break;
+                        case 'clearSchedule':
+                            this.schedule.clearCurrentSchedule();
+                            break;
+                        case 'copySchedule':
+                            this.schedule.copySchedule(action.to);
+                            break;
+                        default:
+                            break;
+                    }
                 }
+            } else {
+                window.localStorage.removeItem('unsavedActions');
             }
-            window.localStorage.removeItem('unsavedActions');
         }
 
         this.emit('addedCoursesChange');
