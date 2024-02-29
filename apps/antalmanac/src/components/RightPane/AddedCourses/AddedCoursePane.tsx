@@ -407,7 +407,7 @@ function AddedSectionsGrid() {
     }, [scheduleNames, scheduleIndex]);
 
     // "No Courses Added Yet!" notification
-    const noCoursesNotif = (
+    const NoCoursesBox = (
         <Box style={{ backgroundColor: 'grey', padding: '16px' }}>
             <Typography align="center">No Courses Added Yet!</Typography>
         </Box>
