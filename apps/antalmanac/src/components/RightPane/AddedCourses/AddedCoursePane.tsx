@@ -408,8 +408,8 @@ function AddedSectionsGrid() {
 
     // "No Courses Added Yet!" notification
     const NoCoursesBox = (
-        <Box style={{ backgroundColor: 'grey', padding: '16px' }}>
-            <Typography align="center">No Courses Added Yet!</Typography>
+        <Box style={{ paddingTop: '12px', paddingBottom: '12px' }}>
+            <Typography align="left">No Courses Added Yet!</Typography>
         </Box>
     );
 
