@@ -422,7 +422,7 @@ function AddedSectionsGrid() {
             </Box>
             <Box style={{ marginTop: 50 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-                {courses.length < 1 ? noCoursesNotif : <></>}
+                {courses.length < 1 ? noCoursesNotif : null}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
                         return (
