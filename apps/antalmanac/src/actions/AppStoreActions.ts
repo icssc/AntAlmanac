@@ -84,7 +84,13 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
             try {
-                await trpc.users.saveUserData.mutate({ id: userID, userData: scheduleSaveState });
+                await trpc.users.saveUserData.mutate({
+                    id: userID,
+                    data: {
+                        id: userID,
+                        userData: scheduleSaveState,
+                    },
+                });
 
                 openSnackbar(
                     'success',
@@ -124,7 +130,7 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
 
             try {
                 const res = await trpc.users.getUserData.query({ userId });
-                const scheduleSaveState = res?.userData;
+                const scheduleSaveState = res && 'userData' in res ? res.userData : res;
 
                 if (scheduleSaveState == null) {
                     openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
