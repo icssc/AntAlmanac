@@ -1,5 +1,5 @@
+import type { Type } from 'arktype';
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
-import { type, Type } from 'arktype';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 
 import {
@@ -15,16 +15,10 @@ import LegacyUserModel from '../models/User';
 import connectToMongoDB from '../db/mongodb';
 import env from '../env';
 
-export const n = type({
-    hellO: 'string',
-});
-
-n.assert;
-
-class DDBClient<T extends Record<string, unknown>, TSchema extends Type<T> = Type<T>> {
+class DDBClient<T extends Type<Record<string, unknown>>> {
     private tableName: string;
 
-    private schema: TSchema;
+    private schema: T;
 
     client: DynamoDB;
 
@@ -68,7 +62,7 @@ class DDBClient<T extends Record<string, unknown>, TSchema extends Type<T> = Typ
         return scheduleSaveState;
     }
 
-    constructor(tableName: string, schema: TSchema) {
+    constructor(tableName: string, schema: T) {
         this.tableName = tableName;
         this.schema = schema;
         this.client = new DynamoDB({
@@ -87,11 +81,11 @@ class DDBClient<T extends Record<string, unknown>, TSchema extends Type<T> = Typ
         });
     }
 
-    async get(id: string): Promise<T | undefined> {
+    async get(column: string, id: string): Promise<T['infer'] | undefined> {
         const params = {
             TableName: this.tableName,
             Key: {
-                id: id,
+                [column]: id,
             },
         };
 
@@ -99,10 +93,10 @@ class DDBClient<T extends Record<string, unknown>, TSchema extends Type<T> = Typ
 
         const { data } = this.schema(Item);
 
-        return data as T | undefined;
+        return data;
     }
 
-    async insertItem(item: T) {
+    async insertItem(item: T['infer']) {
         await this.documentClient.put({ TableName: this.tableName, Item: item });
     }
 
@@ -134,7 +128,11 @@ class DDBClient<T extends Record<string, unknown>, TSchema extends Type<T> = Typ
     }
 
     async getUserData(id: string) {
-        return (await ddbClient.get(id))?.userData;
+        return (await ddbClient.get('id', id))?.userData;
+    }
+
+    async getGoogleUserData(googleId: string) {
+        return (await ddbClient.get('googleId', googleId))?.userData;
     }
 }
 

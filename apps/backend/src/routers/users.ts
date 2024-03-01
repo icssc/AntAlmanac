@@ -7,14 +7,10 @@ const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]
 
 const usersRouter = router({
     getUserData: procedure.input(userInputSchema.assert).query(async ({ input }) => {
-        if ('userId' in input) {
-            return (
-                (await ddbClient.getUserData(input.userId)) ??
-                (await ddbClient.getLegacyUserData(input.userId))
-            );
-        } else {
-            console.log('Google is not yet supported... Google ID: ', input.googleId);
+        if ('googleId' in input) {
+            return await ddbClient.getGoogleUserData(input.googleId);
         }
+        return (await ddbClient.getUserData(input.userId)) ?? (await ddbClient.getLegacyUserData(input.userId));
     }),
     saveUserData: procedure.input(UserSchema.assert).mutation(async ({ input }) => {
         await ddbClient.insertItem(input);
