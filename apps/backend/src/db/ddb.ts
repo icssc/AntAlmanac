@@ -15,6 +15,15 @@ import LegacyUserModel from '../models/User';
 import connectToMongoDB from '../db/mongodb';
 import env from '../env';
 
+/**
+ * TODO: enforce this in the schema too, or just leave it as an arbitrary string?
+ */
+export const VISIBILITY = {
+    PRIVATE: 'private',
+    PUBLIC: 'public',
+    OPEN: 'open',
+};
+
 class DDBClient<T extends Type<Record<string, unknown>>> {
     private tableName: string;
 
@@ -133,6 +142,36 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
 
     async getGoogleUserData(googleId: string) {
         return (await ddbClient.get('googleId', googleId))?.userData;
+    }
+
+    async viewUserData(requesterId: string, requesteeId: string) {
+        const existingUserData = await ddbClient.get('id', requesteeId);
+
+        if (existingUserData == null) {
+            return undefined;
+        }
+
+        const parsedUserData = UserSchema(existingUserData);
+
+        if (parsedUserData.problems != null) {
+            return undefined;
+        }
+
+        parsedUserData.data.visibility ??= VISIBILITY.PRIVATE;
+
+        // Requester and requestee IDs must match if schedule is private.
+        // Otherwise, return the schedule without any additional processing.
+        //
+        // TODO: when a save request is made,
+        // check the schedule's user ID with the user ID making the request
+        // to fully define the visibility system.
+
+        if (parsedUserData.data.visibility === VISIBILITY.PRIVATE) {
+            return requesterId === requesteeId ? parsedUserData.data : undefined;
+        } else {
+            return parsedUserData.data;
+        }
+
     }
 }
 
