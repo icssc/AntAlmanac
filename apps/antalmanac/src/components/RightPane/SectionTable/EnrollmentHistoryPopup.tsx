@@ -45,7 +45,7 @@ function PopupHeader({
                 width: graphWidth,
             }}
         >
-            <Tooltip title="Newer Graph">
+            <Tooltip title="Older Graph">
                 {/* In order for a tooltip to work properly with disabled buttons, we need to wrap the button in a span */}
                 <span>
                     <IconButton onClick={handleBack} disabled={graphIndex === 0}>
@@ -56,7 +56,7 @@ function PopupHeader({
             <Typography sx={{ fontWeight: 500, fontSize: isMobileScreen ? '0.8rem' : '1rem', textAlign: 'center' }}>
                 {popupTitle}
             </Typography>
-            <Tooltip title="Older Graph">
+            <Tooltip title="Newer Graph">
                 <span>
                     <IconButton onClick={handleForward} disabled={graphIndex === enrollmentHistory.length - 1}>
                         <ArrowForward />
@@ -114,7 +114,9 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
         deptEnrollmentHistory.find(courseNumber).then((data) => {
             if (data) {
                 setEnrollmentHistory(data);
-                setGraphIndex(0);
+                // The graph index is the last past enrollment graph since we want to show
+                // the most recent quarter's graph
+                setGraphIndex(data.length - 1);
             }
             setLoading(false);
         });

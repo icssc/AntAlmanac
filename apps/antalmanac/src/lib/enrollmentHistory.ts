@@ -135,7 +135,7 @@ export class DepartmentEnrollmentHistory {
 
     /**
      * Sorts the given array of enrollment histories so that
-     * the most recent quarters are in the beginning of the array.
+     * the oldest quarters are in the beginning of the array
      *
      * @param enrollmentHistory Array where each element represents the enrollment
      * history of a course section during one quarter
@@ -145,10 +145,10 @@ export class DepartmentEnrollmentHistory {
             const aTerm = `${a.year} ${a.quarter}`;
             const bTerm = `${b.year} ${b.quarter}`;
             // If the term for a appears earlier than the term for b in the list of
-            // term short names, then a must be the enrollment history for a later quarter
+            // term short names, then a must be the enrollment history for a more recent quarter
             return (
-                DepartmentEnrollmentHistory.termShortNames.indexOf(aTerm) -
-                DepartmentEnrollmentHistory.termShortNames.indexOf(bTerm)
+                DepartmentEnrollmentHistory.termShortNames.indexOf(bTerm) -
+                DepartmentEnrollmentHistory.termShortNames.indexOf(aTerm)
             );
         });
     }
