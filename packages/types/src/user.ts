@@ -23,6 +23,17 @@ export const UserSchema = type({
     'googleId?': 'string',
 
     /**
+     * Users can view other users' schedules, even anonymously.
+     * Visibility permissions are used to determine if a user can view another user's schedule.
+     *
+     * Visibility values:
+     * - (default) private: Only the owner can view and edit.
+     * - public: Other users can view, but can't edit, i.e. "read-only".
+     * - open: Anybody can view and edit.
+     */
+    'visibility?': 'string',
+
+    /**
      * User data is stored in a JSON.
      */
     userData: ScheduleSaveStateSchema,
