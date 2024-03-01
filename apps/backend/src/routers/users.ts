@@ -1,7 +1,8 @@
 import { type } from 'arktype';
 import { UserSchema } from '@packages/antalmanac-types';
 import { router, procedure } from '../trpc';
-import { ddbClient } from '../db/ddb';
+import { ddbClient, VISIBILITY } from '../db/ddb';
+import { TRPCError } from '@trpc/server';
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
 
@@ -15,6 +16,21 @@ const viewInputSchema = type({
      * ID of the user whose schedule is being requested.
      */
     requesteeId: 'string',
+});
+
+const saveInputSchema = type({
+    /**
+     * ID of the requester.
+     */
+    id: 'string',
+
+    /**
+     * Schedule data being saved.
+     *
+     * The ID of the requester and user ID in the schedule data may differ,
+     * i.e. if the user is editing and saving another user's schedule.
+     */
+    data: UserSchema,
 });
 
 const usersRouter = router({
@@ -31,8 +47,33 @@ const usersRouter = router({
     /**
      * Loads schedule data for a user that's logged in.
      */
-    saveUserData: procedure.input(UserSchema.assert).mutation(async ({ input }) => {
-        await ddbClient.insertItem(input);
+    saveUserData: procedure.input(saveInputSchema.assert).mutation(async ({ input }) => {
+        /**
+         * Assign default visility value.
+         */
+        input.data.visibility ??= VISIBILITY.PRIVATE;
+
+        // Requester and requestee IDs must match if schedule is private.
+
+        if (input.data.visibility === VISIBILITY.PRIVATE && input.id !== input.data.id) {
+            throw new TRPCError({
+                code: 'UNAUTHORIZED',
+                message: 'Schedule is private and user ID does not match.',
+            });
+        }
+
+        // Requester and requestee IDs must match if schedule is public (read-only).
+
+        if (input.data.visibility === VISIBILITY.PUBLIC && input.id !== input.data.id) {
+            throw new TRPCError({
+                code: 'UNAUTHORIZED',
+                message: 'Schedule is public and user ID does not match.',
+            });
+        }
+
+        // Schedule is open, or requester user ID and schedule's user ID match.
+
+        await ddbClient.insertItem(input.data);
     }),
 
     /**
