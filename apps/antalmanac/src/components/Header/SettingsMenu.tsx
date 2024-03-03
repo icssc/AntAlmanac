@@ -7,6 +7,7 @@ import { Close, DarkMode, Help, LightMode, Settings, SettingsBrightness } from '
 import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
 import useCoursePaneStore from '$stores/CoursePaneStore';
 import appStore from '$stores/AppStore';
+import actionTypesStore from '$actions/ActionTypesStore';
 import { saveSchedule } from '$actions/AppStoreActions';
 
 const lightSelectedStyle: CSSProperties = {
@@ -155,10 +156,10 @@ function ExperimentalMenu() {
             const savedUserID = window.localStorage.getItem('userID');
 
             if (savedUserID) {
-                appStore.emit('autoSaveStart');
+                actionTypesStore.emit('autoSaveStart');
                 await saveSchedule(savedUserID, true, true);
                 appStore.unsavedChanges = false;
-                appStore.emit('autoSaveEnd');
+                actionTypesStore.emit('autoSaveEnd');
             }
         }
     };

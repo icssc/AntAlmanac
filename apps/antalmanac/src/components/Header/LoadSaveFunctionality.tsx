@@ -7,9 +7,9 @@ import {
     DialogTitle,
     TextField,
     CircularProgress,
+    Checkbox,
+    FormControlLabel,
 } from '@material-ui/core';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { CloudDownload, Save } from '@material-ui/icons';
 import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 
@@ -17,6 +17,7 @@ import { LoadingButton } from '@mui/lab';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
 import { useThemeStore } from '$stores/SettingsStore';
 import AppStore from '$stores/AppStore';
+import actionTypesStore from '$actions/ActionTypesStore';
 
 interface LoadSaveButtonBaseProps {
     action: typeof saveSchedule;
@@ -33,15 +34,19 @@ interface LoadSaveButtonBaseState {
     rememberMe: boolean;
 }
 
-class SaveLoadIcon extends PureComponent<{ loading: boolean; actionName: 'Save' | 'Load' }> {
-    render() {
-        const { loading, actionName } = this.props;
-        if (loading) {
-            return <CircularProgress size={20} color={'inherit'} />;
-        } else {
-            return actionName === 'Save' ? <Save /> : <CloudDownload />;
-        }
-    }
+interface SaveLoadIconProps {
+    loading: boolean;
+    actionName: 'Save' | 'Load';
+}
+
+function SaveLoadIcon(SaveLoadIconProps: SaveLoadIconProps) {
+    return SaveLoadIconProps.loading ? (
+        <CircularProgress size={20} color="inherit" />
+    ) : SaveLoadIconProps.actionName === 'Save' ? (
+        <Save />
+    ) : (
+        <CloudDownload />
+    );
 }
 
 class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSaveButtonBaseState> {
@@ -201,12 +206,12 @@ const LoadSaveScheduleFunctionality = () => {
         const handleAutoSaveStart = () => setSaving(true);
         const handleAutoSaveEnd = () => setSaving(false);
 
-        AppStore.on('autoSaveStart', handleAutoSaveStart);
-        AppStore.on('autoSaveEnd', handleAutoSaveEnd);
+        actionTypesStore.on('autoSaveStart', handleAutoSaveStart);
+        actionTypesStore.on('autoSaveEnd', handleAutoSaveEnd);
 
         return () => {
-            AppStore.off('autoSaveStart', handleAutoSaveStart);
-            AppStore.off('autoSaveEnd', handleAutoSaveEnd);
+            actionTypesStore.off('autoSaveStart', handleAutoSaveStart);
+            actionTypesStore.off('autoSaveEnd', handleAutoSaveEnd);
         };
     }, []);
 
