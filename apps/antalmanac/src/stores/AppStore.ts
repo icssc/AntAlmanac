@@ -90,6 +90,10 @@ class AppStore extends EventEmitter {
         return this.schedule.getCalendarizedCourseEvents();
     }
 
+    getCustomEventsInCalendar() {
+        return this.schedule.getCalendarizedCustomEvents();
+    }
+
     getFinalEventsInCalendar() {
         return this.schedule.getCalendarizedFinals();
     }
