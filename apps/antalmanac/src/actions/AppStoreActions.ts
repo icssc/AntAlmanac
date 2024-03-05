@@ -64,7 +64,7 @@ export const openSnackbar = (
     AppStore.openSnackbar(variant, message, duration, position, style);
 };
 
-export const saveSchedule = async (userID: string, rememberMe: boolean, autoSave = false) => {
+export const saveSchedule = async (userID: string, rememberMe: boolean) => {
     logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
@@ -86,12 +86,10 @@ export const saveSchedule = async (userID: string, rememberMe: boolean, autoSave
             try {
                 await trpc.users.saveUserData.mutate({ id: userID, userData: scheduleSaveState });
 
-                if (!autoSave) {
-                    openSnackbar(
-                        'success',
-                        `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
-                    );
-                }
+                openSnackbar(
+                    'success',
+                    `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
+                );
                 AppStore.saveSchedule();
             } catch (e) {
                 if (e instanceof TRPCError) {
@@ -103,6 +101,33 @@ export const saveSchedule = async (userID: string, rememberMe: boolean, autoSave
         }
     }
 };
+
+export async function autoSaveSchedule(userID: string) {
+    logAnalytics({
+        category: analyticsEnum.nav.title,
+        action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
+        label: userID,
+    });
+    if (userID != null) {
+        userID = userID.replace(/\s+/g, '');
+
+        if (userID.length > 0) {
+            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+
+            try {
+                await trpc.users.saveUserData.mutate({ id: userID, userData: scheduleSaveState });
+
+                AppStore.saveSchedule();
+            } catch (e) {
+                if (e instanceof TRPCError) {
+                    openSnackbar('error', `Schedule could not be auto-saved under username "${userID}`);
+                } else {
+                    openSnackbar('error', 'Network error or server is down.');
+                }
+            }
+        }
+    }
+}
 
 export const loadSchedule = async (userId: string, rememberMe: boolean) => {
     logAnalytics({

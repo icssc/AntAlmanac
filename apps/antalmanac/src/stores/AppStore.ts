@@ -7,7 +7,7 @@ import { SnackbarPosition } from '$components/NotificationSnackbar';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { useTabStore } from '$stores/TabStore';
 import actionTypesStore from '$actions/ActionTypesStore';
-import {
+import type {
     AddCourseAction,
     DeleteCourseAction,
     AddCustomEventAction,

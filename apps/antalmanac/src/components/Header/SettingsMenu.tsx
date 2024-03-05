@@ -8,7 +8,7 @@ import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } 
 import useCoursePaneStore from '$stores/CoursePaneStore';
 import appStore from '$stores/AppStore';
 import actionTypesStore from '$actions/ActionTypesStore';
-import { saveSchedule } from '$actions/AppStoreActions';
+import { autoSaveSchedule } from '$actions/AppStoreActions';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -152,22 +152,22 @@ function ExperimentalMenu() {
 
     const handleAutoSaveChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         setAutoSave(event.target.checked);
-        if (event.target.checked) {
-            const savedUserID = window.localStorage.getItem('userID');
 
-            if (savedUserID) {
-                actionTypesStore.emit('autoSaveStart');
-                await saveSchedule(savedUserID, true, true);
-                appStore.unsavedChanges = false;
-                actionTypesStore.emit('autoSaveEnd');
-            }
-        }
+        if (!event.target.checked) return;
+
+        const savedUserID = window.localStorage.getItem('userID');
+
+        if (!savedUserID) return;
+        actionTypesStore.emit('autoSaveStart');
+        await autoSaveSchedule(savedUserID);
+        appStore.unsavedChanges = false;
+        actionTypesStore.emit('autoSaveEnd');
     };
 
     return (
-        <Stack sx={{ padding: '1rem 1rem 0 1rem', width: '100%', display: 'flex' }} alignItems="middle">
-            <Box display="flex" justifyContent="space-between" width={1}>
-                <Box display="flex" alignItems="center" style={{ gap: 4 }}>
+        <Stack sx={{ padding: '1rem 1rem 0 1rem', width: '100%', display: 'flex', alignItems: 'middle' }}>
+            <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
+                <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
                         Hover to Preview
                     </Typography>
@@ -175,11 +175,11 @@ function ExperimentalMenu() {
                         <Help />
                     </Tooltip>
                 </Box>
-                <Switch color="primary" value={previewMode} checked={previewMode} onChange={handlePreviewChange} />
+                <Switch color={'primary'} value={previewMode} checked={previewMode} onChange={handlePreviewChange} />
             </Box>
 
-            <Box display="flex" justifyContent="space-between" width={1}>
-                <Box display="flex" alignItems="center" style={{ gap: 4 }}>
+            <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
+                <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
                         Auto Save
                     </Typography>
@@ -187,7 +187,7 @@ function ExperimentalMenu() {
                         <Help />
                     </Tooltip>
                 </Box>
-                <Switch color="primary" value={autoSave} checked={autoSave} onChange={handleAutoSaveChange} />
+                <Switch color={'primary'} value={autoSave} checked={autoSave} onChange={handleAutoSaveChange} />
             </Box>
         </Stack>
     );

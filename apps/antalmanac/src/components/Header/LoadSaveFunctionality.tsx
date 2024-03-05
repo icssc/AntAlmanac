@@ -39,10 +39,10 @@ interface SaveLoadIconProps {
     actionName: 'Save' | 'Load';
 }
 
-function SaveLoadIcon(SaveLoadIconProps: SaveLoadIconProps) {
-    return SaveLoadIconProps.loading ? (
+function SaveLoadIcon(props: SaveLoadIconProps) {
+    return props.loading ? (
         <CircularProgress size={20} color="inherit" />
-    ) : SaveLoadIconProps.actionName === 'Save' ? (
+    ) : props.actionName === 'Save' ? (
         <Save />
     ) : (
         <CloudDownload />
