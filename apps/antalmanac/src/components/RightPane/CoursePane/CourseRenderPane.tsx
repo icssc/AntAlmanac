@@ -268,7 +268,7 @@ export default function CourseRenderPane(props: { id?: number }) {
         return () => {
             setHoveredEvents(undefined);
         };
-    }, [setHoveredEvents]);
+    }, []);
 
     return (
         <>

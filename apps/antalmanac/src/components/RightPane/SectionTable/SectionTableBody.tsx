@@ -533,15 +533,17 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
 
     const [hoveredEvents, setHoveredEvents] = useHoveredStore((store) => [store.hoveredEvents, store.setHoveredEvents]);
 
-    const handleHover = useCallback(() => {
-        const alreadyHovered =
-            hoveredEvents &&
-            hoveredEvents.some((scheduleCourse) => scheduleCourse.section.sectionCode == section.sectionCode);
+    const alreadyHovered = useMemo(() => {
+        return hoveredEvents?.some((scheduleCourse) => scheduleCourse.section.sectionCode == section.sectionCode);
+    }, [hoveredEvents, section.sectionCode]);
 
-        !previewMode || alreadyHovered || addedCourse
-            ? setHoveredEvents(undefined)
-            : setHoveredEvents(section, courseDetails, term);
-    }, [addedCourse, courseDetails, hoveredEvents, previewMode, section, setHoveredEvents, term]);
+    const handleHover = useCallback(() => {
+        if (!previewMode || alreadyHovered || addedCourse) {
+            setHoveredEvents(undefined);
+        } else {
+            setHoveredEvents(section, courseDetails, term);
+        }
+    }, [alreadyHovered, section, courseDetails, term]);
 
     // Attach event listeners to the store.
     useEffect(() => {

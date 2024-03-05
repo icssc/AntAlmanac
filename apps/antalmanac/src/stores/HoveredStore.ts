@@ -4,6 +4,7 @@ import { calendarizeCourseEvents, calendarizeFinals } from './calendarizeHelpers
 import { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CourseDetails } from '$lib/course_data.types';
 
+const HOVERED_SECTION_COLOR = '#80808080';
 export interface HoveredStore {
     hoveredEvents: ScheduleCourse[] | undefined;
     setHoveredEvents: (section?: AASection, courseDetails?: CourseDetails, term?: string) => void;
@@ -11,53 +12,53 @@ export interface HoveredStore {
     hoveredCalendarizedFinal: CourseEvent | undefined;
 }
 
+const DEFAULT_HOVERED_STORE = {
+    hoveredEvents: undefined,
+    hoveredCalendarizedCourses: undefined,
+    hoveredCalendarizedFinal: undefined,
+};
+
 export const useHoveredStore = create<HoveredStore>((set) => {
     return {
-        hoveredEvents: undefined,
-        hoveredCalendarizedCourses: undefined,
-        hoveredCalendarizedFinal: undefined,
+        ...DEFAULT_HOVERED_STORE,
         setHoveredEvents: (section, courseDetails, term) => {
-            set({
-                hoveredEvents:
-                    section && courseDetails && term
-                        ? [
-                              {
-                                  ...courseDetails,
-                                  section: {
-                                      ...section,
-                                      color: '#80808080',
-                                  },
-                                  term,
-                              },
-                          ]
-                        : undefined,
-                hoveredCalendarizedCourses:
-                    section && courseDetails && term
-                        ? calendarizeCourseEvents([
-                              {
-                                  ...courseDetails,
-                                  section: {
-                                      ...section,
-                                      color: '#80808080',
-                                  },
-                                  term,
-                              },
-                          ])
-                        : undefined,
-                hoveredCalendarizedFinal:
-                    section && courseDetails && term
-                        ? calendarizeFinals([
-                              {
-                                  ...courseDetails,
-                                  section: {
-                                      ...section,
-                                      color: '#80808080',
-                                  },
-                                  term,
-                              },
-                          ])[0]
-                        : undefined,
-            });
+            if (section == null || courseDetails == null || term == null) {
+                set({ ...DEFAULT_HOVERED_STORE });
+                return;
+            } else {
+                set({
+                    hoveredEvents: [
+                        {
+                            ...courseDetails,
+                            section: {
+                                ...section,
+                                color: HOVERED_SECTION_COLOR,
+                            },
+                            term,
+                        },
+                    ],
+                    hoveredCalendarizedCourses: calendarizeCourseEvents([
+                        {
+                            ...courseDetails,
+                            section: {
+                                ...section,
+                                color: HOVERED_SECTION_COLOR,
+                            },
+                            term,
+                        },
+                    ]),
+                    hoveredCalendarizedFinal: calendarizeFinals([
+                        {
+                            ...courseDetails,
+                            section: {
+                                ...section,
+                                color: HOVERED_SECTION_COLOR,
+                            },
+                            term,
+                        },
+                    ])[0],
+                });
+            }
         },
     };
 });
