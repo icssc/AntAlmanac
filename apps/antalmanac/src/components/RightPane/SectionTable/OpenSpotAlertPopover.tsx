@@ -7,6 +7,7 @@ import InputMask from 'react-input-mask';
 import { openSnackbar } from '../../../actions/AppStoreActions';
 import RightPaneStore from '../RightPaneStore';
 import { REGISTER_NOTIFICATIONS_ENDPOINT } from '$lib/api/endpoints';
+import { LocalStorageKeys, getLocalStorageItem, setLocalStorageItem } from '$lib/localStorage';
 
 const phoneNumberRegex = RegExp(/\d{10}/);
 
@@ -39,7 +40,7 @@ interface OpenSpotAlertPopoverState {
 class OpenSpotAlertPopover extends PureComponent<OpenSpotAlertPopoverProps, OpenSpotAlertPopoverState> {
     state = {
         anchorElement: null,
-        phoneNumber: window.localStorage.getItem('phoneNumber') || '',
+        phoneNumber: getLocalStorageItem(LocalStorageKeys.phoneNumber) || '',
         invalidInput: false,
         invalidInputMessage: '',
     };
@@ -74,7 +75,7 @@ class OpenSpotAlertPopover extends PureComponent<OpenSpotAlertPopoverProps, Open
             });
 
             if (response.status === 200) {
-                window.localStorage.setItem('phoneNumber', this.state.phoneNumber);
+                setLocalStorageItem(LocalStorageKeys.phoneNumber, this.state.phoneNumber);
                 this.setState({ anchorElement: null, invalidInput: false });
                 openSnackbar('success', `Added to watch list for ${params.sectionCode}`);
                 //TODO: Dialog with the message about txt messages paywall etc etc

@@ -6,6 +6,7 @@ import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../../RightPaneStore';
 import depts from './depts';
+import { LocalStorageKeys, getLocalStorageItem, setLocalStorageItem } from '$lib/localStorage';
 
 const style = {
     formControl: {
@@ -66,7 +67,7 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
 
         let favorites: Department[] = [];
         if (typeof Storage !== 'undefined') {
-            const locallyStoredFavorites = window.localStorage.getItem('favorites');
+            const locallyStoredFavorites = getLocalStorageItem(LocalStorageKeys.favorites);
             favorites = locallyStoredFavorites != null ? JSON.parse(locallyStoredFavorites) : [];
         }
         this.state = {
@@ -140,7 +141,7 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
             if (updatedFavorites.length > 5) updatedFavorites.pop();
         }
         this.setState({ favorites: updatedFavorites });
-        window.localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+        setLocalStorageItem(LocalStorageKeys.favorites, JSON.stringify(updatedFavorites));
     };
 
     render() {

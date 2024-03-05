@@ -3,6 +3,7 @@ import { useEffect, useState, createContext } from 'react';
 import { Paper, Tab, Tabs } from '@material-ui/core';
 import Calendar from './Calendar/CalendarRoot';
 import DesktopTabs from './RightPane/RightPaneRoot';
+import { LocalStorageKeys, getLocalStorageItem } from '$lib/localStorage';
 
 const components = [
     <Calendar isMobile={true} key="calendar" />,
@@ -19,7 +20,7 @@ export const mobileContext = createContext<MobileContext>({
 });
 
 const MobileHome = () => {
-    const [selectedTab, setSelectedTab] = useState(localStorage.getItem('userID') ? 0 : 1);
+    const [selectedTab, setSelectedTab] = useState(getLocalStorageItem(LocalStorageKeys.userId) ? 0 : 1);
     const params = useParams();
 
     useEffect(() => {

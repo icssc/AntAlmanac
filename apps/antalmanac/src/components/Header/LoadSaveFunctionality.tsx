@@ -16,6 +16,7 @@ import { LoadingButton } from '@mui/lab';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
 import { useThemeStore } from '$stores/SettingsStore';
 import AppStore from '$stores/AppStore';
+import { LocalStorageKeys, getLocalStorageItem } from '$lib/localStorage';
 
 interface LoadSaveButtonBaseProps {
     action: typeof saveSchedule;
@@ -42,7 +43,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
     handleOpen = () => {
         this.setState({ isOpen: true });
         if (typeof Storage !== 'undefined') {
-            const userID = window.localStorage.getItem('userID');
+            const userID = getLocalStorageItem(LocalStorageKeys.userId);
             if (userID !== null) {
                 this.setState({ userID: userID });
             }
@@ -169,7 +170,7 @@ const LoadSaveScheduleFunctionality = () => {
 
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
-            const savedUserID = window.localStorage.getItem('userID');
+            const savedUserID = getLocalStorageItem(LocalStorageKeys.userId);
 
             if (savedUserID != null) {
                 // this `void` is for eslint "no floating promises"
