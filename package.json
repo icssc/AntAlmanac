@@ -2,6 +2,7 @@
   "name": "antalmanac",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "prepare": "husky install",
     "start:aa": "turbo start --filter=antalmanac",
@@ -14,8 +15,10 @@
     "test": "vitest"
   },
   "devDependencies": {
+    "@types/eslint": "^8.56.5",
     "@types/node": "^20.11.6",
     "cross-env": "^7.0.3",
+    "eslint-import-resolver-typescript": "^3.6.1",
     "husky": "^8.0.3",
     "jsdom": "^22.1.0",
     "lint-staged": "^13.1.1",
@@ -27,8 +30,5 @@
   "engines": {
     "pnpm": "^8.0.0",
     "node": ">=16"
-  },
-  "dependencies": {
-    "ua-parser-js": "^1.0.37"
   }
 }

@@ -2,6 +2,7 @@
     "name": "antalmanac",
     "version": "1.0.0",
     "private": true,
+    "type": "module",
     "homepage": "https://antalmanac.com",
     "description": "A course exploration and scheduling tool for UCI Anteaters",
     "bugs": {
@@ -31,7 +32,7 @@
         "@mui/icons-material": "^5.11.0",
         "@mui/lab": "^5.0.0-alpha.118",
         "@mui/material": "^5.11.7",
-        "@packages/antalmanac-types": "*",
+        "@packages/antalmanac-types": "workspace:^",
         "@react-leaflet/core": "^2.1.0",
         "@reactour/tour": "^3.6.1",
         "@tanstack/react-query": "^4.24.4",
@@ -72,6 +73,7 @@
         "@babel/core": "^7.20.12",
         "@packages/antalmanac-types": "workspace:^",
         "@testing-library/react": "^14.0.0",
+        "@types/eslint": "^8.56.5",
         "@types/file-saver": "^2.0.5",
         "@types/leaflet": "^1.9.0",
         "@types/leaflet-routing-machine": "^3.2.4",
@@ -85,8 +87,6 @@
         "@types/react-lazyload": "^3.2.0",
         "@types/reactour": "^1.18.5",
         "@types/ua-parser-js": "^0.7.39",
-        "@typescript-eslint/eslint-plugin": "^5.54.1",
-        "@typescript-eslint/parser": "^5.54.1",
         "@vitejs/plugin-react": "^4.0.4",
         "aws-sdk": "^2.1550.0",
         "eslint": "^8.36.0",
@@ -95,25 +95,10 @@
         "eslint-plugin-jsx-a11y": "^6.7.1",
         "eslint-plugin-react": "^7.32.2",
         "eslint-plugin-react-hooks": "^4.6.0",
-        "gh-pages": "^5.0.0",
-        "husky": "^8.0.3",
-        "lint-staged": "^13.1.1",
         "peterportal-api-next-types": "1.0.0-rc.2.68.0",
         "prettier": "^2.8.4",
         "typescript": "^4.9.5",
         "vite": "^4.4.9",
         "vite-plugin-svgr": "^2.4.0"
-    },
-    "browserslist": {
-        "production": [
-            ">0.2%",
-            "not dead",
-            "not op_mini all"
-        ],
-        "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
-        ]
     }
 }
