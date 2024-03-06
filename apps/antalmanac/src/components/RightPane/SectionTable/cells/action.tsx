@@ -13,9 +13,10 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { CourseDetails } from '$lib/course_data.types';
 import AppStore from '$stores/AppStore';
 
-
-// Reset these params in url becasue when copy a specific class's link, it only copy its course code
-// if there is random value let in the url, it will mess up the url copied.
+/**
+ * Copying a specific class's link will only copy its course code.
+ * If there is random value let in the url, it will interfere with the generated url.
+ */
 const fieldsToReset = ['courseCode', 'courseNumber', 'deptLabel', 'deptValue', 'GE', 'term'];
 
 const styles = {
