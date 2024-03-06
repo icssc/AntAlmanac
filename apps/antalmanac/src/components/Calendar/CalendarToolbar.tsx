@@ -301,7 +301,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                 alignItems: 'center',
                 padding: 1,
                 borderRadius: '4px 4px 0 0',
-                backgroundColor: isDark ? darkModePalette.DARK_SECTION_HEADER_BACKGROUND : '',
+                backgroundColor: isDark ? darkModePalette.DARK_SECTION_HEADER_BACKGROUND : undefined,
             }}
         >
             <Box gap={1} display="flex" alignItems="center">

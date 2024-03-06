@@ -40,6 +40,10 @@
     font-size: 0.9rem;
 }
 
+.rbc-time-content{
+    border-top-color: rgb(58, 62, 65);
+}
+
 .dark-mode .rbc-time-content {
     border-top-color: #3a3e41;
 }
@@ -58,6 +62,18 @@
 
 .dark-mode .rbc-time-header.rbc-overflowing {
     border-right-color: #3a3e41;
+}
+
+.rbc-time-view {
+    border-color: rgb(58, 62, 65);
+}
+
+.rbc-time-header-content {
+    border-left-color: rgb(58, 62, 65);
+}
+
+.rbc-time-header.rbc-overflowing {
+    border-right-color: rgb(58, 62, 65);
 }
 
 @media (min-resolution: 96dpi) {

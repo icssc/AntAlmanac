@@ -4,7 +4,7 @@ import { Divider, Stack, Tooltip } from '@mui/material';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { Close, DarkMode, Help, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
-import { usePreviewStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { darkModePalette, usePreviewStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 import useCoursePaneStore from '$stores/CoursePaneStore';
 
 const lightSelectedStyle: CSSProperties = {
@@ -185,10 +185,8 @@ function SettingsMenu() {
                 anchor="right"
                 open={drawerOpen}
                 onClose={handleDrawerClose}
-                PaperProps={{
-                    style: { borderRadius: '10px 0 0 10px', backgroundColor: isDark ? 'rgb(24, 26, 27)' : '' },
-                }}
                 variant="temporary"
+                PaperProps={{ style: { backgroundColor: isDark ? darkModePalette.DARK_BODY_BACKGROUND : undefined } }}
             >
                 <Box style={{ width: isMobileScreen ? '300px' : '360px' }}>
                     <Box
