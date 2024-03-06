@@ -158,3 +158,44 @@ export function UnstyledScheduleAddCell(props: ScheduleAddCellProps) {
 
 export const ColorAndDelete = withStyles(styles)(UnstyledColorAndDelete);
 export const ScheduleAddCell = withStyles(styles)(UnstyledScheduleAddCell);
+
+export interface SectionActionProps {
+    /**
+     * Whether the section has been added.
+     */
+    addedCourse: boolean;
+
+    /**
+     * The actual section.
+     */
+    section: AASection;
+
+    /**
+     */
+    courseDetails: CourseDetails;
+
+    /**
+     */
+    term: string;
+
+    /**
+     * The current schedule names.
+     */
+    scheduleNames: string[];
+
+    /**
+     * Whether the section conflicts with any currently added sections.
+     */
+    scheduleConflict: boolean;
+}
+
+/**
+ * Given a section, provides buttons to perform actions on it.
+ */
+export function SectionActionCell(props: SectionActionProps) {
+    return props.addedCourse ? (
+        <ColorAndDelete color={props.section.color} sectionCode={props.section.sectionCode} term={props.term} />
+    ) : (
+        <ScheduleAddCell {...props} />
+    );
+}
