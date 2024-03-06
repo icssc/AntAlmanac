@@ -4,8 +4,17 @@ import { Divider, Stack, Tooltip } from '@mui/material';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { Close, DarkMode, Help, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
-import { darkModePalette, usePreviewStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import {
+    darkModePalette,
+    usePreviewStore,
+    useThemeStore,
+    useTimeFormatStore,
+    useAutoSaveStore,
+} from '$stores/SettingsStore';
 import useCoursePaneStore from '$stores/CoursePaneStore';
+import appStore from '$stores/AppStore';
+import actionTypesStore from '$actions/ActionTypesStore';
+import { autoSaveSchedule } from '$actions/AppStoreActions';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -141,15 +150,30 @@ function TimeMenu() {
 
 function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
+    const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
 
     const handlePreviewChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPreviewMode(event.target.checked);
     };
 
+    const handleAutoSaveChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        setAutoSave(event.target.checked);
+
+        if (!event.target.checked) return;
+
+        const savedUserID = window.localStorage.getItem('userID');
+
+        if (!savedUserID) return;
+        actionTypesStore.emit('autoSaveStart');
+        await autoSaveSchedule(savedUserID);
+        appStore.unsavedChanges = false;
+        actionTypesStore.emit('autoSaveEnd');
+    };
+
     return (
-        <Stack sx={{ padding: '1rem 1rem 0 1rem', width: '100%', display: 'flex' }} alignItems="middle">
-            <Box display="flex" justifyContent="space-between" width={1}>
-                <Box display="flex" alignItems="center" style={{ gap: 4 }}>
+        <Stack sx={{ padding: '1rem 1rem 0 1rem', width: '100%', display: 'flex', alignItems: 'middle' }}>
+            <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
+                <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
                         Hover to Preview
                     </Typography>
@@ -157,7 +181,19 @@ function ExperimentalMenu() {
                         <Help />
                     </Tooltip>
                 </Box>
-                <Switch color="primary" value={previewMode} checked={previewMode} onChange={handlePreviewChange} />
+                <Switch color={'primary'} value={previewMode} checked={previewMode} onChange={handlePreviewChange} />
+            </Box>
+
+            <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
+                <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                        Auto Save
+                    </Typography>
+                    <Tooltip title={<Typography>Auto Save your schedule!</Typography>}>
+                        <Help />
+                    </Tooltip>
+                </Box>
+                <Switch color={'primary'} value={autoSave} checked={autoSave} onChange={handleAutoSaveChange} />
             </Box>
         </Stack>
     );

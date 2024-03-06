@@ -7,7 +7,6 @@ const styles = {
         padding: 12,
         marginBottom: '10px',
         marginRight: '5px',
-        backgroundColor: 'inherit',
     },
 };
 
