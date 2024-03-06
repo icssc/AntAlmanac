@@ -29,15 +29,46 @@ const styles = {
     },
 };
 
-interface ColorAndDeleteProps {
-    sectionCode: string;
-    color: string;
+/**
+ * Props received by components that perform actions on a specified section.
+ */
+interface SectionActionProps {
+    /**
+     * Styles injected by MUIv4.
+     */
     classes: ClassNameMap;
+
+    /**
+     * The section to perform actions on.
+     */
+    section: AASection;
+
+    /**
+     * The term that the section occurs in.
+     */
     term: string;
+
+    /**
+     * Additional details about the course that the section occurs in.
+     */
+    courseDetails: CourseDetails;
+
+    /**
+     * The names of the schedules that the section can be added to.
+     */
+    scheduleNames: string[];
+
+    /**
+     * Whether the section has a schedule conflict with another event in the calendar.
+     */
+    scheduleConflict: boolean;
 }
 
-export function UnstyledColorAndDelete(props: ColorAndDeleteProps) {
-    const { sectionCode, color, classes, term } = props;
+/**
+ * Sections added to a schedule, can be recolored or deleted.
+ */
+export function UnstyledColorAndDelete(props: SectionActionProps) {
+    const { section, classes, term } = props;
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
     return (
@@ -45,7 +76,7 @@ export function UnstyledColorAndDelete(props: ColorAndDeleteProps) {
             <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
                 <IconButton
                     onClick={() => {
-                        deleteCourse(sectionCode, term);
+                        deleteCourse(section.sectionCode, term);
                         logAnalytics({
                             category: analyticsEnum.addedClasses.title,
                             action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
@@ -56,9 +87,9 @@ export function UnstyledColorAndDelete(props: ColorAndDeleteProps) {
                 </IconButton>
                 <ColorPicker
                     key={AppStore.getCurrentScheduleIndex()}
-                    color={color}
+                    color={section.color}
                     isCustomEvent={false}
-                    sectionCode={sectionCode}
+                    sectionCode={section.sectionCode}
                     term={term}
                     analyticsCategory={analyticsEnum.addedClasses.title}
                 />
@@ -67,16 +98,10 @@ export function UnstyledColorAndDelete(props: ColorAndDeleteProps) {
     );
 }
 
-interface ScheduleAddCellProps {
-    classes: ClassNameMap;
-    section: AASection;
-    courseDetails: CourseDetails;
-    term: string;
-    scheduleNames: string[];
-    scheduleConflict: boolean;
-}
-
-export function UnstyledScheduleAddCell(props: ScheduleAddCellProps) {
+/**
+ * Sections that have not been added to a schedule can be added to a schedule.
+ */
+export function UnstyledScheduleAddCell(props: SectionActionProps) {
     const { classes, section, courseDetails, term, scheduleNames, scheduleConflict } = props;
     const popupState = usePopupState({ popupId: 'SectionTableAddCellPopup', variant: 'popover' });
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
@@ -159,43 +184,16 @@ export function UnstyledScheduleAddCell(props: ScheduleAddCellProps) {
 export const ColorAndDelete = withStyles(styles)(UnstyledColorAndDelete);
 export const ScheduleAddCell = withStyles(styles)(UnstyledScheduleAddCell);
 
-export interface SectionActionProps {
+export interface SectionActionCellProps extends Omit<SectionActionProps, 'classes'> {
     /**
      * Whether the section has been added.
      */
     addedCourse: boolean;
-
-    /**
-     * The actual section.
-     */
-    section: AASection;
-
-    /**
-     */
-    courseDetails: CourseDetails;
-
-    /**
-     */
-    term: string;
-
-    /**
-     * The current schedule names.
-     */
-    scheduleNames: string[];
-
-    /**
-     * Whether the section conflicts with any currently added sections.
-     */
-    scheduleConflict: boolean;
 }
 
 /**
- * Given a section, provides buttons to perform actions on it.
+ * Given a section and schedule information, provides appropriate set of actions.
  */
-export function SectionActionCell(props: SectionActionProps) {
-    return props.addedCourse ? (
-        <ColorAndDelete color={props.section.color} sectionCode={props.section.sectionCode} term={props.term} />
-    ) : (
-        <ScheduleAddCell {...props} />
-    );
+export function SectionActionCell(props: SectionActionCellProps) {
+    return props.addedCourse ? <ColorAndDelete {...props} /> : <ScheduleAddCell {...props} />;
 }
