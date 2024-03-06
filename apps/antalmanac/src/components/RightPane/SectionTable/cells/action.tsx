@@ -52,23 +52,26 @@ interface SectionActionProps {
  */
 export function ColorAndDelete(props: SectionActionProps) {
     const { section, term } = props;
+
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
     const flexDirection = isMobileScreen ? 'column' : undefined;
 
+    const handleClick = () => {
+        deleteCourse(section.sectionCode, term);
+
+        logAnalytics({
+            category: analyticsEnum.addedClasses.title,
+            action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
+        });
+    };
+
     return (
         <Box flexDirection={flexDirection} display="flex" justifyContent="space-evenly">
-            <IconButton
-                onClick={() => {
-                    deleteCourse(section.sectionCode, term);
-                    logAnalytics({
-                        category: analyticsEnum.addedClasses.title,
-                        action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
-                    });
-                }}
-            >
+            <IconButton onClick={handleClick}>
                 <Delete fontSize="small" />
             </IconButton>
+
             <ColorPicker
                 key={AppStore.getCurrentScheduleIndex()}
                 color={section.color}
@@ -86,8 +89,11 @@ export function ColorAndDelete(props: SectionActionProps) {
  */
 export function ScheduleAddCell(props: SectionActionProps) {
     const { section, courseDetails, term, scheduleNames, scheduleConflict } = props;
+
     const popupState = usePopupState({ popupId: 'SectionTableAddCellPopup', variant: 'popover' });
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
+
+    const flexDirection = isMobileScreen ? 'column' : undefined;
 
     const closeAndAddCourse = (scheduleIndex: number, specificSchedule?: boolean) => {
         popupState.close();
@@ -108,7 +114,6 @@ export function ScheduleAddCell(props: SectionActionProps) {
         }
 
         const newCourse = addCourse(section, courseDetails, term, scheduleIndex);
-
         section.color = newCourse.section.color;
     };
 
@@ -133,8 +138,6 @@ export function ScheduleAddCell(props: SectionActionProps) {
         popupState.close();
     };
 
-    const flexDirection = isMobileScreen ? 'column' : undefined;
-
     return (
         <Box flexDirection={flexDirection} display="flex" justifyContent="space-evenly">
             {scheduleConflict ? (
@@ -148,9 +151,11 @@ export function ScheduleAddCell(props: SectionActionProps) {
                     <Add fontSize="small" />
                 </IconButton>
             )}
+
             <IconButton {...bindTrigger(popupState)}>
                 <ArrowDropDown fontSize="small" />
             </IconButton>
+
             <Menu {...bindMenu(popupState)}>
                 {scheduleNames.map((name, index) => (
                     <MenuItem key={index} onClick={() => closeAndAddCourse(index, true)}>
