@@ -194,6 +194,9 @@ importers:
       superjson:
         specifier: ^1.12.3
         version: 1.12.3
+      ua-parser-js:
+        specifier: ^1.0.37
+        version: 1.0.37
       websoc-fuzzy-search:
         specifier: ^1.0.1
         version: 1.0.1
@@ -8973,6 +8976,10 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
     dev: true
+
+  /ua-parser-js@1.0.37:
+    resolution: {integrity: sha512-bhTyI94tZofjo+Dn8SN6Zv8nBDvyXTymAdM3LDI/0IboIUwTu1rEhW7v2TfiVsoYWgkQ4kOVqnI8APUFbIQIFQ==}
+    dev: false
 
   /ufo@1.2.0:
     resolution: {integrity: sha512-RsPyTbqORDNDxqAdQPQBpgqhWle1VcTSou/FraClYlHf6TZnQcGslpLcAphNR+sQW4q5lLWLbOsRlh9j24baQg==}

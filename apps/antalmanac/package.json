@@ -66,6 +66,7 @@
         "react-split": "^2.0.14",
         "recharts": "^2.4.2",
         "superjson": "^1.12.3",
+        "ua-parser-js": "^1.0.37",
         "websoc-fuzzy-search": "^1.0.1",
         "zustand": "^4.3.2"
     },
