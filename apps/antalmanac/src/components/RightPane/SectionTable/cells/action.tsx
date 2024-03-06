@@ -36,7 +36,7 @@ interface ColorAndDeleteProps {
     term: string;
 }
 
-export const ColorAndDelete = withStyles(styles)((props: ColorAndDeleteProps) => {
+export function UnstyledColorAndDelete(props: ColorAndDeleteProps) {
     const { sectionCode, color, classes, term } = props;
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
@@ -65,7 +65,7 @@ export const ColorAndDelete = withStyles(styles)((props: ColorAndDeleteProps) =>
             </div>
         </TableCell>
     );
-});
+}
 
 interface ScheduleAddCellProps {
     classes: ClassNameMap;
@@ -76,13 +76,14 @@ interface ScheduleAddCellProps {
     scheduleConflict: boolean;
 }
 
-export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) => {
+export function UnstyledScheduleAddCell(props: ScheduleAddCellProps) {
     const { classes, section, courseDetails, term, scheduleNames, scheduleConflict } = props;
     const popupState = usePopupState({ popupId: 'SectionTableAddCellPopup', variant: 'popover' });
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
     const closeAndAddCourse = (scheduleIndex: number, specificSchedule?: boolean) => {
         popupState.close();
+
         for (const meeting of section.meetings) {
             if (meeting.timeIsTBA) {
                 openSnackbar('success', 'Online/TBA class added');
@@ -97,7 +98,9 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
                 action: analyticsEnum.classSearch.actions.ADD_SPECIFIC,
             });
         }
+
         const newCourse = addCourse(section, courseDetails, term, scheduleIndex);
+
         section.color = newCourse.section.color;
     };
 
@@ -151,4 +154,7 @@ export const ScheduleAddCell = withStyles(styles)((props: ScheduleAddCellProps) 
             </div>
         </TableCell>
     );
-});
+}
+
+export const ColorAndDelete = withStyles(styles)(UnstyledColorAndDelete);
+export const ScheduleAddCell = withStyles(styles)(UnstyledScheduleAddCell);
