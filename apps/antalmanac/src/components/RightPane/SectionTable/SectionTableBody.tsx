@@ -37,7 +37,6 @@ import { usePreviewStore, useTimeFormatStore, useThemeStore } from '$stores/Sett
 import { useTabStore } from '$stores/TabStore';
 import { normalizeTime, parseDaysString, formatTimes } from '$stores/calendarizeHelpers';
 
-
 const styles: Styles<Theme, object> = (theme) => ({
     sectionCode: {
         display: 'inline-flex',
@@ -641,6 +640,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
                 .map(([column, Component]) => {
                     return (
                         <Component
+                            addedCourse={addedCourse}
                             key={column}
                             section={section}
                             courseDetails={courseDetails}
