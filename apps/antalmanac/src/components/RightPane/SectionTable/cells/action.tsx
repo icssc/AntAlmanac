@@ -1,7 +1,5 @@
-import { IconButton, Menu, MenuItem, TableCell, Tooltip, useMediaQuery } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { Add, ArrowDropDown, Delete } from '@material-ui/icons';
+import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
+import { Box, IconButton, Menu, MenuItem, TableCell, Tooltip, useMediaQuery } from '@mui/material';
 import { AASection } from '@packages/antalmanac-types';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 
@@ -19,25 +17,10 @@ import AppStore from '$stores/AppStore';
  */
 const fieldsToReset = ['courseCode', 'courseNumber', 'deptLabel', 'deptValue', 'GE', 'term'];
 
-const styles = {
-    optionsCell: {
-        width: '8%',
-    },
-    container: {
-        display: 'flex',
-        justifyContent: 'space-evenly',
-    },
-};
-
 /**
  * Props received by components that perform actions on a specified section.
  */
 interface SectionActionProps {
-    /**
-     * Styles injected by MUIv4.
-     */
-    classes: ClassNameMap;
-
     /**
      * The section to perform actions on.
      */
@@ -67,42 +50,42 @@ interface SectionActionProps {
 /**
  * Sections added to a schedule, can be recolored or deleted.
  */
-export function UnstyledColorAndDelete(props: SectionActionProps) {
-    const { section, classes, term } = props;
+export function ColorAndDelete(props: SectionActionProps) {
+    const { section, term } = props;
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
+    const flexDirection = isMobileScreen ? 'column' : undefined;
+
     return (
-        <TableCell padding="none" className={classes.optionsCell}>
-            <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
-                <IconButton
-                    onClick={() => {
-                        deleteCourse(section.sectionCode, term);
-                        logAnalytics({
-                            category: analyticsEnum.addedClasses.title,
-                            action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
-                        });
-                    }}
-                >
-                    <Delete fontSize="small" />
-                </IconButton>
-                <ColorPicker
-                    key={AppStore.getCurrentScheduleIndex()}
-                    color={section.color}
-                    isCustomEvent={false}
-                    sectionCode={section.sectionCode}
-                    term={term}
-                    analyticsCategory={analyticsEnum.addedClasses.title}
-                />
-            </div>
-        </TableCell>
+        <Box flexDirection={flexDirection} display="flex" justifyContent="space-evenly">
+            <IconButton
+                onClick={() => {
+                    deleteCourse(section.sectionCode, term);
+                    logAnalytics({
+                        category: analyticsEnum.addedClasses.title,
+                        action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
+                    });
+                }}
+            >
+                <Delete fontSize="small" />
+            </IconButton>
+            <ColorPicker
+                key={AppStore.getCurrentScheduleIndex()}
+                color={section.color}
+                isCustomEvent={false}
+                sectionCode={section.sectionCode}
+                term={term}
+                analyticsCategory={analyticsEnum.addedClasses.title}
+            />
+        </Box>
     );
 }
 
 /**
  * Sections that have not been added to a schedule can be added to a schedule.
  */
-export function UnstyledScheduleAddCell(props: SectionActionProps) {
-    const { classes, section, courseDetails, term, scheduleNames, scheduleConflict } = props;
+export function ScheduleAddCell(props: SectionActionProps) {
+    const { section, courseDetails, term, scheduleNames, scheduleConflict } = props;
     const popupState = usePopupState({ popupId: 'SectionTableAddCellPopup', variant: 'popover' });
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
@@ -150,39 +133,36 @@ export function UnstyledScheduleAddCell(props: SectionActionProps) {
         popupState.close();
     };
 
+    const flexDirection = isMobileScreen ? 'column' : undefined;
+
     return (
-        <TableCell padding="none" className={classes.optionsCell}>
-            <div className={classes.container} style={isMobileScreen ? { flexDirection: 'column' } : {}}>
-                {scheduleConflict ? (
-                    <Tooltip title="This course overlaps with another event in your calendar!" arrow>
-                        <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
-                            <Add fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                ) : (
+        <Box flexDirection={flexDirection} display="flex" justifyContent="space-evenly">
+            {scheduleConflict ? (
+                <Tooltip title="This course overlaps with another event in your calendar!" arrow>
                     <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
                         <Add fontSize="small" />
                     </IconButton>
-                )}
-                <IconButton {...bindTrigger(popupState)}>
-                    <ArrowDropDown fontSize="small" />
+                </Tooltip>
+            ) : (
+                <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
+                    <Add fontSize="small" />
                 </IconButton>
-                <Menu {...bindMenu(popupState)}>
-                    {scheduleNames.map((name, index) => (
-                        <MenuItem key={index} onClick={() => closeAndAddCourse(index, true)}>
-                            Add to {name}
-                        </MenuItem>
-                    ))}
-                    <MenuItem onClick={addCourseHandler}>Add to All Schedules</MenuItem>
-                    <MenuItem onClick={closeCopyAndAlert}>Copy Link</MenuItem>
-                </Menu>
-            </div>
-        </TableCell>
+            )}
+            <IconButton {...bindTrigger(popupState)}>
+                <ArrowDropDown fontSize="small" />
+            </IconButton>
+            <Menu {...bindMenu(popupState)}>
+                {scheduleNames.map((name, index) => (
+                    <MenuItem key={index} onClick={() => closeAndAddCourse(index, true)}>
+                        Add to {name}
+                    </MenuItem>
+                ))}
+                <MenuItem onClick={addCourseHandler}>Add to All Schedules</MenuItem>
+                <MenuItem onClick={closeCopyAndAlert}>Copy Link</MenuItem>
+            </Menu>
+        </Box>
     );
 }
-
-export const ColorAndDelete = withStyles(styles)(UnstyledColorAndDelete);
-export const ScheduleAddCell = withStyles(styles)(UnstyledScheduleAddCell);
 
 export interface SectionActionCellProps extends Omit<SectionActionProps, 'classes'> {
     /**
@@ -195,5 +175,9 @@ export interface SectionActionCellProps extends Omit<SectionActionProps, 'classe
  * Given a section and schedule information, provides appropriate set of actions.
  */
 export function SectionActionCell(props: SectionActionCellProps) {
-    return props.addedCourse ? <ColorAndDelete {...props} /> : <ScheduleAddCell {...props} />;
+    return (
+        <TableCell padding="none" sx={{ width: '8%' }}>
+            {props.addedCourse ? <ColorAndDelete {...props} /> : <ScheduleAddCell {...props} />}
+        </TableCell>
+    );
 }
