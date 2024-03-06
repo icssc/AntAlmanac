@@ -108,11 +108,11 @@ export async function autoSaveSchedule(userID: string) {
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
         label: userID,
     });
-    if (userID != null) {
-        userID = userID.replace(/\s+/g, '');
+    if (userID == null) return
+    userID = userID.replace(/\s+/g, '');
 
-        if (userID.length > 0) {
-            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+    if (userID.length < 0) return
+    const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
             try {
                 await trpc.users.saveUserData.mutate({ id: userID, userData: scheduleSaveState });
