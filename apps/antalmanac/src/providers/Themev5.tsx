@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { createTheme, CssBaseline, ThemeProvider, type PaletteOptions } from '@mui/material';
 
-import { useThemeStore } from '$stores/SettingsStore';
+import { darkModePalette, useThemeStore } from '$stores/SettingsStore';
 
 const lightTheme: PaletteOptions = {
     primary: {
@@ -24,7 +24,7 @@ const darkTheme: PaletteOptions = {
         main: '#ffffff',
     },
     background: {
-        default: '#1a1c1f',
+        default: darkModePalette.DARK_BODY_BACKGROUND,
         paper: '#424242',
     },
 };

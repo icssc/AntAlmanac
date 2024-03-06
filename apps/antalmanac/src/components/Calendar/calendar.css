@@ -41,7 +41,7 @@
 }
 
 .dark-mode .rbc-time-content {
-    border-top-color: rgb(58, 62, 65);
+    border-top-color: #3a3e41;
 }
 
 .dark-mode .rbc-time-content {
@@ -65,15 +65,15 @@
 }
 
 .dark-mode .rbc-time-view {
-    border-color: rgb(58, 62, 65);
+    border-color: #3a3e41;
 }
 
 .dark-mode .rbc-time-header-content {
-    border-left-color: rgb(58, 62, 65);
+    border-left-color: #3a3e41;
 }
 
 .dark-mode .rbc-time-header.rbc-overflowing {
-    border-right-color: rgb(58, 62, 65);
+    border-right-color: #3a3e41;
 }
 
 @media (min-resolution: 96dpi) {
