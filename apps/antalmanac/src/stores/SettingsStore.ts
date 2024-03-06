@@ -3,6 +3,12 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 export type ThemeSetting = 'light' | 'dark' | 'system';
 
+export const darkModePalette = {
+    DARK_AA_HEADER_BACKGROUND: '#264a92',
+    DARK_SECTION_HEADER_BACKGROUND: '#3a3e41',
+    DARK_BODY_BACKGROUND: '#1a1c1f',
+};
+
 export interface ThemeStore {
     /**
      * The 'raw' theme, based on the user's selected setting

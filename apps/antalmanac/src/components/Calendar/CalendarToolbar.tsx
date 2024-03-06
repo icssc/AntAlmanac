@@ -16,7 +16,7 @@ import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
 import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';
-import { useThemeStore } from '$stores/SettingsStore';
+import { darkModePalette, useThemeStore } from '$stores/SettingsStore';
 
 function handleScheduleChange(index: number) {
     logAnalytics({
@@ -301,7 +301,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                 alignItems: 'center',
                 padding: 1,
                 borderRadius: '4px 4px 0 0',
-                backgroundColor: isDark ? 'rgb(24, 26, 27)' : '',
+                backgroundColor: isDark ? darkModePalette.DARK_SECTION_HEADER_BACKGROUND : '',
             }}
         >
             <Box gap={1} display="flex" alignItems="center">
