@@ -39,7 +39,9 @@ const config = {
     },
     settings: {
         'import/resolver': {
-            typescript: true,
+            typescript: {
+                project: ['tsconfig.json', 'apps/*/tsconfig.json'],
+            },
         },
     },
     env: {
