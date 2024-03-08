@@ -8,7 +8,7 @@ import CoursePane from './CoursePane/CoursePaneRoot';
 import darkModeLoadingGif from './CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './CoursePane/SearchForm/Gifs/loading.gif';
 import { useTabStore } from '$stores/TabStore';
-import { useThemeStore } from '$stores/SettingsStore';
+import { darkModePalette, useThemeStore } from '$stores/SettingsStore';
 
 const UCIMap = React.lazy(() => import('../Map'));
 
@@ -60,7 +60,12 @@ export default function Desktop({ style }: DesktopTabsProps) {
 
     return (
         <Box style={{ ...style, margin: '0 4px' }}>
-            <Paper elevation={0} variant="outlined" square style={{ borderRadius: '4px 4px 0 0' }}>
+            <Paper
+                elevation={0}
+                variant="outlined"
+                square
+                style={{ borderRadius: '4px 4px 0 0', backgroundColor: isDark ? darkModePalette.DARK_SECTION_HEADER_BACKGROUND : '' }}
+            >
                 <Tabs
                     value={activeTab}
                     onChange={(_event, value) => setActiveTab(value)}

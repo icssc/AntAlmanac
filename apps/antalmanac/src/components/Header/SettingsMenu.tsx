@@ -4,7 +4,13 @@ import { Divider, Stack, Tooltip } from '@mui/material';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { Close, DarkMode, Help, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
 
-import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
+import {
+    darkModePalette,
+    usePreviewStore,
+    useThemeStore,
+    useTimeFormatStore,
+    useAutoSaveStore,
+} from '$stores/SettingsStore';
 import useCoursePaneStore from '$stores/CoursePaneStore';
 import appStore from '$stores/AppStore';
 import actionTypesStore from '$actions/ActionTypesStore';
@@ -196,6 +202,7 @@ function ExperimentalMenu() {
 function SettingsMenu() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const isMobileScreen = useMediaQuery('(max-width:750px)');
+    const [isDark] = useThemeStore((store) => [store.isDark]);
 
     const handleDrawerOpen = useCallback(() => {
         setDrawerOpen(true);
@@ -214,8 +221,8 @@ function SettingsMenu() {
                 anchor="right"
                 open={drawerOpen}
                 onClose={handleDrawerClose}
-                PaperProps={{ style: { borderRadius: '10px 0 0 10px' } }}
                 variant="temporary"
+                PaperProps={{ style: { backgroundColor: isDark ? darkModePalette.DARK_BODY_BACKGROUND : undefined } }}
             >
                 <Box style={{ width: isMobileScreen ? '300px' : '360px' }}>
                     <Box
