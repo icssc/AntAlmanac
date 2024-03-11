@@ -112,13 +112,13 @@ function getFinalsStartForTerm(term: string) {
  */
 function getDefaultFinalsStartDate() {
     // FIXME: Un-offset once Spring starts, or figure out a proper fix
-    const [year, month, day] = getDefaultFinalsStart() || [];
+    const [year, month, day] = getDefaultFinalsStart() ?? [];
     return year && month && day ? new Date(year, month, day + 1) : undefined;
 }
 
 function getFinalsStartDateForTerm(term: string) {
     const date = getFinalsStartForTerm(term);
-    const [year, month, day] = date || [];
+    const [year, month, day] = date ?? [];
     return year && month && day ? new Date(year, month, day + 1) : undefined;
 }
 

@@ -25,40 +25,39 @@ export const useHoveredStore = create<HoveredStore>((set) => {
             if (section == null || courseDetails == null || term == null) {
                 set({ ...DEFAULT_HOVERED_STORE });
                 return;
-            } else {
-                set({
-                    hoveredEvents: [
-                        {
-                            ...courseDetails,
-                            section: {
-                                ...section,
-                                color: HOVERED_SECTION_COLOR,
-                            },
-                            term,
-                        },
-                    ],
-                    hoveredCalendarizedCourses: calendarizeCourseEvents([
-                        {
-                            ...courseDetails,
-                            section: {
-                                ...section,
-                                color: HOVERED_SECTION_COLOR,
-                            },
-                            term,
-                        },
-                    ]),
-                    hoveredCalendarizedFinal: calendarizeFinals([
-                        {
-                            ...courseDetails,
-                            section: {
-                                ...section,
-                                color: HOVERED_SECTION_COLOR,
-                            },
-                            term,
-                        },
-                    ])[0],
-                });
             }
+            set({
+                hoveredEvents: [
+                    {
+                        ...courseDetails,
+                        section: {
+                            ...section,
+                            color: HOVERED_SECTION_COLOR,
+                        },
+                        term,
+                    },
+                ],
+                hoveredCalendarizedCourses: calendarizeCourseEvents([
+                    {
+                        ...courseDetails,
+                        section: {
+                            ...section,
+                            color: HOVERED_SECTION_COLOR,
+                        },
+                        term,
+                    },
+                ]),
+                hoveredCalendarizedFinal: calendarizeFinals([
+                    {
+                        ...courseDetails,
+                        section: {
+                            ...section,
+                            color: HOVERED_SECTION_COLOR,
+                        },
+                        term,
+                    },
+                ])[0],
+            });
         },
     };
 });
