@@ -6,10 +6,13 @@ import {
     ShortCourseSchedule,
     RepeatingCustomEvent,
 } from '@packages/antalmanac-types';
+
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
+
 import type { CourseInfo } from '$lib/course_data.types';
-import { getColorForNewSection } from '$stores/scheduleHelpers';
+import { termData } from '$lib/termData';
 import WebSOC from '$lib/websoc';
+import { getColorForNewSection } from '$stores/scheduleHelpers';
 
 export class Schedules {
     private schedules: Schedule[];
@@ -25,7 +28,12 @@ export class Schedules {
     constructor() {
         const scheduleNoteId = Math.random();
         this.schedules = [
-            { scheduleName: 'Schedule 1', courses: [], customEvents: [], scheduleNoteId: scheduleNoteId },
+            {
+                scheduleName: `${termData[0].shortName.replaceAll(' ', '-')}`,
+                courses: [],
+                customEvents: [],
+                scheduleNoteId: scheduleNoteId,
+            },
         ];
         this.currentScheduleIndex = 0;
         this.previousStates = [];

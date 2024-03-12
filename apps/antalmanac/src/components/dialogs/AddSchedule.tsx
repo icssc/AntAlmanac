@@ -1,4 +1,3 @@
-import { useCallback, useState, useEffect, useMemo } from 'react';
 import {
     Button,
     Dialog,
@@ -9,9 +8,12 @@ import {
     type DialogProps,
     Box,
 } from '@mui/material';
+import { useCallback, useState, useEffect } from 'react';
+
 import { addSchedule } from '$actions/AppStoreActions';
-import { useThemeStore } from '$stores/SettingsStore';
+import { termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 type ScheduleNameDialogProps = DialogProps;
 
@@ -34,7 +36,12 @@ function AddScheduleDialog(props: ScheduleNameDialogProps) {
 
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
-    const [name, setName] = useState(`Schedule ${scheduleNames.length + 1}`);
+    const termName = termData[0].shortName.replaceAll(' ', '-');
+    const countSameScheduleNames = scheduleNames.filter((name) => name.includes(termName)).length;
+
+    const [name, setName] = useState(
+        `${termName + (countSameScheduleNames == 0 ? '' : '(' + countSameScheduleNames + ')')}`
+    );
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
@@ -46,7 +53,14 @@ function AddScheduleDialog(props: ScheduleNameDialogProps) {
 
     const submitName = useCallback(() => {
         addSchedule(name);
-        setName(`Schedule ${AppStore.getScheduleNames().length + 1}`);
+        setName(
+            `${
+                termName +
+                (AppStore.getScheduleNames().filter((name) => name.includes(termName)).length == 0
+                    ? ''
+                    : '(' + AppStore.getScheduleNames().filter((name) => name.includes(termName)).length + ')')
+            }`
+        );
         onClose?.({}, 'escapeKeyDown');
     }, [onClose, name]);
 
