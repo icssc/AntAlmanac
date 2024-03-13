@@ -182,7 +182,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
-    const setHoveredCourseEvents = useHoveredStore((store) => store.setHoveredCourseEvents);
+    const setHoveredEvents = useHoveredStore((store) => store.setHoveredEvents);
 
     const loadCourses = useCallback(async () => {
         setLoading(true);
@@ -270,9 +270,9 @@ export default function CourseRenderPane(props: { id?: number }) {
      */
     useEffect(() => {
         return () => {
-            setHoveredCourseEvents(undefined);
+            setHoveredEvents(undefined);
         };
-    }, [setHoveredCourseEvents]);
+    }, []);
 
     return (
         <>
