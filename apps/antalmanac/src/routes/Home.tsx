@@ -10,6 +10,7 @@ import Calendar from '$components/Calendar/CalendarRoot';
 import DesktopTabs from '$components/RightPane/RightPaneRoot';
 import NotificationSnackbar from '$components/NotificationSnackbar';
 import { Tutorial } from '$components/Tutorial';
+import SharedTabs from '$components/SharedTabs';
 
 export default function Home() {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
@@ -20,8 +21,9 @@ export default function Home() {
             <CssBaseline />
             <PatchNotes />
             <Header />
+
             {isMobileScreen ? (
-                <MobileHome />
+                <SharedTabs mobile={true} />
             ) : (
                 <>
                     <Split
@@ -44,9 +46,8 @@ export default function Home() {
                             <Calendar isMobile={false} />
                         </Box>
 
-                        <Box>
-                            <DesktopTabs style={{ height: 'calc(100vh - 58px)' }} />
-                        </Box>
+                        {/* <DesktopTabs style={{ height: 'calc(100vh - 58px)' }} /> */}
+                        <SharedTabs style={{ height: 'calc(100vh - 58px)', overflow: 'auto' }} mobile={false} />
                     </Split>
                     <Tutorial />
                 </>
