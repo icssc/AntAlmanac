@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 /**
@@ -7,9 +8,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
  * Users can toggle certain columns on/off.
  */
 export const SECTION_TABLE_COLUMNS = [
-    // These two are omitted since they're not iterated over in the template.
-    // 'scheduleAdd',
-    // 'colorAndDelete',
+    'action',
     'sectionCode',
     'sectionDetails',
     'instructors',

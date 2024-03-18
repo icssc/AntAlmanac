@@ -10,31 +10,32 @@ import {
     Typography,
     useMediaQuery,
 } from '@material-ui/core';
-import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import classNames from 'classnames';
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-
 import { AASection } from '@packages/antalmanac-types';
+import classNames from 'classnames';
 import { WebsocSectionEnrollment, WebsocSectionMeeting } from 'peterportal-api-next-types';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { MOBILE_BREAKPOINT } from '../../../globals';
-import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
-import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
-import restrictionsMapping from './static/restrictionsMapping.json';
+
 import GradesPopup from './GradesPopup';
+import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
+import { SectionActionCell } from './cells/action';
+import restrictionsMapping from './static/restrictionsMapping.json';
+
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { clickToCopy } from '$lib/helpers';
 import { CourseDetails } from '$lib/course_data.types';
 import Grades from '$lib/grades';
-import AppStore from '$stores/AppStore';
-import { useTabStore } from '$stores/TabStore';
+import { clickToCopy } from '$lib/helpers';
 import locationIds from '$lib/location_ids';
-import { normalizeTime, parseDaysString, formatTimes } from '$stores/calendarizeHelpers';
+import AppStore from '$stores/AppStore';
 import useColumnStore, { type SectionTableColumn } from '$stores/ColumnStore';
-import { usePreviewStore, useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { usePreviewStore, useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
+import { useTabStore } from '$stores/TabStore';
+import { normalizeTime, parseDaysString, formatTimes } from '$stores/calendarizeHelpers';
 
 const styles: Styles<Theme, object> = (theme) => ({
     sectionCode: {
@@ -486,6 +487,7 @@ interface SectionTableBodyProps {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
+    action: SectionActionCell,
     sectionCode: CourseCodeCell,
     sectionDetails: SectionDetailsCell,
     instructors: InstructorsCell,
@@ -632,26 +634,17 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             onMouseEnter={handleHover}
             onMouseLeave={handleHover}
         >
-            {!addedCourse ? (
-                <ScheduleAddCell
-                    section={section}
-                    courseDetails={courseDetails}
-                    term={term}
-                    scheduleNames={scheduleNames}
-                    scheduleConflict={scheduleConflict}
-                />
-            ) : (
-                <ColorAndDelete color={section.color} sectionCode={section.sectionCode} term={term} />
-            )}
             {Object.entries(tableBodyCells)
                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
                 .map(([column, Component]) => {
                     return (
                         <Component
+                            addedCourse={addedCourse}
                             key={column}
                             section={section}
                             courseDetails={courseDetails}
                             term={term}
+                            scheduleConflict={scheduleConflict}
                             scheduleNames={scheduleNames}
                             {...section}
                             sectionType={section.sectionType as SectionType}
