@@ -48,16 +48,6 @@ export class BackendStack extends Stack {
             deletionProtection,
         });
 
-        const authUserDataDDB = new dynamnodb.Table(this, `google-userdata-ddb`, {
-            partitionKey: {
-                name: 'id',
-                type: dynamnodb.AttributeType.STRING,
-            },
-            billingMode: dynamnodb.BillingMode.PAY_PER_REQUEST,
-            removalPolicy,
-            deletionProtection,
-        });
-
         const handler = new lambda.Function(this, 'lambda', {
             runtime: lambda.Runtime.NODEJS_18_X,
             code: lambda.Code.fromAsset('../backend/dist'),
@@ -65,7 +55,6 @@ export class BackendStack extends Stack {
             timeout: Duration.seconds(5),
             memorySize: 256,
             environment: {
-                // We don't need dev database because we will never write to it.
                 AA_MONGODB_URI: env.MONGODB_URI_PROD,
                 MAPBOX_ACCESS_TOKEN: env.MAPBOX_ACCESS_TOKEN ?? '',
                 STAGE: env.NODE_ENV ?? 'development',
@@ -74,7 +63,6 @@ export class BackendStack extends Stack {
         });
 
         userDataDDB.grantReadWriteData(handler);
-        authUserDataDDB.grantReadWriteData(handler);
 
         const certificate = acm.Certificate.fromCertificateArn(
             this,
