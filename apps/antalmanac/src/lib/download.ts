@@ -7,7 +7,7 @@ import { notNull } from './utils';
 import { openSnackbar } from '$actions/AppStoreActions';
 import { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { getDefaultTerm, termData } from '$lib/termData';
+import { termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 
 export const quarterStartDates = Object.fromEntries(
@@ -255,16 +255,30 @@ export function getRRule(bydays: string[], quarter: string) {
 
 export function getEventsFromCourses(
     events = AppStore.getEventsWithFinalsInCalendar(),
-    term = getDefaultTerm().shortName
+    term?: string
 ): EventAttributes[] {
+    /**
+     * The term to assign custom events to.
+     */
+    let customEventTerm = term ?? '';
+
+    // If a designated term has not been determined, assume term of first course event found.
+    if (!customEventTerm) {
+        for (const event of events) {
+            if (!event.isCustomEvent && event.term) {
+                customEventTerm = event.term as typeof customEventTerm;
+            }
+        }
+    }
+
     const calendarEvents = events.flatMap((event) => {
         if (event.isCustomEvent) {
             // FIXME: We don't have a way to get the term for custom events,
             // so we just use the default term.
             const { title, start, end } = event as CustomEvent;
             const days = getByDays(event.days.join(''));
-            const rrule = getRRule(days, getQuarter(term));
-            const eventStartDate = getClassStartDate(term, days);
+            const rrule = getRRule(days, getQuarter(customEventTerm));
+            const eventStartDate = getClassStartDate(customEventTerm, days);
             const [firstClassStart, firstClassEnd] = getFirstClass(
                 eventStartDate,
                 { hour: start.getHours(), minute: start.getMinutes() },
