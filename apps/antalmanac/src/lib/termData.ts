@@ -27,9 +27,9 @@ class Term {
  * Months are 0-indexed
  */
 const termData = [
-    new Term('2024 Summer2', '2024 Summer Session 2', [2024, 7, 5]),
-    new Term('2024 Summer10wk', '2024 10-wk Summer', [2024, 5, 24]),
-    new Term('2024 Summer1', '2024 Summer Session 1', [2024, 5, 24]),
+    new Term('2024 Summer2', '2024 Summer Session 2', [2024, 7, 5], [2024, 8, 10]),
+    new Term('2024 Summer10wk', '2024 10-wk Summer', [2024, 5, 24], [2024, 7, 30]),
+    new Term('2024 Summer1', '2024 Summer Session 1', [2024, 5, 24], [2024, 6, 31]),
     new Term('2024 Spring', '2024 Spring Quarter', [2024, 3, 1], [2024, 5, 8]),
     new Term('2024 Winter', '2024 Winter Quarter', [2024, 0, 8], [2024, 2, 16]),
     new Term('2023 Fall', '2023 Fall Quarter', [2023, 8, 28], [2023, 11, 9]),
