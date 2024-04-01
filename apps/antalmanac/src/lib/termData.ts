@@ -1,3 +1,5 @@
+import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+
 // The index of the default term in termData, as per WebSOC
 const defaultTerm = 0;
 
@@ -89,9 +91,23 @@ const termData = [
     new Term('2014 Fall', '2014 Fall Quarter'),
 ];
 
-// Returns the default term
-function getDefaultTerm() {
-    return termData[defaultTerm];
+/**
+ * Get the default term.
+ *
+ * By default, use a static index.
+ * If an array of events is provided, select the first term found.
+ */
+function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []) {
+    let term = termData[defaultTerm];
+
+    for (const event of events) {
+        if (!event.isCustomEvent && event.term) {
+            term = event.term as any;
+            break;
+        }
+    }
+
+    return term;
 }
 
 // Returns the default finals start as array

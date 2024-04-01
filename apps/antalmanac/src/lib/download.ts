@@ -255,7 +255,7 @@ export function getRRule(bydays: string[], quarter: string) {
 
 export function getEventsFromCourses(
     events = AppStore.getEventsWithFinalsInCalendar(),
-    term = getDefaultTerm().shortName
+    term = getDefaultTerm(events).shortName
 ): EventAttributes[] {
     const calendarEvents = events.flatMap((event) => {
         if (event.isCustomEvent) {
