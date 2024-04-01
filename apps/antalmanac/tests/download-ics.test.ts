@@ -81,7 +81,7 @@ describe('download-ics', () => {
             },
         ];
 
-        const result = getEventsFromCourses(courses);
+        const result = getEventsFromCourses(courses, '2024 Spring');
 
         expect(result).toMatchSnapshot();
     });
