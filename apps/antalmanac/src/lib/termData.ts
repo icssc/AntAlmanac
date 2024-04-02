@@ -97,13 +97,16 @@ const termData = [
  * By default, use a static index.
  * If an array of events is provided, select the first term found.
  */
-function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []) {
+function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term {
     let term = termData[defaultTerm];
 
     for (const event of events) {
         if (!event.isCustomEvent && event.term) {
-            term = event.term as any;
-            break;
+            const existingTerm = termData.find((t) => t.shortName === event.term);
+            if (existingTerm) {
+                term = existingTerm;
+                break;
+            }
         }
     }
 
