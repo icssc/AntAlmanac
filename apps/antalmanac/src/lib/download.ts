@@ -258,8 +258,6 @@ export function getEventsFromCourses(
     term = getDefaultTerm(events).shortName
 ): EventAttributes[] {
     const calendarEvents = events.flatMap((event) => {
-        console.log({ term });
-
         if (event.isCustomEvent) {
             // FIXME: We don't have a way to get the term for custom events,
             // so we just use the default term.
