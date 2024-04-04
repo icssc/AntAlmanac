@@ -13,6 +13,7 @@ import SettingsMenu from './SettingsMenu';
 import Export from './Export';
 import Logo from '$assets/christmas-logo.png';
 import MobileLogo from '$assets/christmas-mobile-logo.png';
+import { darkModePalette, useThemeStore } from '$stores/SettingsStore';
 
 const styles = {
     appBar: {
@@ -51,6 +52,9 @@ const components = [
 
 const Header = ({ classes }: CustomAppBarProps) => {
     const isMobileScreen = useMediaQuery('(max-width:750px)');
+    const isDark = useThemeStore((store) => store.isDark);
+
+    const backgroundColor = isDark ? darkModePalette.DARK_AA_HEADER_BACKGROUND : undefined;
 
     const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
@@ -63,7 +67,7 @@ const Header = ({ classes }: CustomAppBarProps) => {
     };
 
     return (
-        <AppBar position="static" className={classes.appBar}>
+        <AppBar position="static" className={classes.appBar} style={{ backgroundColor }}>
             <Toolbar variant="dense">
                 <img
                     height={32}

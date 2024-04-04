@@ -1,14 +1,5 @@
 import { useCallback, useState } from 'react';
-import {
-    Backdrop,
-    type BackdropProps,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Typography,
-} from '@mui/material';
+import { Backdrop, type BackdropProps, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
 /**
  * Show modal only if the current patch notes haven't been shown.
@@ -16,7 +7,7 @@ import {
  *
  * @example '20230819'
  */
-export const latestPatchNotesUpdate = '20230819';
+export const latestPatchNotesUpdate = '20240401';
 
 /**
  * Whether the user's last visited patch notes is outdated.
@@ -51,24 +42,10 @@ function PatchNotes() {
             data-testid={dialogTestId}
             slots={{ backdrop: PatchNotesBackdrop }}
         >
-            <DialogTitle>{"What's New - October 2023"}</DialogTitle>
+            <DialogTitle>{"What's New - April 2024"}</DialogTitle>
 
             <DialogContent>
-                <Typography>Features</Typography>
-                <ul>
-                    <li>
-                        You can now hover over the Zotistics button to see the Zotistics graph! On mobile, you can still
-                        click the Zotistics button to toggle the graph.
-                    </li>
-                </ul>
-                <img
-                    src="https://user-images.githubusercontent.com/78244965/277567417-f9816b9d-ddda-4c0f-80f4-eeac92428612.gif"
-                    alt="(gif of the new feature)"
-                    style={{
-                        maxWidth: '100%',
-                        boxShadow: '4px 4px 4px rgba(0, 0, 0, 0.4)',
-                    }}
-                />
+                We changed the color pallette for dark mode. We hope you like it!
                 <br />
                 Remember to use the{' '}
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSe0emRHqog-Ctl8tjZfJvewY_CSGXys8ykBkFBy1EEUUUHbUw/viewform">
