@@ -1,4 +1,16 @@
-import { Paper, ImageList, ImageListItem, Typography, Link, List, ListItemText, ListItem } from '@mui/material';
+import { Close } from '@mui/icons-material';
+import {
+    Paper,
+    ImageList,
+    ImageListItem,
+    Typography,
+    Link,
+    List,
+    ListItemText,
+    ListItem,
+    Box,
+    IconButton,
+} from '@mui/material';
 
 const images = [
     {
@@ -15,12 +27,21 @@ const images = [
     },
 ];
 
-function HelpBox() {
+interface HelpBoxProps {
+    onDismiss: () => void;
+}
+
+function HelpBox({ onDismiss }: HelpBoxProps) {
     return (
         <Paper variant="outlined" sx={{ padding: 2, marginBottom: '10px', marginRight: '5px' }}>
-            <Typography variant="h5" fontWeight="bold">
-                Need help planning your schedule?
-            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="h5" fontWeight="bold">
+                    Need help planning your schedule?
+                </Typography>
+                <IconButton aria-label="close" size="large" color="inherit" onClick={onDismiss}>
+                    <Close fontSize="inherit" />
+                </IconButton>
+            </Box>
 
             <List component="ol" sx={{ listStyle: 'decimal', pl: 2, pb: 0 }}>
                 <ListItem sx={{ display: 'list-item', p: 0 }}>

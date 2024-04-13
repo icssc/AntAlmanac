@@ -213,6 +213,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         <IconButton
                             size="small"
                             onClick={() => {
+                                props.closePopover();
                                 deleteCourse(sectionCode, term);
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
@@ -303,7 +304,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             to={`/map?location=${building ?? 0}`}
                             onClick={focusMap}
                         >
-                            {buildingCatalogue[+building].name}
+                            {buildingCatalogue[+building]?.name ?? ''}
                         </Link>
                     </div>
                 )}

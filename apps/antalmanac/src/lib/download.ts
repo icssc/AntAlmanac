@@ -1,11 +1,13 @@
-import type { Course, HourMinute, WebsocSectionFinalExam } from 'peterportal-api-next-types';
 import { saveAs } from 'file-saver';
 import { createEvents, type EventAttributes } from 'ics';
+import type { HourMinute } from 'peterportal-api-next-types';
+
 import { notNull } from './utils';
+
 import { openSnackbar } from '$actions/AppStoreActions';
+import { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { getDefaultTerm, termData } from '$lib/termData';
-import { CourseEvent, CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
 
 export const quarterStartDates = Object.fromEntries(
@@ -251,14 +253,16 @@ export function getRRule(bydays: string[], quarter: string) {
     return `FREQ=WEEKLY;BYDAY=${bydays.toString()};INTERVAL=1;COUNT=${count}`;
 }
 
-export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCalendar()): EventAttributes[] {
+export function getEventsFromCourses(
+    events = AppStore.getEventsWithFinalsInCalendar(),
+    term = getDefaultTerm(events).shortName
+): EventAttributes[] {
     const calendarEvents = events.flatMap((event) => {
         if (event.isCustomEvent) {
             // FIXME: We don't have a way to get the term for custom events,
             // so we just use the default term.
             const { title, start, end } = event as CustomEvent;
             const days = getByDays(event.days.join(''));
-            const term = getDefaultTerm().shortName;
             const rrule = getRRule(days, getQuarter(term));
             const eventStartDate = getClassStartDate(term, days);
             const [firstClassStart, firstClassEnd] = getFirstClass(
@@ -289,15 +293,15 @@ export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCale
 
                     const [finalStart, finalEnd] = getExamTime(finalExam, getYear(term));
 
-                    if (sectionType === 'Fin') {
+                    if (sectionType === 'Fin' && finalStart && finalEnd) {
                         return {
                             productId: CALENDAR_ID,
                             startOutputType: CALENDAR_OUTPUT,
                             endOutputType: CALENDAR_OUTPUT,
                             title: `${title} Final Exam`,
                             description: `Final Exam for ${courseTitle}`,
-                            start: finalStart!,
-                            end: finalEnd!,
+                            start: finalStart,
+                            end: finalEnd,
                         };
                     } else {
                         const classStartDate = getClassStartDate(term, days);
@@ -325,6 +329,7 @@ export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCale
                     }
                 })
                 .filter(notNull);
+
             return courseEvents;
         }
     });

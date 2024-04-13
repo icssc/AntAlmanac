@@ -74,7 +74,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
             />
             <Box sx={{ margin: '0.75rem', color: '#bbbbbb', fontSize: '1rem' }}>
                 <Link to={`/map?location=${customEvent.building ?? 0}`} onClick={focusMap}>
-                    {customEvent.building ? buildingCatalogue[+customEvent.building].name : ''}
+                    {(customEvent.building && buildingCatalogue[+customEvent.building]?.name) || ''}
                 </Link>
             </Box>
 
