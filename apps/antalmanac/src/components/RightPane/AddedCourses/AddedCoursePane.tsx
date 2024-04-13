@@ -30,6 +30,10 @@ interface CourseWithTerm extends AACourse {
     term: string;
 }
 
+interface CopyScheduleButtonProps {
+    index: number;
+}
+
 const NOTE_MAX_LEN = 5000;
 
 function getCourses() {
@@ -96,7 +100,7 @@ function ClearScheduleButton() {
     );
 }
 
-function CopyScheduleButton(index: number) {
+function CopyScheduleButton({ index }: CopyScheduleButtonProps) {
     const [open, setOpen] = useState(false);
 
     const handleOpen = useCallback(() => {
@@ -362,7 +366,7 @@ function AddedSectionsGrid() {
     return (
         <Box display="flex" flexDirection="column" gap={1}>
             <Box display="flex" width={1} position="absolute" zIndex="2">
-                <CopyScheduleButton />
+                <CopyScheduleButton index={scheduleIndex} />
                 <ClearScheduleButton />
                 <ColumnToggleButton />
             </Box>
