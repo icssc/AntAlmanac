@@ -53,14 +53,7 @@ function AddScheduleDialog(props: ScheduleNameDialogProps) {
 
     const submitName = useCallback(() => {
         addSchedule(name);
-        setName(
-            `${
-                termName +
-                (AppStore.getScheduleNames().filter((name) => name.includes(termName)).length == 0
-                    ? ''
-                    : '(' + AppStore.getScheduleNames().filter((name) => name.includes(termName)).length + ')')
-            }`
-        );
+        setName(AppStore.getDefaultScheduleName());
         onClose?.({}, 'escapeKeyDown');
     }, [onClose, name]);
 

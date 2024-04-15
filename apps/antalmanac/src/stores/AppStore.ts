@@ -1,11 +1,11 @@
 import { EventEmitter } from 'events';
-import { VariantType } from 'notistack';
+
 
 import { ScheduleCourse, ScheduleSaveState, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { VariantType } from 'notistack';
+
 import { Schedules } from './Schedules';
-import { SnackbarPosition } from '$components/NotificationSnackbar';
-import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { useTabStore } from '$stores/TabStore';
+
 import actionTypesStore from '$actions/ActionTypesStore';
 import type {
     AddCourseAction,
@@ -19,6 +19,10 @@ import type {
     ChangeCourseColorAction,
     UndoAction,
 } from '$actions/ActionTypesStore';
+import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { SnackbarPosition } from '$components/NotificationSnackbar';
+import { termData } from '$lib/termData';
+import { useTabStore } from '$stores/TabStore';
 
 class AppStore extends EventEmitter {
     schedule: Schedules;
@@ -381,6 +385,14 @@ class AppStore extends EventEmitter {
 
     termsInSchedule = (term: string) =>
         new Set([term, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
+
+    getDefaultScheduleName() {
+        const termName = termData[0].shortName.replaceAll(' ', '-');
+        const countSameScheduleNames = this.schedule
+            .getScheduleNames()
+            .filter((name) => name.includes(termName)).length;
+        return `${termName + (countSameScheduleNames == 0 ? '' : '(' + countSameScheduleNames + ')')}`;
+    }
 }
 
 const store = new AppStore();
