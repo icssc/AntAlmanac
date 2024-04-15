@@ -3,14 +3,16 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import MenuIcon from '@material-ui/icons/Menu';
-import { useState, type MouseEventHandler } from 'react';
+import { useState } from 'react';
 
 import About from './About';
+import Export from './Export';
 import Feedback from './Feedback';
 import Import from './Import';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
+import LoginButton from './Login';
 import SettingsMenu from './SettingsMenu';
-import Export from './Export';
+
 import Logo from '$assets/christmas-logo.png';
 import MobileLogo from '$assets/christmas-mobile-logo.png';
 
@@ -54,7 +56,7 @@ const Header = ({ classes }: CustomAppBarProps) => {
 
     const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
-    const handleClick: MouseEventHandler<SVGSVGElement> = (event) => {
+    const handleClick: React.MouseEventHandler<SVGSVGElement> = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -73,6 +75,8 @@ const Header = ({ classes }: CustomAppBarProps) => {
                 />
 
                 <div style={{ flexGrow: '1' }} />
+
+                <LoginButton />
 
                 <LoadSaveScheduleFunctionality />
 
