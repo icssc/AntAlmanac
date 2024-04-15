@@ -1,14 +1,17 @@
-import { Link } from 'react-router-dom';
 import { Box, Paper, Tab, Tabs, Typography } from '@material-ui/core';
 import { FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
+import { GlobalStyles } from '@mui/material';
 import React, { Suspense } from 'react';
+import { Link } from 'react-router-dom';
 
 import AddedCoursePane from './AddedCourses/AddedCoursePane';
 import CoursePane from './CoursePane/CoursePaneRoot';
 import darkModeLoadingGif from './CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './CoursePane/SearchForm/Gifs/loading.gif';
-import { useTabStore } from '$stores/TabStore';
+
 import { useThemeStore } from '$stores/SettingsStore';
+import { useTabStore } from '$stores/TabStore';
+
 
 const UCIMap = React.lazy(() => import('../Map'));
 
@@ -60,6 +63,7 @@ export default function Desktop({ style }: DesktopTabsProps) {
 
     return (
         <Box style={{ ...style, margin: '0 4px' }}>
+            <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
             <Paper elevation={0} variant="outlined" square style={{ borderRadius: '4px 4px 0 0' }}>
                 <Tabs
                     value={activeTab}
