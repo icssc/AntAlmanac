@@ -1,55 +1,59 @@
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import React, { useEffect, useState } from 'react';
+import { Button, Box } from '@material-ui/core';
+import { useEffect, useState } from 'react';
+
+import { useThemeStore } from '$stores/SettingsStore';
 
 const normal_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const abbreviated_days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
 
 interface DaySelectorProps {
     days?: boolean[];
     onSelectDay: (days: boolean[]) => void;
 }
 
-const DaySelector: React.FC<DaySelectorProps> = ({
-    days = [false, false, false, false, false, false, false],
-    onSelectDay,
-}) => {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+const DaySelector = ({ days = [false, false, false, false, false, false, false], onSelectDay }: DaySelectorProps) => {
     const [selectedDays, setSelectedDays] = useState(days);
+
+    const { isDark } = useThemeStore();
 
     useEffect(() => {
         onSelectDay(selectedDays);
     }, [onSelectDay, selectedDays]);
 
-    const handleChange = (dayIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (dayIndex: number) => {
         const newSelectedDays = [...selectedDays];
-        newSelectedDays[dayIndex] = event.target.checked;
+        newSelectedDays[dayIndex] = !selectedDays[dayIndex];
         setSelectedDays(newSelectedDays);
     };
 
-    const dayNames = isMobile ? abbreviated_days : normal_days;
-
     return (
-        <FormGroup row>
-            {dayNames.map((day, index) => (
-                <FormControlLabel
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                padding: 5,
+            }}
+        >
+            {normal_days.map((day, index) => (
+                <Button
                     key={index}
-                    control={
-                        <Checkbox
-                            checked={selectedDays[index]}
-                            onChange={handleChange(index)}
-                            value={index}
-                            color="primary"
-                        />
-                    }
-                    label={day}
-                />
+                    variant={selectedDays[index] ? 'contained' : 'outlined'}
+                    size="small"
+                    onClick={() => {
+                        handleChange(index);
+                    }}
+                    color={isDark ? 'default' : 'primary'}
+                    style={{
+                        margin: 5,
+                        maxWidth: 40,
+                        minWidth: 40,
+                        aspectRatio: 1,
+                    }}
+                >
+                    {day[0]}
+                </Button>
             ))}
-        </FormGroup>
+        </Box>
     );
 };
 

@@ -22,7 +22,7 @@ import { MOBILE_BREAKPOINT } from '../../../globals';
 
 import GradesPopup from './GradesPopup';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
-import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
+import { SectionActionCell } from './cells/action';
 import restrictionsMapping from './static/restrictionsMapping.json';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
@@ -487,6 +487,7 @@ interface SectionTableBodyProps {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
+    action: SectionActionCell,
     sectionCode: CourseCodeCell,
     sectionDetails: SectionDetailsCell,
     instructors: InstructorsCell,
@@ -633,26 +634,17 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             onMouseEnter={handleHover}
             onMouseLeave={handleHover}
         >
-            {!addedCourse ? (
-                <ScheduleAddCell
-                    section={section}
-                    courseDetails={courseDetails}
-                    term={term}
-                    scheduleNames={scheduleNames}
-                    scheduleConflict={scheduleConflict}
-                />
-            ) : (
-                <ColorAndDelete color={section.color} sectionCode={section.sectionCode} term={term} />
-            )}
             {Object.entries(tableBodyCells)
                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
                 .map(([column, Component]) => {
                     return (
                         <Component
+                            addedCourse={addedCourse}
                             key={column}
                             section={section}
                             courseDetails={courseDetails}
                             term={term}
+                            scheduleConflict={scheduleConflict}
                             scheduleNames={scheduleNames}
                             {...section}
                             sectionType={section.sectionType as SectionType}

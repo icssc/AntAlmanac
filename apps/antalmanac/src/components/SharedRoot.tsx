@@ -1,5 +1,6 @@
 import { Box, Paper, Tab, Tabs, Typography } from '@material-ui/core';
 import { Event, FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
+import { GlobalStyles } from '@mui/material';
 import { Suspense, lazy, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
@@ -115,6 +116,7 @@ const SharedTabs = ({ style, mobile }: SharedTabsProps) => {
 
     return (
         <Box style={{ ...style, height: 'calc(100vh - 58px)' }}>
+            <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
             <Paper
                 elevation={0}
                 variant="outlined"

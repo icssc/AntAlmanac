@@ -51,8 +51,9 @@ Since then, the project has continued to evolve and grow with successive generat
 | 2018 - 2019    | @the-rango (founder) |
 | 2019 - 2021    | @devsdevsdevs        |
 | 2021 - 2022    | @ChaseC99            |
-| 2022 - Present | @EricPedley          |
+| 2022 - 2024    | @EricPedley          |
 | 2023 - Present | @ap0nia              |
+| 2024 - Present | @MinhxNguyen7        |
 
 
 # Contributing
