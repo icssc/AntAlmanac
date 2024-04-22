@@ -96,7 +96,7 @@ const SharedTabs = ({ style, mobile }: SharedTabsProps) => {
     };
 
     useEffect(() => {
-        localStorage.getItem('userID') ? setActiveTab(0) : setActiveTab(2);
+        localStorage.getItem('userID') ? setActiveTab(2) : setActiveTab(1);
     }, [setActiveTab]);
 
     useEffect(() => {
