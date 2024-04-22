@@ -1,18 +1,18 @@
-import React, { Suspense, useEffect } from 'react';
 import { Box, Paper, Tab, Tabs, Typography } from '@material-ui/core';
 import { Event, FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
+import { Suspense, lazy, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
+import Calendar from './Calendar/CalendarRoot';
 import AddedCoursePane from './RightPane/AddedCourses/AddedCoursePane';
 import CoursePane from './RightPane/CoursePane/CoursePaneRoot';
-
 import darkModeLoadingGif from './RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './RightPane/CoursePane/SearchForm/Gifs/loading.gif';
-import Calendar from './Calendar/CalendarRoot';
-import { useThemeStore } from '$stores/SettingsStore';
-import useTabStore from '$stores/TabStore';
 
-const UCIMap = React.lazy(() => import('./Map/Map'));
+import { useThemeStore } from '$stores/SettingsStore';
+import { useTabStore } from '$stores/TabStore';
+
+const UCIMap = lazy(() => import('./Map/Map'));
 
 const styles = {
     fallback: {

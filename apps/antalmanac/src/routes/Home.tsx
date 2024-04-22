@@ -1,14 +1,14 @@
-import Split from 'react-split';
 import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { Box, CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import Split from 'react-split';
 
-import Header from '$components/Header';
-import PatchNotes from '$components/PatchNotes';
 import Calendar from '$components/Calendar/CalendarRoot';
+import Header from '$components/Header';
 import NotificationSnackbar from '$components/NotificationSnackbar';
-import { Tutorial } from '$components/Tutorial';
+import PatchNotes from '$components/PatchNotes';
 import SharedTabs from '$components/SharedRoot';
+import { Tutorial } from '$components/Tutorial';
 
 export default function Home() {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');

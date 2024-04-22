@@ -10,31 +10,32 @@ import {
     Typography,
     useMediaQuery,
 } from '@material-ui/core';
-import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import classNames from 'classnames';
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-
 import { AASection } from '@packages/antalmanac-types';
+import classNames from 'classnames';
 import { WebsocSectionEnrollment, WebsocSectionMeeting } from 'peterportal-api-next-types';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { MOBILE_BREAKPOINT } from '../../../globals';
+
+import GradesPopup from './GradesPopup';
 import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
 import { ColorAndDelete, ScheduleAddCell } from './SectionTableButtons';
 import restrictionsMapping from './static/restrictionsMapping.json';
-import GradesPopup from './GradesPopup';
+
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { clickToCopy } from '$lib/helpers';
 import { CourseDetails } from '$lib/course_data.types';
 import Grades from '$lib/grades';
-import AppStore from '$stores/AppStore';
-import { useTabStore } from '$stores/TabStore';
+import { clickToCopy } from '$lib/helpers';
 import locationIds from '$lib/location_ids';
-import { normalizeTime, parseDaysString, formatTimes } from '$stores/calendarizeHelpers';
+import AppStore from '$stores/AppStore';
 import useColumnStore, { type SectionTableColumn } from '$stores/ColumnStore';
-import { usePreviewStore, useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { usePreviewStore, useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
+import { useTabStore } from '$stores/TabStore';
+import { normalizeTime, parseDaysString, formatTimes } from '$stores/calendarizeHelpers';
 
 const styles: Styles<Theme, object> = (theme) => ({
     sectionCode: {
@@ -531,20 +532,19 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         setCalendarEvents(AppStore.getCourseEventsInCalendar());
     }, [setCalendarEvents]);
 
-    const [hoveredCourseEvents, setHoveredCourseEvents] = useHoveredStore((store) => [
-        store.hoveredCourseEvents,
-        store.setHoveredCourseEvents,
-    ]);
+    const [hoveredEvents, setHoveredEvents] = useHoveredStore((store) => [store.hoveredEvents, store.setHoveredEvents]);
+
+    const alreadyHovered = useMemo(() => {
+        return hoveredEvents?.some((scheduleCourse) => scheduleCourse.section.sectionCode == section.sectionCode);
+    }, [hoveredEvents, section.sectionCode]);
 
     const handleHover = useCallback(() => {
-        const alreadyHovered =
-            hoveredCourseEvents &&
-            hoveredCourseEvents.some((courseEvent) => courseEvent.sectionCode == section.sectionCode);
-
-        !previewMode || alreadyHovered || addedCourse
-            ? setHoveredCourseEvents(undefined)
-            : setHoveredCourseEvents(section, courseDetails, term);
-    }, [addedCourse, courseDetails, hoveredCourseEvents, previewMode, section, setHoveredCourseEvents, term]);
+        if (!previewMode || alreadyHovered || addedCourse) {
+            setHoveredEvents(undefined);
+        } else {
+            setHoveredEvents(section, courseDetails, term);
+        }
+    }, [alreadyHovered, section, courseDetails, term]);
 
     // Attach event listeners to the store.
     useEffect(() => {

@@ -1,16 +1,16 @@
-import { VariantType } from 'notistack';
-
-import { TRPCError } from '@trpc/server';
-import { WebsocSection } from 'peterportal-api-next-types';
 import { ScheduleCourse } from '@packages/antalmanac-types';
 import { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { TRPCError } from '@trpc/server';
+import { VariantType } from 'notistack';
+import { WebsocSection } from 'peterportal-api-next-types';
+
 import { SnackbarPosition } from '$components/NotificationSnackbar';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { warnMultipleTerms } from '$lib/helpers';
-import { CourseDetails } from '$lib/course_data.types';
-import AppStore from '$stores/AppStore';
-import trpc from '$lib/api/trpc';
 import { courseNumAsDecimal } from '$lib/analytics';
+import trpc from '$lib/api/trpc';
+import { CourseDetails } from '$lib/course_data.types';
+import { warnMultipleTerms } from '$lib/helpers';
+import AppStore from '$stores/AppStore';
 
 export interface CopyScheduleOptions {
     onSuccess: (index: number) => unknown;
@@ -101,6 +101,31 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
         }
     }
 };
+
+export async function autoSaveSchedule(userID: string) {
+    logAnalytics({
+        category: analyticsEnum.nav.title,
+        action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
+        label: userID,
+    });
+    if (userID == null) return;
+    userID = userID.replace(/\s+/g, '');
+
+    if (userID.length < 0) return;
+    const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+
+    try {
+        await trpc.users.saveUserData.mutate({ id: userID, userData: scheduleSaveState });
+
+        AppStore.saveSchedule();
+    } catch (e) {
+        if (e instanceof TRPCError) {
+            openSnackbar('error', `Schedule could not be auto-saved under username "${userID}`);
+        } else {
+            openSnackbar('error', 'Network error or server is down.');
+        }
+    }
+}
 
 export const loadSchedule = async (userId: string, rememberMe: boolean) => {
     logAnalytics({

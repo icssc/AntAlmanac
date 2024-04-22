@@ -1,18 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 
-import { Box, Chip, IconButton, Menu, MenuItem, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
 import { ContentCopy, DeleteOutline } from '@mui/icons-material';
+import { Box, Chip, IconButton, Menu, MenuItem, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
-
+import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 import { useSnackbar } from 'notistack';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
 import { ColumnToggleButton } from '../CoursePane/CoursePaneButtonRow';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
+
 import CustomEventDetailView from './CustomEventDetailView';
-import AppStore from '$stores/AppStore';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+
 import { CopyScheduleOptions, clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy } from '$lib/helpers';
+import AppStore from '$stores/AppStore';
 
 /**
  * All the interactive buttons have the same styles.
@@ -303,11 +305,14 @@ function SkeletonSchedule() {
     }, []);
 
     const sectionsByTerm: [string, string[]][] = useMemo(() => {
-        const result = skeletonSchedule.courses.reduce((accumulated, course) => {
-            accumulated[course.term] ??= [];
-            accumulated[course.term].push(course.sectionCode);
-            return accumulated;
-        }, {} as Record<string, string[]>);
+        const result = skeletonSchedule.courses.reduce(
+            (accumulated, course) => {
+                accumulated[course.term] ??= [];
+                accumulated[course.term].push(course.sectionCode);
+                return accumulated;
+            },
+            {} as Record<string, string[]>
+        );
 
         return Object.entries(result);
     }, [skeletonSchedule.courses]);
@@ -403,6 +408,13 @@ function AddedSectionsGrid() {
         return scheduleNames[scheduleIndex];
     }, [scheduleNames, scheduleIndex]);
 
+    // "No Courses Added Yet!" notification
+    const NoCoursesBox = (
+        <Box style={{ paddingTop: '12px', paddingBottom: '12px' }}>
+            <Typography align="left">No Courses Added Yet!</Typography>
+        </Box>
+    );
+
     return (
         <Box display="flex" flexDirection="column" gap={1}>
             <Box display="flex" width={1} position="absolute" zIndex="2">
@@ -412,6 +424,7 @@ function AddedSectionsGrid() {
             </Box>
             <Box style={{ marginTop: 50 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
+                {courses.length < 1 ? NoCoursesBox : null}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
                         return (

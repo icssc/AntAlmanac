@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 export type ThemeSetting = 'light' | 'dark' | 'system';
@@ -82,6 +83,25 @@ export const usePreviewStore = create<PreviewStore>((set) => {
             }
 
             set({ previewMode: previewMode });
+        },
+    };
+});
+
+export interface AutoSaveStore {
+    autoSave: boolean;
+    setAutoSave: (autoSave: boolean) => void;
+}
+
+export const useAutoSaveStore = create<AutoSaveStore>((set) => {
+    const autoSave = typeof Storage !== 'undefined' && window.localStorage.getItem('autoSave') == 'true';
+
+    return {
+        autoSave,
+        setAutoSave: (autoSave) => {
+            if (typeof Storage !== 'undefined') {
+                window.localStorage.setItem('autoSave', autoSave.toString());
+            }
+            set({ autoSave });
         },
     };
 });
