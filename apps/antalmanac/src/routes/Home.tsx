@@ -4,10 +4,8 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { Box, CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
 
 import Header from '$components/Header';
-import MobileHome from '$components/MobileHome';
 import PatchNotes from '$components/PatchNotes';
 import Calendar from '$components/Calendar/CalendarRoot';
-import DesktopTabs from '$components/RightPane/RightPaneRoot';
 import NotificationSnackbar from '$components/NotificationSnackbar';
 import { Tutorial } from '$components/Tutorial';
 import SharedTabs from '$components/SharedTabs';
@@ -46,8 +44,7 @@ export default function Home() {
                             <Calendar isMobile={false} />
                         </Box>
 
-                        {/* <DesktopTabs style={{ height: 'calc(100vh - 58px)' }} /> */}
-                        <SharedTabs style={{ height: 'calc(100vh - 58px)', overflow: 'auto' }} mobile={false} />
+                        <SharedTabs mobile={false} />
                     </Split>
                     <Tutorial />
                 </>

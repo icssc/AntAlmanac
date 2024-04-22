@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect } from 'react';
-import { Box, Paper, Tab, Tabs, Typography, useMediaQuery } from '@material-ui/core';
+import { Box, Paper, Tab, Tabs, Typography } from '@material-ui/core';
 import { Event, FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
 import { Link, useParams } from 'react-router-dom';
 
@@ -81,46 +81,6 @@ const tabs: Array<TabInfo> = [
     },
 ];
 
-const MobileTab = ({ tab }: { tab: TabInfo }) => {
-    return (
-        <Tab
-            label={
-                <Box
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        gap: 2,
-                    }}
-                >
-                    <tab.icon style={{ width: '100%', fontSize: '22px' }} />
-                    <Typography style={{ fontSize: '10px' }}>{tab.label}</Typography>
-                </Box>
-            }
-            style={{ paddingTop: 0, paddingBottom: 0 }}
-            key={tab.label}
-        />
-    );
-};
-
-const DesktopTab = (tab: TabInfo) => {
-    return (
-        <Tab
-            key={tab.label}
-            component={Link}
-            label={
-                <div style={{ display: 'inline-flex', alignItems: 'center' }}>
-                    <tab.icon style={{ height: 16 }} />
-                    <Typography variant="body2">{tab.label}</Typography>
-                </div>
-            }
-            to={tab.href ?? ''}
-            style={{ minHeight: 'auto', height: '44px', padding: 3, minWidth: '33%' }}
-            id={tab.id}
-        />
-    );
-};
-
 interface SharedTabsProps {
     style?: Record<string, unknown>;
     mobile: boolean;
@@ -131,28 +91,44 @@ const SharedTabs = ({ style, mobile }: SharedTabsProps) => {
 
     const params = useParams();
 
-    useEffect(() => {
-        if (params.tab === 'map') {
-            setActiveTab(1);
-        }
-    }, [params, setActiveTab]);
+    const getActiveTab = () => {
+        return mobile ? activeTab : activeTab - 1 >= 0 ? activeTab - 1 : 0;
+    };
 
     useEffect(() => {
-        localStorage.getItem('userID') ? setActiveTab(0) : setActiveTab(1);
+        localStorage.getItem('userID') ? setActiveTab(0) : setActiveTab(2);
     }, [setActiveTab]);
 
+    useEffect(() => {
+        if (mobile) {
+            return;
+        }
+
+        if (params.tab === 'map') {
+            setActiveTab(3);
+        }
+
+        if (activeTab == 0) {
+            setActiveTab(1);
+        }
+    }, [activeTab, mobile, params.tab, setActiveTab]);
+
     return (
-        <Box style={{ ...style, height: '100%' }}>
-            <Paper elevation={0} variant="outlined" square style={{ margin: '4px', height: '50px' }}>
+        <Box style={{ ...style, height: 'calc(100vh - 58px)' }}>
+            <Paper
+                elevation={0}
+                variant="outlined"
+                square
+                style={{ margin: '0px 4px 4px', borderRadius: '4px 4px 0 0' }}
+            >
                 <Tabs
-                    value={mobile ? activeTab : activeTab - 1}
-                    onChange={(_event, value) => setActiveTab(value)}
+                    value={getActiveTab()}
+                    onChange={(_event, value) => {
+                        setActiveTab(mobile ? value : value + 1);
+                    }}
                     indicatorColor="primary"
                     variant="fullWidth"
                     centered
-                    style={{
-                        height: '100%',
-                    }}
                 >
                     {!mobile
                         ? tabs.slice(1).map((tab) => (
@@ -170,7 +146,24 @@ const SharedTabs = ({ style, mobile }: SharedTabsProps) => {
                                   id={tab.id}
                               />
                           ))
-                        : tabs.map((tab) => <MobileTab tab={tab} key={tab.label} />)}
+                        : tabs.map((tab) => (
+                              <Tab
+                                  key={tab.label}
+                                  label={
+                                      <Box
+                                          style={{
+                                              display: 'flex',
+                                              flexDirection: 'column',
+                                              justifyContent: 'center',
+                                              gap: 2,
+                                          }}
+                                      >
+                                          <tab.icon style={{ width: '100%', fontSize: '22px' }} />
+                                          <Typography style={{ fontSize: '10px' }}>{tab.label}</Typography>
+                                      </Box>
+                                  }
+                              />
+                          ))}
                 </Tabs>
             </Paper>
 
