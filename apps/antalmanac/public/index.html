@@ -46,17 +46,21 @@
 
         <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
         <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
-        <link rel="stylesheet" href="%PUBLIC_URL%/google_font_roboto_300_400_500_700.css" />
+        <link rel="preload" href="/google_font_roboto_300_400_500_700.css" as="style" onload="this.rel='stylesheet'"/>
         <link
-            rel="stylesheet"
+            rel="preload"
             href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
             integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
             crossorigin=""
+            as="style"
+            onload="this.rel='stylesheet'"
         />
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+        <link rel="preload" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" as="style" onload="this.rel='stylesheet'"/>
         <link
-            rel="stylesheet"
+            rel="preload"
             href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css"
+            as="style"
+            onload="this.rel='stylesheet'"
         />
 
         <!--
