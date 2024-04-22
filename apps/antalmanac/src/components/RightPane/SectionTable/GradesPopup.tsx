@@ -1,9 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Box, Link, Typography, Skeleton } from '@mui/material';
 import { useThemeStore } from '$stores/SettingsStore';
 import GradesHelper, { type Grades } from '$lib/grades';
-
 export interface GradeData {
     grades: {
         name: string;
@@ -26,6 +25,11 @@ async function getGradeData(
         return undefined;
     }
 
+    const totalGrades = Object.values(Object.entries(courseGrades).filter(([key]) => key !== 'averageGPA')).reduce(
+        (acc, [_, value]) => acc + value,
+        0
+    );
+
     /**
      * Format data for displaying in chart.
      *
@@ -36,7 +40,7 @@ async function getGradeData(
         .map(([key, value]) => {
             return {
                 name: key.replace('grade', '').replace('Count', ''),
-                all: value,
+                all: Number(((value / totalGrades) * 100).toFixed(2)),
             };
         });
 
@@ -51,7 +55,7 @@ export interface GradesPopupProps {
 }
 
 function GradesPopup(props: GradesPopupProps) {
-    const isDark = useThemeStore((store) => [store.isDark]);
+    const { isDark } = useThemeStore();
 
     const { deptCode, courseNumber, instructor = '', isMobileScreen } = props;
 
@@ -108,7 +112,7 @@ function GradesPopup(props: GradesPopupProps) {
     }
 
     const encodedDept = encodeURIComponent(deptCode);
-    const axisColor = isDark ? '#fff' : '#111';
+    const axisColor = isDark ? '#fff' : '#000';
 
     return (
         <Box sx={{ padding: '4px' }}>
@@ -134,13 +138,60 @@ function GradesPopup(props: GradesPopupProps) {
                     <BarChart data={gradeData.grades} style={{ cursor: 'pointer' }}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
-                        <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} />
+                        <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} unit="%" />
+                        <Tooltip
+                            content={({ active, payload, label }) => (
+                                <GradeTooltip
+                                    active={active ?? false}
+                                    payload={(payload as Array<Payload>) ?? null}
+                                    label={label ?? ''}
+                                />
+                            )}
+                            position={{ y: 100 }}
+                            offset={-5}
+                        />
                         <Bar dataKey="all" fill="#5182ed" />
                     </BarChart>
                 </ResponsiveContainer>
             </Link>
         </Box>
     );
+}
+
+const GradeTooltip = (props: GradeTooltipProps) => {
+    const { active, payload, label } = props;
+    if (active && payload && payload.length) {
+        return (
+            <>
+                <Box
+                    sx={{
+                        backgroundColor: '#5182ed',
+                        padding: '5px',
+                        border: '1px solid #000',
+                        borderRadius: '5px',
+                        boxShadow: '0 0 5px 0 rgba(0, 0, 0, 0.5)',
+                    }}
+                >
+                    <Typography variant="body1" align="center" sx={{ color: '#fff', fontWeight: 500 }}>
+                        {`${label}: ${payload[0].value}%`}
+                    </Typography>
+                </Box>
+            </>
+        );
+    }
+
+    return null;
+};
+
+export interface GradeTooltipProps {
+    active: boolean;
+    payload: Array<Payload> | null;
+    label: string;
+}
+
+export interface Payload {
+    name: string;
+    value: number;
 }
 
 export default GradesPopup;

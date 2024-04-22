@@ -1,3 +1,5 @@
+import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+
 // The index of the default term in termData, as per WebSOC
 const defaultTerm = 0;
 
@@ -27,9 +29,12 @@ class Term {
  * Months are 0-indexed
  */
 const termData = [
+    new Term('2024 Summer2', '2024 Summer Session 2', [2024, 7, 5], [2024, 8, 10]),
+    new Term('2024 Summer10wk', '2024 10-wk Summer', [2024, 5, 24], [2024, 7, 30]),
+    new Term('2024 Summer1', '2024 Summer Session 1', [2024, 5, 24], [2024, 6, 31]),
     new Term('2024 Spring', '2024 Spring Quarter', [2024, 3, 1], [2024, 5, 8]),
     new Term('2024 Winter', '2024 Winter Quarter', [2024, 0, 8], [2024, 2, 16]),
-    new Term('2023 Fall', '2023 Fall Quarter', [2023, 8, 28]),
+    new Term('2023 Fall', '2023 Fall Quarter', [2023, 8, 28], [2023, 11, 9]),
     new Term('2023 Summer2', '2023 Summer Session 2', [2023, 7, 7]),
     new Term('2023 Summer10wk', '2023 10-wk Summer', [2023, 5, 26]),
     new Term('2023 Summer1', '2023 Summer Session 1', [2023, 5, 26]),
@@ -86,9 +91,23 @@ const termData = [
     new Term('2014 Fall', '2014 Fall Quarter'),
 ];
 
-// Returns the default term
-function getDefaultTerm() {
-    return termData[defaultTerm];
+/**
+ * Get the default term.
+ *
+ * By default, use a static index.
+ * If an array of events is provided, select the first term found.
+ */
+function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []) {
+    let term = termData[defaultTerm];
+
+    for (const event of events) {
+        if (!event.isCustomEvent && event.term) {
+            term = event.term as any;
+            break;
+        }
+    }
+
+    return term;
 }
 
 // Returns the default finals start as array
@@ -97,14 +116,37 @@ function getDefaultFinalsStart() {
     return termData[defaultTerm + 1].finalsStartDate;
 }
 
+function getFinalsStartForTerm(term: string) {
+    const termThatMatches = termData.find((t) => t.shortName === term);
+    if (termThatMatches === undefined) {
+        console.warn(`No matching term for ${term}`);
+        return getDefaultFinalsStart();
+    }
+    return termThatMatches.finalsStartDate;
+}
+
 /**
  * Returns the default finals start as Date object
  * Days offset by 1 to accomodate toggling with Saturday finals
  */
 function getDefaultFinalsStartDate() {
     // FIXME: Un-offset once Spring starts, or figure out a proper fix
-    const [year, month, day] = termData[defaultTerm + 1].finalsStartDate || [];
+    const [year, month, day] = getDefaultFinalsStart() ?? [];
     return year && month && day ? new Date(year, month, day + 1) : undefined;
 }
 
-export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStart, getDefaultFinalsStartDate };
+function getFinalsStartDateForTerm(term: string) {
+    const date = getFinalsStartForTerm(term);
+    const [year, month, day] = date ?? [];
+    return year && month && day ? new Date(year, month, day + 1) : undefined;
+}
+
+export {
+    defaultTerm,
+    getDefaultTerm,
+    termData,
+    getDefaultFinalsStart,
+    getDefaultFinalsStartDate,
+    getFinalsStartForTerm,
+    getFinalsStartDateForTerm,
+};

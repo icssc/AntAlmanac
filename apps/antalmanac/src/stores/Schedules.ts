@@ -403,6 +403,13 @@ export class Schedules {
     }
 
     /**
+     * Convert just custom events into calendar compatible format.
+     */
+    getCalendarizedCustomEvents() {
+        return calendarizeCustomEvents(this.getCurrentCustomEvents());
+    }
+
+    /**
      * Convert finals into calendar friendly format
      */
     getCalendarizedFinals() {

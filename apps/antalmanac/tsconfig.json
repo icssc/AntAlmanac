@@ -16,6 +16,7 @@
         "jsx": "react-jsx",
         "baseUrl": ".",
         "paths": {
+            "$assets/*": ["src/assets/*"],
             "$actions/*": ["src/actions/*"],
             "$api/*": ["src/api/*"],
             "$components/*": ["src/components/*"],

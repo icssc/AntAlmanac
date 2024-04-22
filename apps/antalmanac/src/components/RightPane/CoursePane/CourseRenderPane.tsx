@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
-import { Alert, Box, GlobalStyles, IconButton } from '@mui/material';
+import { Alert, Box, GlobalStyles, IconButton, useMediaQuery } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
 import { WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
@@ -27,7 +27,7 @@ function getColors() {
             accumulator[section.sectionCode] = section.color;
             return accumulator;
         },
-        {} as { [key: string]: string }
+        {} as Record<string, string>
     );
 
     return courseColors;
@@ -63,11 +63,15 @@ const RecruitmentBanner = () => {
     const dismissedRecently =
         recruitmentDismissalTime !== null &&
         Date.now() - parseInt(recruitmentDismissalTime) < 11 * 7 * 24 * 3600 * 1000;
-    const isSearchCS = ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(RightPaneStore.getFormData().deptValue);
+    const isSearchCS = ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(
+        RightPaneStore.getFormData().deptValue.toUpperCase()
+    );
     const displayRecruitmentBanner = bannerVisibility && !dismissedRecently && isSearchCS;
 
+    const isMobileScreen = useMediaQuery('(max-width: 750px)');
+
     return (
-        <Box sx={{ position: 'fixed', bottom: 5, right: 5, zIndex: 999 }}>
+        <Box sx={{ position: 'fixed', bottom: 5, right: isMobileScreen ? 5 : 75, zIndex: 999 }}>
             {displayRecruitmentBanner ? (
                 <Alert
                     icon={false}
@@ -178,7 +182,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
-    const setHoveredCourseEvents = useHoveredStore((store) => store.setHoveredCourseEvents);
+    const setHoveredEvents = useHoveredStore((store) => store.setHoveredEvents);
 
     const loadCourses = useCallback(async () => {
         setLoading(true);
@@ -266,9 +270,9 @@ export default function CourseRenderPane(props: { id?: number }) {
      */
     useEffect(() => {
         return () => {
-            setHoveredCourseEvents(undefined);
+            setHoveredEvents(undefined);
         };
-    }, [setHoveredCourseEvents]);
+    }, []);
 
     return (
         <>
