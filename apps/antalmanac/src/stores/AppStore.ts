@@ -1,11 +1,10 @@
 import { EventEmitter } from 'events';
-import { VariantType } from 'notistack';
 
 import { ScheduleCourse, ScheduleSaveState, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { VariantType } from 'notistack';
+
 import { Schedules } from './Schedules';
-import { SnackbarPosition } from '$components/NotificationSnackbar';
-import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { useTabStore } from '$stores/TabStore';
+
 import actionTypesStore from '$actions/ActionTypesStore';
 import type {
     AddCourseAction,
@@ -19,6 +18,9 @@ import type {
     ChangeCourseColorAction,
     UndoAction,
 } from '$actions/ActionTypesStore';
+import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { SnackbarPosition } from '$components/NotificationSnackbar';
+import { useTabStore } from '$stores/TabStore';
 
 class AppStore extends EventEmitter {
     schedule: Schedules;
@@ -171,9 +173,9 @@ class AppStore extends EventEmitter {
         }
     }
 
-    deleteCourse(sectionCode: string, term: string) {
+    deleteCourse(sectionCode: string, term: string, triggerUnsavedWarning = true) {
         this.schedule.deleteCourse(sectionCode, term);
-        this.unsavedChanges = true;
+        this.unsavedChanges = triggerUnsavedWarning;
         const action: DeleteCourseAction = {
             type: 'deleteCourse',
             sectionCode: sectionCode,
@@ -183,9 +185,8 @@ class AppStore extends EventEmitter {
         this.emit('addedCoursesChange');
     }
 
-    deleteCourses(sectionCodes: string[], term: string) {
-        sectionCodes.forEach((sectionCode) => this.deleteCourse(sectionCode, term));
-        this.unsavedChanges = true;
+    deleteCourses(sectionCodes: string[], term: string, triggerUnsavedWarning = true) {
+        sectionCodes.forEach((sectionCode) => this.deleteCourse(sectionCode, term, triggerUnsavedWarning));
         this.emit('addedCoursesChange');
     }
 
