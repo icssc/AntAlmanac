@@ -8,7 +8,7 @@ import PatchNotes from '$components/PatchNotes';
 import Calendar from '$components/Calendar/CalendarRoot';
 import NotificationSnackbar from '$components/NotificationSnackbar';
 import { Tutorial } from '$components/Tutorial';
-import SharedTabs from '$components/SharedTabs';
+import SharedTabs from '$components/SharedRoot';
 
 export default function Home() {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
