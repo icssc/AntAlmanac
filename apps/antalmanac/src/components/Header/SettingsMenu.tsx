@@ -1,14 +1,18 @@
-import { useCallback, useState } from 'react';
-import { Box, Button, ButtonGroup, Drawer, IconButton, Switch, Typography, useMediaQuery } from '@material-ui/core';
-import { Divider, Stack, Tooltip } from '@mui/material';
+import { Box, Button, ButtonGroup, Drawer, Switch, Typography, useMediaQuery } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
-import { Close, DarkMode, Help, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
+import { Close, DarkMode, Help, LightMode, SettingsBrightness } from '@mui/icons-material';
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
+import { Divider, Stack, Tooltip } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import { useCallback, useState } from 'react';
 
-import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
-import useCoursePaneStore from '$stores/CoursePaneStore';
-import appStore from '$stores/AppStore';
+import { AboutButtonGroup } from './AboutButtonGoup';
+
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
+import appStore from '$stores/AppStore';
+import useCoursePaneStore from '$stores/CoursePaneStore';
+import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -41,7 +45,7 @@ function ThemeMenu() {
 
     return (
         <Box sx={{ padding: '0 1rem', width: '100%' }}>
-            <Typography variant="h6" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
+            <Typography variant="h6" style={{ marginBottom: '1rem' }}>
                 Theme
             </Typography>
 
@@ -194,6 +198,21 @@ function ExperimentalMenu() {
 }
 
 function SettingsMenu() {
+    return (
+        <Box>
+            <ThemeMenu />
+            <TimeMenu />
+
+            <Divider style={{ marginTop: '16px' }}>
+                <Typography variant="subtitle2">Experimental Features</Typography>
+            </Divider>
+
+            <ExperimentalMenu />
+        </Box>
+    );
+}
+
+function AppDrawer() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const isMobileScreen = useMediaQuery('(max-width:750px)');
 
@@ -207,9 +226,9 @@ function SettingsMenu() {
 
     return (
         <>
-            <Button onClick={handleDrawerOpen} color="inherit" startIcon={<Settings />}>
-                Settings
-            </Button>
+            <IconButton onClick={handleDrawerOpen} color="inherit" size="large">
+                <MenuRoundedIcon fontSize="inherit" />
+            </IconButton>
             <Drawer
                 anchor="right"
                 open={drawerOpen}
@@ -217,36 +236,30 @@ function SettingsMenu() {
                 PaperProps={{ style: { borderRadius: '10px 0 0 10px' } }}
                 variant="temporary"
             >
-                <Box style={{ width: isMobileScreen ? '300px' : '360px' }}>
+                <Box style={{ width: isMobileScreen ? '300px' : '360px', height: '100%' }}>
                     <Box
                         sx={{
                             display: 'flex',
                             flexDirection: 'row',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            padding: '12px',
+                            alignItems: 'end',
+                            paddingTop: '8px',
+                            paddingRight: '12px',
                         }}
                     >
-                        <Typography variant="h6">Settings</Typography>
-                        <IconButton size="medium" onClick={handleDrawerClose}>
+                        <IconButton size="large" onClick={handleDrawerClose} style={{ marginLeft: 'auto' }}>
                             <Close fontSize="inherit" />
                         </IconButton>
                     </Box>
 
-                    <Divider />
+                    <SettingsMenu />
 
-                    <ThemeMenu />
-                    <TimeMenu />
-
-                    <Divider style={{ marginTop: '16px' }}>
-                        <Typography variant="subtitle2">Experimental Features</Typography>
-                    </Divider>
-
-                    <ExperimentalMenu />
+                    <Box sx={{ padding: '1.5rem', width: '100%', bottom: 0, position: 'absolute' }}>
+                        <AboutButtonGroup />
+                    </Box>
                 </Box>
             </Drawer>
         </>
     );
 }
 
-export default SettingsMenu;
+export default AppDrawer;

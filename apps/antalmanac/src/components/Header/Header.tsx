@@ -5,12 +5,11 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import MenuIcon from '@material-ui/icons/Menu';
 import { useState, type MouseEventHandler } from 'react';
 
-import About from './About';
-import Feedback from './Feedback';
+import Export from './Export';
 import Import from './Import';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
-import SettingsMenu from './SettingsMenu';
-import Export from './Export';
+import AppDrawer from './SettingsMenu';
+
 import Logo from '$assets/christmas-logo.png';
 import MobileLogo from '$assets/christmas-mobile-logo.png';
 
@@ -41,13 +40,7 @@ interface CustomAppBarProps {
     classes: ClassNameMap;
 }
 
-const components = [
-    <Import key="studylist" />,
-    <Export key="export" />,
-    <Feedback key="feedback" />,
-    <About key="about" />,
-    <SettingsMenu key="settings" />,
-];
+const components = [<Import key="studylist" />, <Export key="export" />, <AppDrawer key="settings" />];
 
 const Header = ({ classes }: CustomAppBarProps) => {
     const isMobileScreen = useMediaQuery('(max-width:750px)');
