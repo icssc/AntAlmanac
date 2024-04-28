@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
 import {
     Box,
     Checkbox,
@@ -12,7 +12,8 @@ import {
     type SxProps,
     Popover,
 } from '@mui/material';
-import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
+import { useCallback, useMemo, useState } from 'react';
+
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 
 /**
@@ -31,6 +32,7 @@ const buttonSx: SxProps = {
 };
 
 const columnLabels: Record<SectionTableColumn, string> = {
+    action: '',
     sectionCode: 'Code',
     sectionDetails: 'Type',
     instructors: 'Instructors',
@@ -110,12 +112,15 @@ export function ColumnToggleButton() {
                         renderValue={renderEmptySelectValue}
                         MenuProps={{ anchorEl }}
                     >
-                        {COLUMN_LABEL_ENTRIES.map(([column, label], index) => (
-                            <MenuItem key={column} value={column}>
-                                <Checkbox checked={selectedColumns[index]} color="default" />
-                                <ListItemText primary={label} />
-                            </MenuItem>
-                        ))}
+                        {COLUMN_LABEL_ENTRIES.map(
+                            ([column, label], index) =>
+                                label.length > 0 && (
+                                    <MenuItem key={column} value={column}>
+                                        <Checkbox checked={selectedColumns[index]} color="default" />
+                                        <ListItemText primary={label} />
+                                    </MenuItem>
+                                )
+                        )}
                     </Select>
                 </FormControl>
             </Popover>

@@ -50,9 +50,7 @@ interface ColumnStore {
 }
 
 // Don't enable GPA column if the user is on the Added tab
-const enabledColumnsInitial = SECTION_TABLE_COLUMNS.map(
-    (col) => !(window.location.pathname.split('/').slice(1)[0] === 'added' && col === 'gpa')
-);
+const enabledColumnsInitial = SECTION_TABLE_COLUMNS.map(() => true);
 const selectedColumnsInitial = SECTION_TABLE_COLUMNS.map(() => true);
 const activeColumnsInitial = SECTION_TABLE_COLUMNS.filter(
     (_, index) => enabledColumnsInitial[index] && selectedColumnsInitial[index]
