@@ -11,7 +11,6 @@ import {
 import { useCallback, useState, useEffect } from 'react';
 
 import { addSchedule } from '$actions/AppStoreActions';
-import { termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -34,14 +33,9 @@ function AddScheduleDialog(props: ScheduleNameDialogProps) {
      */
     const { onClose } = props;
 
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+    const [, setScheduleNames] = useState(AppStore.getScheduleNames());
 
-    const termName = termData[0].shortName.replaceAll(' ', '-');
-    const countSameScheduleNames = scheduleNames.filter((name) => name.includes(termName)).length;
-
-    const [name, setName] = useState(
-        `${termName + (countSameScheduleNames == 0 ? '' : '(' + countSameScheduleNames + ')')}`
-    );
+    const [name, setName] = useState(AppStore.getDefaultScheduleName());
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
