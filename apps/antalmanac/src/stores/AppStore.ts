@@ -1,9 +1,7 @@
 import { EventEmitter } from 'events';
 
-import { ScheduleCourse, ScheduleSaveState, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import type { ScheduleCourse, ScheduleSaveState, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { VariantType } from 'notistack';
-
-import { Schedules } from './Schedules';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import type {
@@ -20,25 +18,37 @@ import type {
 } from '$actions/ActionTypesStore';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { SnackbarPosition } from '$components/NotificationSnackbar';
+import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
 
 class AppStore extends EventEmitter {
     schedule: Schedules;
+
     customEvents: RepeatingCustomEvent[];
+
     colorPickers: Record<string, EventEmitter>;
+
     snackbarMessage: string;
+
     snackbarVariant: VariantType;
+
     snackbarDuration: number;
+
     snackbarPosition: SnackbarPosition;
-    snackbarStyle: object; // not sure what this is. I don't think we ever use it
+
+    snackbarStyle: object;
+
     eventsInCalendar: CalendarEvent[];
+
     finalsEventsInCalendar: CourseEvent[];
+
     unsavedChanges: boolean;
+
     skeletonMode: boolean;
 
     constructor() {
         super();
-        this.setMaxListeners(300); //this number is big because every section on the search results page listens to two events each.
+        this.setMaxListeners(300);
         this.customEvents = [];
         this.schedule = new Schedules();
         this.colorPickers = {};
@@ -377,7 +387,7 @@ class AppStore extends EventEmitter {
         this.snackbarDuration = duration ? duration : this.snackbarDuration;
         this.snackbarPosition = position ? position : this.snackbarPosition;
         this.snackbarStyle = style ? style : this.snackbarStyle;
-        this.emit('openSnackbar'); // sends event to NotificationSnackbar
+        this.emit('openSnackbar');
     }
 
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
@@ -390,4 +400,5 @@ class AppStore extends EventEmitter {
 }
 
 const store = new AppStore();
+
 export default store;
