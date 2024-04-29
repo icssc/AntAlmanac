@@ -1,4 +1,3 @@
-import { useState, useEffect, useCallback } from 'react';
 import {
     Box,
     Button,
@@ -11,8 +10,10 @@ import {
     type DialogProps,
 } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material';
-import AppStore from '$stores/AppStore';
+import { useState, useEffect, useCallback } from 'react';
+
 import { copySchedule } from '$actions/AppStoreActions';
+import AppStore from '$stores/AppStore';
 
 interface CopyScheduleDialogProps extends DialogProps {
     index: number;

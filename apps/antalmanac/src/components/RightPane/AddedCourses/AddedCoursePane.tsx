@@ -1,15 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Chip, IconButton, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
 import { ContentCopy, DeleteOutline } from '@mui/icons-material';
+import { Box, Chip, IconButton, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
 import { ColumnToggleButton } from '../CoursePane/CoursePaneButtonRow';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
+
 import CustomEventDetailView from './CustomEventDetailView';
-import AppStore from '$stores/AppStore';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { clearSchedules, copySchedule, updateScheduleNote } from '$actions/AppStoreActions';
-import { clickToCopy } from '$lib/helpers';
+
+import { clearSchedules, updateScheduleNote } from '$actions/AppStoreActions';
 import CopyScheduleDialog from '$components/dialogs/CopySchedule';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { clickToCopy } from '$lib/helpers';
+import AppStore from '$stores/AppStore';
 
 /**
  * All the interactive buttons have the same styles.
@@ -371,7 +374,7 @@ function AddedSectionsGrid() {
     );
 
     return (
-        <Box display="flex" flexDirection="column" gap={1}>
+        <Box display="flex" flexDirection="column" gap={1} marginX={0.5}>
             <Box display="flex" width={1} position="absolute" zIndex="2">
                 <CopyScheduleButton index={scheduleIndex} />
                 <ClearScheduleButton />

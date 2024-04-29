@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 export type ThemeSetting = 'light' | 'dark' | 'system';

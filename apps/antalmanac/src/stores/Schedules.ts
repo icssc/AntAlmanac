@@ -6,10 +6,12 @@ import {
     ShortCourseSchedule,
     RepeatingCustomEvent,
 } from '@packages/antalmanac-types';
+
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
+
 import type { CourseInfo } from '$lib/course_data.types';
-import { getColorForNewSection } from '$stores/scheduleHelpers';
 import WebSOC from '$lib/websoc';
+import { getColorForNewSection } from '$stores/scheduleHelpers';
 
 export class Schedules {
     private schedules: Schedule[];

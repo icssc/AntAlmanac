@@ -8,11 +8,12 @@ import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calen
 
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
+
+import locationIds from '$lib/location_ids';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
-import locationIds from '$lib/location_ids';
-import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const localizer = momentLocalizer(moment);
 

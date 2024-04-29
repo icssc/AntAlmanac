@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import useColumnStore from './ColumnStore';
+
+import { useColumnStore } from './ColumnStore';
 
 interface TabStore {
     activeTab: number;

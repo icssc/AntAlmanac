@@ -5,11 +5,13 @@ import { Tune } from '@material-ui/icons';
 import { FormEvent, useState } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
+
 import FuzzySearch from './FuzzySearch';
 import HelpBox from './HelpBox';
 import LegacySearch from './LegacySearch';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import TermSelector from './TermSelector';
+
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import useCoursePaneStore from '$stores/CoursePaneStore';
 

@@ -13,9 +13,8 @@ import Import from './Import';
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
 import appStore from '$stores/AppStore';
-import useCoursePaneStore from '$stores/CoursePaneStore';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
-
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
