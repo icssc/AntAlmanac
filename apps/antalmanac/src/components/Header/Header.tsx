@@ -7,8 +7,8 @@ import Import from './Import';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import AppDrawer from './SettingsMenu';
 
-import Logo from '$assets/christmas-logo.png';
-import MobileLogo from '$assets/christmas-mobile-logo.png';
+import Logo from '$assets/logo.svg';
+import MobileLogo from '$assets/mobile-logo.svg';
 
 const styles = {
     appBar: {
