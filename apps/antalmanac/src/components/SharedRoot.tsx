@@ -164,6 +164,7 @@ const SharedTabs = ({ style, mobile }: SharedTabsProps) => {
                                           <Typography style={{ fontSize: '10px' }}>{tab.label}</Typography>
                                       </Box>
                                   }
+                                  style={{ minWidth: '25%' }}
                               />
                           ))}
                 </Tabs>
