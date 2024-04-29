@@ -178,10 +178,13 @@ export default function CourseMap() {
         };
 
         AppStore.on('addedCoursesChange', updateCalendarEvents);
+        AppStore.on('customEventsChange', updateCalendarEvents);
         AppStore.on('currentScheduleIndexChange', updateCalendarEvents);
 
         return () => {
             AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
+            AppStore.removeListener('customEventsChange', updateCalendarEvents);
+            AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
         };
     }, []);
 
