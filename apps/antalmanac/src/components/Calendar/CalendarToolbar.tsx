@@ -1,5 +1,3 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
-import { Box, Button, IconButton, Paper, Popover, Tooltip, Typography, useTheme } from '@mui/material';
 import {
     Add as AddIcon,
     ArrowDropDown as ArrowDropDownIcon,
@@ -7,13 +5,18 @@ import {
     Edit as EditIcon,
     Undo as UndoIcon,
     Clear as ClearIcon,
+    ContentCopy as ContentCopyIcon,
 } from '@mui/icons-material';
+import { Box, Button, IconButton, Paper, Popover, Tooltip, Typography, useTheme } from '@mui/material';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
+
 import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
 import AddScheduleDialog from '$components/dialogs/AddSchedule';
-import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
+import CopyScheduleDialog from '$components/dialogs/CopySchedule';
 import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
+import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';
 
@@ -50,6 +53,27 @@ function handleClearSchedule() {
             action: analyticsEnum.calendar.actions.CLEAR_SCHEDULE,
         });
     }
+}
+
+function CopyScheduleButton(props: { index: number }) {
+    const [open, setOpen] = useState(false);
+
+    const handleOpen = useCallback(() => {
+        setOpen(true);
+    }, []);
+
+    const handleClose = useCallback(() => {
+        setOpen(false);
+    }, []);
+
+    return (
+        <Box>
+            <IconButton onClick={handleOpen} size="small">
+                <ContentCopyIcon />
+            </IconButton>
+            <CopyScheduleDialog fullWidth open={open} index={props.index} onClose={handleClose} />
+        </Box>
+    );
 }
 
 function EditScheduleButton(props: { index: number }) {
@@ -227,6 +251,7 @@ function SelectSchedulePopover(props: { scheduleNames: string[] }) {
                                 </Button>
                             </Box>
                             <Box display="flex" alignItems="center" gap={0.5}>
+                                <CopyScheduleButton index={index} />
                                 <EditScheduleButton index={index} />
                                 <DeleteScheduleButton index={index} />
                             </Box>

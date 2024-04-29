@@ -216,7 +216,7 @@ const LoadSaveScheduleFunctionality = () => {
     }, []);
 
     return (
-        <div id="load-save-container">
+        <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
             <LoadSaveButtonBase
                 id="save-button"
                 actionName={'Save'}
