@@ -32,7 +32,7 @@ const Views = ({ activeTab, mobile }: { activeTab: number; mobile: boolean }) =>
         <Calendar isMobile={mobile} />
     ) : (
         <Box height="100%" style={{ margin: '0 4px' }}>
-            <Box height="calc(100% - 54px)" overflow="auto" style={{ margin: '8px 4px 0px' }} id="course-pane-box">
+            <Box height="calc(100% - 54px)" overflow="auto" style={{ margin: '8px 0px' }} id="course-pane-box">
                 {activeTab === 1 && <CoursePane />}
                 {activeTab === 2 && <AddedCoursePane />}
                 {activeTab === 3 && (

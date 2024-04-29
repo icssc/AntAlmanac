@@ -374,7 +374,7 @@ function AddedSectionsGrid() {
     );
 
     return (
-        <Box display="flex" flexDirection="column" gap={1}>
+        <Box display="flex" flexDirection="column" gap={1} marginX={0.5}>
             <Box display="flex" width={1} position="absolute" zIndex="2">
                 <CopyScheduleButton index={scheduleIndex} />
                 <ClearScheduleButton />
