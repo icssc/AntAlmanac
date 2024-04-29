@@ -1,9 +1,6 @@
-import { AppBar, Box, Menu, Toolbar, useMediaQuery } from '@material-ui/core';
-import MenuItem from '@material-ui/core/MenuItem';
+import { AppBar, Toolbar, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import MenuIcon from '@material-ui/icons/Menu';
-import { useState, type MouseEventHandler } from 'react';
 
 import Export from './Export';
 import Import from './Import';
@@ -40,24 +37,12 @@ interface CustomAppBarProps {
     classes: ClassNameMap;
 }
 
-const components = [<Import key="studylist" />, <Export key="export" />, <AppDrawer key="settings" />];
-
 const Header = ({ classes }: CustomAppBarProps) => {
     const isMobileScreen = useMediaQuery('(max-width:750px)');
 
-    const [anchorEl, setAnchorEl] = useState<Element | null>(null);
-
-    const handleClick: MouseEventHandler<SVGSVGElement> = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
     return (
         <AppBar position="static" className={classes.appBar}>
-            <Toolbar variant="dense">
+            <Toolbar variant="dense" style={{ padding: '5px', display: 'flex', justifyContent: 'space-between' }}>
                 <img
                     height={32}
                     src={isMobileScreen ? MobileLogo : Logo}
@@ -65,22 +50,18 @@ const Header = ({ classes }: CustomAppBarProps) => {
                     alt="logo"
                 />
 
-                <div style={{ flexGrow: '1' }} />
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <LoadSaveScheduleFunctionality />
 
-                <LoadSaveScheduleFunctionality />
+                    {isMobileScreen ? null : (
+                        <>
+                            <Import key="studylist" />
+                            <Export key="export" />
+                        </>
+                    )}
 
-                {isMobileScreen ? (
-                    <Box className={classes.menuIconContainer}>
-                        <MenuIcon onClick={handleClick} className={classes.menuIcon} />
-                        <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
-                            {components.map((element, index) => (
-                                <MenuItem key={index}>{element}</MenuItem>
-                            ))}
-                        </Menu>
-                    </Box>
-                ) : (
-                    components
-                )}
+                    <AppDrawer key="settings" />
+                </div>
             </Toolbar>
         </AppBar>
     );

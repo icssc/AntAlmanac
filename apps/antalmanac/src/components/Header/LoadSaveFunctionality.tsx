@@ -11,13 +11,13 @@ import {
     FormControlLabel,
 } from '@material-ui/core';
 import { CloudDownload, Save } from '@material-ui/icons';
+import { LoadingButton } from '@mui/lab';
 import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 
-import { LoadingButton } from '@mui/lab';
-import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
-import { useThemeStore } from '$stores/SettingsStore';
-import AppStore from '$stores/AppStore';
 import actionTypesStore from '$actions/ActionTypesStore';
+import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
+import AppStore from '$stores/AppStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 interface LoadSaveButtonBaseProps {
     action: typeof saveSchedule;
@@ -216,7 +216,7 @@ const LoadSaveScheduleFunctionality = () => {
     }, []);
 
     return (
-        <div id="load-save-container">
+        <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
             <LoadSaveButtonBase
                 id="save-button"
                 actionName={'Save'}
