@@ -1,3 +1,5 @@
+import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+
 // The index of the default term in termData, as per WebSOC
 const defaultTerm = 0;
 
@@ -27,6 +29,9 @@ class Term {
  * Months are 0-indexed
  */
 const termData = [
+    new Term('2024 Summer2', '2024 Summer Session 2', [2024, 7, 5], [2024, 8, 10]),
+    new Term('2024 Summer10wk', '2024 10-wk Summer', [2024, 5, 24], [2024, 7, 30]),
+    new Term('2024 Summer1', '2024 Summer Session 1', [2024, 5, 24], [2024, 6, 31]),
     new Term('2024 Spring', '2024 Spring Quarter', [2024, 3, 1], [2024, 5, 8]),
     new Term('2024 Winter', '2024 Winter Quarter', [2024, 0, 8], [2024, 2, 16]),
     new Term('2023 Fall', '2023 Fall Quarter', [2023, 8, 28], [2023, 11, 9]),
@@ -86,9 +91,26 @@ const termData = [
     new Term('2014 Fall', '2014 Fall Quarter'),
 ];
 
-// Returns the default term
-function getDefaultTerm() {
-    return termData[defaultTerm];
+/**
+ * Get the default term.
+ *
+ * By default, use a static index.
+ * If an array of events is provided, select the first term found.
+ */
+function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term {
+    let term = termData[defaultTerm];
+
+    for (const event of events) {
+        if (!event.isCustomEvent && event.term) {
+            const existingTerm = termData.find((t) => t.shortName === event.term);
+            if (existingTerm) {
+                term = existingTerm;
+                break;
+            }
+        }
+    }
+
+    return term;
 }
 
 // Returns the default finals start as array
@@ -112,13 +134,13 @@ function getFinalsStartForTerm(term: string) {
  */
 function getDefaultFinalsStartDate() {
     // FIXME: Un-offset once Spring starts, or figure out a proper fix
-    const [year, month, day] = termData[defaultTerm + 1].finalsStartDate || [];
+    const [year, month, day] = getDefaultFinalsStart() ?? [];
     return year && month && day ? new Date(year, month, day + 1) : undefined;
 }
 
 function getFinalsStartDateForTerm(term: string) {
     const date = getFinalsStartForTerm(term);
-    const [year, month, day] = date || [];
+    const [year, month, day] = date ?? [];
     return year && month && day ? new Date(year, month, day + 1) : undefined;
 }
 

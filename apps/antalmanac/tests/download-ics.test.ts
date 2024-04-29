@@ -1,6 +1,7 @@
 import { describe, test, expect } from 'vitest';
-import { getEventsFromCourses } from '$lib/download';
+
 import { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
+import { getEventsFromCourses } from '$lib/download';
 
 describe('download-ics', () => {
     test('converts schedule courses to events for the ics library', () => {
@@ -80,7 +81,7 @@ describe('download-ics', () => {
             },
         ];
 
-        const result = getEventsFromCourses(courses);
+        const result = getEventsFromCourses(courses, '2024 Spring');
 
         expect(result).toMatchSnapshot();
     });

@@ -1,21 +1,24 @@
 import './Map.css';
 
-import { Fragment, useEffect, useRef, useCallback, useState, createRef, useMemo } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import L, { type Map, type LatLngTuple } from 'leaflet';
-import { MapContainer, TileLayer } from 'react-leaflet';
-import 'leaflet-routing-machine';
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
-import ClassRoutes from './Routes';
+import * as L from 'leaflet';
+import { type Map, type LatLngTuple } from 'leaflet';
+import { Fragment, useEffect, useRef, useCallback, useState, createRef, useMemo } from 'react';
+import { MapContainer, TileLayer } from 'react-leaflet';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+
+import 'leaflet-routing-machine';
 import LocationMarker from './Marker';
+import ClassRoutes from './Routes';
 import UserLocator from './UserLocator';
-import AppStore from '$stores/AppStore';
-import locationIds from '$lib/location_ids';
-import buildingCatalogue, { Building } from '$lib/buildingCatalogue';
+
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
-import { notNull } from '$lib/utils';
 import { TILES_URL } from '$lib/api/endpoints';
+import buildingCatalogue, { Building } from '$lib/buildingCatalogue';
+import locationIds from '$lib/location_ids';
+import { notNull } from '$lib/utils';
+import AppStore from '$stores/AppStore';
 
 const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
@@ -149,7 +152,7 @@ export default function CourseMap() {
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
     const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
-    const [calendarEvents, setCalendarEvents] = useState(AppStore.getCourseEventsInCalendar());
+    const [calendarEvents, setCalendarEvents] = useState(AppStore.getEventsInCalendar());
 
     useEffect(() => {
         const updateAllMarkers = () => {
@@ -172,14 +175,17 @@ export default function CourseMap() {
 
     useEffect(() => {
         const updateCalendarEvents = () => {
-            setCalendarEvents(AppStore.getCourseEventsInCalendar());
+            setCalendarEvents(AppStore.getEventsInCalendar());
         };
 
         AppStore.on('addedCoursesChange', updateCalendarEvents);
+        AppStore.on('customEventsChange', updateCalendarEvents);
         AppStore.on('currentScheduleIndexChange', updateCalendarEvents);
 
         return () => {
             AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
+            AppStore.removeListener('customEventsChange', updateCalendarEvents);
+            AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
         };
     }, []);
 
@@ -212,8 +218,8 @@ export default function CourseMap() {
     );
 
     const days = useMemo(() => {
-        const hasWeekendCourse = calendarEvents.some((event) => weekendIndices.includes(event.start.getDay()));
-        return hasWeekendCourse ? FULL_WEEK : WORK_WEEK;
+        const hasWeekendEvent = calendarEvents.some((event) => weekendIndices.includes(event.start.getDay()));
+        return hasWeekendEvent ? FULL_WEEK : WORK_WEEK;
     }, [calendarEvents]);
 
     const today = useMemo(() => {

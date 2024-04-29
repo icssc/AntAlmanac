@@ -1,11 +1,25 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@material-ui/core';
-import { Info } from '@material-ui/icons';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Link,
+    Tooltip,
+} from '@material-ui/core';
+import { Assignment, Info } from '@material-ui/icons';
+import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
+import { ButtonGroup } from '@mui/material';
 import { useCallback, useState } from 'react';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { useThemeStore } from '$stores/SettingsStore';
 
-const AboutPage = () => {
+const DONATION_LINK = 'https://venmo.com/u/ICSSC';
+const FEEDBACK_LINK = 'https://forms.gle/k81f2aNdpdQYeKK8A';
+
+const About = () => {
     const [open, setOpen] = useState(false);
 
     const { isDark } = useThemeStore();
@@ -24,7 +38,7 @@ const AboutPage = () => {
 
     return (
         <>
-            <Button onClick={handleOpen} color="inherit" startIcon={<Info />}>
+            <Button onClick={handleOpen} color="inherit" startIcon={<Info />} size="large">
                 About
             </Button>
             <Dialog open={open} onClose={handleClose}>
@@ -53,7 +67,7 @@ const AboutPage = () => {
                         <br />
                         <br />
                         To support the ongoing development and enhancement of AntAlmanac, consider making a{' '}
-                        <Link target="_blank" href="https://venmo.com/u/ICSSC">
+                        <Link target="_blank" href={DONATION_LINK}>
                             donation
                         </Link>
                         ; your generosity helps us continue our mission.
@@ -78,4 +92,56 @@ const AboutPage = () => {
     );
 };
 
-export default AboutPage;
+const Feedback = () => {
+    return (
+        <Tooltip title="Give Us Feedback!">
+            <Button
+                onClick={() => {
+                    window.open(FEEDBACK_LINK, '_blank');
+                }}
+                color="inherit"
+                startIcon={<Assignment />}
+                size="large"
+                href={FEEDBACK_LINK}
+            >
+                Feedback
+            </Button>
+        </Tooltip>
+    );
+};
+
+const Donate = () => {
+    return (
+        <Tooltip title="Help us pay for the servers!">
+            <Button
+                onClick={() => {
+                    window.open(DONATION_LINK, '_blank');
+                }}
+                color="inherit"
+                startIcon={<FavoriteRoundedIcon />}
+                size="large"
+                href={DONATION_LINK}
+            >
+                Donate
+            </Button>
+        </Tooltip>
+    );
+};
+
+export function AboutButtonGroup() {
+    return (
+        <ButtonGroup
+            style={{
+                display: 'flex',
+                justifyContent: 'space-evenly',
+                alignItems: 'center',
+                width: '100%',
+                borderColor: 'unset',
+            }}
+        >
+            <Donate />
+            <About />
+            <Feedback />
+        </ButtonGroup>
+    );
+}

@@ -1,25 +1,28 @@
+
+import { Close } from '@mui/icons-material';
+import { Alert, Box, IconButton, useMediaQuery } from '@mui/material';
+import { AACourse, AASection } from '@packages/antalmanac-types';
+import { WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
-import { Alert, Box, GlobalStyles, IconButton, useMediaQuery } from '@mui/material';
-import { Close } from '@mui/icons-material';
-import { AACourse, AASection } from '@packages/antalmanac-types';
-import { WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
 import RightPaneStore from '../RightPaneStore';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
+
 import SchoolDeptCard from './SchoolDeptCard';
 import darkModeLoadingGif from './SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './SearchForm/Gifs/loading.gif';
 import darkNoNothing from './static/dark-no_results.png';
 import noNothing from './static/no_results.png';
-import AppStore from '$stores/AppStore';
-import { useThemeStore } from '$stores/SettingsStore';
-import Grades from '$lib/grades';
-import analyticsEnum from '$lib/analytics';
+
 import { openSnackbar } from '$actions/AppStoreActions';
+import analyticsEnum from '$lib/analytics';
+import Grades from '$lib/grades';
 import WebSOC from '$lib/websoc';
+import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 function getColors() {
     const courseColors = AppStore.schedule.getCurrentCourses().reduce(
@@ -182,7 +185,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
-    const setHoveredCourseEvents = useHoveredStore((store) => store.setHoveredCourseEvents);
+    const setHoveredEvents = useHoveredStore((store) => store.setHoveredEvents);
 
     const loadCourses = useCallback(async () => {
         setLoading(true);
@@ -270,9 +273,9 @@ export default function CourseRenderPane(props: { id?: number }) {
      */
     useEffect(() => {
         return () => {
-            setHoveredCourseEvents(undefined);
+            setHoveredEvents(undefined);
         };
-    }, [setHoveredCourseEvents]);
+    }, []);
 
     return (
         <>
@@ -285,7 +288,6 @@ export default function CourseRenderPane(props: { id?: number }) {
                     <RecruitmentBanner />
                     <Box>
                         <Box sx={{ height: '50px', marginBottom: '5px' }} />
-                        <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
                         {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
                             let heightEstimate = 200;
                             if ((courseData[index] as AACourse).sections !== undefined)
