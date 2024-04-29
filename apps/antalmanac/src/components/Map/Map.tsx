@@ -151,7 +151,7 @@ export default function CourseMap() {
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
     const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
-    const [calendarEvents, setCalendarEvents] = useState(AppStore.getCourseEventsInCalendar());
+    const [calendarEvents, setCalendarEvents] = useState(AppStore.getEventsInCalendar());
 
     useEffect(() => {
         const updateAllMarkers = () => {
@@ -174,7 +174,7 @@ export default function CourseMap() {
 
     useEffect(() => {
         const updateCalendarEvents = () => {
-            setCalendarEvents(AppStore.getCourseEventsInCalendar());
+            setCalendarEvents(AppStore.getEventsInCalendar());
         };
 
         AppStore.on('addedCoursesChange', updateCalendarEvents);
@@ -217,8 +217,8 @@ export default function CourseMap() {
     );
 
     const days = useMemo(() => {
-        const hasWeekendCourse = calendarEvents.some((event) => weekendIndices.includes(event.start.getDay()));
-        return hasWeekendCourse ? FULL_WEEK : WORK_WEEK;
+        const hasWeekendEvent = calendarEvents.some((event) => weekendIndices.includes(event.start.getDay()));
+        return hasWeekendEvent ? FULL_WEEK : WORK_WEEK;
     }, [calendarEvents]);
 
     const today = useMemo(() => {
