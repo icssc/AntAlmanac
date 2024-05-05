@@ -32,6 +32,7 @@ const buttonSx: SxProps = {
 };
 
 const columnLabels: Record<SectionTableColumn, string> = {
+    action: 'Action',
     sectionCode: 'Code',
     sectionDetails: 'Type',
     instructors: 'Instructors',
@@ -92,6 +93,9 @@ export function ColumnToggleDropdown() {
         [selectedColumns]
     );
 
+    console.log('selectedColumns', selectedColumns);
+    console.log('selectedColumnNames', selectedColumnNames);
+
     return (
         <>
             <Tooltip title="Show/Hide Columns">
@@ -111,12 +115,16 @@ export function ColumnToggleDropdown() {
                         renderValue={renderEmptySelectValue}
                         MenuProps={{ anchorEl }}
                     >
-                        {COLUMN_LABEL_ENTRIES.map(([column, label], index) => (
-                            <MenuItem key={column} value={column}>
-                                <Checkbox checked={selectedColumns[index]} color="default" />
-                                <ListItemText primary={label} />
-                            </MenuItem>
-                        ))}
+                        {COLUMN_LABEL_ENTRIES
+                            // Disallow toggling the action column (the one to add courses)
+                            .filter(([column]) => column !== 'action')
+                            // Add 1 to the index to offset the action column being filtered out
+                            .map(([column, label], index) => (
+                                <MenuItem key={column} value={column}>
+                                    <Checkbox checked={selectedColumns[index + 1]} color="default" />
+                                    <ListItemText primary={label} />
+                                </MenuItem>
+                            ))}
                     </Select>
                 </FormControl>
             </Popover>

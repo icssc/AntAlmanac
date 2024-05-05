@@ -51,8 +51,12 @@ export const useColumnStore = create<ColumnStore>((set, _) => {
         activeColumns: activeColumnsInitial,
         setSelectedColumns: (columns: SectionTableColumn[]) => {
             set(() => {
-                const selectedColumns = SECTION_TABLE_COLUMNS.map((column) => columns.includes(column));
-                return { selectedColumns };
+                const selectedColumns: boolean[] = SECTION_TABLE_COLUMNS.map((column) => columns.includes(column));
+                const activeColumns: SectionTableColumn[] = SECTION_TABLE_COLUMNS.filter(
+                    (_, index) => selectedColumns[index]
+                );
+                console.log('activeColumns', activeColumns);
+                return { selectedColumns, activeColumns };
             });
             logAnalytics({
                 category: analyticsEnum.classSearch.title,
