@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
 import {
     Box,
     Checkbox,
@@ -12,7 +12,8 @@ import {
     type SxProps,
     Popover,
 } from '@mui/material';
-import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
+import { useCallback, useMemo, useState } from 'react';
+
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 
 /**
@@ -61,7 +62,7 @@ const COLUMN_LABEL_ENTRIES = Object.entries(columnLabels);
  *
  * e.g. show/hide the section code, instructors, etc.
  */
-export function ColumnToggleButton() {
+export function ColumnToggleDropdown() {
     const [selectedColumns, setSelectedColumns] = useColumnStore((store) => [
         store.selectedColumns,
         store.setSelectedColumns,
@@ -163,7 +164,7 @@ export function CoursePaneButtonRow(props: CoursePaneButtonRowProps) {
                 </IconButton>
             </Tooltip>
 
-            <ColumnToggleButton />
+            <ColumnToggleDropdown />
         </Box>
     );
 }
