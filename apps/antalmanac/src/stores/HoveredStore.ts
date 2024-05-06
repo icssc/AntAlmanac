@@ -1,6 +1,8 @@
-import { create } from 'zustand';
 import { AASection, ScheduleCourse } from '@packages/antalmanac-types';
+import { create } from 'zustand';
+
 import { calendarizeCourseEvents, calendarizeFinals } from './calendarizeHelpers';
+
 import { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CourseDetails } from '$lib/course_data.types';
 

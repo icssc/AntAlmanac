@@ -1,8 +1,9 @@
+import { Box, Link, Typography, Skeleton } from '@mui/material';
 import { useState, useEffect, useMemo } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { Box, Link, Typography, Skeleton } from '@mui/material';
-import { useThemeStore } from '$stores/SettingsStore';
+
 import GradesHelper, { type Grades } from '$lib/grades';
+import { useThemeStore } from '$stores/SettingsStore';
 export interface GradeData {
     grades: {
         name: string;

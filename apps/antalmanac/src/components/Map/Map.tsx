@@ -1,13 +1,12 @@
 import './Map.css';
 
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
-import * as L from 'leaflet';
-import { type Map, type LatLngTuple } from 'leaflet';
+import { Marker, type Map, type LatLngTuple } from 'leaflet';
 import { Fragment, useEffect, useRef, useCallback, useState, createRef, useMemo } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-
 import 'leaflet-routing-machine';
+
 import LocationMarker from './Marker';
 import ClassRoutes from './Routes';
 import UserLocator from './UserLocator';
@@ -147,7 +146,7 @@ export function getCustomEventPerBuilding() {
 export default function CourseMap() {
     const navigate = useNavigate();
     const map = useRef<Map | null>(null);
-    const markerRef = createRef<L.Marker>();
+    const markerRef = createRef<Marker>();
     const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getCoursesPerBuilding());

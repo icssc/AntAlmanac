@@ -1,5 +1,3 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
-import { Box, Button, IconButton, Paper, Popover, Tooltip, Typography, useTheme } from '@mui/material';
 import {
     Add as AddIcon,
     ArrowDropDown as ArrowDropDownIcon,
@@ -9,13 +7,16 @@ import {
     Clear as ClearIcon,
     ContentCopy as ContentCopyIcon,
 } from '@mui/icons-material';
+import { Box, Button, IconButton, Paper, Popover, Tooltip, Typography, useTheme } from '@mui/material';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
+
 import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
 import AddScheduleDialog from '$components/dialogs/AddSchedule';
 import CopyScheduleDialog from '$components/dialogs/CopySchedule';
-import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
 import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
+import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';
 

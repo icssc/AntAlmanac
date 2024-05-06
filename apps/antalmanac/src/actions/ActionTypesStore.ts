@@ -1,5 +1,7 @@
 import { EventEmitter } from 'events';
+
 import { RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
+
 import { autoSaveSchedule } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
 

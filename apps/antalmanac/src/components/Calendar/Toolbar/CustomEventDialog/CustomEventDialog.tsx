@@ -1,4 +1,3 @@
-import React from 'react';
 import {
     Button,
     Dialog,
@@ -12,16 +11,17 @@ import {
     Tooltip,
 } from '@material-ui/core';
 import { Add, Edit } from '@mui/icons-material';
-import { useCallback, useEffect, useState } from 'react';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { useCallback, useEffect, useState } from 'react';
 
 import DaySelector from './DaySelector';
 import ScheduleSelector from './ScheduleSelector';
+
 import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { useThemeStore } from '$stores/SettingsStore';
-import AppStore from '$stores/AppStore';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import AppStore from '$stores/AppStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;

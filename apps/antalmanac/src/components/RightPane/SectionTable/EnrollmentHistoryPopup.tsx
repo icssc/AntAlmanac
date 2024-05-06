@@ -1,3 +1,5 @@
+import { ArrowBack, ArrowForward } from '@mui/icons-material';
+import { Box, IconButton, Link, Typography, Skeleton, Tooltip, useMediaQuery } from '@mui/material';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
     LineChart,
@@ -9,9 +11,9 @@ import {
     Tooltip as RechartsTooltip,
     Legend,
 } from 'recharts';
-import { ArrowBack, ArrowForward } from '@mui/icons-material';
-import { Box, IconButton, Link, Typography, Skeleton, Tooltip, useMediaQuery } from '@mui/material';
+
 import { MOBILE_BREAKPOINT } from '../../../globals';
+
 import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
 import { useThemeStore } from '$stores/SettingsStore';
 

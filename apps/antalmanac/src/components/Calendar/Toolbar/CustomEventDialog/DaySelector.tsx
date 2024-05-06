@@ -1,5 +1,6 @@
 import { Button, Box } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+
 import { useThemeStore } from '$stores/SettingsStore';
 
 const normal_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -9,10 +10,7 @@ interface DaySelectorProps {
     onSelectDay: (days: boolean[]) => void;
 }
 
-const DaySelector: React.FC<DaySelectorProps> = ({
-    days = [false, false, false, false, false, false, false],
-    onSelectDay,
-}) => {
+const DaySelector = ({ days = [false, false, false, false, false, false, false], onSelectDay }: DaySelectorProps) => {
     const [selectedDays, setSelectedDays] = useState(days);
 
     const { isDark } = useThemeStore();

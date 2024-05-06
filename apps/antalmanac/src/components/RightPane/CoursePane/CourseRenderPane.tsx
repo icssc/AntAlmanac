@@ -1,4 +1,3 @@
-
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, useMediaQuery } from '@mui/material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
