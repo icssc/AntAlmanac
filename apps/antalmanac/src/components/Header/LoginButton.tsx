@@ -1,27 +1,36 @@
 import {
     Box,
     Button,
-    Checkbox,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
     Divider,
-    FormControlLabel,
     Stack,
     TextField,
     Typography,
 } from '@mui/material';
 import { GoogleLogin } from '@react-oauth/google';
+import type { CredentialResponse } from '@react-oauth/google';
+import { useSnackbar } from 'notistack';
 import { useState } from 'react';
+
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { trpc } from '$lib/trpc';
+import AppStore from '$stores/AppStore';
 
 /**
  * Opens dialog for logging in.
  */
 export function LoginButton() {
     const [userId, setUserId] = useState('');
-    const [rememberMe, setRememberMe] = useState(true);
     const [open, setOpen] = useState(false);
+
+    const snackbar = useSnackbar();
+
+    const usernameLoginMutation = trpc.auth.loginUsername.useMutation();
+
+    const googleLoginMutation = trpc.auth.loginGoogle.useMutation();
 
     const handleOpen = () => {
         setOpen(true);
@@ -35,12 +44,80 @@ export function LoginButton() {
         setUserId(event.target.value);
     };
 
-    const handleRememberMeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRememberMe(event.target.checked);
+    const handleUsernameLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        logAnalytics({
+            category: analyticsEnum.nav.title,
+            action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
+            label: userId,
+            value: 1,
+        });
+
+        const shouldStop =
+            AppStore.hasUnsavedChanges() &&
+            !window.confirm('Are you sure you want to load a different schedule? You have unsaved changes!');
+
+        if (shouldStop) return;
+
+        if (userId.length === 0) {
+            snackbar.enqueueSnackbar('Please enter a user ID.');
+            return;
+        }
+
+        console.log('Submitting user ID: ', userId);
+
+        try {
+            const response = await usernameLoginMutation.mutateAsync(userId);
+
+            console.log('response: ', response);
+
+            if (response == null) {
+                snackbar.enqueueSnackbar(`Logged in as "${userId}", no schedules found.`);
+                setOpen(false);
+                return;
+            }
+
+            const loadedSchedule = await AppStore.loadSchedule(response);
+
+            if (loadedSchedule == null) {
+                AppStore.loadSkeletonSchedule(response);
+                snackbar.enqueueSnackbar(
+                    `Network error loading course information for "${userId}". 	              
+                        If this continues to happen, please submit a feedback form.`,
+                    { variant: 'error' }
+                );
+                setOpen(false);
+                return;
+            }
+
+            snackbar.enqueueSnackbar(`Schedule for username "${userId}" loaded.`, { variant: 'success' });
+            setOpen(false);
+        } catch (e) {
+            console.error('Error occurred while loading schedules: ', e);
+            snackbar.enqueueSnackbar(
+                `Failed to load schedules. If this continues to happen, please submit a feedback form.`,
+                { variant: 'error' }
+            );
+            setOpen(false);
+        }
     };
 
-    const handleSubmit = async () => {
-        console.log('Submitting: ', { userId, rememberMe });
+    const handleGoogleLogin = async (credential: CredentialResponse) => {
+        if (credential.credential == null) {
+            console.error('Did not receive google credential');
+            return;
+        }
+
+        return;
+
+        const response = await googleLoginMutation.mutateAsync(credential.credential);
+
+        console.log('response: ', response);
+    };
+
+    const handleGoogleError = async () => {
+        console.log('Login Failed');
     };
 
     return (
@@ -65,7 +142,7 @@ export function LoginButton() {
                                     </Typography>
                                 </Box>
 
-                                <form onSubmit={handleSubmit}>
+                                <form onSubmit={handleUsernameLogin}>
                                     <TextField
                                         // eslint-disable-next-line jsx-a11y/no-autofocus
                                         autoFocus
@@ -78,19 +155,8 @@ export function LoginButton() {
                                         onChange={handleUserIdChange}
                                     />
 
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                checked={rememberMe}
-                                                onChange={handleRememberMeChange}
-                                                color="primary"
-                                            />
-                                        }
-                                        label="Remember Me (Uncheck on shared computers)"
-                                    />
-
-                                    <Box>
-                                        <Button color="inherit" variant="outlined">
+                                    <Box marginTop={2}>
+                                        <Button color="inherit" variant="outlined" type="submit">
                                             Submit
                                         </Button>
                                     </Box>
@@ -103,14 +169,7 @@ export function LoginButton() {
                         <Stack gap={1}>
                             <Typography variant="h6">Providers</Typography>
                             <Box>
-                                <GoogleLogin
-                                    onSuccess={(credentialResponse) => {
-                                        console.log(credentialResponse);
-                                    }}
-                                    onError={() => {
-                                        console.log('Login Failed');
-                                    }}
-                                />
+                                <GoogleLogin onSuccess={handleGoogleLogin} onError={handleGoogleError} />
                             </Box>
                         </Stack>
                     </Stack>
