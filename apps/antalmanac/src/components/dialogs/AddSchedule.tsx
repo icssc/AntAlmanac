@@ -1,86 +1,53 @@
-import { useCallback, useState, useEffect, useMemo } from 'react';
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    TextField,
-    type DialogProps,
-    Box,
-} from '@mui/material';
-import { addSchedule } from '$actions/AppStoreActions';
-import { useThemeStore } from '$stores/SettingsStore';
-import AppStore from '$stores/AppStore';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import type { DialogProps } from '@mui/material';
+import { useState } from 'react';
 
-type ScheduleNameDialogProps = DialogProps;
+import { addSchedule } from '$actions/AppStoreActions';
+import AppStore from '$stores/AppStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 /**
  * Dialog with a text field to add a schedule.
  */
-function AddScheduleDialog(props: ScheduleNameDialogProps) {
+function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
     const isDark = useThemeStore((store) => store.isDark);
 
-    /**
-     * {@link props.onClose} also needs to be forwarded to the {@link Dialog} component.
-     * A custom {@link onKeyDown} handler is provided to handle the Enter and Escape keys.
-     */
-    const { onKeyDown, ...dialogProps } = props;
+    const [name, setName] = useState(AppStore.getDefaultScheduleName());
 
-    /**
-     * This is destructured separately for memoization.
-     */
-    const { onClose } = props;
-
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
-
-    const [name, setName] = useState(`Schedule ${scheduleNames.length + 1}`);
-
-    const handleCancel = useCallback(() => {
+    const handleCancel = () => {
         onClose?.({}, 'escapeKeyDown');
-    }, [onClose]);
+    };
 
-    const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleNameChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
-    }, []);
+    };
 
-    const submitName = useCallback(() => {
+    const submitName = () => {
         addSchedule(name);
-        setName(`Schedule ${AppStore.getScheduleNames().length + 1}`);
+        setName(AppStore.schedule.getDefaultScheduleName());
         onClose?.({}, 'escapeKeyDown');
-    }, [onClose, name]);
+    };
 
-    const handleKeyDown = useCallback(
-        (event: React.KeyboardEvent<HTMLDivElement>) => {
-            onKeyDown?.(event);
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        onKeyDown?.(event);
 
-            if (event.key === 'Enter') {
+        switch (event.key) {
+            case 'Enter': {
                 event.stopPropagation();
                 event.preventDefault();
                 submitName();
+                break;
             }
 
-            if (event.key === 'Escape') {
-                props.onClose?.({}, 'escapeKeyDown');
+            case 'Escape': {
+                onClose?.({}, 'escapeKeyDown');
+                break;
             }
-        },
-        [onClose, submitName, onKeyDown]
-    );
-
-    const handleScheduleNamesChange = useCallback(() => {
-        setScheduleNames(AppStore.getScheduleNames());
-    }, []);
-
-    useEffect(() => {
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-
-        return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-        };
-    }, [handleScheduleNamesChange]);
+        }
+    };
 
     return (
-        <Dialog onKeyDown={handleKeyDown} {...dialogProps}>
+        <Dialog onKeyDown={handleKeyDown} {...props}>
             <DialogTitle>Add Schedule</DialogTitle>
 
             <DialogContent>
