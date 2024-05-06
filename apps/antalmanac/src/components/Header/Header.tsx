@@ -5,6 +5,7 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Export from './Export';
 import Import from './Import';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
+import LoginButton from './LoginButton';
 import AppDrawer from './SettingsMenu';
 
 import Logo from '$assets/logo.svg';
@@ -51,6 +52,8 @@ const Header = ({ classes }: CustomAppBarProps) => {
                 />
 
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <LoginButton />
+
                     <LoadSaveScheduleFunctionality />
 
                     {isMobileScreen ? null : (
