@@ -93,9 +93,6 @@ export function ColumnToggleDropdown() {
         [selectedColumns]
     );
 
-    console.log('selectedColumns', selectedColumns);
-    console.log('selectedColumnNames', selectedColumnNames);
-
     return (
         <>
             <Tooltip title="Show/Hide Columns">
