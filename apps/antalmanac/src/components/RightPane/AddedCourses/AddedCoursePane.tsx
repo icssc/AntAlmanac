@@ -3,7 +3,7 @@ import { Box, Chip, IconButton, Paper, SxProps, TextField, Tooltip, Typography }
 import { AACourse } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { ColumnToggleButton } from '../CoursePane/CoursePaneButtonRow';
+import { ColumnToggleDropdown } from '../CoursePane/CoursePaneButtonRow';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 
 import CustomEventDetailView from './CustomEventDetailView';
@@ -378,7 +378,7 @@ function AddedSectionsGrid() {
             <Box display="flex" width={1} position="absolute" zIndex="2">
                 <CopyScheduleButton index={scheduleIndex} />
                 <ClearScheduleButton />
-                <ColumnToggleButton />
+                <ColumnToggleDropdown />
             </Box>
             <Box style={{ marginTop: 50 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>

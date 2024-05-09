@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
 import {
     Box,
     Checkbox,
@@ -12,7 +12,8 @@ import {
     type SxProps,
     Popover,
 } from '@mui/material';
-import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
+import { useCallback, useMemo, useState } from 'react';
+
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 
 /**
@@ -31,6 +32,7 @@ const buttonSx: SxProps = {
 };
 
 const columnLabels: Record<SectionTableColumn, string> = {
+    action: 'Action',
     sectionCode: 'Code',
     sectionDetails: 'Type',
     instructors: 'Instructors',
@@ -61,7 +63,7 @@ const COLUMN_LABEL_ENTRIES = Object.entries(columnLabels);
  *
  * e.g. show/hide the section code, instructors, etc.
  */
-export function ColumnToggleButton() {
+export function ColumnToggleDropdown() {
     const [selectedColumns, setSelectedColumns] = useColumnStore((store) => [
         store.selectedColumns,
         store.setSelectedColumns,
@@ -110,12 +112,16 @@ export function ColumnToggleButton() {
                         renderValue={renderEmptySelectValue}
                         MenuProps={{ anchorEl }}
                     >
-                        {COLUMN_LABEL_ENTRIES.map(([column, label], index) => (
-                            <MenuItem key={column} value={column}>
-                                <Checkbox checked={selectedColumns[index]} color="default" />
-                                <ListItemText primary={label} />
-                            </MenuItem>
-                        ))}
+                        {COLUMN_LABEL_ENTRIES
+                            // Disallow toggling the action column (the one to add courses)
+                            .filter(([column]) => column !== 'action')
+                            // Add 1 to the index to offset the action column being filtered out
+                            .map(([column, label], index) => (
+                                <MenuItem key={column} value={column}>
+                                    <Checkbox checked={selectedColumns[index + 1]} color="default" />
+                                    <ListItemText primary={label} />
+                                </MenuItem>
+                            ))}
                     </Select>
                 </FormControl>
             </Popover>
@@ -163,7 +169,7 @@ export function CoursePaneButtonRow(props: CoursePaneButtonRowProps) {
                 </IconButton>
             </Tooltip>
 
-            <ColumnToggleButton />
+            <ColumnToggleDropdown />
         </Box>
     );
 }
