@@ -162,16 +162,9 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                 </Tooltip>
             ) : (
                 <Tooltip title="Add custom events">
-                    <Button
-                        disableRipple={true}
-                        onClick={handleOpen}
-                        variant="outlined"
-                        size="small"
-                        startIcon={<Add fontSize="small" />}
-                        disabled={skeletonMode}
-                    >
-                        Custom
-                    </Button>
+                    <IconButton disableRipple={true} onClick={handleOpen} size="medium" disabled={skeletonMode}>
+                        <Add fontSize="small" />
+                    </IconButton>
                 </Tooltip>
             )}
             <Dialog open={open} onClose={handleClose} maxWidth={'lg'}>
