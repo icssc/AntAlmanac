@@ -485,7 +485,6 @@ interface SectionTableBodyProps {
     scheduleNames: string[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     action: SectionActionCell,
     sectionCode: CourseCodeCell,
