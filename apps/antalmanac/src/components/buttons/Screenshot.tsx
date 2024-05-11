@@ -1,6 +1,5 @@
-import { Tooltip } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import { Panorama } from '@material-ui/icons';
+import { Panorama } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
 
@@ -27,9 +26,9 @@ const ScreenshotButton = () => {
 
     return (
         <Tooltip title="Get a screenshot of your schedule">
-            <Button onClick={handleClick} variant="outlined" size="small" startIcon={<Panorama fontSize="small" />}>
-                Screenshot
-            </Button>
+            <IconButton onClick={handleClick} size="medium">
+                <Panorama fontSize="small" />
+            </IconButton>
         </Tooltip>
     );
 };
